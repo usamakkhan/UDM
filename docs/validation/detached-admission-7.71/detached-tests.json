@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "name": "Admission reaches a real flushed-temporary-file gate",
+      "passed": true
+    },
+    {
+      "name": "History remains readable and excludes the tentative media job during disk IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery can inspect an in-flight token without releasing or accepting it prematurely",
+      "passed": true
+    },
+    {
+      "name": "The hidden media destination remains reserved while its write is pending",
+      "passed": true
+    },
+    {
+      "name": "A concurrent ordinary write queues behind the gated publication",
+      "passed": true
+    },
+    {
+      "name": "Ordinary filename allocation respects pending media ownership",
+      "passed": true
+    },
+    {
+      "name": "Installing the accepted media preserves the concurrent ordinary job",
+      "passed": true
+    },
+    {
+      "name": "The accepted receipt identifies the installed job exactly once",
+      "passed": true
+    },
+    {
+      "name": "Replaying the accepted media token does not append another job",
+      "passed": true
+    },
+    {
+      "name": "The installed job releases its transient destination ownership",
+      "passed": true
+    },
+    {
+      "name": "Published history contains both jobs and the matching media receipt",
+      "passed": true
+    },
+    {
+      "name": "Admission reaches a real flushed-temporary-file gate",
+      "passed": true
+    },
+    {
+      "name": "History remains readable and excludes the tentative media job during disk IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery can inspect an in-flight token without releasing or accepting it prematurely",
+      "passed": true
+    },
+    {
+      "name": "The hidden media destination remains reserved while its write is pending",
+      "passed": true
+    },
+    {
+      "name": "A concurrent ordinary write queues behind the gated publication",
+      "passed": true
+    },
+    {
+      "name": "Ordinary filename allocation respects pending media ownership",
+      "passed": true
+    },
+    {
+      "name": "Installing the accepted media preserves the concurrent ordinary job",
+      "passed": true
+    },
+    {
+      "name": "The accepted receipt identifies the installed job exactly once",
+      "passed": true
+    },
+    {
+      "name": "Replaying the accepted media token does not append another job",
+      "passed": true
+    },
+    {
+      "name": "The installed job releases its transient destination ownership",
+      "passed": true
+    },
+    {
+      "name": "Published history contains both jobs and the matching media receipt",
+      "passed": true
+    },
+    {
+      "name": "An uncommitted detached write reports its failure",
+      "passed": true
+    },
+    {
+      "name": "A failed detached admission leaves no live or transient orphan",
+      "passed": true
+    },
+    {
+      "name": "A detached admission with no successful write can retry once",
+      "passed": true
+    },
+    {
+      "name": "Nested legacy callers keep synchronous admission and never wait for detached resolution under an outer lock",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

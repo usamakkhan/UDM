@@ -1,0 +1,221 @@
+{
+  "desktop": "7.52",
+  "browser": "0.71.16",
+  "status": "Development build and all targeted checks passed; not installed or packaged",
+  "productionOutput": "candidates/native-build-current/release-native",
+  "build": "progress-snapshot-7.52-build.json",
+  "installedDesktop": "7.11",
+  "checks": 243,
+  "tests": [
+    {
+      "name": "filter",
+      "checks": 46,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.52/filter-final/results.json",
+      "source": "native/FindFilterCacheTests.cpp",
+      "sourceSha256": "47492A35C4A6297BC8C2A847C8C5E81A607F438771AF5985F2F4F764763425E2",
+      "executable": "Udm.FindFilterCacheTests.exe",
+      "version": "7.52",
+      "sha256": "83D0E81CE73186A832129C6374BB88FCF07110CF2BA96B5DAE6FD68ED525CDCD"
+    },
+    {
+      "name": "address",
+      "checks": 27,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.52/address/results.json",
+      "source": "native/FindAddressTests.cpp",
+      "sourceSha256": "0B6B33A1839281F58CD87FB83884D1B11A2CBAB7DE4479C6C12FC08DFD951945",
+      "executable": "Udm.FindAddressTests.exe",
+      "version": "7.52",
+      "sha256": "E034E6FD79461806DC50010A545C265050A8C081D49204ABD5043CC7D1102B80"
+    },
+    {
+      "name": "progress",
+      "checks": 82,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.52/model/results.json",
+      "source": "native/ProgressRecordViewTests.cpp",
+      "sourceSha256": "3061B9093CD693FAB4FE223F87AE3EDFBB12F8389A5BEEB24014A05FB2598CED",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.52",
+      "sha256": "05083C394D27AE9D6A02FA5D24669DE8DDFC3A8223A2A12E0DDC6FA74FA79914"
+    },
+    {
+      "name": "window",
+      "checks": 88,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.52/ui/results.json",
+      "source": "native/FindDialogUiTests.cpp",
+      "sourceSha256": "7BDF744D1611E91B237AE23B12A84764ADC57632FE44A3CFC853D3BC7A71D6E6",
+      "executable": "Udm.FindDialogUiTests.exe",
+      "version": "7.52",
+      "sha256": "37784B00D1FFD1459954F02C50DF5C4C94EC955B40E37BE194C4337C78F2449A"
+    }
+  ],
+  "windowTiming": [
+    {
+      "frames": 8,
+      "msPerFrame": 5.4428125,
+      "scope": "Current main-window refresh with a three-MiB protected capture; no earlier UI or IDM baseline"
+    },
+    {
+      "currentMedianMs": 4.8200125,
+      "currentMsPerFrame": [
+        5.3130875,
+        4.8200125,
+        5.8020625,
+        4.6027375,
+        4.18925,
+        6.127225,
+        3.3323625
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 146.843425,
+      "priorMsPerFrame": [
+        193.6268125,
+        151.0055625,
+        147.27365,
+        131.550825,
+        146.843425,
+        136.852375,
+        131.3695625
+      ],
+      "scope": "Pre-7.51 Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.5203125,
+      "currentMsPerFrame": [
+        1.64,
+        1.5203125,
+        1.529775,
+        1.418425,
+        1.48265,
+        1.4851875,
+        1.703375
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.4115875,
+      "priorMsPerFrame": [
+        1.4115875,
+        1.520825,
+        1.2048125,
+        1.417875,
+        1.1750625,
+        1.3226125,
+        1.8868625
+      ],
+      "scope": "Pre-7.51 handler replay versus actual current handler for an ordinary filename in the same owned window; not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 2.7009,
+      "currentMsPerFrame": [
+        2.566125,
+        2.7009,
+        2.6136,
+        2.5948875,
+        2.936475,
+        2.722025,
+        3.1013
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 135.288225,
+      "priorMsPerFrame": [
+        132.6621625,
+        135.288225,
+        126.8303,
+        124.7815375,
+        138.08965,
+        160.0287125,
+        193.1627
+      ],
+      "scope": "Pre-cache unfiltered Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 2.0117875,
+      "currentMsPerFrame": [
+        1.6599875,
+        1.81945,
+        2.0117875,
+        2.918675,
+        1.3421125,
+        2.9579875,
+        2.8964875
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.9154125,
+      "priorMsPerFrame": [
+        1.7409625,
+        1.4898125,
+        2.4111,
+        1.3336375,
+        2.5165875,
+        1.9154125,
+        2.2180875
+      ],
+      "scope": "Pre-cache unfiltered filename handler replay versus actual current handler; shared current refresh/backend, not old executable or IDM timing"
+    }
+  ],
+  "timingMethod": "Seven alternating trials of eight calls per workload. Previous handler code replay and actual current handler share current refresh/backend code and the same owned window. No older executable or IDM timing comparison; no timing pass threshold.",
+  "timingInterpretation": "Protected-capture medians improve strongly in this run: filtered 146.84 to 4.82 ms, unfiltered 135.29 to 2.70 ms. Filename medians are slightly higher: filtered 1.41 to 1.52 ms and unfiltered 1.92 to 2.01 ms, with overlapping trial ranges. Treat the small-case performance effect as unresolved; do not claim every workload is faster.",
+  "cachePolicy": {
+    "logicalSnapshotBudgetBytes": 33554432,
+    "entryLimit": 8192,
+    "eviction": "Least recently used; marking cohort membership alone does not promote entries",
+    "accounting": "Counts JSON values, object key strings and string payloads. This is a retained snapshot budget, not whole-process RSS, allocator capacity or source-job memory.",
+    "oversized": "Compute the matching result without retaining the snapshot"
+  },
+  "semantics": "Bind cache identity to the saved normalized query independently of visible filtering. Mark current category/queue candidates without rematching when filtering is hidden, then evict unseen entries. Compare live source fields under the manager lock before reuse; copy and match misses outside it. Cache verified negative results too. Expected-query checks prevent reuse/publication under a different query.",
+  "coverage": [
+    "Entry and logical-byte LRU pressure",
+    "Oversized and disabled retention",
+    "Cohort membership versus LRU promotion",
+    "Query clearing and stale-query publication refusal",
+    "Filtered and unfiltered capture/filename selection and wrapping",
+    "Hidden-query changes and changed protected sources",
+    "Stale positive to negative and restored positive",
+    "Category eviction and recomputation on returning to All Downloads"
+  ],
+  "recovery": {
+    "disk": "C: filled during App.obj output. Final production and test targets written to shared D: build root with current core/library objects reused from C:; no media tools copied.",
+    "cleanup": "Five exact old generated object paths removed. Immediate reported C: free space did not increase; selected logical sizes are not claimed as physical reclamation. See generated-test-object-cleanup-7.52.json.",
+    "allocation": "Initial cache fixture aborted with bad allocation after 29 checks under low commit headroom. Unused earlier large fixture copies were released before independent cases; the full final fixture passes 46 checks with observed peak private memory approximately 31.4 MiB. This is test-process observation, not application memory acceptance.",
+    "host": "A PowerShell launch failed with paging-file error 0x800705AF before executing the command. Used cmd/Python and direct pinned compiler flags from native/build.ps1 for the window fixture to avoid retaining the PowerShell host. No unrelated user processes stopped or system settings changed."
+  },
+  "componentBuild": {
+    "method": "Direct pinned compiler invocation matching native/build.ps1; avoid a persistent PowerShell host during low system commit",
+    "buildScriptSha256": "f9e4f6645d61bcc034d44790e4130d6a4f2f2e6cd8a5f3374102da2f4373a8a9",
+    "resourceSha256": "6c66f12489f84f7c63820cecc97de99f1a4bbd16cc0cd894994ccc683b756dce",
+    "optimization": "/O2",
+    "coreObjects": "%LOCALAPPDATA%/UDM-Development/native-work/out-nosymbols",
+    "targetObjectsAndExecutables": "candidates/native-build-current"
+  },
+  "productionArtifactSelection": {
+    "method": "Select only the five production names in the build receipt; this shared development output also contains fixture executables and is not a release package.",
+    "names": [
+      "UDM.exe",
+      "Udm.NativeHost.exe",
+      "Udm.Monitor.exe",
+      "Udm.SetupHelper.exe",
+      "Udm.Automation.exe"
+    ]
+  },
+  "visual": "find-filter-7.50.png",
+  "freshRenderMatchesEarlierTrackedImage": true,
+  "freshRenderSha256": "4176EC1C1B80A01572B8B682BF0BDDE72A019C1DEEFF55604D4BBB5967475E56",
+  "visualScope": "Fresh owned Find render reused only when byte-identical to the previously inspected image; otherwise requires inspection. No new installed or IDM visual acceptance claim.",
+  "limitations": [
+    "First, changed or oversized candidates still require projection and matching on the UI thread outside the job lock",
+    "Initial active-filter snapshot collection can still have memory costs beyond the retained-cache budget",
+    "Equality checks still read selected large values",
+    "Cohort eviction occurs on a history refresh; hidden/minimized deferred history has no immediate eviction guarantee",
+    "Expected-query mismatch is model-tested, not a forced reentrant Windows-message race replay",
+    "No fresh personal-browser, installed-window or live IDM timing acceptance",
+    "No whole-app memory/speed or complete IDM parity claim"
+  ],
+  "next": [
+    "Investigate small-filename handler overhead and repeat controlled comparisons without selecting only favorable trials",
+    "Profile first/changed-source matching and initial snapshot batching",
+    "Continue matched installed dialog/handoff and transfer latency comparisons",
+    "Retain live IDM visual and full-workflow acceptance as separate gates"
+  ]
+}

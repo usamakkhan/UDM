@@ -1,0 +1,228 @@
+{
+  "version": "7.74",
+  "browserVersion": "0.71.38",
+  "allQualifiedRunsPassed": true,
+  "nativeSuites": [
+    {
+      "suite": "pending-ui",
+      "checks": 40
+    },
+    {
+      "suite": "detached-tests",
+      "checks": 53
+    },
+    {
+      "suite": "registry-tests",
+      "checks": 36
+    },
+    {
+      "suite": "reservation-tests",
+      "checks": 73
+    },
+    {
+      "suite": "coordinator-tests",
+      "checks": 13
+    },
+    {
+      "suite": "catalog-tests",
+      "checks": 14
+    },
+    {
+      "suite": "idle-tests",
+      "checks": 7
+    }
+  ],
+  "cases": [
+    {
+      "case": "cold-trace-a",
+      "selectionToExternalActionableMs": 601,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "earlyDialogUsed": true,
+      "paintBeforeFlushCompletion": false,
+      "preparedViewInboxClaimed": true,
+      "sameRenderViewUsed": true,
+      "viewClaimedBeforeFlushCompletion": true,
+      "viewClaimToFlushCompletionMs": 34.6446,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.192
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0008
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 31.3503
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 24.9373
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 248.0195
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0177
+        }
+      ]
+    },
+    {
+      "case": "warm-original-a",
+      "selectionToExternalActionableMs": 172,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "cold-original-a",
+      "selectionToExternalActionableMs": 548,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "warm-trace-b",
+      "selectionToExternalActionableMs": 219,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "earlyDialogUsed": true,
+      "paintBeforeFlushCompletion": false,
+      "preparedViewInboxClaimed": true,
+      "sameRenderViewUsed": true,
+      "viewClaimedBeforeFlushCompletion": true,
+      "viewClaimToFlushCompletionMs": 49.6439,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.0935
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0004
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 48.4516
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 13.9524
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 827.8081
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0118
+        }
+      ]
+    }
+  ],
+  "payloads": [
+    {
+      "path": "candidates/pending-file-info-7.74/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/pending-file-info-7.74/warm-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/pending-file-info-7.74/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/pending-file-info-7.74/warm-trace-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "preliminary": [
+    {
+      "case": "pending-ui",
+      "qualified": false,
+      "reason": "Owned test main-window lifecycle stopped the second case; fixture-only correction."
+    },
+    {
+      "case": "pending-ui-retry",
+      "qualified": false,
+      "reason": "Cancel was checked before Win32 EndDialog unwound; corrected to verify modal return while the write remained held."
+    },
+    {
+      "case": "warm-trace-a",
+      "qualified": false,
+      "reason": "ENOSPC while writing a fixture screenshot; successful replacement is warm-trace-b."
+    }
+  ],
+  "inputHashes": {
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ],
+    "testSources": [
+      {
+        "path": "tests/hls-catalog.native-live.cjs",
+        "sha256": "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+      },
+      {
+        "path": "tests/observe-cold-file-info.py",
+        "sha256": "2E1A24176B15CFFCB3A053776AB1A4D001744AB86A5CB5AEB9FDF91CA29C0013"
+      }
+    ]
+  },
+  "build": "pending-file-info-7.74-build.json",
+  "limits": [
+    "Early same-window presentation applies to eligible new media admissions only; direct-audio, existing-record, duplicate and refresh paths retain their synchronous fallback.",
+    "The gated native UI fixture covers held-write editing, queued Start/Later and Cancel before acceptance. Advanced actions enable after acceptance. Failed-admission retry inside the same dialog, concurrent modal admission stress and full shutdown/session-end cases remain open.",
+    "Four isolated Edge/native selected HLS MP4 transfers verify exact pre-Start/final size and hash, selected audio/language, full decode, real prefetch and hidden main list. Personal installed-browser acceptance and fresh IDM comparisons remain open.",
+    "The timing samples are small and unpaired and establish no overall speedup or IDM parity.",
+    "Cleanup deletion was blocked by automatic approval review. Generated objects were preserved by relocation; profiles and payloads remain retained."
+  ],
+  "cleanup": "Deletion was rejected by automatic approval review. Test artifacts are retained; four verified generated objects were safely relocated to LocalAppData to free D drive. See pending-file-info-7.74-cleanup.json.",
+  "failedFixtureRegistryRemoved": true
+}

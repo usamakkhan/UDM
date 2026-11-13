@@ -1,0 +1,880 @@
+{
+  "version": "7.67",
+  "browserVersion": "0.71.31",
+  "diagnosticOnly": true,
+  "allQualifiedRunsPassed": true,
+  "build": "save-owners-7.67-build.json",
+  "cases": [
+    {
+      "case": "cold-trace-a",
+      "selectionToExternalActionableMs": 992,
+      "phases": [
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 375.5845
+        },
+        {
+          "start": "admission-enter",
+          "end": "before-commit",
+          "wallMs": 6.3642
+        },
+        {
+          "start": "before-commit",
+          "end": "temporary-flushed",
+          "wallMs": 48.6145
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "committed",
+          "wallMs": 28.2078
+        },
+        {
+          "start": "committed",
+          "end": "admission-return",
+          "wallMs": 0.024
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.036
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 67.1786
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 27.9501
+        }
+      ],
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogWrites": [
+        {
+          "kind": "forced",
+          "threadId": 30608,
+          "events": [
+            {
+              "stage": "save-snapshot-ready",
+              "counter": 99489170400,
+              "threadId": 30608,
+              "msAfterAnchor": 446.22,
+              "epochMs": 1794467350132.4075,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-serialized",
+              "counter": 99489171354,
+              "threadId": 30608,
+              "msAfterAnchor": 446.3154,
+              "epochMs": 1794467350132.503,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-wait",
+              "counter": 99489171360,
+              "threadId": 30608,
+              "msAfterAnchor": 446.316,
+              "epochMs": 1794467350132.5034,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-acquired",
+              "counter": 99489171363,
+              "threadId": 30608,
+              "msAfterAnchor": 446.3163,
+              "epochMs": 1794467350132.504,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-atomic-entry",
+              "counter": 99489171383,
+              "threadId": 30608,
+              "msAfterAnchor": 446.3183,
+              "epochMs": 1794467350132.5059,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-dirs-ready",
+              "counter": 99489180022,
+              "threadId": 30608,
+              "msAfterAnchor": 447.1822,
+              "epochMs": 1794467350133.3696,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-file-opened",
+              "counter": 99489183133,
+              "threadId": 30608,
+              "msAfterAnchor": 447.4933,
+              "epochMs": 1794467350133.681,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-bytes-written",
+              "counter": 99489185450,
+              "threadId": 30608,
+              "msAfterAnchor": 447.725,
+              "epochMs": 1794467350133.9126,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-buffer-flushed",
+              "counter": 99489654205,
+              "threadId": 30608,
+              "msAfterAnchor": 494.6005,
+              "epochMs": 1794467350180.788,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-file-published",
+              "counter": 99489937681,
+              "threadId": 30608,
+              "msAfterAnchor": 522.9481,
+              "epochMs": 1794467350209.1355,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-released",
+              "counter": 99489937689,
+              "threadId": 30608,
+              "msAfterAnchor": 522.9489,
+              "epochMs": 1794467350209.1365,
+              "recordWorkMs": 0.0
+            }
+          ],
+          "index": 0,
+          "complete": true,
+          "phases": [
+            {
+              "start": "save-snapshot-ready",
+              "end": "save-serialized",
+              "wallMs": 0.0954
+            },
+            {
+              "start": "save-write-wait",
+              "end": "save-write-acquired",
+              "wallMs": 0.0003
+            },
+            {
+              "start": "save-bytes-written",
+              "end": "save-buffer-flushed",
+              "wallMs": 46.8755
+            },
+            {
+              "start": "save-file-published",
+              "end": "save-write-released",
+              "wallMs": 0.0008
+            }
+          ],
+          "overlappingWriters": []
+        }
+      ],
+      "traceRecords": 49,
+      "catalogReadRetries": 0,
+      "deferredSavesObserved": 2,
+      "admissionWriterIndex": 0
+    },
+    {
+      "case": "warm-trace-a",
+      "selectionToExternalActionableMs": 554,
+      "phases": [
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 386.0975
+        },
+        {
+          "start": "admission-enter",
+          "end": "before-commit",
+          "wallMs": 4.6697
+        },
+        {
+          "start": "before-commit",
+          "end": "temporary-flushed",
+          "wallMs": 340.6888
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "committed",
+          "wallMs": 14.7996
+        },
+        {
+          "start": "committed",
+          "end": "admission-return",
+          "wallMs": 0.0419
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0239
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 57.9951
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 19.8859
+        }
+      ],
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogWrites": [
+        {
+          "kind": "auto",
+          "threadId": 12968,
+          "events": [
+            {
+              "stage": "save-snapshot-ready",
+              "counter": 99641432920,
+              "threadId": 12968,
+              "msAfterAnchor": 2317.8046,
+              "epochMs": 1794467365358.6738,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-serialized",
+              "counter": 99641433354,
+              "threadId": 12968,
+              "msAfterAnchor": 2317.848,
+              "epochMs": 1794467365358.717,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-wait",
+              "counter": 99641433356,
+              "threadId": 12968,
+              "msAfterAnchor": 2317.8482,
+              "epochMs": 1794467365358.7173,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-acquired",
+              "counter": 99641433359,
+              "threadId": 12968,
+              "msAfterAnchor": 2317.8485,
+              "epochMs": 1794467365358.7175,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-atomic-entry",
+              "counter": 99641433378,
+              "threadId": 12968,
+              "msAfterAnchor": 2317.8504,
+              "epochMs": 1794467365358.7195,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-dirs-ready",
+              "counter": 99641563668,
+              "threadId": 12968,
+              "msAfterAnchor": 2330.8794,
+              "epochMs": 1794467365371.7485,
+              "recordWorkMs": 0.0003
+            },
+            {
+              "stage": "save-file-opened",
+              "counter": 99641568120,
+              "threadId": 12968,
+              "msAfterAnchor": 2331.3246,
+              "epochMs": 1794467365372.1938,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-bytes-written",
+              "counter": 99641569106,
+              "threadId": 12968,
+              "msAfterAnchor": 2331.4232,
+              "epochMs": 1794467365372.2922,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-buffer-flushed",
+              "counter": 99641871552,
+              "threadId": 12968,
+              "msAfterAnchor": 2361.6678,
+              "epochMs": 1794467365402.5369,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-file-published",
+              "counter": 99642211694,
+              "threadId": 12968,
+              "msAfterAnchor": 2395.682,
+              "epochMs": 1794467365436.551,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-released",
+              "counter": 99642211701,
+              "threadId": 12968,
+              "msAfterAnchor": 2395.6827,
+              "epochMs": 1794467365436.5518,
+              "recordWorkMs": 0.0
+            }
+          ],
+          "index": 0,
+          "complete": true,
+          "phases": [
+            {
+              "start": "save-snapshot-ready",
+              "end": "save-serialized",
+              "wallMs": 0.0434
+            },
+            {
+              "start": "save-write-wait",
+              "end": "save-write-acquired",
+              "wallMs": 0.0003
+            },
+            {
+              "start": "save-bytes-written",
+              "end": "save-buffer-flushed",
+              "wallMs": 30.2446
+            },
+            {
+              "start": "save-file-published",
+              "end": "save-write-released",
+              "wallMs": 0.0007
+            }
+          ],
+          "overlappingWriters": []
+        },
+        {
+          "kind": "forced",
+          "threadId": 6624,
+          "events": [
+            {
+              "stage": "save-snapshot-ready",
+              "counter": 99642211674,
+              "threadId": 6624,
+              "msAfterAnchor": 2395.68,
+              "epochMs": 1794467365436.549,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-serialized",
+              "counter": 99642212534,
+              "threadId": 6624,
+              "msAfterAnchor": 2395.766,
+              "epochMs": 1794467365436.6353,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-wait",
+              "counter": 99642212537,
+              "threadId": 6624,
+              "msAfterAnchor": 2395.7663,
+              "epochMs": 1794467365436.6355,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-acquired",
+              "counter": 99642212540,
+              "threadId": 6624,
+              "msAfterAnchor": 2395.7666,
+              "epochMs": 1794467365436.6357,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-atomic-entry",
+              "counter": 99642212553,
+              "threadId": 6624,
+              "msAfterAnchor": 2395.7679,
+              "epochMs": 1794467365436.637,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-dirs-ready",
+              "counter": 99642225323,
+              "threadId": 6624,
+              "msAfterAnchor": 2397.0449,
+              "epochMs": 1794467365437.914,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-file-opened",
+              "counter": 99642227276,
+              "threadId": 6624,
+              "msAfterAnchor": 2397.2402,
+              "epochMs": 1794467365438.1094,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-bytes-written",
+              "counter": 99642228182,
+              "threadId": 6624,
+              "msAfterAnchor": 2397.3308,
+              "epochMs": 1794467365438.2,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-buffer-flushed",
+              "counter": 99645617315,
+              "threadId": 6624,
+              "msAfterAnchor": 2736.2441,
+              "epochMs": 1794467365777.1133,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-file-published",
+              "counter": 99645765857,
+              "threadId": 6624,
+              "msAfterAnchor": 2751.0983,
+              "epochMs": 1794467365791.9675,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-released",
+              "counter": 99645765864,
+              "threadId": 6624,
+              "msAfterAnchor": 2751.099,
+              "epochMs": 1794467365791.9683,
+              "recordWorkMs": 0.0001
+            }
+          ],
+          "index": 1,
+          "complete": true,
+          "phases": [
+            {
+              "start": "save-snapshot-ready",
+              "end": "save-serialized",
+              "wallMs": 0.086
+            },
+            {
+              "start": "save-write-wait",
+              "end": "save-write-acquired",
+              "wallMs": 0.0003
+            },
+            {
+              "start": "save-bytes-written",
+              "end": "save-buffer-flushed",
+              "wallMs": 338.9133
+            },
+            {
+              "start": "save-file-published",
+              "end": "save-write-released",
+              "wallMs": 0.0007
+            }
+          ],
+          "overlappingWriters": []
+        }
+      ],
+      "traceRecords": 60,
+      "catalogReadRetries": 0,
+      "deferredSavesObserved": 2,
+      "admissionWriterIndex": 1
+    },
+    {
+      "case": "warm-trace-b",
+      "selectionToExternalActionableMs": 215,
+      "phases": [
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 213.4773
+        },
+        {
+          "start": "admission-enter",
+          "end": "before-commit",
+          "wallMs": 4.3335
+        },
+        {
+          "start": "before-commit",
+          "end": "temporary-flushed",
+          "wallMs": 51.6064
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "committed",
+          "wallMs": 16.9286
+        },
+        {
+          "start": "committed",
+          "end": "admission-return",
+          "wallMs": 0.0238
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.8598
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 53.5745
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 14.0855
+        }
+      ],
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogWrites": [
+        {
+          "kind": "forced",
+          "threadId": 25424,
+          "events": [
+            {
+              "stage": "save-snapshot-ready",
+              "counter": 99771054434,
+              "threadId": 25424,
+              "msAfterAnchor": 1922.5513,
+              "epochMs": 1794467378321.0317,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-serialized",
+              "counter": 99771055274,
+              "threadId": 25424,
+              "msAfterAnchor": 1922.6353,
+              "epochMs": 1794467378321.1157,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-wait",
+              "counter": 99771055276,
+              "threadId": 25424,
+              "msAfterAnchor": 1922.6355,
+              "epochMs": 1794467378321.116,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-acquired",
+              "counter": 99771055280,
+              "threadId": 25424,
+              "msAfterAnchor": 1922.6359,
+              "epochMs": 1794467378321.1165,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-atomic-entry",
+              "counter": 99771055287,
+              "threadId": 25424,
+              "msAfterAnchor": 1922.6366,
+              "epochMs": 1794467378321.1172,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-dirs-ready",
+              "counter": 99771064251,
+              "threadId": 25424,
+              "msAfterAnchor": 1923.533,
+              "epochMs": 1794467378322.0134,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-file-opened",
+              "counter": 99771066259,
+              "threadId": 25424,
+              "msAfterAnchor": 1923.7338,
+              "epochMs": 1794467378322.2144,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-bytes-written",
+              "counter": 99771067154,
+              "threadId": 25424,
+              "msAfterAnchor": 1923.8233,
+              "epochMs": 1794467378322.3037,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-buffer-flushed",
+              "counter": 99771568673,
+              "threadId": 25424,
+              "msAfterAnchor": 1973.9752,
+              "epochMs": 1794467378372.4556,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-file-published",
+              "counter": 99771739124,
+              "threadId": 25424,
+              "msAfterAnchor": 1991.0203,
+              "epochMs": 1794467378389.5007,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-released",
+              "counter": 99771739134,
+              "threadId": 25424,
+              "msAfterAnchor": 1991.0213,
+              "epochMs": 1794467378389.5017,
+              "recordWorkMs": 0.0001
+            }
+          ],
+          "index": 0,
+          "complete": true,
+          "phases": [
+            {
+              "start": "save-snapshot-ready",
+              "end": "save-serialized",
+              "wallMs": 0.084
+            },
+            {
+              "start": "save-write-wait",
+              "end": "save-write-acquired",
+              "wallMs": 0.0004
+            },
+            {
+              "start": "save-bytes-written",
+              "end": "save-buffer-flushed",
+              "wallMs": 50.1519
+            },
+            {
+              "start": "save-file-published",
+              "end": "save-write-released",
+              "wallMs": 0.001
+            }
+          ],
+          "overlappingWriters": []
+        }
+      ],
+      "traceRecords": 49,
+      "catalogReadRetries": 0,
+      "deferredSavesObserved": 2,
+      "admissionWriterIndex": 0
+    },
+    {
+      "case": "cold-trace-b",
+      "selectionToExternalActionableMs": 1012,
+      "phases": [
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 694.53
+        },
+        {
+          "start": "admission-enter",
+          "end": "before-commit",
+          "wallMs": 4.5381
+        },
+        {
+          "start": "before-commit",
+          "end": "temporary-flushed",
+          "wallMs": 45.1268
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "committed",
+          "wallMs": 17.0361
+        },
+        {
+          "start": "committed",
+          "end": "admission-return",
+          "wallMs": 0.0227
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0231
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 59.0727
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 17.2748
+        }
+      ],
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogWrites": [
+        {
+          "kind": "forced",
+          "threadId": 31132,
+          "events": [
+            {
+              "stage": "save-snapshot-ready",
+              "counter": 99911061316,
+              "threadId": 31132,
+              "msAfterAnchor": 734.5796,
+              "epochMs": 1794467392321.517,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-serialized",
+              "counter": 99911062302,
+              "threadId": 31132,
+              "msAfterAnchor": 734.6782,
+              "epochMs": 1794467392321.6157,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-write-wait",
+              "counter": 99911062305,
+              "threadId": 31132,
+              "msAfterAnchor": 734.6785,
+              "epochMs": 1794467392321.616,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-acquired",
+              "counter": 99911062308,
+              "threadId": 31132,
+              "msAfterAnchor": 734.6788,
+              "epochMs": 1794467392321.6162,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-atomic-entry",
+              "counter": 99911062321,
+              "threadId": 31132,
+              "msAfterAnchor": 734.6801,
+              "epochMs": 1794467392321.6177,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-dirs-ready",
+              "counter": 99911079102,
+              "threadId": 31132,
+              "msAfterAnchor": 736.3582,
+              "epochMs": 1794467392323.2957,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-file-opened",
+              "counter": 99911082078,
+              "threadId": 31132,
+              "msAfterAnchor": 736.6558,
+              "epochMs": 1794467392323.5933,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-bytes-written",
+              "counter": 99911083304,
+              "threadId": 31132,
+              "msAfterAnchor": 736.7784,
+              "epochMs": 1794467392323.7158,
+              "recordWorkMs": 0.0001
+            },
+            {
+              "stage": "save-buffer-flushed",
+              "counter": 99911493269,
+              "threadId": 31132,
+              "msAfterAnchor": 777.7749,
+              "epochMs": 1794467392364.7124,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-file-published",
+              "counter": 99911680815,
+              "threadId": 31132,
+              "msAfterAnchor": 796.5295,
+              "epochMs": 1794467392383.467,
+              "recordWorkMs": 0.0
+            },
+            {
+              "stage": "save-write-released",
+              "counter": 99911680827,
+              "threadId": 31132,
+              "msAfterAnchor": 796.5307,
+              "epochMs": 1794467392383.4683,
+              "recordWorkMs": 0.0
+            }
+          ],
+          "index": 0,
+          "complete": true,
+          "phases": [
+            {
+              "start": "save-snapshot-ready",
+              "end": "save-serialized",
+              "wallMs": 0.0986
+            },
+            {
+              "start": "save-write-wait",
+              "end": "save-write-acquired",
+              "wallMs": 0.0003
+            },
+            {
+              "start": "save-bytes-written",
+              "end": "save-buffer-flushed",
+              "wallMs": 40.9965
+            },
+            {
+              "start": "save-file-published",
+              "end": "save-write-released",
+              "wallMs": 0.0012
+            }
+          ],
+          "overlappingWriters": []
+        }
+      ],
+      "traceRecords": 49,
+      "catalogReadRetries": 0,
+      "deferredSavesObserved": 2,
+      "admissionWriterIndex": 0
+    }
+  ],
+  "payloads": [
+    {
+      "path": "candidates/save-owners-7.67/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/save-owners-7.67/warm-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/save-owners-7.67/warm-trace-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/save-owners-7.67/cold-trace-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "inputHashes": {
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ]
+  },
+  "limits": [
+    "Four small unmatched-load trials, not a stable distribution or a comparison against IDM.",
+    "before-commit to temporary-flushed includes save snapshot, serialization, write-mutex wait, directory/file creation, write and FlushFileBuffers; it does not isolate the flush syscall.",
+    "temporary-flushed to committed includes file replacement and cached checkpoint publication.",
+    "No extra catalog writes or sleeps are injected. Automatic/forced save markers use a thread-local scope and fixed stack labels.",
+    "Diagnostic record calls and callbacks can affect timings. All product binaries/shared objects and the normal Core projection are unchanged. Save-event admission closes at first File Info paint; in-flight marker calls may finish later. Recorded lock brackets include timestamp/scheduling overhead; overlaps identify candidate writers, not exact kernel hold times.",
+    "Isolated Edge/native selected HLS MP4 with Spanish audio; personal browser and installed application are not these runs."
+  ],
+  "cleanup": "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See save-owners-7.67-cleanup.json. Logical sizes include hardlinks; physical savings are not measured.",
+  "ownershipConclusion": "Each media admission maps to exactly one complete forced writer on its admission thread between before-commit and committed. No other recorded writer overlaps these admission write-lock waits. One earlier automatic writer is observed in warm-trace-a; it does not overlap admission. The slow warm admission flush itself takes 338.9133 ms. Historical 52 ms contention is not retrospectively identified."
+}

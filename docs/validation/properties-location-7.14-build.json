@@ -1,0 +1,1614 @@
+{
+  "version": "7.14",
+  "browserVersion": "0.70.78",
+  "build": "passed",
+  "incrementalBase": "7.13",
+  "sourceHead": "5b992857b63532c93d12770becf9b7f84ef15906",
+  "sourceHashes": [
+    {
+      "path": "native/Version.hpp",
+      "sha256": "035CD600F06AB59FA696A80FC2A559A932F2DDFE51ECC8EE7BB3EC5751AB05EE"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "391195F754289E86DEC77D62A613F07D2D2D3536D7B46583169EF5212465831A"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "08F24AF02729662A65A6DD2D5AE8614BDA8FBC35AB9DD3D2B5564034D09C7DA3"
+    },
+    {
+      "path": "native/AsyncFileStatus.hpp",
+      "sha256": "AC7AE20F09DCAD38FC81C0BE16ECDD2465428FF251CFD8C41E0DF84159C9B8D3"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "CD073415C9D15505CDBBDB84CBED53B91A74CC6DC118D21D8FBDBE6C9DB5492F"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "EA06EF7879773DC5E887F4FB224205C5D3D568F6657FC388AB51EF7BD4CDE11A"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.14",
+      "sha256": "5D1F2849C0825421D9A13C7B08E52692B4E2C21827E700A3ECA882819D6F5C85"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.14",
+      "sha256": "009ECCC866AAC52A6064DB97C078871160415F3BB684A70DC143C34F14CFB249"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.14",
+      "sha256": "1B792E46FC5C99BF98AB86BCE987FB9CF88EB9726C36DC4D28B920E2E59BBFBC"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.14",
+      "sha256": "9EC7A45DFCE5537B07CD1B824392B4632AD5C4F38150FB1EB7381F3D7048734C"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.14",
+      "sha256": "CC72B032AF2B92E87DE7537EDF4BA0F35C03740855FE7B35682247EF5EBB13D1"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "validation": {
+    "checksPassed": 376,
+    "checksFailed": 0,
+    "checks": [
+      {
+        "name": "Properties resolves Shell details on a worker thread",
+        "passed": true
+      },
+      {
+        "name": "Properties is visible and actionable while Shell lookup is blocked",
+        "passed": true
+      },
+      {
+        "name": "Pending Shell details have a generic type label",
+        "passed": true
+      },
+      {
+        "name": "All Properties edit controls exist before Shell lookup finishes",
+        "passed": true
+      },
+      {
+        "name": "Closing Properties during Shell lookup preserves saved metadata",
+        "passed": true
+      },
+      {
+        "name": "Properties can reopen before the shared Shell lookup returns",
+        "passed": true
+      },
+      {
+        "name": "Reopening Properties shares the pending Shell request",
+        "passed": true
+      },
+      {
+        "name": "Late file details preserve the actionable Properties dialog",
+        "passed": true
+      },
+      {
+        "name": "Late file details preserve user edits",
+        "passed": true
+      },
+      {
+        "name": "Late Shell completion does not commit canceled edits",
+        "passed": true
+      },
+      {
+        "name": "Properties reuses cached file details on the next opening",
+        "passed": true
+      },
+      {
+        "name": "Properties exposes destination, address, description, Referer, login and password",
+        "passed": true
+      },
+      {
+        "name": "Incomplete file cannot be opened",
+        "passed": true
+      },
+      {
+        "name": "Inactive destination can be browsed",
+        "passed": true
+      },
+      {
+        "name": "Password is masked by default",
+        "passed": true
+      },
+      {
+        "name": "Closing Properties without OK preserves the entire record",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "OK saves description",
+        "passed": true
+      },
+      {
+        "name": "OK saves Referer",
+        "passed": true
+      },
+      {
+        "name": "OK saves protected basic authentication",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Properties More menu contains all six actions and separator",
+        "passed": true
+      },
+      {
+        "name": "Inactive ordinary download enables Show password",
+        "passed": true
+      },
+      {
+        "name": "More Show password reveals the current password",
+        "passed": true
+      },
+      {
+        "name": "Revealing password preserves its contents",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Properties More menu contains all six actions and separator",
+        "passed": true
+      },
+      {
+        "name": "Inactive ordinary download enables Show password",
+        "passed": true
+      },
+      {
+        "name": "More Show password toggles masking back on",
+        "passed": true
+      },
+      {
+        "name": "Password visibility does not modify saved metadata",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Properties More menu contains all six actions and separator",
+        "passed": true
+      },
+      {
+        "name": "More Cancel edits discards description and credential changes together",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Properties More menu contains all six actions and separator",
+        "passed": true
+      },
+      {
+        "name": "Properties More opens audio metadata",
+        "passed": true
+      },
+      {
+        "name": "Audio metadata has three fields",
+        "passed": true
+      },
+      {
+        "name": "Audio tag fields display saved values",
+        "passed": true
+      },
+      {
+        "name": "Audio metadata fields are read-only",
+        "passed": true
+      },
+      {
+        "name": "Audio metadata fields are read-only",
+        "passed": true
+      },
+      {
+        "name": "Audio metadata fields are read-only",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing audio metadata preserves the download record",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download cannot change destination",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Accepting active Properties preserves saved metadata apart from timer-maintained peak speed",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download Properties fields cannot be edited",
+        "passed": true
+      },
+      {
+        "name": "Active download cannot change destination",
+        "passed": true
+      },
+      {
+        "name": "Requested properties-dialog action is enabled",
+        "passed": true
+      },
+      {
+        "name": "Accepting active Properties preserves saved metadata apart from timer-maintained peak speed",
+        "passed": true
+      },
+      {
+        "name": "Properties checks a completed file location on a worker thread",
+        "passed": true
+      },
+      {
+        "name": "Properties is actionable while the completed-file status probe is blocked",
+        "passed": true
+      },
+      {
+        "name": "Properties shows the saved destination while file status is pending",
+        "passed": true
+      },
+      {
+        "name": "Closing during a location probe preserves completed download metadata",
+        "passed": true
+      },
+      {
+        "name": "Properties reopens using the pending file-location request",
+        "passed": true
+      },
+      {
+        "name": "A successful completed-file probe retains the saved destination",
+        "passed": true
+      },
+      {
+        "name": "A confirmed missing file updates the destination in the same Properties window",
+        "passed": true
+      },
+      {
+        "name": "Location status updates preserve edited description text",
+        "passed": true
+      },
+      {
+        "name": "A failed location probe remains distinct from a missing file",
+        "passed": true
+      },
+      {
+        "name": "A location lookup error restores the saved destination text",
+        "passed": true
+      },
+      {
+        "name": "A directory is distinguished from a regular file and a missing path",
+        "passed": true
+      },
+      {
+        "name": "An existing directory does not produce a moved-file message",
+        "passed": true
+      },
+      {
+        "name": "Restoring a completed file keeps its destination visible",
+        "passed": true
+      },
+      {
+        "name": "Location refresh and canceled edits preserve completed metadata",
+        "passed": true
+      },
+      {
+        "name": "Another row is selected before completed-file double-click",
+        "passed": true
+      },
+      {
+        "name": "Completed download is visible before double-click",
+        "passed": true
+      },
+      {
+        "name": "Completed-file double-click opens the clicked record's Properties",
+        "passed": true
+      },
+      {
+        "name": "Complete file can be opened",
+        "passed": true
+      },
+      {
+        "name": "Complete file exposes Move",
+        "passed": true
+      },
+      {
+        "name": "Complete destination is read-only until Move",
+        "passed": true
+      },
+      {
+        "name": "Properties reopens with saved description",
+        "passed": true
+      },
+      {
+        "name": "Source-page control is the native Static hyperlink implementation",
+        "passed": true
+      },
+      {
+        "name": "Source-page Static link accepts keyboard focus",
+        "passed": true
+      },
+      {
+        "name": "Enter activates the source-page link once",
+        "passed": true
+      },
+      {
+        "name": "Held Enter does not repeatedly activate the link",
+        "passed": true
+      },
+      {
+        "name": "Enter release does not activate twice",
+        "passed": true
+      },
+      {
+        "name": "Space activates the source-page link",
+        "passed": true
+      },
+      {
+        "name": "Disabled source-page link ignores keyboard activation",
+        "passed": true
+      },
+      {
+        "name": "Native Static mouse notification activates the source-page link once",
+        "passed": true
+      },
+      {
+        "name": "Load Windows accessibility provider for Properties",
+        "passed": true
+      },
+      {
+        "name": "Windows provides link accessibility inspection",
+        "passed": true
+      },
+      {
+        "name": "Source link exposes accessibility object",
+        "passed": true
+      },
+      {
+        "name": "Source page is exposed as an accessible link",
+        "passed": true
+      },
+      {
+        "name": "Accessible source link retains its URL name",
+        "passed": true
+      },
+      {
+        "name": "Accessible source link describes its Open action",
+        "passed": true
+      },
+      {
+        "name": "Accessible default action activates source link once",
+        "passed": true
+      },
+      {
+        "name": "Disabled source link reports unavailable state",
+        "passed": true
+      },
+      {
+        "name": "Disabled source link rejects accessible activation",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties field uses the reference point size and font at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties field uses the reference point size and font at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties field uses the reference point size and font at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties field uses the reference point size and font at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties controls fit inside client area at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties field uses the reference point size and font at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Properties reference geometry, static labels and control classes match",
+        "passed": true
+      },
+      {
+        "name": "Main-window double-click notification is handled",
+        "passed": true
+      },
+      {
+        "name": "Double-click selects only the clicked completed row",
+        "passed": true
+      },
+      {
+        "name": "File Properties opens with Open disabled while a scan is pending",
+        "passed": true
+      },
+      {
+        "name": "The same Properties window enables Open when the scan finishes",
+        "passed": true
+      },
+      {
+        "name": "A posted action can predate the Properties timer refresh",
+        "passed": true
+      },
+      {
+        "name": "A stale Open command does not use the saved path during a pending scan",
+        "passed": true
+      },
+      {
+        "name": "The Properties timer disables Open after a new scan starts",
+        "passed": true
+      }
+    ],
+    "fixture": "native/PropertiesDialogUiTests.cpp",
+    "fixtureSha256": "FFA049810D31F0059B47324DB3A7A2261A9C66B37E41FCCBBA0A10516CC8099E",
+    "fixtureExecutableSha256": "BF5D9F1EB17A7A16CBADAFCF433158B4F04CCA74908B7EC64148BFFB5FA1DCA2",
+    "resultsSha256": "FBE8EB3E2810AFC1F804D6591AE7E0BC4F4C17F9BBC16D64B11494D27D5E317D",
+    "fixtureOptimization": "/Od with production /O2 core objects",
+    "probeScope": "The fixture injects a blocked filesystem probe and missing, permission-denied, directory and restored regular-file results. Ordinary completed-file cases also use the default Windows filesystem status lookup.",
+    "fixtureCorrection": "The first run selected the disabled Properties parent while the nested Audio Metadata dialog was open. The observer now skips disabled parent windows. The complete rerun passed.",
+    "renders": [
+      {
+        "dpi": 96,
+        "sha256": "44D7288A4E0E8809DB805C3FE9397DEE08FB64E2D7A9DDDCEBAA9CF84BAC1D10"
+      },
+      {
+        "dpi": 120,
+        "sha256": "66A4A6AC9BB40D4CF663F8DE08C7FDE0450ED2DFC25EC010F50A2328EB81B032"
+      },
+      {
+        "dpi": 144,
+        "sha256": "43A41D3861E742ADD3DF6AE7689116B4E64A6EBE9C207EA57ABF3F125493C17A"
+      },
+      {
+        "dpi": 168,
+        "sha256": "99D91BCFC5F74A25D9904A31FC4F0D9D7C1DEB29EA24A33845B81194FEE76B05"
+      },
+      {
+        "dpi": 192,
+        "sha256": "18006BBFF91F01590C8F0913AE392DABFF9401515128A9A5666B68EE392634EE"
+      }
+    ],
+    "visualReview": "The 96 DPI render retains the reference layout, Windows type label, file icon and readable controls.",
+    "timingScope": "Responsiveness was checked with controlled blocked probes. Fresh paired IDM timing was not collected.",
+    "installedDesktop": "7.11",
+    "installedBrowserPackage": "0.70.75",
+    "temporaryTestPayloadsRemoved": true,
+    "testExecutableAndObjectRemoved": true
+  }
+}

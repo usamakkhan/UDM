@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "frequency": 10000000,
+  "processId": 13816,
+  "count": 20,
+  "dropped": 0,
+  "incomplete": [],
+  "events": [
+    {
+      "stage": "app-init-entry",
+      "counter": 57589742838,
+      "threadId": 21352,
+      "msAfterAnchor": 0.0041,
+      "epochMs": 1794463160190.3967,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "manager-ready",
+      "counter": 57589856002,
+      "threadId": 21352,
+      "msAfterAnchor": 11.3205,
+      "epochMs": 1794463160201.7131,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "frame-created",
+      "counter": 57592774836,
+      "threadId": 21352,
+      "msAfterAnchor": 303.2039,
+      "epochMs": 1794463160493.5964,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "pipe-ready",
+      "counter": 57592776217,
+      "threadId": 21352,
+      "msAfterAnchor": 303.342,
+      "epochMs": 1794463160493.7346,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "automation-start",
+      "counter": 57592776218,
+      "threadId": 21352,
+      "msAfterAnchor": 303.3421,
+      "epochMs": 1794463160493.7346,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "automation-finished",
+      "counter": 57592781339,
+      "threadId": 21352,
+      "msAfterAnchor": 303.8542,
+      "epochMs": 1794463160494.2468,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "app-init-returning",
+      "counter": 57592782408,
+      "threadId": 21352,
+      "msAfterAnchor": 303.9611,
+      "epochMs": 1794463160494.3538,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "initial-refresh-entry",
+      "counter": 57592783047,
+      "threadId": 21352,
+      "msAfterAnchor": 304.025,
+      "epochMs": 1794463160494.4175,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "initial-refresh-returned",
+      "counter": 57592783746,
+      "threadId": 21352,
+      "msAfterAnchor": 304.0949,
+      "epochMs": 1794463160494.4875,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "capture-posted",
+      "counter": 57595413884,
+      "threadId": 28440,
+      "msAfterAnchor": 567.1087,
+      "epochMs": 1794463160757.5012,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "capture-ui-dispatch",
+      "counter": 57595415017,
+      "threadId": 21352,
+      "msAfterAnchor": 567.222,
+      "epochMs": 1794463160757.6145,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "offer-restored",
+      "counter": 57595415388,
+      "threadId": 21352,
+      "msAfterAnchor": 567.2591,
+      "epochMs": 1794463160757.6516,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "dialog-owner-ready",
+      "counter": 57595431958,
+      "threadId": 21352,
+      "msAfterAnchor": 568.9161,
+      "epochMs": 1794463160759.3086,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "file-info-entry",
+      "counter": 57595432356,
+      "threadId": 21352,
+      "msAfterAnchor": 568.9559,
+      "epochMs": 1794463160759.3484,
+      "recordWorkMs": 0.0006
+    },
+    {
+      "stage": "file-info-controls-start",
+      "counter": 57595548024,
+      "threadId": 21352,
+      "msAfterAnchor": 580.5227,
+      "epochMs": 1794463160770.9153,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "file-info-controls-ready",
+      "counter": 57596038517,
+      "threadId": 21352,
+      "msAfterAnchor": 629.572,
+      "epochMs": 1794463160819.9646,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "owned-show-returned",
+      "counter": 57596129301,
+      "threadId": 21352,
+      "msAfterAnchor": 638.6504,
+      "epochMs": 1794463160829.043,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "owned-paint-returned",
+      "counter": 57596539006,
+      "threadId": 21352,
+      "msAfterAnchor": 679.6209,
+      "epochMs": 1794463160870.0134,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "first-prefetch-pulse",
+      "counter": 57596569196,
+      "threadId": 21352,
+      "msAfterAnchor": 682.6399,
+      "epochMs": 1794463160873.0325,
+      "recordWorkMs": 0.0004
+    },
+    {
+      "stage": "first-prefetch-returned",
+      "counter": 57596571497,
+      "threadId": 21352,
+      "msAfterAnchor": 682.87,
+      "epochMs": 1794463160873.2627,
+      "recordWorkMs": 0.0002
+    }
+  ],
+  "limitations": [
+    "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+    "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+    "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+  ]
+}

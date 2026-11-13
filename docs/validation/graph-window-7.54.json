@@ -1,0 +1,55 @@
+{
+  "desktop": "7.54",
+  "browser": "0.71.18",
+  "status": "Native build and focused graph/history checks passed; not installed or packaged",
+  "build": "graph-window-7.54-build.json",
+  "tests": [
+    {
+      "name": "ProgressRateHistoryTests",
+      "checks": 31,
+      "passed": true,
+      "results": "candidates/graph-window-7.54/history-final/results.json",
+      "executableSha256": "378F06545DAFBE97B25B40495DEE1F162301AA6BEBD7DC06DA07CDAC05B5D4AA"
+    },
+    {
+      "name": "ProgressDialogUiTests",
+      "checks": 263,
+      "passed": true,
+      "results": "candidates/graph-window-7.54/progress-final/results.json",
+      "executableSha256": "06F76DE47350BBD2CCE72882065D72BECC342F1F5CE62D2144B0ABDED2256BC2"
+    }
+  ],
+  "checks": 294,
+  "change": "Clip the retained left-boundary anchor before peak calculation, drawing and hover selection. Interpolate crossing active segments and omit expired rates before a gap.",
+  "reproduction": "Before this change, recording 9000 bytes/s at t=0 then inactivity at t=35 retained both points; the renderer clamped the expired 9000 point onto the left edge and included it in the peak. The visible projection now contains only the inactive point.",
+  "coverage": [
+    "Boundary interpolation 1000 to 100 over 10 seconds gives 550 at the five-second visible boundary",
+    "Expired pre-pause spikes are absent",
+    "Resume preserves gaps",
+    "Source samples remain unchanged",
+    "Empty and exact-boundary histories",
+    "Existing progress window, graph toggles, theme and hover checks"
+  ],
+  "installedDesktop": "7.11",
+  "renders": [
+    {
+      "path": "graph-window-7.54.png",
+      "sha256": "F00D040AF27DB69BB6A76223CDCF41BB322FA4273842E511B84377168C2E50E2"
+    },
+    {
+      "path": "graph-window-7.54-pause.png",
+      "sha256": "C95575F9AF2D5D1B08BC58AAFFE03D50F78EEA188EB878FEF0DF0E2E259DBB2B"
+    }
+  ],
+  "visualReview": "Final owned-component long-pause and gap renders inspected: inactive message and No transfer hover remain visible, with no retained expired peak. Full progress render retained.",
+  "qualificationCorrections": [
+    "Initial progress launch omitted the required reference argument; it wrote no result and was rerun correctly",
+    "Initial 293-check candidate passed but visual inspection found that an old pause marker was removed, showing the waiting-state label. The final implementation retains a clipped inactive marker; all final binaries and both fixtures were rebuilt."
+  ],
+  "limitations": [
+    "No new live IDM speed comparison or personal-window acceptance",
+    "No change to transfer-rate calculation or transfer scheduling",
+    "Owned progress component uses synthetic rates; not a new real-network throughput result"
+  ],
+  "artifactPolicy": "Shared native output directory; no media-tool copies, new installer, installed update or large download payload."
+}

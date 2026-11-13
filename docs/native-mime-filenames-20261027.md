@@ -12,6 +12,16 @@ filename. Generic MIME values such as application/octet-stream never imply an
 EXE, ISO or another specific format. Unknown MIME types retain the original
 name. The existing CorrectFileExtensions preference disables MIME correction.
 
+The 7.43 body-verification follow-up removes a separate eight-character limit
+on explicit alphanumeric suffixes. The isolated 7.42 browser handoff published
+`old.udmfixture` as `old.udmfixture.zip`; that suffix was ten characters and was
+therefore treated as unusable despite being explicit. Long alphanumeric suffixes
+now follow the same preservation rule as short ones. Numeric version endings
+still gain the recognized extension, and known weak/script suffixes remain
+eligible for correction. This includes the existing long `crdownload` entry in
+the weak-suffix list. This rule does not establish preservation of every possible
+punctuated or Unicode custom extension, nor an observed IDM filename comparison.
+
 The map is generated from the repository's existing mime-db 1.54.0 browser data,
 with 1,016 MIME entries. `tools/generate-native-mime.py` regenerates the sorted
 native lookup. The upstream MIT notice is retained under native/third_party and

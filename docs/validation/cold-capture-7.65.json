@@ -1,0 +1,196 @@
+{
+    "version":  "7.65",
+    "kind":  "True cold browser capture baseline before startup-font improvement",
+    "allQualifiedRunsPassed":  true,
+    "cases":  [
+                  {
+                      "case":  "cold-trace-a",
+                      "traced":  true,
+                      "selectionToExternalActionableMs":  1463,
+                      "selectionToExactMs":  2815,
+                      "runnerChecks":  8,
+                      "desktopClosedBeforeSelection":  true,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phases":  [
+                                     {
+                                         "start":  "app-init-entry",
+                                         "end":  "manager-ready",
+                                         "wallMs":  16.8544
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  413.3672
+                                     },
+                                     {
+                                         "start":  "automation-start",
+                                         "end":  "automation-finished",
+                                         "wallMs":  0.6027
+                                     },
+                                     {
+                                         "start":  "file-info-entry",
+                                         "end":  "file-info-controls-start",
+                                         "wallMs":  8.6314
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  59.4265
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  24.0404
+                                     }
+                                 ],
+                      "startupEntryAfterSelectionApproxMs":  94.25146484375,
+                      "paintAfterSelectionApproxMs":  1428.595947265625
+                  },
+                  {
+                      "case":  "cold-original-a",
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  703,
+                      "selectionToExactMs":  2075,
+                      "runnerChecks":  8,
+                      "desktopClosedBeforeSelection":  true,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                  },
+                  {
+                      "case":  "cold-original-b",
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  741,
+                      "selectionToExactMs":  2203,
+                      "runnerChecks":  8,
+                      "desktopClosedBeforeSelection":  true,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                  },
+                  {
+                      "case":  "cold-trace-b",
+                      "traced":  true,
+                      "selectionToExternalActionableMs":  802,
+                      "selectionToExactMs":  2369,
+                      "runnerChecks":  8,
+                      "desktopClosedBeforeSelection":  true,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phases":  [
+                                     {
+                                         "start":  "app-init-entry",
+                                         "end":  "manager-ready",
+                                         "wallMs":  11.3164
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  291.8834
+                                     },
+                                     {
+                                         "start":  "automation-start",
+                                         "end":  "automation-finished",
+                                         "wallMs":  0.5121
+                                     },
+                                     {
+                                         "start":  "file-info-entry",
+                                         "end":  "file-info-controls-start",
+                                         "wallMs":  11.5668
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  49.0493
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  40.9705
+                                     }
+                                 ],
+                      "startupEntryAfterSelectionApproxMs":  104.396728515625,
+                      "paintAfterSelectionApproxMs":  784.013427734375
+                  }
+              ],
+    "preliminary":  [
+
+                    ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/cold-capture-7.65/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/cold-capture-7.65/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/cold-capture-7.65/cold-original-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/cold-capture-7.65/cold-trace-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     }
+                 ],
+    "inputHashes":  {
+                        "sharedHelpers":  [
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffmpeg.exe",
+                                                  "sha256":  "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+                                              },
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffprobe.exe",
+                                                  "sha256":  "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+                                              }
+                                          ],
+                        "productionAndFixtureHashes":  [
+                                                           {
+                                                               "name":  "UDM.exe",
+                                                               "version":  "7.65",
+                                                               "sha256":  "7FF622225E854525098094C26CDE2FDF1314DAB41DFA44BFD1747A189047FA4E"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.NativeHost.exe",
+                                                               "version":  "7.65",
+                                                               "sha256":  "9D2B8F8C02F04872747B59B91726FD5224E45149469344D791FA79B70E0C19D3"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.Monitor.exe",
+                                                               "version":  "7.65",
+                                                               "sha256":  "36B83290C9FFC024D35FCE21E12DB3E4BAD1B6A581295A0B3EC6C9CF938102E1"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.SetupHelper.exe",
+                                                               "version":  "7.65",
+                                                               "sha256":  "95CD388215A1859DFADB5D29906A604C6E92125750889036B50E80E51E34B878"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.Automation.exe",
+                                                               "version":  "7.65",
+                                                               "sha256":  "D9B1F89E74DA0764C8D410DE95D02EA71D2172025C7E11F0BE721EEC9AF24B14"
+                                                           }
+                                                       ],
+                        "testSources":  [
+                                            {
+                                                "path":  "tests/hls-catalog.native-live.cjs",
+                                                "sha256":  "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+                                            },
+                                            {
+                                                "path":  "tests/observe-cold-file-info.py",
+                                                "sha256":  "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970"
+                                            }
+                                        ]
+                    },
+    "limits":  [
+                   "Two traced and two untraced cold observations, not a stable distribution or IDM comparison.",
+                   "The cold-only native preferences-if-running assertion confirms the desktop is still closed after quality/audio menu use.",
+                   "Raw traces use QPC deltas; absolute selection alignment is approximate because of the FILETIME anchor.",
+                   "Private Edge/native catalogs, not installed/personal-browser acceptance."
+               ],
+    "cleanup":  "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See cold-capture-7.65-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

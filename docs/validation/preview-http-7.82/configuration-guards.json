@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "case": "missing-warm",
+      "rejectedBeforeOutputCreation": true,
+      "expectedMessage": "Preview-only requires"
+    },
+    {
+      "case": "fault-in-preview",
+      "rejectedBeforeOutputCreation": true,
+      "expectedMessage": "Preview-only requires"
+    },
+    {
+      "case": "empty-preview",
+      "rejectedBeforeOutputCreation": true,
+      "expectedMessage": "Unset UDM_TEST_PREVIEW_ONLY"
+    },
+    {
+      "case": "empty-diagnostics",
+      "rejectedBeforeOutputCreation": true,
+      "expectedMessage": "Unset UDM_TEST_HTTP_DIAGNOSTICS"
+    },
+    {
+      "case": "invalid-diagnostics",
+      "rejectedBeforeOutputCreation": true,
+      "expectedMessage": "Unset UDM_TEST_HTTP_DIAGNOSTICS"
+    }
+  ]
+}

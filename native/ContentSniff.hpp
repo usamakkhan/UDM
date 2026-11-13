@@ -341,6 +341,34 @@ inline bool htmlMarkup(const uint8_t* d,size_t n){
  if(head.compare(0,4,"<!--")==0||head.compare(0,5,"<?xml")==0)return head.find("<html")!=std::string::npos||head.find("<!doctype html")!=std::string::npos;
  return false;
 }
+// PDF may contain only printable ASCII. A completed HTML notice followed by a
+// standalone PDF header is still a prefixed file, not an HTML response. Keep
+// this narrow: embedded examples and unclosed markup are ordinary HTML.
+inline SniffResult pdfAfterHtmlNotice(const uint8_t* d,size_t n){
+ const size_t limit=2000;
+ const std::string head(reinterpret_cast<const char*>(d),std::min(n,limit+9));
+ const auto folded=lowerAscii(head);
+ for(auto pdf=head.find("%PDF-");pdf!=std::string::npos;pdf=head.find("%PDF-",pdf+1)){
+  if(pdf+9>n||pdf+9>head.size()||d[pdf+5]<'0'||d[pdf+5]>'9'||d[pdf+6]!='.'||
+     d[pdf+7]<'0'||d[pdf+7]>'9'||(d[pdf+8]!='\r'&&d[pdf+8]!='\n'))continue;
+  const auto start=pdf>=3&&at(d,n,pdf-3,"\xef\xbb\xbf",3)?pdf-3:pdf;
+  if(start<16||start>limit)continue;
+  size_t closed=0;
+  for(const char* tag:{"</html>","</body>"}){
+   const auto where=folded.rfind(tag,start),length=std::strlen(tag);
+   if(where!=std::string::npos&&where+length<=start)closed=std::max(closed,where+length);
+  }
+  if(!closed)continue;
+  bool whitespace=true;
+  for(size_t i=closed;i<start;++i)if(d[i]!=' '&&d[i]!='\t'&&d[i]!='\r'&&d[i]!='\n'&&d[i]!='\f'){whitespace=false;break;}
+  if(!whitespace)continue;
+  auto match=signature(d+start,n-start);
+  if(match.verdict==SniffVerdict::Match&&match.extension=="pdf"){
+   match.verdict=SniffVerdict::MatchAfterPrefix;match.prefixLength=start;return match;
+  }
+ }
+ return {};
+}
 }
 // Classifies the leading bytes of a download. complete reports whether data
 // holds the whole file (so a short buffer is final rather than pending).
@@ -352,7 +380,9 @@ inline SniffResult sniffContent(const uint8_t* data,size_t size,bool complete){
  if(!complete&&size<contentSniffWindow){r.verdict=SniffVerdict::NeedMore;return r;}
  const size_t text=sniff::textRun(data,window,!complete||window<size);
  if(text==window||sniff::utf16Text(data,window)){
-  if(sniff::htmlMarkup(data,window)){r.verdict=SniffVerdict::Html;r.mime="text/html";r.extension="html";r.description="HTML document";r.compatible={"html","htm","xhtml","shtml","mht","mhtml","php","asp","aspx","jsp"};return r;}
+  if(sniff::htmlMarkup(data,window)){
+   if(text==window){auto pdf=sniff::pdfAfterHtmlNotice(data,size);if(pdf.verdict==SniffVerdict::MatchAfterPrefix)return pdf;}
+   r.verdict=SniffVerdict::Html;r.mime="text/html";r.extension="html";r.description="HTML document";r.compatible={"html","htm","xhtml","shtml","mht","mhtml","php","asp","aspx","jsp"};return r;}
   r.verdict=SniffVerdict::Text;r.mime="text/plain";r.extension="txt";r.description="Text";return r;
  }
  // Binary content after a text or HTML prefix (for example a notice inserted
@@ -400,7 +430,7 @@ inline std::string correctedFileName(const std::string& name,const SniffResult& 
  static const std::vector<std::string> weak={"action","ashx","asp","aspx","bin","cgi","crdownload","dat","do","download","jsp","part","php","pl","tmp","unknown"};
  auto e=fileExtension(name);
  const bool numeric=!e.empty()&&std::all_of(e.begin(),e.end(),[](char c){return c>='0'&&c<='9';});
- const bool plausible=!e.empty()&&e.size()<=8&&!numeric&&std::all_of(e.begin(),e.end(),[](char c){return (c>='a'&&c<='z')||(c>='0'&&c<='9');});
+ const bool plausible=!e.empty()&&!numeric&&std::all_of(e.begin(),e.end(),[](char c){return (c>='a'&&c<='z')||(c>='0'&&c<='9');});
  if(plausible&&std::find(weak.begin(),weak.end(),e)==weak.end())return "";
  if(e==target)return "";
  if(plausible&&std::find(r.compatible.begin(),r.compatible.end(),e)!=r.compatible.end())return "";

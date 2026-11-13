@@ -1,0 +1,160 @@
+PASS chromium received-byte eligibility for 0, running=false
+PASS chromium received-byte eligibility for 4096, running=false
+PASS chromium received-byte eligibility for 0, running=true
+PASS chromium received-byte eligibility for 4096, running=true
+PASS chromium completed empty response arriving during preparation releases native request
+PASS chromium unknown-length empty-so-far response can still transfer ownership
+PASS chromium native review survives none without browser resume or request replay
+PASS chromium native review survives reply without browser resume or request replay
+PASS chromium native review survives storage without browser resume or request replay
+PASS chromium discarded native review remains terminal after worker loss
+PASS chromium native admission follows observed browser cancellation
+PASS chromium browser complete during native preparation prevents admission
+PASS chromium browser received during native preparation prevents admission
+PASS chromium browser resumed during native preparation prevents admission
+PASS chromium browser removed during native preparation prevents admission
+PASS chromium browser reused during native preparation prevents admission
+PASS chromium completion inside cancel defeats even a successful cancel callback
+PASS chromium cancel failure retains preparation for worker restart
+PASS chromium cancel callback without terminal state never authorizes admission
+PASS chromium lost capture-prepare response recovers without resubmitting a request
+PASS chromium lost capture-commit response recovers without resubmitting a request
+PASS chromium 4 MiB POST survives lost preparation reply without replay or journal disclosure
+PASS chromium storage failure at prepared recovers from the durable boundary
+PASS chromium storage failure at canceled recovers from the durable boundary
+PASS chromium storage failure at committing recovers from the durable boundary
+PASS chromium storage failure at accepted recovers from the durable boundary
+PASS chromium ambiguous native admission is retained without replay or browser resume
+PASS chromium completed browser history during worker loss releases pending native request
+PASS chromium durable cancellation survives browser history erasure
+PASS chromium browser journal contains no request URLs, body or credentials
+PASS firefox received-byte eligibility for 0, running=false
+PASS firefox received-byte eligibility for 4096, running=false
+PASS firefox received-byte eligibility for 0, running=true
+PASS firefox received-byte eligibility for 4096, running=true
+PASS firefox completed empty response arriving during preparation releases native request
+PASS firefox unknown-length empty-so-far response can still transfer ownership
+PASS firefox native review survives none without browser resume or request replay
+PASS firefox native review survives reply without browser resume or request replay
+PASS firefox native review survives storage without browser resume or request replay
+PASS firefox discarded native review remains terminal after worker loss
+PASS firefox native admission follows observed browser cancellation
+PASS firefox browser complete during native preparation prevents admission
+PASS firefox browser received during native preparation prevents admission
+PASS firefox browser resumed during native preparation prevents admission
+PASS firefox browser removed during native preparation prevents admission
+PASS firefox browser reused during native preparation prevents admission
+PASS firefox completion inside cancel defeats even a successful cancel callback
+PASS firefox cancel failure retains preparation for worker restart
+PASS firefox cancel callback without terminal state never authorizes admission
+PASS firefox lost capture-prepare response recovers without resubmitting a request
+PASS firefox lost capture-commit response recovers without resubmitting a request
+PASS firefox 4 MiB POST survives lost preparation reply without replay or journal disclosure
+PASS firefox storage failure at prepared recovers from the durable boundary
+PASS firefox storage failure at canceled recovers from the durable boundary
+PASS firefox storage failure at committing recovers from the durable boundary
+PASS firefox storage failure at accepted recovers from the durable boundary
+PASS firefox ambiguous native admission is retained without replay or browser resume
+PASS firefox completed browser history during worker loss releases pending native request
+PASS firefox durable cancellation survives browser history erasure
+PASS firefox browser journal contains no request URLs, body or credentials
+PASS firefox zero-byte pause still requires an explicit acknowledged cancel
+PASS chromium running response survives preflight abandonment without pause or resume
+PASS chromium running response uses the preparation reply before verified cancellation
+PASS chromium redirected response binds its final URL rather than the original navigation URL
+PASS chromium a stale redirected URL cannot begin native preparation
+PASS chromium original browser response is retained for changed final URL proof
+PASS chromium original browser response is retained for restart final URL proof
+PASS chromium original browser response is retained for legacy final URL proof
+PASS chromium revoked credential access releases preparation before cancellation
+PASS chromium revoked credential access releases preparation after worker restart
+PASS chromium consent revocation leaves credential-free takeovers eligible
+PASS chromium disabled automatic capture releases a credential-free handoff before cancellation
+PASS chromium disabled automatic capture releases a credential-free handoff after worker restart
+PASS chromium running browser complete during preparation releases without modifying browser choice
+PASS chromium running browser received during preparation releases without modifying browser choice
+PASS chromium running browser paused during preparation releases without modifying browser choice
+PASS chromium running browser canceled during preparation releases without modifying browser choice
+PASS chromium running browser removed during preparation releases without modifying browser choice
+PASS chromium running browser reused during preparation releases without modifying browser choice
+PASS chromium running handoff persists its mode through lost capture-prepare and a new worker
+PASS chromium running handoff persists its mode through lost capture-commit and a new worker
+PASS chromium running handoff releases a lost prepare that completes while native is unreachable
+PASS chromium running handoff missing history after cancellation still commits the saved request
+PASS chromium running handoff cancellation with a lost callback requires a new acknowledgment before commit
+PASS chromium running handoff storage failure before preparation never cancels the response
+PASS chromium running handoff zero-byte user cancellation is never adopted
+PASS chromium corrupt running mode cannot authorize a legacy handoff
+PASS firefox running response survives preflight abandonment without pause or resume
+PASS firefox running response uses the preparation reply before verified cancellation
+PASS firefox redirected response binds its final URL rather than the original navigation URL
+PASS firefox a stale redirected URL cannot begin native preparation
+PASS firefox original browser response is retained for changed final URL proof
+PASS firefox original browser response is retained for restart final URL proof
+PASS firefox original browser response is retained for legacy final URL proof
+PASS firefox revoked credential access releases preparation before cancellation
+PASS firefox revoked credential access releases preparation after worker restart
+PASS firefox consent revocation leaves credential-free takeovers eligible
+PASS firefox disabled automatic capture releases a credential-free handoff before cancellation
+PASS firefox disabled automatic capture releases a credential-free handoff after worker restart
+PASS firefox running browser complete during preparation releases without modifying browser choice
+PASS firefox running browser received during preparation releases without modifying browser choice
+PASS firefox running browser paused during preparation releases without modifying browser choice
+PASS firefox running browser canceled during preparation releases without modifying browser choice
+PASS firefox running browser removed during preparation releases without modifying browser choice
+PASS firefox running browser reused during preparation releases without modifying browser choice
+PASS firefox running handoff persists its mode through lost capture-prepare and a new worker
+PASS firefox running handoff persists its mode through lost capture-commit and a new worker
+PASS firefox running handoff releases a lost prepare that completes while native is unreachable
+PASS firefox running handoff missing history after cancellation still commits the saved request
+PASS firefox running handoff cancellation with a lost callback requires a new acknowledgment before commit
+PASS firefox running handoff storage failure before preparation never cancels the response
+PASS firefox running handoff zero-byte user cancellation is never adopted
+PASS firefox corrupt running mode cannot authorize a legacy handoff
+PASS chromium non-resumable failed browser response preserves saved request for review
+PASS chromium failed response restart requires explicit confirmation
+PASS chromium discard failed response releases saved request without retry
+PASS chromium browser resuming during explicit restart blocks native admission
+PASS chromium Canceled, blocked or fully received history does not expose failed-response restart {"error":"USER_CANCELED"}
+PASS chromium Canceled, blocked or fully received history does not expose failed-response restart {"error":"FILE_BLOCKED"}
+PASS chromium Canceled, blocked or fully received history does not expose failed-response restart {"bytesReceived":4096}
+PASS chromium failed-response lost restart acknowledgement commits once
+PASS chromium failed response keeps exact request despite browser resume capability true
+PASS chromium failed response keeps exact request despite browser resume capability undefined
+PASS chromium failed-response cancellation failure retains confirmed choice without sending request
+PASS chromium failed-response lost cancel acknowledgement can retry safely
+PASS chromium cancel may retain original terminal network error during explicit restart
+PASS chromium original transfer starting during cancel blocks explicit restart
+PASS chromium missing original history preserves prepared request for explicit review
+PASS chromium unavailable native summary retains the generic review entry
+PASS chromium prepared request restart requires confirmation and creates one native admission
+PASS chromium explicit saved restart reports native review instead of claiming a download
+PASS chromium discarding an ambiguous prepared request never submits it
+PASS chromium lost explicit restart acknowledgement recovers without duplicate commit
+PASS chromium discard after a lost restart acknowledgement preserves an accepted native job
+PASS chromium failed persistence cannot authorize a prepared request restart
+PASS chromium reappearing original response blocks the ambiguous restart choice
+PASS firefox non-resumable failed browser response preserves saved request for review
+PASS firefox failed response restart requires explicit confirmation
+PASS firefox discard failed response releases saved request without retry
+PASS firefox browser resuming during explicit restart blocks native admission
+PASS firefox Canceled, blocked or fully received history does not expose failed-response restart {"error":"USER_CANCELED"}
+PASS firefox Canceled, blocked or fully received history does not expose failed-response restart {"error":"FILE_BLOCKED"}
+PASS firefox Canceled, blocked or fully received history does not expose failed-response restart {"bytesReceived":4096}
+PASS firefox failed-response lost restart acknowledgement commits once
+PASS firefox failed response keeps exact request despite browser resume capability true
+PASS firefox failed response keeps exact request despite browser resume capability undefined
+PASS firefox failed-response cancellation failure retains confirmed choice without sending request
+PASS firefox failed-response lost cancel acknowledgement can retry safely
+PASS firefox cancel may retain original terminal network error during explicit restart
+PASS firefox original transfer starting during cancel blocks explicit restart
+PASS firefox missing original history preserves prepared request for explicit review
+PASS firefox unavailable native summary retains the generic review entry
+PASS firefox prepared request restart requires confirmation and creates one native admission
+PASS firefox explicit saved restart reports native review instead of claiming a download
+PASS firefox discarding an ambiguous prepared request never submits it
+PASS firefox lost explicit restart acknowledgement recovers without duplicate commit
+PASS firefox discard after a lost restart acknowledgement preserves an accepted native job
+PASS firefox failed persistence cannot authorize a prepared request restart
+PASS firefox reappearing original response blocks the ambiguous restart choice
+ALL 159 TRANSACTION CHECKS PASSED

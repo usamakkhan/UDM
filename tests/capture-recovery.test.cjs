@@ -16,6 +16,7 @@ async function check(name,fn){await fn();passed++;console.log('PASS '+name);}
   const h=harness(),m=h.module(),v=h.item(),r=await m.begin(v);r.protocol=1;
   if(situation==='complete')v.state='complete';
   if(situation==='received')Object.assign(v,{bytesReceived:4096,totalBytes:4096});
+  if(situation==='received-empty')Object.assign(v,{bytesReceived:0,totalBytes:0});
   if(situation==='resumed')v.paused=false;
   if(situation==='removed')h.items.clear();
   if(situation==='identity')v.startTime='2026-09-27T12:01:00.000Z';

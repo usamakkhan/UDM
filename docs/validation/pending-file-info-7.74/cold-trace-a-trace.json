@@ -1,0 +1,447 @@
+{
+  "format": 1,
+  "frequency": 10000000,
+  "processId": 19956,
+  "count": 54,
+  "dropped": 0,
+  "incomplete": [],
+  "events": [
+    {
+      "stage": "app-init-entry",
+      "counter": 82417756176,
+      "threadId": 23912,
+      "msAfterAnchor": 0.0038,
+      "epochMs": 1794482308985.3945,
+      "recordWorkMs": 0.0004
+    },
+    {
+      "stage": "manager-ready",
+      "counter": 82417868216,
+      "threadId": 23912,
+      "msAfterAnchor": 11.2078,
+      "epochMs": 1794482308996.5984,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "frame-created",
+      "counter": 82420348411,
+      "threadId": 23912,
+      "msAfterAnchor": 259.2273,
+      "epochMs": 1794482309244.618,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "pipe-ready",
+      "counter": 82420350455,
+      "threadId": 23912,
+      "msAfterAnchor": 259.4317,
+      "epochMs": 1794482309244.8223,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "automation-start",
+      "counter": 82420350458,
+      "threadId": 23912,
+      "msAfterAnchor": 259.432,
+      "epochMs": 1794482309244.8225,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "automation-finished",
+      "counter": 82420355845,
+      "threadId": 23912,
+      "msAfterAnchor": 259.9707,
+      "epochMs": 1794482309245.3613,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "app-init-returning",
+      "counter": 82420357669,
+      "threadId": 23912,
+      "msAfterAnchor": 260.1531,
+      "epochMs": 1794482309245.5437,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "initial-refresh-entry",
+      "counter": 82420358485,
+      "threadId": 23912,
+      "msAfterAnchor": 260.2347,
+      "epochMs": 1794482309245.6252,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "initial-refresh-returned",
+      "counter": 82420359314,
+      "threadId": 23912,
+      "msAfterAnchor": 260.3176,
+      "epochMs": 1794482309245.7083,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "admission-enter",
+      "counter": 82420544731,
+      "threadId": 23852,
+      "msAfterAnchor": 278.8593,
+      "epochMs": 1794482309264.25,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "deferred-save",
+      "counter": 82420567745,
+      "threadId": 23852,
+      "msAfterAnchor": 281.1607,
+      "epochMs": 1794482309266.5513,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "deferred-save",
+      "counter": 82420582239,
+      "threadId": 23852,
+      "msAfterAnchor": 282.6101,
+      "epochMs": 1794482309268.0007,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "before-commit",
+      "counter": 82420584831,
+      "threadId": 23852,
+      "msAfterAnchor": 282.8693,
+      "epochMs": 1794482309268.26,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "prepared-view-posted",
+      "counter": 82420585796,
+      "threadId": 23852,
+      "msAfterAnchor": 282.9658,
+      "epochMs": 1794482309268.3564,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "detached-ready",
+      "counter": 82420585800,
+      "threadId": 23852,
+      "msAfterAnchor": 282.9662,
+      "epochMs": 1794482309268.357,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "prepared-view-claimed",
+      "counter": 82420586163,
+      "threadId": 23912,
+      "msAfterAnchor": 283.0025,
+      "epochMs": 1794482309268.393,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "save-snapshot-ready",
+      "counter": 82420586550,
+      "threadId": 23852,
+      "msAfterAnchor": 283.0412,
+      "epochMs": 1794482309268.432,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "counter": 82420586556,
+      "threadId": 23852,
+      "msAfterAnchor": 283.0418,
+      "epochMs": 1794482309268.4324,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "save-serialized",
+      "counter": 82420588470,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2332,
+      "epochMs": 1794482309268.6238,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "forced-save-serialized",
+      "counter": 82420588474,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2336,
+      "epochMs": 1794482309268.6243,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "snapshot-prepared",
+      "counter": 82420588475,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2337,
+      "epochMs": 1794482309268.6243,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "save-write-wait",
+      "counter": 82420588476,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2338,
+      "epochMs": 1794482309268.6245,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "counter": 82420588481,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2343,
+      "epochMs": 1794482309268.625,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "save-write-acquired",
+      "counter": 82420588484,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2346,
+      "epochMs": 1794482309268.6252,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "counter": 82420588486,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2348,
+      "epochMs": 1794482309268.6255,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "save-atomic-entry",
+      "counter": 82420588498,
+      "threadId": 23852,
+      "msAfterAnchor": 283.236,
+      "epochMs": 1794482309268.6267,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "counter": 82420588499,
+      "threadId": 23852,
+      "msAfterAnchor": 283.2361,
+      "epochMs": 1794482309268.6267,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "save-dirs-ready",
+      "counter": 82420595976,
+      "threadId": 23852,
+      "msAfterAnchor": 283.9838,
+      "epochMs": 1794482309269.3745,
+      "recordWorkMs": 0.0004
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "counter": 82420595983,
+      "threadId": 23852,
+      "msAfterAnchor": 283.9845,
+      "epochMs": 1794482309269.3752,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "file-info-entry",
+      "counter": 82420610122,
+      "threadId": 23912,
+      "msAfterAnchor": 285.3984,
+      "epochMs": 1794482309270.789,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "file-info-view-pending",
+      "counter": 82420610169,
+      "threadId": 23912,
+      "msAfterAnchor": 285.4031,
+      "epochMs": 1794482309270.7937,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "save-file-opened",
+      "counter": 82420617308,
+      "threadId": 23852,
+      "msAfterAnchor": 286.117,
+      "epochMs": 1794482309271.5076,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "counter": 82420617313,
+      "threadId": 23852,
+      "msAfterAnchor": 286.1175,
+      "epochMs": 1794482309271.508,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "save-bytes-written",
+      "counter": 82420618224,
+      "threadId": 23852,
+      "msAfterAnchor": 286.2086,
+      "epochMs": 1794482309271.599,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "counter": 82420618227,
+      "threadId": 23852,
+      "msAfterAnchor": 286.2089,
+      "epochMs": 1794482309271.5996,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "file-info-controls-start",
+      "counter": 82420852357,
+      "threadId": 23912,
+      "msAfterAnchor": 309.6219,
+      "epochMs": 1794482309295.0125,
+      "recordWorkMs": 0.0004
+    },
+    {
+      "stage": "save-buffer-flushed",
+      "counter": 82420931727,
+      "threadId": 23852,
+      "msAfterAnchor": 317.5589,
+      "epochMs": 1794482309302.9495,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "counter": 82420931735,
+      "threadId": 23852,
+      "msAfterAnchor": 317.5597,
+      "epochMs": 1794482309302.9504,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "temporary-flushed",
+      "counter": 82420932609,
+      "threadId": 23852,
+      "msAfterAnchor": 317.6471,
+      "epochMs": 1794482309303.0378,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "save-file-published",
+      "counter": 82421181982,
+      "threadId": 23852,
+      "msAfterAnchor": 342.5844,
+      "epochMs": 1794482309327.975,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "forced-save-file-published",
+      "counter": 82421181992,
+      "threadId": 23852,
+      "msAfterAnchor": 342.5854,
+      "epochMs": 1794482309327.976,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "forced-save-write-released",
+      "counter": 82421181998,
+      "threadId": 23852,
+      "msAfterAnchor": 342.586,
+      "epochMs": 1794482309327.9766,
+      "recordWorkMs": 0.0
+    },
+    {
+      "stage": "committed",
+      "counter": 82421182453,
+      "threadId": 23852,
+      "msAfterAnchor": 342.6315,
+      "epochMs": 1794482309328.0222,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "admission-return",
+      "counter": 82421183116,
+      "threadId": 23852,
+      "msAfterAnchor": 342.6978,
+      "epochMs": 1794482309328.0884,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "pipe-receive-return",
+      "counter": 82421183299,
+      "threadId": 23852,
+      "msAfterAnchor": 342.7161,
+      "epochMs": 1794482309328.1067,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "capture-posted",
+      "counter": 82421183476,
+      "threadId": 23852,
+      "msAfterAnchor": 342.7338,
+      "epochMs": 1794482309328.1245,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "file-info-controls-ready",
+      "counter": 82421540910,
+      "threadId": 23912,
+      "msAfterAnchor": 378.4772,
+      "epochMs": 1794482309363.868,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "owned-show-returned",
+      "counter": 82421638983,
+      "threadId": 23912,
+      "msAfterAnchor": 388.2845,
+      "epochMs": 1794482309373.675,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "owned-paint-returned",
+      "counter": 82421771282,
+      "threadId": 23912,
+      "msAfterAnchor": 401.5144,
+      "epochMs": 1794482309386.905,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "capture-ui-dispatch",
+      "counter": 82421800635,
+      "threadId": 23912,
+      "msAfterAnchor": 404.4497,
+      "epochMs": 1794482309389.8403,
+      "recordWorkMs": 0.0002
+    },
+    {
+      "stage": "pending-file-info-bound",
+      "counter": 82421839868,
+      "threadId": 23912,
+      "msAfterAnchor": 408.373,
+      "epochMs": 1794482309393.7637,
+      "recordWorkMs": 0.0003
+    },
+    {
+      "stage": "first-prefetch-pulse",
+      "counter": 82421839895,
+      "threadId": 23912,
+      "msAfterAnchor": 408.3757,
+      "epochMs": 1794482309393.7664,
+      "recordWorkMs": 0.0005
+    },
+    {
+      "stage": "first-prefetch-returned",
+      "counter": 82421842967,
+      "threadId": 23912,
+      "msAfterAnchor": 408.6829,
+      "epochMs": 1794482309394.0735,
+      "recordWorkMs": 0.0001
+    },
+    {
+      "stage": "capture-ui-dispatch",
+      "counter": 82436922609,
+      "threadId": 23912,
+      "msAfterAnchor": 1916.6471,
+      "epochMs": 1794482310902.0378,
+      "recordWorkMs": 0.0001
+    }
+  ],
+  "limitations": [
+    "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+    "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+    "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+  ]
+}

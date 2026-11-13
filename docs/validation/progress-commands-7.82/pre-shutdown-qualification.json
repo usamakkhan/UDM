@@ -1,0 +1,2372 @@
+{
+  "version": "7.82",
+  "browserVersion": "0.71.46",
+  "nativeChecks": 1110,
+  "nativeSuites": [
+    {
+      "suite": "wizard-light",
+      "checks": 104
+    },
+    {
+      "suite": "wizard-dark",
+      "checks": 104
+    },
+    {
+      "suite": "pending-ui-light",
+      "checks": 125
+    },
+    {
+      "suite": "pending-ui-dark",
+      "checks": 125
+    },
+    {
+      "suite": "FileInfoDecisionTests",
+      "checks": 13
+    },
+    {
+      "suite": "UiTaskSignalTests",
+      "checks": 6
+    },
+    {
+      "suite": "PendingFileInfoRetryTests",
+      "checks": 27
+    },
+    {
+      "suite": "DetachedMediaAdmissionTests",
+      "checks": 64
+    },
+    {
+      "suite": "CatalogAdmissionRegistryTests",
+      "checks": 36
+    },
+    {
+      "suite": "CatalogAdmissionReservationTests",
+      "checks": 73
+    },
+    {
+      "suite": "CatalogCommitCoordinatorTests",
+      "checks": 13
+    },
+    {
+      "suite": "CatalogCheckpointTests",
+      "checks": 14
+    },
+    {
+      "suite": "IdleCheckpointTests",
+      "checks": 7
+    },
+    {
+      "suite": "progress-ui",
+      "checks": 399
+    }
+  ],
+  "browserCases": [
+    {
+      "case": "cold-original",
+      "diagnosticNetworkLogging": false,
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 506,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "oneCompleteJob": true,
+      "prefetchBeforeStart": true,
+      "mainListHidden": true,
+      "admissionAndStartWriteRetried": false
+    },
+    {
+      "case": "warm-original-b",
+      "diagnosticNetworkLogging": false,
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 138,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "oneCompleteJob": true,
+      "prefetchBeforeStart": true,
+      "mainListHidden": true,
+      "admissionAndStartWriteRetried": false
+    },
+    {
+      "case": "warm-save-retry-b",
+      "diagnosticNetworkLogging": false,
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 264,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "oneCompleteJob": true,
+      "prefetchBeforeStart": true,
+      "mainListHidden": true,
+      "admissionAndStartWriteRetried": true
+    },
+    {
+      "case": "warm-save-retry-probe",
+      "diagnosticNetworkLogging": true,
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 232,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "oneCompleteJob": true,
+      "prefetchBeforeStart": true,
+      "mainListHidden": true,
+      "admissionAndStartWriteRetried": true
+    },
+    {
+      "case": "warm-preview-probe",
+      "diagnosticNetworkLogging": true,
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 149,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "oneCompleteJob": true,
+      "prefetchBeforeStart": true,
+      "mainListHidden": true,
+      "admissionAndStartWriteRetried": false
+    }
+  ],
+  "binaries": [
+    {
+      "name": "Udm.ProgressDialogUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.ProgressDialogUiTests.exe",
+      "sha256": "42475457D70FAC94E921967B6ADE67D291ED81112019A573BCEDBA822CB92328",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.ScheduleDownloadWizardUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.ScheduleDownloadWizardUiTests.exe",
+      "sha256": "CF7AA79982E2D60632309A86CAFA4789827D2F473657827625F594DD76121893",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.PendingFileInfoUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.PendingFileInfoUiTests.exe",
+      "sha256": "2D5876F8ACB251391FE2791216063B9B86C9D091F24E8E11BDF32D83239207CD",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.FileInfoDecisionTests.exe",
+      "sha256": "E237F26A16EB77D4DE2DBE4030084951E0CE05827D90F55C0E47779475CD2D36",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.UiTaskSignalTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.UiTaskSignalTests.exe",
+      "sha256": "011512AA8189E832BF9161B01994231B4B9609ED87231E6BDBE9571707CAB919",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.PendingFileInfoRetryTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.PendingFileInfoRetryTests.exe",
+      "sha256": "6DC7F0BF3726F2D387BECAD83306B693A4AEBD211A43672C1664013A8FD4D973",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.DetachedMediaAdmissionTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.DetachedMediaAdmissionTests.exe",
+      "sha256": "7747BAC105B4C923982BA7635049B164D8D269BE0D33F0BB68DA2DA90BB96983",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.CatalogAdmissionRegistryTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.CatalogAdmissionRegistryTests.exe",
+      "sha256": "2F5DDFC01767CBA4108C198120425E77733E7DE2D8A68FFD1C8A9D9845FBCA90",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.CatalogAdmissionReservationTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.CatalogAdmissionReservationTests.exe",
+      "sha256": "BC1532169777D94FC0E93A4A1A94D06B45AD16765D40E2738D5989B4CA054CB4",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.CatalogCommitCoordinatorTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.CatalogCommitCoordinatorTests.exe",
+      "sha256": "2E22A6FD5ED914FEF87867C9AC5A54EA33D8F230CF58AFD4FF9480BB028571BE",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.CatalogCheckpointTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.CatalogCheckpointTests.exe",
+      "sha256": "C6A02E6BF976BC3E586CF7D03992B9745FEDC6FF1254E8A2DDFA955B55FF4165",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.IdleCheckpointTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/release-native/Udm.IdleCheckpointTests.exe",
+      "sha256": "BAFE580A9E2993358FCD52962F36E9744C83202D4C777CA91467174173E6BB02",
+      "product": false,
+      "version": "7.82"
+    },
+    {
+      "name": "UDM.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/UDM.exe",
+      "sha256": "4323D2070057E75DFAD8E545D5560FEBFE010DF4AC8AF3DEBCB565A0B63D0104",
+      "product": true,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.NativeHost.exe",
+      "sha256": "27C673A3B4236491A4CF9B8F95FCDC7086DBC315D59AC68255114BC62B217CCF",
+      "product": true,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.Monitor.exe",
+      "sha256": "3D0DA710B3F56B1425CA5764C462FBB6C3C3C793699482EED9C0F53C9F629296",
+      "product": true,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.SetupHelper.exe",
+      "sha256": "FE55852DC839290928099363371B3A944A2956440BFE38F8FC7C86997CE67080",
+      "product": true,
+      "version": "7.82"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.Automation.exe",
+      "sha256": "CBFD75B33057A11059D6AA6B500BC2AA35D8C46D352D9E1B4E9E238BC47E0BAB",
+      "product": true,
+      "version": "7.82"
+    }
+  ],
+  "nativeSourceHashes": [
+    {
+      "path": "benchmarks/ui/production_ui_trace.py",
+      "sha256": "53DC4759C86B37EE4EB5ECF764F3D96372CAC6746A130000A8B287577B59100A"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "BA1E64487D899533CD5C7524AD3DCF30C56005C989E24D692BA17C5658308928"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "42F704531776C390B5B7BF5F79F99D6E37337A7CFB4797DEE2B99318E7819908"
+    },
+    {
+      "path": "native/AboutUi.hpp",
+      "sha256": "6556A0DE5BB1AE12C88238DEECE38DA6197CB460F717A78F7B70B88FA5FF11E5"
+    },
+    {
+      "path": "native/AboutUiTests.cpp",
+      "sha256": "29A5867391BB3595A3D916EE722727C0BB1DC0825768510ED99773984016D906"
+    },
+    {
+      "path": "native/Adaptive.cpp",
+      "sha256": "F80F0FCE2790E1384A7909A4BD76530550D861AA17FA7067AD288D2BF06D5206"
+    },
+    {
+      "path": "native/AdaptiveCapture.hpp",
+      "sha256": "DD6DD82DA2DDAA07529A0F3A1A625BFCD66A7501DBACE0DBD8331CA4141BE356"
+    },
+    {
+      "path": "native/AdaptiveChecks.hpp",
+      "sha256": "2C4CA02D0FF1C5716B877783D90BFA5CFBD74A1538C65C70CA2D2653F547B146"
+    },
+    {
+      "path": "native/AdaptiveJournal.hpp",
+      "sha256": "531DF9AC5ED9C31FFE8BEF4B5ED3E18A651C5CEADF824BF1FA7CC5A783F0F3AC"
+    },
+    {
+      "path": "native/AdaptiveJournalTests.cpp",
+      "sha256": "1EAD613FBE3AC495829F2D55F6FB6ACFD939DFB248D6F0F23D8AA3BF477E5980"
+    },
+    {
+      "path": "native/AdaptiveRefreshChecks.hpp",
+      "sha256": "58023B2E4E2DC439AE4561E8BA403CE6D18B36D0A7382E345C214028ABEFBE80"
+    },
+    {
+      "path": "native/AdaptiveResourceChecks.hpp",
+      "sha256": "CC0CFE4FF201C0013D7A0597061E45BA2685C9ACCE28A0A690ED9F7FF0C04DEF"
+    },
+    {
+      "path": "native/AdaptiveResources.hpp",
+      "sha256": "60F678AEA73F61404D666CA0E4B8B522547527860F1283599038DA1ED31FF509"
+    },
+    {
+      "path": "native/AdaptiveTransferLayout.hpp",
+      "sha256": "CCF80FE961DC857747C1297E869953C638640ED4C183599796E164792D3BD83D"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "5744FC737FBDA9EB5185AE74868ECE2CF9C176376DDE068F6BC8140A317BB5FD"
+    },
+    {
+      "path": "native/App.rc",
+      "sha256": "1F0744C5E56F7C3884C0B444D75A7D8DDFC9FB93322A6E3FAC4C675BF542A4AF"
+    },
+    {
+      "path": "native/AsyncFileIcons.hpp",
+      "sha256": "897B9F969C5AFE739AD4A61F5112057643497D44E680ED7E6F9C81F2EE3A5010"
+    },
+    {
+      "path": "native/AsyncFileStatus.hpp",
+      "sha256": "AC7AE20F09DCAD38FC81C0BE16ECDD2465428FF251CFD8C41E0DF84159C9B8D3"
+    },
+    {
+      "path": "native/AtomicStateTests.cpp",
+      "sha256": "97E4863B828280500C0ABF10C201B3058FE94AB1F1E61A1177D82DC72AB81112"
+    },
+    {
+      "path": "native/AudioMetadata.hpp",
+      "sha256": "D93D05DD842DB363EFF6EF88FA1056440D41289FDF745237A713942780F2A5CB"
+    },
+    {
+      "path": "native/AudioMetadataTests.cpp",
+      "sha256": "36D1062E0C436D03C8BCE3A0B1B352894BA67E0B96186A742AA39C3485FC7A3E"
+    },
+    {
+      "path": "native/AudioMetadataTransferTests.cpp",
+      "sha256": "55CD1FC4F57F023500D0ACA7CD0E318886C809DBE01F5E311292E55EBF823875"
+    },
+    {
+      "path": "native/AudioStreamingChecks.hpp",
+      "sha256": "E376737DD7D9A3C0577AADF2EC5F4EC8D439FFEA33B7C4A0639802C0B50D800F"
+    },
+    {
+      "path": "native/AudioTrackMetadata.hpp",
+      "sha256": "CAECAF9BFBD55631E87487390497FB1528CF5FBAE70663AD497556C1256C9574"
+    },
+    {
+      "path": "native/AuthenticationChecks.hpp",
+      "sha256": "47448C2055D45520028A4BCE9A1DCD7CB608B51D6D96384786C9F6A3347FFF92"
+    },
+    {
+      "path": "native/AuthenticationFixture.hpp",
+      "sha256": "0281579B736AAE45A926B7536FC12E1B9BFED17E8B69043DE70AB1E4EE097AD6"
+    },
+    {
+      "path": "native/Automation.hpp",
+      "sha256": "689FA4D485BB2D43A61CF8CF201EAD62031E57CE8018EB1C8E70918462CE2580"
+    },
+    {
+      "path": "native/AutomationMain.cpp",
+      "sha256": "44A9A303A1D4C8F4F34C1C6636F60F3580A922AD41024539B2E844123952CAFC"
+    },
+    {
+      "path": "native/AutomationServer.hpp",
+      "sha256": "9EC5C9F772BF93C367E4F3045734F88C6E5B0491601679EA6517837DABC7337C"
+    },
+    {
+      "path": "native/AutomationTests.cpp",
+      "sha256": "4731BEADF266F3C57729EDA8FC78E38903AFF61C41574A534EA46901AACD392A"
+    },
+    {
+      "path": "native/AutomationUi.hpp",
+      "sha256": "643F885688084815740097323B78939422A2FFC75C5BD439091BA7FC0A956EFE"
+    },
+    {
+      "path": "native/Backup.hpp",
+      "sha256": "D0C8D4DE4A40BE702DE2FE87F501DCF4D1A6AF21BE4848785048EDBACE7BB330"
+    },
+    {
+      "path": "native/BackupTests.cpp",
+      "sha256": "C49DB9E5D8772C02D9E5A8130E837B90613FEE0B08CCA6010C71575AB5EBCD68"
+    },
+    {
+      "path": "native/BasketUi.hpp",
+      "sha256": "26596BEDF2A53EE2402E55D6DD63EE762245A5303182051834B6FFB463B98DAE"
+    },
+    {
+      "path": "native/BatchDialogUiTests.cpp",
+      "sha256": "B48C86B9650E544A356799714DD4F4A97A32D86750F53B53A3D985E6A312C263"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "1A6277762B52CF01589279431D89D6712609371F9354EF8D635ED5C83DF51652"
+    },
+    {
+      "path": "native/BridgeChecks.hpp",
+      "sha256": "83E5E67C211247D814C372EEEA43466B4BBEEFE90E44B03B57874A984CF4346A"
+    },
+    {
+      "path": "native/BrokerExchangeTests.cpp",
+      "sha256": "C9C80639D4C3449B209611B750DB9B7F5FA45D749A858EEF15A31B03BDEADF21"
+    },
+    {
+      "path": "native/BrowserAdmissionContext.hpp",
+      "sha256": "40E449B3312F0FBD32C7642DB68D6DD3FD5250D5F0BFB36E2761CB00D7010BC3"
+    },
+    {
+      "path": "native/BrowserCookieChecks.hpp",
+      "sha256": "3AD088153048AF89B9093CE2201720048272A65788E9C60941561F4F83FB27A2"
+    },
+    {
+      "path": "native/BrowserCookies.hpp",
+      "sha256": "F76681BB449B1EC71C00DF4BD165113F9A73D508E1BCB88371EC3D45B4D0481B"
+    },
+    {
+      "path": "native/BrowserCustomizationUi.hpp",
+      "sha256": "4C94F2050D34E960E35E9CBA87A25D58BF08786514020A0AFBBB8F6BA13FAFFF"
+    },
+    {
+      "path": "native/BrowserIdentity.hpp",
+      "sha256": "420814C1A2C32FAC89BBB0FB641F87890815118F26E22C7F6CA086312647E92C"
+    },
+    {
+      "path": "native/BrowserProxy.hpp",
+      "sha256": "3AE5211CA71B68C436894FC50FCBF5115FE1B07C0EF0F28FC737F64F787C89AD"
+    },
+    {
+      "path": "native/BrowserProxyChecks.hpp",
+      "sha256": "7172E87BECDAF8A0F4CA705D66464A8B2ADAE869C9789915EB4337DCBDF079A3"
+    },
+    {
+      "path": "native/BrowserRequest.hpp",
+      "sha256": "F19B915C0551937BD9A40919DB511E4F75DB4DE6D50B061F7BCE1A65086CBE43"
+    },
+    {
+      "path": "native/BrowserSession.hpp",
+      "sha256": "F3236DC39B19AF78C25D6EFFFFC48D8DFA21AE60D7A99EC26BCCEE02BAD0B815"
+    },
+    {
+      "path": "native/BrowserSettings.hpp",
+      "sha256": "5E0C928F1098BBDEE69E293A418FA3DA1A89F62A593132851AF8233E9017C636"
+    },
+    {
+      "path": "native/BrowserSettingsUi.hpp",
+      "sha256": "9D9E576778F2576F0998F4A2C94876468536F5BDED8DEC31FBCBA99060C3BBA9"
+    },
+    {
+      "path": "native/CaptureAdmission.cpp",
+      "sha256": "9012D0BBE657A2741033FA1CB8D204661E4F5898870362F3E46267685BAB6682"
+    },
+    {
+      "path": "native/CaptureAtomicChecks.hpp",
+      "sha256": "F450CE535D60774C0C68432D41258F7B3BF8BD8BDF1AE336ADBA90412EA164B8"
+    },
+    {
+      "path": "native/CaptureExclusionChecks.hpp",
+      "sha256": "44E639E9995E02E84C189733E59C9B8AD82D796E1D0B6BB4F71DD0850E0401AF"
+    },
+    {
+      "path": "native/CaptureExclusionUiTests.cpp",
+      "sha256": "35A1ECB3D86BA299A3AA11E37D62F6A7C0CE4A230FB1FE24819C68A11898A264"
+    },
+    {
+      "path": "native/CaptureExclusions.cpp",
+      "sha256": "0D9E68AD46990FD17B4197168D08AA0A4F66B471B57FC2072ED88F5BE7C9F732"
+    },
+    {
+      "path": "native/CaptureExclusions.hpp",
+      "sha256": "3BA8855BC679C3DBC916A2253B07139D91D433DBDE997A1641909C11EB18F208"
+    },
+    {
+      "path": "native/CaptureExclusionsUi.hpp",
+      "sha256": "3AAD09B2A677CF76EC77D28EDC9373108B8F1680F4A4A85903E6E4215A0ADF50"
+    },
+    {
+      "path": "native/CaptureLegacyChecks.hpp",
+      "sha256": "7CAA95DB2B805EE10509DEBDEBA1045B60428FD147506246D148BCBB9F27E6D8"
+    },
+    {
+      "path": "native/CapturePresentation.hpp",
+      "sha256": "12262E8F2CCF0BDAC6CA2A4ED65D5BF6764D7EA6AFA5AEA2CB2BDC07A6683839"
+    },
+    {
+      "path": "native/CapturePresentationChecks.hpp",
+      "sha256": "1656FC4758FEB5749B134BA18E38B8CE71E6516FA0B126BC20BC61677D9AB829"
+    },
+    {
+      "path": "native/CapturePresentationUiTests.cpp",
+      "sha256": "258F585753EB3F5BCE439335E695165AF109AB158189B9B742BE1B6830920510"
+    },
+    {
+      "path": "native/CaptureReceiptChecks.hpp",
+      "sha256": "0AE65711237C65BA4D0CA0087DC991BE19252028D87762EB7CF0DDE10E11CD87"
+    },
+    {
+      "path": "native/CaptureReceipts.hpp",
+      "sha256": "BEE14FFE80E2B5B1E6E9C169A995BE7D96304BB3C625F801E7066912A473A8DE"
+    },
+    {
+      "path": "native/CaptureReviewChecks.hpp",
+      "sha256": "021AB77D074B06729DBC3CD6E7A7A0038DC52696C03A2A141310470495CC388F"
+    },
+    {
+      "path": "native/CaptureReviewUi.hpp",
+      "sha256": "47D1A6E5325363A9365E9FEB029E67E22731FA1824E43FCD736D14C512F76BAF"
+    },
+    {
+      "path": "native/CaptureRules.hpp",
+      "sha256": "0A3084580D3297E018A5EE780AE837FED83D1E7FFD022E1182157A839B3F98E1"
+    },
+    {
+      "path": "native/CaptureRulesChecks.hpp",
+      "sha256": "81BFEA18C2529C7E959E2E9C6E962713FB168EAE21BEFC9954A3245CE76CAE9E"
+    },
+    {
+      "path": "native/CaptureTransactionChecks.hpp",
+      "sha256": "DF1141DB3E593B1DB2D8758E6E9FA5CAA288A16A64653929F5CC0DE96C078463"
+    },
+    {
+      "path": "native/CaptureTransactions.hpp",
+      "sha256": "891F362BE17ACBC67965CFD68C83ECBB77F0AFED8A52C62038E910560C2782E4"
+    },
+    {
+      "path": "native/CapturedResponseTestAccess.hpp",
+      "sha256": "F2C67E39C68021C17D7A92B3FC9E5D462C874788D82CFC66867A60D6BB801B6F"
+    },
+    {
+      "path": "native/Catalog.hpp",
+      "sha256": "32514B3AC0FBD351A3233C6391FBA297D08DE2A0DA6097AEA0ECE831755EEB84"
+    },
+    {
+      "path": "native/CatalogAdmissionRegistry.hpp",
+      "sha256": "F2BDBA2CAA707985AD1FA78610793AC193376CA40B5B60F069DFCA25B714A736"
+    },
+    {
+      "path": "native/CatalogAdmissionRegistryTests.cpp",
+      "sha256": "5F46BB2E2AF04DCC4DEEBD683E158684AEEBE5F3D8A7FF673EFCF181D5D27857"
+    },
+    {
+      "path": "native/CatalogAdmissionReservation.hpp",
+      "sha256": "DA7E95517FA6A5CA57CBBE10207F242A0E5D81BD40A5BD73481E7FF732D68D76"
+    },
+    {
+      "path": "native/CatalogAdmissionReservationTests.cpp",
+      "sha256": "798E26A5ECAF20D04954E0B2595CDBFC0DAD226825B65DB1ED9BBBEF51DA358E"
+    },
+    {
+      "path": "native/CatalogCheckpointTests.cpp",
+      "sha256": "56EE9197618F237B3B17A28EB91A376322EBA0CD4CC37C0C6E8768F39549B172"
+    },
+    {
+      "path": "native/CatalogChecks.hpp",
+      "sha256": "51136C4A52D930E5AD3E898785855F5957197CA180C1439FCDD7FC2BCA6818A5"
+    },
+    {
+      "path": "native/CatalogCommitCoordinator.hpp",
+      "sha256": "5B8FDACBBCD4AA8CD1CCF638CAEE4E8C13650CD636CA00A80012C89B8B040A11"
+    },
+    {
+      "path": "native/CatalogCommitCoordinatorTests.cpp",
+      "sha256": "E036E81BE9115072DF058468A9F4077B4617A0430D95658D726819BCDD7BDF08"
+    },
+    {
+      "path": "native/CategoryEditor.hpp",
+      "sha256": "DA51E6CFB86162DED5D44189731A8FF5EACD65497B3A2AC02BB9C0D3FF3D6801"
+    },
+    {
+      "path": "native/CategoryLabels.hpp",
+      "sha256": "B8748391A518DAC837C1D9309F90849252175A0EAFDCFDDFF662090D4947B205"
+    },
+    {
+      "path": "native/CheckpointChecks.hpp",
+      "sha256": "BAB61B18A6E4D244C41CD8C822BA2E909F6B3A5D5EE4D991F88CA371952AF4A7"
+    },
+    {
+      "path": "native/CliCompletion.hpp",
+      "sha256": "4DAD358BC8879860B1C3B5A30E2FC5386DA91BA08F1283BDD37850F64D3666D1"
+    },
+    {
+      "path": "native/ClipboardPolicy.hpp",
+      "sha256": "512AD2E5CC70848BB78029BBF99A93B062E09C6E019BFE9BD49DB03B23EF8E71"
+    },
+    {
+      "path": "native/ClipboardSnapshot.hpp",
+      "sha256": "BD782CA90EDD58CF8D9DCCF7F63994D7A0E77C759A79BBEBB45124C77BE07B92"
+    },
+    {
+      "path": "native/ClipboardSnapshotTests.cpp",
+      "sha256": "6B7328E6A2280DD5B9E2563EAE9819AE72E6F56C2F2D180CB6AA881540E3250A"
+    },
+    {
+      "path": "native/ColumnControlsUiTests.cpp",
+      "sha256": "7025D0D99D132F7C170C841D4423F34773E6996BD766FC30B573D2D50A15E8A2"
+    },
+    {
+      "path": "native/CommandAvailability.hpp",
+      "sha256": "C030B5750E5B59AF1F848B966BF90C679BB9DA44241E368E87A6FF9FA2ED0FF4"
+    },
+    {
+      "path": "native/CompletionDialogUiTests.cpp",
+      "sha256": "36B079AB1520799C3CCEE0E7AED1BED246739EFCF2800BEBD97315AADFE50987"
+    },
+    {
+      "path": "native/CompletionPlanChecks.hpp",
+      "sha256": "5A876E9320684BA82A967B1BEC940ECF0BF4E3514B48BC307175ADBD027E636D"
+    },
+    {
+      "path": "native/CompletionPolicy.hpp",
+      "sha256": "BD766A91E16FA9CB672A7345FC2C5DA55EA577A8D522CA5022260C574277B43A"
+    },
+    {
+      "path": "native/ConnectionChecks.hpp",
+      "sha256": "CF816413FC2DB8E3987DA5F17B3881A4815CA68698F8E55180C68D2E6BFFF81D"
+    },
+    {
+      "path": "native/ContentDispositionName.hpp",
+      "sha256": "AB68D3395CF46351BA00064558588B1EB3317A13677ECD3FB336BEA406A24D72"
+    },
+    {
+      "path": "native/ContentDispositionNameTests.cpp",
+      "sha256": "6449B879E9AE48BE5BA3B147D8F474F56F684C23DFF7B027D85B93E95E9FC211"
+    },
+    {
+      "path": "native/ContentSniff.hpp",
+      "sha256": "CCAC54F3BDD67FC9998D1602753BDFE91FA4752135236F6C3C703BAFC21B6946"
+    },
+    {
+      "path": "native/ContentSniffChecks.hpp",
+      "sha256": "E3EFA0EBB928DFDE9CE3D4D9E5C9BF2EB0818594A5F9FF2B78B514500A999588"
+    },
+    {
+      "path": "native/ContentSniffCorpusChecks.hpp",
+      "sha256": "1489BDE129B3A765F2B314D00B93DC6F2CD55138AC5CF68A5B05E0EA23DE7790"
+    },
+    {
+      "path": "native/ContentSniffNamingTests.cpp",
+      "sha256": "3BBC577564D292133A78807D0EBC761E9BA942F53ACB7C1547158733F7662697"
+    },
+    {
+      "path": "native/ContentSniffNoticeTests.cpp",
+      "sha256": "31625150836121C7D9EF1676718FECA2188A0EBB5A83706712E5D946C712A8B8"
+    },
+    {
+      "path": "native/ContentSniffUnicodeChecks.hpp",
+      "sha256": "E138C0DE6902BC777F803233D1F0A49807EBC752240391299F8979BC30F3564A"
+    },
+    {
+      "path": "native/CookieResumeChecks.hpp",
+      "sha256": "8665BEE9FB08EFDBCCB7856BC320460A0C50D683FE70BF6821EA94BEA069F560"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "EA0D614B63EFB5865DBA7C4BB3B92D4546749C53B1B0A9213933C146873A2B70"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "E5B7D167655AEDF2452281176D9F0D9688937F8A7EECA8E03D88B3D1A41A659D"
+    },
+    {
+      "path": "native/CssReferenceTests.cpp",
+      "sha256": "24C8DCBBBF2AE528B1796B23F236D730B2A53BFBEBCA20771E4437638EBE2CD8"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "native/DarkGroupsUiTests.cpp",
+      "sha256": "13574D40F0D6CEC3EF18F87BA2086F24A72174962529839DBC5C987E9C40757E"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "sha256": "1346AB46BD7808750EAEC56B1E8D63509D0042A0B9A21BB64288890E65502598"
+    },
+    {
+      "path": "native/DashManifest.hpp",
+      "sha256": "5EE874298465D18374B1ADE2AF2B6297370EAC27C4F7F88137F892B3EC4AC749"
+    },
+    {
+      "path": "native/DashPeriodAssembly.hpp",
+      "sha256": "A38BF487F9488F6DA73F639FAE7D6712513B880DB92B0D896A52D4F3DF5520AC"
+    },
+    {
+      "path": "native/DashPeriods.hpp",
+      "sha256": "077CBF60B88D9DD4017BAD67A54E714F88631718812F4B193711D5FFB317E03E"
+    },
+    {
+      "path": "native/DashRecordingSession.hpp",
+      "sha256": "85A73403D81EF4CC3106A5D67ADE3B5A2100F644AC59D72BECA4D57739D60189"
+    },
+    {
+      "path": "native/DashResourceCommit.hpp",
+      "sha256": "F302806FFC73B0A3EE6A513F21D7B888D75EB0ABF68A66E229D3CE14FCCD68DA"
+    },
+    {
+      "path": "native/DashResourceResume.hpp",
+      "sha256": "99AABD294121BEF1FE28E0FC3DD3302737C4E427CF4B37E3F4C51FC384FAC2CD"
+    },
+    {
+      "path": "native/DateParsingTests.cpp",
+      "sha256": "AE5635D4E6FB34D64E2E2067045406284F6044536480E2A9B756ED06EA5B24CC"
+    },
+    {
+      "path": "native/DefaultQueues.hpp",
+      "sha256": "B8B847E01808F1AF9AB2E473F113C2535BFAEA8B291DA5EC770D8E21E258C6FE"
+    },
+    {
+      "path": "native/DesktopUi.hpp",
+      "sha256": "9ADBCBC43287645A8F27ED6AA712A7153BDFA77FB53012EEEA8E99CBDADC81E2"
+    },
+    {
+      "path": "native/DetachedMediaAdmissionTests.cpp",
+      "sha256": "4641BCAD50821FA152271E69185BA43D5D543D05E50A361D19B4EE142D466D8C"
+    },
+    {
+      "path": "native/DialCredentialChecks.hpp",
+      "sha256": "24A7B75C7579853B3F371D1B86A4621E4F1843316A37DEBE96B18BE6D94FA00B"
+    },
+    {
+      "path": "native/DialCredentials.hpp",
+      "sha256": "792472EF6B5F4D48A342A8F754A18822D3E047A4107D20F57F663F3D013F68CD"
+    },
+    {
+      "path": "native/DialCredentialsUi.hpp",
+      "sha256": "1849837B7318570F6E28122FCD3E83CA5D690B501D88821865164C95F0468DF0"
+    },
+    {
+      "path": "native/DialCredentialsUiTests.cpp",
+      "sha256": "26C15E79D45BE638B3BD83CAD50BD013D7516BE04ADBEE6FA3D43462474CC309"
+    },
+    {
+      "path": "native/DialUp.cpp",
+      "sha256": "D1C32BD3598BCCA14FE4959DC8B362CABC8A554B9E42F39C64E0AEFF98CC83E0"
+    },
+    {
+      "path": "native/DialUp.hpp",
+      "sha256": "CF5BCFF8620FF1D2ED4FB81827DE233F47EC2C6EFBDFE9AACDD9CD4DD4C475BF"
+    },
+    {
+      "path": "native/DialUpUi.hpp",
+      "sha256": "06A968F66C264A4DC0C304DAED3AB1D55C8DAF194E68E3CFAF5700AB3E8B6BB3"
+    },
+    {
+      "path": "native/DialogChecks.hpp",
+      "sha256": "F2C017E9DECAB8F38785E412706C1C6F605C18EEAE9889CC67080C7F39E86675"
+    },
+    {
+      "path": "native/DialogGeometry.hpp",
+      "sha256": "3659A3ADFB8AEBB178B34DF8736CD9E29F774953494AF5413A982A706F71A269"
+    },
+    {
+      "path": "native/DialogPreferences.hpp",
+      "sha256": "211F7A0AA05017F7D7E9CEF88A8B160DAF1C54E40C10E99F4FCC509BF0252AC9"
+    },
+    {
+      "path": "native/DirectMediaRefresh.hpp",
+      "sha256": "0D9B074F7B864FACEEE5CF2A1F2C1B57C4C8172609AD8584EF52FD040B419C38"
+    },
+    {
+      "path": "native/DirectMediaRefreshChecks.hpp",
+      "sha256": "99B981315031BF72E993D2B12647B54DD8079BD3F1D55277FFAD75F19F031E87"
+    },
+    {
+      "path": "native/DownloadDetailsUi.hpp",
+      "sha256": "529FD6D1DA9F914ABA033F081A40557EB6CB6406AD8C6820295B5CF60BF00A5D"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "33E7ECD87C5598B605E9F6C4DA9B80FACC15DC90A1B1602D0706522B04DFF2CB"
+    },
+    {
+      "path": "native/DownloadListEtaOrder.hpp",
+      "sha256": "BBA629494970F3BFD7D35AAF9EA949F2BFDA80E76DF92597A5A6C6B02C223B74"
+    },
+    {
+      "path": "native/DownloadListOrder.hpp",
+      "sha256": "7DB195DA3FB0FAE733135D3024B5909A1F4474AA5A8DBF0F0C2E68114965827D"
+    },
+    {
+      "path": "native/DownloadListSizeOrder.hpp",
+      "sha256": "57301EBC466C36648774C06CDA9964ADCD57A30DC2A2F770E50A99941CDFE3D4"
+    },
+    {
+      "path": "native/DownloadListSnapshot.hpp",
+      "sha256": "692E1073B7F4907D8863BDAD5F063B196D11049EEE63A9E130149045D927C2CE"
+    },
+    {
+      "path": "native/DownloadListStatusOrder.hpp",
+      "sha256": "9AB1E9FEDB246E229AC1E44E2F795D72AF93B0B6130B22651DDF85DB957E9E0C"
+    },
+    {
+      "path": "native/DownloadPreview.cpp",
+      "sha256": "0B2F654BC53A6E234F5CDCF7943E23FEA5039C7D7C970537DADEC2E13F58AE6E"
+    },
+    {
+      "path": "native/DownloadPreview.hpp",
+      "sha256": "512AD676040036FB3E518BC93D223F5B800DFD71EE193145F646E52C1D53B667"
+    },
+    {
+      "path": "native/DownloadSessionChecks.hpp",
+      "sha256": "0B09B599ADEFD3366162F662E1E8E4E69CBECE97C1E9F80950829336D9C66E68"
+    },
+    {
+      "path": "native/DragUi.hpp",
+      "sha256": "3D5C14A55E77C65222A540FA8ECB5BF4AA8BBCF452703E3CA1CB6FD66682CBC6"
+    },
+    {
+      "path": "native/DuplicateChecks.hpp",
+      "sha256": "4ED9202848758E5A7DF41683120E47B287CF96408A566E16283AC0760A05707B"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "424196BD2CFA0128E778E59BEE2D126CAB1AC05E345443C74418D5036EE5E44C"
+    },
+    {
+      "path": "native/ExportScope.hpp",
+      "sha256": "2AAEF55B3F71591A467E4990D1E3D247108A13567FAAE416CEB5CA2A160068E7"
+    },
+    {
+      "path": "native/ExportUi.hpp",
+      "sha256": "25D41E65BC8D2ED8B4A610F5B46C7BD2C747189AC316FF083931A904D1BFF33D"
+    },
+    {
+      "path": "native/FileHashTests.cpp",
+      "sha256": "A139030DD8DF455D117DAAD9C29C0ED9B1823593D21EA9B37C7688B5F459019B"
+    },
+    {
+      "path": "native/FileIdentity.hpp",
+      "sha256": "81435BDF2F677B2B624368492EFCFEE31D895FB37FBFDED9495C13257497477C"
+    },
+    {
+      "path": "native/FileInfoInitialView.hpp",
+      "sha256": "9CF1E69BCFA30A8E67616512D11016BB9340B1D9D28E6F93A81AD77DCBE27634"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "C96FACF093227F0BB84873951C703B88B7325DA04737F968F80DEB608893D939"
+    },
+    {
+      "path": "native/FilenamePreviewUiTests.cpp",
+      "sha256": "293A2531D21A622451561CC8C68089E64DC53279FC81EDF498BBBE40F8462B59"
+    },
+    {
+      "path": "native/FindAddressTests.cpp",
+      "sha256": "E88A695B0A3BF230D046126BDD0CCAE80ECB0F28D348BF7B37836025EBFAA808"
+    },
+    {
+      "path": "native/FindDialogUiTests.cpp",
+      "sha256": "BDCA8B5217C42C2943E8F69158E15B91B47FBA3723BA4436317B8D456A03CA7B"
+    },
+    {
+      "path": "native/FindFilterCacheTests.cpp",
+      "sha256": "47492A35C4A6297BC8C2A847C8C5E81A607F438771AF5985F2F4F764763425E2"
+    },
+    {
+      "path": "native/FindState.hpp",
+      "sha256": "9C17416602967DFCDCF0DBFCDE32818459A66C9AE2A4FAB79AE649BBCB92C401"
+    },
+    {
+      "path": "native/Ftp.cpp",
+      "sha256": "18F7A309E48B975C11179B3A77300E9ACB43189F24E83D16C50551F6E7D9B616"
+    },
+    {
+      "path": "native/Ftp.hpp",
+      "sha256": "0D63783A0B48A4B381732B6FBA8593F65CF2F7E14B027140C9589452341C8E6B"
+    },
+    {
+      "path": "native/FtpChecks.hpp",
+      "sha256": "3A598ADD4E9923D942E7DAC974696C36E239A4D4003D6147EA0E4E86FB137285"
+    },
+    {
+      "path": "native/FtpProxyPolicy.hpp",
+      "sha256": "F270F3E42E2EFFFE1CB5D89EC80FAF476B0D0ED1A89BD5D2E7E6C401CA191F86"
+    },
+    {
+      "path": "native/GlobalLimiter.hpp",
+      "sha256": "557C6A6FD20DC93E0FFD19E62F11CD0D42EF79E786374A9FE355EA53B699C9DD"
+    },
+    {
+      "path": "native/Grabber.cpp",
+      "sha256": "D6EDE347C0B4E431139565B452DBFE8EBF7660F75BF2A0D6D52662F098F5A510"
+    },
+    {
+      "path": "native/GrabberActionChecks.hpp",
+      "sha256": "413D93F88C973ABD20C4707DF9EBD3A074DDE7E0FC12ED0E63756B054CA1F798"
+    },
+    {
+      "path": "native/GrabberAuth.hpp",
+      "sha256": "B1B82D1578920FD441ADF0F5F3718BCADBCE94A3FCA4A226BD6068564A9EC55D"
+    },
+    {
+      "path": "native/GrabberBrowserSession.hpp",
+      "sha256": "F6FCBAFFA447E1461F8CAEC3DFED727C894BA46252B68848D29A05A984321AF0"
+    },
+    {
+      "path": "native/GrabberChecks.hpp",
+      "sha256": "8C1293239CB4860CC523BBAA0D2658CE22E35B84F91645EED2C240549412545F"
+    },
+    {
+      "path": "native/GrabberContextChecks.hpp",
+      "sha256": "A3D5C828B5803B3A7EC80E7F2A3285842B46F47E250EFC7255A820435D2ADE1B"
+    },
+    {
+      "path": "native/GrabberDestinations.hpp",
+      "sha256": "FD25A334220DA06E04CE0EEF797A0CCE2214D28857DBB2D43A610A96A7854D8B"
+    },
+    {
+      "path": "native/GrabberExploreSignature.hpp",
+      "sha256": "C2DFC57CFDF7440892B71B2DF6AE200A41BAB82A2265A46F9A04A70AA8CCC03E"
+    },
+    {
+      "path": "native/GrabberExploreSignatureTests.cpp",
+      "sha256": "55B2EA5EAB29C18F090CFCCFAFBFCD387B54BE5072BD60E330DA1155ACE2A791"
+    },
+    {
+      "path": "native/GrabberFilterChecks.hpp",
+      "sha256": "301F63CCFEB2229675354D7CC0F9410A6C0C65CEC48582AA9B00B8E06889920B"
+    },
+    {
+      "path": "native/GrabberFilters.hpp",
+      "sha256": "C471A89238E9FE0FA222317CD3146D3DCA9ECAD5F5FC409ECF984D55AFC95CF9"
+    },
+    {
+      "path": "native/GrabberLinkChecks.hpp",
+      "sha256": "D0B86C5DFDDE1F9FC75AD88334AB192B7FFFB36899B7EAD13568D97761200687"
+    },
+    {
+      "path": "native/GrabberLinks.cpp",
+      "sha256": "EE694F8BA0F37A9DCC6A6623FC89DCAEDB6EA16F887AE1F590DCE7D5868A4BDF"
+    },
+    {
+      "path": "native/GrabberLinks.hpp",
+      "sha256": "9DE1681F4A7BC223544A75385FDCDA293305AE6D38714996E0083E79BB761EF3"
+    },
+    {
+      "path": "native/GrabberLoginUi.hpp",
+      "sha256": "6543105D9C453DD5F5F151F5DC73D2A7E8875DEEDDC805D7AFB3C748F2B64FA2"
+    },
+    {
+      "path": "native/GrabberProject.hpp",
+      "sha256": "F3F50D7C413E4D6A8BF9A92C3CE204CE64200ABFB562BFF779DFBF33F5D0C927"
+    },
+    {
+      "path": "native/GrabberRendered.hpp",
+      "sha256": "7F72E0A53FA16AE9996B795EA75C631657541454B949A750762D0B116DC24089"
+    },
+    {
+      "path": "native/GrabberRenderedCrawlerTests.cpp",
+      "sha256": "4E004CFEFB98EF615F3DF2AE39C89E4C50C6A7A8A5FAE4ED0E61D5CBA909747B"
+    },
+    {
+      "path": "native/GrabberRenderedStore.hpp",
+      "sha256": "8F483AEDBE108FA483339BF27B0106C6CC8FC296B58A44E1C363BFC485BA2EB6"
+    },
+    {
+      "path": "native/GrabberRenderedTests.cpp",
+      "sha256": "C4112BF7176E666BF6AA49E5CA7DDE9546D5841F45E51D60A32FAD14E141F5AC"
+    },
+    {
+      "path": "native/GrabberResultUi.hpp",
+      "sha256": "B783C27D1859F6A19E9DC1810A53A46C972140DE0F4343712353FB674A8FE661"
+    },
+    {
+      "path": "native/GrabberScriptBudget.hpp",
+      "sha256": "2012B4E1B2DC68B1B54F41115CEF5F47B90DD9F083120D9E4A13585E95290A97"
+    },
+    {
+      "path": "native/GrabberSessionChecks.hpp",
+      "sha256": "A68BDEDAF53F0B40900A19F074D18E058D1061DB25E837B8B786E731CB8DCD57"
+    },
+    {
+      "path": "native/GrabberUi.hpp",
+      "sha256": "558F6EEDBAD7A556137A286BCC956BCF58CAD59A27B8BDD389FD41D6C14CB4BA"
+    },
+    {
+      "path": "native/GrabberWizardUiTests.cpp",
+      "sha256": "BBC51568ACEFB9C026784590BE5F60DFCCB6D2FBF8A01D7F1E9C6933CF1C51ED"
+    },
+    {
+      "path": "native/GuiChecks.hpp",
+      "sha256": "B5C7503F998E42B48BFDBC0100EF49C135A7A0205D27F80BB6482C6F61BAE4D3"
+    },
+    {
+      "path": "native/GuiModels.hpp",
+      "sha256": "64D1FB7FA26DC17AFD61EA7F3860860D71883651EAA475029F11428AD3CC49AE"
+    },
+    {
+      "path": "native/HelpContent.hpp",
+      "sha256": "6917FDC5CB8A0A0F0B79B293948DE7D8391AAEA1A36234C397F649476EFF1167"
+    },
+    {
+      "path": "native/HlsPlaylist.hpp",
+      "sha256": "93F764FCA46D44696F7B148E8BE8BDE1E5DE13693ED0AB105139F0AE39F3A1F0"
+    },
+    {
+      "path": "native/HlsPlaylistChecks.hpp",
+      "sha256": "CA6E3DC8B5604D4E581B9379A78F15AD60CBE6259DDF42DC187DF565B6A0AAC1"
+    },
+    {
+      "path": "native/HlsRecording.hpp",
+      "sha256": "EC0373DAE0CC6A7933098C4411F06E70CFA34EF8997F8EE3F4B38BFC8FB31708"
+    },
+    {
+      "path": "native/HlsRecordingChecks.hpp",
+      "sha256": "B11DA02F80FBB757A934F855965E4EDE1DA8136C1FEB75871840A37E6CC89563"
+    },
+    {
+      "path": "native/HostMain.cpp",
+      "sha256": "A04F68295990B81F3C393EB84E130D561BA44E9B1F9BD08DDC16B018477906AC"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/HttpAdmissionTests.cpp",
+      "sha256": "114D35D4E8E96CB20995645FC9DD913C87C27B88FD5BC55DB44249ED288CD8BB"
+    },
+    {
+      "path": "native/HttpGzipDecoder.hpp",
+      "sha256": "7956BAA50EB4A8B51EF553FBF0D33F7EDB50B8471638140BAD112ACAD0D4C272"
+    },
+    {
+      "path": "native/HttpGzipDecoderTests.cpp",
+      "sha256": "D82442326AE3F859260F992AD9111E41B50E3FE8E3A6575239F950BA5BAA9E44"
+    },
+    {
+      "path": "native/HttpGzipTransferTests.cpp",
+      "sha256": "C4FEA7F05782DB56F1D28575751B5929C619E5DE6A6EB0E4C76CD88B3243B923"
+    },
+    {
+      "path": "native/HttpPostGzipTests.cpp",
+      "sha256": "2B6436F66F19A6F6578989564B07855E3761254CD39608054C3A3F8C0E3AF4A4"
+    },
+    {
+      "path": "native/HttpPostIdentityTests.cpp",
+      "sha256": "087A658645CCF91BBF9B66C89C4C93CB722A5967AD8F96C552A54DAE03C04C70"
+    },
+    {
+      "path": "native/HttpRepresentation.hpp",
+      "sha256": "5C2A7400737737ADF84347C7E6F2F8BB0F5F984A7E07A27300DD512E670A9004"
+    },
+    {
+      "path": "native/Id3v2.hpp",
+      "sha256": "AB2635C79D27DA0A109B6DCA6F33CBCF59D6518C2FD16D3DF330ABD24AD8640C"
+    },
+    {
+      "path": "native/Id3v2Probe.cpp",
+      "sha256": "67AA5AFFD32E150E0397CA73C01D696A55651615C1CC24A325581BC85EF530F2"
+    },
+    {
+      "path": "native/Id3v2Tests.cpp",
+      "sha256": "7E594F4360EC28E9B0C6BA4BFA4D0BA83E7BE2E87D016E1656D19C151ED24791"
+    },
+    {
+      "path": "native/IdleCheckpointTests.cpp",
+      "sha256": "8D76BE948A584D8DDB05E47B174073EB875A1C5D4F818B974CDE125421F379E2"
+    },
+    {
+      "path": "native/IdmExport.hpp",
+      "sha256": "1135F5DF5D932930EA5A037B18C0D48B448A0B695E28B7681595423038DC7741"
+    },
+    {
+      "path": "native/IdmExportChecks.hpp",
+      "sha256": "2B1DFE9B67BC393ABBCDBCDD655FA39646098AE6EDBEA02B2D154BE2CB69FB32"
+    },
+    {
+      "path": "native/IdmImportUi.hpp",
+      "sha256": "E64350C181136BCF1ACB6AA458CA133B787549F564FEE64BC637696D216B4165"
+    },
+    {
+      "path": "native/IdmTextSort.hpp",
+      "sha256": "FA0DFE2A479758C0CD1E9015C5F3C7A3409B975535948742DC6109C262C78FB1"
+    },
+    {
+      "path": "native/InlinePacSource.hpp",
+      "sha256": "BCA21001022820A3D8F9C3ECB700D1C1991BD6434E6F05EB9363BC473BD5D682"
+    },
+    {
+      "path": "native/Launch.hpp",
+      "sha256": "F2311A2709437552E5630042632D0BBBAA1166A3C2484DEEF33697F6D7BB6CF1"
+    },
+    {
+      "path": "native/LaunchQueueTests.cpp",
+      "sha256": "25F3506B062A098CC19DA6CE0A1F23E846B170A8FFCA0B205430FCF222FBECD4"
+    },
+    {
+      "path": "native/LiveAudioMetadataTests.cpp",
+      "sha256": "5AC19E97A04E6B6126BA2327DC0DD6ACA3644C0780093A9B4F1C0A94D784517F"
+    },
+    {
+      "path": "native/LiveDash.hpp",
+      "sha256": "09256B653DB84809BE12301BAABDCF9947E009F91A6EC3F9771C1CF810E8EC02"
+    },
+    {
+      "path": "native/LiveHls.hpp",
+      "sha256": "1C4B2F9E648EB9CA4D694943DB48B04EFF3F9278FFB6E7857D2958B9478E3157"
+    },
+    {
+      "path": "native/LiveHlsChecks.hpp",
+      "sha256": "598632428BFAB1BF7FECAABA67AFF07FAC82AF25D4AEE1C159095BDD3F449626"
+    },
+    {
+      "path": "native/LiveHlsTracksChecks.hpp",
+      "sha256": "A378374F3162C8E75DDD541F2608FD437C29DE58C59C046043C36F035C00AE78"
+    },
+    {
+      "path": "native/LiveSubtitleTests.cpp",
+      "sha256": "E0CD2394E7AA1A71F42377164F58DB02B33F720EC79FDE51C04BD74C708D72FA"
+    },
+    {
+      "path": "native/LiveSubtitles.hpp",
+      "sha256": "FA57D8709FC9276E3DABC50091BCD3CC74B893D1218CC8992F422B4986466DF8"
+    },
+    {
+      "path": "native/LoginControlsUiTests.cpp",
+      "sha256": "D7734D07E70525ACC4103C7D84506441F04520CF05B77E45BA567354B77080D1"
+    },
+    {
+      "path": "native/LoginProtocolsUiTests.cpp",
+      "sha256": "654DE36E483F5966F027F8F8E4BF90EA98DCF6E39526A286B9BE1999B5093B86"
+    },
+    {
+      "path": "native/LongAdaptiveTests.cpp",
+      "sha256": "E0998637492126EA1F0D441EE6B2D055DE4623885930091334E1C5728598D9FD"
+    },
+    {
+      "path": "native/MainFeatures.hpp",
+      "sha256": "7AA766D8F1EBB2F2689A2FAC3B031A8B692C532E95BAFB7F5EC9FE6DCF06DF57"
+    },
+    {
+      "path": "native/MainTrayUiTests.cpp",
+      "sha256": "3E175F09A93BFEE491015336316F99D43F400103EE95920A3ECC463724C1B06E"
+    },
+    {
+      "path": "native/MediaAdmission.hpp",
+      "sha256": "CC5DE1D8B9BCA0633582C9CF19656A8574B5D50DE3056C0FF9A0821113484F97"
+    },
+    {
+      "path": "native/MediaAdmissionChecks.hpp",
+      "sha256": "CDD63A953F2782ECC0106DA82A415364B0D11329E97589AF7858A18E9DAF76CF"
+    },
+    {
+      "path": "native/MediaAssemblyVerification.hpp",
+      "sha256": "A674B65F60239B1DC0E41F2699674F2FAE36459F36177399E2B52B7347671845"
+    },
+    {
+      "path": "native/MediaChecks.hpp",
+      "sha256": "5B3ED666FF3BAA5CC5B567FE5CD0B2C9BF29609A81D9A19F8E071F83E507C2FF"
+    },
+    {
+      "path": "native/MediaCopyCancellationTests.cpp",
+      "sha256": "69B7BADFDCE9B7C18F3D7DE0ADEAB138CEB24B7EADE64DAB0894D13D8CA834C7"
+    },
+    {
+      "path": "native/MediaPreview.hpp",
+      "sha256": "46E0B98DF0091D6EDBF5BD0CD3096F430BCF7F311036162F70901D754B699028"
+    },
+    {
+      "path": "native/MediaPublication.hpp",
+      "sha256": "4AA3318CAF4AC6093EDA32F27ABD936519B0748A42515D9BC38870120C144CCA"
+    },
+    {
+      "path": "native/MediaSize.hpp",
+      "sha256": "F66713329D6152E57F142385DF24FF6CBE9E915591FD10F8857C84036AFDB55E"
+    },
+    {
+      "path": "native/MediaSizeTests.cpp",
+      "sha256": "81FA0D288B17B00BB48135148BA2AE688381366A2F391E522794293D3C4EE009"
+    },
+    {
+      "path": "native/MediaStorage.hpp",
+      "sha256": "A857CF4E53CB155CBAB7A856B609B2CEF0D0A9BE3E2AB8F6C1B8563A81BA4FB5"
+    },
+    {
+      "path": "native/MenuBarTheme.hpp",
+      "sha256": "2AF87B80F899A3D8FCAC549C52A7BF5C524B7B3AFE5356D6D556F629CE4E579C"
+    },
+    {
+      "path": "native/MenuStateTests.cpp",
+      "sha256": "FD0316FFA868CEB10D7613B15D06DB9B37432691F811C6E9A7C0300436CB5526"
+    },
+    {
+      "path": "native/MimeFilenameData.hpp",
+      "sha256": "69FC3DF3ABCAB163A88E2B5CE08AE225159CC47E3BA1B030544A032BDF7292E7"
+    },
+    {
+      "path": "native/MonitorMain.cpp",
+      "sha256": "BDD45E6474F67D5FB86E205EC9E1D09BC4EF68B45CEBF78CA91CF7BFFC424470"
+    },
+    {
+      "path": "native/MonitorReconnectTests.cpp",
+      "sha256": "0C134E5C95E0CF49A826724E2EEE87E8325E6D6E35B989E5A56D76F925460F89"
+    },
+    {
+      "path": "native/MonitorTests.hpp",
+      "sha256": "460334E049891575A2C58CD0A6A3A23B00522067FBE94369B72D87FA2692288F"
+    },
+    {
+      "path": "native/Mp4WebVtt.hpp",
+      "sha256": "1BE38CBBD5D323A0C8974DF4D9FEF240E91910A8E2EE91EF6504770B5AF403C5"
+    },
+    {
+      "path": "native/Mp4WebVttAssembly.hpp",
+      "sha256": "C1E96BA95EFBDA268DFFBAFFC328FC0DB47B073FD17BBC3C4F5B9D3B03E7F307"
+    },
+    {
+      "path": "native/Mp4WebVttFragments.hpp",
+      "sha256": "F0FCC4808311980998C797C1D9C13F4C6712710F8753B23D9E22B70E31495114"
+    },
+    {
+      "path": "native/NavigationTreeSnapshot.hpp",
+      "sha256": "BA49BA46774AAC00E8983AF18A8639669E8C3A470FF0C9D0A014832CE7EC3CF9"
+    },
+    {
+      "path": "native/Network.cpp",
+      "sha256": "B3BABC40F85EE6B5968D245F5FA9C747EECE98BEDBBDF06D13634CEE40EB9EA3"
+    },
+    {
+      "path": "native/NetworkRecord.hpp",
+      "sha256": "37A1897038942024D931F6C7B1418A86799E7736A5A5CD32D71CC8341597F715"
+    },
+    {
+      "path": "native/OfflineArchive.hpp",
+      "sha256": "80056D54C229524E186C538D103D49AD07668ABECE43B8C38EFA7E059D6C8392"
+    },
+    {
+      "path": "native/OfflineArchiveChecks.hpp",
+      "sha256": "D823BD072D5862FAA6DEF6FED9FDBF07DBF4DC9A1F9C3D7BFC0B6C411D96F79A"
+    },
+    {
+      "path": "native/OfflineChecks.hpp",
+      "sha256": "4BE03AECE4D2C0E07C811DA59E3AA162DBF7C6C19705E7547AE7A8F3C81BF0DD"
+    },
+    {
+      "path": "native/OfflineSite.cpp",
+      "sha256": "FBF5F9C60E806F6598E7542BAD454894C62184EE8EABEAF73E0F993B43294CF8"
+    },
+    {
+      "path": "native/OfflineSite.hpp",
+      "sha256": "04BCAD70404622FE6D23793A7E16DE7606DBD2DBFCD4B49B9A83F0CA4C5130C6"
+    },
+    {
+      "path": "native/OptionsChecks.hpp",
+      "sha256": "4588D4123A94C75009FEE432B09A2A22E1DBBCD0F8BA11370EBCB077A56E07EA"
+    },
+    {
+      "path": "native/OptionsIcons.hpp",
+      "sha256": "584E93E836318409AE40C511F49D4BC04053F6FA9505FDB74BC84D6216DC82A7"
+    },
+    {
+      "path": "native/OptionsModel.hpp",
+      "sha256": "2842345B833449996E5C2FBBA8BD4B093D1301A25645E4297CF5EB4FDDE7FC4C"
+    },
+    {
+      "path": "native/OptionsPages.hpp",
+      "sha256": "B6A8E4AA5C3340A0875D257B87AAAEDFC99DD089DBC69924F636EA8A34A3A845"
+    },
+    {
+      "path": "native/OptionsPolicyProbe.cpp",
+      "sha256": "B8AF32794DFC5F04934BBA46C0E0B88D4FEDEBD859E41C7B4BFDD96EC2C713D5"
+    },
+    {
+      "path": "native/OptionsTabsUiTests.cpp",
+      "sha256": "B23D50C61100A7CBCBD1F74DDD4459E24C8F638CC918E2983770EE6AB7D6C0E4"
+    },
+    {
+      "path": "native/OptionsUi.hpp",
+      "sha256": "A5788DB0A3BDB956C5966DB5B021E3DBA2DD5068801EEF5F5DBA536115624338"
+    },
+    {
+      "path": "native/OriginalResponsePolicy.hpp",
+      "sha256": "3175B769D735DBA281D907AB1BA671822598D03CBA7201AA750DAA6392648D23"
+    },
+    {
+      "path": "native/OriginalResponseTests.cpp",
+      "sha256": "4340298F8D5B9350FDDC0E73ABAD43D61DBE5C2907603C65E05B40A2D9796552"
+    },
+    {
+      "path": "native/OverwriteChecks.hpp",
+      "sha256": "6FDA4551682DFD4D01F603073BF3EE8BB27E43217EEEEB5D3E233538BA09A9C0"
+    },
+    {
+      "path": "native/PacChecks.hpp",
+      "sha256": "75D408CDF27F8FCC9AC555A97E33B2542E776BB03B2CDD271F5D40E09582E634"
+    },
+    {
+      "path": "native/PacFunctions.hpp",
+      "sha256": "EFE08BF1F51AEF136CF695A51437F7F61390A248BCD6D99D8B50FB68C09C2DEC"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacRequest.hpp",
+      "sha256": "0EA33E722552432EEEFB1FECFED5C0A898E134D6F49CD7157C27657DBFF8DD6E"
+    },
+    {
+      "path": "native/PacRouteResult.hpp",
+      "sha256": "65EEA65DBA6D24B8C29969C13DB6C30FB360308CD7D7566A0706CA8328B71BF1"
+    },
+    {
+      "path": "native/PacWorker.hpp",
+      "sha256": "A7D3576A9A3B97C2A2EBF53A91398AED5E66FCE4DFE58ACE7671838338B47FF0"
+    },
+    {
+      "path": "native/ParallelMediaChecks.hpp",
+      "sha256": "000A8B55E86DB7B32B57EADB8A2AA02ABC6DFC4F6B3DD5ACF85D0B8B65EC4525"
+    },
+    {
+      "path": "native/PauseTransactionTests.cpp",
+      "sha256": "2921439E1BE16F279308F01C3AFA269A425AFE9716BC90D1227AC6FE96942842"
+    },
+    {
+      "path": "native/PendingFileInfoInbox.hpp",
+      "sha256": "B6CF16A00D7AA30F4F121C6E06351D1A1BF0B5A6F7922E9FE0547649F76CE737"
+    },
+    {
+      "path": "native/PendingFileInfoUiTests.cpp",
+      "sha256": "FBFF1B614ED3E938ED451B9B12420BBF1D55A3CD53C7C16D766BE919B76B87E6"
+    },
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "F2B4A92BFD67AE1E33D01AA2BC40CF66B5540CA156B4DCB0E460F7F6826D0BDF"
+    },
+    {
+      "path": "native/PeriodicSyncLiveTests.cpp",
+      "sha256": "A8AA2F4C418420F80B9FDB2B832EE7334C3BDFDB62D23ECF5A43C44F22025F89"
+    },
+    {
+      "path": "native/PlayerAdTests.cpp",
+      "sha256": "2B8C19D7DA85104BBCD9D28868E05117E49105EFAE3D83A960A8F06AC25C1786"
+    },
+    {
+      "path": "native/PlayerChecks.hpp",
+      "sha256": "3EECA24C7FB3579E9CFB63FEFB68A704E593A988CB297EAAECA5AC5DB66DBDF4"
+    },
+    {
+      "path": "native/PostBodyStore.hpp",
+      "sha256": "B8A7946260FCE489DFDBFDA018271A7072B103948655F0206DDF37F0865AAE15"
+    },
+    {
+      "path": "native/PostChecks.hpp",
+      "sha256": "05D3659B911D9C1F03F55E489C5C10FA53B45F5912D2EF006F6AAD41CC1E7D0C"
+    },
+    {
+      "path": "native/PostResponse.hpp",
+      "sha256": "E4ED6373C42A4C54F9F4F0B6B3687A068C68A503CCAFAF345740FAD4090CC0D5"
+    },
+    {
+      "path": "native/PresentationLookupTests.cpp",
+      "sha256": "5E59DD7FD3A623794CD58A0FB6E2892ED8952DC0DBB46E1A0E7CD739DF9008BC"
+    },
+    {
+      "path": "native/PreviewChecks.hpp",
+      "sha256": "C87B25A71138956B3213BE6AC5016D907AF825C6E7BB3498BDEE8451750B7AD2"
+    },
+    {
+      "path": "native/PreviewFilename.hpp",
+      "sha256": "B9F8CA74CA63016CB854B9372195C33240CD08167390789E64E659C9B2E2D0BA"
+    },
+    {
+      "path": "native/ProductLinks.hpp",
+      "sha256": "404E05686408384830D8B5C8A696A529F6C82BDA72A707CC6D4AA434471E9B58"
+    },
+    {
+      "path": "native/ProductionUiTiming.hpp",
+      "sha256": "F83FF74D97DAD8F99854FF611397C8B3C18BDE7B76C8D90C780ADF7CEE8861E6"
+    },
+    {
+      "path": "native/ProductionUiTimingTests.cpp",
+      "sha256": "2A88F35EB52655E7B37E3CF7820AAF5CEC04E9F35CE53E0DED1F25E742E28FA6"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "C3676F3CE9C5B9FB0156C3D10BF6DE073286992B76ADB5AF6EC84FA3FFA9AD7D"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "41FCD5857517BB1DCD0A462F52806CFA92C713546A7D9AAD53C053E000E1FDAF"
+    },
+    {
+      "path": "native/ProgressPreferencesUiTests.cpp",
+      "sha256": "4E730D09C3E36F1D2C7D5B8A584447EA581171BEA0062014A728F26C1AC910CE"
+    },
+    {
+      "path": "native/ProgressPresentation.hpp",
+      "sha256": "71C1D2042F920186CD66FFF1CB2623EF4692DD0514239E85BF31EA8EAAA10D14"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "80E27B7E1263562A00C00707D545B2E2CAAF35374BF970BC9D43F4851103C8DA"
+    },
+    {
+      "path": "native/ProgressRateHistoryTests.cpp",
+      "sha256": "1669890CD7E7CD0D17CC5DBE5AEF364786C35D24FE2F4B463434B76FC2E8023E"
+    },
+    {
+      "path": "native/ProgressRecordView.hpp",
+      "sha256": "51CAA2931292AE17ECD440264EFB707BDD8368DC54C4AC58E4BC9A7B4C37AF3A"
+    },
+    {
+      "path": "native/ProgressRecordViewTests.cpp",
+      "sha256": "27556B1D0EAE2C3B3123E3953592660817AE09B72181C1CE806ABD7B00CBD62E"
+    },
+    {
+      "path": "native/ProgressTrayRecoveryUiTests.cpp",
+      "sha256": "51E4CE3F5471F9574E0B4969C20990D9CDB1E4C3601E53082D244896181E3040"
+    },
+    {
+      "path": "native/ProgressTrayUiTests.cpp",
+      "sha256": "B213690E907830FFED20A88604605B4D5FF508D01197803B1AC20D59CCB004E0"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "9C82668ADAE23F425668321FA93E7ACA8EB28F6F28D313F25D4A2F9F789C409F"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D700F46E9700516D8E29770026B81E1C543075856CA36BD78CB3BE8F513698BC"
+    },
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "BE65060F886926F0C3C1A6BC2F86D5F1D63EBDEE1E5030B10B3B603E84B3BC2C"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "F08779F3E9D9685875043096EAC49E8E3C390ED9D0D77AAF299256981AF2A234"
+    },
+    {
+      "path": "native/ProtocolFallback.hpp",
+      "sha256": "8C491D58D676087CDA3B936E5CDDBBCAD93C70E8AC31294810B01CA55F82CED0"
+    },
+    {
+      "path": "native/ProtocolFallbackChecks.hpp",
+      "sha256": "98F858CD8E253DE290AC539B0B4F729B4E0F53D2A7911CE29A5909D78153BAFA"
+    },
+    {
+      "path": "native/ProxyLoginChecks.hpp",
+      "sha256": "221EA976F7423523029400813E258A9E779BA9AC2A0897EF7A7AD001BD6D24DC"
+    },
+    {
+      "path": "native/ProxyPolicy.hpp",
+      "sha256": "4CFF2BD282E7948FF7F9EC1FD69C87E9CF361591E62E3A41C5CB4FB767A388D4"
+    },
+    {
+      "path": "native/ProxyPolicyChecks.hpp",
+      "sha256": "41AAB4BEB83237E6AD236CF1073952F07AF8B760D5A5BC643F096AF65730B0A6"
+    },
+    {
+      "path": "native/ProxyPolicyUi.hpp",
+      "sha256": "BAAA2622DA2335DF203BB912217CAB687BBF2411C90ADC9D05760345F622ADF3"
+    },
+    {
+      "path": "native/PublicSuffix.hpp",
+      "sha256": "CC0EC46B2BB9F05CBB9761750D54AEDF236B0283AF4B3090062E5418A00D4349"
+    },
+    {
+      "path": "native/PublicationRecovery.hpp",
+      "sha256": "85960AE84A6ABDAF69FE8F2006AD7245D898A3A35BDE3E8CEFCAE970B6A2574B"
+    },
+    {
+      "path": "native/PublicationRecoveryTests.cpp",
+      "sha256": "A0F0F31CAFA8846ED569DFF8DEC7B7A5EB12C164BCCFF59AB9372E4401815B4E"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "06414242CEEFF04DEA57753B5E79D75E0BFCC067956535A74E233EDE2492B9AF"
+    },
+    {
+      "path": "native/QueueChecks.hpp",
+      "sha256": "8C2D0A8058563421B199D415E9C457873D54B57543DAFD4D37F413160F5DB66A"
+    },
+    {
+      "path": "native/QueueChoiceUi.hpp",
+      "sha256": "3F09A8FFD19C872ABAE4F9BDDB6D0E76702D3935ABC94CCF8C0526C2AC79780B"
+    },
+    {
+      "path": "native/QueueCompletion.hpp",
+      "sha256": "9AB6F2E111131236E06E081C8E35FE674F2BB008F0E205A50E496DAA39D0B627"
+    },
+    {
+      "path": "native/QueueCompletionCycleTests.cpp",
+      "sha256": "E7BC7D83E9C84C3C6F8003E26BF4801360C409982A5AA0F73E06F617365E9E31"
+    },
+    {
+      "path": "native/QueueDragUi.hpp",
+      "sha256": "ABF70F7E52D2B214E71BE74F1ED22B664376A77577D7257255591FFCEE6C14DB"
+    },
+    {
+      "path": "native/QueueExportUiTests.cpp",
+      "sha256": "44C21FCC8FB9625A1A0109B4CC3191C1395797FF4F2E9828691D823473D44156"
+    },
+    {
+      "path": "native/QueueFinishPolicyTests.cpp",
+      "sha256": "BF2B16D4ADCC151C28D2CC911DDF275585D3865793D78147FB0D273A586D639C"
+    },
+    {
+      "path": "native/QueueIndicatorState.hpp",
+      "sha256": "4F6433DEA681E9225732046D8EB305E71F9DB010F10AFD77953177DA95D1B394"
+    },
+    {
+      "path": "native/QueueIndicators.hpp",
+      "sha256": "B727A2DE9D7A6A28135C761FE852FC44DCAF6AD1F636680F02D16DF0B478752A"
+    },
+    {
+      "path": "native/QueueLabels.hpp",
+      "sha256": "9F434E00C87CD062981D343197EB43E43F11A06FE0D247808E238368D86D832A"
+    },
+    {
+      "path": "native/QueueMembership.hpp",
+      "sha256": "3E29A715E00F1D70FEE6631B8D2DD933817887639893146C6AE1370C28DFED63"
+    },
+    {
+      "path": "native/QueueMenus.hpp",
+      "sha256": "30883254FAB784638AE9E409CB8A1C68B5B3F357182475881A72B81390F2943F"
+    },
+    {
+      "path": "native/QueueMultiSelectionTests.cpp",
+      "sha256": "64DED19DE75725431712E8FCF9B74BB17AD90A2E798200B998BABD9DD278BE3C"
+    },
+    {
+      "path": "native/QueueRetry.hpp",
+      "sha256": "418776B07BB4D7E237004F95AEB4DECC7D524AAA779A7B5D7EA989E7EED31D3C"
+    },
+    {
+      "path": "native/QueueRetryLiveTests.cpp",
+      "sha256": "0EBF4E1770BB974F0E675E1B1CB0B9CF40D007CE281F2033A9071B77FDE1EB64"
+    },
+    {
+      "path": "native/QueueRetryPolicyTests.cpp",
+      "sha256": "7C3FBDF67063E4D0492E0E3BDC7A6EC53DBA2B355E4F759CF7C837B91E68A7BB"
+    },
+    {
+      "path": "native/QueueStop.hpp",
+      "sha256": "0E4F1CC2C81B414EB3E161831C081AB0E6DE617AF70F5395DA295FAED16D8004"
+    },
+    {
+      "path": "native/QueueWake.cpp",
+      "sha256": "FB20F9EAACFEFEA377580BABB2663835B526F55BF7DF09BF599C9299A3CE83B0"
+    },
+    {
+      "path": "native/QueueWake.hpp",
+      "sha256": "F4A9DDE204EB17FDA119879D504085D5218894151EF110A35BB3859B859AB78C"
+    },
+    {
+      "path": "native/QuotaChecks.hpp",
+      "sha256": "139F3D4CBEDCD6D820C72C2AD741A1B1DCC1BA23BAC2E70C6438455819196F74"
+    },
+    {
+      "path": "native/QuotaDraftTests.cpp",
+      "sha256": "2B2B518AB030528DF10324C3B4B0488EB12F0214D4433FC7912E40CFA6D337FC"
+    },
+    {
+      "path": "native/QuotaPreferencesUiTests.cpp",
+      "sha256": "0FF9C9517228FA7656A1DC023C044BD737EBA22E29224AC37B919AA5E3464F82"
+    },
+    {
+      "path": "native/RecordedHlsMapTests.cpp",
+      "sha256": "ECB8DA82063DE78D38DAB4008AFC068AC8F9756FB3BB1C2E1234850469FBE711"
+    },
+    {
+      "path": "native/RecoveryAvailability.hpp",
+      "sha256": "94BA5A69E6649D07659EC1231C8FE2896694FF5B190C884074F83FCB3BD4E559"
+    },
+    {
+      "path": "native/RecoveryChecks.hpp",
+      "sha256": "831105FF6D39E5766F70CAD3197C390885C878421CE7B78F17AA53069FF5501C"
+    },
+    {
+      "path": "native/RecoveryDirectories.hpp",
+      "sha256": "048BDD0C6D6D6B51889C6FD0A6E9FA93B7B9DE44B8693D9EA248816ACF3A6CB2"
+    },
+    {
+      "path": "native/RecoveryIo.hpp",
+      "sha256": "403BED14544AECCEE59455CC86FA19BB1585E810765D96042FBB6FB7B63E2446"
+    },
+    {
+      "path": "native/RecoveryIoTests.cpp",
+      "sha256": "0AEB6ABDFC47DBAD109CC22551DCF9DA0400AC54E5537E357C75EB1CB5F2E5B3"
+    },
+    {
+      "path": "native/RecoverySession.hpp",
+      "sha256": "7A10A30915D5F3926B9AEC71B5898DAA20FD672E92C83E8156E23AF6304906F1"
+    },
+    {
+      "path": "native/RecoveryUi.hpp",
+      "sha256": "04E671D1464FDC5602660D413EB02BBC00CD1C8064406B97BF36DB5E3C3B1F11"
+    },
+    {
+      "path": "native/ReliabilityChecks.hpp",
+      "sha256": "44DBA9F8BDAA324EE271881D218C6FF6CA5B23F9020A24D1AF62E14081C90F16"
+    },
+    {
+      "path": "native/RemovalUi.hpp",
+      "sha256": "08023225C019862B78EAD1AD3CEEC495540D3A1FD205070A157AC4B66C0B78E5"
+    },
+    {
+      "path": "native/RenderedOfflineTests.cpp",
+      "sha256": "F92DE2974C3C6E1E1E4976EA0175CAB563A6739A69BBA62758B601152B03284F"
+    },
+    {
+      "path": "native/Restore.hpp",
+      "sha256": "30566A7823C54C8B852F2457CAD0D903BE8F2BD87492D231D479E9944D690C7B"
+    },
+    {
+      "path": "native/RestoreTests.cpp",
+      "sha256": "C424B0673D3DFF42BECD7F25A3F54A65A3FBFFA256AFA0FE39C0E35D0D23579C"
+    },
+    {
+      "path": "native/Scanner.cpp",
+      "sha256": "B74DC4C7FCD1A9875716EDADC1E4046D060B85E90A7A82A35C827F8FDA51B594"
+    },
+    {
+      "path": "native/Scanner.hpp",
+      "sha256": "F9557887A52C84A1CF80596461E510E00EBF1012010662F015D87F33A397E1C7"
+    },
+    {
+      "path": "native/ScannerChecks.hpp",
+      "sha256": "5DF38B1B8FEBCEB95D000F2525217F3F8F73D8B86FA689B990F93076DF3F0276"
+    },
+    {
+      "path": "native/ScannerUi.hpp",
+      "sha256": "3F65698EBC645C95A4E24247234DCA9C5D97DBE193FD15337012E9E417C0D1A7"
+    },
+    {
+      "path": "native/ScheduleDownloadUi.hpp",
+      "sha256": "9EF382115B9D8A3496A74B85402298685AE1F0F227B78BE1E76B455A0E01E259"
+    },
+    {
+      "path": "native/SchedulerChecks.hpp",
+      "sha256": "BBBF69D45B344BFCD0D255C416AEA452E6E12B91D7DA9923E56F64EBF9E88C52"
+    },
+    {
+      "path": "native/SchedulerNumber.hpp",
+      "sha256": "91ED37BAE6035D3C2EC4D6E86821E89FF9D01AF633C738C03AA9A28B6A167430"
+    },
+    {
+      "path": "native/SchedulerNumberTests.cpp",
+      "sha256": "45FE55766DB12C6492A1F993672BE4A3BE83B90E106EC0A92E554315D9C61C8E"
+    },
+    {
+      "path": "native/SchedulerNumberUiTests.cpp",
+      "sha256": "6DCB012EC478CFD3411D60BFF71802DA91724FEEEDB4B6E38CBFB317A58A68EB"
+    },
+    {
+      "path": "native/SchedulerTime.hpp",
+      "sha256": "5987D3DFDC7058875836EF259312F6E6A48729521B29095F0D8BAC7B475199A0"
+    },
+    {
+      "path": "native/SchedulerUi.hpp",
+      "sha256": "5618626B3820DAC385E247E5B2EB182EDEB45528E9E2699EE4AC564B69BA6C29"
+    },
+    {
+      "path": "native/ScriptModules.hpp",
+      "sha256": "21D6B8AE8F89CAE5FD1B4737FFAD5805F53048885B76E50B70B2A263CFAAE5D2"
+    },
+    {
+      "path": "native/SelectionUi.hpp",
+      "sha256": "26782B30C778F3FE9C1FD0388022C839432B0DD7A3D0F50D4C3F3BBCB9B13770"
+    },
+    {
+      "path": "native/ServerConnections.hpp",
+      "sha256": "373EB380C5D441689477DCA5CA2F5B777955C6D4B38C6F929A0CA2A3C856BB0A"
+    },
+    {
+      "path": "native/ServerConnectionsTests.cpp",
+      "sha256": "C8BD2A5581EF1747F71D17F0FD964AD3927A44BA8452A0EEA794175975295369"
+    },
+    {
+      "path": "native/ServerControlsUiTests.cpp",
+      "sha256": "4580CA6EF20CE87666D5FDD3593BD1A8C1A550AE05CC3FE97AAE83A3594F7BA9"
+    },
+    {
+      "path": "native/ServerRetryTests.cpp",
+      "sha256": "480530C7A789F7063BBBB4B7C6AD9BBFB4C5811D2111384323AEC88AAB634C41"
+    },
+    {
+      "path": "native/ServerRulesUiTests.cpp",
+      "sha256": "7BF4A807DEE830B7FEF257A5A46646F26C1103BBC2B386A102B05BFCE791CD40"
+    },
+    {
+      "path": "native/SetupMain.cpp",
+      "sha256": "16DF8214D337C7B02CAD66736770393F5BD5806612AF6CB2D96769EFAF556E26"
+    },
+    {
+      "path": "native/SetupMigration.hpp",
+      "sha256": "C71DA665211C64D2A4E36721332D400E2B98DB2197988D732ABF08B05DEFEB1C"
+    },
+    {
+      "path": "native/ShareUi.hpp",
+      "sha256": "1B9CDD857D014730E0DD97F15128E2A763B6F4BA09A8A021014C7689479E8154"
+    },
+    {
+      "path": "native/SiteLoginProtocolsTests.cpp",
+      "sha256": "00CB61BE10CC32F24871A1571062246C16F9847EF3469CAC6997BBEACE2BCDC2"
+    },
+    {
+      "path": "native/SiteLogins.hpp",
+      "sha256": "BD02AD1D80FF56A43BE2766CC5B732ADB69385748A6FC76D5E5DBAF51537BD12"
+    },
+    {
+      "path": "native/SocksProxy.cpp",
+      "sha256": "793C0C9011156AFF02E7A9F8D6151190DF4B93673BC5FCA7C75054DFA53932D4"
+    },
+    {
+      "path": "native/SocksProxy.hpp",
+      "sha256": "53230BC2C9163531B2079DF2F86B7A3147445512B0A33F11A5022CF8FAD4C09A"
+    },
+    {
+      "path": "native/SortKeyCache.hpp",
+      "sha256": "D3FBB475414C9D7397B0AA752FB9795E926A1F25CE7E38441A0CAD50221087EF"
+    },
+    {
+      "path": "native/SortKeyCacheTests.cpp",
+      "sha256": "6218F6A4A8EA9BDA63442AF7B1EB5AF6671EBF45B7E770E62DA5B929C801DFAA"
+    },
+    {
+      "path": "native/SpeedMeter.hpp",
+      "sha256": "B6EDE5C49F17AC8BD03B5C5B2F1517DBA3E8F34E262968182E5EC6F9274A63D8"
+    },
+    {
+      "path": "native/Startup.hpp",
+      "sha256": "0B36D0B26B57B15B4E43C498E16E42D98F4D6A25604114871800EB0D174F9F26"
+    },
+    {
+      "path": "native/StartupExportChecks.hpp",
+      "sha256": "2AF39A2E8697952F68DAFDF56297E88053FFDF8B709EE58EC42BE648D3576C04"
+    },
+    {
+      "path": "native/StartupFontUiTests.cpp",
+      "sha256": "33F82DF7E8FF07CCAC42173799EF07D16D47C80E6FF52FB3D23202485401207D"
+    },
+    {
+      "path": "native/StartupPerformanceTests.cpp",
+      "sha256": "995F1F63A461463787828B7D0F3A14B58D66F5A65C418CE6BE0983FB3E28A98D"
+    },
+    {
+      "path": "native/StreamCache.hpp",
+      "sha256": "A526A92287988E577165E7024612225ACC6063A4D5AD3B36B7BBF9B7F7811B81"
+    },
+    {
+      "path": "native/StreamHash.hpp",
+      "sha256": "AE3D6BFBACA19A1B7FA8F0707736495B29FE014A9193E107D4DFED262C7EDDAB"
+    },
+    {
+      "path": "native/StreamProgress.hpp",
+      "sha256": "C684010E12630414C7FEDFD0E9D2680A2048287AD56E2A0003D5258DC5069C78"
+    },
+    {
+      "path": "native/StreamRecoveryChecks.hpp",
+      "sha256": "244012E5A022AFB6B261E15F8A7BE235C8E0A94BE83887A4EC4A0D566B1C1B83"
+    },
+    {
+      "path": "native/Streaming.cpp",
+      "sha256": "592389BD224948D497A3FD999ADE29DD54ECC8D6E650BA7FA7DA9D28B1CBACC2"
+    },
+    {
+      "path": "native/Streaming.hpp",
+      "sha256": "2D509B5EB5F91DEE4B46402D8B72A1DBD8E8CE64091332E046AF7EED2953A5AA"
+    },
+    {
+      "path": "native/StreamingContinuationTests.cpp",
+      "sha256": "F0DF4FA191FBC9FE13CAB0B1B18C8CE4621B34222389F42CCD1265F590F4EDB4"
+    },
+    {
+      "path": "native/SyncMembershipTests.cpp",
+      "sha256": "EF4CE7976EAAF08EA30E9E7E7F169B4E763D097403C96D905E62F449F1517296"
+    },
+    {
+      "path": "native/SyncProbeTests.cpp",
+      "sha256": "9675B93BCDF273278F404B1EB0C5863575073FAC98A662CCBE24C954CB8D3F2B"
+    },
+    {
+      "path": "native/SyncReplacementRecoveryTests.cpp",
+      "sha256": "397B63E5E54A4D98FFFC52DD21761146B68A78DEBA19FD3B4ED05560F8F52D08"
+    },
+    {
+      "path": "native/SyncRetryLiveTests.cpp",
+      "sha256": "8EE0C41BF216C565B6ECDC28328583ABC900011E11E26E49681C2624DF97127D"
+    },
+    {
+      "path": "native/SystemActions.hpp",
+      "sha256": "7D4AC0CDB2D4237297ECCB4B9507F345ADFA486DA2CE967315CDA1CE30837DA6"
+    },
+    {
+      "path": "native/TerminalActionTests.cpp",
+      "sha256": "112B5861F23938DFD73634FBA9F3B23C0D35D5FF63E0A2C88BB2C97070320EB8"
+    },
+    {
+      "path": "native/Tests.cpp",
+      "sha256": "FDC9973A2144FA1B1C72E94F76F3773FDEB8869162C604B37678876ABD8F536C"
+    },
+    {
+      "path": "native/ThemeControls.hpp",
+      "sha256": "2904ED1D64F297DA6EBAF396219CD03793EE92FF62148CB2579BCB24CB753271"
+    },
+    {
+      "path": "native/ToolbarChecks.hpp",
+      "sha256": "8E7A296B4B1F3A7E4D14DFF1F4FFC040B7AFE6C76EFCC1B915BA8D2EC871D3BD"
+    },
+    {
+      "path": "native/ToolbarImages.hpp",
+      "sha256": "1676342ED62583565D80AA5C035C7EE30186592D09E00CA4B20D9D13D719207D"
+    },
+    {
+      "path": "native/ToolbarModel.hpp",
+      "sha256": "8DC518DB925ECE1EFC528103B6C42D30AF8042B2A20839E0AF52CD12389D536E"
+    },
+    {
+      "path": "native/ToolbarUi.hpp",
+      "sha256": "2EAC70985DF91B5681CC3A2638846016049A6C6E6938457FE0ED1977C2E5EF66"
+    },
+    {
+      "path": "native/ToolbarUiTests.cpp",
+      "sha256": "7C9B49DC082EC99840D7820FE30DC115984C076FF1BD7D0DFA82358FFECF27E7"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "6042A7043888B12DF9F9D55AEBD9AD81FE6A559E9C260F5DA9481B43FDCC569A"
+    },
+    {
+      "path": "native/TransferChecks.hpp",
+      "sha256": "B1FE193D6BF8AE5BACE649605D7D48DAD7A7F0127BB1CEAA991AED70F2837103"
+    },
+    {
+      "path": "native/TransferFixture.hpp",
+      "sha256": "58DB02D2FB8B3643CC827AC451FE5495B54134796F324F8B24628535471DAD44"
+    },
+    {
+      "path": "native/TransportPoolProbe.cpp",
+      "sha256": "87B5AECFAF87C25F50DE83F52B93BB8B92549ECCF053D1ACA5F4DE30DC48D332"
+    },
+    {
+      "path": "native/TrayIcon.hpp",
+      "sha256": "70FFF81783F5CA1645935C64418AD205DE20E42142320DB5B95689E2CFA33D4E"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "A7C3F7086B29F449DEB7D2E7ACC54AE2A0160DA68AD3666CBD7F11348CDFA5A5"
+    },
+    {
+      "path": "native/UpdateChecks.hpp",
+      "sha256": "77C30C3ABF0BCAA668B8E9E8B85D5D09862DF2AD39E2034B6C6345F84E39A7FD"
+    },
+    {
+      "path": "native/UpdateKey.hpp",
+      "sha256": "3BF6BED4398FFEE3F64107F3A8F59BB74A9D117BAAB4867B85CAB9ABA5150BBD"
+    },
+    {
+      "path": "native/UpdateManifest.hpp",
+      "sha256": "ED62657A93A34ABF8AF90FD859218316D927BAD55E6F2B16A9F1898BEC491210"
+    },
+    {
+      "path": "native/UpdateUi.hpp",
+      "sha256": "515EFD95B518A74511EE8B41E53BCD17B8A9F9E26066FFC08AB334D9C0B68A43"
+    },
+    {
+      "path": "native/Updates.hpp",
+      "sha256": "768FADAA9E1BCB29944EFAF26F3739411FF8A9695174854FBBC0335AF8083E14"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "3B73C0E382E53004407E991E89EE7ECCB9A2F69B1AB151CFC6DE7C973A4FC070"
+    },
+    {
+      "path": "native/WakeChecks.hpp",
+      "sha256": "E4606585774A2BCE35E84AC3A03CA34DE65590FA92DAB589F423B47095780CEF"
+    },
+    {
+      "path": "native/WebVtt.hpp",
+      "sha256": "F98D1F6A10145864DFBCBCB357E3F1C1D52EE138763C2BB74C411A34130D0B21"
+    },
+    {
+      "path": "native/WebVttClockChecks.hpp",
+      "sha256": "5A5D36C0FF88980443307C09A5D63DA82E8B7B2E027B85B81309098052B08662"
+    },
+    {
+      "path": "native/WebVttClockTests.cpp",
+      "sha256": "4F9C08F51A317604C2B9E9292491F41D9D9764453757206C31D37D4DEEC23AE0"
+    },
+    {
+      "path": "native/WindowsLoginChecks.hpp",
+      "sha256": "CBA23C4D92C32A42AB4B4A173A97B5F4C8DD10368720E51A4AA282B48C67EAD8"
+    },
+    {
+      "path": "native/WorkflowChecks.hpp",
+      "sha256": "C72D3D4E0DC2B8ED84535D9A6CB22E840D5AC4961B59F94551BAB71ACDF3AB12"
+    },
+    {
+      "path": "native/WorkflowsUi.hpp",
+      "sha256": "A207DC7106E79341036FCADFF88F81BE11BBE207A9D027E49FFEA42DE0EC01F9"
+    },
+    {
+      "path": "native/YouTubePlayer.cpp",
+      "sha256": "A6AD8F1D97C260EB3ED6D26508E62095DDC722B0F55360A82CD372D18FE001BB"
+    },
+    {
+      "path": "native/YouTubePlayer.hpp",
+      "sha256": "571B92C47F09D015D3DC46BC85FD8D45CABF1A8D1BF036F30B1B2FD36523BFB7"
+    },
+    {
+      "path": "native/ZipPreview.cpp",
+      "sha256": "EB1CEC0279A3FB1E03281BA0EC7A433E04D06A5A049845E6EEBD37C78A465C15"
+    },
+    {
+      "path": "native/ZipPreview.hpp",
+      "sha256": "F532B0FF14C074381906590DB4B35348DFD48A4D55F6AE2ACBB59F3574C4EC13"
+    },
+    {
+      "path": "native/ZipPreviewChecks.hpp",
+      "sha256": "1B63B48171630710D66FBA7A6BCAE1522F95443494AB18556F9F296A7D55B9DA"
+    },
+    {
+      "path": "native/ZipPreviewUi.hpp",
+      "sha256": "18CC20929AB113DCC923E011A02BC156405DC60B44CCAE724B703BF5A1292CCF"
+    },
+    {
+      "path": "native/ZipPreviewUiTests.cpp",
+      "sha256": "2CC59B35187B1A7EF0BDC4A02E7C2D003729F46518231E4204EEEBAF9787ADCA"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "A0DADB3628EAEDB857DA4047143B04FD7D6FAC759F4429DAB7F0BA7EEA516A63"
+    },
+    {
+      "path": "native/test-pending-file-info.ps1",
+      "sha256": "135029EC8DA089AFFF5271C7DB5E71035B54736A9E57B3A35BE9250039B9210A"
+    },
+    {
+      "path": "native/PendingFileInfoRetryTests.cpp",
+      "sha256": "D35A90E3BE2F3391B2F76F2E71C95EAE9E5C2904EEBFFC7CC381B92040F581E2"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "sha256": "77399659FA06C2D049EE6054B74A07E731AD8DA19BAFD142FF49FB1DF100046D"
+    },
+    {
+      "path": "native/FileInfoDecision.hpp",
+      "sha256": "222F0A1653DD020057234625B7385065245CC00835B01A5CEFD2F99BB0A491D1"
+    },
+    {
+      "path": "native/UiTaskSignal.hpp",
+      "sha256": "967DE3652BA10B1DC0D12B0FAF93A775E30C8DA8FD2E2273CAE4072AD2B1567A"
+    },
+    {
+      "path": "native/FileInfoDecisionTests.cpp",
+      "sha256": "C072F35C46BF58157A9B4BBD31CCCE4FB877503A38F0437414BF4F02C4ACEA59"
+    },
+    {
+      "path": "native/UiTaskSignalTests.cpp",
+      "sha256": "58E310DEE0F6BC6330E3A9DD4BCDDC0814B5C60033D793B2CF1D57F29D2B796F"
+    },
+    {
+      "path": "native/ScheduleDownloadWizardUiTests.cpp",
+      "sha256": "28E50A560F25407D5703DDFF63909FBC798DC236086D5573719CC09BB262A20B"
+    },
+    {
+      "path": "native/test-schedule-download-wizard.ps1",
+      "sha256": "7924801EADF54B7188BFB490A5FEF7C2C1A62A86B441527664DC03E504113790"
+    },
+    {
+      "path": "tests/hls-catalog.native-live.cjs",
+      "sha256": "DD017D4C14163C06B7513BEE62707F90AE463A2F8C5E4D91F687B124DCB8F126"
+    },
+    {
+      "path": "tests/observe-cold-file-info.py",
+      "sha256": "303295E25C3A7AD27EBFA05D9DC85B25D2CD7CF65FFCB1595CC75FD849124F9A"
+    }
+  ],
+  "coreObjects": [
+    {
+      "name": "Core.obj",
+      "sha256": "AD4CD8A42967771DF994081BF64F7A286237F23C796A510B1071835F5466A5AB"
+    },
+    {
+      "name": "PacProxy.obj",
+      "sha256": "F0A7A80848DDCA73CFBCDDF22708672CFF2AB1B5EF64933DE27F0178D029C1B3"
+    },
+    {
+      "name": "Queue.obj",
+      "sha256": "36320ECE55FBE4DF51F4836DDD8926523A99F34E8E2B699807C202F0DCDCB48B"
+    },
+    {
+      "name": "FileWorkflows.obj",
+      "sha256": "675E148D834B842AE7BFCDC05DF6AB09BB394AC9375165A0FD4E9CF837062CB0"
+    },
+    {
+      "name": "Duplicates.obj",
+      "sha256": "EEE95F208974F745F056DD474931E6C31A92FE14CF8E9BFACB1E82D7571FE222"
+    },
+    {
+      "name": "Transfer.obj",
+      "sha256": "F75AAD9ED800C96719A7023B9CE0B23D5702C601C8DC0BF6CEF231AFC7614DA6"
+    },
+    {
+      "name": "Grabber.obj",
+      "sha256": "474BAD20D9B0881610A9E79E9932EFBE307591799717672561E2340DD5EB39BA"
+    },
+    {
+      "name": "GrabberLinks.obj",
+      "sha256": "16AB43ADDFE2DAD0001CE582E558DC1E336C230D554B20CDA3856CE7DD9D7FA2"
+    },
+    {
+      "name": "Streaming.obj",
+      "sha256": "E38E59B4CF821EE3A6637F9C4A42C5C11C8906B143A750122020ED0876743067"
+    },
+    {
+      "name": "Adaptive.obj",
+      "sha256": "574D2443BCE5BAD19CEF6A9634A4B823DFE0579470318181E881165B3B734AA6"
+    },
+    {
+      "name": "DashManifest.obj",
+      "sha256": "5AC7F1D21E79393400B3B46B01644BDF34D9092AE44FC5DFBC08056BECA98014"
+    },
+    {
+      "name": "YouTubePlayer.obj",
+      "sha256": "A549FBDC10A775978F52FBB59E0A74884F6158C0D0BA3A82E48D2A96D4CBCC12"
+    },
+    {
+      "name": "Bridge.obj",
+      "sha256": "3658EEACA274FEBF4E791DFCCB21A4BB39D6450FADB921C8D21B233EC8B5BAF4"
+    },
+    {
+      "name": "Network.obj",
+      "sha256": "56EDD20E166FFFC1E1201B58A89064ADFE1886803775E9FE286219A0D699948C"
+    },
+    {
+      "name": "SocksProxy.obj",
+      "sha256": "91395D6E1DAFE08D7BF4D0E7DE9C7D3B4B932D0900E0B41794B5982ABFDDD451"
+    },
+    {
+      "name": "OfflineSite.obj",
+      "sha256": "85B735CAE2943B0B58B6F99C68D5CE716798E0A7C1DC60925DC6B4E5E47F980F"
+    },
+    {
+      "name": "DialUp.obj",
+      "sha256": "3C313213EA19B536F6B8FCDF21FD32F4BF6C2C1281BFFF251A9A674844E37F81"
+    },
+    {
+      "name": "Ftp.obj",
+      "sha256": "D7FB6926EAE11A39C600A51B5A3EC3E825E6852945C67B7C28F1D3C136EBE073"
+    },
+    {
+      "name": "DownloadPreview.obj",
+      "sha256": "A354300C639F2DC642FDCAD330AB583F197DC630C447C44342DBAEB84ED1F069"
+    },
+    {
+      "name": "ZipPreview.obj",
+      "sha256": "A8F151EAE1CFFBBE3D2155936D2F2F49FF636C63AA1CF7C07D3A807C138E6F8B"
+    },
+    {
+      "name": "QueueWake.obj",
+      "sha256": "844622AF2FFE70687938FFD890F084A560A8BA74534A86781D16D3FC7FB99C65"
+    },
+    {
+      "name": "Scanner.obj",
+      "sha256": "4BC43E7DC1DB86196BA0E17EE4B72FA1D388CE0DF77934D90C99B7E7977D44B8"
+    },
+    {
+      "name": "CaptureExclusions.obj",
+      "sha256": "157D39A56B8A49E4B0E66A8E33C0DE0E24DCC2F5B74A86481573D432ADFD489D"
+    },
+    {
+      "name": "CaptureAdmission.obj",
+      "sha256": "00FD8BFC1DD52C4B187BCE9540E5F39DF54964BEF3789279A233F6A17C85E17B"
+    },
+    {
+      "name": "zlib-adler32.obj",
+      "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B"
+    },
+    {
+      "name": "zlib-crc32.obj",
+      "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62"
+    },
+    {
+      "name": "zlib-inffast.obj",
+      "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80"
+    },
+    {
+      "name": "zlib-inflate.obj",
+      "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF"
+    },
+    {
+      "name": "zlib-inftrees.obj",
+      "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A"
+    },
+    {
+      "name": "zlib-zutil.obj",
+      "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19"
+    },
+    {
+      "name": "brotli-common-constants.obj",
+      "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA"
+    },
+    {
+      "name": "brotli-common-context.obj",
+      "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48"
+    },
+    {
+      "name": "brotli-common-dictionary.obj",
+      "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C"
+    },
+    {
+      "name": "brotli-common-platform.obj",
+      "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D"
+    },
+    {
+      "name": "brotli-common-shared_dictionary.obj",
+      "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C"
+    },
+    {
+      "name": "brotli-common-transform.obj",
+      "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987"
+    },
+    {
+      "name": "brotli-dec-bit_reader.obj",
+      "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0"
+    },
+    {
+      "name": "brotli-dec-decode.obj",
+      "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95"
+    },
+    {
+      "name": "brotli-dec-huffman.obj",
+      "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E"
+    },
+    {
+      "name": "brotli-dec-prefix.obj",
+      "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546"
+    },
+    {
+      "name": "brotli-dec-state.obj",
+      "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1"
+    },
+    {
+      "name": "brotli-dec-static_init.obj",
+      "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188"
+    }
+  ],
+  "buildMethod": "Pinned optimized/static build. Initial compile completed all 17 targets, but its final source freeze correctly rejected a late ProgressUi.hpp login-followup correction. Four UI targets freshly rebuilt from the final frozen inputs; 13 unaffected targets retained after verifying their literal native include closures exclude Ui.hpp/ProgressUi.hpp and their hashes remain unchanged. Core objects/resources retained from the matching 7.82 build, with unchanged core objects verified against 7.81 and Bridge bound to the version header receipt. At most two compilers.",
+  "buildDependencies": [
+    {
+      "source": "Core",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "PacProxy",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Queue",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "FileWorkflows",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Duplicates",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Transfer",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Grabber",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "GrabberLinks",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Streaming",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Adaptive",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "DashManifest",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "YouTubePlayer",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Bridge",
+      "changedLocalInputs": [
+        "native/Version.hpp"
+      ]
+    },
+    {
+      "source": "Network",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "SocksProxy",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "OfflineSite",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "DialUp",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Ftp",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "DownloadPreview",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "ZipPreview",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "QueueWake",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "Scanner",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "CaptureExclusions",
+      "changedLocalInputs": []
+    },
+    {
+      "source": "CaptureAdmission",
+      "changedLocalInputs": []
+    }
+  ],
+  "proof": [
+    "Primary progress actions and accepted Cancel capture an owned request, revalidate current job membership/action on the worker, and reuse the backend Pause/Resume/live-finish operations. The worker accesses no controls or window handles.",
+    "A displayed Close dismisses immediately without the Manager lock and cannot stop a newer queued transfer. Primary-action identity is rechecked to reject stale clicks.",
+    "Accepted work uses the shared presentation guard through UI acknowledgement, restoring exact control enablement on error. Graph switching, details and painting remain available. Queued completion-close requests defer until command acknowledgement; forced window destruction joins the owned task.",
+    "The actual progress fixture passes 399 checks. Twelve light/dark Resume/Pause/Cancel success and prepublication-failure cases hold the real catalog write, reject duplicate actions, remove polling, acknowledge the real warning, retry explicitly and verify one intended state transition. Existing scanner-stop and stale-action cases also pass with asynchronous acknowledgement.",
+    "Existing wizard/pending UI and nine backend suites add 711 checks. Five complete production Edge/native HLS MP4 downloads (three normal and two network-logging controls) fully decode 192 frames and selected Spanish audio, matching exact pre-Start/final size and checksum with prefetch and the main list hidden.",
+    "Form exposes an instance pulse period; ordinary dialogs retain 250 ms, progress retains 500 ms, and task signals dispatch the same owned pulse independently of polling."
+  ],
+  "preliminary": [
+    {
+      "case": "warm-original and warm-save-retry browser bootstraps",
+      "qualified": false,
+      "reason": "Before UDM selection, preview fetch failed with net::ERR_INVALID_HTTP_RESPONSE despite a finished local 200 response. Both failed runs are preserved; fresh warm-original-b and warm-save-retry-b passed. Two additional network-logging controls passed complete workflows; they did not reproduce or explain the transport error. The transient browser/server transport cause remains unresolved."
+    },
+    {
+      "case": "first compilation",
+      "qualified": false,
+      "reason": "The capture-free child enumerator resolved IsWindowEnabled as a CWnd member. Qualified the intended Win32 API with :: before successful compilation."
+    },
+    {
+      "case": "initial UI run",
+      "qualified": false,
+      "reason": "399 checks passed, but that executable preceded the final login-followup limiter synchronization correction. The full build source freeze rejected that late header change. Four affected UI targets were rebuilt from frozen final inputs and the fresh final UI runs passed; 13 unaffected targets were retained only after include-closure and hash verification."
+    }
+  ],
+  "limits": [
+    "Login and address-refresh modal workflows still use their existing synchronous backend calls. The limiter is synchronized again after login. Those live modal followups and full live-recording finalization were not newly qualified here.",
+    "Progress speed-limit changes, completion-option writes, recording context-menu commands, main-list commands and unrelated modeless operations can still block on backend work.",
+    "The new failure cases force prepublication catalog errors, not postpublication/lost acknowledgements, hardware failures or full Windows session-end/crash recovery. Forced window destruction joining is source-reviewed and shares the previously tested owned-task primitive; no dedicated forced-destroy UI case was run.",
+    "Two warm preview bootstraps returned a client-side invalid-HTTP-response error before selection; the server recorded a completed 200. Their cause remains unresolved. Fresh replacement and fault-recovery runs passed; successful instrumented controls do not prove the failure is fixed.",
+    "The isolated browser cases cover selected HLS MP4, not every quality/format or the personal installed browser. No overall speedup, fresh matched IDM timing or complete parity claim."
+  ],
+  "installedDesktop": "7.11",
+  "installerCreated": false,
+  "installed": false,
+  "artifactDisposition": "Payload and temporary object cleanup follows qualification; reusable core objects, executables and compact evidence remain on C.",
+  "reusedNonUiTargets": [
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "sha256": "E237F26A16EB77D4DE2DBE4030084951E0CE05827D90F55C0E47779475CD2D36",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.UiTaskSignalTests.exe",
+      "sha256": "011512AA8189E832BF9161B01994231B4B9609ED87231E6BDBE9571707CAB919",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.PendingFileInfoRetryTests.exe",
+      "sha256": "6DC7F0BF3726F2D387BECAD83306B693A4AEBD211A43672C1664013A8FD4D973",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.DetachedMediaAdmissionTests.exe",
+      "sha256": "7747BAC105B4C923982BA7635049B164D8D269BE0D33F0BB68DA2DA90BB96983",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.CatalogAdmissionRegistryTests.exe",
+      "sha256": "2F5DDFC01767CBA4108C198120425E77733E7DE2D8A68FFD1C8A9D9845FBCA90",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.CatalogAdmissionReservationTests.exe",
+      "sha256": "BC1532169777D94FC0E93A4A1A94D06B45AD16765D40E2738D5989B4CA054CB4",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.CatalogCommitCoordinatorTests.exe",
+      "sha256": "2E22A6FD5ED914FEF87867C9AC5A54EA33D8F230CF58AFD4FF9480BB028571BE",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.CatalogCheckpointTests.exe",
+      "sha256": "C6A02E6BF976BC3E586CF7D03992B9745FEDC6FF1254E8A2DDFA955B55FF4165",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.IdleCheckpointTests.exe",
+      "sha256": "BAFE580A9E2993358FCD52962F36E9744C83202D4C777CA91467174173E6BB02",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "27C673A3B4236491A4CF9B8F95FCDC7086DBC315D59AC68255114BC62B217CCF",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "3D0DA710B3F56B1425CA5764C462FBB6C3C3C793699482EED9C0F53C9F629296",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "sha256": "FE55852DC839290928099363371B3A944A2956440BFE38F8FC7C86997CE67080",
+      "localInputsExcludeUi": true
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "sha256": "CBFD75B33057A11059D6AA6B500BC2AA35D8C46D352D9E1B4E9E238BC47E0BAB",
+      "localInputsExcludeUi": true
+    }
+  ],
+  "browserBootstrapFailureOpen": true,
+  "diagnosticProjection": {
+    "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/diagnostic-browser.cjs",
+    "sha256": "23E0B51C0FF8F34602500D4C1FBB35BE2F066F53B34D339BCA24B5A92C1CBCC0",
+    "changes": "Same maintained HLS fixture with D:/UDM project/observer paths and private Default-mode browser network logging; no product-code changes."
+  },
+  "networkLogs": [
+    {
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/browser/warm-save-retry-probe/network-log.json",
+      "sha256": "8DDEA12E6BF0CECB8FF83946524ACF9494F4080036EAACE81D68014F078BDAE0",
+      "bytes": 459449
+    },
+    {
+      "path": "LOCALAPPDATA/UDM-Development/progress-commands-7.82/browser/warm-preview-probe/network-log.json",
+      "sha256": "433C9CB2F4C1639873654FBA64D4A85B1B73E03F0881BEB9B47D474B7DB856A4",
+      "bytes": 467580
+    }
+  ],
+  "referenceMetadata": {
+    "path": "docs/reference/progress-dialogs.json",
+    "sha256": "3A70655ADBD58E5A7DD7CC44B7DCBD0381CE140FA6F32F5FCB247370A1AED0C7"
+  }
+}

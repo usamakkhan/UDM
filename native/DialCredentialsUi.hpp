@@ -24,10 +24,21 @@ class DialCredentialFields {
  }
  void commit(Draft& draft){store->write(draft.entry,draft.change);draft.before=store->read(draft.entry);draft.change={draft.before.userName,"",false,draft.before.savedPassword};draft.dirty=false;}
 public:
- DialCredentialFields(Form& owner,int ox,int oy,CWnd* note,std::shared_ptr<DialCredentialStore> backend):form(owner),store(std::move(backend)),status(note){
+ // Owned worker input/output. No form, control, or reference into drafts is
+ // transferred; acknowledge only after joining the worker on the UI thread.
+ struct Batch {
+  struct Item {std::string key;DialEntry entry;DialCredentialChange change;std::optional<DialCredentialInfo> saved;};
+  std::shared_ptr<DialCredentialStore> store;std::vector<Item> items;
+  void apply(){int count=0;try{for(auto& item:items){store->write(item.entry,item.change);item.saved=store->read(item.entry);++count;}}
+   catch(const std::exception& e){if(count)throw std::runtime_error(std::to_string(count)+" connection credential update(s) were saved. The remaining change failed: "+e.what());throw;}}
+ };
+ std::shared_ptr<Batch> prepareBatch(){validate();auto batch=std::make_shared<Batch>();batch->store=store;for(const auto& item:drafts)if(item.second.dirty)batch->items.push_back({item.first,item.second.entry,item.second.change,{}});return batch;}
+ std::shared_ptr<Batch> prepareCurrentBatch(){capture();auto batch=std::make_shared<Batch>();batch->store=store;if(!current.empty()){const auto& draft=drafts.at(current);if(draft.dirty){validateDialCredentialChange(draft.change);batch->items.push_back({current,draft.entry,draft.change,{}});}}return batch;}
+ void acknowledgeBatch(const Batch& batch){for(const auto& item:batch.items)if(item.saved){auto& draft=drafts.at(item.key);draft.before=*item.saved;draft.change={draft.before.userName,"",false,draft.before.savedPassword};draft.dirty=false;}if(!current.empty())display();}
+ DialCredentialFields(Form& owner,int ox,int oy,CWnd* note,std::shared_ptr<DialCredentialStore> backend,std::function<void()> applyRequest={}):form(owner),store(std::move(backend)),status(note){
   form.label("User name:",ox+20,oy+84,65,10);user=form.edit("",ox+91,oy+82,133,14);
   form.label("Password:",ox+18,oy+106,67,10);password=form.edit("",ox+91,oy+103,133,14,false,false,true);
-  save=form.check("Save password",false,ox+91,oy+123,131,10);apply=form.button("Apply",ox+229,oy+134,57,[this]{applyCurrent();});
+  save=form.check("Save password",false,ox+91,oy+123,131,10);apply=form.button("Apply",ox+229,oy+134,57,[this,request=std::move(applyRequest)]{if(request)request();else applyCurrent();});
   user->SendMessage(EM_SETLIMITTEXT,UNLEN+DNLEN+1);password->SendMessage(EM_SETLIMITTEXT,PWLEN);
   user->SendMessage(EM_SETCUEBANNER,TRUE,(LPARAM)L"User or DOMAIN\\user");
   form.bindChange(user,[this]{capture();});form.bindChange(password,[this]{if(!loading){passwordTouched=true;capture();}});

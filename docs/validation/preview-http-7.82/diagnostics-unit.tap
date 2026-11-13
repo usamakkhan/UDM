@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: HTTP evidence retains framing headers without credentials or cookies
+ok 1 - HTTP evidence retains framing headers without credentials or cookies
+  ---
+  duration_ms: 1.6869
+  type: 'test'
+  ...
+# Subtest: Reordered protocol events remain attributable after the request arrives
+ok 2 - Reordered protocol events remain attributable after the request arrives
+  ---
+  duration_ms: 0.7456
+  type: 'test'
+  ...
+# Subtest: Other origins, ports and credential-bearing URLs cannot enter exported evidence
+ok 3 - Other origins, ports and credential-bearing URLs cannot enter exported evidence
+  ---
+  duration_ms: 0.3231
+  type: 'test'
+  ...
+# Subtest: Redirect histories are kept without guessing which response belongs to which hop
+ok 4 - Redirect histories are kept without guessing which response belongs to which hop
+  ---
+  duration_ms: 0.3563
+  type: 'test'
+  ...
+# Subtest: A reused request ID cannot export an external redirect or its earlier extra-info event
+ok 5 - A reused request ID cannot export an external redirect or its earlier extra-info event
+  ---
+  duration_ms: 0.2943
+  type: 'test'
+  ...
+# Subtest: Nonstandard error details are omitted and non-loopback tracing is rejected
+ok 6 - Nonstandard error details are omitted and non-loopback tracing is rejected
+  ---
+  duration_ms: 1.3033
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 149.1959

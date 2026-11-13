@@ -12,7 +12,12 @@ static int mediaCrashChild(const fs::path& root,const std::string& phase){
  return 9;
 }
 static DWORD mediaCrashRun(const fs::path& root,const std::string& phase){
- auto exe=appDir()/L"Udm.NativeTests.exe";auto command=quote(exe.wstring())+L" --media-crash-fixture "+quote(root.wstring())+L" "+quote(wide(phase));
+#ifdef UDM_MEDIA_CRASH_FIXTURE_NAME
+ auto exe=appDir()/UDM_MEDIA_CRASH_FIXTURE_NAME;
+#else
+ auto exe=appDir()/L"Udm.NativeTests.exe";
+#endif
+ auto command=quote(exe.wstring())+L" --media-crash-fixture "+quote(root.wstring())+L" "+quote(wide(phase));
  STARTUPINFOW si{sizeof(si)};PROCESS_INFORMATION pi{};if(!CreateProcessW(exe.c_str(),command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,appDir().c_str(),&si,&pi))throw std::runtime_error("Cannot launch media crash fixture.");
  Handle thread(pi.hThread),process(pi.hProcess);if(WaitForSingleObject(process.h,20000)!=WAIT_OBJECT_0){TerminateProcess(process.h,199);WaitForSingleObject(process.h,5000);throw std::runtime_error("Media crash fixture timed out.");}
  DWORD result=0;GetExitCodeProcess(process.h,&result);return result;

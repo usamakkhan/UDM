@@ -1,0 +1,298 @@
+{
+  "checks": [
+    {
+      "name": "Overlay adds the exact reserved job and receipt together",
+      "passed": true
+    },
+    {
+      "name": "Repeating the same reservation is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Preparing a persistence overlay leaves the source catalog unchanged",
+      "passed": true
+    },
+    {
+      "name": "Changed job content cannot reuse a reserved identity",
+      "passed": true
+    },
+    {
+      "name": "Job conflict leaves the detached snapshot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Changed receipt fingerprint cannot reuse a reserved token",
+      "passed": true
+    },
+    {
+      "name": "Receipt conflict leaves the detached snapshot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Duplicate reserved IDs in a snapshot are rejected",
+      "passed": true
+    },
+    {
+      "name": "An unrelated job cannot take a missing reservation's destination",
+      "passed": true
+    },
+    {
+      "name": "Destination conflict publishes neither receipt nor reserved job",
+      "passed": true
+    },
+    {
+      "name": "Independent overlays preserve other reservations and unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Reservation owns immutable copies of its supplied job and receipt",
+      "passed": true
+    },
+    {
+      "name": "Malformed receipt stores are rejected",
+      "passed": true
+    },
+    {
+      "name": "An invalid reservation identity is rejected before overlay",
+      "passed": true
+    },
+    {
+      "name": "Adaptive admission persists its job and accepted receipt",
+      "passed": true
+    },
+    {
+      "name": "Repeated adaptive submission returns the same job",
+      "passed": true
+    },
+    {
+      "name": "Native reply correlation ID is not part of the media selection",
+      "passed": true
+    },
+    {
+      "name": "Receipt replay cannot duplicate a completed media job",
+      "passed": true
+    },
+    {
+      "name": "Receipt token cannot be reused for changed selection metadata",
+      "passed": true
+    },
+    {
+      "name": "Receipt token binds the exact media credential context",
+      "passed": true
+    },
+    {
+      "name": "Media receipts do not store plaintext credentials or URLs",
+      "passed": true
+    },
+    {
+      "name": "Restart retains accepted media identity",
+      "passed": true
+    },
+    {
+      "name": "Removed history remains an accepted receipt with no current record",
+      "passed": true
+    },
+    {
+      "name": "Deleting history cannot authorize replay",
+      "passed": true
+    },
+    {
+      "name": "Missing fresh media receipt creates a durable late-submission barrier",
+      "passed": true
+    },
+    {
+      "name": "Submission after receipt release cannot create a late job",
+      "passed": true
+    },
+    {
+      "name": "Expired missing receipt remains uncertain",
+      "passed": true
+    },
+    {
+      "name": "Expired media token cannot create a new job",
+      "passed": true
+    },
+    {
+      "name": "Malformed media identity is rejected",
+      "passed": true
+    },
+    {
+      "name": "Ordinary-download token cannot be interpreted as media receipt",
+      "passed": true
+    },
+    {
+      "name": "Invalid media is rejected before admission",
+      "passed": true
+    },
+    {
+      "name": "Rejected media cannot leave a job or receipt",
+      "passed": true
+    },
+    {
+      "name": "Media admission reports failure at deferred-save",
+      "passed": true
+    },
+    {
+      "name": "Media admission rolls back before commit at deferred-save",
+      "passed": true
+    },
+    {
+      "name": "A rolled-back media admission can be retried once",
+      "passed": true
+    },
+    {
+      "name": "Media admission reports failure at before-commit",
+      "passed": true
+    },
+    {
+      "name": "Media admission rolls back before commit at before-commit",
+      "passed": true
+    },
+    {
+      "name": "A rolled-back media admission can be retried once",
+      "passed": true
+    },
+    {
+      "name": "Media admission reports failure at temporary-flushed",
+      "passed": true
+    },
+    {
+      "name": "Media admission rolls back before commit at temporary-flushed",
+      "passed": true
+    },
+    {
+      "name": "A rolled-back media admission can be retried once",
+      "passed": true
+    },
+    {
+      "name": "Lost acknowledgement is observable after commit",
+      "passed": true
+    },
+    {
+      "name": "Lost reply preserves the committed receipt and job",
+      "passed": true
+    },
+    {
+      "name": "Retry after a lost reply reuses the committed job",
+      "passed": true
+    },
+    {
+      "name": "Media process terminates at deferred-save",
+      "passed": true
+    },
+    {
+      "name": "Restart has no orphan media job at deferred-save",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles media acceptance with durable state",
+      "passed": true
+    },
+    {
+      "name": "Uncommitted crash reconciliation rejects a delayed old submission",
+      "passed": true
+    },
+    {
+      "name": "Media process terminates at before-commit",
+      "passed": true
+    },
+    {
+      "name": "Restart has no orphan media job at before-commit",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles media acceptance with durable state",
+      "passed": true
+    },
+    {
+      "name": "Uncommitted crash reconciliation rejects a delayed old submission",
+      "passed": true
+    },
+    {
+      "name": "Media process terminates at temporary-flushed",
+      "passed": true
+    },
+    {
+      "name": "Restart has no orphan media job at temporary-flushed",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles media acceptance with durable state",
+      "passed": true
+    },
+    {
+      "name": "Uncommitted crash reconciliation rejects a delayed old submission",
+      "passed": true
+    },
+    {
+      "name": "Media process terminates at committed",
+      "passed": true
+    },
+    {
+      "name": "Restart has no orphan media job at committed",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles media acceptance with durable state",
+      "passed": true
+    },
+    {
+      "name": "Committed crash recovery cannot duplicate media",
+      "passed": true
+    },
+    {
+      "name": "Receipt admission preserves an explicitly armed adaptive refresh target",
+      "passed": true
+    },
+    {
+      "name": "Accepted adaptive refresh retains its review presentation",
+      "passed": true
+    },
+    {
+      "name": "Replaying a refresh receipt does not create another download",
+      "passed": true
+    },
+    {
+      "name": "Recovered media refresh preserves the captured replacement",
+      "passed": true
+    },
+    {
+      "name": "Explicit new media recovery clears the previous captured session",
+      "passed": true
+    },
+    {
+      "name": "Atomic media refresh fixture locks catalog replacement",
+      "passed": true
+    },
+    {
+      "name": "Failed session save reports catalog write failure",
+      "passed": true
+    },
+    {
+      "name": "Failed session save restores job and review receipt together",
+      "passed": true
+    },
+    {
+      "name": "Failed session save retains the review prompt for retry",
+      "passed": true
+    },
+    {
+      "name": "Process terminates immediately after applying a media session",
+      "passed": true
+    },
+    {
+      "name": "Applied media session survives termination",
+      "passed": true
+    },
+    {
+      "name": "Applied session cannot resurrect its consumed refresh prompt after termination",
+      "passed": true
+    },
+    {
+      "name": "Consuming the prompt preserves receipt identity and the original job",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

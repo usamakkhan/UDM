@@ -1,0 +1,278 @@
+{
+  "version": "7.65",
+  "browserVersion": "0.71.29",
+  "kind": "Matched external observation of production and component first File Info after desktop readiness; no product changes",
+  "allQualifiedRunsPassed": true,
+  "cases": [
+    {
+      "case": "production-qualified-a",
+      "productionExecutable": true,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 545,
+      "internalObservedSelectionToActionableMs": null,
+      "selectionToExactMs": 2117,
+      "selectionToFirstSegmentMs": 682,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 101,
+      "jobAddedToExternalActionableMs": 444
+    },
+    {
+      "case": "component-qualified-a",
+      "productionExecutable": false,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 340,
+      "internalObservedSelectionToActionableMs": 354,
+      "selectionToExactMs": 1749,
+      "selectionToFirstSegmentMs": 621,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 51,
+      "jobAddedToExternalActionableMs": 289
+    },
+    {
+      "case": "component-qualified-b",
+      "productionExecutable": false,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 575,
+      "internalObservedSelectionToActionableMs": 590,
+      "selectionToExactMs": 3643,
+      "selectionToFirstSegmentMs": 972,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 32,
+      "jobAddedToExternalActionableMs": 543
+    },
+    {
+      "case": "production-qualified-b",
+      "productionExecutable": true,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 871,
+      "internalObservedSelectionToActionableMs": null,
+      "selectionToExactMs": 2569,
+      "selectionToFirstSegmentMs": 1243,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 42,
+      "jobAddedToExternalActionableMs": 829
+    },
+    {
+      "case": "production-qualified-c",
+      "productionExecutable": true,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 383,
+      "internalObservedSelectionToActionableMs": null,
+      "selectionToExactMs": 1293,
+      "selectionToFirstSegmentMs": 475,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 41,
+      "jobAddedToExternalActionableMs": 342
+    },
+    {
+      "case": "component-qualified-c",
+      "productionExecutable": false,
+      "readyBeforeSelection": true,
+      "sameExternalObserver": true,
+      "externalObservedSelectionToActionableMs": 264,
+      "internalObservedSelectionToActionableMs": 287,
+      "selectionToExactMs": 2860,
+      "selectionToFirstSegmentMs": 677,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "runnerChecks": 8,
+      "prefetchFinishedBeforeStart": true,
+      "mainListHiddenAtObservation": true,
+      "selectionToJobAddedMs": 54,
+      "jobAddedToExternalActionableMs": 210
+    }
+  ],
+  "summary": {
+    "production": {
+      "samples": 3,
+      "medianMs": 545,
+      "observationsMs": [
+        545,
+        871,
+        383
+      ]
+    },
+    "component": {
+      "samples": 3,
+      "medianMs": 340,
+      "observationsMs": [
+        340,
+        575,
+        264
+      ]
+    }
+  },
+  "preliminary": [
+    {
+      "case": "production-a",
+      "passed": false,
+      "timingIncluded": false,
+      "reason": "Bootstrap fetch rejected by Edge before video readiness; private catalog stayed empty"
+    },
+    {
+      "case": "component-a",
+      "passed": true,
+      "timingIncluded": false,
+      "reason": "Control before the warm-only test assertion correction"
+    },
+    {
+      "case": "production-retry-a",
+      "passed": false,
+      "timingIncluded": false,
+      "reason": "Cold-only closed-desktop assertion incorrectly applied to warm mode; corrected before qualified runs"
+    }
+  ],
+  "payloads": [
+    {
+      "path": "candidates/production-observer-7.65/production-qualified-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/component-qualified-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/component-qualified-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/production-qualified-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/production-qualified-c/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/component-qualified-c/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-observer-7.65/component-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "inputHashes": {
+    "version": "7.65",
+    "productBinariesUnchanged": true,
+    "productionAndFixtureHashes": [
+      {
+        "name": "UDM.exe",
+        "version": "7.65",
+        "sha256": "7FF622225E854525098094C26CDE2FDF1314DAB41DFA44BFD1747A189047FA4E"
+      },
+      {
+        "name": "Udm.NativeHost.exe",
+        "version": "7.65",
+        "sha256": "9D2B8F8C02F04872747B59B91726FD5224E45149469344D791FA79B70E0C19D3"
+      },
+      {
+        "name": "Udm.Monitor.exe",
+        "version": "7.65",
+        "sha256": "36B83290C9FFC024D35FCE21E12DB3E4BAD1B6A581295A0B3EC6C9CF938102E1"
+      },
+      {
+        "name": "Udm.SetupHelper.exe",
+        "version": "7.65",
+        "sha256": "95CD388215A1859DFADB5D29906A604C6E92125750889036B50E80E51E34B878"
+      },
+      {
+        "name": "Udm.Automation.exe",
+        "version": "7.65",
+        "sha256": "D9B1F89E74DA0764C8D410DE95D02EA71D2172025C7E11F0BE721EEC9AF24B14"
+      },
+      {
+        "name": "Udm.MenuStateTests.exe",
+        "version": "7.65",
+        "sha256": "C6EAE4B58E4D7B79BE177603F7DD8D9DBC67B109203A39E7733696D7E9F97D5F"
+      },
+      {
+        "name": "Udm.CapturePresentationUiTests.exe",
+        "version": "7.65",
+        "sha256": "9DD747FD571583E5C4ED2AA26EC21A8C0CA8E75D6451D54810CF3F317867D0EA"
+      },
+      {
+        "name": "Udm.FindDialogUiTests.exe",
+        "version": "7.65",
+        "sha256": "324A1507D1EF1164F453A6D4868228827C38A7DD58752B978B7D36C494EBBD11"
+      }
+    ],
+    "testSources": [
+      {
+        "path": "tests/hls-catalog.native-live.cjs",
+        "sha256": "D8DAE6725B994D520CF3586D6D7DDB87D4EEBC26855819EEFF9C1AD173B07312"
+      },
+      {
+        "path": "tests/observe-cold-file-info.py",
+        "sha256": "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970"
+      }
+    ],
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ],
+    "scope": "Private production binary hardlinks and read-only tool-directory junctions; no installation or full media tool copies.",
+    "correction": "Warm-production mode now skips the cold-only assertion that the desktop is closed. Earlier attempts and their failures remain separate; their timing is not used."
+  },
+  "limits": [
+    "Three observations per executable path; no stable latency distribution, significance claim or IDM comparison.",
+    "Both desktop paths answer diagnostics before the video selection. Process launch precedes selection, but residual startup can overlap; diagnostics readiness does not prove UI initialization has completely finished.",
+    "External observer polls standard controls at 15 ms with bounded cross-process text reads; observations can lag actual paint.",
+    "The component still has per-control timing, assertions and a different application entry point. A path difference cannot be attributed solely to CPU counters.",
+    "Production startup/background services differ from the component fixture, including normal update/automation initialization; no load-matched causal attribution is made.",
+    "Job Added is a persisted creation timestamp, not an exact UI admission or first-paint event. Its intervals only separate broad handoff and post-creation work.",
+    "Private Edge profiles/catalogs and actual native binaries; not an installed/personal-browser acceptance test. Installed UDM remains 7.11.",
+    "The initial bootstrap failure is unresolved and preserved. The warm-mode assertion failure was a test setup bug, not a timed product failure."
+  ],
+  "cleanup": "Seven exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; five tools junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See production-observer-7.65-cleanup.json. Logical sizes include hardlinks; physical savings are not measured.",
+  "negativeObserverGuards": [
+    {
+      "case": "Udm.CapturePresentationUiTests.exe",
+      "rejectedBeforeWindowAccess": true
+    },
+    {
+      "case": "UDM.exe",
+      "rejectedBeforeWindowAccess": true
+    }
+  ],
+  "interpretation": "The production executable also exhibits the observed File Info delay. The common-observer samples do not support blaming fixture CPU counters alone. Most measured time followed persisted job creation; production startup completion, message dispatch, offer restoration and dialog construction still need finer attribution. No production speedup or IDM equivalence is claimed.",
+  "next": "Record high-level timestamps on the actual production path: end of desktop initialization, posted capture notification, UI dispatch, restored offer, completed controls, paint and first prefetch. Avoid per-control CPU queries and keep first process startup separate from an already-running desktop."
+}

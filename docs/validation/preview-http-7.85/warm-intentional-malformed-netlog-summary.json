@@ -1,0 +1,151 @@
+{
+  "scope": "Owned loopback URL_REQUEST sources only; query, raw payload, cookies, credentials, unrelated traffic and dependency graphs omitted",
+  "requests": [
+    {
+      "sourceId": 49,
+      "paths": [
+        "/nested"
+      ],
+      "bodyBytes": 687,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-type": "text/html; charset=utf-8",
+            "connection": "keep-alive",
+            "content-length": "687"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 63,
+      "paths": [
+        "/video.mp4"
+      ],
+      "bodyBytes": 0,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2,
+          "netError": -370
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2,
+          "netError": -370
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2,
+          "netError": -370
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2,
+          "netError": -370
+        }
+      ]
+    },
+    {
+      "sourceId": 73,
+      "paths": [
+        "/favicon.ico"
+      ],
+      "bodyBytes": 0,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 404,
+          "headers": {
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    }
+  ]
+}

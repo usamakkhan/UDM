@@ -1,0 +1,440 @@
+{
+  "version": "7.61",
+  "browserVersion": "0.71.25",
+  "change": "Queue the initial File Info prefetch pulse after completed paint; generated/recurring timers remain fallback. Earlier queued input is not bypassed.",
+  "before": {
+    "version": "7.60",
+    "queuePressure": {
+      "atPrefetch": 512,
+      "attachFailed": false,
+      "processed": 512
+    },
+    "resultsSha256": "1312acfdc5d1bbd93f8a895426e964abca82ab60387374e90ac390fe6015967b",
+    "fixtureReceipt": "docs/validation/file-info-pressure-7.60-build.json"
+  },
+  "buildReceipt": "docs/validation/file-info-kick-7.61-build.json",
+  "cases": [
+    {
+      "case": "pressure-mp4",
+      "runnerChecks": 8,
+      "resultsSha256": "6352253ae1e237093d749ef63e38f3a0a7884c4f82e9f51916de300de0092cce",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "admissionToActionableMs": 547,
+      "firstReceivedBeforeStart": true,
+      "outputProof": {
+        "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8.021333,
+        "videoFrames": 192,
+        "bytes": 6560076,
+        "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "queuePressure": {
+        "atPrefetch": 1,
+        "attachFailed": false,
+        "processed": 512
+      },
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "paintToPrefetchMs": 6.944300003349781,
+      "constructionMs": 374.81489999592304,
+      "nativeStages": [
+        {
+          "epochMs": 1794433789007,
+          "msAfterAdmission": 0.4645000025629997,
+          "stage": "ui-dispatch"
+        },
+        {
+          "epochMs": 1794433789007,
+          "msAfterAdmission": 0.49809999763965607,
+          "stage": "pending-offer-ready"
+        },
+        {
+          "epochMs": 1794433789007,
+          "msAfterAdmission": 0.5157999992370605,
+          "stage": "offer-restored"
+        },
+        {
+          "epochMs": 1794433789028,
+          "msAfterAdmission": 21.154100000858307,
+          "stage": "dialog-owner-ready"
+        },
+        {
+          "epochMs": 1794433789028,
+          "msAfterAdmission": 21.214199997484684,
+          "stage": "file-info-entry"
+        },
+        {
+          "epochMs": 1794433789057,
+          "msAfterAdmission": 50.22810000181198,
+          "stage": "file-info-controls-start"
+        },
+        {
+          "epochMs": 1794433789431,
+          "msAfterAdmission": 425.042999997735,
+          "stage": "file-info-controls-ready"
+        },
+        {
+          "epochMs": 1794433789438,
+          "msAfterAdmission": 431.9193999990821,
+          "stage": "owned-theme-ready"
+        },
+        {
+          "epochMs": 1794433789451,
+          "msAfterAdmission": 444.4236999973655,
+          "stage": "owned-show-returned"
+        },
+        {
+          "epochMs": 1794433789488,
+          "msAfterAdmission": 481.179999999702,
+          "stage": "owned-paint-returned"
+        },
+        {
+          "epochMs": 1794433789488,
+          "msAfterAdmission": 481.18980000168085,
+          "stage": "owned-foreground-returned"
+        },
+        {
+          "epochMs": 1794433789495,
+          "msAfterAdmission": 488.12430000305176,
+          "stage": "first-prefetch-pulse"
+        },
+        {
+          "epochMs": 1794433789495,
+          "msAfterAdmission": 488.47870000451803,
+          "stage": "first-prefetch-returned"
+        },
+        {
+          "epochMs": 1794433789561,
+          "msAfterAdmission": 554.6906000003219,
+          "stage": "actionable-observed"
+        },
+        {
+          "epochMs": 1794433790344,
+          "msAfterAdmission": 1337.7388999983668,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433791485,
+          "msAfterAdmission": 2478.602200001478,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433791593,
+          "msAfterAdmission": 2587.095300003886,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433791689,
+          "msAfterAdmission": 2682.5139000043273,
+          "stage": "catalog-temporary-flushed"
+        }
+      ]
+    },
+    {
+      "case": "pressure-ts",
+      "runnerChecks": 8,
+      "resultsSha256": "ce2210bbe475c722471857b7ba16b957cded6b81525e464776290057e42634ad",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+      "admissionToActionableMs": 578,
+      "firstReceivedBeforeStart": true,
+      "outputProof": {
+        "name": "nested TS complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8,
+        "videoFrames": 192,
+        "bytes": 1961216,
+        "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "queuePressure": {
+        "atPrefetch": 1,
+        "attachFailed": false,
+        "processed": 512
+      },
+      "sizeBeforeStart": 1961216,
+      "sha256BeforeStart": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+      "paintToPrefetchMs": 3.943300001323223,
+      "constructionMs": 391.81789999455214,
+      "nativeStages": [
+        {
+          "epochMs": 1794433827779,
+          "msAfterAdmission": 7.57660000026226,
+          "stage": "ui-dispatch"
+        },
+        {
+          "epochMs": 1794433827779,
+          "msAfterAdmission": 7.6114000007510185,
+          "stage": "pending-offer-ready"
+        },
+        {
+          "epochMs": 1794433827779,
+          "msAfterAdmission": 7.628100000321865,
+          "stage": "offer-restored"
+        },
+        {
+          "epochMs": 1794433827801,
+          "msAfterAdmission": 29.476099997758865,
+          "stage": "dialog-owner-ready"
+        },
+        {
+          "epochMs": 1794433827801,
+          "msAfterAdmission": 29.512099996209145,
+          "stage": "file-info-entry"
+        },
+        {
+          "epochMs": 1794433827858,
+          "msAfterAdmission": 86.24840000271797,
+          "stage": "file-info-controls-start"
+        },
+        {
+          "epochMs": 1794433828249,
+          "msAfterAdmission": 478.0662999972701,
+          "stage": "file-info-controls-ready"
+        },
+        {
+          "epochMs": 1794433828253,
+          "msAfterAdmission": 481.4649999961257,
+          "stage": "owned-theme-ready"
+        },
+        {
+          "epochMs": 1794433828272,
+          "msAfterAdmission": 500.2276000007987,
+          "stage": "owned-show-returned"
+        },
+        {
+          "epochMs": 1794433828306,
+          "msAfterAdmission": 534.38939999789,
+          "stage": "owned-paint-returned"
+        },
+        {
+          "epochMs": 1794433828306,
+          "msAfterAdmission": 534.3998999968171,
+          "stage": "owned-foreground-returned"
+        },
+        {
+          "epochMs": 1794433828310,
+          "msAfterAdmission": 538.3326999992132,
+          "stage": "first-prefetch-pulse"
+        },
+        {
+          "epochMs": 1794433828310,
+          "msAfterAdmission": 538.6361000016332,
+          "stage": "first-prefetch-returned"
+        },
+        {
+          "epochMs": 1794433828352,
+          "msAfterAdmission": 580.4488999992609,
+          "stage": "actionable-observed"
+        },
+        {
+          "epochMs": 1794433828925,
+          "msAfterAdmission": 1153.2497000023723,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433829883,
+          "msAfterAdmission": 2111.556699998677,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433829960,
+          "msAfterAdmission": 2188.6811999976635,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433830102,
+          "msAfterAdmission": 2331.0529000014067,
+          "stage": "catalog-temporary-flushed"
+        }
+      ]
+    },
+    {
+      "case": "pressure-m4a",
+      "runnerChecks": 9,
+      "resultsSha256": "850507a784202e6d7e03368398d178b9d077f41601c8511dd5862f352259503a",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+      "admissionToActionableMs": 985,
+      "firstReceivedBeforeStart": true,
+      "outputProof": {
+        "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8.021333,
+        "videoFrames": 0,
+        "bytes": 98791,
+        "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "queuePressure": {
+        "atPrefetch": 1,
+        "attachFailed": false,
+        "processed": 512
+      },
+      "sizeBeforeStart": 98791,
+      "sha256BeforeStart": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+      "paintToPrefetchMs": 21.53539999574423,
+      "constructionMs": 716.213700003922,
+      "nativeStages": [
+        {
+          "epochMs": 1794433846145,
+          "msAfterAdmission": 5.534400001168251,
+          "stage": "ui-dispatch"
+        },
+        {
+          "epochMs": 1794433846145,
+          "msAfterAdmission": 5.564100004732609,
+          "stage": "pending-offer-ready"
+        },
+        {
+          "epochMs": 1794433846145,
+          "msAfterAdmission": 5.580300003290176,
+          "stage": "offer-restored"
+        },
+        {
+          "epochMs": 1794433846156,
+          "msAfterAdmission": 16.296000003814697,
+          "stage": "dialog-owner-ready"
+        },
+        {
+          "epochMs": 1794433846156,
+          "msAfterAdmission": 16.32720000296831,
+          "stage": "file-info-entry"
+        },
+        {
+          "epochMs": 1794433846197,
+          "msAfterAdmission": 58.07829999923706,
+          "stage": "file-info-controls-start"
+        },
+        {
+          "epochMs": 1794433846914,
+          "msAfterAdmission": 774.292000003159,
+          "stage": "file-info-controls-ready"
+        },
+        {
+          "epochMs": 1794433846919,
+          "msAfterAdmission": 779.799699999392,
+          "stage": "owned-theme-ready"
+        },
+        {
+          "epochMs": 1794433846934,
+          "msAfterAdmission": 794.4690999984741,
+          "stage": "owned-show-returned"
+        },
+        {
+          "epochMs": 1794433846987,
+          "msAfterAdmission": 847.9615000039339,
+          "stage": "owned-paint-returned"
+        },
+        {
+          "epochMs": 1794433846987,
+          "msAfterAdmission": 847.9738000035286,
+          "stage": "owned-foreground-returned"
+        },
+        {
+          "epochMs": 1794433847009,
+          "msAfterAdmission": 869.4968999996781,
+          "stage": "first-prefetch-pulse"
+        },
+        {
+          "epochMs": 1794433847009,
+          "msAfterAdmission": 869.7626999989152,
+          "stage": "first-prefetch-returned"
+        },
+        {
+          "epochMs": 1794433847121,
+          "msAfterAdmission": 981.4437000006437,
+          "stage": "actionable-observed"
+        },
+        {
+          "epochMs": 1794433847433,
+          "msAfterAdmission": 1293.4552000015974,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433848293,
+          "msAfterAdmission": 2153.5419000014663,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433848384,
+          "msAfterAdmission": 2244.9052000045776,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433848575,
+          "msAfterAdmission": 2435.81930000335,
+          "stage": "catalog-temporary-flushed"
+        }
+      ]
+    },
+    {
+      "case": "start-receiving-ts",
+      "runnerChecks": 8,
+      "resultsSha256": "aa0eb39bd41a2f4a24867c688c05a95f2fbb97bd084978963dc3fc80bc68d74b",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+      "admissionToActionableMs": 563,
+      "firstReceivedBeforeStart": true,
+      "outputProof": {
+        "name": "nested TS complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8,
+        "videoFrames": 192,
+        "bytes": 1961216,
+        "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "retainedBytesAtStart": 131072,
+      "segmentsRequestedOnce": true
+    }
+  ],
+  "uiFixtures": [
+    {
+      "case": "presentation-ui",
+      "checks": 179,
+      "resultsSha256": "3e339e9dc4ffc9fbdef6171b6a9a0a207e625bf14c9e696e612d67ad393055ae"
+    },
+    {
+      "case": "first-paint",
+      "checks": 25,
+      "resultsSha256": "b4dc81a6a35e84c3fe52a09379db39893440b3cc5b89da926ae456710a1f1d1e"
+    }
+  ],
+  "suiteChecks": 237,
+  "runnerSha256": "4baf05e9544c0267ca17a9819bad3f4df5fddf15cc6a3cded130b0148ed6aaa3",
+  "timerReference": "https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-timer",
+  "limits": [
+    "Isolated Edge and actual native host with an owned File Info component using App.cpp. No installed/personal browser or fresh paired IDM comparison. Installed UDM remains 7.11.",
+    "Two pre-change traces and three different-format after traces are descriptive, not a speed distribution or parity proof.",
+    "Correction: the trace observes normal catalog saves after first-prefetch-pulse; it does not inject an additional write. Trace callbacks add overhead. The early-Start control does not enable that trace.",
+    "The larger control-construction delay remains open.",
+    "Runner checks and repeated observer assertions are not counts of unique features."
+  ],
+  "cleanup": "Exact generated files removed; see docs/validation/file-info-kick-7.61-cleanup.json. Reusable media, current binaries/core and diagnostic metadata retained.",
+  "payloads": [
+    {
+      "path": "candidates/handoff-7.61/pressure-mp4/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "path": "candidates/handoff-7.61/pressure-ts/downloads/UDM alternate audio fixture.ts",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+    },
+    {
+      "path": "candidates/handoff-7.61/pressure-m4a/downloads/UDM alternate audio fixture.m4a",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+    },
+    {
+      "path": "candidates/handoff-7.61/start-receiving-ts/downloads/UDM alternate audio fixture.ts",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+    }
+  ]
+}

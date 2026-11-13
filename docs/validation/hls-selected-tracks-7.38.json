@@ -1,0 +1,430 @@
+{
+  "applicationVersion": "7.38",
+  "extensionVersion": "0.71.2",
+  "fixtureSha256": "890248F6F782B6FFDDAC0F2265351D555BEFBC5B90B272FE1487824F2BD17FBE",
+  "realNativeResults": {
+    "registryRemoved": true,
+    "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+    "browser": "msedge",
+    "passed": 25,
+    "failed": 0,
+    "results": [
+      {
+        "name": "Updated extension and native app connect only to the isolated audio fixture",
+        "passed": true
+      },
+      {
+        "name": "nested panel exposes each actual quality/container once",
+        "passed": true,
+        "elapsedMs": 294,
+        "labels": [
+          "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+        ]
+      },
+      {
+        "name": "nested MP4 presents declared default audio before creating a download",
+        "passed": true
+      },
+      {
+        "name": "nested MP4 output contains the selected audio and language tag",
+        "passed": true,
+        "language": "es",
+        "frequencyHz": 880,
+        "bytes": 6560076,
+        "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+      },
+      {
+        "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+        "passed": true
+      },
+      {
+        "name": "nested panel exposes each actual quality/container once",
+        "passed": true,
+        "elapsedMs": 141,
+        "labels": [
+          "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+        ]
+      },
+      {
+        "name": "nested MP4 presents declared default audio before creating a download",
+        "passed": true
+      },
+      {
+        "name": "nested MP4 output contains the selected audio and language tag",
+        "passed": true,
+        "language": "es",
+        "frequencyHz": 880,
+        "bytes": 98791,
+        "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+      },
+      {
+        "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+        "passed": true
+      },
+      {
+        "name": "nested audio-only creates M4A without downloading the video track",
+        "passed": true
+      },
+      {
+        "name": "nested panel exposes each actual quality/container once",
+        "passed": true,
+        "elapsedMs": 156,
+        "labels": [
+          "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+        ]
+      },
+      {
+        "name": "nested TS presents declared default audio before creating a download",
+        "passed": true
+      },
+      {
+        "name": "nested TS output contains the selected audio and language tag",
+        "passed": true,
+        "language": "en",
+        "frequencyHz": 440,
+        "bytes": 1961216,
+        "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+      },
+      {
+        "name": "nested TS never fetches unselected audio or the overridden parent group",
+        "passed": true
+      },
+      {
+        "name": "flat panel exposes each actual quality/container once",
+        "passed": true,
+        "elapsedMs": 19,
+        "labels": [
+          "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+        ]
+      },
+      {
+        "name": "flat MP4 presents declared default audio before creating a download",
+        "passed": true
+      },
+      {
+        "name": "Back returns to video qualities without starting a download",
+        "passed": true
+      },
+      {
+        "name": "flat MP4 output contains the selected audio and language tag",
+        "passed": true,
+        "language": "es",
+        "frequencyHz": 880,
+        "bytes": 1873982,
+        "sha256": "8a246e608b09084dfe4f639997c6bb7b57c9122fdc8d5bef1c59d27a99bd1a64"
+      },
+      {
+        "name": "flat selected subtitles preserve Unicode, timing, language and unique cues",
+        "passed": true
+      },
+      {
+        "name": "flat MP4 never fetches unselected audio or the overridden parent group",
+        "passed": true
+      },
+      {
+        "name": "cycle panel exposes each actual quality/container once",
+        "passed": true,
+        "elapsedMs": 139,
+        "labels": [
+          "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+          "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+          "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+        ]
+      },
+      {
+        "name": "cycle MP4 presents declared default audio before creating a download",
+        "passed": true
+      },
+      {
+        "name": "cycle MP4 output contains the selected audio and language tag",
+        "passed": true,
+        "language": "es",
+        "frequencyHz": 880,
+        "bytes": 6560076,
+        "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+      },
+      {
+        "name": "cycle MP4 never fetches unselected audio or the overridden parent group",
+        "passed": true
+      },
+      {
+        "name": "Audio selection pages have no script errors",
+        "passed": true
+      }
+    ]
+  },
+  "completeFiles": {
+    "applicationVersion": "7.38",
+    "extensionVersion": "0.71.2",
+    "fixtureChecks": 25,
+    "registryRemoved": true,
+    "publishedFiles": [
+      {
+        "file": "UDM alternate audio fixture.mp4",
+        "status": "Complete",
+        "bytes": 6560076,
+        "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+        "catalogHashPresent": true,
+        "catalogHashMatches": true,
+        "durationSeconds": 8.021333,
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "language": "und",
+            "height": 720,
+            "decodedFrames": "192"
+          },
+          {
+            "type": "audio",
+            "codec": "aac",
+            "language": "spa",
+            "height": null,
+            "decodedFrames": "376"
+          }
+        ]
+      },
+      {
+        "file": "UDM alternate audio fixture.m4a",
+        "status": "Complete",
+        "bytes": 98791,
+        "sha256": "6CBF4A429198F996617432DDA28347F32905625AE2D763DE41C7AF127E7A33DE",
+        "catalogHashPresent": true,
+        "catalogHashMatches": true,
+        "durationSeconds": 8.021333,
+        "streams": [
+          {
+            "type": "audio",
+            "codec": "aac",
+            "language": "spa",
+            "height": null,
+            "decodedFrames": "376"
+          }
+        ]
+      },
+      {
+        "file": "UDM alternate audio fixture.ts",
+        "status": "Complete",
+        "bytes": 1961216,
+        "sha256": "99D1C7DD7F3F53AA55675D2DD96A7091447F1461519F6E05BCE1A6950B27F11D",
+        "catalogHashPresent": true,
+        "catalogHashMatches": true,
+        "durationSeconds": 8.0,
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "language": null,
+            "height": 360,
+            "decodedFrames": "192"
+          },
+          {
+            "type": "audio",
+            "codec": "aac",
+            "language": "eng",
+            "height": null,
+            "decodedFrames": "376"
+          }
+        ]
+      },
+      {
+        "file": "UDM alternate audio fixture (1).mp4",
+        "status": "Complete",
+        "bytes": 1873982,
+        "sha256": "8A246E608B09084DFE4F639997C6BB7B57C9122FDC8D5BEF1C59D27A99BD1A64",
+        "catalogHashPresent": true,
+        "catalogHashMatches": true,
+        "durationSeconds": 8.021333,
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "language": "und",
+            "height": 360,
+            "decodedFrames": "192"
+          },
+          {
+            "type": "audio",
+            "codec": "aac",
+            "language": "spa",
+            "height": null,
+            "decodedFrames": "376"
+          },
+          {
+            "type": "subtitle",
+            "codec": "mov_text",
+            "language": "spa",
+            "height": null,
+            "decodedFrames": "1"
+          }
+        ]
+      },
+      {
+        "file": "UDM alternate audio fixture (2).mp4",
+        "status": "Complete",
+        "bytes": 6560076,
+        "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+        "catalogHashPresent": true,
+        "catalogHashMatches": true,
+        "durationSeconds": 8.021333,
+        "streams": [
+          {
+            "type": "video",
+            "codec": "h264",
+            "language": "und",
+            "height": 720,
+            "decodedFrames": "192"
+          },
+          {
+            "type": "audio",
+            "codec": "aac",
+            "language": "spa",
+            "height": null,
+            "decodedFrames": "376"
+          }
+        ]
+      }
+    ],
+    "scope": "All output timelines are eight seconds within 150 ms; every video output contains all 192 expected frames; the fixture separately decodes complete outputs and verifies tones/language/captions."
+  },
+  "requestPaths": [
+    "/nested",
+    "/video.mp4",
+    "/favicon.ico",
+    "/outer.m3u8",
+    "/real/master.m3u8",
+    "/nested/master.m3u8",
+    "/v/index.m3u8",
+    "/real/master.m3u8",
+    "/v720/index.m3u8",
+    "/v720/index.m3u8",
+    "/es/index.m3u8",
+    "/v720/index3.ts",
+    "/v720/index2.ts",
+    "/v720/index1.ts",
+    "/v720/index0.ts",
+    "/es/index0.ts",
+    "/es/index1.ts",
+    "/es/index2.ts",
+    "/es/index3.ts",
+    "/es/index4.ts",
+    "/nested",
+    "/video.mp4",
+    "/outer.m3u8",
+    "/real/master.m3u8",
+    "/nested/master.m3u8",
+    "/v/index.m3u8",
+    "/real/master.m3u8",
+    "/v720/index.m3u8",
+    "/es/index.m3u8",
+    "/es/index3.ts",
+    "/es/index1.ts",
+    "/es/index2.ts",
+    "/es/index0.ts",
+    "/es/index4.ts",
+    "/nested",
+    "/video.mp4",
+    "/outer.m3u8",
+    "/real/master.m3u8",
+    "/nested/master.m3u8",
+    "/v/index.m3u8",
+    "/real/master.m3u8",
+    "/v720/index.m3u8",
+    "/en/index.m3u8",
+    "/v/index.m3u8",
+    "/v/index3.ts",
+    "/v/index0.ts",
+    "/v/index1.ts",
+    "/v/index2.ts",
+    "/en/index0.ts",
+    "/en/index1.ts",
+    "/en/index2.ts",
+    "/en/index3.ts",
+    "/en/index4.ts",
+    "/flat",
+    "/video.mp4",
+    "/master.m3u8",
+    "/v/index.m3u8",
+    "/v/index.m3u8",
+    "/es/index.m3u8",
+    "/sub/index.m3u8",
+    "/v/index1.ts",
+    "/v/index3.ts",
+    "/v/index0.ts",
+    "/v/index2.ts",
+    "/es/index0.ts",
+    "/es/index1.ts",
+    "/es/index2.ts",
+    "/es/index3.ts",
+    "/es/index4.ts",
+    "/sub/0.vtt",
+    "/sub/1.vtt",
+    "/cycle",
+    "/video.mp4",
+    "/cycle.m3u8",
+    "/real/master.m3u8",
+    "/nested/master.m3u8",
+    "/v/index.m3u8",
+    "/real/master.m3u8",
+    "/v720/index.m3u8",
+    "/v720/index.m3u8",
+    "/es/index.m3u8",
+    "/v720/index1.ts",
+    "/v720/index2.ts",
+    "/v720/index3.ts",
+    "/v720/index0.ts",
+    "/es/index0.ts",
+    "/es/index1.ts",
+    "/es/index2.ts",
+    "/es/index3.ts",
+    "/es/index4.ts"
+  ],
+  "stagedNativeHashesMatched": true,
+  "extensionFilesCompared": 47,
+  "extensionStagingChange": "Only the native host name was replaced to use a unique, temporary registration",
+  "testRegistrationRemoved": true,
+  "mediaTools": [
+    {
+      "name": "ffmpeg.exe",
+      "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+    },
+    {
+      "name": "ffprobe.exe",
+      "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+    }
+  ],
+  "mediaToolCopiesCreated": 0,
+  "mediaToolAccess": "Directory junction to existing workspace tools; Program Files hard-link attempt was denied before launch",
+  "publishedOutputBytes": 17054141.0,
+  "cleanupComplete": false,
+  "scope": "Real isolated headless Edge extension and native 7.38; nested/flat/cyclic recorded HLS; MP4, TS and M4A; selected audio tones/language, subtitles, full decode, 192 expected video frames and eight-second output timelines. No personal profile or catalog.",
+  "limitations": "Static selected-track end-to-end cases; catalog changes during an open chooser remain covered separately by the owned 7.38 browser fixture. File Info was skipped, so this does not qualify pre-Start exact-size display or focus/timing. No public site, Firefox engine, installed update or paired IDM timing.",
+  "cleanup": {
+    "blocked": true,
+    "action": "Remove only the verified temporary HLS test root after detaching its shared-tools junction",
+    "reason": "Automatic approval review rejected the command: blocked by policy",
+    "commandStarted": false,
+    "temporaryRootRetained": true,
+    "temporaryRoot": "candidates/hls-selected-tracks-7.38",
+    "sharedMediaToolHashesUnchanged": true,
+    "testRegistrationAlreadyRemoved": true
+  },
+  "selectionScreenshot": {
+    "path": "docs/validation/hls-selected-tracks-7.38/spanish-selection.png",
+    "sha256": "847B6DEA663D1A5F3531AFBBD68E7F5F52D6DF88695A1DE3AABA8E0360523970",
+    "visuallyInspected": true,
+    "scope": "Real isolated Edge page with Spanish audio and subtitle selection before the actual native handoff"
+  },
+  "installedDesktop": "7.11"
+}

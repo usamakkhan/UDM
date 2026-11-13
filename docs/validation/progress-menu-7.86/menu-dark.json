@@ -1,0 +1,219 @@
+{
+  "checks": [
+    {
+      "name": "Create isolated popup owner",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress popup owner",
+      "passed": true
+    },
+    {
+      "name": "A competing backend holds current state beyond the displayed snapshot",
+      "passed": true
+    },
+    {
+      "name": "Actual popup opens from the displayed snapshot without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "Next refreshed popup catches up with completion/open eligibility",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for a recording menu command",
+      "passed": true
+    },
+    {
+      "name": "Actual popup displays the current recording command",
+      "passed": true
+    },
+    {
+      "name": "Inspecting the popup does not dispatch a recording command",
+      "passed": true
+    },
+    {
+      "name": "Menu dispatch returns while a real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+      "passed": true
+    },
+    {
+      "name": "Explicit recording command publishes once, or retries once after rollback",
+      "passed": true
+    },
+    {
+      "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for a recording menu command",
+      "passed": true
+    },
+    {
+      "name": "Actual popup displays the current recording command",
+      "passed": true
+    },
+    {
+      "name": "Inspecting the popup does not dispatch a recording command",
+      "passed": true
+    },
+    {
+      "name": "Menu dispatch returns while a real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+      "passed": true
+    },
+    {
+      "name": "Failure reports the original error and rolls back before cancellation is signalled",
+      "passed": true
+    },
+    {
+      "name": "Explicit recording command publishes once, or retries once after rollback",
+      "passed": true
+    },
+    {
+      "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for a recording menu command",
+      "passed": true
+    },
+    {
+      "name": "Actual popup displays the current recording command",
+      "passed": true
+    },
+    {
+      "name": "Inspecting the popup does not dispatch a recording command",
+      "passed": true
+    },
+    {
+      "name": "Menu dispatch returns while a real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+      "passed": true
+    },
+    {
+      "name": "Explicit recording command publishes once, or retries once after rollback",
+      "passed": true
+    },
+    {
+      "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for a recording menu command",
+      "passed": true
+    },
+    {
+      "name": "Actual popup displays the current recording command",
+      "passed": true
+    },
+    {
+      "name": "Inspecting the popup does not dispatch a recording command",
+      "passed": true
+    },
+    {
+      "name": "Menu dispatch returns while a real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+      "passed": true
+    },
+    {
+      "name": "Failure reports the original error and rolls back before cancellation is signalled",
+      "passed": true
+    },
+    {
+      "name": "Explicit recording command publishes once, or retries once after rollback",
+      "passed": true
+    },
+    {
+      "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+      "passed": true
+    },
+    {
+      "name": "Copy resolves current address on the worker without touching the clipboard",
+      "passed": true
+    },
+    {
+      "name": "Folder command resolves current destination without opening Explorer",
+      "passed": true
+    },
+    {
+      "name": "A stale Open-with choice cannot open an unfinished file",
+      "passed": true
+    },
+    {
+      "name": "Open-with uses the current completed target without launching an application",
+      "passed": true
+    },
+    {
+      "name": "Pending scanner policy still prevents Open-with",
+      "passed": true
+    },
+    {
+      "name": "A stale recording choice cannot restart a completed download",
+      "passed": true
+    },
+    {
+      "name": "A displayed Pause cannot become Resume after activity changes",
+      "passed": true
+    },
+    {
+      "name": "A queued live save cannot be resumed again from a stale Retry-save choice",
+      "passed": true
+    },
+    {
+      "name": "Detached membership prevents selected menu followups and mutation",
+      "passed": true
+    },
+    {
+      "name": "Initial refresh-menu eligibility matches the existing backend",
+      "passed": true
+    },
+    {
+      "name": "A changed encrypted live plan invalidates refresh eligibility",
+      "passed": true
+    },
+    {
+      "name": "A changed recorded plan restores refresh eligibility",
+      "passed": true
+    },
+    {
+      "name": "Capture/live policy changes invalidate cached refresh eligibility",
+      "passed": true
+    },
+    {
+      "name": "Cleared capture/live policy catches up in the next snapshot",
+      "passed": true
+    },
+    {
+      "name": "Capture/live policy changes invalidate cached refresh eligibility",
+      "passed": true
+    },
+    {
+      "name": "Cleared capture/live policy catches up in the next snapshot",
+      "passed": true
+    },
+    {
+      "name": "Protected request presence invalidates refresh eligibility",
+      "passed": true
+    },
+    {
+      "name": "Unsupported current URL invalidates refresh eligibility",
+      "passed": true
+    }
+  ],
+  "darkMode": true,
+  "error": "",
+  "passed": true
+}

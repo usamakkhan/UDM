@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "testExitCode": 0,
+  "error": null,
+  "ownedChildObserved": false,
+  "logicalProcessors": 4,
+  "processorGroups": 1,
+  "samplerCpuMs": 0.0,
+  "startEpochMs": 1794458561878.213,
+  "endEpochMs": 1794458580274.521,
+  "samples": [],
+  "sourceSha256": "f813e34b58a64242d7e5951f71029a4334b286b7a15d138df897a842426119e0",
+  "limitations": [
+    "Process counters include all owned fixture threads, not just the UI thread.",
+    "GetSystemTimes is aggregate across the caller processor group when multiple groups exist.",
+    "Available commit here belongs to the sampler API context, not an exact system-wide commit measurement.",
+    "Sampling is observational and can perturb scheduling. CPU and memory correlations do not identify a wait owner or prove causation.",
+    "Only the exact child executable is queried; other process identities and command lines are not retained."
+  ]
+}

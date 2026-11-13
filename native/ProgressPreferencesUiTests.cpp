@@ -20,16 +20,17 @@ static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)retu
 static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>12000){failure="Owned dialog test deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 
+#include "ProgressPreferencesSaveChecks.hpp"
 class ProgressPreferencesApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
- CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);
- try{if(argc!=2)throw std::runtime_error("Pass isolated output directory");output=fs::path(argv[1]);fs::create_directories(output);Manager manager(output/L"state");Json prefs=manager.state["Settings"];
+ CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);PreferencesOwner owner;
+ try{if(argc!=2)throw std::runtime_error("Pass isolated output directory");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);wchar_t dark[2]{};uiDark=useDarkUi(GetEnvironmentVariableW(L"UDM_TEST_PROGRESS_PREFS_DARK",dark,2)==1&&dark[0]==L'1',windowsHighContrast());Manager manager(output/L"state");Json prefs=manager.state["Settings"];
  auto drive=[&](std::function<void(HWND)> callback){expectedTitle=L"Customize download progress dialog";action=callback;began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);progressPreferences(nullptr,prefs);KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);};
  drive([&](HWND w){auto combo=children(w,L"ComboBox").at(0);auto index=SendMessageW(combo,CB_FINDSTRINGEXACT,-1,(LPARAM)L"Don't show");expect(index!=CB_ERR,"Don't show is available in the real start-view control");selectCombo(w,combo,(int)index);capture(w,L"dont-show.png");press(w,L"OK");});
  expect(str(prefs,"ProgressStartMode")=="Don't show","OK saves the selected start view");manager.setSettings(prefs);{Manager reopened(manager.root);expect(str(reopened.state["Settings"],"ProgressStartMode")=="Don't show","Start view survives reopening the catalog");}
- auto saved=prefs;drive([&](HWND w){auto combo=children(w,L"ComboBox").at(0);expect(windowText(combo)==L"Don't show","Reopening settings selects the stored mode");selectCombo(w,combo,0);press(w,L"Cancel");});expect(prefs==saved,"Cancel preserves the saved mode");code=0;
- }catch(const std::exception& e){failure=e.what();}if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;}
+ auto saved=prefs;drive([&](HWND w){auto combo=children(w,L"ComboBox").at(0);expect(windowText(combo)==L"Don't show","Reopening settings selects the stored mode");selectCombo(w,combo,0);press(w,L"Cancel");});expect(prefs==saved,"Cancel preserves the saved mode");expect(owner.Create(nullptr,L"Private preference owner",WS_OVERLAPPEDWINDOW,CRect(0,0,40,40))!=FALSE,"Create isolated customization owner");m_pMainWnd=&owner;progressPreferencePersistenceChecks(owner,output/L"persistence");m_pMainWnd=nullptr;owner.DestroyWindow();code=0;
+ }catch(const std::exception& e){failure=e.what();}m_pMainWnd=nullptr;if(owner.GetSafeHwnd())owner.DestroyWindow();if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results},{"darkMode",uiDark}}.dump(2),false);return FALSE;}
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };ProgressPreferencesApplication application;
 }

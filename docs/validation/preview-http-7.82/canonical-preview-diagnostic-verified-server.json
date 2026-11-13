@@ -1,0 +1,94 @@
+[
+  {
+    "path": "/nested",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "closed": true
+  },
+  {
+    "path": "/video.mp4",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1771847",
+      "content-type": "video/mp4",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/outer.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  },
+  {
+    "path": "/favicon.ico",
+    "method": "GET",
+    "status": 404,
+    "finished": true,
+    "headers": {},
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  },
+  {
+    "path": "/nested/master.m3u8",
+    "method": "GET",
+    "status": 302,
+    "finished": true,
+    "headers": {},
+    "closed": true
+  },
+  {
+    "path": "/v/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "225",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "225",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "version": "7.63",
+  "kind": "Evidence interpretation correction; no product change",
+  "proof": [
+    {
+      "path": "native/CapturedResponseTestAccess.hpp",
+      "sha256": "f2c67e39c68021c17d7a92b3fc9e5d462c874788d82cfc66867a60d6bb801b6f"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "853df13c6d0bfd3c9aeedc158b6466ed7ef03a5b932537822dc54505686fb918"
+    }
+  ],
+  "finding": "saveCheckpoint assigns Manager.catalogCheckpoint. Manager.save copies the callback and atomicText calls it after its existing normal FlushFileBuffers. Registration itself neither calls save nor performs a write.",
+  "effect": "Earlier raw timings, hashes, counts and pass/fail outcomes remain unchanged. The alleged extra injected catalog write is withdrawn. Callback overhead and component instrumentation still preclude an uninstrumented-production latency claim.",
+  "correctedFiles": [
+    "native/README.md",
+    "docs/idm-parity-audit-6.13.md",
+    "docs/idm-parity-execution-plan-20261107.md",
+    "docs/validation/file-info-latency-7.60.json",
+    "docs/validation/file-info-kick-7.61.json",
+    "docs/validation/layout-snapshot-7.62.json",
+    "candidates/handoff-7.60/record_latency.py",
+    "candidates/handoff-7.60/record_761.py",
+    "candidates/dialog-construction-7.61/record_762.py"
+  ]
+}

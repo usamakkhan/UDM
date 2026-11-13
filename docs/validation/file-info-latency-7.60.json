@@ -1,0 +1,595 @@
+{
+  "version": "7.60",
+  "browserVersion": "0.71.24",
+  "scope": "Two isolated Edge/native owned File Info traces with unchanged production sources; no installed app or paired IDM measurement.",
+  "limits": [
+    "Correction: tracing registers an observer of normal catalog saves at first-prefetch-pulse; it does not trigger an additional save. Trace callbacks add measurement overhead, so these are instrumented observations.",
+    "Control CPU records use coarse GetThreadTimes accounting. Nested font/create-and-font records must not be added to *-total records.",
+    "Observer timers can detect actionable state later than actual paint.",
+    "Two samples are diagnostic and establish neither a distribution nor speed parity."
+  ],
+  "timerReference": "https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-timer",
+  "cases": [
+    {
+      "case": "file-info-trace-mp4",
+      "runnerChecks": 8,
+      "resultsSha256": "19f94c4f136470eef3e0ab52fc5149c5d956bbed9d7b243c3734c7807eb1be82",
+      "stages": [
+        {
+          "epochMs": 1794432895107,
+          "msAfterAdmission": 0.3189999982714653,
+          "stage": "ui-dispatch"
+        },
+        {
+          "epochMs": 1794432895107,
+          "msAfterAdmission": 0.35350000113248825,
+          "stage": "pending-offer-ready"
+        },
+        {
+          "epochMs": 1794432895107,
+          "msAfterAdmission": 0.3698999956250191,
+          "stage": "offer-restored"
+        },
+        {
+          "epochMs": 1794432895133,
+          "msAfterAdmission": 26.485599994659424,
+          "stage": "dialog-owner-ready"
+        },
+        {
+          "epochMs": 1794432895133,
+          "msAfterAdmission": 26.52809999883175,
+          "stage": "file-info-entry"
+        },
+        {
+          "epochMs": 1794432895233,
+          "msAfterAdmission": 126.4349999949336,
+          "stage": "file-info-controls-start"
+        },
+        {
+          "epochMs": 1794432895832,
+          "msAfterAdmission": 725.9754000008106,
+          "stage": "file-info-controls-ready"
+        },
+        {
+          "epochMs": 1794432895839,
+          "msAfterAdmission": 732.5265000015497,
+          "stage": "owned-theme-ready"
+        },
+        {
+          "epochMs": 1794432895882,
+          "msAfterAdmission": 775.7052999958396,
+          "stage": "owned-show-returned"
+        },
+        {
+          "epochMs": 1794432895907,
+          "msAfterAdmission": 800.8883000016212,
+          "stage": "owned-paint-returned"
+        },
+        {
+          "epochMs": 1794432895907,
+          "msAfterAdmission": 800.8993999958038,
+          "stage": "owned-foreground-returned"
+        },
+        {
+          "epochMs": 1794432896090,
+          "msAfterAdmission": 983.798299998045,
+          "stage": "actionable-observed"
+        },
+        {
+          "epochMs": 1794432896094,
+          "msAfterAdmission": 987.1629999950528,
+          "stage": "first-prefetch-pulse"
+        },
+        {
+          "epochMs": 1794432896094,
+          "msAfterAdmission": 987.3856000006199,
+          "stage": "first-prefetch-returned"
+        },
+        {
+          "epochMs": 1794432897709,
+          "msAfterAdmission": 2602.338299997151,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794432898681,
+          "msAfterAdmission": 3574.311700001359,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794432898754,
+          "msAfterAdmission": 3647.7144999951124,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794432898826,
+          "msAfterAdmission": 3719.5659999996424,
+          "stage": "catalog-temporary-flushed"
+        }
+      ],
+      "constructionMs": 599.540400005877,
+      "sumNonOverlappingControlMs": 397.43850000202656,
+      "sumControlThreadCpuMs": 125.0,
+      "paintToPrefetchMs": 186.27469999343157,
+      "prefetchAdmissionMs": 0.22260000556707382,
+      "controlRecords": [
+        {
+          "id": 1000,
+          "ms": 16.317900002002716,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1001,
+          "ms": 6.911700002849102,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1002,
+          "ms": 24.32719999551773,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1003,
+          "ms": 20.41169999539852,
+          "stage": "font"
+        },
+        {
+          "id": 1003,
+          "ms": 133.14079999923706,
+          "stage": "typed-control-total",
+          "threadCpuMs": 31.25
+        },
+        {
+          "id": 1003,
+          "ms": 133.1574999988079,
+          "stage": "create-and-font"
+        },
+        {
+          "id": 1003,
+          "ms": 0.0016000047326087952,
+          "stage": "populate-and-select"
+        },
+        {
+          "id": 1003,
+          "ms": 0.0005999952554702759,
+          "stage": "restore-redraw"
+        },
+        {
+          "id": 1004,
+          "ms": 2.3809999972581863,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1005,
+          "ms": 2.4880999997258186,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1006,
+          "ms": 10.26800000667572,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1007,
+          "ms": 2.2263999953866005,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1008,
+          "ms": 2.0146000012755394,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1009,
+          "ms": 2.27419999986887,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1010,
+          "ms": 2.7476000040769577,
+          "stage": "window-control-total",
+          "threadCpuMs": 15.625
+        },
+        {
+          "id": 1011,
+          "ms": 7.5067999958992,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1012,
+          "ms": 42.476599998772144,
+          "stage": "font"
+        },
+        {
+          "id": 1012,
+          "ms": 97.14719999581575,
+          "stage": "typed-control-total",
+          "threadCpuMs": 46.875
+        },
+        {
+          "id": 1012,
+          "ms": 97.1537000015378,
+          "stage": "create-and-font"
+        },
+        {
+          "id": 1012,
+          "ms": 5.655099995434284,
+          "stage": "populate-and-select"
+        },
+        {
+          "id": 1012,
+          "ms": 0.0012999996542930603,
+          "stage": "restore-redraw"
+        },
+        {
+          "id": 1013,
+          "ms": 2.7958000004291534,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1014,
+          "ms": 13.081199996173382,
+          "stage": "window-control-total",
+          "threadCpuMs": 15.625
+        },
+        {
+          "id": 1015,
+          "ms": 3.0993999987840652,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1016,
+          "ms": 3.0737999975681305,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1017,
+          "ms": 24.71010000258684,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1018,
+          "ms": 6.428800001740456,
+          "stage": "window-control-total",
+          "threadCpuMs": 15.625
+        },
+        {
+          "id": 1019,
+          "ms": 3.034800000488758,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1020,
+          "ms": 16.04890000075102,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1021,
+          "ms": 3.232700005173683,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1022,
+          "ms": 9.276600003242493,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1023,
+          "ms": 2.904899999499321,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        }
+      ],
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "case": "file-info-trace-mp4-repeat",
+      "runnerChecks": 8,
+      "resultsSha256": "d6a5fdd606eb0742eea37c6405b86ebfc640dcd08480e45babebf81372ac300f",
+      "stages": [
+        {
+          "epochMs": 1794433050743,
+          "msAfterAdmission": 0.6501000002026558,
+          "stage": "ui-dispatch"
+        },
+        {
+          "epochMs": 1794433050743,
+          "msAfterAdmission": 0.7045999988913536,
+          "stage": "pending-offer-ready"
+        },
+        {
+          "epochMs": 1794433050743,
+          "msAfterAdmission": 0.7238999977707863,
+          "stage": "offer-restored"
+        },
+        {
+          "epochMs": 1794433050769,
+          "msAfterAdmission": 27.102699995040894,
+          "stage": "dialog-owner-ready"
+        },
+        {
+          "epochMs": 1794433050769,
+          "msAfterAdmission": 27.138199999928474,
+          "stage": "file-info-entry"
+        },
+        {
+          "epochMs": 1794433050955,
+          "msAfterAdmission": 212.9742999970913,
+          "stage": "file-info-controls-start"
+        },
+        {
+          "epochMs": 1794433052103,
+          "msAfterAdmission": 1360.9549999982119,
+          "stage": "file-info-controls-ready"
+        },
+        {
+          "epochMs": 1794433052107,
+          "msAfterAdmission": 1364.8775999993086,
+          "stage": "owned-theme-ready"
+        },
+        {
+          "epochMs": 1794433052128,
+          "msAfterAdmission": 1386.2031999975443,
+          "stage": "owned-show-returned"
+        },
+        {
+          "epochMs": 1794433052177,
+          "msAfterAdmission": 1434.617699995637,
+          "stage": "owned-paint-returned"
+        },
+        {
+          "epochMs": 1794433052177,
+          "msAfterAdmission": 1434.627999998629,
+          "stage": "owned-foreground-returned"
+        },
+        {
+          "epochMs": 1794433052223,
+          "msAfterAdmission": 1480.9253999963403,
+          "stage": "actionable-observed"
+        },
+        {
+          "epochMs": 1794433052225,
+          "msAfterAdmission": 1482.94129999727,
+          "stage": "first-prefetch-pulse"
+        },
+        {
+          "epochMs": 1794433052225,
+          "msAfterAdmission": 1483.1538999974728,
+          "stage": "first-prefetch-returned"
+        },
+        {
+          "epochMs": 1794433053751,
+          "msAfterAdmission": 3008.728199996054,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433054485,
+          "msAfterAdmission": 3742.964599996805,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433054554,
+          "msAfterAdmission": 3811.5342999994755,
+          "stage": "catalog-temporary-flushed"
+        },
+        {
+          "epochMs": 1794433054689,
+          "msAfterAdmission": 3947.1932999938726,
+          "stage": "catalog-temporary-flushed"
+        }
+      ],
+      "constructionMs": 1147.9807000011206,
+      "sumNonOverlappingControlMs": 733.8256999775767,
+      "sumControlThreadCpuMs": 140.625,
+      "paintToPrefetchMs": 48.32360000163317,
+      "prefetchAdmissionMs": 0.2126000002026558,
+      "controlRecords": [
+        {
+          "id": 1000,
+          "ms": 51.58619999885559,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1001,
+          "ms": 94.11789999902248,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1002,
+          "ms": 2.516399994492531,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1003,
+          "ms": 24.91560000181198,
+          "stage": "font"
+        },
+        {
+          "id": 1003,
+          "ms": 121.31409999728203,
+          "stage": "typed-control-total",
+          "threadCpuMs": 46.875
+        },
+        {
+          "id": 1003,
+          "ms": 121.33139999955893,
+          "stage": "create-and-font"
+        },
+        {
+          "id": 1003,
+          "ms": 0.0009000003337860107,
+          "stage": "populate-and-select"
+        },
+        {
+          "id": 1003,
+          "ms": 0.0005000010132789612,
+          "stage": "restore-redraw"
+        },
+        {
+          "id": 1004,
+          "ms": 16.739100001752377,
+          "stage": "button-total",
+          "threadCpuMs": 15.625
+        },
+        {
+          "id": 1005,
+          "ms": 19.860699996352196,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1006,
+          "ms": 18.409100003540516,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1007,
+          "ms": 17.037399999797344,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1008,
+          "ms": 14.94709999859333,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1009,
+          "ms": 31.294299997389317,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1010,
+          "ms": 2.598600000143051,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1011,
+          "ms": 2.0727000012993813,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1012,
+          "ms": 93.37569999694824,
+          "stage": "font"
+        },
+        {
+          "id": 1012,
+          "ms": 263.6270999982953,
+          "stage": "typed-control-total",
+          "threadCpuMs": 62.5
+        },
+        {
+          "id": 1012,
+          "ms": 263.63409999758005,
+          "stage": "create-and-font"
+        },
+        {
+          "id": 1012,
+          "ms": 43.936099998652935,
+          "stage": "populate-and-select"
+        },
+        {
+          "id": 1012,
+          "ms": 0.0010000020265579224,
+          "stage": "restore-redraw"
+        },
+        {
+          "id": 1013,
+          "ms": 3.496899999678135,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1014,
+          "ms": 3.5371999964118004,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1015,
+          "ms": 13.90599999576807,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1016,
+          "ms": 2.5320999994874,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1017,
+          "ms": 5.611600004136562,
+          "stage": "window-control-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1018,
+          "ms": 4.383199997246265,
+          "stage": "window-control-total",
+          "threadCpuMs": 15.625
+        },
+        {
+          "id": 1019,
+          "ms": 18.01569999754429,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1020,
+          "ms": 3.1652999967336655,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1021,
+          "ms": 1.9287000000476837,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1022,
+          "ms": 9.351700000464916,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        },
+        {
+          "id": 1023,
+          "ms": 11.776600003242493,
+          "stage": "button-total",
+          "threadCpuMs": 0.0
+        }
+      ],
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    }
+  ],
+  "next": "Reproduce initial-prefetch starvation under deterministic queued messages; qualify a posted kick after completed paint separately from the larger control-construction gap."
+}

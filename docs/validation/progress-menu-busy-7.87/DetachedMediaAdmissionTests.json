@@ -1,0 +1,262 @@
+{
+  "checks": [
+    {
+      "name": "Admission reaches a real flushed-temporary-file gate",
+      "passed": true
+    },
+    {
+      "name": "History remains readable and excludes the tentative media job during disk IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery can inspect an in-flight token without releasing or accepting it prematurely",
+      "passed": true
+    },
+    {
+      "name": "The hidden media destination remains reserved while its write is pending",
+      "passed": true
+    },
+    {
+      "name": "A concurrent ordinary write queues behind the gated publication",
+      "passed": true
+    },
+    {
+      "name": "Ordinary filename allocation respects pending media ownership",
+      "passed": true
+    },
+    {
+      "name": "Installing the accepted media preserves the concurrent ordinary job",
+      "passed": true
+    },
+    {
+      "name": "The accepted receipt identifies the installed job exactly once",
+      "passed": true
+    },
+    {
+      "name": "Replaying the accepted media token does not append another job",
+      "passed": true
+    },
+    {
+      "name": "The installed job releases its transient destination ownership",
+      "passed": true
+    },
+    {
+      "name": "A successful containing publication never sends a false prepared-dialog rejection",
+      "passed": true
+    },
+    {
+      "name": "Published history contains both jobs and the matching media receipt",
+      "passed": true
+    },
+    {
+      "name": "Admission reaches a real flushed-temporary-file gate",
+      "passed": true
+    },
+    {
+      "name": "History remains readable and excludes the tentative media job during disk IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery can inspect an in-flight token without releasing or accepting it prematurely",
+      "passed": true
+    },
+    {
+      "name": "The hidden media destination remains reserved while its write is pending",
+      "passed": true
+    },
+    {
+      "name": "A concurrent ordinary write queues behind the gated publication",
+      "passed": true
+    },
+    {
+      "name": "Ordinary filename allocation respects pending media ownership",
+      "passed": true
+    },
+    {
+      "name": "Installing the accepted media preserves the concurrent ordinary job",
+      "passed": true
+    },
+    {
+      "name": "The accepted receipt identifies the installed job exactly once",
+      "passed": true
+    },
+    {
+      "name": "Replaying the accepted media token does not append another job",
+      "passed": true
+    },
+    {
+      "name": "The installed job releases its transient destination ownership",
+      "passed": true
+    },
+    {
+      "name": "A successful containing publication never sends a false prepared-dialog rejection",
+      "passed": true
+    },
+    {
+      "name": "Published history contains both jobs and the matching media receipt",
+      "passed": true
+    },
+    {
+      "name": "An uncommitted detached write preserves its failure even when the rejection observer throws",
+      "passed": true
+    },
+    {
+      "name": "Definite rejection identifies the delivered view and runs outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "A failed detached admission leaves no live or transient orphan",
+      "passed": true
+    },
+    {
+      "name": "A detached admission with no successful write can retry once",
+      "passed": true
+    },
+    {
+      "name": "A lost acknowledgement still reports an error to its caller",
+      "passed": true
+    },
+    {
+      "name": "An error after durable acceptance never reports a rejected File Info operation",
+      "passed": true
+    },
+    {
+      "name": "Nested legacy callers keep synchronous admission and never wait for detached resolution under an outer lock",
+      "passed": true
+    },
+    {
+      "name": "The immutable File Info view is handed off before the catalog write",
+      "passed": true
+    },
+    {
+      "name": "A view consumer runs outside the Manager lock and cannot see a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Prepared File Info destination and name identify the accepted selection",
+      "passed": true
+    },
+    {
+      "name": "Prepared media flags and category choices match the existing dialog inputs",
+      "passed": true
+    },
+    {
+      "name": "The render snapshot preserves selected display-address precedence",
+      "passed": true
+    },
+    {
+      "name": "Later job, child-track and preference edits cannot mutate a retained view",
+      "passed": true
+    },
+    {
+      "name": "Render data excludes form bodies, segment history and adaptive plans",
+      "passed": true
+    },
+    {
+      "name": "Request kind and selected track size survive projection without copying their payloads",
+      "passed": true
+    },
+    {
+      "name": "Failed prepared-view delivery does not acknowledge an uncommitted operation",
+      "passed": true
+    },
+    {
+      "name": "Rejected delivery restores transient ownership and the same token can retry",
+      "passed": true
+    },
+    {
+      "name": "Prepared delivery uses a nonzero opaque key and rejects unknown messages",
+      "passed": true
+    },
+    {
+      "name": "An inbox message transfers its owned view exactly once",
+      "passed": true
+    },
+    {
+      "name": "UI can claim a view while its worker outcome is still pending",
+      "passed": true
+    },
+    {
+      "name": "A committed-offer timer can claim by identity before message dispatch and leave the queued key harmless",
+      "passed": true
+    },
+    {
+      "name": "A different accepted identity cannot bind this prepared view",
+      "passed": true
+    },
+    {
+      "name": "Worker destruction cannot erase a proven accepted outcome",
+      "passed": true
+    },
+    {
+      "name": "An interrupted acknowledgement remains uncertain rather than falsely failed",
+      "passed": true
+    },
+    {
+      "name": "A failed window notification rejects prepared delivery before persistence",
+      "passed": true
+    },
+    {
+      "name": "Failed notification retracts its unclaimed inbox entry",
+      "passed": true
+    },
+    {
+      "name": "Closing the UI inbox does not revoke a worker's later durable acceptance",
+      "passed": true
+    },
+    {
+      "name": "A closed inbox rejects new prepared views",
+      "passed": true
+    },
+    {
+      "name": "Closed delivery never posts another window message",
+      "passed": true
+    },
+    {
+      "name": "Restarted integration cannot interpret a stale message as a new view",
+      "passed": true
+    },
+    {
+      "name": "Unclaimed prepared deliveries have a fixed capacity",
+      "passed": true
+    },
+    {
+      "name": "A rejection for another job cannot terminate a prepared operation",
+      "passed": true
+    },
+    {
+      "name": "A matching proven rejection terminates the pending operation",
+      "passed": true
+    },
+    {
+      "name": "Ticket abandonment cannot replace a proven rejection with uncertainty",
+      "passed": true
+    },
+    {
+      "name": "A late rejection cannot downgrade proven acceptance",
+      "passed": true
+    },
+    {
+      "name": "Legacy nested admission masks the outer rejection observer",
+      "passed": true
+    },
+    {
+      "name": "Admission context restores rejection observers after nested and outer scopes",
+      "passed": true
+    },
+    {
+      "name": "An unchanged accepted job can reuse its exact prepared render inputs",
+      "passed": true
+    },
+    {
+      "name": "A later job edit invalidates prepared rendering instead of replacing the user's current values",
+      "passed": true
+    },
+    {
+      "name": "A media request without File Info creates no unused prepared delivery",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

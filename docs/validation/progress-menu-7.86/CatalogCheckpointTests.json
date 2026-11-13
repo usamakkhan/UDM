@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "Unchanged automatic checkpoint performs no durable write",
+      "passed": true
+    },
+    {
+      "name": "Explicit save durably commits the newer state",
+      "passed": true
+    },
+    {
+      "name": "An obsolete automatic dirty decision is rechecked before snapshot and IO",
+      "passed": true
+    },
+    {
+      "name": "Skipping obsolete automatic work retains the explicit commit",
+      "passed": true
+    },
+    {
+      "name": "Changed automatic checkpoint still commits exactly once",
+      "passed": true
+    },
+    {
+      "name": "Changed settings survive a catalog reload",
+      "passed": true
+    },
+    {
+      "name": "Explicit unchanged save retains its forced durable barrier",
+      "passed": true
+    },
+    {
+      "name": "Forced-save failure reports the original error",
+      "passed": true
+    },
+    {
+      "name": "Failure preserves the published catalog and records a storage error",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint retries a failed save even when data matches its last checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint does not publish an unfinished transaction",
+      "passed": true
+    },
+    {
+      "name": "Transaction state is saved after deferral ends",
+      "passed": true
+    },
+    {
+      "name": "Stopping suppresses automatic checkpoints",
+      "passed": true
+    },
+    {
+      "name": "Forced shutdown save persists final state while stopping",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

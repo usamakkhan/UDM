@@ -1,0 +1,14 @@
+[
+  {
+    "event": "response",
+    "url": "http://127.0.0.1:59681/nested",
+    "status": 200,
+    "contentLength": "687",
+    "finished": true
+  },
+  {
+    "event": "failed",
+    "url": "http://127.0.0.1:59681/video.mp4",
+    "error": "net::ERR_INVALID_HTTP_RESPONSE"
+  }
+]

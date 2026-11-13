@@ -1,0 +1,2871 @@
+{
+  "checks": [
+    {
+      "name": "An eligible held admission delivers its owned view to the UI",
+      "passed": true
+    },
+    {
+      "name": "Create a hidden native dialog owner",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info keeps its main owner hidden",
+      "passed": true
+    },
+    {
+      "name": "The actual dialog paints while its catalog write is held and its job remains absent from history",
+      "passed": true
+    },
+    {
+      "name": "The pending dialog exposes an actionable Start button",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info creates the real destination and description editors",
+      "passed": true
+    },
+    {
+      "name": "Destination edits are accepted before durable admission",
+      "passed": true
+    },
+    {
+      "name": "Acceptance binds the same File Info window without replacement",
+      "passed": true
+    },
+    {
+      "name": "Acceptance preserves the destination and description edited while pending",
+      "passed": true
+    },
+    {
+      "name": "An eligible held admission delivers its owned view to the UI",
+      "passed": true
+    },
+    {
+      "name": "Create a hidden native dialog owner",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info keeps its main owner hidden",
+      "passed": true
+    },
+    {
+      "name": "The actual dialog paints while its catalog write is held and its job remains absent from history",
+      "passed": true
+    },
+    {
+      "name": "The pending dialog exposes an actionable Start button",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info creates the real destination and description editors",
+      "passed": true
+    },
+    {
+      "name": "Destination edits are accepted before durable admission",
+      "passed": true
+    },
+    {
+      "name": "A pending decision freezes one draft and keeps the same dialog alive",
+      "passed": true
+    },
+    {
+      "name": "The queued decision applies the complete edited draft after acceptance",
+      "passed": true
+    },
+    {
+      "name": "An eligible held admission delivers its owned view to the UI",
+      "passed": true
+    },
+    {
+      "name": "Create a hidden native dialog owner",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info keeps its main owner hidden",
+      "passed": true
+    },
+    {
+      "name": "The actual dialog paints while its catalog write is held and its job remains absent from history",
+      "passed": true
+    },
+    {
+      "name": "The pending dialog exposes an actionable Start button",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info creates the real destination and description editors",
+      "passed": true
+    },
+    {
+      "name": "Destination edits are accepted before durable admission",
+      "passed": true
+    },
+    {
+      "name": "A pending decision freezes one draft and keeps the same dialog alive",
+      "passed": true
+    },
+    {
+      "name": "The queued decision applies the complete edited draft after acceptance",
+      "passed": true
+    },
+    {
+      "name": "Pending Download Later remains paused without starting media transfer",
+      "passed": true
+    },
+    {
+      "name": "An eligible held admission delivers its owned view to the UI",
+      "passed": true
+    },
+    {
+      "name": "Create a hidden native dialog owner",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info keeps its main owner hidden",
+      "passed": true
+    },
+    {
+      "name": "The actual dialog paints while its catalog write is held and its job remains absent from history",
+      "passed": true
+    },
+    {
+      "name": "The pending dialog exposes an actionable Start button",
+      "passed": true
+    },
+    {
+      "name": "Pending File Info creates the real destination and description editors",
+      "passed": true
+    },
+    {
+      "name": "Destination edits are accepted before durable admission",
+      "passed": true
+    },
+    {
+      "name": "Pending Cancel returns to the modal loop without releasing or waiting for the disk write",
+      "passed": true
+    },
+    {
+      "name": "Pending Cancel does not expose or delete a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "The pending dialog closes completely while its admission write remains held",
+      "passed": true
+    },
+    {
+      "name": "The cancellation worker resolves the accepted pending offer",
+      "passed": true
+    },
+    {
+      "name": "Pending cancellation preserves unrelated downloads",
+      "passed": true
+    }
+  ],
+  "controlClasses": {
+    "1000": "Static",
+    "1001": "Edit",
+    "1002": "Static",
+    "1003": "ComboBox",
+    "1004": "Button",
+    "1005": "Static",
+    "1006": "Static",
+    "1007": "Static",
+    "1008": "Static",
+    "1009": "Button",
+    "1010": "Static",
+    "1011": "Static",
+    "1012": "ComboBox",
+    "1013": "Button",
+    "1014": "Button",
+    "1015": "Edit",
+    "1016": "Button",
+    "1017": "Static",
+    "1018": "Edit",
+    "1019": "Button",
+    "1020": "Button",
+    "1021": "Button",
+    "1022": "Button",
+    "1023": "Button"
+  },
+  "darkMode": false,
+  "error": "",
+  "formLayouts": {
+    "cancel": {
+      "controls": [
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1000,
+          "rect": [
+            9,
+            10,
+            103,
+            30
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1001,
+          "rect": [
+            112,
+            6,
+            539,
+            34
+          ],
+          "style": 1342244992
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1002,
+          "rect": [
+            9,
+            44,
+            103,
+            64
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1003,
+          "rect": [
+            112,
+            44,
+            315,
+            68
+          ],
+          "style": 1342243331
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1004,
+          "rect": [
+            320,
+            42,
+            348,
+            70
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 0,
+          "fontFace": "",
+          "fontHeight": 0,
+          "fontQuality": 0,
+          "fontWeight": 0,
+          "id": 1005,
+          "rect": [
+            583,
+            56,
+            623,
+            96
+          ],
+          "style": 1342177283
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1006,
+          "rect": [
+            544,
+            114,
+            656,
+            134
+          ],
+          "style": 1342177281
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1007,
+          "rect": [
+            12,
+            216,
+            653,
+            236
+          ],
+          "style": 1342193664
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1008,
+          "rect": [
+            544,
+            138,
+            656,
+            154
+          ],
+          "style": 1342193665
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1009,
+          "rect": [
+            558,
+            156,
+            646,
+            184
+          ],
+          "style": 1073807360
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1010,
+          "rect": [
+            12,
+            288,
+            653,
+            306
+          ],
+          "style": 1073758208
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1011,
+          "rect": [
+            9,
+            82,
+            103,
+            102
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1012,
+          "rect": [
+            112,
+            78,
+            502,
+            102
+          ],
+          "style": 1342243394
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1013,
+          "rect": [
+            112,
+            112,
+            539,
+            176
+          ],
+          "style": 1342177287
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1014,
+          "rect": [
+            121,
+            110,
+            527,
+            130
+          ],
+          "style": 1342251011
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1015,
+          "rect": [
+            121,
+            138,
+            527,
+            166
+          ],
+          "style": 1476460672
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1016,
+          "rect": [
+            511,
+            78,
+            539,
+            106
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1017,
+          "rect": [
+            9,
+            186,
+            103,
+            206
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1018,
+          "rect": [
+            112,
+            182,
+            539,
+            210
+          ],
+          "style": 1342242944
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1019,
+          "rect": [
+            558,
+            244,
+            646,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1020,
+          "rect": [
+            12,
+            244,
+            102,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1021,
+          "rect": [
+            112,
+            244,
+            242,
+            272
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1022,
+          "rect": [
+            261,
+            244,
+            390,
+            272
+          ],
+          "style": 1342242817
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1023,
+          "rect": [
+            410,
+            244,
+            539,
+            272
+          ],
+          "style": 1342242816
+        }
+      ],
+      "dpi": 120,
+      "tabs": [
+        1001,
+        1003,
+        1012,
+        1014,
+        1016,
+        1018,
+        1021,
+        1022,
+        1023
+      ]
+    },
+    "later": {
+      "controls": [
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1000,
+          "rect": [
+            9,
+            10,
+            103,
+            30
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1001,
+          "rect": [
+            112,
+            6,
+            539,
+            34
+          ],
+          "style": 1342244992
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1002,
+          "rect": [
+            9,
+            44,
+            103,
+            64
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1003,
+          "rect": [
+            112,
+            44,
+            315,
+            68
+          ],
+          "style": 1342243331
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1004,
+          "rect": [
+            320,
+            42,
+            348,
+            70
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 0,
+          "fontFace": "",
+          "fontHeight": 0,
+          "fontQuality": 0,
+          "fontWeight": 0,
+          "id": 1005,
+          "rect": [
+            583,
+            56,
+            623,
+            96
+          ],
+          "style": 1342177283
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1006,
+          "rect": [
+            544,
+            114,
+            656,
+            134
+          ],
+          "style": 1342177281
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1007,
+          "rect": [
+            12,
+            216,
+            653,
+            236
+          ],
+          "style": 1342193664
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1008,
+          "rect": [
+            544,
+            138,
+            656,
+            154
+          ],
+          "style": 1342193665
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1009,
+          "rect": [
+            558,
+            156,
+            646,
+            184
+          ],
+          "style": 1073807360
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1010,
+          "rect": [
+            12,
+            288,
+            653,
+            306
+          ],
+          "style": 1073758208
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1011,
+          "rect": [
+            9,
+            82,
+            103,
+            102
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1012,
+          "rect": [
+            112,
+            78,
+            502,
+            102
+          ],
+          "style": 1342243394
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1013,
+          "rect": [
+            112,
+            112,
+            539,
+            176
+          ],
+          "style": 1342177287
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1014,
+          "rect": [
+            121,
+            110,
+            527,
+            130
+          ],
+          "style": 1342251011
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1015,
+          "rect": [
+            121,
+            138,
+            527,
+            166
+          ],
+          "style": 1476460672
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1016,
+          "rect": [
+            511,
+            78,
+            539,
+            106
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1017,
+          "rect": [
+            9,
+            186,
+            103,
+            206
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1018,
+          "rect": [
+            112,
+            182,
+            539,
+            210
+          ],
+          "style": 1342242944
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1019,
+          "rect": [
+            558,
+            244,
+            646,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1020,
+          "rect": [
+            12,
+            244,
+            102,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1021,
+          "rect": [
+            112,
+            244,
+            242,
+            272
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1022,
+          "rect": [
+            261,
+            244,
+            390,
+            272
+          ],
+          "style": 1342242817
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1023,
+          "rect": [
+            410,
+            244,
+            539,
+            272
+          ],
+          "style": 1342242816
+        }
+      ],
+      "dpi": 120,
+      "tabs": [
+        1001,
+        1003,
+        1012,
+        1014,
+        1016,
+        1018,
+        1021,
+        1022,
+        1023
+      ]
+    },
+    "review": {
+      "controls": [
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1000,
+          "rect": [
+            9,
+            10,
+            103,
+            30
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1001,
+          "rect": [
+            112,
+            6,
+            539,
+            34
+          ],
+          "style": 1342244992
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1002,
+          "rect": [
+            9,
+            44,
+            103,
+            64
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1003,
+          "rect": [
+            112,
+            44,
+            315,
+            68
+          ],
+          "style": 1342243331
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1004,
+          "rect": [
+            320,
+            42,
+            348,
+            70
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 0,
+          "fontFace": "",
+          "fontHeight": 0,
+          "fontQuality": 0,
+          "fontWeight": 0,
+          "id": 1005,
+          "rect": [
+            583,
+            56,
+            618,
+            96
+          ],
+          "style": 1342177283
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1006,
+          "rect": [
+            544,
+            114,
+            656,
+            134
+          ],
+          "style": 1342177281
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1007,
+          "rect": [
+            12,
+            216,
+            653,
+            236
+          ],
+          "style": 1342193664
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1008,
+          "rect": [
+            544,
+            138,
+            656,
+            154
+          ],
+          "style": 1342193665
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1009,
+          "rect": [
+            558,
+            156,
+            646,
+            184
+          ],
+          "style": 1073807360
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1010,
+          "rect": [
+            12,
+            288,
+            653,
+            306
+          ],
+          "style": 1073758208
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1011,
+          "rect": [
+            9,
+            82,
+            103,
+            102
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1012,
+          "rect": [
+            112,
+            78,
+            502,
+            102
+          ],
+          "style": 1342243394
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1013,
+          "rect": [
+            112,
+            112,
+            539,
+            176
+          ],
+          "style": 1342177287
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1014,
+          "rect": [
+            121,
+            110,
+            527,
+            130
+          ],
+          "style": 1342251011
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1015,
+          "rect": [
+            121,
+            138,
+            527,
+            166
+          ],
+          "style": 1476460672
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1016,
+          "rect": [
+            511,
+            78,
+            539,
+            106
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1017,
+          "rect": [
+            9,
+            186,
+            103,
+            206
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1018,
+          "rect": [
+            112,
+            182,
+            539,
+            210
+          ],
+          "style": 1342242944
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1019,
+          "rect": [
+            558,
+            244,
+            646,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1020,
+          "rect": [
+            12,
+            244,
+            102,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1021,
+          "rect": [
+            112,
+            244,
+            242,
+            272
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1022,
+          "rect": [
+            261,
+            244,
+            390,
+            272
+          ],
+          "style": 1342242817
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1023,
+          "rect": [
+            410,
+            244,
+            539,
+            272
+          ],
+          "style": 1342242816
+        }
+      ],
+      "dpi": 120,
+      "tabs": [
+        1001,
+        1003,
+        1012,
+        1014,
+        1016,
+        1018,
+        1021,
+        1022,
+        1023
+      ]
+    },
+    "start": {
+      "controls": [
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1000,
+          "rect": [
+            9,
+            10,
+            103,
+            30
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1001,
+          "rect": [
+            112,
+            6,
+            539,
+            34
+          ],
+          "style": 1342244992
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1002,
+          "rect": [
+            9,
+            44,
+            103,
+            64
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1003,
+          "rect": [
+            112,
+            44,
+            315,
+            68
+          ],
+          "style": 1342243331
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1004,
+          "rect": [
+            320,
+            42,
+            348,
+            70
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 0,
+          "fontFace": "",
+          "fontHeight": 0,
+          "fontQuality": 0,
+          "fontWeight": 0,
+          "id": 1005,
+          "rect": [
+            583,
+            56,
+            623,
+            96
+          ],
+          "style": 1342177283
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1006,
+          "rect": [
+            544,
+            114,
+            656,
+            134
+          ],
+          "style": 1342177281
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1007,
+          "rect": [
+            12,
+            216,
+            653,
+            236
+          ],
+          "style": 1342193664
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1008,
+          "rect": [
+            544,
+            138,
+            656,
+            154
+          ],
+          "style": 1342193665
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1009,
+          "rect": [
+            558,
+            156,
+            646,
+            184
+          ],
+          "style": 1073807360
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1010,
+          "rect": [
+            12,
+            288,
+            653,
+            306
+          ],
+          "style": 1073758208
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1011,
+          "rect": [
+            9,
+            82,
+            103,
+            102
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1012,
+          "rect": [
+            112,
+            78,
+            502,
+            102
+          ],
+          "style": 1342243394
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1013,
+          "rect": [
+            112,
+            112,
+            539,
+            176
+          ],
+          "style": 1342177287
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1014,
+          "rect": [
+            121,
+            110,
+            527,
+            130
+          ],
+          "style": 1342251011
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1015,
+          "rect": [
+            121,
+            138,
+            527,
+            166
+          ],
+          "style": 1476460672
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1016,
+          "rect": [
+            511,
+            78,
+            539,
+            106
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1017,
+          "rect": [
+            9,
+            186,
+            103,
+            206
+          ],
+          "style": 1342177282
+        },
+        {
+          "exStyle": 512,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1018,
+          "rect": [
+            112,
+            182,
+            539,
+            210
+          ],
+          "style": 1342242944
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1019,
+          "rect": [
+            558,
+            244,
+            646,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1020,
+          "rect": [
+            12,
+            244,
+            102,
+            272
+          ],
+          "style": 1476460544
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1021,
+          "rect": [
+            112,
+            244,
+            242,
+            272
+          ],
+          "style": 1342242816
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1022,
+          "rect": [
+            261,
+            244,
+            390,
+            272
+          ],
+          "style": 1342242817
+        },
+        {
+          "exStyle": 0,
+          "fontCharset": 1,
+          "fontFace": "Tahoma",
+          "fontHeight": -13,
+          "fontQuality": 0,
+          "fontWeight": 400,
+          "id": 1023,
+          "rect": [
+            410,
+            244,
+            539,
+            272
+          ],
+          "style": 1342242816
+        }
+      ],
+      "dpi": 120,
+      "tabs": [
+        1001,
+        1003,
+        1012,
+        1014,
+        1016,
+        1018,
+        1021,
+        1022,
+        1023
+      ]
+    }
+  },
+  "formLifecycle": {
+    "cancel": [
+      {
+        "ms": 1.4786999989300966,
+        "stage": "file-info-entry"
+      },
+      {
+        "ms": 3.8523999992758036,
+        "stage": "form-init-entry"
+      },
+      {
+        "ms": 3.8665999993681908,
+        "stage": "form-base-ready"
+      },
+      {
+        "ms": 4.047799998894334,
+        "stage": "form-font-ready"
+      },
+      {
+        "ms": 10.081399999558926,
+        "stage": "form-frame-ready"
+      },
+      {
+        "ms": 10.088499998673797,
+        "stage": "file-info-controls-start"
+      },
+      {
+        "ms": 13.420699998736382,
+        "stage": "file-info-category-create"
+      },
+      {
+        "ms": 20.592199999839067,
+        "stage": "file-info-category-created"
+      },
+      {
+        "ms": 23.529799999669194,
+        "stage": "file-info-category-populated"
+      },
+      {
+        "ms": 31.252299999818206,
+        "stage": "file-info-destination-start"
+      },
+      {
+        "ms": 39.84539999999106,
+        "stage": "file-info-destination-ready"
+      },
+      {
+        "ms": 46.06570000015199,
+        "stage": "file-info-fields-ready"
+      },
+      {
+        "ms": 46.08660000003874,
+        "stage": "file-info-actions-start"
+      },
+      {
+        "ms": 50.61500000022352,
+        "stage": "file-info-controls-ready"
+      },
+      {
+        "ms": 52.916699999943376,
+        "stage": "form-theme-ready"
+      },
+      {
+        "ms": 52.93459999933839,
+        "stage": "owned-theme-ready"
+      },
+      {
+        "ms": 56.72639999911189,
+        "stage": "owned-show-returned"
+      },
+      {
+        "ms": 69.39209999889135,
+        "stage": "owned-paint-returned"
+      },
+      {
+        "ms": 69.40499999932945,
+        "stage": "owned-foreground-returned"
+      }
+    ],
+    "later": [
+      {
+        "ms": 2.3445999994874,
+        "stage": "file-info-entry"
+      },
+      {
+        "ms": 4.636600000783801,
+        "stage": "form-init-entry"
+      },
+      {
+        "ms": 4.650000000372529,
+        "stage": "form-base-ready"
+      },
+      {
+        "ms": 4.854499999433756,
+        "stage": "form-font-ready"
+      },
+      {
+        "ms": 9.93610000051558,
+        "stage": "form-frame-ready"
+      },
+      {
+        "ms": 9.94230000115931,
+        "stage": "file-info-controls-start"
+      },
+      {
+        "ms": 12.618300000205636,
+        "stage": "file-info-category-create"
+      },
+      {
+        "ms": 20.838100001215935,
+        "stage": "file-info-category-created"
+      },
+      {
+        "ms": 24.45519999973476,
+        "stage": "file-info-category-populated"
+      },
+      {
+        "ms": 32.225700000301,
+        "stage": "file-info-destination-start"
+      },
+      {
+        "ms": 41.292500000447035,
+        "stage": "file-info-destination-ready"
+      },
+      {
+        "ms": 47.22589999996126,
+        "stage": "file-info-fields-ready"
+      },
+      {
+        "ms": 47.24070000089705,
+        "stage": "file-info-actions-start"
+      },
+      {
+        "ms": 52.024299999699,
+        "stage": "file-info-controls-ready"
+      },
+      {
+        "ms": 54.075999999418855,
+        "stage": "form-theme-ready"
+      },
+      {
+        "ms": 54.09800000116229,
+        "stage": "owned-theme-ready"
+      },
+      {
+        "ms": 58.339200001209974,
+        "stage": "owned-show-returned"
+      },
+      {
+        "ms": 76.64560000039637,
+        "stage": "owned-paint-returned"
+      },
+      {
+        "ms": 76.66119999997318,
+        "stage": "owned-foreground-returned"
+      },
+      {
+        "ms": 133.36480000056326,
+        "stage": "first-prefetch-pulse"
+      },
+      {
+        "ms": 133.38159999996424,
+        "stage": "first-prefetch-returned"
+      }
+    ],
+    "review": [
+      {
+        "ms": 1.7314999997615814,
+        "stage": "file-info-entry"
+      },
+      {
+        "ms": 4.579499999061227,
+        "stage": "form-init-entry"
+      },
+      {
+        "ms": 4.602700000628829,
+        "stage": "form-base-ready"
+      },
+      {
+        "ms": 4.781700000166893,
+        "stage": "form-font-ready"
+      },
+      {
+        "ms": 15.777699999511242,
+        "stage": "form-frame-ready"
+      },
+      {
+        "ms": 15.800200000405312,
+        "stage": "file-info-controls-start"
+      },
+      {
+        "ms": 18.799699999392033,
+        "stage": "file-info-category-create"
+      },
+      {
+        "ms": 28.000399999320507,
+        "stage": "file-info-category-created"
+      },
+      {
+        "ms": 31.250099999830127,
+        "stage": "file-info-category-populated"
+      },
+      {
+        "ms": 37.72650000080466,
+        "stage": "file-info-destination-start"
+      },
+      {
+        "ms": 46.43400000035763,
+        "stage": "file-info-destination-ready"
+      },
+      {
+        "ms": 51.85630000010133,
+        "stage": "file-info-fields-ready"
+      },
+      {
+        "ms": 51.8866000007838,
+        "stage": "file-info-actions-start"
+      },
+      {
+        "ms": 57.42909999936819,
+        "stage": "file-info-controls-ready"
+      },
+      {
+        "ms": 64.33290000073612,
+        "stage": "form-theme-ready"
+      },
+      {
+        "ms": 64.35469999909401,
+        "stage": "owned-theme-ready"
+      },
+      {
+        "ms": 69.17809999920428,
+        "stage": "owned-show-returned"
+      },
+      {
+        "ms": 83.20600000023842,
+        "stage": "owned-paint-returned"
+      },
+      {
+        "ms": 83.2214999999851,
+        "stage": "owned-foreground-returned"
+      },
+      {
+        "ms": 135.60969999991357,
+        "stage": "first-prefetch-pulse"
+      },
+      {
+        "ms": 135.64919999986887,
+        "stage": "first-prefetch-returned"
+      }
+    ],
+    "start": [
+      {
+        "ms": 1.430800000205636,
+        "stage": "file-info-entry"
+      },
+      {
+        "ms": 3.6448999997228384,
+        "stage": "form-init-entry"
+      },
+      {
+        "ms": 3.6597000006586313,
+        "stage": "form-base-ready"
+      },
+      {
+        "ms": 3.8377000000327826,
+        "stage": "form-font-ready"
+      },
+      {
+        "ms": 10.083899999037385,
+        "stage": "form-frame-ready"
+      },
+      {
+        "ms": 10.091499999165535,
+        "stage": "file-info-controls-start"
+      },
+      {
+        "ms": 12.908299999311566,
+        "stage": "file-info-category-create"
+      },
+      {
+        "ms": 19.354000000283122,
+        "stage": "file-info-category-created"
+      },
+      {
+        "ms": 23.313999999314547,
+        "stage": "file-info-category-populated"
+      },
+      {
+        "ms": 29.11879999935627,
+        "stage": "file-info-destination-start"
+      },
+      {
+        "ms": 38.281199999153614,
+        "stage": "file-info-destination-ready"
+      },
+      {
+        "ms": 43.87009999901056,
+        "stage": "file-info-fields-ready"
+      },
+      {
+        "ms": 43.881699999794364,
+        "stage": "file-info-actions-start"
+      },
+      {
+        "ms": 48.34320000000298,
+        "stage": "file-info-controls-ready"
+      },
+      {
+        "ms": 50.406199999153614,
+        "stage": "form-theme-ready"
+      },
+      {
+        "ms": 50.41939999908209,
+        "stage": "owned-theme-ready"
+      },
+      {
+        "ms": 55.8672000002116,
+        "stage": "owned-show-returned"
+      },
+      {
+        "ms": 73.1781999990344,
+        "stage": "owned-paint-returned"
+      },
+      {
+        "ms": 73.19569999910891,
+        "stage": "owned-foreground-returned"
+      },
+      {
+        "ms": 119.4258999992162,
+        "stage": "first-prefetch-pulse"
+      },
+      {
+        "ms": 119.4452999997884,
+        "stage": "first-prefetch-returned"
+      }
+    ]
+  },
+  "formStages": [
+    {
+      "id": 1000,
+      "ms": 0.7732999995350838,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 1.1169000007212162,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 0.6855999995023012,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 2.461600000038743,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 9.179199999198318,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 9.187599999830127,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0010000001639127731,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0006000008434057236,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 0.9250999987125397,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 0.9174000006169081,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 0.6995999999344349,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 0.709799999371171,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 0.6895000003278255,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 0.8001000005751848,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 0.718800000846386,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 0.7051999997347593,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 2.628100000321865,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 8.07689999975264,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 8.083200000226498,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 0.6106000002473593,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0005999989807605743,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 0.772699998691678,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 0.7563999984413385,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 0.9131000004708767,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 1.0835999995470047,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 0.3878000006079674,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 0.8335999995470047,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 0.7515999991446733,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 1.9133000001311302,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 0.8739999998360872,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 0.7352000009268522,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 0.7401999998837709,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 0.7380999997258186,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 0.9641999993473291,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 0.688400000333786,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 1.8288000002503395,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 6.41639999859035,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 6.421800000593066,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0009000003337860107,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.000499999150633812,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 0.8288000002503395,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1005,
+      "ms": 0.7159000001847744,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 0.6998999994248152,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 0.6591000016778708,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 0.6489000003784895,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 0.7381999995559454,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 0.6567999999970198,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 0.6498999986797571,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 3.1458000000566244,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 8.42509999871254,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 8.43189999833703,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 0.7182000000029802,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0005000010132789612,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 0.9898999985307455,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 0.7358999997377396,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1015,
+      "ms": 0.9139000009745359,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 1.0699000004678965,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 0.38240000046789646,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 0.8394999988377094,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 0.756699999794364,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 0.8354000002145767,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 0.8497999999672174,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 0.7423000000417233,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 0.7295999992638826,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 0.5784000009298325,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 0.9208000004291534,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 0.7611999996006489,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 2.6873000003397465,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 8.202299999073148,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 8.208999998867512,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0010000001639127731,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.000499999150633812,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 0.931300001218915,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 1.0559000000357628,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 0.7068000007420778,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 0.6627999991178513,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 1.3941000010818243,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 0.8278000000864267,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 0.6916999984532595,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1011,
+      "ms": 0.5962000004947186,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 2.740300001576543,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 8.424200000241399,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 8.432300001382828,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 0.6230999995023012,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0005000010132789612,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 0.8401000015437603,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 0.786099998280406,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 0.9440999999642372,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 0.9715999998152256,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 0.5973000004887581,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 0.9613999985158443,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1019,
+      "ms": 0.8285000007599592,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 0.9965000003576279,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 1.0160000007599592,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 0.7489000000059605,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 0.7406000010669231,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 0.6985999997705221,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 1.4366000015288591,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1002,
+      "ms": 0.6983000002801418,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 2.5929000005126,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 7.156700000166893,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 7.162899998947978,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.000700000673532486,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0004000011831521988,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 0.7584999985992908,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 1.165700001642108,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 1.694599999114871,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1007,
+      "ms": 0.6370999999344349,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 0.6445000004023314,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 0.7052999995648861,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 0.650900000706315,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 0.6238000001758337,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 2.678100001066923,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 8.028300000354648,
+      "stage": "typed-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 8.032800000160933,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 0.5509000010788441,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0005000010132789612,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 0.7384999990463257,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 0.7795000001788139,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 0.8804999999701977,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 1.1127000004053116,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 0.7895999997854233,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 0.7839999999850988,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 0.705400001257658,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 0.8066000007092953,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 0.9062999989837408,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 0.7083999998867512,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 0.6896999999880791,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    }
+  ],
+  "passed": true
+}

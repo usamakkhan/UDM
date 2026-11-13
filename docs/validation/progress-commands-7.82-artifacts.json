@@ -1,0 +1,21 @@
+{
+  "Version": "7.82",
+  "RemovalPasses": [
+    {
+      "Evidence": "progress-commands-7.82/initial-artifact-cleanup.json",
+      "Files": 22,
+      "LogicalBytesRemoved": 219454482.0
+    },
+    {
+      "Evidence": "progress-commands-7.82/final-artifact-cleanup.json",
+      "Files": 7,
+      "LogicalBytesRemoved": 153063556.0
+    }
+  ],
+  "FileVersionRemovalOperations": 29,
+  "DistinctPaths": 25,
+  "LogicalBytesRemoved": 372518038.0,
+  "Note": "Four UI object paths were rebuilt and removed again after shutdown corrections; totals count file versions across the two passes, not unique physical disk savings.",
+  "CoreCacheAndExecutablesRetained": true,
+  "SharedToolsUntouched": true
+}

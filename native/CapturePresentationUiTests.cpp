@@ -410,6 +410,37 @@ public:static void run(Manager& manager,MainWindow& frame){
    expect(text(editable)=="Custom path","Batched editable dropdown retains unsaved text");
    expect(empty->GetCount()==0&&empty->GetCurSel()==CB_ERR,"Batched empty dropdown stays unselected");
    for(auto combo:{selected,fallback,editable,empty})expect((combo->GetStyle()&WS_VISIBLE)!=0&&!GetPropW(combo->GetSafeHwnd(),L"SysSetRedraw"),"Batched dropdown restores visibility and redraw");
+   const std::vector<std::string> keys={"Other","Archives","Video","General","Compressed","Audio"};
+   unsigned nativeSearches=0;
+   const auto countSearches=+[](HWND window,UINT message,WPARAM w,LPARAM l,UINT_PTR,DWORD_PTR data)->LRESULT{
+    if(message==CB_FINDSTRINGEXACT)++*reinterpret_cast<unsigned*>(data);
+    return DefSubclassProc(window,message,w,l);
+   };
+   expect(SetWindowSubclass(selected->GetSafeHwnd(),countSearches,71,reinterpret_cast<DWORD_PTR>(&nativeSearches))!=FALSE,"Category search observer attaches to its owned selector");
+   populateDownloadCategories(*selected,keys,3);
+   RemoveWindowSubclass(selected->GetSafeHwnd(),countSearches,71);
+   expect(nativeSearches==0,"Category label resolution avoids native combo searches");
+   expect(selected->GetCount()==6&&selected->GetCurSel()==3&&text(selected)=="General (custom)","File Info category batch retains custom key selection and General alias collision");
+   expect(selected->FindStringExact(-1,L"General")==0&&selected->FindStringExact(-1,L"Compressed")==1&&selected->FindStringExact(-1,L"Compressed (custom)")==4,"File Info category batch preserves built-in aliases and custom labels");
+   expect((selected->GetStyle()&WS_VISIBLE)!=0&&!GetPropW(selected->GetSafeHwnd(),L"SysSetRedraw"),"File Info category batch restores redraw and child visibility before dialog paint");
+   populateDownloadCategories(*selected,{"Video","Music"},1);
+   expect(selected->GetCount()==2&&selected->GetCurSel()==1&&text(selected)=="Music","Category rebuild removes old items and selects the requested key");
+   populateDownloadCategories(*selected,{"Video","Music"},99);
+   expect(selected->GetCurSel()==0,"Category rebuild retains missing-key fallback");
+   selected->ShowWindow(SW_HIDE);
+   populateDownloadCategories(*selected,keys,5);
+   expect(!(selected->GetStyle()&WS_VISIBLE)&&selected->GetCurSel()==5,"Category batch does not reveal a previously hidden selector");
+   populateDownloadCategories(*selected,{},0);
+   expect(selected->GetCount()==0&&selected->GetCurSel()==CB_ERR,"Category batch leaves an empty selector unselected");
+   const std::vector<std::string> localizedKeys={"Other","Archives","General","general","Compressed","I","i","\xC4\xB0","\xC4\xB1","\xC3\x9F","ss","\xEF\xBC\xA1","A","General (custom)",""};
+   for(const auto locale:{GetUserDefaultLCID(),LCID(0x041f),LCID(0x0411),LCID(0x0407)}){
+    expect(selected->SetLocale(locale)!=CB_ERR&&fallback->SetLocale(locale)!=CB_ERR,"Category comparison uses an available native selector locale");
+    fallback->ResetContent();
+    for(const auto& key:localizedKeys){auto label=cs(categoryDisplayName(key));while(fallback->FindStringExact(-1,label)!=CB_ERR)label+=L" (custom)";expect(fallback->AddString(label)>=0,"Native locale oracle accepts its owned category label");}
+    populateDownloadCategories(*selected,localizedKeys,7);
+    expect(selected->GetCount()==fallback->GetCount()&&selected->GetCurSel()==7,"Localized category rebuild retains every key and selected index");
+    for(int index=0;index<fallback->GetCount();++index){CString expected,actual;fallback->GetLBText(index,expected);selected->GetLBText(index,actual);expect(actual==expected,"In-memory collision labels match native search behavior for this locale");}
+   }
    combos.PostMessage(WM_COMMAND,IDCANCEL);
   };
   combos.DoModal();
@@ -428,11 +459,30 @@ static HWND visibleControl(HWND parent,const std::wstring& label){
 static i64 fixtureEpochMs(){
  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
+// An owned modal's posted traffic must not starve its initial prefetch request.
+struct FileInfoQueuePressure {
+ HWND window=nullptr;int processed=0,atPrefetch=-1;bool enabled=false,attachFailed=false;
+ static LRESULT CALLBACK dispatch(HWND window,UINT message,WPARAM w,LPARAM l,UINT_PTR id,DWORD_PTR context){
+  auto& self=*reinterpret_cast<FileInfoQueuePressure*>(context);
+  if(message==WM_APP+1241){if(++self.processed<512)PostMessageW(window,message,0,0);return 0;}
+  if(message==WM_NCDESTROY){RemoveWindowSubclass(window,dispatch,id);self.window=nullptr;}
+  return DefSubclassProc(window,message,w,l);
+ }
+ void begin(){
+  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM context)->BOOL{
+   auto& self=*reinterpret_cast<FileInfoQueuePressure*>(context);
+   if(title(window)!=L"Download File Info"||!IsWindowVisible(window))return TRUE;
+   if(!SetWindowSubclass(window,dispatch,1241,reinterpret_cast<DWORD_PTR>(&self))){self.attachFailed=true;return FALSE;}
+   self.window=window;PostMessageW(window,WM_APP+1241,0,0);return FALSE;
+  },reinterpret_cast<LPARAM>(this));
+ }
+ ~FileInfoQueuePressure(){if(window)RemoveWindowSubclass(window,dispatch,1241);}
+};
 static void browserColdFileInfoFixture(const fs::path& root){
  wchar_t tag[40]{};
  if(!GetEnvironmentVariableW(L"UDM_INSTANCE_TAG",tag,40)||!fs::is_regular_file(root/L".udm-live-file-info-fixture"))
   throw std::runtime_error("Expected an isolated tagged File Info fixture.");
- std::vector<std::tuple<const char*,double,i64>> stages;
+ std::vector<std::tuple<const char*,double,i64,DWORD,std::optional<double>>> stages;
  std::mutex timingMutex;
  Manager manager(root/L"state");
  if(!manager.jobs.empty()||yes(manager.state["Settings"],"SkipBrowserFileInfo")||!yes(manager.state["Settings"],"PrefetchFileInfo"))
@@ -444,15 +494,23 @@ static void browserColdFileInfoFixture(const fs::path& root){
  std::atomic<ULONGLONG> admissionTick{0};
  std::atomic<double> admissionClock{0};
  const bool trace=GetEnvironmentVariableW(L"UDM_FILE_INFO_TRACE",nullptr,0)>0;
+ const bool observeCatalog=GetEnvironmentVariableW(L"UDM_FILE_INFO_TRACE_CATALOG",nullptr,0)>0||
+  GetEnvironmentVariableW(L"UDM_TRACE_STARTUP_CHECKPOINTS",nullptr,0)>0;
+ if(observeCatalog&&!trace)throw std::runtime_error("Catalog observation requires tracing.");
+ FileInfoQueuePressure pressure;
+ pressure.enabled=GetEnvironmentVariableW(L"UDM_FILE_INFO_QUEUE_PRESSURE",nullptr,0)>0;
+ if(pressure.enabled&&!trace)throw std::runtime_error("Message-pressure qualification requires tracing.");
  auto recordStage=[&](const char* stage){
   std::lock_guard<std::mutex> lock(timingMutex);
-  if(stages.size()<64)stages.emplace_back(stage,formClockMs(),fixtureEpochMs());
+  if(stages.size()<64)stages.emplace_back(stage,formClockMs(),fixtureEpochMs(),GetCurrentThreadId(),formThreadCpuMs());
  };
  if(trace){
   stages.reserve(64);
-  capturePresentationTrace=[&manager,recordStage](const char* stage){
+  capturePresentationTrace=[&manager,recordStage,&pressure,observeCatalog](const char* stage){
    recordStage(stage);
-   if(std::string_view(stage)=="first-prefetch-pulse"){
+   if(pressure.enabled&&std::string_view(stage)=="owned-foreground-returned")pressure.begin();
+   if(pressure.enabled&&std::string_view(stage)=="first-prefetch-pulse")pressure.atPrefetch=pressure.processed;
+   if(observeCatalog&&std::string_view(stage)=="first-prefetch-pulse"){
     Lock lock(manager.mutex);
     CapturedResponseTestAccess::saveCheckpoint(manager,[recordStage](const char* catalogStage){
      if(std::string_view(catalogStage)=="temporary-flushed")recordStage("catalog-temporary-flushed");
@@ -464,6 +522,8 @@ static void browserColdFileInfoFixture(const fs::path& root){
  ULONGLONG paintTick=0;
  std::string shownHash;
  const bool observeHeld=GetEnvironmentVariableW(L"UDM_FILE_INFO_OBSERVE_HELD",nullptr,0)>0;
+ const bool startWhileReceiving=GetEnvironmentVariableW(L"UDM_FILE_INFO_START_RECEIVING",nullptr,0)>0;
+ if(observeHeld&&startWhileReceiving)throw std::runtime_error("Choose held-session or receiving confirmation, not both.");
  Json held;
  const auto deadline=GetTickCount64()+(observeHeld?180000:65000);
  const auto inspect=[&](HWND window){
@@ -479,6 +539,7 @@ static void browserColdFileInfoFixture(const fs::path& root){
   }
   Json prepared,heldState;
   fs::path target;
+  bool receiving=false;
   {
    Lock lock(manager.mutex);
    if(!job&&!manager.jobs.empty())job=manager.jobs.front();
@@ -486,12 +547,19 @@ static void browserColdFileInfoFixture(const fs::path& root){
    expect(manager.jobs.size()==1,"The browser selection creates exactly one native job");
    if(!bodyEpoch&&num(job->data,"Received")>0)bodyEpoch=fixtureEpochMs();
    target=job->target();
+   if(startWhileReceiving&&!confirmedEpoch&&bodyEpoch&&manager.isActive(job)&&yes(job->data,"ConfirmationPending")&&
+      str(job->data,"MediaPhase")!="Waiting for confirmation"&&num(job->data,"PrefetchedFinalSize",-1)<0)
+    receiving=true;
    if(observeHeld&&yes(job->data,"SabrSessionRefreshRequired")&&!manager.isActive(job)){
     heldState={{"retainedBytes",num(job->data,"SabrRetainedBytes")},{"completedMs",num(job->data,"StreamCompletedMs")}};
    }else{
-    if(confirmedEpoch||!yes(job->data,"ConfirmationPending")||str(job->data,"MediaPhase")!="Waiting for confirmation")return;
+    if(!receiving&&(confirmedEpoch||!yes(job->data,"ConfirmationPending")||str(job->data,"MediaPhase")!="Waiting for confirmation"))return;
     shownSize=num(job->data,"PrefetchedFinalSize",-1);prepared=job->preparedMedia;
    }
+  }
+  if(receiving){
+   expect(!fs::exists(target)&&shownSize<0,"Early Start is issued while prefetch is receiving and before exact output exists");
+   confirmedEpoch=fixtureEpochMs();PostMessageW(start,BM_CLICK,0,0);return;
   }
   if(heldState.is_object()){
    const auto refresh=visibleControl(window,L"&Refresh...");
@@ -544,19 +612,32 @@ static void browserColdFileInfoFixture(const fs::path& root){
    expect(yes(job->data,"SabrSessionRefreshRequired")&&num(job->data,"SabrRetainedBytes")==num(held,"retainedBytes")&&!fs::exists(job->target()),"Closing File Info preserves the held checkpoint");
   }else{
    expect(complete&&confirmedEpoch&&bodyEpoch,"The browser download receives bytes before confirmation and completes after Start");
-   expect((i64)fs::file_size(job->target())==shownSize&&fileHash(job->target())==shownHash,"Published file matches the exact size and hash verified before Start");
+   if(startWhileReceiving){
+    Lock lock(manager.mutex);
+    expect(yes(job->data,"ContinuedMediaPrefetch")&&num(job->data,"PrefetchedBytesAtStart")>0&&!yes(job->data,"ConfirmationPending"),
+     "Early Start confirms the existing media prefetch and retains its received bytes");
+    expect(num(job->data,"Size")==static_cast<i64>(fs::file_size(job->target()))&&str(job->data,"Sha256")==fileHash(job->target()),
+     "Early-confirmed output matches its final catalog size and hash");
+   }else expect((i64)fs::file_size(job->target())==shownSize&&fileHash(job->target())==shownHash,"Published file matches the exact size and hash verified before Start");
+  }
+  if(pressure.enabled){
+   atomicText(root/L"queue-pressure.json",Json{{"processed",pressure.processed},{"atPrefetch",pressure.atPrefetch},{"attachFailed",pressure.attachFailed}}.dump(2),false);
+   expect(!pressure.attachFailed&&pressure.atPrefetch>=0&&pressure.atPrefetch<512,"Initial File Info prefetch starts before queued notification traffic drains");
   }
   Json traceResult=Json::array();
   const auto origin=admissionClock.load();
   {std::lock_guard<std::mutex> lock(timingMutex);
-   for(const auto& [stage,stamp,wall]:stages)traceResult.push_back({{"stage",stage},{"msAfterAdmission",stamp-origin},{"epochMs",wall}});
+   for(const auto& [stage,stamp,wall,thread,cpu]:stages){
+    Json record={{"stage",stage},{"msAfterAdmission",stamp-origin},{"epochMs",wall},{"threadId",thread}};
+    if(cpu)record["threadCpuMs"]=*cpu;traceResult.push_back(std::move(record));
+   }
   }
   const auto paintDelay=static_cast<i64>(paintTick)-static_cast<i64>(admissionTick.load());
   atomicText(root/L"file-info-result.json",Json{{"status",complete?"Complete":"Held"},{"admissionEpochMs",admissionEpoch.load()},
    {"actionableEpochMs",paintEpoch},{"admissionToActionableMs",paintDelay},{"firstReceivedObservationEpochMs",bodyEpoch},
    {"exactVisibleEpochMs",exactEpoch},{"startEpochMs",confirmedEpoch},{"publishedEpochMs",complete?fixtureEpochMs():0},
-   {"sizeBeforeStart",shownSize},{"sha256BeforeStart",shownHash},{"held",held},{"trace",traceResult},
-   {"formStages",trace?formInitializationTiming:Json::array()},{"checks",outcomes}}.dump(2),false);
+   {"sizeBeforeStart",shownSize},{"sha256BeforeStart",shownHash},{"startWhileReceiving",startWhileReceiving},{"held",held},{"trace",traceResult},
+   {"catalogSaveObserved",trace&&observeCatalog},{"formStages",trace?formInitializationTiming:Json::array()},{"checks",outcomes}}.dump(2),false);
  }catch(...){KillTimer(nullptr,timer);livePrefetchPulse={};capturePresentationTrace={};frame->SendMessage(WM_CLOSE);throw;}
  KillTimer(nullptr,timer);livePrefetchPulse={};capturePresentationTrace={};frame->SendMessage(WM_CLOSE);
 }

@@ -1,0 +1,217 @@
+{
+  "desktop": "7.49",
+  "browser": "0.71.13",
+  "status": "Development build complete; targeted projection/UI qualification passed; broader address-search fixture has one unresolved expectation",
+  "build": "progress-snapshot-7.49-build.json",
+  "installedDesktop": "7.11",
+  "sourceAndProductionBinaryHashesVerified": true,
+  "focusedChecksPassed": 345,
+  "additionalSearchChecks": 25,
+  "additionalSearchChecksPassed": 24,
+  "tests": [
+    {
+      "name": "model",
+      "passed": true,
+      "checks": 82,
+      "failed": [],
+      "source": "native/ProgressRecordViewTests.cpp",
+      "sourceSha256": "3061B9093CD693FAB4FE223F87AE3EDFBB12F8389A5BEEB24014A05FB2598CED",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.49",
+      "sha256": "12A9D637E4152A04525080CC6ED10B96D1C807207973D42EBA577A42E8C14BEC"
+    },
+    {
+      "name": "ui",
+      "passed": true,
+      "checks": 263,
+      "failed": [],
+      "source": "native/ProgressDialogUiTests.cpp",
+      "sourceSha256": "EDFA6648994A3D734E1CD02B2A620C2F139DF3B9E59F1AFBCE2625B593A53707",
+      "executable": "Udm.ProgressDialogUiTests.exe",
+      "version": "7.49",
+      "sha256": "0D02EA706E1A090CB8DD4FFBC7FC686A3F4EED2641D2F2F2E64045ED1CA2F0FF"
+    },
+    {
+      "name": "address-search",
+      "passed": false,
+      "checks": 25,
+      "failed": [
+        {
+          "name": "Find uses uppercase folding for Greek sigma variants",
+          "observed": {
+            "filenameFold": "ς.BIN",
+            "queryFold": "Σ.BIN"
+          },
+          "passed": false
+        }
+      ],
+      "source": "native/FindAddressTests.cpp",
+      "sourceSha256": "A5D240BA7405310D51B2EAF734D9670415BB578CC2A95D5FE9BBB7309D008915",
+      "executable": "Udm.FindAddressTests.exe",
+      "version": "7.49",
+      "sha256": "B183FED1734844E973C10F7F4DC6ECAFA2D4A935B81F0436332BA10D49EE1D99"
+    }
+  ],
+  "addressTiming": {
+    "borrowedMedianMs": 2.70600625,
+    "borrowedMsPerCheck": [
+      2.70600625,
+      4.52328125,
+      2.14391875,
+      2.645225,
+      2.79074375,
+      3.3310875,
+      2.04593125
+    ],
+    "cloneMedianMs": 9.3439875,
+    "cloneMsPerCheck": [
+      13.534771875,
+      12.2660875,
+      13.396809375,
+      8.368428125,
+      8.022525,
+      9.3439875,
+      8.345490625
+    ],
+    "iterationsPerTrial": 32,
+    "scope": "Synthetic unchanged six-MiB legacy adaptive address; copy/compare vs borrowed comparison, not full UI or IDM"
+  },
+  "timerTiming": [
+    {
+      "frames": 16,
+      "largeContextMsPerFrame": 0.75958125,
+      "scope": "Synthetic owned progress window; current timer handler only, no IDM or earlier UI-frame baseline",
+      "smallContextMsPerFrame": 0.8300625
+    },
+    {
+      "frames": 16,
+      "msPerFrame": 1.48129375,
+      "scope": "Current real component timer with unchanged three-MiB protected adaptive payload; no earlier UI or IDM baseline"
+    }
+  ],
+  "timingConditions": "Synthetic model timing ran while a production compiler was active. Diagnostic comparison only; no pass/fail time threshold.",
+  "addressSearchChecks": [
+    {
+      "name": "Original URL remains searchable",
+      "passed": true
+    },
+    {
+      "name": "Parent page remains searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties redirected address is searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties video stream is searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties audio stream is searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties manifest is searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties first segment is searchable",
+      "passed": true
+    },
+    {
+      "name": "Properties SABR endpoint is searchable",
+      "passed": true
+    },
+    {
+      "name": "Stream matching ignores case by default",
+      "passed": true
+    },
+    {
+      "name": "Stream matching honors case selection",
+      "passed": true
+    },
+    {
+      "name": "Whole-string matches the complete stream site",
+      "passed": true
+    },
+    {
+      "name": "Whole-string excludes site fragments",
+      "passed": true
+    },
+    {
+      "name": "Whole-string matches complete stream URL",
+      "passed": true
+    },
+    {
+      "name": "Unchecked Address excludes stream URLs",
+      "passed": true
+    },
+    {
+      "name": "Whole-string site search covers the parent page with Windows case folding",
+      "passed": true
+    },
+    {
+      "name": "Case-sensitive whole-site search preserves spelling",
+      "passed": true
+    },
+    {
+      "name": "Whole-site comparison retains authority port",
+      "passed": true
+    },
+    {
+      "name": "Whole-site comparison accepts the full literal authority",
+      "passed": true
+    },
+    {
+      "name": "Find uses uppercase folding for Greek sigma variants",
+      "observed": {
+        "filenameFold": "ς.BIN",
+        "queryFold": "Σ.BIN"
+      },
+      "passed": false
+    },
+    {
+      "name": "Live properties expose each selected track playlist and segment",
+      "passed": true
+    },
+    {
+      "name": "Live properties distinguish video, audio and subtitle playlist labels",
+      "passed": true
+    },
+    {
+      "name": "Live properties distinguish video, audio and subtitle segment labels",
+      "passed": true
+    },
+    {
+      "name": "Both subtitle playlist and segment URLs remain searchable",
+      "passed": true
+    },
+    {
+      "name": "Viewing live links preserves protected metadata and the primary video address",
+      "passed": true
+    },
+    {
+      "name": "Search leaves captured download metadata unchanged",
+      "passed": true
+    }
+  ],
+  "searchFinding": "Windows CharUpperBuffW on this PC leaves U+03C2 unchanged but folds U+03C3 to U+03A3. The dormant fixture expects their search folds to match. No fresh IDM Find comparison establishes which outcome parity requires. Search implementation was not changed.",
+  "fixtureMaintenance": "Old credential-bearing authority sample was invalid under the current URL parser. Replaced with a valid host/port sample and added exception reporting. Initial compile failure from a removed explicit-copy helper was corrected before final build.",
+  "render": "progress-address-7.49-graph.png",
+  "visualInspection": "Owned component graph render inspected: labels, controls and graph fit; intentional history gap remains visible. This is not installed or physical-monitor acceptance.",
+  "artifactPolicy": "Shared current test cache and production output reused; one 20,949-byte component screenshot retained in documentation. No installer, installation, media-tool copy or temporary-root cleanup.",
+  "semantics": "Address field selection has one shared visitor. The timer compares borrowed input values under the manager lock; only changed inputs are copied and decrypted outside it. Full-copy helper remains for explicit Copy download address actions. No transport source mutation or new decrypt/persistence cache.",
+  "limits": [
+    "No full-app speed or IDM timing claim",
+    "No new installed or personal-browser acceptance",
+    "Unchanged large legacy plans are still compared byte-for-byte; this removes copies, not all O(n) reads",
+    "A changed or first-seen legacy plan still needs an owned snapshot and decryption",
+    "Search sigma expectation remains unresolved against IDM"
+  ],
+  "next": [
+    "Compare IDM Find behavior for final/ordinary Greek sigma before changing search semantics",
+    "Profile first-seen address resolution separately from steady-state progress refresh",
+    "Continue installed dialog, handoff and transfer latency comparisons under matched conditions"
+  ]
+}

@@ -68,3 +68,98 @@ One JSON per case and client in `--out`, plus `summary.md`. Fields:
 - `tcp.peak_concurrent` (public cases): established TCP connections sampled with `netstat` once per second.
 
 The results are in `docs/speed-benchmark-2026-10-18.md`.
+
+## Multiple jobs at one origin
+
+`host_concurrency.py` starts three independent downloads with one connection per
+job against a loopback origin that accepts two connections. Each file defaults
+to 8 MiB at 512 KiB/s. The app stays open until all jobs finish or the timeout
+expires. The fixture reports every job, checks the completed files' SHA-256,
+and removes its payloads and HTTP partials. It returns a nonzero exit status
+when any job fails, remains unfinished or has incorrect bytes.
+
+```powershell
+python benchmarks/speed/host_concurrency.py --udm release-native/UDM.exe --work D:/UDM/candidates/host-cap-work --out D:/UDM/candidates/host-cap-results.json
+```
+
+Use new work and output paths. `--jobs`, `--server-connections`, `--size-mib`,
+`--rate-kib`, `--retries` and `--timeout` adjust the workload. Set
+`--lift-cap-after` to a positive number of seconds to remove the origin's cap
+while downloads are active and check whether admission restores capacity.
+This fixture uses UDM's private
+catalog and an instance tag. A paired IDM run still requires the disposable
+profile described above.
+
+Include the slower first-payload case when changing admission: use
+`--size-mib 2 --rate-kib 128 --lift-cap-after 5` with fresh paths. All three
+files must complete, and peak concurrency must grow to three after the cap
+is removed. With `--retries 0` and the cap retained, the expected negative
+control is two correct completed files and one failed initial open after one
+refusal; that run intentionally exits nonzero. These cases distinguish
+productive-capacity learning from headers alone and preserve the explicit
+zero-retry policy.
+
+Use `--proxy-mode windows` to run the same workload through Windows automatic
+proxy selection. The receipt records the chosen mode. This tests the machine's
+current configuration without changing its proxy settings; a passing loopback
+case does not qualify VPN, authenticated enterprise proxy or WPAD deployment.
+
+`proxy_routes.py --udm <exe> --work <fresh-folder> --out <new-json>` exercises
+proxy-only delivery, dead-first-proxy failover, failure without an implicit
+direct fallback, and the Windows resolver's explicit bypass for local targets.
+The three positive transfers are 1 MiB and are checked by SHA-256. The negative
+case requires a failed selected-proxy connection, no payload requests and no
+published file. All generated payloads and partials are removed. No Windows
+proxy settings are changed.
+
+`proxy_accounts.py --fixture <Udm.HttpAdmissionTests.exe> --work <fresh-folder>
+--out <new-json>` drives four downloads through normal native queue dispatch.
+The first account has a two-response cap; its three managers independently
+encrypt the same password. The fourth download uses another account and must
+begin receiving while the first account remains full. All four 2 MiB outputs
+must match SHA-256. The native receipt records whether matching credentials
+produce one admission identity and whether the third download waits for a
+slot. Credentials are fixture-only; neither passwords nor authorization headers
+are written to the evidence. Payloads and partials are removed afterwards.
+Add `--challenge` to use Automatic authentication and require at least four
+407 challenge responses before the four authenticated downloads complete.
+Use `--header-timeout` for a negative control: the third request stays silent,
+uses a one-second response deadline and one retry, and must fail after exactly
+two wire requests without entering admission wait. The other three files must
+complete correctly. This option can be combined with `--challenge`.
+Use `--pause-waiter --challenge` separately to pause the third job while it waits
+for capacity, acknowledge cancellation while peers remain active, resume it
+through normal queue dispatch, and verify all four final files. The receipt
+records pause acknowledgement time; it is not an IDM latency comparison.
+Use `--pause-active --challenge` for the saved-partial handoff case. It pauses
+a receiving file after real progress, requires its waiter to begin receiving
+within 1.5 seconds of pause acknowledgement, and resumes the saved partial.
+The proxy must observe a nonzero resumed range and all four files must match
+SHA-256. Account isolation is checked from the proxy's actual occupied-slot
+counter when the independent account starts, rather than inferred from end times.
+
+Add `--cap-reduction` to `--pause-active --challenge` to lower that account's
+active-response cap from two to one when the paused response closes. The waiter
+must remain without payload during the 1.5-second observation interval, then all
+four files must complete with exact hashes, including the resumed partial. Every
+later acceptance must respect the one-response cap. Add `--cap-restore` to raise
+the cap back to two after the first reduced-cap acceptance; an additional job
+must then start while that response is still active. Evidence records cap-change
+times, accepted concurrency and refused GET attempts. Refusals include libcurl
+safe reconnects; they are not one-to-one with logical admission attempts.
+These modes leave Windows proxy settings unchanged and remove generated payloads.
+
+## Interrupted form submissions
+
+`post_recovery.py --fixture <Udm.HttpAdmissionTests.exe> --work <fresh-folder>
+--out <new-json>` checks direct and authenticated proxy POST recovery, including
+empty bodies, lost responses, receive deadlines, explicit resubmission, successful
+forms, and safe GET retries. Basic and Digest proxy challenges are controlled
+locally. Use `--cases name,name` to select individual cases.
+
+The proxy counts authenticated submissions and compares their body hashes.
+An ambiguous POST must not be silently submitted again by the transport or
+queue, while an explicit restart may submit again. GET controls must still
+recover. Five successful response files across all ten cases are checked by
+SHA-256; failed submissions must publish no file. Payloads and partials are
+removed. No real forms, credentials or system proxy settings are used.

@@ -5,7 +5,40 @@ namespace udm {
 static Json checks=Json::array();
 static fs::path checkpointRoot;
 static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!checkpointRoot.empty())atomicText(checkpointRoot/L"progress.json",checks.dump(2),false);if(!ok)throw std::runtime_error(name);}
+struct LayoutReadProbe {
+ Manager& manager;unsigned queries=0,available=0;
+ static LRESULT CALLBACK observe(HWND window,UINT message,WPARAM w,LPARAM l,UINT_PTR id,DWORD_PTR context){
+  auto& self=*reinterpret_cast<LayoutReadProbe*>(context);
+  if(message==LVM_GETCOLUMNWIDTH||message==LVM_GETCOLUMNORDERARRAY){
+   ++self.queries;bool acquired=false;
+   std::thread reader([&]{std::unique_lock<std::recursive_mutex> lock(self.manager.mutex,std::try_to_lock);if(lock.owns_lock()){self.manager.state["Settings"]["FixtureLayoutMarker"]="preserved";acquired=true;}});
+   reader.join();if(acquired)++self.available;
+  }
+  return DefSubclassProc(window,message,w,l);
+ }
+};
 class CapturePresentationComponentTest {
+static void checkLayoutSnapshot(Manager& manager,MainWindow& frame){
+ LayoutReadProbe probe{manager};
+ const auto window=frame.table.GetSafeHwnd();
+ if(!SetWindowSubclass(window,LayoutReadProbe::observe,762,reinterpret_cast<DWORD_PTR>(&probe)))throw std::runtime_error("Cannot observe owned layout reads.");
+ try{frame.rememberLayout();}catch(...){RemoveWindowSubclass(window,LayoutReadProbe::observe,762);throw;}
+ RemoveWindowSubclass(window,LayoutReadProbe::observe,762);
+ const auto saved=manager.state["Settings"]["ListLayout"];
+ atomicText(checkpointRoot/L"layout-probe.json",Json{{"queries",probe.queries},{"catalogAvailableDuringQueries",probe.available},{"layout",saved}}.dump(2),false);
+ expect(probe.queries==13,"Layout snapshot reads the order and twelve native column widths");
+ expect(probe.available==probe.queries,"Layout snapshot does not hold the catalog lock while querying Windows controls");
+ expect(str(manager.state["Settings"],"FixtureLayoutMarker")=="preserved","Layout snapshot preserves concurrent changes to other preferences");
+ expect(saved==frame.listLayout(),"Published layout matches the current native order, widths and sort state");
+ const int original=frame.table.GetColumnWidth(0);frame.table.SetColumnWidth(0,original+19);frame.rememberLayout();
+ expect(manager.state["Settings"]["ListLayout"]==frame.listLayout(),"Column resize remains captured by the layout snapshot");
+ int order[MainWindow::columnCount]{};frame.table.GetColumnOrderArray(order,MainWindow::columnCount);std::swap(order[0],order[1]);frame.table.SetColumnOrderArray(MainWindow::columnCount,order);frame.rememberLayout();
+ expect(manager.state["Settings"]["ListLayout"]==frame.listLayout(),"Column reorder remains captured by the layout snapshot");
+ std::swap(order[0],order[1]);frame.table.SetColumnOrderArray(MainWindow::columnCount,order);frame.table.SetColumnWidth(0,original);frame.rememberLayout();
+ const auto before=manager.state["Settings"]["ListLayout"];frame.rememberLayout();
+ expect(manager.state["Settings"]["ListLayout"]==before,"Unchanged layout retains its saved values");
+ manager.state["Settings"].erase("FixtureLayoutMarker");
+}
 static void checkQueueMenus(Manager& manager,MainWindow& frame){
  auto downloadsMenu=frame.GetMenu()->GetSubMenu(2);
  const wchar_t* expectedLabels[]={L"&Pause All",L"&Stop All",L"",L"&Delete All Completed",L"",L"Find (Ctrl-F)",L"Find Next (F3)",L"",L"S&cheduler",L"Start &queue",L"S&top queue",L"",L"Speed &Limiter",L"",L"&Options"};
@@ -41,6 +74,8 @@ static void checkQueueMenus(Manager& manager,MainWindow& frame){
  manager.setQueues(originalQueues);
 }
 public:static void run(Manager& manager,MainWindow& frame){
+ checkLayoutSnapshot(manager,frame);
+ if(GetEnvironmentVariableW(L"UDM_LAYOUT_PROBE_ONLY",nullptr,0))return;
  checkQueueMenus(manager,frame);
  auto updateHelp=frame.GetMenu()->GetSubMenu(4);expect(updateHelp->GetMenuItemID(9)==CMD_CHECK_UPDATES,"Help menu contains the update check command at reference position");frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)updateHelp->GetSafeHmenu(),MAKELPARAM(4,FALSE));expect((updateHelp->GetMenuState(CMD_CHECK_UPDATES,MF_BYCOMMAND)&(MF_DISABLED|MF_GRAYED))==0,"Update check command is enabled without download selection");
  expect(updateHelp->GetMenuItemCount()==13,"Help menu matches reference entry count including separators");
@@ -124,15 +159,26 @@ public:static void run(Manager& manager,MainWindow& frame){
   expect(tipAt((int)frame.visible.size()).empty(),"Removed tooltip row clears stale text");
   expect(tipAt(0,1).empty(),"One-character tooltip capacity remains terminated");
   expect(tipAt(0,0)==L"previous row text","Zero-capacity tooltip does not write to the buffer");
-  frame.filter="category:nonexistent-fixture-category";frame.refresh();expect(frame.visible.empty()&&tipAt(0).empty(),"Filtering away the hovered row clears its tooltip");
+  std::string emptyCategory;
+  for(const auto& category:manager.categories())if(std::none_of(manager.jobs.begin(),manager.jobs.end(),[&](const JobPtr& job){return str(job->data,"Category")==category;})){emptyCategory=category;break;}
+  expect(!emptyCategory.empty(),"Tooltip filter uses an existing category without matching downloads");
+  frame.filter="category:"+emptyCategory;frame.refresh();
+  expect(frame.filter=="category:"+emptyCategory&&frame.visible.empty()&&tipAt(0).empty(),"Filtering away the hovered row clears its tooltip");
   frame.filter=oldFilter;frame.sortColumn=oldSort;frame.ascending=oldAscending;frame.refresh();
  }
  // Real subitem and tree icons follow queue configuration and membership.
  {
  auto previousQueues=manager.state["Queues"],previousData=paused->data;auto oldFilter=frame.filter;
- std::set<int> kinds;
+ std::set<int> kinds;Json tooltipEvidence=Json::array();
  for(int kind=0;kind<8;++kind){
-  auto queue=defaultQueue(kind&1?"Indicator queue":"Main queue");queue["Enabled"]=false;queue["Synchronize"]=(kind&2)!=0;queue["Scheduled"]=(kind&4)!=0;manager.setQueue(queue);
+  Json queue;
+  if(kind&1)queue=defaultQueue("Indicator queue");
+  else{
+   const auto role=kind&2?"Synchronization":"Download";
+   for(const auto& candidate:manager.state["Queues"])if(str(candidate,"DefaultQueueRole")==role){queue=candidate;break;}
+   expect(queue.is_object(),"Indicator fixture uses the actual built-in queue for its fixed mode");
+  }
+  queue["Enabled"]=false;queue["Synchronize"]=(kind&2)!=0;queue["Scheduled"]=(kind&4)!=0;manager.setQueue(queue);
   paused->data["Queue"]=str(queue,"Name");paused->data["QueueMember"]=true;frame.filter="all";frame.refresh();int row=(int)(std::find(frame.visible.begin(),frame.visible.end(),paused)-frame.visible.begin());
   LVITEMW item{};item.mask=LVIF_IMAGE;item.iItem=row;item.iSubItem=1;expect(frame.table.GetItem(&item)!=FALSE&&item.iImage==frame.queueImages[kind],"Q cell has the correct main/additional, download/sync, scheduled image");kinds.insert(item.iImage);
   expect(frame.textValue(row,1).empty(),"Q cell shows only its indicator without clipped queue-name text");
@@ -141,7 +187,9 @@ public:static void run(Manager& manager,MainWindow& frame){
   for(auto child=frame.tree.GetChildItem(root);child;child=frame.tree.GetNextSiblingItem(child))if(frame.tree.GetItemText(child)==cs(queueLabel)){int image=-1,selected=-1;frame.tree.GetItemImage(child,image,selected);found=image==item.iImage&&selected==item.iImage;}
   expect(found,"Queue tree uses the same state indicator as the download cell");
   wchar_t tipText[512]{};NMLVGETINFOTIPW tip{};tip.hdr={frame.table.GetSafeHwnd(),502,LVN_GETINFOTIPW};tip.iItem=row;tip.pszText=tipText;tip.cchTextMax=512;frame.SendMessage(WM_NOTIFY,502,(LPARAM)&tip);
-  auto tipValue=utf8(tipText);expect(tipValue.find(str(queue,"Name"))!=std::string::npos&&tipValue.find(kind&2?"Synchronization queue":"Download queue")!=std::string::npos&&((tipValue.find("scheduled start")!=std::string::npos)==bool(kind&4)),"Native infotip identifies queue name, type and configured schedule");
+  auto tipValue=utf8(tipText);tooltipEvidence.push_back({{"kind",kind},{"label",queueLabel},{"tooltip",tipValue}});
+  atomicText(checkpointRoot/L"queue-tooltips.json",tooltipEvidence.dump(2),false);
+  expect(tipValue.find(queueLabel)!=std::string::npos&&tipValue.find(kind&2?"Synchronization queue":"Download queue")!=std::string::npos&&((tipValue.find("scheduled start")!=std::string::npos)==bool(kind&4)),"Native infotip identifies queue display label, type and configured schedule");
  }
  expect(kinds.size()==8,"All eight queue states have distinct native image slots");
  auto row=(int)(std::find(frame.visible.begin(),frame.visible.end(),paused)-frame.visible.begin());paused->data["QueueMember"]=false;frame.refresh();LVITEMW removed{};removed.mask=LVIF_IMAGE;removed.iItem=row;removed.iSubItem=1;frame.table.GetItem(&removed);expect(removed.iImage==I_IMAGENONE,"Removing membership immediately clears the native subitem image");
@@ -314,8 +362,19 @@ public:static void run(Manager& manager,MainWindow& frame){
 
  {
   const auto savedJobs=manager.jobs;const auto savedSort=frame.sortColumn;const auto savedAscending=frame.ascending;
+  const auto savedFilter=frame.filter;const auto savedFind=frame.findQuery;const auto savedFindActive=frame.findFilterActive;
+  std::string viewportCategory;
+  for(const auto& category:manager.categories())if(frame.treeItems.count("category:"+category)){viewportCategory=category;break;}
+  expect(!viewportCategory.empty(),"History category fixture uses an actual navigation node");
+  frame.filter="all";frame.findFilterActive=false;
+  Json viewportTrace=Json::array();
+  auto recordViewport=[&](const char* stage){
+   viewportTrace.push_back({{"stage",stage},{"filter",frame.filter},{"top",frame.table.GetTopIndex()},
+    {"rows",frame.visible.size()},{"catalogOrderMatches",frame.visible==manager.jobs},{"effectiveView",frame.rowView}});
+   atomicText(checkpointRoot/L"viewport.json",viewportTrace.dump(2),false);
+  };
   manager.jobs.clear();
-  for(int i=0;i<80;++i){auto data=complete->data;data["Id"]=guid();data["FileName"]="history-"+std::to_string(i)+".zip";manager.jobs.push_back(std::make_shared<Job>(data));}
+  for(int i=0;i<80;++i){auto data=complete->data;data["Id"]=guid();data["FileName"]="history-"+std::to_string(i)+".zip";data["Added"]="/Date(1000)/";data["Category"]=viewportCategory;manager.jobs.push_back(std::make_shared<Job>(data));}
   frame.sortColumn=-1;frame.refresh();frame.table.EnsureVisible(40,FALSE);
   auto top=frame.table.GetTopIndex();expect(top>0,"History fixture scrolls beyond the first page");
   auto anchor=frame.visible[top];
@@ -326,6 +385,35 @@ public:static void run(Manager& manager,MainWindow& frame){
   manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),anchor));frame.refresh();
   expect(frame.table.GetTopIndex()>0,"Removing the viewport anchor keeps a nearby history page visible");
   frame.sortColumn=0;frame.refresh();expect(frame.table.GetTopIndex()==0,"Explicit sorting starts at the first row of the new order");
+  recordViewport("name-sort");
+  const auto beforeReverse=frame.visible;frame.table.EnsureVisible(40,FALSE);frame.ascending=false;frame.refresh();
+  recordViewport("descending-name-sort");
+  expect(frame.visible!=beforeReverse&&frame.table.GetTopIndex()==0,"A reversed sort resets the viewport after rebuilding the row order");
+  frame.sortColumn=-1;frame.ascending=true;frame.refresh();const auto naturalOrder=frame.visible;
+  frame.table.EnsureVisible(40,FALSE);expect(frame.table.GetTopIndex()>0,"Equal-key sort fixture starts on a later history page");
+  frame.sortColumn=8;frame.refresh();
+  recordViewport("equal-key-sort");
+  expect(frame.visible==naturalOrder&&frame.table.GetTopIndex()==0,"A changed sort resets the viewport even when equal keys retain the same row order");
+  expect(frame.filter!="category:"+viewportCategory,"Category viewport fixture starts in a different view");
+  frame.table.EnsureVisible(40,FALSE);frame.filter="category:"+viewportCategory;frame.refresh();
+  recordViewport("matching-category");
+  expect(frame.visible==naturalOrder&&frame.table.GetTopIndex()==0,"A category change resets the viewport even when all rows still match");
+  frame.table.EnsureVisible(40,FALSE);frame.findQuery={{"Text","history-"},{"FileName",true}};frame.findFilterActive=true;frame.refresh();
+  recordViewport("matching-search");
+  expect(frame.visible==naturalOrder&&frame.table.GetTopIndex()==0,"A search change resets the viewport even when all rows still match");
+  frame.table.EnsureVisible(40,FALSE);auto filteredAnchor=frame.visible[frame.table.GetTopIndex()];
+  manager.jobs.front()->data["Description"]="Viewport metadata fixture";frame.refresh();
+  recordViewport("automatic-metadata");
+  expect(frame.visible[frame.table.GetTopIndex()]==filteredAnchor,"Automatic metadata refresh preserves the filtered viewport anchor");
+  frame.findQuery={{"Text","no-history-match"},{"FileName",true}};frame.refresh();
+  recordViewport("empty-search");
+  expect(frame.visible.empty()&&frame.table.GetItemCount()==0,"An empty explicit view has no invalid viewport target");
+  frame.findFilterActive=false;frame.findQuery=savedFind;frame.filter="all";frame.refresh();frame.table.EnsureVisible(40,FALSE);
+  auto fallbackAnchor=frame.visible[frame.table.GetTopIndex()];frame.filter="category:no-such-viewport-category";frame.refresh();
+  recordViewport("navigation-fallback");
+  expect(frame.filter=="all"&&frame.visible[frame.table.GetTopIndex()]==fallbackAnchor,"Navigation fallback to the same effective view retains its anchor");
+  frame.refresh();recordViewport("fallback-next-tick");expect(frame.visible[frame.table.GetTopIndex()]==fallbackAnchor,"Normalized navigation does not reset the viewport on the next tick");
+  frame.findQuery=savedFind;frame.findFilterActive=savedFindActive;frame.filter=savedFilter;
   manager.jobs=savedJobs;frame.sortColumn=savedSort;frame.ascending=savedAscending;frame.refresh();select({paused});
  }
  frame.SendMessage(WM_COMMAND,CMD_SORT_NAME);expect(frame.visible.front()==complete,"Name menu sorts actual rows alphabetically");expect(frame.selected()==std::vector<JobPtr>{paused},"Sorting preserves selected download identity");
@@ -415,8 +503,15 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(ordinaryRejected&&complete->data==enrollmentOriginal,"Completed enrollment in ordinary queue is rejected without mutation");
  complete->data["DuplicateOf"]="fixture-original";auto unsupportedEnrollment=complete->data;bool duplicateRejected=false;try{manager.setMembership(complete,true,"File checks");}catch(...){duplicateRejected=true;}
  expect(duplicateRejected&&complete->data==unsupportedEnrollment,"Duplicate placeholder cannot enroll for synchronization");complete->data=enrollmentOriginal;
- complete->data["Folder"]=utf8((manager.root/L"missing-enrollment-folder").wstring());auto missingEnrollment=complete->data;bool missingRejected=false;try{manager.setMembership(complete,true,"File checks");}catch(...){missingRejected=true;}
- expect(missingRejected&&complete->data==missingEnrollment,"Missing saved file cannot enroll and preserves its record");complete->data=enrollmentOriginal;
+ complete->data["Folder"]=utf8((manager.root/L"missing-enrollment-folder").wstring());const auto missingTarget=complete->target();
+ expect(!fs::exists(missingTarget),"Missing restoration fixture has no saved destination");
+ manager.setMembership(complete,true,"File checks");
+ expect(str(complete->data,"Queue")=="File checks"&&yes(complete->data,"QueueMember")&&str(complete->data,"Status")=="Complete"&&!yes(complete->data,"SyncPending")&&!fs::exists(missingTarget),
+  "Missing destination enrolls for later restoration without downloading during enrollment");
+ complete->data=enrollmentOriginal;manager.save();
+ complete->data["Folder"]=utf8((manager.root/L"directory-enrollment-folder").wstring());const auto directoryTarget=complete->target();fs::create_directories(directoryTarget);
+ auto directoryEnrollment=complete->data;bool directoryRejected=false;try{manager.setMembership(complete,true,"File checks");}catch(...){directoryRejected=true;}
+ expect(directoryRejected&&complete->data==directoryEnrollment&&fs::is_directory(directoryTarget),"Directory destination cannot enroll and preserves its record and directory");complete->data=enrollmentOriginal;
  manager.save();bool enrollmentFailed=false;
  {Handle blocked(CreateFileW((manager.root/L"state.json").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));try{manager.setMembership(complete,true,"File checks");}catch(...){enrollmentFailed=true;}}
  expect(enrollmentFailed&&complete->data==enrollmentOriginal,"Failed completed enrollment save restores source queue and membership");
@@ -450,12 +545,14 @@ public:static void run(Manager& manager,MainWindow& frame){
  frame.SendMessage(WM_COMMAND,CMD_REMOVEQUEUE);
  expect(!yes(complete->data,"SyncPending"),"Removing completed queue member clears pending synchronization");
  auto queuesBeforeMembership=manager.state["Queues"];auto pausedBeforeMembership=paused->data;
- auto syncQueue=manager.state["Queues"][0];syncQueue["Synchronize"]=true;syncQueue["Enabled"]=false;manager.setQueue(syncQueue);
- complete->data["QueueMember"]=true;complete->data["SyncPending"]=false;manager.queueRun("Main queue",true);
+ Json syncQueue;for(const auto& candidate:manager.state["Queues"])if(str(candidate,"DefaultQueueRole")=="Synchronization"){syncQueue=candidate;break;}
+ expect(syncQueue.is_object(),"Membership fixture uses the existing built-in synchronization queue");
+ syncQueue["Enabled"]=false;manager.setQueue(syncQueue);const auto syncName=str(syncQueue,"Name");
+ complete->data["Queue"]=syncName;complete->data["QueueMember"]=true;complete->data["SyncPending"]=false;manager.queueRun(syncName,true);
  expect(yes(complete->data,"SyncPending"),"Synchronization still schedules retained completed queue members");
- manager.queueRun("Main queue",false);manager.setMembership(complete,false);manager.queueRun("Main queue",true);
+ manager.queueRun(syncName,false);manager.setMembership(complete,false);manager.queueRun(syncName,true);
  expect(!yes(complete->data,"SyncPending"),"Starting synchronization queue does not requeue removed completed record");
- manager.queueRun("Main queue",false);manager.setQueues(queuesBeforeMembership);paused->data=pausedBeforeMembership;
+ manager.queueRun(syncName,false);manager.setQueues(queuesBeforeMembership);paused->data=pausedBeforeMembership;
  expect(!yes(complete->data,"QueueMember")&&str(complete->data,"Status")=="Complete","Removing completed queue member preserves completion status");
  expect(fileHash(complete->target())==completedFileHash,"Removing completed queue member preserves downloaded bytes");
  expect(!enabled(1,CMD_REMOVEQUEUE)&&!enabled(1,CMD_UP)&&!enabled(1,CMD_DOWN),"Removed queue member disables membership actions");

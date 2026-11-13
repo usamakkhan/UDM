@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Light and dark modes each complete all 67 UI checks",
+      "passed": true
+    },
+    {
+      "name": "Runner restores both environment flags after success",
+      "passed": true
+    },
+    {
+      "name": "Existing RunRoot is rejected without replacing results",
+      "passed": true
+    },
+    {
+      "name": "SkipBuild rejects a missing fixture without creating a run",
+      "passed": true
+    },
+    {
+      "name": "Rejected runs preserve environment flags",
+      "passed": true
+    }
+  ]
+}

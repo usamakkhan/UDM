@@ -1,0 +1,1762 @@
+{
+  "desktop": "7.47",
+  "browser": "0.71.11",
+  "buildReceipt": "plain-form-recovery-7.47-build.json",
+  "installed": false,
+  "installedDesktopObserved": "7.11",
+  "installerCreated": false,
+  "scope": "Private catalogs and loopback origins exercising production transfer objects. No personal browser or installed-app visual acceptance.",
+  "totalTargetedChecks": 278,
+  "baseline": {
+    "version": "7.45",
+    "executableSha256": "7E0AD9B7E6041940C732F6034620480C7AABF34CC0FC8DF17CA6A556ADB5B6C1",
+    "result": {
+      "checks": [
+        {
+          "name": "Fresh forms still do not submit on File Info open",
+          "passed": true
+        },
+        {
+          "name": "Successful plain POST still publishes exact bytes",
+          "passed": true
+        },
+        {
+          "name": "Successful plain POST adds no saved-response receipt pass and keeps inline hashing",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": false
+        }
+      ],
+      "error": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": false
+    },
+    "traffic": {
+      "payloadBytes": 88000,
+      "payloadSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "pdfBytes": 395,
+      "pdfSha256": "89ea2eefb182434c553b72c9e7607c65693c24a8e113d6f9ce1e59a903c6424e",
+      "prefixBytes": 60,
+      "requestBodyBytes": 11,
+      "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+      "requests": [
+        {
+          "route": "success",
+          "method": "POST",
+          "bytes": 11,
+          "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+          "range": ""
+        },
+        {
+          "route": "info",
+          "method": "POST",
+          "bytes": 11,
+          "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+          "range": ""
+        }
+      ]
+    },
+    "qualification": "7.45 core baseline fails at the missing plain form receipt after full-response verification failure. The fixture source was later extended with publication-fault coverage."
+  },
+  "intermediate": {
+    "desktop": "7.46",
+    "result": {
+      "checks": [
+        {
+          "name": "Fresh forms still do not submit on File Info open",
+          "passed": true
+        },
+        {
+          "name": "Successful plain POST still publishes exact bytes",
+          "passed": true
+        },
+        {
+          "name": "Successful plain POST adds no saved-response receipt pass and keeps inline hashing",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Reopened File Info verifies retained plain response without submitting again",
+          "passed": true
+        },
+        {
+          "announcedBytes": 88000,
+          "name": "Retained plain response supplies verified size before Start",
+          "passed": true
+        },
+        {
+          "name": "Published plain form file matches the size shown before Start",
+          "passed": true
+        },
+        {
+          "name": "Completion discards the obsolete form response receipt",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "A retained empty response reports verified zero before Start",
+          "passed": true
+        },
+        {
+          "name": "The retained empty response publishes an empty final file",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Retained plain response reaches confirmation before Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later leaves the plain form target unpublished",
+          "passed": true
+        },
+        {
+          "name": "Later resumes plain saved bytes instead of submitting again",
+          "passed": true
+        },
+        {
+          "name": "A destination collision preserves both the existing file and the complete form response",
+          "passed": true
+        },
+        {
+          "name": "Changing destination after failure publishes saved bytes without overwriting the old file",
+          "passed": true
+        },
+        {
+          "name": "A real catalog failure after publication retains its recovery journal",
+          "passed": true
+        },
+        {
+          "name": "Failure retention leaves pending publication recovery intact rather than creating a competing response receipt",
+          "passed": true
+        },
+        {
+          "name": "Resume completes pending publication recovery without another form submission",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Failure retention never rebinds an old response to a changed form request",
+          "passed": true
+        },
+        {
+          "name": "A final verification failure retains an unpublished complete plain form response",
+          "passed": true
+        },
+        {
+          "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+          "passed": true
+        },
+        {
+          "name": "Response retention preserves the original verification error",
+          "passed": true
+        },
+        {
+          "name": "Damaged saved plain bytes fail Resume without becoming a new response receipt",
+          "passed": true
+        },
+        {
+          "name": "A separate explicit Restart is required before resubmitting the damaged plain form",
+          "passed": true
+        },
+        {
+          "name": "Inserted text before a plain form file waits for a choice with a retained response",
+          "passed": false
+        }
+      ],
+      "error": "Inserted text before a plain form file waits for a choice with a retained response",
+      "passed": false
+    },
+    "qualification": "Compilation passed; integration stopped at the ASCII-only PDF notice case. Fixed as a separate 7.47 increment."
+  },
+  "plainForms": {
+    "checks": [
+      {
+        "name": "Fresh forms still do not submit on File Info open",
+        "passed": true
+      },
+      {
+        "name": "Successful plain POST still publishes exact bytes",
+        "passed": true
+      },
+      {
+        "name": "Successful plain POST adds no saved-response receipt pass and keeps inline hashing",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Reopened File Info verifies retained plain response without submitting again",
+        "passed": true
+      },
+      {
+        "announcedBytes": 88000,
+        "name": "Retained plain response supplies verified size before Start",
+        "passed": true
+      },
+      {
+        "name": "Published plain form file matches the size shown before Start",
+        "passed": true
+      },
+      {
+        "name": "Completion discards the obsolete form response receipt",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "A retained empty response reports verified zero before Start",
+        "passed": true
+      },
+      {
+        "name": "The retained empty response publishes an empty final file",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Retained plain response reaches confirmation before Download Later",
+        "passed": true
+      },
+      {
+        "name": "Download Later leaves the plain form target unpublished",
+        "passed": true
+      },
+      {
+        "name": "Later resumes plain saved bytes instead of submitting again",
+        "passed": true
+      },
+      {
+        "name": "A destination collision preserves both the existing file and the complete form response",
+        "passed": true
+      },
+      {
+        "name": "Changing destination after failure publishes saved bytes without overwriting the old file",
+        "passed": true
+      },
+      {
+        "name": "A real catalog failure after publication retains its recovery journal",
+        "passed": true
+      },
+      {
+        "name": "Failure retention leaves pending publication recovery intact rather than creating a competing response receipt",
+        "passed": true
+      },
+      {
+        "name": "Resume completes pending publication recovery without another form submission",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Failure retention never rebinds an old response to a changed form request",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Damaged saved plain bytes fail Resume without becoming a new response receipt",
+        "passed": true
+      },
+      {
+        "name": "A separate explicit Restart is required before resubmitting the damaged plain form",
+        "passed": true
+      },
+      {
+        "name": "Inserted text before a plain form file waits for a choice with a retained response",
+        "passed": true
+      },
+      {
+        "name": "An approved prefix-removal choice verifies retained form bytes before Start",
+        "passed": true
+      },
+      {
+        "announcedBytes": 395,
+        "name": "Prefix removal reports final output size rather than retained response length",
+        "passed": true
+      },
+      {
+        "name": "The published prefix-stripped form exactly matches pre-Start size and original file hash",
+        "passed": true
+      },
+      {
+        "name": "Completed range display describes the final form file while preserving response byte counts",
+        "passed": true
+      },
+      {
+        "name": "A final verification failure retains an unpublished complete plain form response",
+        "passed": true
+      },
+      {
+        "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+        "passed": true
+      },
+      {
+        "name": "Response retention preserves the original verification error",
+        "passed": true
+      },
+      {
+        "name": "Plain form response receipt survives a catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Reopened catalog publishes retained plain form bytes without resubmission",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "plainFormTraffic": {
+    "payloadBytes": 88000,
+    "payloadSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+    "pdfBytes": 395,
+    "pdfSha256": "89ea2eefb182434c553b72c9e7607c65693c24a8e113d6f9ce1e59a903c6424e",
+    "prefixBytes": 60,
+    "requestBodyBytes": 11,
+    "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+    "requests": [
+      {
+        "route": "success",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "info",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "unknown",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "redirect",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "redirected-get",
+        "method": "GET",
+        "bytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "range": ""
+      },
+      {
+        "route": "empty",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "later",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "collision",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "journal",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "changed",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "damaged",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "damaged",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "prefix",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "reopened",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      }
+    ]
+  },
+  "gzipForms": {
+    "checks": [
+      {
+        "name": "Opening fresh form File Info never submits the POST speculatively",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Reopening File Info verifies a completed form response without submitting again",
+        "passed": true
+      },
+      {
+        "announcedBytes": 140000,
+        "name": "A verified decoded size is available before Start while the target remains absent",
+        "passed": true
+      },
+      {
+        "name": "Start publishes exactly the form file size shown before confirmation",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+        "passed": true
+      },
+      {
+        "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+        "passed": true
+      },
+      {
+        "name": "Confirmation remains usable after a rejected transfer-property edit",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Completed form response is ready for Download Later",
+        "passed": true
+      },
+      {
+        "name": "Download Later leaves the saved form response unpublished",
+        "passed": true
+      },
+      {
+        "name": "Resume after Download Later uses the saved form response",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Changing the form request invalidates reuse and sends no replacement request",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "A damaged saved response fails Resume without replaying POST",
+        "passed": true
+      },
+      {
+        "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+        "passed": true
+      },
+      {
+        "name": "Interrupted POST has no complete receipt and stays failed",
+        "passed": true
+      },
+      {
+        "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Request-bound completed response survives catalog reopening",
+        "passed": true
+      },
+      {
+        "name": "A reopened catalog publishes saved form bytes without another POST",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "getRegression": {
+    "checks": [
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch starts before confirmation",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch reaches verified confirmation without publishing",
+        "passed": true
+      },
+      {
+        "name": "Before Start size is verified decoded output and target is absent",
+        "passed": true
+      },
+      {
+        "name": "Start confirms the existing prefetched response",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches the size shown before Start",
+        "passed": true
+      },
+      {
+        "name": "Download Later fixture has fully decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Ending confirmation keeps the destination unpublished",
+        "passed": true
+      },
+      {
+        "name": "Resume reuses verified encoded bytes without a second response",
+        "passed": true
+      },
+      {
+        "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Pause retains a genuine partial encoded response",
+        "passed": true
+      },
+      {
+        "name": "Encoded-byte range resume decodes to the complete original file",
+        "passed": true
+      },
+      {
+        "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+        "passed": true
+      },
+      {
+        "name": "Output projection leaves authoritative wire metadata unchanged",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "decoder": {
+    "checks": [
+      {
+        "name": "Compressed dynamic-Huffman input drains multiple bounded output buffers",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Concatenated gzip members preserve all output",
+        "passed": true
+      },
+      {
+        "name": "A valid empty gzip file remains valid",
+        "passed": true
+      },
+      {
+        "name": "truncated",
+        "passed": true
+      },
+      {
+        "name": "checksum",
+        "passed": true
+      },
+      {
+        "name": "trailing",
+        "passed": true
+      },
+      {
+        "name": "raw",
+        "passed": true
+      },
+      {
+        "name": "empty-wire",
+        "passed": true
+      },
+      {
+        "name": "limit",
+        "passed": true
+      },
+      {
+        "name": "members",
+        "passed": true
+      },
+      {
+        "name": "canceled",
+        "passed": true
+      },
+      {
+        "name": "write-failure",
+        "passed": true
+      },
+      {
+        "name": "Data after final completion is rejected",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "components": [
+    {
+      "name": "ContentSniffNoticeTests",
+      "result": {
+        "checks": [
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "ASCII PDF after a completed HTML notice reports its exact file offset",
+            "passed": true
+          },
+          {
+            "name": "A complete leading window identifies a prefixed ASCII PDF before response EOF",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "HTML examples, malformed headers and notices beyond the prefix limit remain HTML",
+            "passed": true
+          },
+          {
+            "name": "A normal ASCII PDF remains a direct PDF match",
+            "passed": true
+          },
+          {
+            "name": "An ordinary HTML notice remains HTML",
+            "passed": true
+          },
+          {
+            "name": "Unstructured textual examples are not guessed to be prefixed PDFs",
+            "passed": true
+          },
+          {
+            "name": "Existing binary archive prefix recognition remains intact",
+            "passed": true
+          },
+          {
+            "name": "A short incomplete window retains its existing pending classification",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "name": "ContentSniffNamingTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture identifies actual ZIP bytes",
+            "passed": true
+          },
+          {
+            "name": "old.udmfixture",
+            "passed": true
+          },
+          {
+            "name": "package.unitypackage",
+            "passed": true
+          },
+          {
+            "name": "model.safetensors",
+            "passed": true
+          },
+          {
+            "name": "app.application",
+            "passed": true
+          },
+          {
+            "name": "file.longcustomextension",
+            "passed": true
+          },
+          {
+            "name": "file.UDMFIXTURE",
+            "passed": true
+          },
+          {
+            "name": "Long explicit suffix stays within the existing filename instead of gaining another extension",
+            "passed": true
+          },
+          {
+            "name": "Existing short explicit suffix is retained",
+            "passed": true
+          },
+          {
+            "name": "Matching suffix is retained",
+            "passed": true
+          },
+          {
+            "name": "Generic binary suffix still follows recognized bytes",
+            "passed": true
+          },
+          {
+            "name": "Script endpoint suffix still follows recognized bytes",
+            "passed": true
+          },
+          {
+            "name": "Missing suffix still gains the recognized type",
+            "passed": true
+          },
+          {
+            "name": "Long known temporary suffix is corrected using the existing weak-suffix policy",
+            "passed": true
+          },
+          {
+            "name": "Numeric version suffix remains distinct from an explicit type",
+            "passed": true
+          },
+          {
+            "name": "Empty names are unchanged",
+            "passed": true
+          },
+          {
+            "name": "Unknown content never appends an invented extension",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "name": "PauseTransactionTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Queued Pause reports blocked catalog replacement",
+            "passed": true
+          },
+          {
+            "name": "Failed queued Pause restores all job and capture metadata",
+            "passed": true
+          },
+          {
+            "name": "Failed queued Pause preserves the disk catalog",
+            "passed": true
+          },
+          {
+            "name": "Queued Pause can be retried after the lock is released",
+            "passed": true
+          },
+          {
+            "name": "Successful Pause consumes its capture presentation",
+            "passed": true
+          },
+          {
+            "name": "Successful Pause survives reopening the catalog",
+            "passed": true
+          },
+          {
+            "name": "Idle completed Stop does not require a writable catalog",
+            "passed": true
+          },
+          {
+            "name": "Idle completed Stop preserves metadata and write time",
+            "passed": true
+          },
+          {
+            "name": "Failed synchronization Stop preserves pending explicit work",
+            "passed": true
+          },
+          {
+            "name": "Successful synchronization Stop clears pending explicit work",
+            "passed": true
+          },
+          {
+            "name": "Active Pause reports blocked catalog replacement",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause restores its complete job state",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause leaves saved state unchanged",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause does not cancel the worker and bytes continue arriving",
+            "passed": true
+          },
+          {
+            "name": "A successful retry actually stops the active transfer",
+            "passed": true
+          },
+          {
+            "name": "Resumed transfer publishes the exact original bytes",
+            "passed": true
+          },
+          {
+            "name": "Queue-origin Pause exposes the save error",
+            "passed": true
+          },
+          {
+            "name": "Failed Pause does not poison a successful queue completion cycle",
+            "passed": true
+          },
+          {
+            "name": "Completion remains ready after a failed Pause without executing its action",
+            "passed": true
+          }
+        ],
+        "failed": 0,
+        "passed": 19
+      }
+    },
+    {
+      "name": "TerminalActionTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Completed Resume ignores RequiresRequestCapture",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores RequiresMediaCapture",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores DuplicateOf",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores ProtectedBrowserSession",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop preserves catalog metadata",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop performs no catalog write",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop preserves file bytes",
+            "passed": true
+          },
+          {
+            "name": "Actual transfer started for active Resume check",
+            "passed": true
+          },
+          {
+            "name": "Resume ignores already active download before capture validation",
+            "passed": true
+          },
+          {
+            "name": "Stop still pauses an actual active transfer",
+            "passed": true
+          },
+          {
+            "name": "Unfinished media still requires fresh capture",
+            "passed": true
+          },
+          {
+            "name": "Eligible resumed download completes with exact bytes",
+            "passed": true
+          },
+          {
+            "name": "Completed download has a real scanner process still running",
+            "passed": true
+          },
+          {
+            "name": "Stop ends scanner wait for a completed active download",
+            "passed": true
+          },
+          {
+            "name": "Stopping scanner wait preserves completed file",
+            "passed": true
+          },
+          {
+            "name": "Stopping wait does not terminate the scanner process",
+            "passed": true
+          }
+        ],
+        "failed": 0,
+        "passed": 16
+      }
+    },
+    {
+      "name": "MediaSizeTests",
+      "result": {
+        "checks": [
+          {
+            "name": "A failed metadata track promptly cancels its sibling and preserves the original error",
+            "passed": true
+          },
+          {
+            "name": "Pair failure does not cancel its caller",
+            "passed": true
+          },
+          {
+            "name": "A failed metadata track promptly cancels its sibling and preserves the original error",
+            "passed": true
+          },
+          {
+            "name": "Pair failure does not cancel its caller",
+            "passed": true
+          },
+          {
+            "name": "Concurrent metadata collection preserves video/audio ordering",
+            "passed": true
+          },
+          {
+            "name": "Selected media size appears before starting",
+            "passed": true
+          },
+          {
+            "name": "Size hint cannot change transfer or resume metadata",
+            "passed": true
+          },
+          {
+            "name": "Actual size takes precedence",
+            "passed": true
+          },
+          {
+            "name": "Actual empty file is not replaced by an estimate",
+            "passed": true
+          },
+          {
+            "name": "Completed downloads do not show stale estimates",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Malformed or unsafe size is ignored",
+            "passed": true
+          },
+          {
+            "name": "Missing refreshed size clears the previous hint",
+            "passed": true
+          },
+          {
+            "name": "Ordinary files do not use media size hints",
+            "passed": true
+          },
+          {
+            "name": "Size hint survives save and reopen without becoming a transfer size",
+            "passed": true
+          },
+          {
+            "name": "Reported stream bytes are displayed without an estimate marker",
+            "passed": true
+          },
+          {
+            "name": "Reported bytes remain independent of transfer bounds",
+            "passed": true
+          },
+          {
+            "name": "Final file size takes precedence over reported streams",
+            "passed": true
+          },
+          {
+            "name": "Completed file does not display stale stream lengths",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Unsafe reported byte count is ignored",
+            "passed": true
+          },
+          {
+            "name": "Refresh clears stale reported bytes",
+            "passed": true
+          },
+          {
+            "name": "Ordinary files cannot use reported media bytes",
+            "passed": true
+          },
+          {
+            "name": "Direct tracks can calculate a final mux size",
+            "passed": true
+          },
+          {
+            "name": "Streaming sessions do not claim a complete metadata preview",
+            "passed": true
+          },
+          {
+            "name": "Metadata preview is restricted to captured media origins",
+            "passed": true
+          },
+          {
+            "name": "Complete sample size table is counted",
+            "passed": true
+          },
+          {
+            "name": "Truncated sample table is rejected",
+            "passed": true
+          },
+          {
+            "name": "Missing per-sample sizes cannot produce a calculated result",
+            "passed": true
+          },
+          {
+            "name": "False sample count is rejected",
+            "passed": true
+          },
+          {
+            "name": "Unsupported extended-size box is rejected",
+            "passed": true
+          },
+          {
+            "name": "Sample offsets use the complete per-sample size records",
+            "passed": true
+          },
+          {
+            "name": "AV1 temporal delimiter is inspected without a fixed byte correction",
+            "passed": true
+          },
+          {
+            "name": "AV1 variable-length OBU payload is bounded by its sample",
+            "passed": true
+          },
+          {
+            "name": "Invalid, unsized, truncated and overflowing AV1 OBUs are rejected",
+            "passed": true
+          }
+        ],
+        "passed": true
+      }
+    }
+  ],
+  "persistedPlainOutputs": [
+    {
+      "route": "success",
+      "path": "main\\files\\success.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "info",
+      "path": "main\\files\\info.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "unknown",
+      "path": "main\\files\\unknown.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "redirect",
+      "path": "main\\files\\redirect.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "empty",
+      "path": "main\\files\\empty.udmform",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "completedSize": 0,
+      "wireSize": null
+    },
+    {
+      "route": "later",
+      "path": "main\\files\\later.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "collision",
+      "path": "new-destination\\collision.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "journal",
+      "path": "main\\files\\journal.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "damaged",
+      "path": "main\\files\\damaged.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    },
+    {
+      "route": "prefix",
+      "path": "main\\files\\prefix.udmform",
+      "bytes": 395,
+      "sha256": "89ea2eefb182434c553b72c9e7607c65693c24a8e113d6f9ce1e59a903c6424e",
+      "completedSize": 395,
+      "wireSize": 455
+    },
+    {
+      "route": "reopened",
+      "path": "reopened\\files\\reopened.udmform",
+      "bytes": 88000,
+      "sha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "completedSize": 88000,
+      "wireSize": null
+    }
+  ],
+  "destinationSentinel": {
+    "preserved": true,
+    "sha256": "2DCCD8261896C76885EB2DBA0EF9FAC4A28D9B24B4C121B48923BFECA23E48DB"
+  },
+  "testExecutables": [
+    {
+      "name": "Udm.ContentSniffNoticeTests.exe",
+      "version": "7.47",
+      "sha256": "AA36FAA680D59245997E6372F92420B980A80D41B21122380BD570BCD16338BB"
+    },
+    {
+      "name": "Udm.ContentSniffNamingTests.exe",
+      "version": "7.47",
+      "sha256": "6316830E483155572B33E2E8067A8EB044886C3392657255FA72FC8A646E338E"
+    },
+    {
+      "name": "Udm.HttpGzipDecoderTests.exe",
+      "version": "7.47",
+      "sha256": "73EC4C2B49B4D3C8BEB1F14E77231767CD98F1F79D2D6C00DF24597AA086CD69"
+    },
+    {
+      "name": "Udm.HttpGzipTransferTests.exe",
+      "version": "7.47",
+      "sha256": "CC0675545F2EEE2F163C9643A841FEC6B80EB6A955E7F2837DFAD2222F96B2C9"
+    },
+    {
+      "name": "Udm.HttpPostGzipTests.exe",
+      "version": "7.47",
+      "sha256": "D95E4018D6A4C1D74957F938AB2CD990D4E694319B1E28A824EAA8D02BEB0361"
+    },
+    {
+      "name": "Udm.HttpPostIdentityTests.exe",
+      "version": "7.47",
+      "sha256": "B1EA88DCDD8B7CFB778FD09AC42B48A73C7A94B7CB3F302AA9466BD09353A2A4"
+    },
+    {
+      "name": "Udm.PauseTransactionTests.exe",
+      "version": "7.47",
+      "sha256": "14ABBC1FEFA4E876DBF796CC7D9659947CB6B549FBAA98209EB3BDB04F5371AD"
+    },
+    {
+      "name": "Udm.TerminalActionTests.exe",
+      "version": "7.47",
+      "sha256": "60611E41399969225A9B8C5DCADE361C18B316BF80C8A0D161AE342DF74481B0"
+    },
+    {
+      "name": "Udm.MediaSizeTests.exe",
+      "version": "7.47",
+      "sha256": "C376C7A644B02D1DF5738EEB604D0F19A7015E09746F36AB5C476B46803DE9DD"
+    }
+  ],
+  "sharedProductionObjects": [
+    {
+      "name": "Core.obj",
+      "sha256": "520C7B115EA9F43D465D4EA03D7F5DE5B2113329136A926FA47905EA53049522"
+    },
+    {
+      "name": "Transfer.obj",
+      "sha256": "FAE21A87693DA5C32C0D0CEFE92CF5BA4F8E8C152227BB387B9500A70CA62C28"
+    },
+    {
+      "name": "Duplicates.obj",
+      "sha256": "B30D8F261F6EF6206E69130FEB95D0C3A886DB1F680B7338A723CE502E3BD7ED"
+    },
+    {
+      "name": "FileWorkflows.obj",
+      "sha256": "1DAA9562DA231CB5B13B476347F1C8A0A16474BBA5CD4C20B07F1293B18867EF"
+    },
+    {
+      "name": "Queue.obj",
+      "sha256": "5E181E69CDCD10E5C0B1F962A557CF9587BA11123379F1B37D735BE7D52FB998"
+    },
+    {
+      "name": "Bridge.obj",
+      "sha256": "4D1DFB9C2C1C868E6726454617025BED6DFF3E0C623259F435F368BD58C46D9B"
+    },
+    {
+      "name": "QueueWake.obj",
+      "sha256": "259BB2854BFDD8E2A119360B26142C67789C1296948AA621C4C1104CA8AB63F7"
+    }
+  ],
+  "validationSources": [
+    {
+      "path": "native/HttpPostIdentityTests.cpp",
+      "sha256": "087A658645CCF91BBF9B66C89C4C93CB722A5967AD8F96C552A54DAE03C04C70"
+    },
+    {
+      "path": "native/ContentSniffNoticeTests.cpp",
+      "sha256": "31625150836121C7D9EF1676718FECA2188A0EBB5A83706712E5D946C712A8B8"
+    },
+    {
+      "path": "native/HttpPostGzipTests.cpp",
+      "sha256": "2B6436F66F19A6F6578989564B07855E3761254CD39608054C3A3F8C0E3AF4A4"
+    },
+    {
+      "path": "tests/http-post-identity.native-live.cjs",
+      "sha256": "B9C1EFD5A47C1FABD0BA90C369F191EBE0F8BDA8ACBD2DB02A8C23389372F785"
+    },
+    {
+      "path": "tests/http-post-gzip.native-live.cjs",
+      "sha256": "DED3C078C2FDFCE38021B669D61A3A3B5947099232F76BBF951D343FC7B85E96"
+    },
+    {
+      "path": "tests/http-gzip.native-live.cjs",
+      "sha256": "628BABE02782676B27DDA7E82E6FE3F9EBD212C3607D92F041141D5EF362E963"
+    }
+  ],
+  "artifactPolicy": {
+    "testBuildCache": "%LOCALAPPDATA%\\UDM-Development\\native-validation-current",
+    "currentCacheMiB": 59.4,
+    "reusedAcrossVersions": true,
+    "newPerVersionTestExecutableCopies": false,
+    "mediaHelperCopies": false
+  },
+  "pdfFormatReference": "https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf",
+  "limitations": [
+    "No claim of zero additional milliseconds or measured speed parity. A success-path observer verifies no response receipt pass and retained inline hashing.",
+    "A redirected response without an inline hash may require a full local read when creating its failure-path receipt.",
+    "Cancellation, interrupted responses and receipt storage failures do not gain a guaranteed reusable receipt. Existing explicit Restart behavior remains when no valid receipt exists.",
+    "Pending publication journals retain ownership; the injected catalog-failure test exercises recovery without creating a competing response receipt. Broader crash/disk-fault qualification remains open.",
+    "ASCII PDF notice recognition is a bounded header heuristic, not full PDF validation. It requires a completed HTML/body notice, a standalone numeric version header, whitespace after the closing notice and the existing 2000-byte prefix limit.",
+    "The successful paired IDM POST response comparison remains historical 7.45 evidence, not a new 7.47 timing or arbitrary-form equivalence claim.",
+    "Native UI and personal-browser acceptance of the new retained plain-form path remain separate from these backend checks."
+  ],
+  "cleanup": "Small fixture outputs retained; old versioned artifacts preserved. Current test executables reuse the shared cache. No previously rejected cleanup was retried."
+}

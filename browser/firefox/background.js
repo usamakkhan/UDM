@@ -943,6 +943,11 @@ api.contextMenus.onClicked.addListener((info,tab)=>{(async()=>{const menu=await 
  if(browserControls?.handle(info,tab))return;
  if(info.menuItemId==='udm-link')await handoff({url:acceptable(info.linkUrl)?info.linkUrl:info.srcUrl,referrer:info.frameUrl||tab?.url,tabId:tab?.id,frameId:info.frameId??0});
  })().catch(e=>report(e.message));});
+function browserResponseReceived(item){
+  // Edge can report zero for a body whose length is still unknown.
+  return !!item&&Number.isSafeInteger(item.totalBytes)&&item.totalBytes>0&&
+    Number.isSafeInteger(item.bytesReceived)&&item.bytesReceived>=item.totalBytes;
+}
 let latestAutomaticDownload=0;
 api.downloads.onCreated.addListener(async item => {
   if(item.incognito||!acceptable(item.finalUrl||item.url)||(item.state&&item.state!=='in_progress'))return;
@@ -1004,11 +1009,16 @@ api.downloads.onCreated.addListener(async item => {
     // capabilities. Finish these checks before touching the browser response.
     const prepared=await prepareBrowserHandoff(captureItem,capturedContext,()=>desktop);
     if(!browserRunning){
+      // Policy and request preparation may outlive a user action in Downloads.
+      // Recheck before pausing or creating ownership for an obsolete transfer.
+      const [live]=await api.downloads.search({id:item.id});
+      if(!live||live.state!=='in_progress'||live.paused||browserResponseReceived(live))return;
       if(captureRecovery)ownership=await captureRecovery.begin(item);
       await api.downloads.pause(item.id);paused=true;
     }
     const [current]=await api.downloads.search({id:item.id});
-    if(!current||(browserRunning?(current.state!=='in_progress'||current.paused):!current.paused)){paused=false;return;}
+    if(!current||(browserRunning?(current.state!=='in_progress'||current.paused||browserResponseReceived(current)):!current.paused)){paused=false;return;}
+    if(!browserRunning&&browserResponseReceived(current))return;
     if(!['in_progress','interrupted'].includes(current.state))return;
     if(browserRunning)ownership=await captureRecovery.begin(item,{browserRunning:true});
     if(ownership)ownership.protocol=desktop.captureTransaction===1?2:desktop.captureRecovery===1?1:0;

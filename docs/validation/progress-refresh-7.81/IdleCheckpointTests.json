@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "name": "Idle ticks preserve a newly initialized catalog",
+      "passed": true
+    },
+    {
+      "name": "Idle ticks do not rewrite or flush the catalog",
+      "passed": true
+    },
+    {
+      "name": "Finished daily cycle clears its running flag",
+      "passed": true
+    },
+    {
+      "name": "Finished daily cycle is durably checkpointed",
+      "passed": true
+    },
+    {
+      "name": "Settled cycle returns to write-free idle operation",
+      "passed": true
+    },
+    {
+      "name": "Nested media changes are checkpointed without a desktop tick",
+      "passed": true
+    },
+    {
+      "name": "The worker continues checkpointing without desktop ticks",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "PostResponse.hpp"
 #include <algorithm>
 namespace udm {
 inline void clearServerRetry(Json& job){
@@ -27,7 +28,7 @@ inline bool queueTransferBlocked(const Json& job){
   ||yes(job,"RequiresRequestCapture")||yes(job,"RequiresMediaCapture")||yes(job,"RequiresBrowserProxyCapture")
   ||yes(job,"RequiresBrowserSessionCapture")||yes(job,"SabrSessionRefreshRequired")||yes(job,"AuthenticationPromptPending")||yes(job,"ServerRetryRequiresReview")||yes(job,"BrowserVerificationRequired")
   ||yes(job,"WebPageReceived")||yes(job,"ContentPrefixPending"))return true;
- if(yes(job,"PostAttempted")&&str(job,"ProtectedPostGetUrl").empty())return true;
+ if(yes(job,"PostAttempted")&&str(job,"ProtectedPostGetUrl").empty()&&!completedPostResponseCandidate(job))return true;
  const auto response=job.find("OriginalResponse");
  return response!=job.end()&&str(*response,"State")!="Published";
 }

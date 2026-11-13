@@ -220,13 +220,19 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
    for(int index=0;index<4096;++index)segments.push_back({{"Index",index},{"Start",4096*index},{"Done",4096}});
   }
   const auto inputs=downloadAddressInputs(*media);
-  expect(inputs.size()==3&&inputs["Video"].size()==1&&inputs["Audio"].size()==1,
-   "Split completion address copies only track URLs even with populated journals");
+  expect(inputs.size()==2&&inputs["Video"].size()==1&&!inputs.contains("Audio"),
+   "Split completion address copies only the selected primary URL even with populated journals");
   frame.complete(media,true);
   const auto window=frame.completions.back()->GetSafeHwnd();
   expect(named(window,L"https://example.invalid/video.mp4")&&named(window,media->target().c_str()),
    "Split completion displays the selected video URL and final saved path");
   SendMessageW(named(window,L"Close"),BM_CLICK,0,0);
+
+  media->audio->data["Url"]="https://";frame.complete(media,true);
+  const auto primaryWindow=frame.completions.back()->GetSafeHwnd();
+  expect(named(primaryWindow,L"Address")&&named(primaryWindow,L"https://example.invalid/video.mp4"),"Invalid secondary audio cannot hide a valid completion video address");
+  SendMessageW(named(primaryWindow,L"Close"),BM_CLICK,0,0);
+  media->audio->data["Url"]="https://example.invalid/audio.m4a";
 
   media->data["ProtectedAdaptive"]=protect(Json{{"type","hls"},{"manifestUrl","https://example.invalid/legacy.m3u8"}}.dump());
   expect(downloadAddress(downloadAddressInputs(*media))=="https://example.invalid/legacy.m3u8","Legacy adaptive completion retains its manifest address");
@@ -235,6 +241,34 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
   expect(cached.size()==1&&downloadAddress(cached)=="https://example.invalid/cached.m3u8","Cached manifest display excludes the full adaptive plan");
   media->data["ProtectedSabr"]=protect(Json{{"url","https://example.invalid/sabr"}}.dump());
   expect(downloadAddress(downloadAddressInputs(*media))=="https://example.invalid/sabr","SABR keeps address precedence over cached adaptive metadata");
+ }
+ {
+  auto redirected=std::make_shared<Job>(job->data);redirected->data["ProtectedResolvedUrl"]="not-a-valid-encrypted-context";
+  frame.complete(redirected,true);const auto window=frame.completions.back()->GetSafeHwnd();
+  expect(named(window,L"Address")&&named(window,wide(str(redirected->data,"Url")).c_str()),"Unreadable secondary redirect does not hide the completed primary address");
+  expect(IsWindowEnabled(named(window,L"Open"))!=FALSE,"Primary-only address display keeps verified local Open enabled");
+  render(window,output/L"primary-address.png");SendMessageW(named(window,L"Close"),BM_CLICK,0,0);
+ }
+ const std::vector<std::pair<std::string,std::string>> unreadableContexts={
+  {"ProtectedSabr","not-a-valid-encrypted-context"},{"ProtectedAdaptive","not-a-valid-encrypted-context"},
+  {"ProtectedAdaptiveDisplayAddress","not-a-valid-encrypted-context"},
+  {"ProtectedSabr",protect("{")},{"ProtectedAdaptive",protect("{")},
+  {"ProtectedAdaptiveDisplayAddress",protect("https://")}};
+ for(const auto& [key,value]:unreadableContexts){
+  auto unreadable=std::make_shared<Job>(job->data);unreadable->data[key]=value;
+  const auto count=frame.completions.size();frame.complete(unreadable,true);
+  expect(frame.completions.size()==count+1&&frame.completions.back()->GetSafeHwnd(),"Unreadable saved address context cannot prevent completion from opening");
+  const auto window=frame.completions.back()->GetSafeHwnd();
+  expect(named(window,L"Address (unavailable)")&&named(window,unreadable->target().c_str()),"Unreadable address is identified without hiding the verified destination");
+  HWND addressField=nullptr;
+  for(auto child=GetWindow(window,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){
+   wchar_t type[80]{};GetClassNameW(child,type,80);if(!_wcsicmp(type,L"Edit")){addressField=child;break;}
+  }
+  expect(addressField&&caption(addressField).empty()&&(GetWindowLongW(addressField,GWL_STYLE)&ES_READONLY),"Unavailable address stays empty and read-only rather than guessing a different source");
+  for(const auto* title:{L"Open",L"Open with...",L"Open folder",L"Close"})expect(IsWindowEnabled(named(window,title))!=FALSE,"Unreadable remote metadata leaves local completion actions enabled");
+  expect(str(unreadable->data,key.c_str())==value,"Viewing completion does not erase unreadable saved request context");
+  if(&key==&unreadableContexts.front().first)render(window,output/L"unavailable-address.png");
+  SendMessageW(named(window,L"Close"),BM_CLICK,0,0);expect(!IsWindow(window),"Completion with unreadable metadata closes normally");
  }
  frame.complete(job,true);expect(!frame.completions.empty()&&frame.completions.back()->GetSafeHwnd(),"Actual completed record opens its completion dialog");auto w=frame.completions.back()->GetSafeHwnd();
  for(auto title:{L"Open",L"Open with...",L"Open folder",L"Close"})expect(IsWindowEnabled(named(w,title))!=FALSE,"Completion action is enabled for a saved file");

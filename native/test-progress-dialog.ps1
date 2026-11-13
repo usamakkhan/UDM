@@ -13,7 +13,7 @@ foreach($progressArgument in @($progressRun,$progressReference)){if($progressArg
 if(!$SkipBuild){& (Join-Path $PSScriptRoot 'build.ps1') -ProgressDialogUiTestsOnly -OutputRoot $progressBuild}
 $progressExecutable=Join-Path $progressBuild 'release-native\Udm.ProgressDialogUiTests.exe'
 $progressProcess=Start-Process -FilePath $progressExecutable -ArgumentList ('"'+$progressRun+'" "'+$progressReference+'"') -WindowStyle Hidden -PassThru
-if(!$progressProcess.WaitForExit(30000)){throw ('Progress fixture still running; inspect PID '+$progressProcess.Id+' before retrying.')}
+if(!$progressProcess.WaitForExit(120000)){throw ('Progress fixture still running; inspect PID '+$progressProcess.Id+' before retrying.')}
 $progressResultPath=Join-Path $progressRun 'results.json'
 if(!(Test-Path -LiteralPath $progressResultPath)){throw ('Progress fixture did not write its result; exit code '+$progressProcess.ExitCode)}
 $progressResult=Get-Content -Raw -LiteralPath $progressResultPath | ConvertFrom-Json

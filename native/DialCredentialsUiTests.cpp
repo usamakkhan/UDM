@@ -16,7 +16,7 @@ static void capture(HWND w,const wchar_t* name){
  for(HWND c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){if(!(GetWindowLongW(c,GWL_STYLE)&WS_VISIBLE))continue;auto cr=bounds(c);auto saved=SaveDC(dc);IntersectClipRect(dc,cr.left-r.left,cr.top-r.top,cr.right-r.left,cr.bottom-r.top);SetViewportOrgEx(dc,cr.left-r.left,cr.top-r.top,nullptr);SendMessageW(c,WM_PRINT,(WPARAM)dc,PRF_NONCLIENT|PRF_CLIENT|PRF_ERASEBKGND|PRF_CHILDREN);RestoreDC(dc,saved);}
  img.ReleaseDC();if(FAILED(img.Save((output/name).c_str())))throw std::runtime_error("Could not render native test dialog");
 }
-static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)return TRUE;try{ShowWindow(w,SW_SHOWNOACTIVATE);action(w);}catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
+static BOOL CALLBACK observe(HWND w,LPARAM){if(windowText(w)!=expectedTitle)return TRUE;try{ShowWindow(w,SW_SHOWNOACTIVATE);if(action){auto run=std::move(action);run(w);}}catch(const std::exception& e){failure=e.what();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
 static void CALLBACK onTimer(HWND,UINT,UINT_PTR,DWORD){if(GetTickCount64()-began>12000){failure="Owned dialog test deadline";EnumThreadWindows(GetCurrentThreadId(),[](HWND w,LPARAM)->BOOL{PostMessageW(w,WM_CLOSE,0,0);return TRUE;},0);return;}EnumThreadWindows(GetCurrentThreadId(),observe,0);}
 static void modal(Form& dialog,const wchar_t* caption,std::function<void(HWND)> callback){expectedTitle=caption;action=std::move(callback);began=GetTickCount64();auto timer=SetTimer(nullptr,0,80,onTimer);dialog.DoModal();KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);}
 
@@ -34,12 +34,14 @@ public:
   else if(!change.savePassword){info.savedPassword=false;}else if(info.sessionPassword){info.savedPassword=true;info.sessionPassword=false;}
  }
 };
+#include "DialCredentialApplyChecks.hpp"
+#include "DialCredentialConnectChecks.hpp"
 class DialCredentialsTestApplication:public CWinApp {
  int code=1;
 public:BOOL InitInstance()override{
- CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);
+ CWinApp::InitInstance();wchar_t dark[2]{};uiDark=useDarkUi(GetEnvironmentVariableW(L"UDM_TEST_DIAL_CREDENTIALS_DARK",dark,2)==1&&dark[0]==L'1',windowsHighContrast());INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);
  try{
-  if(argc!=2)throw std::runtime_error("Pass an isolated output directory");output=fs::path(argv[1]);fs::create_directories(output);Manager manager(output/L"state");
+  if(argc!=2)throw std::runtime_error("Pass an isolated output directory");output=fs::absolute(argv[1]);if(fs::exists(output))throw std::runtime_error("Fresh output required");fs::create_directories(output);Manager manager(output/L"state");
   DialEntry first{"Same VPN",utf8((output/L"first.pbk").wstring())},second{"Same VPN",utf8((output/L"second.pbk").wstring())};
   auto store=std::make_shared<FixtureCredentials>();store->entries[first.phonebook]={"DOMAIN\\alice",true,false};store->entries[second.phonebook]={"bob",false,false};
   auto provider=[=]{return std::vector<DialEntry>{first,second};};
@@ -71,17 +73,6 @@ public:BOOL InitInstance()override{
    {Options reopened(manager,nullptr,store,provider);modal(reopened,L"UDM Configuration",[&](HWND w){dialTab(w);expect(windowText(editAfter(w,L"User name:"))==L"DOMAIN\\first-draft","Reopened dialog shows the committed identity");expect(!IsWindowEnabled(applyButton(w,false)),"Successful OK leaves no selected credential draft");capture(w,L"dial-applied.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);});}
   }
   {
-   auto before=store->writes.size();Options dialog(manager,nullptr,store,provider);modal(dialog,L"UDM Configuration",[&](HWND w){
-    dialTab(w);auto password=editAfter(w,L"Password:");SetWindowTextW(password,L"session-fixture");press(w,L"Save password");SendMessageW(applyButton(w,false),BM_CLICK,0,0);
-    expect(store->writes.size()==before+1&&!store->writes.back().second.savePassword&&store->writes.back().second.passwordEdited,"Connection Apply accepts an explicitly unsaved password");
-    expect(store->writes.back().second.protectedPassword!="session-fixture"&&reveal(store->writes.back().second.protectedPassword)=="session-fixture","Credential draft passes only Windows-protected password data to its backend");
-    expect(!store->entries[first.phonebook].savedPassword&&store->entries[first.phonebook].sessionPassword,"Session-only mode is reflected after Apply");
-    expect(windowText(password)==L"********","Applied session password is replaced by its masked placeholder");
-    capture(w,L"dial-session.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);
-   });expect(store->writes.size()==before+1,"Cancel does not repeat or undo an explicitly applied credential update");
-   expect(manager.snapshot().dump().find("session-fixture")==std::string::npos,"Dial password is absent from UDM configuration and history");
-  }
-  {
    Options dialog(manager,nullptr,store,[]{return std::vector<DialEntry>{};});modal(dialog,L"UDM Configuration",[&](HWND w){
     dialTab(w);expect(!IsWindowEnabled(editAfter(w,L"User name:"))&&!IsWindowEnabled(editAfter(w,L"Password:"))&&!IsWindowEnabled(applyButton(w,false)),"Empty Windows connection list disables credential editing");
     capture(w,L"dial-empty.png");SendMessageW(w,WM_COMMAND,IDCANCEL,0);
@@ -97,9 +88,9 @@ public:BOOL InitInstance()override{
     SendMessageW(w,WM_COMMAND,IDCANCEL,0);
    });
   }
-  code=0;
+  dialApplyChecks(output);dialConnectChecks(output);code=0;
  }catch(const std::exception& e){failure=e.what();}
- if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;
+ if(argv)LocalFree(argv);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",code==0},{"darkMode",uiDark},{"error",failure},{"checks",results}}.dump(2),false);return FALSE;
  }
  int ExitInstance()override{AfxOleTerm(FALSE);return code;}
 };

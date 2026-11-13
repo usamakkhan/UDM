@@ -4,6 +4,11 @@
 #include "QueueWake.hpp"
 #include "Scanner.hpp"
 #include "Core.hpp"
+#include "CatalogCommitCoordinator.hpp"
+#include "CatalogAdmissionRegistry.hpp"
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#endif
 #include "StreamProgress.hpp"
 #include "PostBodyStore.hpp"
 #include "QueueStop.hpp"
@@ -98,7 +103,33 @@ i64 parseDate(const Json& j){
  return result;
 }
 std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)throw std::runtime_error("File exceeds the supported size.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot read file.");std::string s((std::istreambuf_iterator<char>(f)),{});if(s.rfind("\xEF\xBB\xBF",0)==0)s.erase(0,3);return s;}
-void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";{Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));if(!f)throw std::runtime_error("Cannot write state temporary file.");DWORD n=0;if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size()||!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");}if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
+void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-atomic-entry");
+ nativeUiTraceSaveRecord("save-atomic-entry");
+#endif
+fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-dirs-ready");
+ nativeUiTraceSaveRecord("save-dirs-ready");
+#endif
+{Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-file-opened");
+ nativeUiTraceSaveRecord("save-file-opened");
+#endif
+if(!f)throw std::runtime_error("Cannot write state temporary file.");DWORD n=0;
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size())throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)nativeUiTraceRecord("save-bytes-written");
+ nativeUiTraceSaveRecord("save-bytes-written");
+if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)nativeUiTraceRecord("save-buffer-flushed");
+ nativeUiTraceSaveRecord("save-buffer-flushed");
+#else
+if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size()||!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
+#endif
+}if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
  if(ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr))break;
  const DWORD code=GetLastError();
  // Readers of the catalog or its existing backup may briefly omit FILE_SHARE_DELETE.
@@ -270,7 +301,7 @@ void Job::samplePrefetchRate(std::chrono::steady_clock::time_point now,bool fini
  if(finished)prefetchSampleTime.reset();
 }
 fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
-Manager::Manager(fs::path p,StartupRecovery recovery):root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");
+Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");
   if(status=="Pausing"){
    const auto response=job->data.find("OriginalResponse");
    if(response!=job->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing"))job->data["ResponseSaveDeferred"]=true;
@@ -303,22 +334,58 @@ std::function<void(const Json&)> Manager::browserSessionPersistence(JobPtr job,J
  };
 }
 Json Manager::snapshot()const{Lock l(mutex);auto s=state;s["Downloads"]=Json::array();for(auto j:jobs)s["Downloads"].push_back(j->snapshot());return s;}
-void Manager::save(){
+void Manager::save(){saveCatalog(false);}
+void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)>* observation){
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ NativeUiTraceSaveScope traceSave(changedOnly);
+#endif
  // Snapshot under the manager lock; serialization and file IO run on the caller
  // outside this function's lock. Periodic callers use an owned worker. Explicit
  // callers remain synchronous and may hold an outer lock. Older writes are skipped.
  std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
- {Lock l(mutex);if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
-  try{current=snapshot();}catch(const std::exception& e){storageError=e.what();throw;}
-  sequence=++catalogSequence;checkpoint=catalogCheckpoint;}
+ CatalogAdmissionRegistry::Publication publication;
+ {Lock l(mutex);if(changedOnly&&stopping)return;if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
+  // Recheck automatic checkpoint necessity in the same lock as its snapshot.
+  // An explicit commit can supersede a worker's earlier dirty observation.
+  // Forced saves and retries after a storage failure still perform durable IO.
+  try{if(changedOnly&&storageError.empty()&&!checkpointChanged())return;current=snapshot();publication=admissionRegistry->overlay(current);}catch(const std::exception& e){storageError=e.what();throw;}
+  sequence=++catalogSequence;checkpoint=observation?*observation:catalogCheckpoint;}
+
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-snapshot-ready");
+ nativeUiTraceSaveRecord("save-snapshot-ready");
+#endif
  // JSON serialization reads only the detached snapshot. Keep this CPU work off
  // the manager lock during periodic saves, just like the subsequent disk write.
  try{serialized=current.dump();if(serialized.size()>32*1024*1024)throw std::runtime_error("Download history has reached its 32 MB storage limit. Export and remove older records before adding more downloads.");}
  catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
+
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-serialized");
+ nativeUiTraceSaveRecord("save-serialized");
+#endif
  // Publish the cached checkpoint only after its file replacement succeeds.
  // The manager lock is never taken while the write mutex is held: a worker that
  // saves under the manager lock may be waiting for this write to finish.
- try{{std::lock_guard<std::mutex> writing(catalogWriteMutex);if(sequence<catalogWritten)return;atomicText(root/L"state.json",serialized,true,checkpoint);catalogWritten=sequence;}Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSequence=sequence;storageError.clear();}}
+ try{
+ if(checkpoint)checkpoint("snapshot-prepared");
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-write-wait");
+ nativeUiTraceSaveRecord("save-write-wait");
+#endif
+ CatalogCommitCoordinator coordinator(catalogWriteMutex,catalogWritten);
+ const auto result=coordinator.commit(sequence,[&]{atomicText(root/L"state.json",serialized,true,checkpoint);},[&](CatalogCommitStage stage)noexcept{
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  const auto label=stage==CatalogCommitStage::Acquired?"save-write-acquired":stage==CatalogCommitStage::Published?"save-file-published":"save-write-released";
+  if(checkpoint&&stage!=CatalogCommitStage::Released)nativeUiTraceRecord(label);
+  nativeUiTraceSaveRecord(label);
+#else
+  (void)stage;
+#endif
+ });
+ if(!result.published())return;
+ publication.published(sequence);
+Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSequence=sequence;storageError.clear();}}
  catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
 }
 bool Manager::jobMatchesCheckpoint(const Job& job,const Json& saved){
@@ -381,14 +448,16 @@ bool Manager::downloadDestinationReserved(const fs::path& path,const JobPtr& own
   const auto previous=str(other->data,"PreviousPath");
   if(!previous.empty()&&downloadPathKey(fs::path(wide(previous)))==key)return true;
  }
- return false;
+ return admissionRegistry->reserves(path,owner?owner->id():std::string{});
 }
+bool Manager::pendingMediaAdmission(const std::string& token)const{Lock lock(mutex);return admissionRegistry->lookup(token).phase!=CatalogAdmissionRegistry::Phase::Missing;}
+bool Manager::pendingMediaDestination(const fs::path& path,const JobPtr& owner)const{Lock lock(mutex);return admissionRegistry->reserves(path,owner?owner->id():std::string{});}
 // The caller holds the catalog lock while choosing and adding the destination.
 static std::string availableDownloadName(const Manager& manager,const fs::path& folder,const std::string& filename){
  const auto original=fs::path(wide(filename));
  const auto first=folder/original;
  const auto firstKey=downloadPathKey(first);
- const auto reservedOnDisk=[&](const fs::path& path){return fs::exists(path)||manager.relocationReserves(path);};
+ const auto reservedOnDisk=[&](const fs::path& path){return fs::exists(path)||manager.relocationReserves(path)||manager.pendingMediaDestination(path);};
  if(!reservedOnDisk(first)&&std::none_of(manager.jobs.begin(),manager.jobs.end(),[&](const auto& job){
      const auto previous=str(job->data,"PreviousPath");
      return downloadPathKey(job->target())==firstKey||
@@ -450,7 +519,16 @@ void Manager::queueIndividualResume(JobPtr j){
  if(yes(j->data,"SabrSessionRefreshRequired"))throw SabrSessionRefreshRequired(num(j->data.value("SabrSessionRejection",Json()),"part")==46);
  if(!str(j->data,"DuplicateOf").empty())throw std::runtime_error("Choose how to handle this duplicate first.");
  auto before=j->data;auto oldLimit=j->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
- j->data["PostAttempted"]=false;j->data["IndividualStart"]=true;j->sessionLimit.reset();j->data["QueueMember"]=true;j->data["QueueOrigin"]=false;j->data["QueueAttempts"]=0;j->data["Status"]="Queued";j->data["Error"]="";schedulePaused.erase(j->id());eraseCapturePresentations(state,j->id());
+ // A Resume of a completed response is not permission to submit its form
+ // again. If verification rejects it, a later explicit Restart rearms POST.
+ const bool savedPost=completedPostResponseCandidate(j->data);
+ if(yes(j->data,"PostResponseComplete")&&!savedPost){
+  j->data.erase("PostResponseComplete");j->data.erase("CompletedPrefetch");j->data.erase("ReusedCompletedPrefetch");
+  j->data.erase("PostResponseRequestSha256");j->data.erase("ProtectedPostGetUrl");j->data.erase("ProtectedPostGetHeaders");
+  j->data["HttpPartsResetPending"]=true;j->data["Segments"]=Json::array();j->data["Size"]=-1;j->data["Received"]=0;
+  j->data.erase("PrefetchedFinalSize");j->data["HttpDecodedSize"]=-1;j->data["HttpDecodedReceived"]=0;
+ }
+ j->data["PostAttempted"]=savedPost;j->data["IndividualStart"]=true;j->sessionLimit.reset();j->data["QueueMember"]=true;j->data["QueueOrigin"]=false;j->data["QueueAttempts"]=0;j->data["Status"]="Queued";j->data["Error"]="";schedulePaused.erase(j->id());eraseCapturePresentations(state,j->id());
  try{save();}catch(...){j->data=before;j->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
 }
 void Manager::pause(JobPtr j){
@@ -698,13 +776,9 @@ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))retur
  });
 }
 void Manager::checkpointPeriodic(){
- bool changed=false;
- {Lock l(mutex);if(stopping||catalogTransaction)return;
-  try{changed=!storageError.empty()||checkpointChanged();}
-  catch(const std::exception& e){storageError=e.what();return;}}
  // Do not hold an outer manager lock across save's serialization or disk IO.
- // save reports failures with its sequence guard; do not overwrite newer results.
- if(changed)try{save();}catch(...){}
+ // Check and snapshot atomically; save reports failures with its sequence guard.
+ try{saveCatalog(true);}catch(...){}
 }
 void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResponses();auto now=std::chrono::steady_clock::now();double seconds=std::max(.000001,std::chrono::duration<double>(now-lastTick).count());lastTick=now;for(auto j:jobs){if(str(j->data,"Status")=="Complete"&&!isActive(j)&&j->speed==0){
  if(!catalogTransaction&&!pendingScanRunning){

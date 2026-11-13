@@ -1,0 +1,128 @@
+{
+  "version": "7.14",
+  "browserVersion": "0.70.78",
+  "udmSha256": "5D1F2849C0825421D9A13C7B08E52692B4E2C21827E700A3ECA882819D6F5C85",
+  "rangeCases": [
+    {
+      "case": "range-ignored-16m",
+      "completed": true,
+      "sha256_ok": true,
+      "requests": 2,
+      "bytes_sent": 17039360,
+      "wasted_bytes": 262144,
+      "wall_seconds": 6.459,
+      "launch_to_headers_seconds": 1.876,
+      "launch_to_body_seconds": 1.952,
+      "body_window_seconds": 3.925,
+      "last_body_to_completion_seconds": 0.582
+    },
+    {
+      "case": "range-none-16m",
+      "completed": true,
+      "sha256_ok": true,
+      "requests": 1,
+      "bytes_sent": 16777216,
+      "wasted_bytes": 0,
+      "wall_seconds": 5.289,
+      "launch_to_headers_seconds": 0.647,
+      "launch_to_body_seconds": 0.71,
+      "body_window_seconds": 3.938,
+      "last_body_to_completion_seconds": 0.641
+    },
+    {
+      "case": "range-unadvertised-16m",
+      "completed": true,
+      "sha256_ok": true,
+      "requests": 4,
+      "bytes_sent": 17771623,
+      "wasted_bytes": 994407,
+      "wall_seconds": 3.904,
+      "launch_to_headers_seconds": 1.724,
+      "launch_to_body_seconds": 1.797,
+      "body_window_seconds": 1.24,
+      "last_body_to_completion_seconds": 0.866
+    }
+  ],
+  "hostConcurrency": {
+    "passed": false,
+    "jobsRequested": 3,
+    "serverConnections": 2,
+    "connectionsPerJob": 1,
+    "bytesPerFile": 8388608,
+    "elapsedSeconds": 17.941,
+    "jobs": [
+      {
+        "name": "job-1.bin",
+        "status": "Complete",
+        "received": 8388608,
+        "error": "",
+        "sha256_ok": true
+      },
+      {
+        "name": "job-2.bin",
+        "status": "Failed",
+        "received": 0,
+        "error": "HTTP send failed (Windows error 12030).",
+        "sha256_ok": false
+      },
+      {
+        "name": "job-3.bin",
+        "status": "Complete",
+        "received": 8388608,
+        "error": "",
+        "sha256_ok": true
+      }
+    ],
+    "acceptedConnections": 2,
+    "rejectedConnections": 4,
+    "acceptedRequests": 2,
+    "bodyBytes": 16777216,
+    "earlierRepeat": {
+      "elapsedSeconds": 18.583,
+      "jobs": [
+        {
+          "name": "job-1.bin",
+          "status": "Complete",
+          "received": 8388608,
+          "error": "",
+          "hash_ok": true
+        },
+        {
+          "name": "job-2.bin",
+          "status": "Complete",
+          "received": 8388608,
+          "error": "",
+          "hash_ok": true
+        },
+        {
+          "name": "job-3.bin",
+          "status": "Failed",
+          "received": 0,
+          "error": "HTTP response failed (Windows error 12030).",
+          "hash_ok": null
+        }
+      ],
+      "rejectedConnections": 4
+    }
+  },
+  "control": {
+    "passed": true,
+    "jobs": [
+      {
+        "name": "job-1.bin",
+        "status": "Complete",
+        "received": 1048576,
+        "error": "",
+        "sha256_ok": true
+      }
+    ],
+    "requests": 1,
+    "rejectedConnections": 0
+  },
+  "harness": "benchmarks/speed/host_concurrency.py",
+  "harnessSha256": "BA3A12998C38D75122163A87D3E55466081F059B6C8CE0B26F44CBE0973AA364",
+  "scope": "Owned loopback origins, tagged private UDM catalogs. The corrected multi-job trials omit /q to keep the primary process open. An earlier /q pilot was excluded because it paused another job when the launching download completed.",
+  "idmComparison": "Existing IDM processes were running. The paired benchmark requires a disposable profile and an idle reference instance, so no paired IDM result is claimed.",
+  "temporaryPayloadsRemoved": true,
+  "remainingWork": "Coordinate initial connection admission across concurrent jobs with matching origin, resolved proxy route and authentication scope. Preserve cancellation, retry policy, fairness and capacity recovery."
+}

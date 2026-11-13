@@ -1,0 +1,303 @@
+{
+  "checks": [
+    {
+      "name": "Don't show is available in the real start-view control",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "OK saves the selected start view",
+      "passed": true
+    },
+    {
+      "name": "Start view survives reopening the catalog",
+      "passed": true
+    },
+    {
+      "name": "Reopening settings selects the stored mode",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel preserves the saved mode",
+      "passed": true
+    },
+    {
+      "name": "Create isolated customization owner",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "OK returns with controls frozen while its worker waits for the held model",
+      "passed": true
+    },
+    {
+      "name": "Pending settings repaint and reject duplicate OK, More and Cancel without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "Real preference publication is held after dispatch",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Settings save publishes once or explicitly retries once after the original error",
+      "passed": true
+    },
+    {
+      "name": "Changed main-dialog choices persist together",
+      "passed": true
+    },
+    {
+      "name": "More acceptance, More cancellation and untouched concurrent progress fields retain their intended values",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field merge preserves newer unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Merged progress and unrelated settings survive reopening",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "OK returns with controls frozen while its worker waits for the held model",
+      "passed": true
+    },
+    {
+      "name": "Pending settings repaint and reject duplicate OK, More and Cancel without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "Real preference publication is held after dispatch",
+      "passed": true
+    },
+    {
+      "name": "Preference failure retains its original backend message",
+      "passed": true
+    },
+    {
+      "name": "Failed preference publication restores all current settings before acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Failed preferences retain the same controls and leave the caller draft uncommitted",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Settings save publishes once or explicitly retries once after the original error",
+      "passed": true
+    },
+    {
+      "name": "Changed main-dialog choices persist together",
+      "passed": true
+    },
+    {
+      "name": "More acceptance, More cancellation and untouched concurrent progress fields retain their intended values",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field merge preserves newer unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Merged progress and unrelated settings survive reopening",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "OK returns with controls frozen while its worker waits for the held model",
+      "passed": true
+    },
+    {
+      "name": "Pending settings repaint and reject duplicate OK, More and Cancel without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "Real preference publication is held after dispatch",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Settings save publishes once or explicitly retries once after the original error",
+      "passed": true
+    },
+    {
+      "name": "Changed main-dialog choices persist together",
+      "passed": true
+    },
+    {
+      "name": "More acceptance, More cancellation and untouched concurrent progress fields retain their intended values",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field merge preserves newer unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Merged progress and unrelated settings survive reopening",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Cancel or unchanged OK performs no settings save and commits no caller draft",
+      "passed": true
+    },
+    {
+      "name": "Cancel or unchanged OK leaves catalog bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Cancel or unchanged OK performs no settings save and commits no caller draft",
+      "passed": true
+    },
+    {
+      "name": "Cancel or unchanged OK leaves catalog bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "OK returns with controls frozen while its worker waits for the held model",
+      "passed": true
+    },
+    {
+      "name": "Pending settings repaint and reject duplicate OK, More and Cancel without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "Real preference publication is held after dispatch",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Settings save publishes once or explicitly retries once after the original error",
+      "passed": true
+    },
+    {
+      "name": "Changed main-dialog choices persist together",
+      "passed": true
+    },
+    {
+      "name": "More acceptance, More cancellation and untouched concurrent progress fields retain their intended values",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field merge preserves newer unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Merged progress and unrelated settings survive reopening",
+      "passed": true
+    },
+    {
+      "name": "Create actual cached progress customization entry",
+      "passed": true
+    },
+    {
+      "name": "Competing settings owner holds newer unrelated settings before dialog entry",
+      "passed": true
+    },
+    {
+      "name": "Preferences dialog opens from owned values while another thread holds the model",
+      "passed": true
+    },
+    {
+      "name": "Customization remains responsive through model contention",
+      "passed": true
+    },
+    {
+      "name": "Cancel or unchanged OK performs no settings save and commits no caller draft",
+      "passed": true
+    },
+    {
+      "name": "Invalid progress patches cannot mutate other settings or bypass typed choices",
+      "passed": true
+    },
+    {
+      "name": "Invalid progress patches cannot mutate other settings or bypass typed choices",
+      "passed": true
+    },
+    {
+      "name": "Invalid progress patches cannot mutate other settings or bypass typed choices",
+      "passed": true
+    },
+    {
+      "name": "Cached customization values exclude unrelated protected settings",
+      "passed": true
+    }
+  ],
+  "darkMode": true,
+  "error": "",
+  "passed": true
+}

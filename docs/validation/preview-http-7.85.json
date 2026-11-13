@@ -1,0 +1,663 @@
+{
+  "desktopVersion": "7.85",
+  "browserVersion": "0.71.49",
+  "runtimeChanged": false,
+  "nativeRebuild": false,
+  "nativeChecksRerun": false,
+  "baselineQualification": "docs/validation/progress-options-7.85.json",
+  "unchangedBinaries": [
+    {
+      "name": "Udm.ProgressCompletionUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.ProgressCompletionUiTests.exe",
+      "sha256": "44359F329353FEC156705E71109788DB8C8AE908B59883C340D4D1CCF49967F8",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.ProgressLimiterUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.ProgressLimiterUiTests.exe",
+      "sha256": "BD530C71AA051DD27DEEC0B99FA3F27D9A8C2ED10C2599A51D3D49B4E8705DF4",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.ProgressDialogUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.ProgressDialogUiTests.exe",
+      "sha256": "CB45AEDBFE1CF5ED2089FBE6E05EB151CF5700C2179F291764BA46D437BA97A8",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.ScheduleDownloadWizardUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.ScheduleDownloadWizardUiTests.exe",
+      "sha256": "885A322BE40043EC90A02BD5C5745E46FD3DA036858E5B96A84E24F792CC066F",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.PendingFileInfoUiTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.PendingFileInfoUiTests.exe",
+      "sha256": "25AFABDE8CE8C3DC3458CF9C027A1BA262DA257EDDB7D4B8218BC8D6ADEB9D50",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.FileInfoDecisionTests.exe",
+      "sha256": "D447A974D91BE482C7E189AA1CBD87B6B6EC8C06E219F750E43EF63C210639FA",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.UiTaskSignalTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.UiTaskSignalTests.exe",
+      "sha256": "A684B389E1BE90F7631A1D390167A175290BD202E4CC32D149D7DC53120D8A75",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.PendingFileInfoRetryTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.PendingFileInfoRetryTests.exe",
+      "sha256": "A6FD8BD3C0735F87EFAFB8A74D3BB62B6196FEF5CEACEAF426F4B5A227246251",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.DetachedMediaAdmissionTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.DetachedMediaAdmissionTests.exe",
+      "sha256": "899626717EA2C996E2EC430B42133539613791145D051D13884BA57122FDC5EE",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.CatalogAdmissionRegistryTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.CatalogAdmissionRegistryTests.exe",
+      "sha256": "1AFE63CA52254615B33612CA0A30028081A418527BAF03643D2518D969001027",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.CatalogAdmissionReservationTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.CatalogAdmissionReservationTests.exe",
+      "sha256": "A186A8B3B9FBC5A604228FC8FFA833E72639E4AE997CE9F0D027E8D8EB52F391",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.CatalogCommitCoordinatorTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.CatalogCommitCoordinatorTests.exe",
+      "sha256": "020F8A8CBCB6DFF57F39A7628D5A3B967321113FF50D613AC04487D6C4A20D70",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.CatalogCheckpointTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.CatalogCheckpointTests.exe",
+      "sha256": "60FA523FFEE75454A49B0FB998327B2E8CCEBAEB7E2BE0DAA2068971EAE79B0B",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.IdleCheckpointTests.exe",
+      "path": "LOCALAPPDATA/UDM-Development/progress-options-7.85/release-native/Udm.IdleCheckpointTests.exe",
+      "sha256": "79E7C333D4F048E482BE9A7370A39ABCA249F39F7ABB1339D3553C764902CF83",
+      "product": false,
+      "version": "7.85"
+    },
+    {
+      "name": "UDM.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/UDM.exe",
+      "sha256": "8B8C108DC328D6C7F6C4AB90FE54C00EE105AF4415B908C67CEDAEF40A3925AA",
+      "product": true,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.NativeHost.exe",
+      "sha256": "BDE233897475DB2FF386E70B3A5B7E7F2240037B1B90C08C258BF2486FD4CAEC",
+      "product": true,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.Monitor.exe",
+      "sha256": "08A8FFFE758FD335615EBA080E74DC4D277C94C1506FC5BD625A947DE42D981A",
+      "product": true,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.SetupHelper.exe",
+      "sha256": "3C610567D86016E86F9C34E684C5AEE6DCC57118C4FCE81C1FCB17A084757E51",
+      "product": true,
+      "version": "7.85"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "path": "LOCALAPPDATA/UDM-Development/native-work/release-native/Udm.Automation.exe",
+      "sha256": "56EA9F38389B908677E6C7E14B06A62F7BD836AC83B1A5FB53A25F66526D2433",
+      "product": true,
+      "version": "7.85"
+    }
+  ],
+  "unchangedCoreObjects": [
+    {
+      "name": "Core.obj",
+      "sha256": "AD4CD8A42967771DF994081BF64F7A286237F23C796A510B1071835F5466A5AB"
+    },
+    {
+      "name": "PacProxy.obj",
+      "sha256": "F0A7A80848DDCA73CFBCDDF22708672CFF2AB1B5EF64933DE27F0178D029C1B3"
+    },
+    {
+      "name": "Queue.obj",
+      "sha256": "36320ECE55FBE4DF51F4836DDD8926523A99F34E8E2B699807C202F0DCDCB48B"
+    },
+    {
+      "name": "FileWorkflows.obj",
+      "sha256": "675E148D834B842AE7BFCDC05DF6AB09BB394AC9375165A0FD4E9CF837062CB0"
+    },
+    {
+      "name": "Duplicates.obj",
+      "sha256": "EEE95F208974F745F056DD474931E6C31A92FE14CF8E9BFACB1E82D7571FE222"
+    },
+    {
+      "name": "Transfer.obj",
+      "sha256": "F75AAD9ED800C96719A7023B9CE0B23D5702C601C8DC0BF6CEF231AFC7614DA6"
+    },
+    {
+      "name": "Grabber.obj",
+      "sha256": "474BAD20D9B0881610A9E79E9932EFBE307591799717672561E2340DD5EB39BA"
+    },
+    {
+      "name": "GrabberLinks.obj",
+      "sha256": "16AB43ADDFE2DAD0001CE582E558DC1E336C230D554B20CDA3856CE7DD9D7FA2"
+    },
+    {
+      "name": "Streaming.obj",
+      "sha256": "E38E59B4CF821EE3A6637F9C4A42C5C11C8906B143A750122020ED0876743067"
+    },
+    {
+      "name": "Adaptive.obj",
+      "sha256": "574D2443BCE5BAD19CEF6A9634A4B823DFE0579470318181E881165B3B734AA6"
+    },
+    {
+      "name": "DashManifest.obj",
+      "sha256": "5AC7F1D21E79393400B3B46B01644BDF34D9092AE44FC5DFBC08056BECA98014"
+    },
+    {
+      "name": "YouTubePlayer.obj",
+      "sha256": "A549FBDC10A775978F52FBB59E0A74884F6158C0D0BA3A82E48D2A96D4CBCC12"
+    },
+    {
+      "name": "Bridge.obj",
+      "sha256": "7CB623282E2DB86E56A6EEA418937513AEA33D66B1AD095DB1EAD99C9AB62F76"
+    },
+    {
+      "name": "Network.obj",
+      "sha256": "56EDD20E166FFFC1E1201B58A89064ADFE1886803775E9FE286219A0D699948C"
+    },
+    {
+      "name": "SocksProxy.obj",
+      "sha256": "91395D6E1DAFE08D7BF4D0E7DE9C7D3B4B932D0900E0B41794B5982ABFDDD451"
+    },
+    {
+      "name": "OfflineSite.obj",
+      "sha256": "85B735CAE2943B0B58B6F99C68D5CE716798E0A7C1DC60925DC6B4E5E47F980F"
+    },
+    {
+      "name": "DialUp.obj",
+      "sha256": "3C313213EA19B536F6B8FCDF21FD32F4BF6C2C1281BFFF251A9A674844E37F81"
+    },
+    {
+      "name": "Ftp.obj",
+      "sha256": "D7FB6926EAE11A39C600A51B5A3EC3E825E6852945C67B7C28F1D3C136EBE073"
+    },
+    {
+      "name": "DownloadPreview.obj",
+      "sha256": "A354300C639F2DC642FDCAD330AB583F197DC630C447C44342DBAEB84ED1F069"
+    },
+    {
+      "name": "ZipPreview.obj",
+      "sha256": "A8F151EAE1CFFBBE3D2155936D2F2F49FF636C63AA1CF7C07D3A807C138E6F8B"
+    },
+    {
+      "name": "QueueWake.obj",
+      "sha256": "844622AF2FFE70687938FFD890F084A560A8BA74534A86781D16D3FC7FB99C65"
+    },
+    {
+      "name": "Scanner.obj",
+      "sha256": "4BC43E7DC1DB86196BA0E17EE4B72FA1D388CE0DF77934D90C99B7E7977D44B8"
+    },
+    {
+      "name": "CaptureExclusions.obj",
+      "sha256": "157D39A56B8A49E4B0E66A8E33C0DE0E24DCC2F5B74A86481573D432ADFD489D"
+    },
+    {
+      "name": "CaptureAdmission.obj",
+      "sha256": "00FD8BFC1DD52C4B187BCE9540E5F39DF54964BEF3789279A233F6A17C85E17B"
+    },
+    {
+      "name": "zlib-adler32.obj",
+      "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B"
+    },
+    {
+      "name": "zlib-crc32.obj",
+      "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62"
+    },
+    {
+      "name": "zlib-inffast.obj",
+      "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80"
+    },
+    {
+      "name": "zlib-inflate.obj",
+      "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF"
+    },
+    {
+      "name": "zlib-inftrees.obj",
+      "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A"
+    },
+    {
+      "name": "zlib-zutil.obj",
+      "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19"
+    },
+    {
+      "name": "brotli-common-constants.obj",
+      "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA"
+    },
+    {
+      "name": "brotli-common-context.obj",
+      "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48"
+    },
+    {
+      "name": "brotli-common-dictionary.obj",
+      "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C"
+    },
+    {
+      "name": "brotli-common-platform.obj",
+      "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D"
+    },
+    {
+      "name": "brotli-common-shared_dictionary.obj",
+      "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C"
+    },
+    {
+      "name": "brotli-common-transform.obj",
+      "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987"
+    },
+    {
+      "name": "brotli-dec-bit_reader.obj",
+      "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0"
+    },
+    {
+      "name": "brotli-dec-decode.obj",
+      "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95"
+    },
+    {
+      "name": "brotli-dec-huffman.obj",
+      "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E"
+    },
+    {
+      "name": "brotli-dec-prefix.obj",
+      "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546"
+    },
+    {
+      "name": "brotli-dec-state.obj",
+      "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1"
+    },
+    {
+      "name": "brotli-dec-static_init.obj",
+      "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "tests/hls-catalog.native-live.cjs",
+      "sha256": "7AB7ED1D0ADE927A520377F61C5594E166FF76A5201D5D1A59CCB80B8BC12ED2"
+    },
+    {
+      "path": "tests/loopback-netlog.cjs",
+      "sha256": "04223E0C81F62F30C4907068F53D055F6CC6EFC31829D70F5F5F4049D7122C6F"
+    },
+    {
+      "path": "tests/loopback-netlog.test.cjs",
+      "sha256": "7F4883F7C441674BBFFA7CFE48A5CE889F757ED7CE587760A4F176C38E17AE25"
+    },
+    {
+      "path": "tests/loopback-http-diagnostics.cjs",
+      "sha256": "2ABBA575DEBFDB5E98ACBC90FA89AE761BEEC91ADF9550746EFC3F28B916B41E"
+    },
+    {
+      "path": "tests/loopback-http-diagnostics.test.cjs",
+      "sha256": "4D4589FBCCB4F796C0550443EFDD95B1D05C6DFB71C3BE81647F9FB3C230931C"
+    }
+  ],
+  "unitChecks": 13,
+  "unitCommand": "node --test tests/loopback-netlog.test.cjs tests/loopback-http-diagnostics.test.cjs",
+  "configurationGuards": [
+    {
+      "flag": "UDM_TEST_HTTP_DIAGNOSTICS",
+      "value": "0",
+      "additionalFlags": {},
+      "rejectedBeforeSideEffects": true
+    },
+    {
+      "flag": "UDM_TEST_PREVIEW_ONLY",
+      "value": "0",
+      "additionalFlags": {},
+      "rejectedBeforeSideEffects": true
+    },
+    {
+      "flag": "UDM_TEST_PREVIEW_MALFORMED",
+      "value": "0",
+      "additionalFlags": {},
+      "rejectedBeforeSideEffects": true
+    },
+    {
+      "flag": "UDM_TEST_PREVIEW_MALFORMED",
+      "value": "1",
+      "additionalFlags": {},
+      "rejectedBeforeSideEffects": true
+    },
+    {
+      "flag": "UDM_TEST_PREVIEW_MALFORMED",
+      "value": "1",
+      "additionalFlags": {
+        "UDM_TEST_PREVIEW_ONLY": "1",
+        "UDM_TEST_COLD_DESKTOP": "1",
+        "UDM_TEST_WARM_PRODUCTION": "1"
+      },
+      "rejectedBeforeSideEffects": true
+    }
+  ],
+  "workflows": [
+    {
+      "case": "warm-canonical-control",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true
+    },
+    {
+      "case": "warm-canonical-diagnostic",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5263072,
+      "privateRawSha256": "1964482613CB28B66620C8FAB0666BD34A4BC738F4AE35721E25E631C0E3431C",
+      "summarySha256": "FE76E077D491FE6D722D835EB75183EBE9F789FEB178F03A1F76276A80D1CFEA"
+    },
+    {
+      "case": "warm-canonical-final-control",
+      "finalMaintainedFixture": true,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true
+    },
+    {
+      "case": "warm-canonical-final-diagnostic",
+      "finalMaintainedFixture": true,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5409643,
+      "privateRawSha256": "EE7DD17DCA1F88513218CC97DBB6ECC4FA80A6C34A5F71FB11C2371F237B8F71",
+      "summarySha256": "61211785D6779BB0ECBC177F1D1AEF952CB527BE7FC78FB1677CCC2B82BA5F56"
+    },
+    {
+      "case": "warm-intentional-malformed",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": true,
+      "passedChecks": 1,
+      "failedChecks": 1,
+      "expectedFailureVerified": true,
+      "downloadAdmissions": 0,
+      "parserError": -370,
+      "previewBodyBytes": 0,
+      "privateRawBytes": 1171442,
+      "privateRawSha256": "120041A14031CEAB954CE6A632EB031D1F4FA510BF6BD12D99C4BDFA31733C68",
+      "summarySha256": "08425F6B765698ECC030AFEFD5004D7A4A1D769B61EAC234DF0D9CBAC7D160EB"
+    },
+    {
+      "case": "warm-recovery-bytes-1",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5249597,
+      "privateRawSha256": "7690DE679CB7FFB7FC2864593FD2AD7D0A1CC12261CF0AD14620BE499BA8B623",
+      "summarySha256": "F746F8D7EF05D30D01D554576E948D10750302F6D780CA93DDF1382F44A1ADF0"
+    },
+    {
+      "case": "warm-recovery-bytes-2",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5246347,
+      "privateRawSha256": "B16BF6E0E7ADE66E9B07EC6C1C3F9D512B3DC1D7E9BAD319B4C222795DA8E608",
+      "summarySha256": "F6E5893372DEE205DCCC09D78F93D598998915FDEB8980EFE101599240CC3EA6"
+    },
+    {
+      "case": "warm-recovery-bytes-3",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5247841,
+      "privateRawSha256": "DE043D9299D726053E02129B49E5303ED99A3D6118CE2B2FB8D8CACBEFA47CEB",
+      "summarySha256": "D6DE7F062303B7B17B7389E8BDCBFC4AA1DFD53FBF4329D5C96D792944F94EA0"
+    },
+    {
+      "case": "warm-recovery-bytes-4",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5243382,
+      "privateRawSha256": "50F9F56B3BCF088E1AB3635A6E198610643604E7703E31EB4D901120F2BA85A4",
+      "summarySha256": "FDAA616C4AB4C799979252D32AC1DF859396EDA79164AA1712A9E302A585131D"
+    },
+    {
+      "case": "warm-recovery-bytes-5",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5240340,
+      "privateRawSha256": "982F798B1C1C94C7082159CB983F760341FBF39FB0CE37EB6A33C40F2D223B69",
+      "summarySha256": "D6DE7F062303B7B17B7389E8BDCBFC4AA1DFD53FBF4329D5C96D792944F94EA0"
+    },
+    {
+      "case": "warm-recovery-bytes-6",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5743114,
+      "privateRawSha256": "7FB74399209C13B8F94AF4A0E30F9AEFF352C41EC9B81D40DB34EE59D3F79F17",
+      "summarySha256": "2A41A19C5AF5A396B9F9073C762DB6712DC0916D6792F7A3BE43835C649A1597"
+    },
+    {
+      "case": "warm-recovery-bytes-7",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5822880,
+      "privateRawSha256": "815DFF85AE60087A1C69601B81F7375212490BFDEF4987817F591D2E476E8355",
+      "summarySha256": "43735DAC19C10ABDC6B3E4C6D7F8172C7636486576BB1D8CD50C4FA77333545A"
+    },
+    {
+      "case": "warm-recovery-bytes-8",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 5243921,
+      "privateRawSha256": "D6CA13818792817519291278B52D261FDFE2D74B8120E55F1CC6EF052937E9F0",
+      "summarySha256": "4FA1B0E26858087535A8DA4B48B3FB191BD383A8904839788E91E1DCE1F3A22C"
+    },
+    {
+      "case": "warm-recovery-wire-1",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 459776,
+      "privateRawSha256": "7E6A5CEECCEFA492B45B4F49AFFD3BDBC78DC091674CC4276FC757AFE9167D19",
+      "summarySha256": "4F198CF6C8A67F20491DD408111DA49573BD1266B3F9F1B4E4163A360E137376"
+    },
+    {
+      "case": "warm-recovery-wire-2",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 688175,
+      "privateRawSha256": "231055B928FA81CECFCC0344C6E10DD2946E421DB328311C708C3FB66B06577F",
+      "summarySha256": "36D7C5E4C4E073416669F59C06908C8736AB43C97AFE7D8A459162DEC8836434"
+    },
+    {
+      "case": "warm-recovery-wire-3",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 307737,
+      "privateRawSha256": "0101C9F47B0DB4DA396AD2F446CE7AECBEC30E3C42056313975B76473FA0A2E0",
+      "summarySha256": "A9AE9481FE9D83C851A77F520C70F2795F7F984CFD7CEDE17509DDC14366331C"
+    },
+    {
+      "case": "warm-recovery-wire-4",
+      "finalMaintainedFixture": false,
+      "intentionalMalformedResponse": false,
+      "passedChecks": 8,
+      "failedChecks": 0,
+      "completeDownload": true,
+      "bytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "tracksFullyDecoded": true,
+      "mainListHidden": true,
+      "sameDialogRecovery": true,
+      "privateRawBytes": 469163,
+      "privateRawSha256": "F2FF382A6C4790E9F02DD884175F8FD4E5AAFD49A62C81CAB04E237BEE142626",
+      "summarySha256": "30DFF39332D052D3FE3578983FE85E8D256B9DFC0C14F1EC3B26979C82C38BAD"
+    }
+  ],
+  "findings": [
+    "Twelve fresh private complete workflows with a private launch hook passed: four Default and eight Everything NetLogs. These were preliminary captures before maintained integration, not final-source qualification.",
+    "Two initial maintained complete workflows passed. After hardening source-ID/phase filtering and adding a guarded malformed-response mode, both final maintained workflows passed: diagnostic and ordinary control. All sixteen positive workflows matched exact size/checksum and decoded selected tracks.",
+    "The maintained diagnostic mode captures a private raw NetLog and emits an owned-loopback URL_REQUEST summary after browser close. It exports header-parser errors, allowlisted framing headers/numeric status and filtered body-byte totals. Raw bytes, request headers/cookies, URL queries/credentials, other source types and external redirect chains are omitted.",
+    "A deliberately malformed owned-loopback preview response produces real Edge ERR_INVALID_HTTP_RESPONSE. Its summary records HTTP_STREAM_PARSER_READ_HEADERS error -370 with zero body bytes, while the private catalog retains zero admissions. This is an expected negative fixture, not a passing download or a reproduction of the intermittent cause.",
+    "The final valid diagnostic preview receives status 200 and all 1,771,847 body bytes; the uninstrumented full recovery control also passes. No automatic product retry was added."
+  ],
+  "limits": [
+    "The intermittent natural failure was not reproduced during these runs. Its cause/fix and instrumentation timing effects remain unproven.",
+    "No product code, version increment, native rebuild, installer or installation. Existing 19 binaries and 42 core hashes remain unchanged; 1,541 native checks belong to the prior qualification, not a new run.",
+    "No personal browser/desktop visual test or fresh IDM timing comparison. Installed desktop remains 7.11.",
+    "The negative capture was collected before the final numeric source-ID/phase filter hardening; the current pure collector was replayed over all fifteen immutable raw captures and those filtered outputs are the recorded summaries."
+  ],
+  "researchSources": [
+    {
+      "url": "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/net/http/http_stream_parser.cc",
+      "use": "Parser source shows malformed/non-HTTP header paths can return ERR_INVALID_HTTP_RESPONSE. This guides event selection, not attribution of the natural failure."
+    }
+  ],
+  "naturalFailureOpen": true,
+  "installedDesktop": "7.11",
+  "installed": false,
+  "installerCreated": false,
+  "artifactDisposition": "31 individually hash-verified payload/raw-NetLog files removed (161,767,646 logical bytes). Summaries, profiles/evidence, executables/core cache and shared media/helpers retained; earlier blocked preview-http-7.82 paths untouched."
+}

@@ -1,0 +1,650 @@
+{
+  "version": "7.42",
+  "browserVersion": "0.71.6",
+  "build": "passed",
+  "incrementalBase": "7.41 (rejected candidate)",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "BE65060F886926F0C3C1A6BC2F86D5F1D63EBDEE1E5030B10B3B603E84B3BC2C"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "F08779F3E9D9685875043096EAC49E8E3C390ED9D0D77AAF299256981AF2A234"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D700F46E9700516D8E29770026B81E1C543075856CA36BD78CB3BE8F513698BC"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "B4FF004D41B128B5FE2DFD97223700499DA248C74D963C203342DB4D1213466A"
+    },
+    {
+      "path": "native/ProgressRateHistoryTests.cpp",
+      "sha256": "4037083906BD564C4A89C2D57FEB4304B122BBADB5B0CC77B78D64B829834C40"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "823FED010B58392F65C91B9CEDFC44D963452C353ACA7FCD920E7F47784F8627"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7F14E03D214C0CB0AA1AB9623E1D283DA1CEA5B741B036663DE4EFA566980CDC"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "path": "tests/browser.test.cjs",
+      "sha256": "709376EECED8685E41FAEB414FC0A6C15816FE51730AE340CC6353334E7F41B9"
+    },
+    {
+      "path": "tests/browser-preflight-state.test.cjs",
+      "sha256": "C0070FB74175D03F978CAC0DC5C798296B3A7E5D85408A868125091394048044"
+    },
+    {
+      "path": "tests/browser-received-response.test.cjs",
+      "sha256": "A808C90EC3DA3F39408C63ACEC800FA305B97518E1F9A4ADB6A55AF8377EA650"
+    },
+    {
+      "path": "tests/browser-download-byte-counts.native-live.cjs",
+      "sha256": "7B3FCC86E0522748399C0831D5BBECA2E48153B2BA63B450B057A70D4305BE7A"
+    },
+    {
+      "path": "tests/capture-transaction.test.cjs",
+      "sha256": "7F959AD3B0CF9F551F96BA44AF866A31390EEA656018E923DB8856D3A7CC7EA4"
+    },
+    {
+      "path": "tests/capture-recovery.test.cjs",
+      "sha256": "A38F2607657CBEB70DBD699B8C475C1D0D1D8864A9B7468FEB99EBBAB46E4AB6"
+    },
+    {
+      "path": "browser/chromium/capture-recovery.js",
+      "sha256": "B273563813D8732E46908ABDD8126AB37C252B9C90A1972FF977B7549B5C0E5C"
+    },
+    {
+      "path": "browser/firefox/capture-recovery.js",
+      "sha256": "B273563813D8732E46908ABDD8126AB37C252B9C90A1972FF977B7549B5C0E5C"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "tests/panel-track-refresh.browser.cjs",
+      "sha256": "77A6FF4E3F786933635C94AB0002565A13354A97034E2493F2383A7E3E2ED5ED"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "tests/youtube-pending-captures.browser.cjs",
+      "sha256": "D2F0A2B8A3777D3EAE242BB9FF75CF8B632605325008D9F9BDC42A232E2765D7"
+    },
+    {
+      "path": "tests/youtube-stream-readers.browser.cjs",
+      "sha256": "C1E98D1021D99CA93C0B054EF26D938BCC93879C361E5A730B246E42C267D70F"
+    },
+    {
+      "path": "tests/streaming-capture.test.cjs",
+      "sha256": "987D5AB8FDD4492935991D659A3554CF0D665976307E8A2C54A795792E614251"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "E777E5D4EE1BC3791B3D3122EDCF9621C916DFBF837B882F0B49235898C29BAD"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "902EC36CBA03C036C6233BCCFFEF11BA9D0D083FFCDD6B0D25E8B3E4338F7F23"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "4D80E0E214075A10213A63E50F64A73111AFE8BBE15D2B980113862E417F7C7C"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.42",
+      "sha256": "E7398B0C5CB4A7F1C06A8FC24005FA31166A11DD53239D7B6A38F78E1705D7D4"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.42",
+      "sha256": "FDC5B80437AC111C776DB38B7D17272F1859C49A0E41DE0DA99CD8FBA57E5EE5"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.42",
+      "sha256": "345F9EEE2FD7BD43DD777800A28692E7BF6C25588DA204781C3EF92C4DEF730C"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.42",
+      "sha256": "8F26E11D415A10C40FFEFFF8738C5B959DDE5D5923F1CA90B652192DB5F29918"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.42",
+      "sha256": "210CCE91DF947150162DFB62041AF13122EA8B30E1961EEA5A332E8265DF8951"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "qualification": {
+    "focused": {
+      "passed": 10,
+      "failed": 0,
+      "scope": "Both bundle sources in browser API simulations; no personal browser or origin transfer",
+      "results": [
+        {
+          "name": "chromium legacy retains fully received 256-byte response before ownership",
+          "passed": true
+        },
+        {
+          "name": "chromium transactional retains fully received 256-byte response before ownership",
+          "passed": true
+        },
+        {
+          "name": "chromium resumes response that finishes between live check and pause",
+          "passed": true
+        },
+        {
+          "name": "chromium unknown byte length remains eligible",
+          "passed": true
+        },
+        {
+          "name": "chromium zero byte-length placeholder remains eligible",
+          "passed": true
+        },
+        {
+          "name": "firefox legacy retains fully received 256-byte response before ownership",
+          "passed": true
+        },
+        {
+          "name": "firefox transactional retains fully received 256-byte response before ownership",
+          "passed": true
+        },
+        {
+          "name": "firefox resumes response that finishes between live check and pause",
+          "passed": true
+        },
+        {
+          "name": "firefox unknown byte length remains eligible",
+          "passed": true
+        },
+        {
+          "name": "firefox zero byte-length placeholder remains eligible",
+          "passed": true
+        }
+      ]
+    },
+    "preflight": {
+      "passed": 14,
+      "failed": 0,
+      "scope": "Browser API simulations for both source bundles; no personal browser or network transfer",
+      "results": [
+        {
+          "name": "chromium leaves canceled download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "chromium leaves completed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "chromium leaves removed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "chromium leaves paused download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "chromium leaves lookup-failed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "chromium captures an unchanged live transfer exactly once",
+          "passed": true
+        },
+        {
+          "name": "chromium rechecks user resume after extension pause",
+          "passed": true
+        },
+        {
+          "name": "firefox leaves canceled download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "firefox leaves completed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "firefox leaves removed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "firefox leaves paused download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "firefox leaves lookup-failed download untouched after policy preflight",
+          "passed": true
+        },
+        {
+          "name": "firefox captures an unchanged live transfer exactly once",
+          "passed": true
+        },
+        {
+          "name": "firefox rechecks user resume after extension pause",
+          "passed": true
+        }
+      ]
+    },
+    "transactionChecks": 159,
+    "recoveryChecks": 27,
+    "browserChecks": 56,
+    "auditChecks": 10,
+    "edge": {
+      "scope": "Real isolated Edge downloads API, synthetic empty and 64 KiB chunked responses; UDM and the personal browser were not loaded",
+      "observations": [
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "empty",
+          "state": "complete",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 65536,
+          "udmReceived": false
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 65536,
+          "bytesReceived": 65536,
+          "udmReceived": true
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 65536,
+          "bytesReceived": 65536,
+          "udmReceived": true
+        },
+        {
+          "case": "unknown",
+          "state": "complete",
+          "totalBytes": 65536,
+          "bytesReceived": 65536,
+          "udmReceived": true
+        },
+        {
+          "id": 1,
+          "event": "created",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false,
+          "case": "empty"
+        },
+        {
+          "id": 2,
+          "event": "created",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "udmReceived": false,
+          "case": "unknown"
+        }
+      ],
+      "checks": [
+        {
+          "name": "empty response completed with expected browser/file byte count",
+          "passed": true,
+          "bytes": 0
+        },
+        {
+          "name": "unknown response completed with expected browser/file byte count",
+          "passed": true,
+          "bytes": 65536
+        },
+        {
+          "name": "Unknown response was observed before completion; raw counters retained without assuming zero proves empty",
+          "passed": true
+        },
+        {
+          "name": "Production UDM predicate retains zero/unknown eligibility and recognizes the positive received total",
+          "passed": true
+        }
+      ]
+    },
+    "edgeVersion": "157.0.4341.46",
+    "payloadProof": [
+      {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matchesOriginPayload": true
+      },
+      {
+        "bytes": 65536,
+        "sha256": "1136688e8a1d093f4613d56359da1c2d75bd65ba6e33603cd752b29dd401de8c",
+        "matchesOriginPayload": true
+      }
+    ],
+    "documentation": "https://developer.chrome.com/docs/extensions/reference/api/downloads#property-DownloadItem-totalBytes",
+    "observation": "Real Edge reports zero for both empty and unfinished unknown-length responses; zero alone is not completion proof.",
+    "rejectedCandidate": "7.41 / browser 0.71.5; never installed or packaged",
+    "baselineScope": "Original 12-case synthetic suite had ten failures. Six positive-total/race failures remain relevant; four zero-total expectations were invalidated by live Edge and replaced with eligibility controls.",
+    "installed": false,
+    "installerCreated": false,
+    "personalBrowserUsed": false,
+    "freshIdmComparison": false,
+    "liveScope": "Own minimal fixture extension loads the actual production received-byte predicate. Real downloads API and output bytes; not the full UDM extension/native workflow."
+  }
+}

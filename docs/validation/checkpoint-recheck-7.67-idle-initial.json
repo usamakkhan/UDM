@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "name": "Idle ticks preserve a newly initialized catalog",
+      "passed": true
+    },
+    {
+      "name": "Idle ticks do not rewrite or flush the catalog",
+      "passed": true
+    },
+    {
+      "name": "Finished daily cycle clears its running flag",
+      "passed": true
+    }
+  ],
+  "error": "Cannot read file.",
+  "passed": false
+}

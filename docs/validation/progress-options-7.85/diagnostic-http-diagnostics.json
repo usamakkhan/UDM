@@ -1,0 +1,127 @@
+{
+  "scope": "Owned loopback requests only; URL queries, credentials and unrelated headers omitted",
+  "requests": [
+    {
+      "requestId": "4563DD49E3B5DB402EE5AFC2FA7CCF4B",
+      "history": [
+        {
+          "path": "/nested",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "requestId": "27384.2",
+      "history": [
+        {
+          "path": "/video.mp4",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "requestId": "27384.7",
+      "history": [
+        {
+          "path": "/outer.m3u8",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "requestId": "27384.8",
+      "history": [
+        {
+          "path": "/favicon.ico",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "requestId": "27384.12",
+      "history": [
+        {
+          "path": "/real/master.m3u8",
+          "method": "GET"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "requestId": "4563DD49E3B5DB402EE5AFC2FA7CCF4B",
+      "event": "response-headers",
+      "statusCode": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "687",
+        "content-type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "requestId": "4563DD49E3B5DB402EE5AFC2FA7CCF4B",
+      "event": "finished",
+      "encodedDataLength": 876
+    },
+    {
+      "requestId": "27384.2",
+      "event": "response-headers",
+      "statusCode": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-length": "1771847",
+        "content-type": "video/mp4",
+        "etag": "\"audio-fixture\""
+      }
+    },
+    {
+      "requestId": "27384.2",
+      "event": "finished",
+      "encodedDataLength": 1772048
+    },
+    {
+      "requestId": "27384.7",
+      "event": "response-headers",
+      "statusCode": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/vnd.apple.mpegurl",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "requestId": "27384.8",
+      "event": "response-headers",
+      "statusCode": 404,
+      "headers": {
+        "connection": "keep-alive",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "requestId": "27384.8",
+      "event": "finished",
+      "encodedDataLength": 168
+    },
+    {
+      "requestId": "27384.7",
+      "event": "finished",
+      "encodedDataLength": 456
+    },
+    {
+      "requestId": "27384.12",
+      "event": "response-headers",
+      "statusCode": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/vnd.apple.mpegurl",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "requestId": "27384.12",
+      "event": "finished",
+      "encodedDataLength": 779
+    }
+  ]
+}

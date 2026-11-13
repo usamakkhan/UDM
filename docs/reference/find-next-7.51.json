@@ -1,0 +1,99 @@
+{
+  "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "procedure": "0x0047c2a0",
+  "emptyQueryBranch": "0x0047c2d2",
+  "fieldOffsets": [
+    "0x1840",
+    "0x1844",
+    "0x1848"
+  ],
+  "disabledFieldBranch": "0x0047c2f1",
+  "returnPath": "0x0047c44f",
+  "byteChecks": [
+    {
+      "address": "0x47c2d2",
+      "bytes": "0f8477010000",
+      "instruction": "JZ 0x0047c44f",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2d8",
+      "bytes": "83be4018000000",
+      "instruction": "CMP dword ptr [ESI + 0x1840],0x0",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2df",
+      "bytes": "7516",
+      "instruction": "JNZ 0x0047c2f7",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2e1",
+      "bytes": "83be4418000000",
+      "instruction": "CMP dword ptr [ESI + 0x1844],0x0",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2e8",
+      "bytes": "750d",
+      "instruction": "JNZ 0x0047c2f7",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2ea",
+      "bytes": "83be4818000000",
+      "instruction": "CMP dword ptr [ESI + 0x1848],0x0",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c2f1",
+      "bytes": "0f8458010000",
+      "instruction": "JZ 0x0047c44f",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c44f",
+      "bytes": "5f",
+      "instruction": "POP EDI",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c450",
+      "bytes": "5e",
+      "instruction": "POP ESI",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c451",
+      "bytes": "5d",
+      "instruction": "POP EBP",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c452",
+      "bytes": "5b",
+      "instruction": "POP EBX",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c453",
+      "bytes": "59",
+      "instruction": "POP ECX",
+      "matchesInstalledBytes": true
+    },
+    {
+      "address": "0x47c454",
+      "bytes": "c3",
+      "instruction": "RET",
+      "matchesInstalledBytes": true
+    }
+  ],
+  "conclusion": "Find Next returns before list scanning for an empty query or when all three source fields are disabled. Implement the same guard without changing accepted-query persistence.",
+  "method": "Current installed PE bytes compared with the retained instruction export; inferred control flow from that export, not a fresh IDM UI replay.",
+  "relatedEvidence": [
+    "idm-find-filter-20261104.json",
+    "idm-find-cursor-20261104.json",
+    "find-windows-fold-7.50.json"
+  ]
+}

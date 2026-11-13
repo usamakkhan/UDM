@@ -1,0 +1,3598 @@
+{
+  "desktop": "7.58",
+  "browser": "0.71.22",
+  "status": "Full native core rebuilt, five targets built and targeted display/transfer checks passed; not installed or packaged",
+  "build": "primary-address-7.58-build.json",
+  "checks": 785,
+  "tests": [
+    {
+      "name": "FindAddressTests",
+      "path": "candidates/primary-address-7.58/address",
+      "checks": 46,
+      "passed": true,
+      "executableSha256": "F522CAAA55FF0FF95C800CDF8972A0D0F9AF7F4F5FA984869A514FA0BA93C00E",
+      "checksDetail": [
+        {
+          "name": "Original URL remains searchable",
+          "passed": true
+        },
+        {
+          "name": "Parent page remains searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties redirected address is searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties video stream is searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties audio stream is searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties manifest is searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties first segment is searchable",
+          "passed": true
+        },
+        {
+          "name": "Properties SABR endpoint is searchable",
+          "passed": true
+        },
+        {
+          "name": "Stream matching ignores case by default",
+          "passed": true
+        },
+        {
+          "name": "Stream matching honors case selection",
+          "passed": true
+        },
+        {
+          "name": "Whole-string matches the complete stream site",
+          "passed": true
+        },
+        {
+          "name": "Whole-string excludes site fragments",
+          "passed": true
+        },
+        {
+          "name": "Whole-string matches complete stream URL",
+          "passed": true
+        },
+        {
+          "name": "Unchecked Address excludes stream URLs",
+          "passed": true
+        },
+        {
+          "name": "Whole-string site search covers the parent page with Windows case folding",
+          "passed": true
+        },
+        {
+          "name": "Case-sensitive whole-site search preserves spelling",
+          "passed": true
+        },
+        {
+          "name": "Whole-site comparison retains authority port",
+          "passed": true
+        },
+        {
+          "name": "Whole-site comparison accepts the full literal authority",
+          "passed": true
+        },
+        {
+          "name": "Windows reference folding keeps final sigma distinct from ordinary sigma on this host",
+          "passed": true
+        },
+        {
+          "name": "Ordinary sigma matches its uppercase form through Windows reference folding",
+          "passed": true
+        },
+        {
+          "name": "Final sigma still matches itself with an insensitive extension",
+          "observed": {
+            "filenameFold": "\u03c2.BIN",
+            "queryFold": "\u03a3.BIN"
+          },
+          "passed": true
+        },
+        {
+          "name": "Live properties expose each selected track playlist and segment",
+          "passed": true
+        },
+        {
+          "name": "Live properties distinguish video, audio and subtitle playlist labels",
+          "passed": true
+        },
+        {
+          "name": "Live properties distinguish video, audio and subtitle segment labels",
+          "passed": true
+        },
+        {
+          "name": "Both subtitle playlist and segment URLs remain searchable",
+          "passed": true
+        },
+        {
+          "name": "Viewing live links preserves protected metadata and the primary video address",
+          "passed": true
+        },
+        {
+          "name": "Search leaves captured download metadata unchanged",
+          "passed": true
+        },
+        {
+          "name": "Primary display address does not decrypt an unused redirected address",
+          "passed": true
+        },
+        {
+          "name": "Full Links still reports unreadable redirected context",
+          "passed": true
+        },
+        {
+          "name": "Healthy primary display and complete redirected Links retain their distinct roles",
+          "passed": true
+        },
+        {
+          "name": "A missing requested address retains the resolved fallback",
+          "passed": true
+        },
+        {
+          "name": "An unreadable selected fallback is still rejected",
+          "passed": true
+        },
+        {
+          "name": "An invalid selected primary does not silently switch to a redirect",
+          "passed": true
+        },
+        {
+          "name": "A valid video display does not parse an unused invalid audio URL",
+          "passed": true
+        },
+        {
+          "name": "Full split Links still validates the secondary audio URL",
+          "passed": true
+        },
+        {
+          "name": "A missing video address retains the audio fallback",
+          "passed": true
+        },
+        {
+          "name": "An invalid selected video remains an error instead of switching tracks",
+          "passed": true
+        },
+        {
+          "name": "A page without stream URLs is not presented as the selected stream",
+          "passed": true
+        },
+        {
+          "name": "Primary display snapshot excludes even a large unused redirect payload",
+          "passed": true
+        },
+        {
+          "name": "Unused redirect changes do not invalidate a primary display snapshot",
+          "passed": true
+        },
+        {
+          "name": "Removing the primary invalidates its snapshot and selects redirect context",
+          "passed": true
+        },
+        {
+          "name": "Video display snapshot excludes secondary audio",
+          "passed": true
+        },
+        {
+          "name": "Secondary audio changes do not invalidate selected video",
+          "passed": true
+        },
+        {
+          "name": "Removing selected video switches the display snapshot to audio",
+          "passed": true
+        },
+        {
+          "name": "Projected audio fallback resolves to its selected address",
+          "passed": true
+        },
+        {
+          "name": "Both address algorithms return the same healthy requested URL in every timing iteration",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "ProgressRecordViewTests",
+      "path": "candidates/primary-address-7.58/model",
+      "checks": 83,
+      "passed": true,
+      "executableSha256": "C00C52F9313939185E8658E1F5FAFFFB2D96269389E1C497993BD9A3BD20D80C",
+      "checksDetail": [
+        {
+          "name": "Large source has matching complete-response metadata",
+          "passed": true
+        },
+        {
+          "name": "Display request state derives from the original record before redaction",
+          "passed": true
+        },
+        {
+          "name": "Progress presentation contains no opaque form or captured-page payloads",
+          "passed": true
+        },
+        {
+          "name": "Only the used receipt size and captured-response state enter the display snapshot",
+          "passed": true
+        },
+        {
+          "name": "Output receipt summary preserves displayed readiness without its large binding",
+          "passed": true
+        },
+        {
+          "name": "Only the visible connection map copies its needed segments",
+          "passed": true
+        },
+        {
+          "name": "Resume capability and form restart behavior survive payload redaction",
+          "passed": true
+        },
+        {
+          "name": "Display request state derives from the original record before redaction",
+          "passed": true
+        },
+        {
+          "name": "Progress presentation contains no opaque form or captured-page payloads",
+          "passed": true
+        },
+        {
+          "name": "Only the used receipt size and captured-response state enter the display snapshot",
+          "passed": true
+        },
+        {
+          "name": "Output receipt summary preserves displayed readiness without its large binding",
+          "passed": true
+        },
+        {
+          "name": "Only the visible connection map copies its needed segments",
+          "passed": true
+        },
+        {
+          "name": "Resume capability and form restart behavior survive payload redaction",
+          "passed": true
+        },
+        {
+          "name": "Snapshot creation never mutates transport or recovery data",
+          "passed": true
+        },
+        {
+          "name": "Snapshot size falls substantially while hidden connections omit their range map",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve legacy missing/null field semantics",
+          "passed": true
+        },
+        {
+          "name": "Reference-based candidate checks preserve absent-field defaults",
+          "passed": true
+        },
+        {
+          "name": "A changed range plan still invalidates the saved-response candidate",
+          "passed": true
+        },
+        {
+          "name": "Display range-map edits cannot alter transport checkpoints",
+          "passed": true
+        },
+        {
+          "name": "Protected refresh invalidation survives redaction without losing the live receipt kind",
+          "passed": true
+        },
+        {
+          "name": "Rejected form response still offers explicit Restart",
+          "passed": true
+        },
+        {
+          "name": "Decoded output projection cannot invalidate the original saved-response candidate",
+          "passed": true
+        },
+        {
+          "name": "Captured-response save status survives journal reduction",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Changed ordinary URL invalidates the address snapshot",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Unused secondary audio changes leave the selected video address snapshot valid",
+          "passed": true
+        },
+        {
+          "name": "Removing unused secondary audio leaves the selected video address snapshot valid",
+          "passed": true
+        },
+        {
+          "name": "Changing the selected video address invalidates the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Legacy adaptive address retains the full selected protected plan only in the owned snapshot",
+          "passed": true
+        },
+        {
+          "name": "Both address algorithms match the unchanged large plan in every trial",
+          "passed": true
+        },
+        {
+          "name": "A same-length plan change near its end invalidates the cached address",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Audio-only session with an unexpected video track rejects the direct binding",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        },
+        {
+          "name": "Address projection preserves the selected source fields and shape",
+          "passed": true
+        },
+        {
+          "name": "Unchanged selected address inputs match without rebuilding the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Extra cached address fields invalidate the snapshot",
+          "passed": true
+        },
+        {
+          "name": "Invalid cached address shape cannot suppress refresh",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "FindFilterCacheTests",
+      "path": "candidates/primary-address-7.58/cache",
+      "checks": 46,
+      "passed": true,
+      "executableSha256": "B2FAA515BC7F0210D30B3E433DF489918A1CBE7C415D150FC9ABB5F5F9D01D48",
+      "checksDetail": [
+        {
+          "name": "An unseen download requires an owned search snapshot",
+          "passed": true
+        },
+        {
+          "name": "An address match seeds the positive cache outside the job lock",
+          "passed": true
+        },
+        {
+          "name": "An unchanged large encrypted source returns its cached positive result",
+          "passed": true
+        },
+        {
+          "name": "Progress and an unchecked filename do not invalidate address-only matching",
+          "passed": true
+        },
+        {
+          "name": "Same-length changes at the end of a protected plan invalidate matching",
+          "passed": true
+        },
+        {
+          "name": "Changing a selected URL invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Every selected address dependency invalidates the cached match",
+          "passed": true
+        },
+        {
+          "name": "Search projection owns only selected track addresses and preserves empty tracks",
+          "passed": true
+        },
+        {
+          "name": "Transport range updates do not invalidate track-address matching",
+          "passed": true
+        },
+        {
+          "name": "Missing and explicit-null track URLs remain distinct",
+          "passed": true
+        },
+        {
+          "name": "An explicit-null track address matches its own snapshot",
+          "passed": true
+        },
+        {
+          "name": "Removing a track object invalidates the projected shape",
+          "passed": true
+        },
+        {
+          "name": "Extra snapshot fields and invalid cache shapes cannot suppress matching",
+          "passed": true
+        },
+        {
+          "name": "Unchecked address payloads never enter filename-only snapshots",
+          "passed": true
+        },
+        {
+          "name": "An unchecked protected plan cannot invalidate filename-only matching",
+          "passed": true
+        },
+        {
+          "name": "Changing the selected filename invalidates filename-only matching",
+          "passed": true
+        },
+        {
+          "name": "A nonmatching download seeds a negative cache entry",
+          "passed": true
+        },
+        {
+          "name": "A cached false result remains an engaged cache hit",
+          "passed": true
+        },
+        {
+          "name": "Unseen downloads are evicted at the end of a refresh",
+          "passed": true
+        },
+        {
+          "name": "A cache hit marks the download seen for the current refresh",
+          "passed": true
+        },
+        {
+          "name": "Changing query options clears prior match results",
+          "passed": true
+        },
+        {
+          "name": "Identical metadata on another job cannot inherit its cache entry",
+          "passed": true
+        },
+        {
+          "name": "Failed decryption cannot become a cached nonmatch",
+          "passed": true
+        },
+        {
+          "name": "Cache use leaves source transport and protected data unchanged",
+          "passed": true
+        },
+        {
+          "name": "Inactive-filter cohort retention preserves a query-bound positive match",
+          "passed": true
+        },
+        {
+          "name": "Inactive-filter cohort retention preserves a negative match",
+          "passed": true
+        },
+        {
+          "name": "A removed or out-of-category job is evicted without re-matching retained candidates",
+          "passed": true
+        },
+        {
+          "name": "Query changes clear retained entries, ordering and budget accounting",
+          "passed": true
+        },
+        {
+          "name": "Entry and logical-byte budgets bound cache retention",
+          "passed": true
+        },
+        {
+          "name": "Entry pressure evicts the least recently used match",
+          "passed": true
+        },
+        {
+          "name": "Cohort eviction updates entry and logical-cost accounting",
+          "passed": true
+        },
+        {
+          "name": "Clearing a populated bounded cache resets logical cost",
+          "passed": true
+        },
+        {
+          "name": "Marking view membership does not promote unused entries in LRU order",
+          "passed": true
+        },
+        {
+          "name": "Logical-byte pressure evicts old payloads before exceeding the budget",
+          "passed": true
+        },
+        {
+          "name": "Oversized snapshots still match but replace no retained cache entry",
+          "passed": true
+        },
+        {
+          "name": "Disabling retention preserves the computed matching result",
+          "passed": true
+        },
+        {
+          "name": "Another query can retain its own negative result",
+          "passed": true
+        },
+        {
+          "name": "A mismatched expected query computes the requested result rather than reusing another query's negative",
+          "passed": true
+        },
+        {
+          "name": "A stale-query match cannot overwrite the bound query's existing result",
+          "passed": true
+        },
+        {
+          "name": "Refused stale-query publication leaves retention accounting intact",
+          "passed": true
+        },
+        {
+          "name": "Both refresh algorithms observe the positive match in every benchmark iteration",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "CompletionDialogUiTests",
+      "path": "candidates/primary-address-7.58/completion",
+      "checks": 255,
+      "passed": true,
+      "executableSha256": "DFBF6432D80321475BFF9C39DF7E9BDFDAF7426CF4800D6CC4E3EE9A04F7FFB0",
+      "scope": "Functional owned-window checks while ProgressDialogUiTests compiled; no timing comparison.",
+      "checksDetail": [
+        {
+          "name": "Captured completion callback observes published bytes and zero live speed",
+          "passed": true
+        },
+        {
+          "name": "Repeated captured publication emits one completion dialog callback",
+          "passed": true
+        },
+        {
+          "name": "Captured response publication opens the native completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Captured completion dialog displays the published destination",
+          "passed": true
+        },
+        {
+          "name": "Captured completed file enables its standard file actions",
+          "passed": true
+        },
+        {
+          "name": "Captured completed file enables its standard file actions",
+          "passed": true
+        },
+        {
+          "name": "Captured completed file enables its standard file actions",
+          "passed": true
+        },
+        {
+          "name": "Captured completed file enables its standard file actions",
+          "passed": true
+        },
+        {
+          "name": "Captured completion dialog closes normally",
+          "passed": true
+        },
+        {
+          "name": "Completed file is visible in the main download list",
+          "passed": true
+        },
+        {
+          "name": "An idle completed selection supplies its saved file to the main-list drag",
+          "passed": true
+        },
+        {
+          "name": "A scan starting before the next list refresh blocks the selected file drag",
+          "passed": true
+        },
+        {
+          "name": "Pending scanner work disables both file actions while the folder remains accessible",
+          "passed": true
+        },
+        {
+          "name": "Invoking a pending-scan command does not reach the file action",
+          "passed": true
+        },
+        {
+          "name": "Invoking a pending-scan command does not reach the file action",
+          "passed": true
+        },
+        {
+          "name": "An idle completed job still offers explicit file actions after an interrupted scan",
+          "passed": true
+        },
+        {
+          "name": "Main-list file actions reject a directory substituted for the saved file",
+          "passed": true
+        },
+        {
+          "name": "Main-list file actions reject a directory substituted for the saved file",
+          "passed": true
+        },
+        {
+          "name": "Enter on the selected row uses the configured Open action",
+          "passed": true
+        },
+        {
+          "name": "Enter does not activate a focused but unselected row",
+          "passed": true
+        },
+        {
+          "name": "The same row remains available for the properties action",
+          "passed": true
+        },
+        {
+          "name": "Enter opens File Properties when it is the configured action",
+          "passed": true
+        },
+        {
+          "name": "The paused row is available for keyboard activation",
+          "passed": true
+        },
+        {
+          "name": "Enter opens the progress window for the paused row",
+          "passed": true
+        },
+        {
+          "name": "Completed selection enables batch Move/Rename and keeps Open single-file",
+          "passed": true
+        },
+        {
+          "name": "Batch Move/Rename updates both saved paths and preserves names",
+          "passed": true
+        },
+        {
+          "name": "Batch Move/Rename preserves both files' bytes",
+          "passed": true
+        },
+        {
+          "name": "A mixed main-list drag includes the ready relocated file and skips the running scan",
+          "passed": true
+        },
+        {
+          "name": "A finished scan restores the relocated file to the drag in selection order",
+          "passed": true
+        },
+        {
+          "name": "Batch Move/Rename identifies the failing file and reports prior work",
+          "passed": true
+        },
+        {
+          "name": "A later collision leaves the earlier move committed and overwrites nothing",
+          "passed": true
+        },
+        {
+          "name": "Mixed completed and unfinished selection disables Move/Rename",
+          "passed": true
+        },
+        {
+          "name": "A paused file cannot enter a mixed completed-file drag even when its path exists",
+          "passed": true
+        },
+        {
+          "name": "Reference contains Download complete dialog 286",
+          "passed": true
+        },
+        {
+          "name": "Split completion address copies only the selected primary URL even with populated journals",
+          "passed": true
+        },
+        {
+          "name": "Split completion displays the selected video URL and final saved path",
+          "passed": true
+        },
+        {
+          "name": "Invalid secondary audio cannot hide a valid completion video address",
+          "passed": true
+        },
+        {
+          "name": "Legacy adaptive completion retains its manifest address",
+          "passed": true
+        },
+        {
+          "name": "Cached manifest display excludes the full adaptive plan",
+          "passed": true
+        },
+        {
+          "name": "SABR keeps address precedence over cached adaptive metadata",
+          "passed": true
+        },
+        {
+          "name": "Unreadable secondary redirect does not hide the completed primary address",
+          "passed": true
+        },
+        {
+          "name": "Primary-only address display keeps verified local Open enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Unreadable saved address context cannot prevent completion from opening",
+          "passed": true
+        },
+        {
+          "name": "Unreadable address is identified without hiding the verified destination",
+          "passed": true
+        },
+        {
+          "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Unreadable remote metadata leaves local completion actions enabled",
+          "passed": true
+        },
+        {
+          "name": "Viewing completion does not erase unreadable saved request context",
+          "passed": true
+        },
+        {
+          "name": "Completion with unreadable metadata closes normally",
+          "passed": true
+        },
+        {
+          "name": "Actual completed record opens its completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Completion action is enabled for a saved file",
+          "passed": true
+        },
+        {
+          "name": "Completion action is enabled for a saved file",
+          "passed": true
+        },
+        {
+          "name": "Completion action is enabled for a saved file",
+          "passed": true
+        },
+        {
+          "name": "Completion action is enabled for a saved file",
+          "passed": true
+        },
+        {
+          "name": "Drag area contains one icon without clipped filename text",
+          "passed": true
+        },
+        {
+          "name": "Completion shows exact source and saved destination",
+          "passed": true
+        },
+        {
+          "name": "Completion source and destination are read-only",
+          "passed": true
+        },
+        {
+          "name": "Completion source and destination are read-only",
+          "passed": true
+        },
+        {
+          "name": "Completion tab order and wrap match the reference",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Completion reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "A directory at the saved file path is rejected by both completion file actions",
+          "passed": true
+        },
+        {
+          "name": "Rejecting the substituted directory leaves it untouched",
+          "passed": true
+        },
+        {
+          "name": "Open explains the moved file and retains completion",
+          "passed": true
+        },
+        {
+          "name": "Open with explains the moved file and retains completion",
+          "passed": true
+        },
+        {
+          "name": "Completion text fields use the reference plain border",
+          "passed": true
+        },
+        {
+          "name": "The completion dialog exposes both native drag controls",
+          "passed": true
+        },
+        {
+          "name": "The old destination is still displayed before a timer tick",
+          "passed": true
+        },
+        {
+          "name": "The large icon resolves the current file when dragged before a timer tick",
+          "passed": true
+        },
+        {
+          "name": "The list handle still displays the previous path before its next drag",
+          "passed": true
+        },
+        {
+          "name": "The list handle resolves the renamed Unicode file before a timer tick",
+          "passed": true
+        },
+        {
+          "name": "A committed Move/Rename updates the read-only saved path without replacing the completion window",
+          "passed": true
+        },
+        {
+          "name": "Both drag controls follow the same Unicode destination as the path field",
+          "passed": true
+        },
+        {
+          "name": "Windows reads the exact renamed Unicode path from the large icon's file drop",
+          "passed": true
+        },
+        {
+          "name": "Windows reads the exact renamed Unicode path from the list handle's file drop",
+          "passed": true
+        },
+        {
+          "name": "The shared multi-file drop preserves file order and skips missing files and folders",
+          "passed": true
+        },
+        {
+          "name": "A new scan can arrive before the completion controls refresh",
+          "passed": true
+        },
+        {
+          "name": "A queued completion command rechecks the pending scan before using its path",
+          "passed": true
+        },
+        {
+          "name": "A queued completion command rechecks the pending scan before using its path",
+          "passed": true
+        },
+        {
+          "name": "Pending scanning disables completion file actions while the folder and Close remain available",
+          "passed": true
+        },
+        {
+          "name": "Neither completion drag control supplies a path during a scan",
+          "passed": true
+        },
+        {
+          "name": "After scanning the existing dialog restores both actions and both drag paths",
+          "passed": true
+        },
+        {
+          "name": "A file moved outside UDM yields no stale file-drop data",
+          "passed": true
+        },
+        {
+          "name": "Open reports the updated destination if the relocated file is later moved externally",
+          "passed": true
+        },
+        {
+          "name": "Hold the catalog write lock for a failed suppression change",
+          "passed": true
+        },
+        {
+          "name": "A failed suppression write restores the checkbox and keeps completion open",
+          "passed": true
+        },
+        {
+          "name": "Checking Don't show again saves the preference before either completion dialog closes",
+          "passed": true
+        },
+        {
+          "name": "Completion suppression survives catalog reopen before closing the dialog",
+          "passed": true
+        },
+        {
+          "name": "A later automatic completion is suppressed while the first dialog is still open",
+          "passed": true
+        },
+        {
+          "name": "Another open completion reflects the shared preference",
+          "passed": true
+        },
+        {
+          "name": "Unchecking restores automatic completion and synchronizes the first dialog",
+          "passed": true
+        },
+        {
+          "name": "Automatic completion opens again after unchecking suppression",
+          "passed": true
+        },
+        {
+          "name": "The reactivated completion saves suppression again before Close",
+          "passed": true
+        },
+        {
+          "name": "Close dismisses only its own completion and preserves the saved preference",
+          "passed": true
+        },
+        {
+          "name": "An explicit completion still opens and shows the current suppression preference",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused light completion Open button",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused light completion Open with button",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused light Close button",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused dark completion Open button",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused dark completion Open with button",
+          "passed": true
+        },
+        {
+          "name": "Enter invokes the focused dark Close button",
+          "passed": true
+        },
+        {
+          "name": "The publication event shows completion before the transfer finishes its cleanup",
+          "passed": true
+        },
+        {
+          "name": "Finishing cleanup does not reopen a dismissed publication dialog",
+          "passed": true
+        },
+        {
+          "name": "A pending scan prevents early completion presentation",
+          "passed": true
+        },
+        {
+          "name": "Early publication respects completion suppression",
+          "passed": true
+        },
+        {
+          "name": "A finished transfer with automatic close skips a stale Start event",
+          "passed": true
+        },
+        {
+          "name": "A completed prefetch honors the keep-open progress preference",
+          "passed": true
+        },
+        {
+          "name": "The retained progress window shows the measured prefetch peak",
+          "passed": true
+        },
+        {
+          "name": "Scanner result opens the expanded completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Initial scanner actions and suppression control fit",
+          "passed": true
+        },
+        {
+          "name": "Install the enlarged frame metrics fixture",
+          "passed": true
+        },
+        {
+          "name": "Scanner actions fit when the actual frame exceeds the calculated frame",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner dialog closes normally",
+          "passed": true
+        },
+        {
+          "name": "Scanner result opens the expanded completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Initial scanner actions and suppression control fit",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner dialog closes normally",
+          "passed": true
+        },
+        {
+          "name": "Scanner result opens the expanded completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Initial scanner actions and suppression control fit",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner dialog closes normally",
+          "passed": true
+        },
+        {
+          "name": "Scanner result opens the expanded completion dialog",
+          "passed": true
+        },
+        {
+          "name": "Initial scanner actions and suppression control fit",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Long scanner diagnostic scrolls while retaining its complete text",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Long scanner diagnostic scrolls while retaining its complete text",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Long scanner diagnostic scrolls while retaining its complete text",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Scanner summary fits above actions without overlap",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner actions and suppression control stay inside the dialog",
+          "passed": true
+        },
+        {
+          "name": "Long scanner diagnostic scrolls while retaining its complete text",
+          "passed": true
+        },
+        {
+          "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+          "passed": true
+        },
+        {
+          "name": "Expanded scanner dialog closes normally",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "ProgressDialogUiTests",
+      "path": "candidates/primary-address-7.58/progress",
+      "checks": 263,
+      "passed": true,
+      "executableSha256": "2607E0814286ABD4092AB0B3DFC88F6D0D75F26637662891D013D59EE709A9EC",
+      "checksDetail": [
+        {
+          "name": "Reference contains IDM download-status dialog 363",
+          "passed": true
+        },
+        {
+          "name": "A short tick keeps its bytes in the open sample",
+          "passed": true
+        },
+        {
+          "name": "The first measured window includes bytes from the early tick",
+          "passed": true
+        },
+        {
+          "name": "A one-millisecond final slice cannot replace the measured peak",
+          "passed": true
+        },
+        {
+          "name": "A short prefetch keeps its average through confirmation",
+          "passed": true
+        },
+        {
+          "name": "An idle tick cannot turn the first credited buffer into a one-millisecond peak",
+          "passed": true
+        },
+        {
+          "name": "Create isolated owner",
+          "passed": true
+        },
+        {
+          "name": "Create actual progress dialog",
+          "passed": true
+        },
+        {
+          "name": "Progress URL uses the reference Static control class",
+          "passed": true
+        },
+        {
+          "name": "Progress URL uses reference single-line static style",
+          "passed": true
+        },
+        {
+          "name": "Progress URL has no edit-box edge",
+          "passed": true
+        },
+        {
+          "name": "URL ampersands are displayed literally rather than as keyboard mnemonics",
+          "passed": true
+        },
+        {
+          "name": "Progress dialog exposes its native progress bar",
+          "passed": true
+        },
+        {
+          "name": "Progress bar position agrees with the downloaded byte percentage",
+          "passed": true
+        },
+        {
+          "name": "Downloaded value includes exact percentage",
+          "passed": true
+        },
+        {
+          "name": "Downloaded percentage retains reference hundredth precision",
+          "passed": true
+        },
+        {
+          "name": "Progress bar retains its integer range while the label preserves hundredths",
+          "passed": true
+        },
+        {
+          "name": "Progress retains known track size while final size is unresolved",
+          "passed": true
+        },
+        {
+          "name": "Progress credits bytes received before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Progress shows measured prefetch peak separately from the current transfer rate",
+          "passed": true
+        },
+        {
+          "name": "Opening progress shows the measured prefetch peak",
+          "passed": true
+        },
+        {
+          "name": "Live rate returns after the opening prefetch display",
+          "passed": true
+        },
+        {
+          "name": "Final size replaces the track-size fallback",
+          "passed": true
+        },
+        {
+          "name": "Progress dialog exposes its connection details",
+          "passed": true
+        },
+        {
+          "name": "Offline prefetch reuse displays verified saved bytes without a connection number",
+          "passed": true
+        },
+        {
+          "name": "Completed connections retain their number and bytes while unused rows disappear",
+          "passed": true
+        },
+        {
+          "name": "A paused partial file with range support offers Resume",
+          "passed": true
+        },
+        {
+          "name": "A paused partial offers Resume while its range capability is still unknown",
+          "passed": true
+        },
+        {
+          "name": "A failed partial with unknown range support can also be resumed",
+          "passed": true
+        },
+        {
+          "name": "An unstarted download with unknown range support offers Start",
+          "passed": true
+        },
+        {
+          "name": "Captured browser response does not falsely report unsupported resume",
+          "passed": true
+        },
+        {
+          "name": "Confirmed unsupported server displays No and offers Start",
+          "passed": true
+        },
+        {
+          "name": "Pausing disables the primary progress action and shows the transition",
+          "passed": true
+        },
+        {
+          "name": "Enter cannot restart a download while its primary action is disabled",
+          "passed": true
+        },
+        {
+          "name": "Primary action rechecks state before the next display timer",
+          "passed": true
+        },
+        {
+          "name": "Unready active live recording disables the shared primary action",
+          "passed": true
+        },
+        {
+          "name": "Ready live recording permits Stop and save",
+          "passed": true
+        },
+        {
+          "name": "Live recording already saving rejects a second primary action",
+          "passed": true
+        },
+        {
+          "name": "Unresolved duplicate cannot activate the primary action",
+          "passed": true
+        },
+        {
+          "name": "Unsubmitted form retains the Start action",
+          "passed": true
+        },
+        {
+          "name": "Interrupted form advertises Restart rather than byte resume",
+          "passed": true
+        },
+        {
+          "name": "Paused form explains that restarting submits the request again",
+          "passed": true
+        },
+        {
+          "name": "Form request cannot claim byte resume even with a stale range flag",
+          "passed": true
+        },
+        {
+          "name": "Existing transfer error takes precedence over the form hint",
+          "passed": true
+        },
+        {
+          "name": "Resumable POST-to-GET continuation does not resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "Saved encoded form response offers Resume after output-size projection",
+          "passed": true
+        },
+        {
+          "name": "Saved response capability is distinct from HTTP byte ranges",
+          "passed": true
+        },
+        {
+          "name": "Matching form receipt does not advertise another submission",
+          "passed": true
+        },
+        {
+          "name": "Rejected saved form response advertises explicit Restart",
+          "passed": true
+        },
+        {
+          "name": "Rejected form receipt cannot claim resumability through a stale redirect range flag",
+          "passed": true
+        },
+        {
+          "name": "Rejected completed response explains resubmission even after a POST-to-GET redirect",
+          "passed": true
+        },
+        {
+          "name": "Large opaque form context preserves real progress Resume/Restart controls",
+          "passed": true
+        },
+        {
+          "name": "Repeated real progress refreshes leave the large original request untouched",
+          "passed": true,
+          "timing": {
+            "frames": 16,
+            "largeContextMsPerFrame": 0.41296875,
+            "scope": "Synthetic owned progress window; current timer handler only, no IDM or earlier UI-frame baseline",
+            "smallContextMsPerFrame": 0.37844375
+          }
+        },
+        {
+          "name": "Untested audio track keeps combined resume capability unknown",
+          "passed": true
+        },
+        {
+          "name": "Confirmed unsupported track takes precedence over an unknown track",
+          "passed": true
+        },
+        {
+          "name": "Both verified tracks display Yes",
+          "passed": true
+        },
+        {
+          "name": "Saved media retains its distinct resume capability",
+          "passed": true
+        },
+        {
+          "name": "Legacy playlist address appears in the real progress control",
+          "passed": true
+        },
+        {
+          "name": "Repeated refreshes retain the large legacy playlist address",
+          "passed": true,
+          "timing": {
+            "frames": 16,
+            "msPerFrame": 11.7887375,
+            "scope": "Current real component timer with unchanged three-MiB protected adaptive payload; no earlier UI or IDM baseline"
+          }
+        },
+        {
+          "name": "New cached display address replaces a legacy playlist in the real progress control",
+          "passed": true
+        },
+        {
+          "name": "SABR precedence changes the real displayed address despite a cached playlist",
+          "passed": true
+        },
+        {
+          "name": "Removing capture context restores the ordinary progress address",
+          "passed": true
+        },
+        {
+          "name": "Expanded progress starts in the connections view",
+          "passed": true
+        },
+        {
+          "name": "Speed graph replaces connection details without resizing the window",
+          "passed": true
+        },
+        {
+          "name": "Compact progress hides the chart and view switch",
+          "passed": true
+        },
+        {
+          "name": "Expanding restores the selected chart view",
+          "passed": true
+        },
+        {
+          "name": "The switch restores the connection map",
+          "passed": true
+        },
+        {
+          "name": "Progress status uses reference Tahoma point size at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Hide details updates the native button caption",
+          "passed": true
+        },
+        {
+          "name": "Hide details removes the expected connection-area height at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Hide details hides connection caption",
+          "passed": true
+        },
+        {
+          "name": "Show details restores the previous expanded client height",
+          "passed": true
+        },
+        {
+          "name": "Progress status uses reference Tahoma point size at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Hide details updates the native button caption",
+          "passed": true
+        },
+        {
+          "name": "Hide details removes the expected connection-area height at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Hide details hides connection caption",
+          "passed": true
+        },
+        {
+          "name": "Show details restores the previous expanded client height",
+          "passed": true
+        },
+        {
+          "name": "Progress status uses reference Tahoma point size at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Progress status reference control class, label and geometry match",
+          "passed": true
+        },
+        {
+          "name": "Hide details updates the native button caption",
+          "passed": true
+        },
+        {
+          "name": "Hide details removes the expected connection-area height at tested DPI",
+          "passed": true
+        },
+        {
+          "name": "Hide details hides connection caption",
+          "passed": true
+        },
+        {
+          "name": "Show details restores the previous expanded client height",
+          "passed": true
+        },
+        {
+          "name": "Progress window exposes its native tab control",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Reference contains the selected progress options panel",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Visible progress options control matches reference class, label and geometry",
+          "passed": true
+        },
+        {
+          "name": "Speed tab hides URL and displays limiter controls",
+          "passed": true
+        },
+        {
+          "name": "Disabled limiter keeps its rate field disabled",
+          "passed": true
+        },
+        {
+          "name": "Enabling limiter applies its default temporary rate",
+          "passed": true
+        },
+        {
+          "name": "Editing temporary limiter does not change remembered rate",
+          "passed": true
+        },
+        {
+          "name": "Remember checkbox persists the entered rate",
+          "passed": true
+        },
+        {
+          "name": "Remembered GUI rate survives catalog reopen",
+          "passed": true
+        },
+        {
+          "name": "Invalid GUI rate preserves the saved setting and displays its valid range",
+          "passed": true
+        },
+        {
+          "name": "Disabling remembered limiter saves zero and disables the rate field",
+          "passed": true
+        },
+        {
+          "name": "Completion tab hides URL and displays completion controls",
+          "passed": true
+        },
+        {
+          "name": "Load Windows accessibility provider",
+          "passed": true
+        },
+        {
+          "name": "Windows exposes native accessibility inspection",
+          "passed": true
+        },
+        {
+          "name": "Blank checkbox exposes native accessibility object",
+          "passed": true
+        },
+        {
+          "name": "Glyph retains its meaningful accessible name and checkbox role",
+          "passed": true
+        },
+        {
+          "name": "Blank checkbox exposes native accessibility object",
+          "passed": true
+        },
+        {
+          "name": "Glyph retains its meaningful accessible name and checkbox role",
+          "passed": true
+        },
+        {
+          "name": "Blank checkbox exposes native accessibility object",
+          "passed": true
+        },
+        {
+          "name": "Glyph retains its meaningful accessible name and checkbox role",
+          "passed": true
+        },
+        {
+          "name": "Blank checkbox exposes native accessibility object",
+          "passed": true
+        },
+        {
+          "name": "Glyph retains its meaningful accessible name and checkbox role",
+          "passed": true
+        },
+        {
+          "name": "All four blank glyphs expose their distinct completion-option names",
+          "passed": true
+        },
+        {
+          "name": "Showing the completion dialog disables power options",
+          "passed": true
+        },
+        {
+          "name": "Hiding the completion dialog saves the preference and enables power options",
+          "passed": true
+        },
+        {
+          "name": "Completion preference survives catalog reopen",
+          "passed": true
+        },
+        {
+          "name": "Clicking the separate exit label checks the glyph and saves its plan without executing it",
+          "passed": true
+        },
+        {
+          "name": "Clicking the glyph clears the completion plan",
+          "passed": true
+        },
+        {
+          "name": "Completion checkbox supports accessibility action inspection",
+          "passed": true
+        },
+        {
+          "name": "Completion checkbox describes its accessible default action",
+          "passed": true
+        },
+        {
+          "name": "Accessible default action toggles and reports the persisted completion option",
+          "passed": true
+        },
+        {
+          "name": "Accessible default action toggles the option off again",
+          "passed": true
+        },
+        {
+          "name": "Space key dispatch toggles the checkbox and saves its option",
+          "passed": true
+        },
+        {
+          "name": "Showing the completion dialog again clears and disables the selected exit action",
+          "passed": true
+        },
+        {
+          "name": "Returning to status restores the URL label",
+          "passed": true
+        },
+        {
+          "name": "Refresh updates the literal displayed URL without changing control role",
+          "passed": true
+        },
+        {
+          "name": "Hiding Speed Limiter removes only that tab and returns to status",
+          "passed": true
+        },
+        {
+          "name": "Hiding speed tab preserves completion tab preference",
+          "passed": true
+        },
+        {
+          "name": "Completion tab remains correctly mapped after speed tab removal",
+          "passed": true
+        },
+        {
+          "name": "Hiding completion tab leaves status available",
+          "passed": true
+        },
+        {
+          "name": "Hidden tab preferences survive catalog reopen",
+          "passed": true
+        },
+        {
+          "name": "Reopen actual progress dialog after hiding tabs",
+          "passed": true
+        },
+        {
+          "name": "Reopened progress dialog respects both hidden tab preferences",
+          "passed": true
+        },
+        {
+          "name": "Cancel still stops an active download",
+          "passed": true
+        },
+        {
+          "name": "Closing during a completed file's scanner wait does not cancel it",
+          "passed": true
+        },
+        {
+          "name": "Closing during a pause does not submit another pause",
+          "passed": true
+        },
+        {
+          "name": "Create progress window for dismissal",
+          "passed": true
+        },
+        {
+          "name": "Dismissal destroys the Paused progress window",
+          "passed": true
+        },
+        {
+          "name": "Dismissal preserves the Paused job and catalog",
+          "passed": true
+        },
+        {
+          "name": "Create progress window for dismissal",
+          "passed": true
+        },
+        {
+          "name": "Dismissal destroys the Failed progress window",
+          "passed": true
+        },
+        {
+          "name": "Dismissal preserves the Failed job and catalog",
+          "passed": true
+        },
+        {
+          "name": "Create progress window for dismissal",
+          "passed": true
+        },
+        {
+          "name": "Dismissal destroys the Complete progress window",
+          "passed": true
+        },
+        {
+          "name": "Dismissal preserves the Complete job and catalog",
+          "passed": true
+        },
+        {
+          "name": "Create progress window for dismissal",
+          "passed": true
+        },
+        {
+          "name": "Cancel stops a queued download and closes its progress window",
+          "passed": true
+        },
+        {
+          "name": "Create progress window for action transitions",
+          "passed": true
+        },
+        {
+          "name": "A stale Start click cannot stop a newly queued download",
+          "passed": true
+        },
+        {
+          "name": "A stale Pause keyboard action cannot resume a stopped download",
+          "passed": true
+        },
+        {
+          "name": "A refreshed Start still queues the download",
+          "passed": true
+        },
+        {
+          "name": "A refreshed Pause still stops the queued download",
+          "passed": true
+        },
+        {
+          "name": "Close never cancels a job queued before the next progress refresh",
+          "passed": true
+        },
+        {
+          "name": "A completed job busy outside the scanner cannot open or stop a scanner",
+          "passed": true
+        },
+        {
+          "name": "Locate the inert scanner fixture",
+          "passed": true
+        },
+        {
+          "name": "Create completed progress dialog for scanner transitions",
+          "passed": true
+        },
+        {
+          "name": "Pending scan disables Open",
+          "passed": true
+        },
+        {
+          "name": "Enter does not bypass a pending scan",
+          "passed": true
+        },
+        {
+          "name": "An active scanner offers Stop wait",
+          "passed": true
+        },
+        {
+          "name": "Stop wait interrupts monitoring and restores the manual Open action",
+          "passed": true
+        },
+        {
+          "name": "Stopping the scan wait preserves the saved file",
+          "passed": true
+        },
+        {
+          "name": "The scanner process finishes after monitoring stops",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "HttpGzipTransferTests",
+      "path": "candidates/primary-address-7.58/get",
+      "checks": 43,
+      "passed": true,
+      "executableSha256": "89161F86E7791F7AFD4FDBD1550760EC7FCB232342D593CC411D9A40CD5022B7",
+      "checksDetail": [
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch starts before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch reaches verified confirmation without publishing",
+          "passed": true
+        },
+        {
+          "name": "Gzip aliases persist the canonical representation for output size and retained-response reuse",
+          "passed": true
+        },
+        {
+          "name": "Before Start size is verified decoded output and target is absent",
+          "passed": true
+        },
+        {
+          "name": "Verified decoded prefetch is already staged in the destination folder before Start",
+          "passed": true
+        },
+        {
+          "name": "Start confirms the existing prefetched response",
+          "passed": true
+        },
+        {
+          "name": "Final file exactly matches the size shown before Start",
+          "passed": true
+        },
+        {
+          "name": "Confirmation publishes the destination sibling without leaving a decoded staging copy",
+          "passed": true
+        },
+        {
+          "name": "Relocation fixture prepares the decoded response before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Confirmation can change the folder after decoded prefetch",
+          "passed": true
+        },
+        {
+          "name": "A destination change publishes the same verified bytes through the relocation fallback",
+          "passed": true
+        },
+        {
+          "name": "Relocation removes the original decoded sibling after successful publication",
+          "passed": true
+        },
+        {
+          "name": "Download Later fixture has fully decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Ending confirmation keeps the destination unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume reuses verified encoded bytes without a second response",
+          "passed": true
+        },
+        {
+          "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Pause retains a genuine partial encoded response",
+          "passed": true
+        },
+        {
+          "name": "Encoded-byte range resume decodes to the complete original file",
+          "passed": true
+        },
+        {
+          "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+          "passed": true
+        },
+        {
+          "name": "Output projection leaves authoritative wire metadata unchanged",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 524288,
+        "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+        "gzipBytes": 1943,
+        "requests": [
+          {
+            "route": "known",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "unknown",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "concatenated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 2105
+          },
+          {
+            "route": "empty",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 19
+          },
+          {
+            "route": "crc",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "truncated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1941
+          },
+          {
+            "route": "trailing",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1943
+          },
+          {
+            "route": "unsupported",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "prefetch",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "relocated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "deferred",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "paused",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 524380
+          },
+          {
+            "route": "paused",
+            "range": "bytes=262080-524380",
+            "ifRange": "\"gzip-fixture-v1\"",
+            "start": 262080,
+            "end": 524380
+          }
+        ]
+      }
+    },
+    {
+      "name": "HttpPostGzipTests",
+      "path": "candidates/primary-address-7.58/post",
+      "checks": 49,
+      "passed": true,
+      "executableSha256": "EAFB1D75759F7F3CF70CFB4B1BFD8F993A4B5B8348695F0AE35408E88BF7C20F",
+      "checksDetail": [
+        {
+          "name": "Opening fresh form File Info never submits the POST speculatively",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Reopening File Info verifies a completed form response without submitting again",
+          "passed": true
+        },
+        {
+          "announcedBytes": 140000,
+          "name": "A verified decoded size is available before Start while the target remains absent",
+          "passed": true
+        },
+        {
+          "name": "Start publishes exactly the form file size shown before confirmation",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+          "passed": true
+        },
+        {
+          "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+          "passed": true
+        },
+        {
+          "name": "Confirmation remains usable after a rejected transfer-property edit",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Completed form response is ready for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later leaves the saved form response unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume after Download Later uses the saved form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Changing the form request invalidates reuse and sends no replacement request",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "A damaged saved response fails Resume without replaying POST",
+          "passed": true
+        },
+        {
+          "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+          "passed": true
+        },
+        {
+          "name": "Interrupted POST has no complete receipt and stays failed",
+          "passed": true
+        },
+        {
+          "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Request-bound completed response survives catalog reopening",
+          "passed": true
+        },
+        {
+          "name": "A reopened catalog publishes saved form bytes without another POST",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 140000,
+        "payloadSha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8",
+        "wireBytes": 481,
+        "requestBodyBytes": 11,
+        "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "requests": [
+          {
+            "route": "post-known",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-unknown",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-redirect",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "redirected-get",
+            "method": "GET",
+            "bytes": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "range": ""
+          },
+          {
+            "route": "post-info",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-confirmed-hash",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-later",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-changed",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-loss",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-reopened",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          }
+        ]
+      }
+    }
+  ],
+  "before": {
+    "receipt": {
+      "executableSha256": "8E8F95E85EF4B623B54957648FBD7BE11CD747CD67BC6870E4D1CC5A9404EEAF",
+      "sourceSha256": "FEE58C57304DE11C256C279BBBC7BD3E68C0589DACA94B79B81AFAC06BB63492",
+      "exitCode": 1,
+      "error": "This encrypted setting cannot be opened by the current Windows account."
+    },
+    "checksDetail": [
+      {
+        "name": "Original URL remains searchable",
+        "passed": true
+      },
+      {
+        "name": "Parent page remains searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties redirected address is searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties video stream is searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties audio stream is searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties manifest is searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties first segment is searchable",
+        "passed": true
+      },
+      {
+        "name": "Properties SABR endpoint is searchable",
+        "passed": true
+      },
+      {
+        "name": "Stream matching ignores case by default",
+        "passed": true
+      },
+      {
+        "name": "Stream matching honors case selection",
+        "passed": true
+      },
+      {
+        "name": "Whole-string matches the complete stream site",
+        "passed": true
+      },
+      {
+        "name": "Whole-string excludes site fragments",
+        "passed": true
+      },
+      {
+        "name": "Whole-string matches complete stream URL",
+        "passed": true
+      },
+      {
+        "name": "Unchecked Address excludes stream URLs",
+        "passed": true
+      },
+      {
+        "name": "Whole-string site search covers the parent page with Windows case folding",
+        "passed": true
+      },
+      {
+        "name": "Case-sensitive whole-site search preserves spelling",
+        "passed": true
+      },
+      {
+        "name": "Whole-site comparison retains authority port",
+        "passed": true
+      },
+      {
+        "name": "Whole-site comparison accepts the full literal authority",
+        "passed": true
+      },
+      {
+        "name": "Windows reference folding keeps final sigma distinct from ordinary sigma on this host",
+        "passed": true
+      },
+      {
+        "name": "Ordinary sigma matches its uppercase form through Windows reference folding",
+        "passed": true
+      },
+      {
+        "name": "Final sigma still matches itself with an insensitive extension",
+        "observed": {
+          "filenameFold": "\u03c2.BIN",
+          "queryFold": "\u03a3.BIN"
+        },
+        "passed": true
+      },
+      {
+        "name": "Live properties expose each selected track playlist and segment",
+        "passed": true
+      },
+      {
+        "name": "Live properties distinguish video, audio and subtitle playlist labels",
+        "passed": true
+      },
+      {
+        "name": "Live properties distinguish video, audio and subtitle segment labels",
+        "passed": true
+      },
+      {
+        "name": "Both subtitle playlist and segment URLs remain searchable",
+        "passed": true
+      },
+      {
+        "name": "Viewing live links preserves protected metadata and the primary video address",
+        "passed": true
+      },
+      {
+        "name": "Search leaves captured download metadata unchanged",
+        "passed": true
+      }
+    ],
+    "error": "This encrypted setting cannot be opened by the current Windows account.",
+    "scope": "Owned model fixture with the 7.57 address resolver. A valid requested URL failed because unused redirect decryption threw; this is not an old installed-app or live IDM window replay."
+  },
+  "change": "Primary display lookup and snapshots stop at the selected requested/video address. Redirect/audio context is selected only when that primary is absent. Full Links and address search retain all-link processing and validation; no download request context is changed.",
+  "coverage": [
+    "Unused unreadable redirect and invalid secondary audio no longer hide a valid primary",
+    "A selected invalid primary still fails rather than silently choosing another source",
+    "Missing requested/video address selects the existing redirect/audio fallback",
+    "Display snapshots exclude unused redirect/audio, ignore secondary-only changes and invalidate on primary removal/change",
+    "A four-MiB unused opaque redirect payload is excluded from the display snapshot",
+    "Full Links still validates secondary addresses, and redirected/audio/subtitle address search remains covered",
+    "Real completion/progress controls, DPI, keyboard, scanner and suppression checks",
+    "Actual GET/form output, exact pre-Start size, encoded-offset resume, response reuse and malformed gzip rejection"
+  ],
+  "timing": {
+    "currentMsPerLookup": [
+      0.00156484375,
+      0.00179453125,
+      0.00156796875,
+      0.00133125,
+      0.00135625,
+      0.00133125,
+      0.00143828125
+    ],
+    "priorMsPerLookup": [
+      0.2260828125,
+      0.21685234375,
+      0.19653125,
+      0.2013828125,
+      0.20191015625,
+      0.202703125,
+      0.23282265625
+    ],
+    "scope": "Seven alternating trials of 128 direct-address lookups with a valid encrypted redirect. Prior all-link resolver code replay versus primary-only lookup; no whole-dialog, installed-app or IDM latency measurement.",
+    "priorMedianMs": 0.202703125,
+    "currentMedianMs": 0.00143828125
+  },
+  "timingLimits": "Code replay of the unchanged all-link resolver versus current primary-only helper, sharing the current backend. Native compilation finished before these seven alternating lookup trials. This is not whole-dialog paint, browser handoff, installed-app or IDM latency, and does not establish universal speed parity. The completion functional preflight ran while another fixture compiled and supplies no latency result.",
+  "buildScope": {
+    "applicationCoreObjectsRebuilt": 24,
+    "reason": "GuiModels.hpp defines shared inline functions; all application core translation units were rebuilt into the existing C: cache to avoid mixed old/new definitions. All target and fixture executables and resources were rebuilt on D:.",
+    "coreOverrides": []
+  },
+  "qualificationCorrection": "The new projection fixture initially omitted valid saved-job IDs. Source review caught that before acceptance; its identifiers/filenames were corrected and the model executable rebuilt. The original build-time hash and final qualification hash are retained; production inputs did not change.",
+  "visual": {
+    "path": "primary-address-7.58.png",
+    "sha256": "F6A3C3C2792F5162E0EB90A63B9B3D08561B236DF1484CD63474D97BC2F64D26",
+    "scope": "Inspected owned completion render with unreadable secondary redirect: normal Address label, full valid requested URL, destination and local actions remain visible. No fresh IDM-window comparison."
+  },
+  "installedDesktop": "7.11",
+  "limits": [
+    "First-seen/changed legacy adaptive and unbound SABR context still needs protected-plan resolution",
+    "Full Links still stops on unreadable secondary context; assess partial-link presentation separately",
+    "No personal-browser or installed-window acceptance or universal latency parity claim",
+    "No installer, installation, Git push or release created"
+  ],
+  "cleanup": "primary-address-7.58-cleanup.json"
+}

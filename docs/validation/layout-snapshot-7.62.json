@@ -1,0 +1,164 @@
+{
+  "version": "7.62",
+  "browserVersion": "0.71.26",
+  "change": "Snapshot native column controls before acquiring the shared catalog lock; assign only changed layout values.",
+  "build": "passed",
+  "buildReceipt": "docs/validation/layout-snapshot-7.62-build.json",
+  "qualificationFixtureReceipt": "docs/validation/layout-snapshot-7.62-menu-build.json",
+  "qualificationFixtureChanges": [
+    {
+      "path": "native/MenuStateTests.cpp",
+      "buildSha256": "41E0744B3B7197FD3442C0EB36298A3876DBF7779C061F5DE84FBF198331A114",
+      "qualificationSha256": "DC68645A72707F9C4626FF342EF2F08D4A7ED3DD0A5F9235B63579F2C6E8ACDD",
+      "reason": "Tooltip filtering uses an actual empty category and asserts it stays selected; queue infotips assert display labels. Indicator and membership cases use the actual fixed-mode built-in queues instead of attempting to turn Main download queue into synchronization. Production sources and core remain the verified 7.62 build."
+    }
+  ],
+  "before": {
+    "version": "7.61",
+    "queries": 13,
+    "catalogAvailableDuringQueries": 0,
+    "fixtureReceipt": "docs/validation/layout-snapshot-7.61-before-build.json"
+  },
+  "after": {
+    "queries": 13,
+    "catalogAvailableDuringQueries": 13
+  },
+  "fixtures": [
+    {
+      "case": "layout-current",
+      "checks": 7,
+      "resultsSha256": "6ff9f798f4ac4d61096a2c9b2f1200c115a8f7f52792ed3e669045e3fd041bf4"
+    },
+    {
+      "case": "presentation-ui",
+      "checks": 179,
+      "resultsSha256": "6da188aa6980ebe736e77fa999307580c4eef051df6e444ae4c4fd6baffb763c"
+    },
+    {
+      "case": "first-paint",
+      "checks": 25,
+      "resultsSha256": "b4dc81a6a35e84c3fe52a09379db39893440b3cc5b89da926ae456710a1f1d1e"
+    }
+  ],
+  "mediaCases": [
+    {
+      "case": "media-mp4",
+      "runnerChecks": 8,
+      "resultsSha256": "f4f5f0f0b17cce5e7c6ebb0a3abeeb667bc509849772141d771da7c7cb95703f",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "outputProof": {
+        "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8.021333,
+        "videoFrames": 192,
+        "bytes": 6560076,
+        "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "firstReceivedBeforeStart": true
+    },
+    {
+      "case": "media-m4a",
+      "runnerChecks": 9,
+      "resultsSha256": "56f60bf07aa47465dd999c4844fe706bdeb11792abb8fadba97343574ab07a94",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+      "outputProof": {
+        "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8.021333,
+        "videoFrames": 0,
+        "bytes": 98791,
+        "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "sizeBeforeStart": 98791,
+      "sha256BeforeStart": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+      "firstReceivedBeforeStart": true
+    },
+    {
+      "case": "media-ts-receiving",
+      "runnerChecks": 8,
+      "resultsSha256": "9daf3beee1d9722e6a8c5e99b1c577d7df42ed502872b6ac94897d77c8da1437",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+      "outputProof": {
+        "name": "nested TS complete output matches its timeline, frame count, size and checksum",
+        "passed": true,
+        "duration": 8,
+        "videoFrames": 192,
+        "bytes": 1961216,
+        "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+      },
+      "stagedExtensionFilesVerified": 47,
+      "prefetchedBytesAtStart": 892624,
+      "segmentsRequestedOnce": true,
+      "firstReceivedBeforeStart": true
+    }
+  ],
+  "focusedSuiteChecksPassed": 236,
+  "broaderMenuSuite": {
+    "passed": false,
+    "checksRun": 302,
+    "checksPassed": 301,
+    "checksFailed": 1,
+    "error": "Explicit sorting starts at the first row of the new order",
+    "resultsSha256": "43e637cb22cda45ea505d73c5a974f633210f781f4c2f337baa43814b52656b6",
+    "next": "Investigate explicit view changes retaining the old top row, including cases where row order remains identical. Later menu/transfer checks were not reached."
+  },
+  "earlierFixtureFailures": [
+    {
+      "case": "menus-full",
+      "error": "Filtering away the hovered row clears its tooltip",
+      "classification": "Corrected qualification fixture; production queue/navigation logic was not changed.",
+      "reason": "Fixture selected a nonexistent category; navigation resets it to All Downloads.",
+      "resultsSha256": "1c254ef5c590c06bec4db836585912385094dc240848c4f9c8a74873f08d6cd9"
+    },
+    {
+      "case": "menus-qualified",
+      "error": "Native infotip identifies queue name, type and configured schedule",
+      "classification": "Corrected qualification fixture; production queue/navigation logic was not changed.",
+      "reason": "Fixture expected the internal queue name instead of its display label.",
+      "resultsSha256": "0bc3515aec4ecd43eca3873ca2f43cc9ba730a5eef2c8eb330a97feabfff2b05"
+    },
+    {
+      "case": "menus-final",
+      "error": "Only custom queues can change between download and synchronization mode.",
+      "classification": "Corrected qualification fixture; production queue/navigation logic was not changed.",
+      "reason": "Fixture attempted to change a fixed-mode built-in queue to synchronization.",
+      "resultsSha256": "ee452938680eaa8d9309c66ae185c8ee76e4fcb66d9db2c3db18cc0a087c8170"
+    }
+  ],
+  "prototypeEvidence": "docs/validation/dialog-construction-7.61.json",
+  "runnerSha256": "4baf05e9544c0267ca17a9819bad3f4df5fddf15cc6a3cded130b0148ed6aaa3",
+  "limits": [
+    "The broader menu suite is not green; this is not a fully qualified release.",
+    "Catalog availability is a lock-order proof, not measured download throughput or whole-dialog latency. Native layout queries still occur on timer ticks.",
+    "Isolated native UI and Edge fixtures; no installed-app, personal-browser or fresh IDM comparison. Installed UDM remains 7.11.",
+    "The larger File Info control-construction delay remains open.",
+    "Correction: MP4 pressure tracing observes normal catalog saves after its first pulse; it does not inject an additional write. M4A and early-Start TS omit the overall trace. Media checks overlap prior increments; they are not counts of unique features."
+  ],
+  "payloads": [
+    {
+      "path": "candidates/layout-snapshot-7.62/media-mp4/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "path": "candidates/layout-snapshot-7.62/media-m4a/downloads/UDM alternate audio fixture.m4a",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+    },
+    {
+      "path": "candidates/layout-snapshot-7.62/media-ts-receiving/downloads/UDM alternate audio fixture.ts",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+    }
+  ],
+  "cleanup": "Exact generated files removed; see docs/validation/layout-snapshot-7.62-cleanup.json. Shared native binaries/core, reusable media and diagnostic metadata retained.",
+  "initialLayoutMatchesBefore": true,
+  "finalSourceAndBinaryVerification": "Passed, including the separately qualified menu fixture; all cleanup paths are absent."
+}

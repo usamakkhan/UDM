@@ -1,0 +1,229 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Interleaved threads and repeated saves are grouped into separate writers",
+      "passed": true
+    },
+    {
+      "name": "Each write retains its automatic or forced origin",
+      "passed": true
+    },
+    {
+      "name": "Cut-off writer is retained as incomplete",
+      "passed": true
+    },
+    {
+      "name": "Forced wait identifies the overlapping automatic writer with the expected interval",
+      "passed": true
+    },
+    {
+      "name": "A later write on the same thread does not inherit an earlier contention",
+      "passed": true
+    },
+    {
+      "name": "Recorded forced wait preserves the full 17 ms bracket",
+      "passed": true
+    },
+    {
+      "name": "Analysis preserves original event labels",
+      "passed": true
+    },
+    {
+      "name": "Existing unlabelled traces remain readable and are not assigned invented owners",
+      "passed": true
+    }
+  ],
+  "syntheticWriters": [
+    {
+      "kind": "auto",
+      "threadId": 1,
+      "events": [
+        {
+          "threadId": 1,
+          "stage": "save-snapshot-ready",
+          "counter": 0
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-wait",
+          "counter": 1
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-acquired",
+          "counter": 2
+        },
+        {
+          "threadId": 1,
+          "stage": "save-bytes-written",
+          "counter": 3
+        },
+        {
+          "threadId": 1,
+          "stage": "save-buffer-flushed",
+          "counter": 20
+        },
+        {
+          "threadId": 1,
+          "stage": "save-file-published",
+          "counter": 21
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-released",
+          "counter": 22
+        }
+      ],
+      "index": 0,
+      "complete": true,
+      "phases": [
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 1.0
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 17.0
+        },
+        {
+          "start": "save-file-published",
+          "end": "save-write-released",
+          "wallMs": 1.0
+        }
+      ],
+      "overlappingWriters": []
+    },
+    {
+      "kind": "forced",
+      "threadId": 2,
+      "events": [
+        {
+          "threadId": 2,
+          "stage": "save-snapshot-ready",
+          "counter": 5
+        },
+        {
+          "threadId": 2,
+          "stage": "save-write-wait",
+          "counter": 6
+        },
+        {
+          "threadId": 2,
+          "stage": "save-write-acquired",
+          "counter": 23
+        },
+        {
+          "threadId": 2,
+          "stage": "save-bytes-written",
+          "counter": 24
+        },
+        {
+          "threadId": 2,
+          "stage": "save-buffer-flushed",
+          "counter": 30
+        },
+        {
+          "threadId": 2,
+          "stage": "save-file-published",
+          "counter": 31
+        },
+        {
+          "threadId": 2,
+          "stage": "save-write-released",
+          "counter": 32
+        }
+      ],
+      "index": 1,
+      "complete": true,
+      "phases": [
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 17.0
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 6.0
+        },
+        {
+          "start": "save-file-published",
+          "end": "save-write-released",
+          "wallMs": 1.0
+        }
+      ],
+      "overlappingWriters": [
+        {
+          "index": 0,
+          "kind": "auto",
+          "threadId": 1,
+          "recordedOverlapMs": 16.0
+        }
+      ]
+    },
+    {
+      "kind": "forced",
+      "threadId": 1,
+      "events": [
+        {
+          "threadId": 1,
+          "stage": "save-snapshot-ready",
+          "counter": 40
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-wait",
+          "counter": 41
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-acquired",
+          "counter": 42
+        },
+        {
+          "threadId": 1,
+          "stage": "save-file-published",
+          "counter": 43
+        },
+        {
+          "threadId": 1,
+          "stage": "save-write-released",
+          "counter": 44
+        }
+      ],
+      "index": 2,
+      "complete": true,
+      "phases": [
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 1.0
+        },
+        {
+          "start": "save-file-published",
+          "end": "save-write-released",
+          "wallMs": 1.0
+        }
+      ],
+      "overlappingWriters": []
+    },
+    {
+      "kind": "forced",
+      "threadId": 3,
+      "events": [
+        {
+          "threadId": 3,
+          "stage": "save-snapshot-ready",
+          "counter": 100
+        }
+      ],
+      "index": 3,
+      "complete": false,
+      "phases": [],
+      "overlappingWriters": []
+    }
+  ]
+}

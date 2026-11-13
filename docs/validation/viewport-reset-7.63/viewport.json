@@ -1,0 +1,191 @@
+[
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      0,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "name-sort",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": false,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      0,
+      false
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "descending-name-sort",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "equal-key-sort",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "category:Archives",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "category:Archives",
+    "rows": 79,
+    "stage": "matching-category",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "category:Archives",
+      true,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "history-",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "category:Archives",
+    "rows": 79,
+    "stage": "matching-search",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "category:Archives",
+      true,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "history-",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "category:Archives",
+    "rows": 79,
+    "stage": "automatic-metadata",
+    "top": 25
+  },
+  {
+    "catalogOrderMatches": false,
+    "effectiveView": [
+      "category:Archives",
+      true,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "no-history-match",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "category:Archives",
+    "rows": 0,
+    "stage": "empty-search",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "navigation-fallback",
+    "top": 25
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "fallback-next-tick",
+    "top": 25
+  }
+]

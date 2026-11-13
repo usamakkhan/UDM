@@ -1,0 +1,205 @@
+{
+    "version":  "7.65",
+    "browserVersion":  "0.71.29",
+    "kind":  "External diagnostic sampling; no product or production binary changes",
+    "allPassed":  true,
+    "cases":  [
+                  {
+                      "case":  "sample-a",
+                      "observed":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  500,
+                      "actionableTraceMs":  498.0985000000801,
+                      "samplerCpuMs":  4421.875,
+                      "samples":  258,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "approximateLoadWindow":  {
+                                                    "spanMs":  556.8497999999672,
+                                                    "startSlackMs":  42.0478515625,
+                                                    "endSlackMs":  102.574462890625,
+                                                    "samples":  8,
+                                                    "systemBusyPct":  100.0,
+                                                    "processCpuMs":  93.75,
+                                                    "processCpuCoreEquivalent":  0.16835778696518436,
+                                                    "minAvailablePhysicalBytes":  6743826432,
+                                                    "maxPhysicalMemoryLoadPct":  73,
+                                                    "maxCounterReadMs":  114.53850000002421,
+                                                    "processorGroups":  1,
+                                                    "logicalProcessors":  4
+                                                },
+                      "allSampleReadMs":  {
+                                              "median":  19.03434999997262,
+                                              "max":  181.11409999988973
+                                          }
+                  },
+                  {
+                      "case":  "sample-b",
+                      "observed":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  250,
+                      "actionableTraceMs":  255.04750000010245,
+                      "samplerCpuMs":  656.25,
+                      "samples":  269,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "approximateLoadWindow":  {
+                                                    "spanMs":  321.6459000001196,
+                                                    "startSlackMs":  43.52392578125,
+                                                    "endSlackMs":  52.111572265625,
+                                                    "samples":  7,
+                                                    "systemBusyPct":  100.0,
+                                                    "processCpuMs":  109.375,
+                                                    "processCpuCoreEquivalent":  0.3400478600845195,
+                                                    "minAvailablePhysicalBytes":  5993472000,
+                                                    "maxPhysicalMemoryLoadPct":  76,
+                                                    "maxCounterReadMs":  62.5058999999892,
+                                                    "processorGroups":  1,
+                                                    "logicalProcessors":  4
+                                                },
+                      "allSampleReadMs":  {
+                                              "median":  7.540800000075251,
+                                              "max":  155.6661000000313
+                                          }
+                  },
+                  {
+                      "case":  "control-a",
+                      "observed":  false,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  265,
+                      "actionableTraceMs":  258.8288000000175,
+                      "samplerCpuMs":  0.0,
+                      "samples":  0,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                  },
+                  {
+                      "case":  "sample-c",
+                      "observed":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  125,
+                      "actionableTraceMs":  120.05269999988377,
+                      "samplerCpuMs":  156.25,
+                      "samples":  492,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "approximateLoadWindow":  {
+                                                    "spanMs":  140.4727000000421,
+                                                    "startSlackMs":  20.83837890625,
+                                                    "endSlackMs":  14.73681640625,
+                                                    "samples":  6,
+                                                    "systemBusyPct":  84.21052631578948,
+                                                    "processCpuMs":  62.5,
+                                                    "processCpuCoreEquivalent":  0.4449263095247779,
+                                                    "minAvailablePhysicalBytes":  5739712512,
+                                                    "maxPhysicalMemoryLoadPct":  77,
+                                                    "maxCounterReadMs":  15.265799999935552,
+                                                    "processorGroups":  1,
+                                                    "logicalProcessors":  4
+                                                },
+                      "allSampleReadMs":  {
+                                              "median":  0.13245000003371388,
+                                              "max":  73.42109999991953
+                                          }
+                  },
+                  {
+                      "case":  "control-b",
+                      "observed":  false,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  187,
+                      "actionableTraceMs":  189.13709999993443,
+                      "samplerCpuMs":  15.625,
+                      "samples":  0,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                  },
+                  {
+                      "case":  "sample-d",
+                      "observed":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableCoarseMs":  187,
+                      "actionableTraceMs":  177.0733000000473,
+                      "samplerCpuMs":  218.75,
+                      "samples":  294,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "approximateLoadWindow":  {
+                                                    "spanMs":  203.01339999982156,
+                                                    "startSlackMs":  20.24951171875,
+                                                    "endSlackMs":  17.4365234375,
+                                                    "samples":  6,
+                                                    "systemBusyPct":  100.0,
+                                                    "processCpuMs":  93.75,
+                                                    "processCpuCoreEquivalent":  0.46179217726555194,
+                                                    "minAvailablePhysicalBytes":  5848637440,
+                                                    "maxPhysicalMemoryLoadPct":  77,
+                                                    "maxCounterReadMs":  16.63400000007823,
+                                                    "processorGroups":  1,
+                                                    "logicalProcessors":  4
+                                                },
+                      "allSampleReadMs":  {
+                                              "median":  3.3170000000391155,
+                                              "max":  85.30930000008084
+                                          }
+                  }
+              ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/load-window-7.65/sample-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/load-window-7.65/sample-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/load-window-7.65/control-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/load-window-7.65/sample-c/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/load-window-7.65/control-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/load-window-7.65/sample-d/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     }
+                 ],
+    "selfcheck":  "load-window-7.65-selfcheck.json",
+    "collectorRuntimeSha256":  "3671fa21f5917d9cf9458cce9108185a70cab1bd47865e5401e70500b9c39cd1",
+    "limitations":  [
+                        "Only six ordered fresh-process observations; neither a latency distribution nor a paired IDM comparison.",
+                        "The collector consumes CPU and can perturb scheduling; two runs omit the collector while retaining the same native timing instrumentation.",
+                        "System/process counter windows are approximate: row timestamps follow some reads and read durations plus endpoint slack bound interpretation. Do not infer precise native-call waits.",
+                        "Process CPU includes all owned fixture threads. Aggregate CPU cannot identify another process, a particular lock or a call stack.",
+                        "Available physical memory is system context; available commit values belong to the sampler API context, not an exact system-wide commit reading.",
+                        "Sampled before and after state does not prove causality. No installed/personal-browser acceptance. Installed UDM remains 7.11.",
+                        "Native fixture timing and observation polling remain instrumented in both modes."
+                    ],
+    "references":  [
+                       "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getsystemtimes",
+                       "https://learn.microsoft.com/en-us/windows/win32/api/tlhelp32/ns-tlhelp32-processentry32w",
+                       "https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex"
+                   ],
+    "cleanup":  "All six generated payloads and closed browser profiles/staged extensions removed individually after hashing; see load-window-7.65-cleanup.json. Current binaries, core cache, reusable media and diagnostics retained.",
+    "collectorSelfcheckCorrection":  {
+                                         "initialFailure":  "Self-test incorrectly required the Python launcher and queried process image to have identical paths. The launcher was python.exe while the process image was python3.13.exe.",
+                                         "finalSelftestPassed":  true,
+                                         "actualRuntimeFunctionUnchanged":  true,
+                                         "collectedSourceSha256":  "f813e34b58a64242d7e5951f71029a4334b286b7a15d138df897a842426119e0",
+                                         "currentSourceSha256":  "f0f2969fc67e0365cbba58d99d9f7237bd4a0d99836ad58479e8055c6cb8aa76",
+                                         "note":  "The self-test now verifies handle PID identity and a valid queried image. The six completed workloads retain their original collector hashes and measurements."
+                                     },
+    "interpretation":  "Unchanged production and native fixture bytes produced substantial latency variation. Aggregate CPU was high in all sampled windows; the slowest sampled window used about the same coarse process CPU as a faster window. Scheduling or native blocking is a plausible contributor, not a proven root cause. Sampling itself was costly in one run, and CPU load alone did not predict latency. No product latency fix or IDM equivalence is claimed.",
+    "next":  "Use controlled repeated native-call measurements with low-overhead observation and matched reference/candidate workload. Do not optimize another small operation merely because one trace labels it slow; distinguish on-CPU work from waiting before changing production."
+}

@@ -1,0 +1,106 @@
+{
+  "desktop": "7.50",
+  "browser": "0.71.14",
+  "status": "Development build complete; all targeted checks passed; not installed or packaged",
+  "installedDesktop": "7.11",
+  "build": "progress-snapshot-7.50-build.json",
+  "checks": 208,
+  "tests": [
+    {
+      "name": "filter",
+      "checks": 30,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.50/filter/results.json",
+      "source": "native/FindFilterCacheTests.cpp",
+      "sourceSha256": "DB182D524B70B8BE2538C398BDE997D705F8802919DDF13090075A3204BD87D2",
+      "executable": "Udm.FindFilterCacheTests.exe",
+      "version": "7.50",
+      "sha256": "A760B1EF2C733A55A12D381CA1CF848AE322FCAC8BC17EB969A6E1D56755C82E"
+    },
+    {
+      "name": "address",
+      "checks": 27,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.50/address/results.json",
+      "source": "native/FindAddressTests.cpp",
+      "sourceSha256": "0B6B33A1839281F58CD87FB83884D1B11A2CBAB7DE4479C6C12FC08DFD951945",
+      "executable": "Udm.FindAddressTests.exe",
+      "version": "7.50",
+      "sha256": "348C2EBF6B2CFB4978D3843CDB0D0DFB29C149954914446AD12E2048ED05DDE2"
+    },
+    {
+      "name": "progress",
+      "checks": 82,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.50/model/results.json",
+      "source": "native/ProgressRecordViewTests.cpp",
+      "sourceSha256": "3061B9093CD693FAB4FE223F87AE3EDFBB12F8389A5BEEB24014A05FB2598CED",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.50",
+      "sha256": "390807BF824D17DA5994EF822D30D40D8A55E227860691B646458923D01808BE"
+    },
+    {
+      "name": "ui",
+      "checks": 69,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.50/ui-final/results.json",
+      "source": "native/FindDialogUiTests.cpp",
+      "sourceSha256": "4A8251362DAB196250C876AA9DB5CEE7BC7FD6F5ED42EAF1FD38432B713890D7",
+      "executable": "Udm.FindDialogUiTests.exe",
+      "version": "7.50",
+      "sha256": "FED40D0CC95F86C4B7D3D8CAAEEAEB8A545EE15A8511CFDF8CD8BDDC5372068E"
+    }
+  ],
+  "filterSnapshotTiming": {
+    "borrowedMedianMs": 1.238575,
+    "borrowedMsPerCheck": [
+      1.238575,
+      1.48746875,
+      1.25675,
+      1.35610625,
+      1.0062125,
+      1.1245375,
+      1.116375
+    ],
+    "cloneMedianMs": 3.26449375,
+    "cloneMsPerCheck": [
+      3.26075625,
+      3.4020875,
+      3.26449375,
+      3.36495,
+      3.34713125,
+      3.1202875,
+      3.24536875
+    ],
+    "iterationsPerTrial": 16,
+    "scope": "Synthetic unchanged six-MiB address-filter snapshot; not whole-list, whole-app or IDM timing",
+    "snapshotBytes": 6291525
+  },
+  "timingConditions": "Native compiler idle during filter and progress model measurements. Seven alternating trials of sixteen filter iterations; no timing threshold used for pass/fail.",
+  "windowTiming": [
+    {
+      "frames": 8,
+      "msPerFrame": 3.6255875,
+      "scope": "Current main-window refresh with a three-MiB protected capture; no earlier UI or IDM baseline"
+    }
+  ],
+  "reference": "../reference/find-windows-fold-7.50.json",
+  "referenceConclusion": "Installed IDM hash matches the complete historical export. Three CharUpperBuffW call instructions and five record-matcher call edges match installed bytes. The host API preserves final sigma separately from ordinary sigma. Preserve existing UDM folding; replace the unsupported test expectation. This is static inference and host API observation, not an IDM Find UI replay.",
+  "fixtureCorrection": "The first UI run stopped at a pre-existing category:Other test; current navigation intentionally omits that node. The final fixture uses visible category:Music, retains category-scoping assertions and adds large protected-capture refresh/invalidation checks. Production sources were unchanged by this correction; build-time and final fixture hashes remain separate in the build record.",
+  "semantics": "Compare only query-selected fields against the UI-owned encrypted snapshot under the manager lock. A cached false is an engaged hit. On misses, copy once and move the owned snapshot into the cache after matching outside the lock. Query changes clear results; end-of-refresh eviction removes unseen jobs. No new cleartext/decrypted cache or transport-source mutation.",
+  "visual": "find-filter-7.50.png",
+  "visualInspection": "Owned Find component at simulated 96 DPI inspected: input, field choices, separators, options and buttons readable within bounds. Fixture also checks 144 and 192 DPI bounds; physical monitor and live IDM visual parity remain unverified.",
+  "artifactPolicy": "Shared current test cache and production outputs reused. One 9,717-byte component render copied into tracked documentation. No installer, installed update, media-tool copy, network payload or cleanup attempt.",
+  "limitations": [
+    "Borrowed comparison still reads selected large values; it does not remove all O(n) work",
+    "First or changed records still require projection and address/header decryption",
+    "Synthetic snapshot comparison does not measure whole-app speed or establish IDM parity",
+    "The current-window timer sample has no previous-version or IDM baseline",
+    "Desktop control failed initialization and reset/retry; no personal-browser or installed-window acceptance"
+  ],
+  "next": [
+    "Profile initial or changed-record matching separately from unchanged refreshes",
+    "Continue matched installed dialog/handoff and transfer latency comparisons",
+    "Retain a live IDM Find replay as a separate acceptance gate"
+  ]
+}

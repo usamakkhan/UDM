@@ -1,0 +1,114 @@
+{
+  "checks": [
+    {
+      "name": "Rejection notification cannot retry while its producer still owns the lease",
+      "passed": true
+    },
+    {
+      "name": "A rejected result remains unavailable until the producer ticket finishes",
+      "passed": true
+    },
+    {
+      "name": "Unwinding the rejected producer enables an explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Only one explicit retry can claim a rejected generation",
+      "passed": true
+    },
+    {
+      "name": "Retry prepares a new job identity while retaining the original token",
+      "passed": true
+    },
+    {
+      "name": "Cancel through the old generation follows the in-flight retry and resolves once",
+      "passed": true
+    },
+    {
+      "name": "All generations share cancellation completion and release the claimed retry presentation",
+      "passed": true
+    },
+    {
+      "name": "Cancelling an accepted retry preserves unrelated history",
+      "passed": true
+    },
+    {
+      "name": "Rejection notification cannot retry while its producer still owns the lease",
+      "passed": true
+    },
+    {
+      "name": "A rejected result remains unavailable until the producer ticket finishes",
+      "passed": true
+    },
+    {
+      "name": "Unwinding the rejected producer enables an explicit retry",
+      "passed": true
+    },
+    {
+      "name": "A rejected generation can request reconciliation after another caller accepts its token",
+      "passed": true
+    },
+    {
+      "name": "Reconciled retry reaches a terminal prepared generation",
+      "passed": true
+    },
+    {
+      "name": "An already accepted receipt binds the existing job without a second download",
+      "passed": true
+    },
+    {
+      "name": "Bound or superseded generations cannot retry again",
+      "passed": true
+    },
+    {
+      "name": "Rejection notification cannot retry while its producer still owns the lease",
+      "passed": true
+    },
+    {
+      "name": "A rejected result remains unavailable until the producer ticket finishes",
+      "passed": true
+    },
+    {
+      "name": "Unwinding the rejected producer enables an explicit retry",
+      "passed": true
+    },
+    {
+      "name": "A definitely rejected retry can finish and enable another explicit attempt",
+      "passed": true
+    },
+    {
+      "name": "A retry generation cannot queue its replacement twice",
+      "passed": true
+    },
+    {
+      "name": "The stable presentation follows repeated attempts without retaining a chain of old generations",
+      "passed": true
+    },
+    {
+      "name": "Repeated write failures still produce exactly one accepted job and receipt token",
+      "passed": true
+    },
+    {
+      "name": "An original-generation Cancel reaches the newest accepted retry",
+      "passed": true
+    },
+    {
+      "name": "Failure before a new prepared identity still terminates its retry generation",
+      "passed": true
+    },
+    {
+      "name": "An uncertain retry never grants permission for another admission",
+      "passed": true
+    },
+    {
+      "name": "A blocked retry does not occupy the independent cancellation worker",
+      "passed": true
+    },
+    {
+      "name": "Closing integration cancels the late retry offer before stopping its cancellation worker",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

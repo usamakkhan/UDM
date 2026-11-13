@@ -1,0 +1,253 @@
+{
+  "version": "7.43",
+  "browserVersion": "0.71.7",
+  "productionSourceChanged": false,
+  "scope": "Native component tests using current production core objects and private catalogs. Real loopback transfers, catalog sharing-violation injection and an owned 2.5-second scanner-fixture process.",
+  "sourceIdentities": [
+    {
+      "path": "native/PauseTransactionTests.cpp",
+      "sha256": "2921439E1BE16F279308F01C3AFA269A425AFE9716BC90D1227AC6FE96942842"
+    },
+    {
+      "path": "native/TerminalActionTests.cpp",
+      "sha256": "112B5861F23938DFD73634FBA9F3B23C0D35D5FF63E0A2C88BB2C97070320EB8"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "3CFED3E197D3278099C5A5D54CC0E258E9B723BC8DB58F9F526CF5AC8ADBE52F"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "sha256": "06414242CEEFF04DEA57753B5E79D75E0BFCC067956535A74E233EDE2492B9AF"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/ContentSniff.hpp",
+      "sha256": "8D36CFE965B06036806629D821E3FFDA59DD3F62A2EDF0D01012CF3B43FA9F5D"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "C9B404B39604BFCFCC58CE7AC91C66164DB60D49EC71BD20E56EA78A70D96841"
+    }
+  ],
+  "cases": [
+    {
+      "case": "PauseTransactionTests",
+      "version": "7.43",
+      "exeSha256": "89B644E9F95AE98C67595A074289D3BC10070A25200F17F49A66A8997EBDD3D5",
+      "result": {
+        "checks": [
+          {
+            "name": "Queued Pause reports blocked catalog replacement",
+            "passed": true
+          },
+          {
+            "name": "Failed queued Pause restores all job and capture metadata",
+            "passed": true
+          },
+          {
+            "name": "Failed queued Pause preserves the disk catalog",
+            "passed": true
+          },
+          {
+            "name": "Queued Pause can be retried after the lock is released",
+            "passed": true
+          },
+          {
+            "name": "Successful Pause consumes its capture presentation",
+            "passed": true
+          },
+          {
+            "name": "Successful Pause survives reopening the catalog",
+            "passed": true
+          },
+          {
+            "name": "Idle completed Stop does not require a writable catalog",
+            "passed": true
+          },
+          {
+            "name": "Idle completed Stop preserves metadata and write time",
+            "passed": true
+          },
+          {
+            "name": "Failed synchronization Stop preserves pending explicit work",
+            "passed": true
+          },
+          {
+            "name": "Successful synchronization Stop clears pending explicit work",
+            "passed": true
+          },
+          {
+            "name": "Active Pause reports blocked catalog replacement",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause restores its complete job state",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause leaves saved state unchanged",
+            "passed": true
+          },
+          {
+            "name": "Failed active Pause does not cancel the worker and bytes continue arriving",
+            "passed": true
+          },
+          {
+            "name": "A successful retry actually stops the active transfer",
+            "passed": true
+          },
+          {
+            "name": "Resumed transfer publishes the exact original bytes",
+            "passed": true
+          },
+          {
+            "name": "Queue-origin Pause exposes the save error",
+            "passed": true
+          },
+          {
+            "name": "Failed Pause does not poison a successful queue completion cycle",
+            "passed": true
+          },
+          {
+            "name": "Completion remains ready after a failed Pause without executing its action",
+            "passed": true
+          }
+        ],
+        "failed": 0,
+        "passed": 19
+      }
+    },
+    {
+      "case": "TerminalActionTests",
+      "version": "7.43",
+      "exeSha256": "C1F48DB59459EC0BB8D5B06FF33CA9CB3A1B13F302BC385307F3338141CBBC74",
+      "result": {
+        "checks": [
+          {
+            "name": "Completed Resume ignores RequiresRequestCapture",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores RequiresMediaCapture",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores DuplicateOf",
+            "passed": true
+          },
+          {
+            "name": "Completed Resume ignores ProtectedBrowserSession",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop preserves catalog metadata",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop performs no catalog write",
+            "passed": true
+          },
+          {
+            "name": "Completed Stop preserves file bytes",
+            "passed": true
+          },
+          {
+            "name": "Actual transfer started for active Resume check",
+            "passed": true
+          },
+          {
+            "name": "Resume ignores already active download before capture validation",
+            "passed": true
+          },
+          {
+            "name": "Stop still pauses an actual active transfer",
+            "passed": true
+          },
+          {
+            "name": "Unfinished media still requires fresh capture",
+            "passed": true
+          },
+          {
+            "name": "Eligible resumed download completes with exact bytes",
+            "passed": true
+          },
+          {
+            "name": "Completed download has a real scanner process still running",
+            "passed": true
+          },
+          {
+            "name": "Stop ends scanner wait for a completed active download",
+            "passed": true
+          },
+          {
+            "name": "Stopping scanner wait preserves completed file",
+            "passed": true
+          },
+          {
+            "name": "Stopping wait does not terminate the scanner process",
+            "passed": true
+          }
+        ],
+        "failed": 0,
+        "passed": 16
+      }
+    }
+  ],
+  "independentFileProof": [
+    {
+      "catalog": "PauseTransactionTests/active/state.json",
+      "filename": "steady",
+      "bytes": 2097152,
+      "sha256": "D3017DD386A99F590550ABED1B605FB15D539236F78AA4E1DA63751C92811F16",
+      "expectedSha256": "D3017DD386A99F590550ABED1B605FB15D539236F78AA4E1DA63751C92811F16",
+      "matches": true
+    },
+    {
+      "catalog": "PauseTransactionTests/cycle/state.json",
+      "filename": "steady",
+      "bytes": 2097152,
+      "sha256": "D3017DD386A99F590550ABED1B605FB15D539236F78AA4E1DA63751C92811F16",
+      "expectedSha256": "D3017DD386A99F590550ABED1B605FB15D539236F78AA4E1DA63751C92811F16",
+      "matches": true
+    },
+    {
+      "catalog": "TerminalActionTests/data/state.json",
+      "filename": "running.bin",
+      "bytes": 1048576,
+      "sha256": "08F7099AFC56A789EAAF5FBEBFCB911246B701E8A7A90E6A20D7008B29276C4B",
+      "expectedSha256": "08F7099AFC56A789EAAF5FBEBFCB911246B701E8A7A90E6A20D7008B29276C4B",
+      "matches": true
+    },
+    {
+      "catalog": "TerminalActionTests/data/state.json",
+      "filename": "scanning.bin",
+      "bytes": 1048576,
+      "sha256": "08F7099AFC56A789EAAF5FBEBFCB911246B701E8A7A90E6A20D7008B29276C4B",
+      "expectedSha256": "08F7099AFC56A789EAAF5FBEBFCB911246B701E8A7A90E6A20D7008B29276C4B",
+      "matches": true
+    }
+  ],
+  "checks": 35,
+  "fixturePrivacy": "Only example.invalid and owned loopback routes; no personal catalog or browser",
+  "limits": [
+    "Not the production desktop UI or installed executable",
+    "Scanner is a harmless fixture executable, not an antivirus product",
+    "Queue completion readiness is checked without executing Exit UDM or power actions",
+    "No paired IDM timing or public-server qualification"
+  ],
+  "installed": false,
+  "installerCreated": false,
+  "fixtureFilesRetained": true
+}

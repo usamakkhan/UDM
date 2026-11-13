@@ -1,0 +1,11 @@
+PASS Accepted downloads still cancel in-browser when status storage fails
+PASS Accepted downloads do not wait for a stalled badge update
+PASS Failed handoffs release browser downloads even if error reporting stalls
+PASS A cancellation error after desktop acceptance never resumes a duplicate transfer
+PASS Selected-link partial failure reports exactly how many downloads were accepted
+PASS Collected link lists survive background-worker recreation
+PASS A worker restart during a batch cannot resubmit its uncertain downloads
+PASS A completed batch remains consumed after worker recreation
+PASS A failed submission journal write sends no downloads
+PASS Only the exact link-selection page can consume a batch
+AUDIT 10 passed, 0 failed

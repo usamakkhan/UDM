@@ -1,0 +1,336 @@
+{
+  "desktop": "7.60",
+  "browser": "0.71.24",
+  "includedDevelopmentIncrements": [
+    "7.59 / 0.71.23: complete request budgets",
+    "7.60 / 0.71.24: explicit disconnect cancellation"
+  ],
+  "standalone759ArtifactCreated": false,
+  "status": "Five native targets built; direct bridge, integration/recovery and isolated Edge/native-host checks passed; not installed or packaged",
+  "build": "native-deadlines-7.60-build.json",
+  "browserSources": [
+    {
+      "path": "browser/chromium/native-bridge.js",
+      "sha256": "3329F7D756652B533D4D05E95DB83091CB133C21E7E56D83FDF389DDCC926D25"
+    },
+    {
+      "path": "browser/firefox/native-bridge.js",
+      "sha256": "3329F7D756652B533D4D05E95DB83091CB133C21E7E56D83FDF389DDCC926D25"
+    }
+  ],
+  "before": [
+    {
+      "variant": "chromium",
+      "case": "legacy_ack",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-chromium-legacy_ack.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:68:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:66:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "variant": "chromium",
+      "case": "persistent_validation",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-chromium-persistent_validation.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:73:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:71:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "variant": "chromium",
+      "case": "disconnect_validation",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-chromium-disconnect_validation.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:93:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:91:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "variant": "firefox",
+      "case": "legacy_ack",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-firefox-legacy_ack.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:68:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:66:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "variant": "firefox",
+      "case": "persistent_validation",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-firefox-persistent_validation.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:73:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:71:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    },
+    {
+      "variant": "firefox",
+      "case": "disconnect_validation",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "sourceSha256": "DE859AE5D4AF2D8987429341F3707CE288AD48E974B06877B750E4A580381AED",
+      "log": "before-firefox-disconnect_validation.log",
+      "logText": "PASS responsive startup sends the download immediately after hello\nPASS slow native startup preserves the original connection and sends one download\nPASS concurrent commands share startup without duplicate admissions\nPASS missing hello stops at a bounded deadline without submitting a download\nPASS lost download acknowledgement is never replayed\nPASS disconnect before dispatch reconnects and sends one download\nPASS disconnect after dispatch does not repeat the download\nALL 7 NATIVE HANDSHAKE CHECKS PASSED\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'pending'\n- 'rejected'\n\n    at <project>\\tests\\native-handshake.test.cjs:93:10\n    at async test (<project>\\tests\\native-handshake.test.cjs:65:62)\n    at async runDeadlineChecks (<project>\\tests\\native-handshake.test.cjs:91:2)\n    at async <project>\\tests\\native-handshake.test.cjs:107:64 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'pending',\n  expected: 'rejected',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+    }
+  ],
+  "suites": [
+    {
+      "command": "UDM_TEST_NATIVE_VARIANT=chromium node tests/native-handshake.test.cjs",
+      "checks": 16,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "UDM_TEST_NATIVE_VARIANT=firefox node tests/native-handshake.test.cjs",
+      "checks": 16,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "node tests/integration-parity.test.cjs",
+      "checks": 36,
+      "nestedRepeatedHandshakeChecks": 7,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "node tests/browser-tools-handoff.test.cjs",
+      "checks": 4,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "node tests/media-receipt-errors.test.cjs",
+      "checks": 6,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "node tests/capture-recovery.test.cjs",
+      "checks": 27,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    },
+    {
+      "command": "node tests/capture-transaction.test.cjs",
+      "checks": 159,
+      "passed": true,
+      "evidence": "Exit code zero and PASS totals observed in the tool output; no separate raw stdout log retained for this run."
+    }
+  ],
+  "edge": {
+    "scope": "Fresh browser profile, actual native host, copied current bridge. Only static hello commands. Validation and legacy acknowledgement stalls are deliberately injected around actual browser/native APIs; no download or personal-browser acceptance.",
+    "desktop": "7.60",
+    "browser": "msedge",
+    "hostSha256": "0F54C3363CBC07B00ED35B233DAA67ACB6D98B6F963CCF79E8FF04101F454EF7",
+    "checks": [
+      {
+        "mode": "healthy",
+        "ok": true,
+        "version": "7.60",
+        "elapsedMs": 0.6000000014901161,
+        "sent": 1,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          },
+          {
+            "action": "hello",
+            "requestId": 2
+          }
+        ],
+        "oneShot": [],
+        "versions": [
+          "7.60",
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 2,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        },
+        "passed": true
+      },
+      {
+        "mode": "validation",
+        "ok": false,
+        "message": "Browser verification did not finish. No download request was sent.",
+        "beforeSend": true,
+        "elapsedMs": 1010.3999999985099,
+        "sent": 0,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          }
+        ],
+        "oneShot": [],
+        "versions": [
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 1,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 1
+        },
+        "passed": true
+      },
+      {
+        "mode": "disconnect_validation",
+        "ok": false,
+        "message": "UDM connection closed.",
+        "elapsedMs": 0.7000000029802322,
+        "sent": 0,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          }
+        ],
+        "oneShot": [],
+        "versions": [
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 1,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 0
+        },
+        "passed": true
+      },
+      {
+        "mode": "legacy_ack",
+        "ok": false,
+        "message": "UDM did not acknowledge the request. Check its download list before trying again.",
+        "beforeSend": false,
+        "elapsedMs": 1001.7999999970198,
+        "sent": 1,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          }
+        ],
+        "oneShot": [
+          {
+            "action": "hello"
+          }
+        ],
+        "versions": [
+          "7.60",
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 0,
+          "failures": 1,
+          "pending": 0,
+          "persistent": 0
+        },
+        "passed": true
+      },
+      {
+        "mode": "disconnect_legacy",
+        "ok": false,
+        "message": "UDM connection closed.",
+        "elapsedMs": 290.70000000298023,
+        "sent": 1,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          }
+        ],
+        "oneShot": [
+          {
+            "action": "hello"
+          }
+        ],
+        "versions": [
+          "7.60",
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 0,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 0
+        },
+        "passed": true
+      },
+      {
+        "mode": "before_send_disconnect",
+        "ok": false,
+        "message": "UDM connection closed.",
+        "elapsedMs": 0.4000000059604645,
+        "sent": 1,
+        "wire": [
+          {
+            "action": "hello",
+            "requestId": 1
+          }
+        ],
+        "oneShot": [],
+        "versions": [
+          "7.60"
+        ],
+        "diagnostics": {
+          "connections": 1,
+          "completed": 1,
+          "failures": 0,
+          "pending": 0,
+          "persistent": 0
+        },
+        "passed": true
+      }
+    ],
+    "registrationRemoved": true,
+    "bridgeSha256": "3329F7D756652B533D4D05E95DB83091CB133C21E7E56D83FDF389DDCC926D25",
+    "browserVersion": "157.0.4341.46",
+    "passed": true
+  },
+  "executedCheckCount": 270,
+  "counting": "270 executed checks include seven shared Chromium handshake cases repeated inside the 36-check integration suite. Counts represent suite executions, not 270 independent concepts. The isolated Edge test adds six real-browser cases; Firefox source is covered by VM/integration tests, not a live Firefox run.",
+  "deadlineContract": {
+    "ordinaryDefaultMs": 40000,
+    "ordinaryMaximumMs": 45000,
+    "minimumMs": 1000,
+    "captureStatusMaximumPerAttemptMs": 10000,
+    "captureStatusMaximumTotalMs": 20000,
+    "warmHelloMs": 15000,
+    "scope": "Ordinary request budget includes startup, selection validation and acknowledgement. Capture status retains one safe retry within a two-attempt total budget. Shared protocol warmup can finish for another request after an earlier request expires, but the expired request cannot dispatch."
+  },
+  "cancellationContract": "Explicit disconnect rejects live requests waiting on validation, startup, persistent acknowledgements or legacy one-shot replies. Checks after awaits and after beforeSend prevent a late callback from reconnecting or posting. Dispatched mutations never retry automatically; capture-status alone retains its existing safe read retry.",
+  "coverage": [
+    "Legacy lost acknowledgement returns uncertainty once, ignores late success and does not replay",
+    "Persistent and legacy validation hangs time out before dispatch; late validation cannot send",
+    "A short request budget does not close another request shared startup",
+    "Startup plus acknowledgement obeys the total mutation budget",
+    "Disconnect during validation/legacy wait and reentrant beforeSend cannot post an abandoned command",
+    "Existing capture-status retry, media receipts and browser ownership transaction checks remain green"
+  ],
+  "browserFixtureNotes": "Actual Edge native messaging and actual 7.60 host; only static hello messages. Legacy negotiation and reply stalls are deliberately injected around those real APIs. sent in the raw record counts beforeSend callbacks; wire/oneShot identify actual outbound metadata messages. This does not test a public video or file download.",
+  "fixtureDriver": {
+    "path": "tests/native-deadline.browser-live.cjs",
+    "sha256": "D6089FBCB0B91CD9EA9824D03E33B8155BD3B61713D2A1DA24BB5B7ED938AFC5"
+  },
+  "installedDesktop": "7.11",
+  "limits": [
+    "No personal browser, YouTube/ad capture, File Info paint or final video-file acceptance in this increment",
+    "No live Firefox run and no fresh IDM latency comparison",
+    "Timer-based deadlines do not establish hard real-time latency",
+    "Already dispatched commands cannot be retracted; underlying legacy browser API work may continue after the caller times out. Receipts and explicit reconciliation remain required",
+    "Native runtime logic is unchanged from 7.58 except version metadata; no claim that the earlier native suites were rerun as 7.60",
+    "No installer, installation, push or release created"
+  ],
+  "cleanup": "native-deadlines-7.60-cleanup.json"
+}

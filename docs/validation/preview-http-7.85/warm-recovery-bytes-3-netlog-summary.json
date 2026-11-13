@@ -1,0 +1,553 @@
+{
+  "scope": "Owned loopback URL_REQUEST sources only; query, raw payload, cookies, credentials, unrelated traffic and dependency graphs omitted",
+  "requests": [
+    {
+      "sourceId": 49,
+      "paths": [
+        "/nested"
+      ],
+      "bodyBytes": 687,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-type": "text/html; charset=utf-8",
+            "connection": "keep-alive",
+            "content-length": "687"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 61,
+      "paths": [
+        "/video.mp4"
+      ],
+      "bodyBytes": 1771847,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-length": "1771847",
+            "content-type": "video/mp4",
+            "etag": "\"audio-fixture\"",
+            "connection": "keep-alive"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 71,
+      "paths": [
+        "/favicon.ico"
+      ],
+      "bodyBytes": 0,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 404,
+          "headers": {
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 72,
+      "paths": [
+        "/outer.m3u8"
+      ],
+      "bodyBytes": 244,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-type": "application/vnd.apple.mpegurl",
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 79,
+      "paths": [
+        "/real/master.m3u8"
+      ],
+      "bodyBytes": 566,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-type": "application/vnd.apple.mpegurl",
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 83,
+      "paths": [
+        "/nested/master.m3u8",
+        "/real/master.m3u8"
+      ],
+      "bodyBytes": 566,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 302,
+          "headers": {
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-type": "application/vnd.apple.mpegurl",
+            "connection": "keep-alive",
+            "transfer-encoding": "chunked"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 84,
+      "paths": [
+        "/v/index.m3u8"
+      ],
+      "bodyBytes": 225,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-length": "225",
+            "content-type": "application/vnd.apple.mpegurl",
+            "etag": "\"audio-fixture\"",
+            "connection": "keep-alive"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 85,
+      "paths": [
+        "/v720/index.m3u8"
+      ],
+      "bodyBytes": 225,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-length": "225",
+            "content-type": "application/vnd.apple.mpegurl",
+            "etag": "\"audio-fixture\"",
+            "connection": "keep-alive"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 107,
+      "paths": [
+        "/v720/index.m3u8"
+      ],
+      "bodyBytes": 225,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-length": "225",
+            "content-type": "application/vnd.apple.mpegurl",
+            "etag": "\"audio-fixture\"",
+            "connection": "keep-alive"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    },
+    {
+      "sourceId": 108,
+      "paths": [
+        "/es/index.m3u8"
+      ],
+      "bodyBytes": 253,
+      "events": [
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 1
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 1
+        },
+        {
+          "name": "HTTP_STREAM_PARSER_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_RESPONSE_HEADERS",
+          "phase": 0,
+          "status": 200,
+          "headers": {
+            "content-length": "253",
+            "content-type": "application/vnd.apple.mpegurl",
+            "etag": "\"audio-fixture\"",
+            "connection": "keep-alive"
+          }
+        },
+        {
+          "name": "HTTP_TRANSACTION_READ_HEADERS",
+          "phase": 2
+        },
+        {
+          "name": "URL_REQUEST_START_JOB",
+          "phase": 2
+        },
+        {
+          "name": "REQUEST_ALIVE",
+          "phase": 2
+        }
+      ]
+    }
+  ]
+}

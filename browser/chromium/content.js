@@ -470,23 +470,52 @@
      if(p.sending)return;choices.replaceChildren();all.hidden=true;
      const name=element('p',choice.label),label=element('label','Audio track'),select=element('select'),actions=element('div',null,'foot'),back=element('button','Back','small'),download=element('button','Download video','small');
      name.style.cssText='white-space:normal;overflow-wrap:anywhere;margin:5px 7px';label.style.cssText='display:block;margin:8px 7px';select.style.cssText='display:block;width:calc(100% - 14px);margin:5px 7px;padding:5px;max-width:540px';select.setAttribute('aria-label','Audio track');label.htmlFor='udm-audio-'+token;select.id=label.htmlFor;
-     let selectedDefault=false;for(const track of choice.audioOptions||[]){const option=element('option',track.label+(track.default?' — default':''));option.value=track.key;option.selected=!!track.default&&!selectedDefault;if(option.selected)selectedDefault=true;select.append(option);}
      const subtitles=element('select'),subtitleLabel=element('label','Subtitles');subtitles.setAttribute('aria-label','Subtitles');subtitles.id='udm-subtitle-'+token;subtitleLabel.htmlFor=subtitles.id;subtitleLabel.style.cssText=label.style.cssText;subtitles.style.cssText=select.style.cssText;
-     const none=element('option','None');none.value='';subtitles.append(none);for(const track of choice.subtitleOptions||[]){const option=element('option',track.label);option.value=track.key;subtitles.append(option);}
-     const audio=element('button','Download audio (M4A)','small');audio.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),output:'audio'}]);}});
+     let available=true,audioMissing=false,subtitleMissing=false;
+     const canSend=output=>available&&!audioMissing&&(output==='audio'?choice.audioOnlyAvailable:!choice.onlyAudio&&!subtitleMissing);
+     const audio=element('button','Download audio (M4A)','small');audio.addEventListener('click',e=>{if(e.isTrusted&&canSend('audio')){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),output:'audio'}]);}});
      back.addEventListener('click',e=>{if(e.isTrusted&&!p.sending){e.stopPropagation();updateTrackChooser=null;showStatus();renderChoices(returnFocusKey);}});
-     download.addEventListener('click',e=>{if(e.isTrusted){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),subtitleKey:subtitles.value,output:'video'}]);}});
-     actions.append(back);if(!choice.onlyAudio)actions.append(download);if(choice.audioOnlyAvailable)actions.append(audio);choices.append(name);if(choice.audioOptions?.length)choices.append(label,select);if(choice.subtitleOptions?.length)choices.append(subtitleLabel,subtitles);choices.append(actions);(choice.audioOptions?.length?select:choice.onlyAudio?audio:download).focus();schedule();
-     updateTrackChooser=()=>{
-      if(id)return; // YouTube track selection is validated by the native handoff path.
-      const available=[...(response.choices||[]),...(response.captionChoices||[])].some(item=>item.key===choice.key);
+     download.addEventListener('click',e=>{if(e.isTrusted&&canSend('video')){e.stopPropagation();sendChoices([{...choice,...(select.value?{audioKey:select.value}:{}),subtitleKey:subtitles.value,output:'video'}]);}});
+     function fillTracks(control,tracks,selected,isAudio){
+      const options=[];
+      if(!isAudio||!tracks.length){const option=element('option',isAudio?'Default audio':'None');option.value='';options.push(option);}
+      for(const track of tracks){const option=element('option',track.label+(isAudio&&track.default?' — default':''));option.value=track.key;options.push(option);}
+      const known=selected?tracks.some(track=>track.key===selected):!isAudio||!tracks.length;
+      if(!known){const option=element('option',isAudio?'Selected audio is no longer available':'Selected subtitle is no longer available');option.value=selected;option.disabled=true;options.unshift(option);}
+      control.replaceChildren(...options);control.value=selected;
+     }
+     function updateValidity(){
       const active=shadow.activeElement;
-      download.disabled=audio.disabled=!available;
+      audioMissing=select.value?!(choice.audioOptions||[]).some(track=>track.key===select.value):!!choice.audioOptions?.length;
+      subtitleMissing=!!subtitles.value&&!(choice.subtitleOptions||[]).some(track=>track.key===subtitles.value);
+      label.hidden=select.hidden=!choice.audioOptions?.length&&!audioMissing;
+      subtitleLabel.hidden=subtitles.hidden=!choice.subtitleOptions?.length&&!subtitleMissing;
+      select.disabled=subtitles.disabled=!available;
+      download.hidden=!!choice.onlyAudio;audio.hidden=!choice.audioOnlyAvailable;
+      download.disabled=!canSend('video');audio.disabled=!canSend('audio');
       if(!available){
        status.textContent='This format is no longer in the list. Go back to choose another format.';
-       if(active===download||active===audio)back.focus({preventScroll:true});
+      }else if(audioMissing)status.textContent='The selected audio is no longer available. Choose another audio track.';
+      else if(subtitleMissing)status.textContent='The selected subtitle is no longer available. Choose another subtitle or None.';
+      if([download,audio,select,subtitles].includes(active)&&(active.disabled||active.hidden)){
+       (!available?back:audioMissing?select:subtitleMissing&&active===download?subtitles:back).focus({preventScroll:true});
       }
       schedule();
+     }
+     const changed=e=>{if(e.isTrusted&&!p.sending){showStatus();updateValidity();}};
+     select.addEventListener('change',changed);subtitles.addEventListener('change',changed);
+     actions.append(back,download,audio);choices.append(name,label,select,subtitleLabel,subtitles,actions);
+     fillTracks(select,choice.audioOptions||[],(choice.audioOptions?.find(track=>track.default)||choice.audioOptions?.[0])?.key||'',true);
+     fillTracks(subtitles,choice.subtitleOptions||[],'',false);updateValidity();
+     (!select.hidden?select:choice.onlyAudio?audio:download).focus();
+     updateTrackChooser=()=>{
+      const latest=id&&choice.onlyAudio&&!choice.key?(response.audioChoices?.length?{...choice,audioOptions:response.audioChoices}:null):[...(response.choices||[]),...(response.captionChoices||[])].find(item=>item.key===choice.key);
+      available=!!latest;
+      if(latest){
+       const audioKey=select.value,subtitleKey=subtitles.value;choice=latest;name.textContent=choice.label;
+       fillTracks(select,choice.audioOptions||[],audioKey,true);fillTracks(subtitles,choice.subtitleOptions||[],subtitleKey,false);
+      }
+      updateValidity();
      };
     }
     function updateCatalog(next){

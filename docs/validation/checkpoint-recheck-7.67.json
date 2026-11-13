@@ -1,0 +1,186 @@
+{
+    "version":  "7.67",
+    "browserVersion":  "0.71.31",
+    "allQualifiedRunsPassed":  true,
+    "nativeSuites":  [
+                         {
+                             "suite":  "catalog-tests",
+                             "checks":  14
+                         },
+                         {
+                             "suite":  "idle-retry-tests",
+                             "checks":  7
+                         }
+                     ],
+    "cases":  [
+                  {
+                      "case":  "cold-trace-a",
+                      "selectionToExternalActionableMs":  1087,
+                      "runnerChecks":  8,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchBeforeStart":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "phases":  [
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0912
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  0.0004
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  149.5913
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  31.4747
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  318.7033
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0498
+                                     }
+                                 ]
+                  },
+                  {
+                      "case":  "warm-original-a",
+                      "selectionToExternalActionableMs":  314,
+                      "runnerChecks":  8,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchBeforeStart":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0
+                  },
+                  {
+                      "case":  "cold-original-a",
+                      "selectionToExternalActionableMs":  742,
+                      "runnerChecks":  8,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchBeforeStart":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0
+                  },
+                  {
+                      "case":  "warm-trace-a",
+                      "selectionToExternalActionableMs":  222,
+                      "runnerChecks":  8,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchBeforeStart":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "phases":  [
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0999
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  0.0001
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  35.191
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  19.2179
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  288.349
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0309
+                                     }
+                                 ]
+                  }
+              ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/checkpoint-recheck-7.67/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/checkpoint-recheck-7.67/warm-original-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/checkpoint-recheck-7.67/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/checkpoint-recheck-7.67/warm-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     }
+                 ],
+    "preliminary":  [
+                        {
+                            "suite":  "idle-tests",
+                            "passed":  false,
+                            "reason":  "Transient catalog-read failure in existing test; retained as checkpoint-recheck-7.67-idle-initial.json, excluded from qualified checks"
+                        }
+                    ],
+    "inputHashes":  {
+                        "sharedHelpers":  [
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffmpeg.exe",
+                                                  "sha256":  "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+                                              },
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffprobe.exe",
+                                                  "sha256":  "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+                                              }
+                                          ],
+                        "testSources":  [
+                                            {
+                                                "path":  "tests/hls-catalog.native-live.cjs",
+                                                "sha256":  "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+                                            },
+                                            {
+                                                "path":  "tests/observe-cold-file-info.py",
+                                                "sha256":  "2E1A24176B15CFFCB3A053776AB1A4D001744AB86A5CB5AEB9FDF91CA29C0013"
+                                            }
+                                        ]
+                    },
+    "build":  "checkpoint-recheck-7.67-build.json",
+    "limits":  [
+                   "The change removes an automatic dirty-check/snapshot race; it does not remove flushing or cancel an already-running write.",
+                   "Small unpaired timing samples do not establish an overall speedup or IDM parity.",
+                   "The new fixture verifies skipped writes, forced writes, failed-save retry, transaction deferral and stopping, including durable file contents.",
+                   "The competing writer in the earlier 52 ms browser observation was not independently identified; this change addresses a source-proven redundant-write race.",
+                   "Isolated Edge/native selected HLS fixture; installed/personal browser and fresh IDM comparisons remain open.",
+                   "The preliminary idle test failure is retained; its observer-only retry stays within the original deadline and does not accept malformed JSON."
+               ],
+    "cleanup":  "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See checkpoint-recheck-7.67-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

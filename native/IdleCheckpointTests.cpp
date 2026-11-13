@@ -15,7 +15,16 @@ int wmain(int argc,wchar_t** argv){
   const auto file=manager.root/L"state.json";
   auto awaitSaved=[&](const std::function<bool(const Json&)>& matches){
    const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(5);
-   do{if(matches(Json::parse(readText(file))))return true;Sleep(10);}
+   do{
+    std::string text;
+    try{text=readText(file);}catch(const std::runtime_error& e){
+     // Replacement may briefly prevent opening the published filename.
+     // Keep the original deadline; malformed JSON and other errors stay fatal.
+     if(std::string(e.what())!="Cannot read file.")throw;
+     Sleep(10);continue;
+    }
+    if(matches(Json::parse(text)))return true;Sleep(10);
+   }
    while(std::chrono::steady_clock::now()<deadline);
    return false;
   };

@@ -1,0 +1,497 @@
+{
+    "version":  "7.66",
+    "browserVersion":  "0.71.30",
+    "diagnosticOnly":  true,
+    "allQualifiedRunsPassed":  true,
+    "build":  "save-phases-7.66-build.json",
+    "cases":  [
+                  {
+                      "case":  "cold-trace-r1",
+                      "selectionToExternalActionableMs":  645,
+                      "phases":  [
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "save-snapshot-ready",
+                                         "wallMs":  0.0593
+                                     },
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0877
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  0.0003
+                                     },
+                                     {
+                                         "start":  "save-write-acquired",
+                                         "end":  "save-atomic-entry",
+                                         "wallMs":  0.0006
+                                     },
+                                     {
+                                         "start":  "save-atomic-entry",
+                                         "end":  "save-dirs-ready",
+                                         "wallMs":  0.7049
+                                     },
+                                     {
+                                         "start":  "save-dirs-ready",
+                                         "end":  "save-file-opened",
+                                         "wallMs":  0.1962
+                                     },
+                                     {
+                                         "start":  "save-file-opened",
+                                         "end":  "save-bytes-written",
+                                         "wallMs":  0.0923
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  59.231
+                                     },
+                                     {
+                                         "start":  "save-buffer-flushed",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  0.1492
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  12.6993
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  309.7365
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  4.2511
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  60.5216
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  12.7046
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0235
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0293
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  56.5156
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  26.3897
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "warm-trace-r1",
+                      "selectionToExternalActionableMs":  227,
+                      "phases":  [
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "save-snapshot-ready",
+                                         "wallMs":  0.0662
+                                     },
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0935
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  0.0003
+                                     },
+                                     {
+                                         "start":  "save-write-acquired",
+                                         "end":  "save-atomic-entry",
+                                         "wallMs":  0.0009
+                                     },
+                                     {
+                                         "start":  "save-atomic-entry",
+                                         "end":  "save-dirs-ready",
+                                         "wallMs":  0.7096
+                                     },
+                                     {
+                                         "start":  "save-dirs-ready",
+                                         "end":  "save-file-opened",
+                                         "wallMs":  0.5978
+                                     },
+                                     {
+                                         "start":  "save-file-opened",
+                                         "end":  "save-bytes-written",
+                                         "wallMs":  0.1145
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  14.4971
+                                     },
+                                     {
+                                         "start":  "save-buffer-flushed",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  0.066
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  15.4166
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  218.5326
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  4.7044
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  16.146
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  15.4232
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0254
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0284
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  59.8958
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  19.4857
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "cold-trace-r2",
+                      "selectionToExternalActionableMs":  680,
+                      "phases":  [
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "save-snapshot-ready",
+                                         "wallMs":  0.0625
+                                     },
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0995
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  0.0003
+                                     },
+                                     {
+                                         "start":  "save-write-acquired",
+                                         "end":  "save-atomic-entry",
+                                         "wallMs":  0.0007
+                                     },
+                                     {
+                                         "start":  "save-atomic-entry",
+                                         "end":  "save-dirs-ready",
+                                         "wallMs":  0.9311
+                                     },
+                                     {
+                                         "start":  "save-dirs-ready",
+                                         "end":  "save-file-opened",
+                                         "wallMs":  2.6557
+                                     },
+                                     {
+                                         "start":  "save-file-opened",
+                                         "end":  "save-bytes-written",
+                                         "wallMs":  0.0882
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  29.6141
+                                     },
+                                     {
+                                         "start":  "save-buffer-flushed",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  0.0632
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  20.5148
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  280.3929
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  3.8343
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  33.5154
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  20.5201
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0244
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0269
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  58.2742
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  16.3776
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "warm-trace-r2",
+                      "selectionToExternalActionableMs":  464,
+                      "phases":  [
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "save-snapshot-ready",
+                                         "wallMs":  0.0522
+                                     },
+                                     {
+                                         "start":  "save-snapshot-ready",
+                                         "end":  "save-serialized",
+                                         "wallMs":  0.0869
+                                     },
+                                     {
+                                         "start":  "save-write-wait",
+                                         "end":  "save-write-acquired",
+                                         "wallMs":  52.0436
+                                     },
+                                     {
+                                         "start":  "save-write-acquired",
+                                         "end":  "save-atomic-entry",
+                                         "wallMs":  0.0032
+                                     },
+                                     {
+                                         "start":  "save-atomic-entry",
+                                         "end":  "save-dirs-ready",
+                                         "wallMs":  0.7695
+                                     },
+                                     {
+                                         "start":  "save-dirs-ready",
+                                         "end":  "save-file-opened",
+                                         "wallMs":  0.1735
+                                     },
+                                     {
+                                         "start":  "save-file-opened",
+                                         "end":  "save-bytes-written",
+                                         "wallMs":  0.088
+                                     },
+                                     {
+                                         "start":  "save-bytes-written",
+                                         "end":  "save-buffer-flushed",
+                                         "wallMs":  133.77
+                                     },
+                                     {
+                                         "start":  "save-buffer-flushed",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  0.084
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "save-file-published",
+                                         "wallMs":  14.0057
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  256.4239
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  3.6515
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  187.071
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  14.0098
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0275
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0267
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  67.868
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  18.1124
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "catalogReadRetries":  0,
+                      "deferredSavesObserved":  2
+                  }
+              ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/save-phases-7.66/cold-trace-r1/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/save-phases-7.66/warm-trace-r1/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/save-phases-7.66/cold-trace-r2/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/save-phases-7.66/warm-trace-r2/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     }
+                 ],
+    "observerRevision":  {
+                             "reason":  "Observer catalog read failed with transient PermissionError while the application replaced its state file; retry within the original 65-second deadline without relaxing exact-size or hash assertions.",
+                             "path":  "tests/observe-cold-file-info.py",
+                             "beforeSha256":  "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970",
+                             "afterSha256":  "2E1A24176B15CFFCB3A053776AB1A4D001744AB86A5CB5AEB9FDF91CA29C0013",
+                             "preliminaryCases":  [
+                                                      "cold-trace-a",
+                                                      "warm-trace-a"
+                                                  ],
+                             "qualifiedCases":  [
+                                                    "cold-trace-r1",
+                                                    "warm-trace-r1",
+                                                    "cold-trace-r2",
+                                                    "warm-trace-r2"
+                                                ]
+                         },
+    "preliminary":  [
+                        {
+                            "case":  "cold-trace-a",
+                            "passed":  true,
+                            "includedInTimingComparison":  false
+                        },
+                        {
+                            "case":  "warm-trace-a",
+                            "passed":  false,
+                            "includedInTimingComparison":  false,
+                            "reason":  "Observer PermissionError reading catalog during atomic replacement"
+                        }
+                    ],
+    "inputHashes":  {
+                        "sharedHelpers":  [
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffmpeg.exe",
+                                                  "sha256":  "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+                                              },
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffprobe.exe",
+                                                  "sha256":  "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+                                              }
+                                          ]
+                    },
+    "limits":  [
+                   "Four small unmatched-load trials, not a stable distribution or a comparison against IDM.",
+                   "before-commit to temporary-flushed includes save snapshot, serialization, write-mutex wait, directory/file creation, write and FlushFileBuffers; it does not isolate the flush syscall.",
+                   "temporary-flushed to committed includes file replacement and cached checkpoint publication.",
+                   "Bounded diagnostic timestamps split existing save work; no extra writes or sleeps are injected.",
+                   "Diagnostic record calls and checkpoint callbacks can affect timing; normal production Core/Bridge projections and original production binaries are unchanged.",
+                   "Isolated Edge/native selected HLS MP4 with Spanish audio; personal browser and installed application are not these runs."
+               ],
+    "cleanup":  "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See save-phases-7.66-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

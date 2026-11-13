@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "HttpRepresentation.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -37,8 +38,8 @@ inline std::string downloadStatusText(const Json& d,const std::string& state,int
  const auto failure=num(d,"LastHttpStatus")==404?"Not Found":"Error";
  if(yes(d,"LiveRecording"))return state=="Failed"?failure:state;
  const auto duration=num(d,"StreamDurationMs"),segments=num(d,"AdaptiveTotalSegments"),source=adaptiveSourceBytes(d);
- const auto total=duration>0?duration:source>0?source:segments>0?segments:num(d,"Size",-1);
- const auto completed=duration>0?num(d,"StreamCompletedMs"):source<=0&&segments>0?num(d,"AdaptiveCompletedSegments"):num(d,"Received");
+ const auto total=duration>0?duration:source>0?source:segments>0?segments:httpOutputSize(d);
+ const auto completed=duration>0?num(d,"StreamCompletedMs"):source<=0&&segments>0?num(d,"AdaptiveCompletedSegments"):httpOutputReceived(d);
  const auto percent=downloadStatusPercentage(completed,total);
  if(!percent.empty())return percent;
  // Positive retained progress takes precedence over textual failure labels in
@@ -56,7 +57,7 @@ inline int downloadPermille(const Json& data){
   return (int)std::clamp(1000.0*num(data,"Received")/source,0.0,999.0);
  auto segments=num(data,"AdaptiveTotalSegments");
  if(segments>0)return (int)std::clamp(1000.0*num(data,"AdaptiveCompletedSegments")/segments,0.0,999.0);
- auto size=num(data,"Size",-1);return size>0?(int)std::clamp(1000.0*num(data,"Received")/size,0.0,1000.0):-1;
+ auto size=httpOutputSize(data);return size>0?(int)std::clamp(1000.0*httpOutputReceived(data)/size,0.0,1000.0):-1;
 }
 inline std::string mediaClock(i64 milliseconds){
  auto seconds=std::max<i64>(0,milliseconds)/1000;auto tail=std::to_string(seconds%60);
@@ -88,7 +89,7 @@ inline i64 boundedDownloadEta(double seconds){
  return static_cast<i64>(seconds);
 }
 inline i64 downloadSecondsLeftForState(const Json& data,double speed,bool includeStopped){
- if(yes(data,"LiveRecording"))return -1;
+ if(yes(data,"LiveRecording")||pendingHttpGzip(data))return -1;
  const auto state=str(data,"Status");const bool eligible=state=="Downloading"||(includeStopped&&(state=="Paused"||state=="Failed"||state=="Queued"));
  if(!eligible||!std::isfinite(speed)||speed<=0)return -1;
  auto duration=num(data,"StreamDurationMs"),done=num(data,"StreamCompletedMs");

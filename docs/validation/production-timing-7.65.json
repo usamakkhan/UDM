@@ -1,0 +1,509 @@
+{
+  "version": "7.65",
+  "browserVersion": "0.71.29",
+  "kind": "Fixed-buffer diagnostic build of real Application path; guarded hooks only, production binaries unchanged",
+  "allQualifiedRunsPassed": true,
+  "cases": [
+    {
+      "case": "trace-a",
+      "mode": "trace-enabled",
+      "externalActionableMs": 248,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "presentationRoute": "notification-dispatch-precedes-offer",
+      "phaseIntervals": [
+        {
+          "start": "capture-posted",
+          "end": "capture-ui-dispatch",
+          "wallMs": 0.1227,
+          "sameThread": false
+        },
+        {
+          "start": "capture-ui-dispatch",
+          "end": "offer-restored",
+          "wallMs": 0.054,
+          "sameThread": true
+        },
+        {
+          "start": "app-init-entry",
+          "end": "manager-ready",
+          "wallMs": 9.9134,
+          "sameThread": true
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 286.2728,
+          "sameThread": true
+        },
+        {
+          "start": "automation-start",
+          "end": "automation-finished",
+          "wallMs": 0.6734,
+          "sameThread": true
+        },
+        {
+          "start": "initial-refresh-entry",
+          "end": "initial-refresh-returned",
+          "wallMs": 0.0918,
+          "sameThread": true
+        },
+        {
+          "start": "offer-restored",
+          "end": "dialog-owner-ready",
+          "wallMs": 2.4913,
+          "sameThread": true
+        },
+        {
+          "start": "dialog-owner-ready",
+          "end": "file-info-entry",
+          "wallMs": 0.0461,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-entry",
+          "end": "file-info-controls-start",
+          "wallMs": 14.2538,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 49.6641,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-ready",
+          "end": "owned-show-returned",
+          "wallMs": 9.3157,
+          "sameThread": true
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 20.0843,
+          "sameThread": true
+        },
+        {
+          "start": "owned-paint-returned",
+          "end": "first-prefetch-pulse",
+          "wallMs": 2.0801,
+          "sameThread": true
+        },
+        {
+          "start": "first-prefetch-pulse",
+          "end": "first-prefetch-returned",
+          "wallMs": 0.2513,
+          "sameThread": true
+        }
+      ],
+      "recordedEvents": 20,
+      "maxRecordedWriteWorkMs": 0.0005,
+      "sumRecordedWriteWorkMs": 0.0034000000000000002,
+      "startupReturnedBeforeSelectionApproxMs": 1419.737548828125,
+      "paintAfterSelectionApproxMs": 212.665283203125,
+      "externalLagAfterPaintApproxMs": 35.334716796875,
+      "startupReturnVsDiagnosticsApproxMs": -18.737548828125,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "trace-off-a",
+      "mode": "trace-disabled",
+      "externalActionableMs": 299,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "original-a",
+      "mode": "original",
+      "externalActionableMs": 234,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "trace-b",
+      "mode": "trace-enabled",
+      "externalActionableMs": 192,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "presentationRoute": "notification-dispatch-precedes-offer",
+      "phaseIntervals": [
+        {
+          "start": "capture-posted",
+          "end": "capture-ui-dispatch",
+          "wallMs": 0.1683,
+          "sameThread": false
+        },
+        {
+          "start": "capture-ui-dispatch",
+          "end": "offer-restored",
+          "wallMs": 0.0416,
+          "sameThread": true
+        },
+        {
+          "start": "app-init-entry",
+          "end": "manager-ready",
+          "wallMs": 65.1758,
+          "sameThread": true
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 284.2852,
+          "sameThread": true
+        },
+        {
+          "start": "automation-start",
+          "end": "automation-finished",
+          "wallMs": 0.4795,
+          "sameThread": true
+        },
+        {
+          "start": "initial-refresh-entry",
+          "end": "initial-refresh-returned",
+          "wallMs": 0.065,
+          "sameThread": true
+        },
+        {
+          "start": "offer-restored",
+          "end": "dialog-owner-ready",
+          "wallMs": 2.2096,
+          "sameThread": true
+        },
+        {
+          "start": "dialog-owner-ready",
+          "end": "file-info-entry",
+          "wallMs": 0.0292,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-entry",
+          "end": "file-info-controls-start",
+          "wallMs": 10.4783,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 60.7992,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-ready",
+          "end": "owned-show-returned",
+          "wallMs": 7.3574,
+          "sameThread": true
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 19.6439,
+          "sameThread": true
+        },
+        {
+          "start": "owned-paint-returned",
+          "end": "first-prefetch-pulse",
+          "wallMs": 2.8347,
+          "sameThread": true
+        },
+        {
+          "start": "first-prefetch-pulse",
+          "end": "first-prefetch-returned",
+          "wallMs": 0.21,
+          "sameThread": true
+        }
+      ],
+      "recordedEvents": 20,
+      "maxRecordedWriteWorkMs": 0.0005,
+      "sumRecordedWriteWorkMs": 0.0039000000000000003,
+      "startupReturnedBeforeSelectionApproxMs": 1438.45361328125,
+      "paintAfterSelectionApproxMs": 164.28125,
+      "externalLagAfterPaintApproxMs": 27.71875,
+      "startupReturnVsDiagnosticsApproxMs": -27.45361328125,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "original-b",
+      "mode": "original",
+      "externalActionableMs": 240,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "trace-off-b",
+      "mode": "trace-disabled",
+      "externalActionableMs": 251,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "oneCompleteJobInPrivateCatalog": true
+    },
+    {
+      "case": "trace-c",
+      "mode": "trace-enabled",
+      "externalActionableMs": 254,
+      "runnerChecks": 8,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "prefetchCompletedBeforeStart": true,
+      "mainListHidden": true,
+      "presentationRoute": "offer-restored-before-notification-dispatch",
+      "phaseIntervals": [
+        {
+          "start": "app-init-entry",
+          "end": "manager-ready",
+          "wallMs": 12.0353,
+          "sameThread": true
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 216.4916,
+          "sameThread": true
+        },
+        {
+          "start": "automation-start",
+          "end": "automation-finished",
+          "wallMs": 0.5022,
+          "sameThread": true
+        },
+        {
+          "start": "initial-refresh-entry",
+          "end": "initial-refresh-returned",
+          "wallMs": 0.0656,
+          "sameThread": true
+        },
+        {
+          "start": "offer-restored",
+          "end": "dialog-owner-ready",
+          "wallMs": 2.3317,
+          "sameThread": true
+        },
+        {
+          "start": "dialog-owner-ready",
+          "end": "file-info-entry",
+          "wallMs": 0.0451,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-entry",
+          "end": "file-info-controls-start",
+          "wallMs": 12.7722,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-start",
+          "end": "file-info-controls-ready",
+          "wallMs": 46.1944,
+          "sameThread": true
+        },
+        {
+          "start": "file-info-controls-ready",
+          "end": "owned-show-returned",
+          "wallMs": 6.3799,
+          "sameThread": true
+        },
+        {
+          "start": "owned-show-returned",
+          "end": "owned-paint-returned",
+          "wallMs": 19.6604,
+          "sameThread": true
+        },
+        {
+          "start": "owned-paint-returned",
+          "end": "first-prefetch-pulse",
+          "wallMs": 2.4955,
+          "sameThread": true
+        },
+        {
+          "start": "first-prefetch-pulse",
+          "end": "first-prefetch-returned",
+          "wallMs": 0.2159,
+          "sameThread": true
+        }
+      ],
+      "recordedEvents": 21,
+      "maxRecordedWriteWorkMs": 0.0005,
+      "sumRecordedWriteWorkMs": 0.0033,
+      "startupReturnedBeforeSelectionApproxMs": 1334.817138671875,
+      "paintAfterSelectionApproxMs": 227.327880859375,
+      "externalLagAfterPaintApproxMs": 26.672119140625,
+      "startupReturnVsDiagnosticsApproxMs": -31.817138671875,
+      "oneCompleteJobInPrivateCatalog": true
+    }
+  ],
+  "summary": {
+    "trace-enabled": {
+      "observationsMs": [
+        248,
+        192,
+        254
+      ],
+      "medianMs": 248
+    },
+    "trace-disabled": {
+      "observationsMs": [
+        299,
+        251
+      ],
+      "medianMs": 275.0
+    },
+    "original": {
+      "observationsMs": [
+        234,
+        240
+      ],
+      "medianMs": 237.0
+    }
+  },
+  "preliminary": [],
+  "payloads": [
+    {
+      "path": "candidates/production-timing-7.65/trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/trace-off-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/trace-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/original-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/trace-off-b/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/production-timing-7.65/trace-c/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "inputHashes": {
+    "productionAndFixtureHashes": [
+      {
+        "name": "UDM.exe",
+        "version": "7.65",
+        "sha256": "7FF622225E854525098094C26CDE2FDF1314DAB41DFA44BFD1747A189047FA4E"
+      },
+      {
+        "name": "Udm.NativeHost.exe",
+        "version": "7.65",
+        "sha256": "9D2B8F8C02F04872747B59B91726FD5224E45149469344D791FA79B70E0C19D3"
+      },
+      {
+        "name": "Udm.Monitor.exe",
+        "version": "7.65",
+        "sha256": "36B83290C9FFC024D35FCE21E12DB3E4BAD1B6A581295A0B3EC6C9CF938102E1"
+      },
+      {
+        "name": "Udm.SetupHelper.exe",
+        "version": "7.65",
+        "sha256": "95CD388215A1859DFADB5D29906A604C6E92125750889036B50E80E51E34B878"
+      },
+      {
+        "name": "Udm.Automation.exe",
+        "version": "7.65",
+        "sha256": "D9B1F89E74DA0764C8D410DE95D02EA71D2172025C7E11F0BE721EEC9AF24B14"
+      },
+      {
+        "name": "Udm.MenuStateTests.exe",
+        "version": "7.65",
+        "sha256": "C6EAE4B58E4D7B79BE177603F7DD8D9DBC67B109203A39E7733696D7E9F97D5F"
+      },
+      {
+        "name": "Udm.CapturePresentationUiTests.exe",
+        "version": "7.65",
+        "sha256": "9DD747FD571583E5C4ED2AA26EC21A8C0CA8E75D6451D54810CF3F317867D0EA"
+      },
+      {
+        "name": "Udm.FindDialogUiTests.exe",
+        "version": "7.65",
+        "sha256": "324A1507D1EF1164F453A6D4868228827C38A7DD58752B978B7D36C494EBBD11"
+      },
+      {
+        "name": "Udm.ProductionUiTimingTests.exe",
+        "sha256": "B8A4D68772CE624654CA9768C0465E90953AE2322E8A14D1C33168CDA69B75AE"
+      }
+    ],
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ],
+    "testSources": [
+      {
+        "path": "tests/hls-catalog.native-live.cjs",
+        "sha256": "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+      },
+      {
+        "path": "tests/observe-cold-file-info.py",
+        "sha256": "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970"
+      }
+    ]
+  },
+  "diagnosticBuild": "production-timing-7.65-build.json",
+  "productionProjection": {
+    "artifact": "docs/validation/production-timing-7.65-build.json",
+    "field": "productionProjectionProof"
+  },
+  "findings": [
+    "In these traced runs desktop initialization finished more than 1.3 seconds before selection, so unfinished startup did not overlap the selection.",
+    "Notification dispatch and offer restoration were sub-millisecond on the two message-driven traces. The third offer was restored before its explicit capture notification was dispatched; late modal-loop dispatch must not be misread as pre-dialog latency.",
+    "Control creation/population and synchronous paint are measurable post-restoration costs. The previously seen 871 ms outlier was not reproduced by these traces.",
+    "The frame-setup startup interval includes applyStartupGlobalLimiter and MainWindow construction, and is separate from warm File Info timing."
+  ],
+  "limits": [
+    "Only three trace-enabled and two observations each for disabled/original paths; descriptive observations, no stable distribution, causal overhead estimate or IDM parity.",
+    "Trace event copy work is measured, but index reservation, final commit, memory-mapping startup and all scheduling effects are not fully included in that overhead number.",
+    "No CPU accounting, heap allocation or explicit disk flush occurs per event. Mapping creation/first-touch happens before the app-init-entry marker.",
+    "Absolute FILETIME alignment is coarse; QPC deltas are authoritative for stage intervals. The external observer polls controls and may detect readiness after native paint.",
+    "These selected-video runs start after diagnostics readiness and do not measure full cold browser-click-to-process startup.",
+    "The diagnostic executable uses the actual Application path and a compile-time tracing flag; the original production executables remain byte-identical.",
+    "Private Edge profiles and private catalogs; no installed/personal-browser or fresh IDM acceptance. Installed UDM remains 7.11."
+  ],
+  "next": "Measure true cold capture startup, then investigate the measured frame-setup cost and control creation/painting. Preserve UI ownership and reveal behavior before considering deferred hidden main-window visual initialization. Do not optimize COM registration or posted capture dispatch based on the older hypotheses.",
+  "cleanup": "Seven exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; seven tools junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See production-timing-7.65-cleanup.json. Logical sizes include hardlinks; physical savings are not measured.",
+  "maintainedDecoder": "benchmarks/ui/production_ui_trace.py",
+  "maintainedBuildTarget": "native/build.ps1 -ProductionUiTimingTestsOnly -OmitDebugSymbols"
+}

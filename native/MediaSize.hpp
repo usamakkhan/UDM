@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "HttpRepresentation.hpp"
 namespace udm {
 // Browser sizes are display hints, never transfer bounds or resume metadata.
 inline i64 positiveMediaSize(const Json& value){
@@ -35,7 +36,7 @@ inline i64 savedMediaOutputSize(const Json& data){
  return size>0&&hash.size()==64&&(expected.empty()||expected==hash)?size:-1;
 }
 inline i64 reportedDirectResponseSize(const Json& data){
- if(yes(data,"RefreshPendingValidation")||str(data,"Status")=="Complete")return 0;
+ if(pendingHttpGzip(data)||yes(data,"RefreshPendingValidation")||str(data,"Status")=="Complete")return 0;
  const auto found=data.find("BrowserReportedDirectSize");
  return found==data.end()?0:positiveMediaSize(*found);
 }
@@ -44,7 +45,8 @@ inline bool mayStripResponsePrefix(const Json& data){
   (data.contains("MediaOutput")||data.contains("MediaFormatId")||str(data,"FormatDescription").rfind("Browser capture",0)==0));
 }
 inline std::string downloadSizeLabel(const Json& data){
- auto size=num(data,"Size",-1);if(size>=0)return bytes(size);
+ auto size=httpOutputSize(data);if(size>=0)return bytes(size);
+ if(pendingHttpGzip(data))return bytes(-1);
  auto reported=reportedMediaSize(data);if(reported)return bytes(reported);
  auto estimate=mediaSizeHint(data);return estimate?"~ "+bytes(estimate):bytes(-1);
 }

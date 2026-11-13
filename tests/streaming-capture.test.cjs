@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('nod
 const base=process.env.UDM_BROWSER_SOURCE||path.resolve(__dirname,'../browser/chromium'),id='Q3TI27IN7X0',page='https://www.youtube.com/watch?v='+id;
 const body=Uint8Array.of(42,1,1,154,1,2,8,1);let checks=0;
 function pass(name){checks++;console.log('PASS '+name);}
-function harness(){
- let now=Date.now();
+function harness(startTime=Date.now()){
+ let now=startTime;
  const stored={},events={},state={snapshot:{videoId:id,page,timeOrigin:now-10000,visit:3},documentId:'doc-a',incognito:false};
  const event=name=>({addListener:fn=>events[name]=fn});
  const api={tabs:{get:async()=>({incognito:state.incognito}),onRemoved:event('removed'),onUpdated:event('updated')},webRequest:{onBeforeRequest:event('before'),onHeadersReceived:event('headers'),onErrorOccurred:event('failed')},scripting:{executeScript:async()=>{if(state.proofGate)await state.proofGate;return [{frameId:0,documentId:state.documentId,result:state.snapshot}];}},storage:{session:{get:async key=>({[key]:stored[key]}),set:async value=>Object.assign(stored,value),remove:async key=>{delete stored[key];}}}};
@@ -13,7 +13,7 @@ function harness(){
  const request=(extra={})=>({requestId:'one',tabId:7,frameId:0,documentId:'doc-a',method:'POST',url:'https://rr1.googlevideo.com/videoplayback?sabr=1',requestBody:{raw:[{bytes:body.buffer}]},...extra});
  const response=(extra={})=>({...request(),statusCode:200,responseHeaders:[{name:'Content-Type',value:'application/vnd.yt-ump'}],...extra});
  const query=(extra={})=>context.capture.session({tabId:7,frameId:0,documentId:'doc-a',id,snapshot:{visit:3},...extra});
- return {capture:context.capture,state,events,stored,request,response,query,advance:()=>{now+=100;}};
+ return {capture:context.capture,state,events,stored,request,response,query,advance:(delta=100)=>{now+=delta;}};
 }
 (async()=>{
  let h=harness();h.events.before(h.request());await h.capture.response(h.response());let session=await h.query();assert.equal(session.videoId,id);assert.equal(session.body,Buffer.from(body).toString('base64'));assert.equal(session.captureSource,'browser-request');pass('Browser API captures a matched successful streaming POST without relying on page fetch wrappers');
@@ -27,6 +27,17 @@ function harness(){
  await h.capture.response(h.response(older));
  assert.equal((await h.query()).url,newer.url);pass('An older request finishing late cannot replace the latest accepted capture');
  await h.capture.clear(7);assert.equal(await h.query(),null);pass('Navigation clearing removes streaming request context');
+ {
+  const fixed=Date.now();h=harness(fixed);const first=h.request({requestId:'tie-old'}),second=h.request({requestId:'tie-new',url:first.url+'&rn=tie-new'});
+  h.events.before(first);h.events.before(second);await h.capture.response(h.response(second));await h.capture.response(h.response(first));
+  assert.equal((await h.query()).url,second.url);pass('Equal wall-clock timestamps retain request ordering through browser-level capture');
+  assert.equal(Object.hasOwn(await h.query(),'captureOrder'),false);assert.equal(Object.hasOwn(await h.query(),'captureOrderEpoch'),false);pass('Internal ordering metadata stays out of the streaming offer');
+  h=harness(fixed);h.events.before(h.request());await h.capture.response(h.response());h.advance(-1000);const rollback=h.request({requestId:'rollback',url:h.request().url+'&rn=rollback'});h.events.before(rollback);await h.capture.response(h.response(rollback));
+  assert.equal((await h.query()).url,rollback.url);pass('A newer same-worker capture survives a backward wall-clock adjustment');
+  const previous=harness(fixed);previous.events.before(previous.request({requestId:'one'}));previous.events.before(previous.request({requestId:'two',url:previous.request().url+'&rn=previous'}));await previous.capture.response(previous.response({requestId:'two',url:previous.request().url+'&rn=previous'}));
+  const restarted=harness(fixed);Object.assign(restarted.stored,previous.stored);const fresh=restarted.request({requestId:'restart',url:restarted.request().url+'&rn=restart'});restarted.events.before(fresh);await restarted.capture.response(restarted.response(fresh));
+  assert.equal((await restarted.query()).url,fresh.url);pass('Restarted worker ordering does not compare its first request with the old worker sequence');
+ }
  h=harness();let releaseProof;h.state.proofGate=new Promise(resolve=>{releaseProof=resolve;});h.events.before(h.request());const lateResponse=h.capture.response(h.response());await h.capture.clear(7);releaseProof();await lateResponse;assert.equal(await h.query(),null);assert.equal(h.capture.diagnostics(7).accepted,undefined);pass('A delayed identity lookup cannot restore a capture after navigation');
  h=harness();h.events.before(h.request());await h.capture.clear(7);await h.capture.response(h.response());assert.equal(await h.query(),null);pass('A response from a request removed by navigation cannot create a new offer');
 

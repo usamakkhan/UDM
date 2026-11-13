@@ -1,0 +1,316 @@
+{
+  "desktop": "7.53",
+  "browser": "0.71.17",
+  "status": "Development build and targeted functional checks passed; consistent latency improvement over 7.52 is not established; not installed or packaged",
+  "build": "find-query-witness-7.53-build.json",
+  "productionOutput": "candidates/native-build-current/release-native",
+  "installedDesktop": "7.11",
+  "checks": 246,
+  "tests": [
+    {
+      "name": "filter",
+      "checks": 46,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.53/filter/results.json",
+      "source": "native/FindFilterCacheTests.cpp",
+      "sourceSha256": "47492A35C4A6297BC8C2A847C8C5E81A607F438771AF5985F2F4F764763425E2",
+      "executable": "Udm.FindFilterCacheTests.exe",
+      "version": "7.53",
+      "sha256": "F114113A5616007C8A4FC370D35470141972BAA00F1291186822060D04DB6DF7"
+    },
+    {
+      "name": "address",
+      "checks": 27,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.53/address/results.json",
+      "source": "native/FindAddressTests.cpp",
+      "sourceSha256": "0B6B33A1839281F58CD87FB83884D1B11A2CBAB7DE4479C6C12FC08DFD951945",
+      "executable": "Udm.FindAddressTests.exe",
+      "version": "7.53",
+      "sha256": "362470D8A38CDB46C8E61595DCC79F6179D021F040EB233A2F54B864E67B1A67"
+    },
+    {
+      "name": "progress",
+      "checks": 82,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.53/model/results.json",
+      "source": "native/ProgressRecordViewTests.cpp",
+      "sourceSha256": "3061B9093CD693FAB4FE223F87AE3EDFBB12F8389A5BEEB24014A05FB2598CED",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.53",
+      "sha256": "DB9F5B2148319F175032E4DAFF4685DB38C0FAA23BE5FCF413F0EF60C5DF5659"
+    },
+    {
+      "name": "window",
+      "checks": 91,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.53/ui-final/results.json",
+      "source": "native/FindDialogUiTests.cpp",
+      "sourceSha256": "BDCA8B5217C42C2943E8F69158E15B91B47FBA3723BA4436317B8D456A03CA7B",
+      "executable": "Udm.FindDialogUiTests.exe",
+      "version": "7.53",
+      "sha256": "3D4562AB039344757E659AF5BC1E029594EA080C3C05B4D14A71AF031051906F"
+    }
+  ],
+  "change": "Borrow a canonical UI query during memory-only cache lookups. Normalize partial queries as needed and allocate an immutable witness before a cache miss can match/decrypt, outside the manager lock. Recheck cache identity per candidate, keep a shared candidate reference across matching, and abandon a scan if the query or visible candidate changes.",
+  "initialWindowTiming": [
+    {
+      "frames": 8,
+      "msPerFrame": 1.1592375,
+      "scope": "Current main-window refresh with a three-MiB protected capture; no earlier UI or IDM baseline"
+    },
+    {
+      "currentMedianMs": 2.453825,
+      "currentMsPerFrame": [
+        2.453825,
+        2.4403125,
+        2.3517,
+        2.6129625,
+        2.6207,
+        2.4473125,
+        2.9335875
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 2.4201,
+      "priorMsPerFrame": [
+        2.68,
+        2.3497625,
+        2.571775,
+        2.4761625,
+        2.4201,
+        2.384,
+        2.414775
+      ],
+      "scope": "7.52 Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.0801625,
+      "currentMsPerFrame": [
+        1.4267125,
+        1.0801625,
+        1.0114875,
+        1.0915875,
+        1.0097,
+        1.1524375,
+        0.9881375
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.0545125,
+      "priorMsPerFrame": [
+        1.2735625,
+        1.0303875,
+        1.0545125,
+        1.0045,
+        1.0783875,
+        0.98995,
+        1.17425
+      ],
+      "scope": "7.52 handler replay versus actual current handler for an ordinary filename in the same owned window; not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.837725,
+      "currentMsPerFrame": [
+        2.023825,
+        1.8436875,
+        2.4790125,
+        1.837725,
+        1.7616,
+        1.7783,
+        1.759325
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.771625,
+      "priorMsPerFrame": [
+        2.3726375,
+        1.8171875,
+        1.6393375,
+        1.771625,
+        1.750425,
+        1.8944375,
+        1.7508625
+      ],
+      "scope": "7.52 unfiltered Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.0935125,
+      "currentMsPerFrame": [
+        1.0635125,
+        1.09165,
+        1.013925,
+        1.0935125,
+        1.2373875,
+        1.09715,
+        1.202575
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.12265,
+      "priorMsPerFrame": [
+        1.1455875,
+        1.0090125,
+        1.12265,
+        1.0265,
+        1.1858125,
+        1.268525,
+        1.008175
+      ],
+      "scope": "7.52 unfiltered filename handler replay versus actual current handler; shared current refresh/backend, not old executable or IDM timing"
+    }
+  ],
+  "finalWindowTiming": [
+    {
+      "frames": 8,
+      "msPerFrame": 1.5397375,
+      "scope": "Current main-window refresh with a three-MiB protected capture; no earlier UI or IDM baseline"
+    },
+    {
+      "currentMedianMs": 2.58085,
+      "currentMsPerFrame": [
+        2.7354875,
+        2.65635,
+        2.327125,
+        2.5319,
+        2.58085,
+        3.025625,
+        2.4425625
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 2.5049,
+      "priorMsPerFrame": [
+        2.8544625,
+        2.3170625,
+        2.5049,
+        2.54365,
+        2.735725,
+        2.3713125,
+        2.3449625
+      ],
+      "scope": "7.52 Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.045925,
+      "currentMsPerFrame": [
+        1.431875,
+        1.045925,
+        0.99045,
+        1.09815,
+        1.0022125,
+        1.0465,
+        0.9701625
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.0892,
+      "priorMsPerFrame": [
+        1.3124375,
+        1.028875,
+        1.0892,
+        0.9729125,
+        1.0958125,
+        0.9719125,
+        1.1985125
+      ],
+      "scope": "7.52 handler replay versus actual current handler for an ordinary filename in the same owned window; not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.7748125,
+      "currentMsPerFrame": [
+        2.16925,
+        1.8772125,
+        1.6890375,
+        1.7748125,
+        1.9650625,
+        1.7354875,
+        1.7529625
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.8226625,
+      "priorMsPerFrame": [
+        2.334125,
+        1.684925,
+        1.86125,
+        1.76565,
+        1.7908375,
+        1.860525,
+        1.8226625
+      ],
+      "scope": "7.52 unfiltered Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.1767875,
+      "currentMsPerFrame": [
+        1.1915125,
+        1.193075,
+        1.0150625,
+        1.204075,
+        1.1329875,
+        1.0645625,
+        1.1767875
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.0626,
+      "priorMsPerFrame": [
+        1.0423875,
+        1.025125,
+        1.2056625,
+        1.057475,
+        1.2086125,
+        1.2522625,
+        1.0626
+      ],
+      "scope": "7.52 unfiltered filename handler replay versus actual current handler; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.1150375,
+      "currentMsPerFrame": [
+        1.1150375,
+        1.1618125,
+        1.017625,
+        1.1447625,
+        1.2503125,
+        1.1146375,
+        1.0317125
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.12875,
+      "priorMsPerFrame": [
+        1.513625,
+        1.119425,
+        1.101275,
+        1.27125,
+        1.0796375,
+        1.12875,
+        1.2914625
+      ],
+      "scope": "7.52 cached handler replay versus actual current handler for a 2047-unit valid Unicode description query; same owned window/current backend, not old executable or IDM timing"
+    }
+  ],
+  "method": "Actual current handler versus a 7.52 cached-handler code replay, including its early guard, in the same owned window and shared current backend. Seven alternating trials of eight calls per workload. Initial four-workload run retained; final fixture also checks a 2047-unit valid Unicode description. No timing pass threshold; not an older executable or IDM comparison.",
+  "interpretation": "Ordinary-workload differences are small and trial ranges overlap; direction varies by workload/run. The final unfiltered filename median is about 0.11 ms higher, while other cases are slightly higher or lower. The Unicode median differs by about 0.01 ms. No uniform or statistically resolved speed benefit is claimed. Source inspection establishes removal of the redundant normalization/allocation on canonical hot hits, not a measured whole-handler allocation count.",
+  "coverage": [
+    "Existing filtered/unfiltered selection, wrapping, query/source invalidation and bounded-cache tests",
+    "Partial query fallback through the existing protected-capture setup",
+    "Maximum 2047-unit valid Unicode description matches and stays unchanged through repeated hot lookups",
+    "Return from long description Find to hidden protected-address Find",
+    "Disabled-field return and category eviction"
+  ],
+  "ownershipScope": "Candidate retention, immutable miss witness and query/view cancellation checks are implemented. No forced Windows-message reentrancy or concurrent removal replay is claimed; ordinary source/query mutations are covered.",
+  "componentBuild": "Pinned /O2 compiler arguments from native/build.ps1; same cached libraries, explicit Windows entry point and resource",
+  "optimization": "/O2",
+  "coreReuse": "Unchanged 7.52 core/library objects plus Bridge rebuilt on D: for the new Version.hpp. Every production target and resource rebuilt; same pinned flags and libraries from native/build.ps1.",
+  "visual": "find-filter-7.50.png",
+  "freshRenderMatchesEarlierTrackedImage": true,
+  "freshRenderSha256": "4176EC1C1B80A01572B8B682BF0BDDE72A019C1DEEFF55604D4BBB5967475E56",
+  "visualScope": "No design changes. Byte-identical render reused from earlier inspected Find component when possible; simulated DPI control bounds checked. No installed/IDM visual acceptance.",
+  "artifactPolicy": "One shared D: output/cache root; no media-tool copy, installer, installed update, network payload or cleanup in this increment. Directory also contains fixture executables; production selection is the five build-receipt names.",
+  "limitations": [
+    "Uniform speed parity remains unproven; avoid selecting only favorable timing samples",
+    "First/changed candidates still match synchronously outside the job lock",
+    "Source equality checks and query preparation still have CPU costs",
+    "No forced reentrant query/view mutation acceptance",
+    "No fresh personal-browser, installed-window or live IDM latency comparison"
+  ],
+  "next": [
+    "Use a broader UI/download latency profile to prioritize confirmed blocking work rather than infer a speed win from sub-millisecond variation",
+    "Investigate first/changed-source matching and initial snapshot batching",
+    "Continue matched installed dialog/handoff/completion comparisons and remaining IDM feature gates"
+  ]
+}

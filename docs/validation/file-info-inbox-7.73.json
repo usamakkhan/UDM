@@ -1,0 +1,204 @@
+{
+  "version": "7.73",
+  "browserVersion": "0.71.37",
+  "allQualifiedRunsPassed": true,
+  "nativeSuites": [
+    {
+      "suite": "detached-tests",
+      "checks": 53
+    },
+    {
+      "suite": "registry-tests",
+      "checks": 36
+    },
+    {
+      "suite": "reservation-tests",
+      "checks": 73
+    },
+    {
+      "suite": "coordinator-tests",
+      "checks": 13
+    },
+    {
+      "suite": "catalog-tests",
+      "checks": 14
+    },
+    {
+      "suite": "idle-tests",
+      "checks": 7
+    }
+  ],
+  "cases": [
+    {
+      "case": "cold-trace-a",
+      "selectionToExternalActionableMs": 690,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "preparedViewInboxClaimed": true,
+      "acceptedPreparedViewUsed": true,
+      "viewClaimedBeforeFlushCompletion": true,
+      "viewClaimToFlushCompletionMs": 95.6924,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.0849
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0004
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 94.4025
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 15.8506
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 254.5559
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.015
+        }
+      ]
+    },
+    {
+      "case": "warm-original-a",
+      "selectionToExternalActionableMs": 289,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "cold-original-a",
+      "selectionToExternalActionableMs": 508,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "warm-trace-a",
+      "selectionToExternalActionableMs": 211,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "preparedViewInboxClaimed": true,
+      "acceptedPreparedViewUsed": true,
+      "viewClaimedBeforeFlushCompletion": true,
+      "viewClaimToFlushCompletionMs": 33.8306,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.0889
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0004
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 32.5899
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 16.999
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 246.4727
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0125
+        }
+      ]
+    }
+  ],
+  "payloads": [
+    {
+      "path": "candidates/file-info-inbox-7.73/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/file-info-inbox-7.73/warm-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/file-info-inbox-7.73/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/file-info-inbox-7.73/warm-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "preliminary": [],
+  "inputHashes": {
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ],
+    "testSources": [
+      {
+        "path": "tests/hls-catalog.native-live.cjs",
+        "sha256": "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+      },
+      {
+        "path": "tests/observe-cold-file-info.py",
+        "sha256": "2E1A24176B15CFFCB3A053776AB1A4D001744AB86A5CB5AEB9FDF91CA29C0013"
+      }
+    ]
+  },
+  "build": "file-info-inbox-7.73-build.json",
+  "limits": [
+    "Concurrent registry ownership and snapshot publication tickets are integrated in the current synchronous admission path. Eligible new media jobs persist detached without holding the manager lock. File Info now renders from an owned immutable initial snapshot; an opt-in in-process sink can receive it before persistence. The production pipe now posts opaque prepared-view keys to an owned inbox and passes accepted matching views to the existing dialog; early paint remains disabled. Existing/duplicate/refresh and direct-audio paths retain the synchronous fallback. Early File Info presentation and a queued writer remain unimplemented.",
+    "Small unpaired timing samples do not establish an overall speedup or IDM parity. These complete browser runs contain one admission per process; multiple admissions arriving during a modal dialog remain a required gate before early rendering.",
+    "Coordinator tests cover actual file bytes/backups, repeated/older sequences, failure/retry, concurrent writers and unlocked result observation; existing checkpoint/idle suites retain their persistence coverage.",
+    "Overlay conflicts and actual synchronous admission/recovery are covered; registry component tests cover concurrent ownership and separately captured publication tickets; gated application tests cover containing-write success and failed-write resolution. A general asynchronous queue and pending UI decisions are not yet enabled. No whole-dialog speedup or early paint is established.",
+    "Isolated Edge/native selected HLS fixture; installed/personal browser and fresh IDM comparisons remain open.",
+    "The existing idle polling reader retains its original deadline and keeps malformed JSON fatal."
+  ],
+  "cleanup": "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See file-info-inbox-7.73-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

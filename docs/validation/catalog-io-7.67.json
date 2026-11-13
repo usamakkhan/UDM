@@ -1,0 +1,1664 @@
+{
+  "productVersion": "7.67",
+  "browserVersion": "0.71.31",
+  "experimentOnly": true,
+  "passed": true,
+  "runs": [
+    "run-a",
+    "run-b"
+  ],
+  "cases": [
+    {
+      "run": "run-a",
+      "bytes": 4096,
+      "policies": [
+        {
+          "policy": "buffered-plus-flush",
+          "count": 8,
+          "medianTotalMs": 35.496399999999994,
+          "minTotalMs": 27.3183,
+          "maxTotalMs": 64.2914,
+          "medianWriteMs": 0.0839,
+          "medianFlushMs": 30.4975,
+          "medianPublishMs": 7.6379
+        },
+        {
+          "policy": "write-through-plus-flush",
+          "count": 8,
+          "medianTotalMs": 35.2249,
+          "minTotalMs": 23.5475,
+          "maxTotalMs": 55.0459,
+          "medianWriteMs": 1.0983,
+          "medianFlushMs": 25.90535,
+          "medianPublishMs": 6.768000000000001
+        }
+      ],
+      "pairs": [
+        {
+          "pair": 0,
+          "currentMs": 64.2914,
+          "writeThroughMs": 31.5853,
+          "writeThroughMinusCurrentMs": -32.70609999999999
+        },
+        {
+          "pair": 1,
+          "currentMs": 37.0892,
+          "writeThroughMs": 55.0459,
+          "writeThroughMinusCurrentMs": 17.956700000000005
+        },
+        {
+          "pair": 2,
+          "currentMs": 33.9036,
+          "writeThroughMs": 30.1362,
+          "writeThroughMinusCurrentMs": -3.7673999999999985
+        },
+        {
+          "pair": 3,
+          "currentMs": 27.3183,
+          "writeThroughMs": 43.0897,
+          "writeThroughMinusCurrentMs": 15.7714
+        },
+        {
+          "pair": 4,
+          "currentMs": 48.9618,
+          "writeThroughMs": 23.5475,
+          "writeThroughMinusCurrentMs": -25.414299999999997
+        },
+        {
+          "pair": 5,
+          "currentMs": 31.9492,
+          "writeThroughMs": 39.2291,
+          "writeThroughMinusCurrentMs": 7.279900000000001
+        },
+        {
+          "pair": 6,
+          "currentMs": 45.0787,
+          "writeThroughMs": 24.2817,
+          "writeThroughMinusCurrentMs": -20.796999999999997
+        },
+        {
+          "pair": 7,
+          "currentMs": 27.6338,
+          "writeThroughMs": 38.8645,
+          "writeThroughMinusCurrentMs": 11.230699999999999
+        }
+      ],
+      "medianPairedDeltaMs": 1.7562500000000014,
+      "writeThroughWins": 4
+    },
+    {
+      "run": "run-a",
+      "bytes": 65536,
+      "policies": [
+        {
+          "policy": "buffered-plus-flush",
+          "count": 8,
+          "medianTotalMs": 52.37625,
+          "minTotalMs": 49.2902,
+          "maxTotalMs": 58.8283,
+          "medianWriteMs": 0.13305,
+          "medianFlushMs": 24.46555,
+          "medianPublishMs": 26.740850000000002
+        },
+        {
+          "policy": "write-through-plus-flush",
+          "count": 8,
+          "medianTotalMs": 51.960049999999995,
+          "minTotalMs": 43.723,
+          "maxTotalMs": 57.5905,
+          "medianWriteMs": 1.2093,
+          "medianFlushMs": 22.35685,
+          "medianPublishMs": 27.24105
+        }
+      ],
+      "pairs": [
+        {
+          "pair": 0,
+          "currentMs": 53.5399,
+          "writeThroughMs": 50.6017,
+          "writeThroughMinusCurrentMs": -2.938200000000002
+        },
+        {
+          "pair": 1,
+          "currentMs": 49.2902,
+          "writeThroughMs": 48.8801,
+          "writeThroughMinusCurrentMs": -0.4100999999999999
+        },
+        {
+          "pair": 2,
+          "currentMs": 58.8283,
+          "writeThroughMs": 53.3184,
+          "writeThroughMinusCurrentMs": -5.509900000000002
+        },
+        {
+          "pair": 3,
+          "currentMs": 51.2721,
+          "writeThroughMs": 57.5734,
+          "writeThroughMinusCurrentMs": 6.301299999999998
+        },
+        {
+          "pair": 4,
+          "currentMs": 51.7112,
+          "writeThroughMs": 43.723,
+          "writeThroughMinusCurrentMs": -7.988199999999999
+        },
+        {
+          "pair": 5,
+          "currentMs": 53.0413,
+          "writeThroughMs": 57.5905,
+          "writeThroughMinusCurrentMs": 4.549199999999999
+        },
+        {
+          "pair": 6,
+          "currentMs": 58.7487,
+          "writeThroughMs": 50.3825,
+          "writeThroughMinusCurrentMs": -8.3662
+        },
+        {
+          "pair": 7,
+          "currentMs": 50.1081,
+          "writeThroughMs": 55.6217,
+          "writeThroughMinusCurrentMs": 5.513599999999997
+        }
+      ],
+      "medianPairedDeltaMs": -1.674150000000001,
+      "writeThroughWins": 5
+    },
+    {
+      "run": "run-b",
+      "bytes": 4096,
+      "policies": [
+        {
+          "policy": "buffered-plus-flush",
+          "count": 8,
+          "medianTotalMs": 24.43515,
+          "minTotalMs": 20.6343,
+          "maxTotalMs": 31.0775,
+          "medianWriteMs": 0.0798,
+          "medianFlushMs": 21.7683,
+          "medianPublishMs": 2.29215
+        },
+        {
+          "policy": "write-through-plus-flush",
+          "count": 8,
+          "medianTotalMs": 27.3338,
+          "minTotalMs": 20.7409,
+          "maxTotalMs": 35.5668,
+          "medianWriteMs": 1.11045,
+          "medianFlushMs": 22.87305,
+          "medianPublishMs": 2.1622500000000002
+        }
+      ],
+      "pairs": [
+        {
+          "pair": 0,
+          "currentMs": 29.2339,
+          "writeThroughMs": 20.7409,
+          "writeThroughMinusCurrentMs": -8.492999999999999
+        },
+        {
+          "pair": 1,
+          "currentMs": 24.4663,
+          "writeThroughMs": 32.9159,
+          "writeThroughMinusCurrentMs": 8.4496
+        },
+        {
+          "pair": 2,
+          "currentMs": 20.6343,
+          "writeThroughMs": 28.9183,
+          "writeThroughMinusCurrentMs": 8.283999999999999
+        },
+        {
+          "pair": 3,
+          "currentMs": 29.6141,
+          "writeThroughMs": 35.5668,
+          "writeThroughMinusCurrentMs": 5.9527
+        },
+        {
+          "pair": 4,
+          "currentMs": 24.404,
+          "writeThroughMs": 25.5456,
+          "writeThroughMinusCurrentMs": 1.1416000000000004
+        },
+        {
+          "pair": 5,
+          "currentMs": 31.0775,
+          "writeThroughMs": 33.5087,
+          "writeThroughMinusCurrentMs": 2.431199999999997
+        },
+        {
+          "pair": 6,
+          "currentMs": 24.3607,
+          "writeThroughMs": 25.1583,
+          "writeThroughMinusCurrentMs": 0.7975999999999992
+        },
+        {
+          "pair": 7,
+          "currentMs": 23.0558,
+          "writeThroughMs": 25.7493,
+          "writeThroughMinusCurrentMs": 2.6935000000000002
+        }
+      ],
+      "medianPairedDeltaMs": 2.5623499999999986,
+      "writeThroughWins": 1
+    },
+    {
+      "run": "run-b",
+      "bytes": 65536,
+      "policies": [
+        {
+          "policy": "buffered-plus-flush",
+          "count": 8,
+          "medianTotalMs": 50.85555,
+          "minTotalMs": 43.3482,
+          "maxTotalMs": 61.9538,
+          "medianWriteMs": 0.1298,
+          "medianFlushMs": 21.18235,
+          "medianPublishMs": 27.3749
+        },
+        {
+          "policy": "write-through-plus-flush",
+          "count": 8,
+          "medianTotalMs": 52.617850000000004,
+          "minTotalMs": 47.4359,
+          "maxTotalMs": 57.8608,
+          "medianWriteMs": 1.213,
+          "medianFlushMs": 20.495199999999997,
+          "medianPublishMs": 27.97505
+        }
+      ],
+      "pairs": [
+        {
+          "pair": 0,
+          "currentMs": 43.3482,
+          "writeThroughMs": 57.8608,
+          "writeThroughMinusCurrentMs": 14.512599999999999
+        },
+        {
+          "pair": 1,
+          "currentMs": 57.4219,
+          "writeThroughMs": 54.4337,
+          "writeThroughMinusCurrentMs": -2.988199999999999
+        },
+        {
+          "pair": 2,
+          "currentMs": 44.7048,
+          "writeThroughMs": 49.9938,
+          "writeThroughMinusCurrentMs": 5.2890000000000015
+        },
+        {
+          "pair": 3,
+          "currentMs": 61.9538,
+          "writeThroughMs": 55.3115,
+          "writeThroughMinusCurrentMs": -6.642299999999999
+        },
+        {
+          "pair": 4,
+          "currentMs": 50.2246,
+          "writeThroughMs": 48.1977,
+          "writeThroughMinusCurrentMs": -2.026900000000005
+        },
+        {
+          "pair": 5,
+          "currentMs": 52.1231,
+          "writeThroughMs": 50.802,
+          "writeThroughMinusCurrentMs": -1.3211000000000013
+        },
+        {
+          "pair": 6,
+          "currentMs": 51.4865,
+          "writeThroughMs": 47.4359,
+          "writeThroughMinusCurrentMs": -4.050600000000003
+        },
+        {
+          "pair": 7,
+          "currentMs": 44.6237,
+          "writeThroughMs": 55.107,
+          "writeThroughMinusCurrentMs": 10.4833
+        }
+      ],
+      "medianPairedDeltaMs": -1.674000000000003,
+      "writeThroughWins": 5
+    }
+  ],
+  "files": [
+    {
+      "path": "candidates/catalog-io-7.67/run-a/buffered-4096.json",
+      "bytes": 4096,
+      "sha256": "436ABBC22C82F5A765927C9921BB6FA7CD0D2E23723D438A80CD59AA93951A30"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/buffered-4096.json.bak",
+      "bytes": 4096,
+      "sha256": "968B01FCFF100F243DF2490908B3E7DE4DA299EA5A006D10599B0EB2386CBE3C"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/through-4096.json",
+      "bytes": 4096,
+      "sha256": "436ABBC22C82F5A765927C9921BB6FA7CD0D2E23723D438A80CD59AA93951A30"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/through-4096.json.bak",
+      "bytes": 4096,
+      "sha256": "968B01FCFF100F243DF2490908B3E7DE4DA299EA5A006D10599B0EB2386CBE3C"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/buffered-65536.json",
+      "bytes": 65536,
+      "sha256": "4835198F258A5481608CADDA897159CB5588A32D7271CD210274A814D578071D"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/buffered-65536.json.bak",
+      "bytes": 65536,
+      "sha256": "3BA9DE1FF144151A65DEC4E1D052CCD1095A607E5C04BE908E8FF4E309454FCE"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/through-65536.json",
+      "bytes": 65536,
+      "sha256": "4835198F258A5481608CADDA897159CB5588A32D7271CD210274A814D578071D"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-a/through-65536.json.bak",
+      "bytes": 65536,
+      "sha256": "3BA9DE1FF144151A65DEC4E1D052CCD1095A607E5C04BE908E8FF4E309454FCE"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/buffered-4096.json",
+      "bytes": 4096,
+      "sha256": "436ABBC22C82F5A765927C9921BB6FA7CD0D2E23723D438A80CD59AA93951A30"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/buffered-4096.json.bak",
+      "bytes": 4096,
+      "sha256": "968B01FCFF100F243DF2490908B3E7DE4DA299EA5A006D10599B0EB2386CBE3C"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/through-4096.json",
+      "bytes": 4096,
+      "sha256": "436ABBC22C82F5A765927C9921BB6FA7CD0D2E23723D438A80CD59AA93951A30"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/through-4096.json.bak",
+      "bytes": 4096,
+      "sha256": "968B01FCFF100F243DF2490908B3E7DE4DA299EA5A006D10599B0EB2386CBE3C"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/buffered-65536.json",
+      "bytes": 65536,
+      "sha256": "4835198F258A5481608CADDA897159CB5588A32D7271CD210274A814D578071D"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/buffered-65536.json.bak",
+      "bytes": 65536,
+      "sha256": "3BA9DE1FF144151A65DEC4E1D052CCD1095A607E5C04BE908E8FF4E309454FCE"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/through-65536.json",
+      "bytes": 65536,
+      "sha256": "4835198F258A5481608CADDA897159CB5588A32D7271CD210274A814D578071D"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/run-b/through-65536.json.bak",
+      "bytes": 65536,
+      "sha256": "3BA9DE1FF144151A65DEC4E1D052CCD1095A607E5C04BE908E8FF4E309454FCE"
+    }
+  ],
+  "allSamples": [
+    {
+      "run": "run-a",
+      "error": "",
+      "files": [
+        {
+          "bytes": 4096,
+          "name": "buffered-4096.json"
+        },
+        {
+          "bytes": 4096,
+          "name": "buffered-4096.json.bak"
+        },
+        {
+          "bytes": 4096,
+          "name": "through-4096.json"
+        },
+        {
+          "bytes": 4096,
+          "name": "through-4096.json.bak"
+        },
+        {
+          "bytes": 65536,
+          "name": "buffered-65536.json"
+        },
+        {
+          "bytes": 65536,
+          "name": "buffered-65536.json.bak"
+        },
+        {
+          "bytes": 65536,
+          "name": "through-65536.json"
+        },
+        {
+          "bytes": 65536,
+          "name": "through-65536.json.bak"
+        }
+      ],
+      "frequency": 10000000,
+      "passed": true,
+      "policiesRetainExplicitFlush": true,
+      "powerLossTested": false,
+      "samples": [
+        {
+          "backupBytesMatch": null,
+          "bytes": 4096,
+          "closeMs": 0.1182,
+          "flushMs": 28.5275,
+          "openMs": 0.219,
+          "orderInPair": 0,
+          "pair": -1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 0.9981,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 29.9644,
+          "writeMs": 0.1016
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 4096,
+          "closeMs": 0.4139,
+          "flushMs": 20.2046,
+          "openMs": 0.5918,
+          "orderInPair": 1,
+          "pair": -1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.1889,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 37.2278,
+          "writeMs": 14.8286
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1081,
+          "flushMs": 48.6111,
+          "openMs": 0.8724,
+          "orderInPair": 0,
+          "pair": 0,
+          "policy": "buffered-plus-flush",
+          "publishMs": 14.6179,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 64.2914,
+          "writeMs": 0.0819
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.8854,
+          "flushMs": 27.6355,
+          "openMs": 0.4989,
+          "orderInPair": 1,
+          "pair": 0,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.5229,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 31.5853,
+          "writeMs": 1.0426
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4309,
+          "flushMs": 40.8764,
+          "openMs": 0.4869,
+          "orderInPair": 0,
+          "pair": 1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 11.6989,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 55.0459,
+          "writeMs": 1.5528
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1104,
+          "flushMs": 34.3686,
+          "openMs": 0.1714,
+          "orderInPair": 1,
+          "pair": 1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.3493,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 37.0892,
+          "writeMs": 0.0895
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1134,
+          "flushMs": 20.3039,
+          "openMs": 0.1626,
+          "orderInPair": 0,
+          "pair": 2,
+          "policy": "buffered-plus-flush",
+          "publishMs": 13.2312,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 33.9036,
+          "writeMs": 0.0925
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.386,
+          "flushMs": 26.2128,
+          "openMs": 0.5105,
+          "orderInPair": 1,
+          "pair": 2,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.9981,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 30.1362,
+          "writeMs": 1.0288
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.3774,
+          "flushMs": 29.2232,
+          "openMs": 0.912,
+          "orderInPair": 0,
+          "pair": 3,
+          "policy": "write-through-plus-flush",
+          "publishMs": 11.4078,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 43.0897,
+          "writeMs": 1.1693
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1049,
+          "flushMs": 24.6512,
+          "openMs": 0.1723,
+          "orderInPair": 1,
+          "pair": 3,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.3006,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 27.3183,
+          "writeMs": 0.0893
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1017,
+          "flushMs": 34.8903,
+          "openMs": 0.1927,
+          "orderInPair": 0,
+          "pair": 4,
+          "policy": "buffered-plus-flush",
+          "publishMs": 13.6926,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 48.9618,
+          "writeMs": 0.0845
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4297,
+          "flushMs": 19.6799,
+          "openMs": 0.5179,
+          "orderInPair": 1,
+          "pair": 4,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.9536,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 23.5475,
+          "writeMs": 0.9664
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.432,
+          "flushMs": 25.4412,
+          "openMs": 0.5795,
+          "orderInPair": 0,
+          "pair": 5,
+          "policy": "write-through-plus-flush",
+          "publishMs": 11.6322,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 39.2291,
+          "writeMs": 1.1442
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1276,
+          "flushMs": 29.034,
+          "openMs": 0.1728,
+          "orderInPair": 1,
+          "pair": 5,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.5378,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 31.9492,
+          "writeMs": 0.077
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.128,
+          "flushMs": 31.961,
+          "openMs": 0.1712,
+          "orderInPair": 0,
+          "pair": 6,
+          "policy": "buffered-plus-flush",
+          "publishMs": 12.738,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 45.0787,
+          "writeMs": 0.0805
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.3371,
+          "flushMs": 19.9868,
+          "openMs": 0.5503,
+          "orderInPair": 1,
+          "pair": 6,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.3349,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 24.2817,
+          "writeMs": 1.0726
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4105,
+          "flushMs": 25.5979,
+          "openMs": 0.531,
+          "orderInPair": 0,
+          "pair": 7,
+          "policy": "write-through-plus-flush",
+          "publishMs": 11.2011,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 38.8645,
+          "writeMs": 1.124
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1122,
+          "flushMs": 25.0669,
+          "openMs": 0.1715,
+          "orderInPair": 1,
+          "pair": 7,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.1999,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 27.6338,
+          "writeMs": 0.0833
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 65536,
+          "closeMs": 0.1063,
+          "flushMs": 27.1934,
+          "openMs": 0.189,
+          "orderInPair": 0,
+          "pair": -1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 1.1167,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 28.7197,
+          "writeMs": 0.1143
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 65536,
+          "closeMs": 0.4228,
+          "flushMs": 19.9922,
+          "openMs": 0.6394,
+          "orderInPair": 1,
+          "pair": -1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.1384,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 23.8036,
+          "writeMs": 1.6108
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1105,
+          "flushMs": 28.0027,
+          "openMs": 0.2897,
+          "orderInPair": 0,
+          "pair": 0,
+          "policy": "buffered-plus-flush",
+          "publishMs": 24.9997,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 53.5399,
+          "writeMs": 0.1373
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4033,
+          "flushMs": 21.5725,
+          "openMs": 0.5585,
+          "orderInPair": 1,
+          "pair": 0,
+          "policy": "write-through-plus-flush",
+          "publishMs": 26.5165,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 50.6017,
+          "writeMs": 1.5509
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4178,
+          "flushMs": 21.3631,
+          "openMs": 0.7318,
+          "orderInPair": 0,
+          "pair": 1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 25.2097,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 48.8801,
+          "writeMs": 1.1577
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1113,
+          "flushMs": 22.0788,
+          "openMs": 0.1955,
+          "orderInPair": 1,
+          "pair": 1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.7987,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 49.2902,
+          "writeMs": 0.1059
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.0877,
+          "flushMs": 27.4296,
+          "openMs": 0.1999,
+          "orderInPair": 0,
+          "pair": 2,
+          "policy": "buffered-plus-flush",
+          "publishMs": 30.9744,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 58.8283,
+          "writeMs": 0.1367
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3331,
+          "flushMs": 23.1412,
+          "openMs": 0.5305,
+          "orderInPair": 1,
+          "pair": 2,
+          "policy": "write-through-plus-flush",
+          "publishMs": 28.1842,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 53.3184,
+          "writeMs": 1.1294
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3405,
+          "flushMs": 29.1706,
+          "openMs": 0.8892,
+          "orderInPair": 0,
+          "pair": 3,
+          "policy": "write-through-plus-flush",
+          "publishMs": 26.0771,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 57.5734,
+          "writeMs": 1.096
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.0615,
+          "flushMs": 24.1692,
+          "openMs": 0.2539,
+          "orderInPair": 1,
+          "pair": 3,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.683,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 51.2721,
+          "writeMs": 0.1045
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1271,
+          "flushMs": 24.7619,
+          "openMs": 0.2071,
+          "orderInPair": 0,
+          "pair": 4,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.4774,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 51.7112,
+          "writeMs": 0.1377
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3736,
+          "flushMs": 15.9192,
+          "openMs": 0.4899,
+          "orderInPair": 1,
+          "pair": 4,
+          "policy": "write-through-plus-flush",
+          "publishMs": 25.5805,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 43.723,
+          "writeMs": 1.3598
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4212,
+          "flushMs": 25.731,
+          "openMs": 1.1067,
+          "orderInPair": 0,
+          "pair": 5,
+          "policy": "write-through-plus-flush",
+          "publishMs": 29.0901,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 57.5905,
+          "writeMs": 1.2415
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1424,
+          "flushMs": 22.4389,
+          "openMs": 0.2138,
+          "orderInPair": 1,
+          "pair": 5,
+          "policy": "buffered-plus-flush",
+          "publishMs": 30.1312,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 53.0413,
+          "writeMs": 0.115
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.2675,
+          "flushMs": 27.6897,
+          "openMs": 0.225,
+          "orderInPair": 0,
+          "pair": 6,
+          "policy": "buffered-plus-flush",
+          "publishMs": 30.4371,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 58.7487,
+          "writeMs": 0.1294
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4221,
+          "flushMs": 19.4761,
+          "openMs": 0.5646,
+          "orderInPair": 1,
+          "pair": 6,
+          "policy": "write-through-plus-flush",
+          "publishMs": 28.6898,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 50.3825,
+          "writeMs": 1.2299
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3685,
+          "flushMs": 25.1135,
+          "openMs": 0.9854,
+          "orderInPair": 0,
+          "pair": 7,
+          "policy": "write-through-plus-flush",
+          "publishMs": 27.9656,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 55.6217,
+          "writeMs": 1.1887
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.0996,
+          "flushMs": 23.2273,
+          "openMs": 0.1859,
+          "orderInPair": 1,
+          "pair": 7,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.4562,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 50.1081,
+          "writeMs": 0.1391
+        }
+      ]
+    },
+    {
+      "run": "run-b",
+      "error": "",
+      "files": [
+        {
+          "bytes": 4096,
+          "name": "buffered-4096.json"
+        },
+        {
+          "bytes": 4096,
+          "name": "buffered-4096.json.bak"
+        },
+        {
+          "bytes": 4096,
+          "name": "through-4096.json"
+        },
+        {
+          "bytes": 4096,
+          "name": "through-4096.json.bak"
+        },
+        {
+          "bytes": 65536,
+          "name": "buffered-65536.json"
+        },
+        {
+          "bytes": 65536,
+          "name": "buffered-65536.json.bak"
+        },
+        {
+          "bytes": 65536,
+          "name": "through-65536.json"
+        },
+        {
+          "bytes": 65536,
+          "name": "through-65536.json.bak"
+        }
+      ],
+      "frequency": 10000000,
+      "passed": true,
+      "policiesRetainExplicitFlush": true,
+      "powerLossTested": false,
+      "samples": [
+        {
+          "backupBytesMatch": null,
+          "bytes": 4096,
+          "closeMs": 0.0892,
+          "flushMs": 22.4748,
+          "openMs": 0.1849,
+          "orderInPair": 0,
+          "pair": -1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 0.9703,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 23.8285,
+          "writeMs": 0.1093
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 4096,
+          "closeMs": 0.4144,
+          "flushMs": 25.606,
+          "openMs": 0.4502,
+          "orderInPair": 1,
+          "pair": -1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.2245,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 28.856,
+          "writeMs": 1.1609
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1257,
+          "flushMs": 23.4585,
+          "openMs": 0.8523,
+          "orderInPair": 0,
+          "pair": 0,
+          "policy": "buffered-plus-flush",
+          "publishMs": 4.7253,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 29.2339,
+          "writeMs": 0.0721
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4332,
+          "flushMs": 16.7783,
+          "openMs": 0.5443,
+          "orderInPair": 1,
+          "pair": 0,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.7977,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 20.7409,
+          "writeMs": 1.1874
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.3777,
+          "flushMs": 28.2593,
+          "openMs": 0.9247,
+          "orderInPair": 0,
+          "pair": 1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.1796,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 32.9159,
+          "writeMs": 1.1746
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1093,
+          "flushMs": 21.8182,
+          "openMs": 0.1884,
+          "orderInPair": 1,
+          "pair": 1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.2711,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 24.4663,
+          "writeMs": 0.0793
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.0753,
+          "flushMs": 18.0535,
+          "openMs": 0.1625,
+          "orderInPair": 0,
+          "pair": 2,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.2627,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 20.6343,
+          "writeMs": 0.0803
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.3902,
+          "flushMs": 24.5426,
+          "openMs": 0.5887,
+          "orderInPair": 1,
+          "pair": 2,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.1908,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 28.9183,
+          "writeMs": 1.206
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4226,
+          "flushMs": 31.0584,
+          "openMs": 0.8437,
+          "orderInPair": 0,
+          "pair": 3,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.1449,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 35.5668,
+          "writeMs": 1.0972
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1124,
+          "flushMs": 26.9034,
+          "openMs": 0.1935,
+          "orderInPair": 1,
+          "pair": 3,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.3223,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 29.6141,
+          "writeMs": 0.0825
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1092,
+          "flushMs": 21.6819,
+          "openMs": 0.1742,
+          "orderInPair": 0,
+          "pair": 4,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.3611,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 24.404,
+          "writeMs": 0.0776
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4658,
+          "flushMs": 20.8501,
+          "openMs": 0.7274,
+          "orderInPair": 1,
+          "pair": 4,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.5211,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 25.5456,
+          "writeMs": 0.9812
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4542,
+          "flushMs": 28.9702,
+          "openMs": 0.9442,
+          "orderInPair": 0,
+          "pair": 5,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.0981,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 33.5087,
+          "writeMs": 1.042
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1147,
+          "flushMs": 28.4336,
+          "openMs": 0.2104,
+          "orderInPair": 1,
+          "pair": 5,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.2377,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 31.0775,
+          "writeMs": 0.0811
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1072,
+          "flushMs": 21.7184,
+          "openMs": 0.1797,
+          "orderInPair": 0,
+          "pair": 6,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.2767,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 24.3607,
+          "writeMs": 0.0787
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4117,
+          "flushMs": 21.2035,
+          "openMs": 0.4999,
+          "orderInPair": 1,
+          "pair": 6,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.0531,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 25.1583,
+          "writeMs": 0.9901
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.4207,
+          "flushMs": 20.9283,
+          "openMs": 0.8695,
+          "orderInPair": 0,
+          "pair": 7,
+          "policy": "write-through-plus-flush",
+          "publishMs": 2.4071,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 25.7493,
+          "writeMs": 1.1237
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 4096,
+          "closeMs": 0.1658,
+          "flushMs": 20.317,
+          "openMs": 0.1756,
+          "orderInPair": 1,
+          "pair": 7,
+          "policy": "buffered-plus-flush",
+          "publishMs": 2.3076,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 23.0558,
+          "writeMs": 0.0898
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 65536,
+          "closeMs": 0.1201,
+          "flushMs": 20.06,
+          "openMs": 0.2418,
+          "orderInPair": 0,
+          "pair": -1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 1.3222,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 21.8908,
+          "writeMs": 0.1467
+        },
+        {
+          "backupBytesMatch": null,
+          "bytes": 65536,
+          "closeMs": 0.3973,
+          "flushMs": 29.2082,
+          "openMs": 0.6453,
+          "orderInPair": 1,
+          "pair": -1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 1.0284,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": true,
+          "totalMs": 32.823,
+          "writeMs": 1.5438
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1079,
+          "flushMs": 17.727,
+          "openMs": 0.29,
+          "orderInPair": 0,
+          "pair": 0,
+          "policy": "buffered-plus-flush",
+          "publishMs": 25.0749,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 43.3482,
+          "writeMs": 0.1484
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3706,
+          "flushMs": 27.9048,
+          "openMs": 0.9615,
+          "orderInPair": 1,
+          "pair": 0,
+          "policy": "write-through-plus-flush",
+          "publishMs": 27.3346,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 57.8608,
+          "writeMs": 1.2893
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4245,
+          "flushMs": 19.4825,
+          "openMs": 0.6322,
+          "orderInPair": 0,
+          "pair": 1,
+          "policy": "write-through-plus-flush",
+          "publishMs": 32.6547,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 54.4337,
+          "writeMs": 1.2398
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1087,
+          "flushMs": 29.0767,
+          "openMs": 0.1925,
+          "orderInPair": 1,
+          "pair": 1,
+          "policy": "buffered-plus-flush",
+          "publishMs": 27.904,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 57.4219,
+          "writeMs": 0.14
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1124,
+          "flushMs": 18.0793,
+          "openMs": 0.1858,
+          "orderInPair": 0,
+          "pair": 2,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.1817,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 44.7048,
+          "writeMs": 0.1456
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4428,
+          "flushMs": 21.2558,
+          "openMs": 1.0719,
+          "orderInPair": 1,
+          "pair": 2,
+          "policy": "write-through-plus-flush",
+          "publishMs": 25.9719,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 49.9938,
+          "writeMs": 1.2514
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4122,
+          "flushMs": 25.8409,
+          "openMs": 0.5357,
+          "orderInPair": 0,
+          "pair": 3,
+          "policy": "write-through-plus-flush",
+          "publishMs": 27.2542,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 55.3115,
+          "writeMs": 1.2685
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3742,
+          "flushMs": 19.6676,
+          "openMs": 0.2102,
+          "orderInPair": 1,
+          "pair": 3,
+          "policy": "buffered-plus-flush",
+          "publishMs": 41.5822,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 61.9538,
+          "writeMs": 0.1196
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1018,
+          "flushMs": 23.1372,
+          "openMs": 0.2007,
+          "orderInPair": 0,
+          "pair": 4,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.6755,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 50.2246,
+          "writeMs": 0.1094
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3219,
+          "flushMs": 17.6254,
+          "openMs": 0.5221,
+          "orderInPair": 1,
+          "pair": 4,
+          "policy": "write-through-plus-flush",
+          "publishMs": 28.6155,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 48.1977,
+          "writeMs": 1.1128
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3664,
+          "flushMs": 20.1955,
+          "openMs": 0.5137,
+          "orderInPair": 0,
+          "pair": 5,
+          "policy": "write-through-plus-flush",
+          "publishMs": 28.6258,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 50.802,
+          "writeMs": 1.1006
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1036,
+          "flushMs": 23.1909,
+          "openMs": 0.1715,
+          "orderInPair": 1,
+          "pair": 5,
+          "policy": "buffered-plus-flush",
+          "publishMs": 28.5496,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 52.1231,
+          "writeMs": 0.1075
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.1464,
+          "flushMs": 22.6971,
+          "openMs": 0.2321,
+          "orderInPair": 0,
+          "pair": 6,
+          "policy": "buffered-plus-flush",
+          "publishMs": 28.3,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 51.4865,
+          "writeMs": 0.1109
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.4044,
+          "flushMs": 18.4186,
+          "openMs": 0.5068,
+          "orderInPair": 1,
+          "pair": 6,
+          "policy": "write-through-plus-flush",
+          "publishMs": 26.9199,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 47.4359,
+          "writeMs": 1.1862
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.3704,
+          "flushMs": 20.7949,
+          "openMs": 0.5603,
+          "orderInPair": 0,
+          "pair": 7,
+          "policy": "write-through-plus-flush",
+          "publishMs": 32.2101,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 55.107,
+          "writeMs": 1.1713
+        },
+        {
+          "backupBytesMatch": true,
+          "bytes": 65536,
+          "closeMs": 0.0991,
+          "flushMs": 17.2434,
+          "openMs": 0.2447,
+          "orderInPair": 1,
+          "pair": 7,
+          "policy": "buffered-plus-flush",
+          "publishMs": 26.8458,
+          "publishedBytesMatch": true,
+          "replacementRetries": 0,
+          "seed": false,
+          "totalMs": 44.6237,
+          "writeMs": 0.1907
+        }
+      ]
+    }
+  ],
+  "logicalPayloadBytesWritten": 2506752,
+  "limits": [
+    "A single machine and drive, small alternating paired samples; not a stable performance distribution, installed-browser test or IDM comparison.",
+    "Each policy retains explicit FlushFileBuffers plus the same atomic replacement/creation behavior. The variant adds only FILE_FLAG_WRITE_THROUGH to temporary file creation.",
+    "Successful byte/backup reads and API success do not verify hardware power-loss durability.",
+    "The standalone loop mirrors the production Win32 sequence but does not measure the whole application, catalog serialization or admission locks.",
+    "Seed creations are recorded separately and excluded from replacement-pair summaries."
+  ],
+  "cleanup": "Exact verified generated payloads/backups, standalone probe executable and object removed; compact measurement JSON and source retained. No recursive deletion or product/shared-tool changes.",
+  "decision": {
+    "productionPolicyChanged": false,
+    "reason": "The write-through-plus-explicit-flush variant did not show a consistent total-latency improvement across the four alternating comparison windows; retain the existing production policy.",
+    "writeThroughPairWins": 15,
+    "replacementPairs": 32,
+    "next": "Implement the coordinator/reservation foundation specified in docs/file-info-pending-admission-architecture.md, followed by early File Info presentation without weakening durable acceptance."
+  }
+}

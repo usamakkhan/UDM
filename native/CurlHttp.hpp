@@ -12,8 +12,14 @@ namespace udm {
 // Preserve explicit loopback, encrypted proxy and local-DNS SOCKS routes.
 // WinHTTP and its SOCKS bridge cannot represent all three without changing routing.
 // A dropped established connection is separate from PAC route-establishment failure.
-struct CurlResponseDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
+struct CurlResponseDisconnect:std::runtime_error {
+ DWORD code;
+ explicit CurlResponseDisconnect(std::string message,DWORD error=ERROR_WINHTTP_CONNECTION_ERROR):runtime_error(std::move(message)),code(error){}
+};
 struct CurlBodyDisconnect:std::runtime_error {using std::runtime_error::runtime_error;};
+struct CurlPostReplayBlocked:CurlResponseDisconnect {
+ CurlPostReplayBlocked():CurlResponseDisconnect("The request may already have been submitted. Start this download explicitly to submit it again."){}
+};
 // Keep the established Basic/Digest/NTLM preference. A completed challenge that
 // offers only Negotiate gets one explicit-identity retry below. POST requires
 // a rejected HTTPS CONNECT before any upload; mixed NTLM preference is retained.
@@ -54,13 +60,28 @@ inline bool needsExplicitProxyTransport(const Url& url,const Json& prefs){
 class CurlSession;
 struct CurlRequestState {
   CURL* easy=nullptr;CurlSession* owner=nullptr;curl_slist* outgoing=nullptr;
-  bool attached=false,complete=false,paused=false,ready=false,headersComplete=false,digest=false,proxyAuth=false;
+  bool attached=false,complete=false,paused=false,ready=false,headersComplete=false,digest=false,proxyAuth=false,submission=false,requestIssued=false;
   CURLcode result=CURLE_OK;DWORD status=0;size_t headerBytes=0,offset=0;
   Bytes buffer,postBody;std::vector<std::pair<std::string,std::string>> response;
   std::vector<std::string> cookies;std::exception_ptr callbackError;
   ~CurlRequestState();
   template<class T>void set(CURLoption option,T value){auto code=curl_easy_setopt(easy,option,value);if(code!=CURLE_OK)throw std::runtime_error("HTTP proxy configuration (option "+std::to_string(option)+"): "+curl_easy_strerror(code));}
   void append(const std::string& header){auto* next=curl_slist_append(outgoing,header.c_str());if(!next)throw std::bad_alloc();outgoing=next;}
+  static int prerequest(void* opaque,char*,char*,int,int)noexcept{
+   auto& self=*static_cast<CurlRequestState*>(opaque);
+   try{
+    if(self.callbackError)return CURL_PREREQFUNC_ABORT;
+    if(!self.submission)return CURL_PREREQFUNC_OK;
+    const bool rejected=(self.proxyAuth&&self.status==407)||(self.digest&&self.status==401);
+    if(self.requestIssued&&!rejected){self.callbackError=std::make_exception_ptr(CurlPostReplayBlocked());return CURL_PREREQFUNC_ABORT;}
+    self.requestIssued=true;
+    // An authentication rejection permits one continuation, not a later
+    // blind replay after that continuation loses its response. Empty POSTs
+    // also submit a request, so this does not depend on upload byte counts.
+    self.status=0;self.ready=false;self.headersComplete=false;self.response.clear();
+    return CURL_PREREQFUNC_OK;
+   }catch(...){self.callbackError=std::current_exception();return CURL_PREREQFUNC_ABORT;}
+  }
   static size_t body(char* data,size_t size,size_t count,void* opaque)noexcept{
    auto& self=*static_cast<CurlRequestState*>(opaque);
    try{
@@ -98,6 +119,11 @@ struct CurlRequestState {
    if(complete&&result!=CURLE_OK){
     // Only connection failures before an HTTP response qualify for PAC failover.
     // TLS, authentication, malformed responses and partial bodies do not qualify for PAC failover.
+    const bool challengeOnly=headersComplete&&!ready&&((proxyAuth&&status==407)||(digest&&status==401));
+    if(challengeOnly&&result==CURLE_OPERATION_TIMEDOUT)
+     throw CurlResponseDisconnect("HTTP authentication response timed out.",ERROR_WINHTTP_TIMEOUT);
+    if(challengeOnly&&(result==CURLE_GOT_NOTHING||result==CURLE_SEND_ERROR||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM))
+     throw CurlResponseDisconnect(std::string("HTTP connection closed before authentication completed: ")+curl_easy_strerror(result)+".");
     if(headersComplete&&(result==CURLE_PARTIAL_FILE||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM||result==CURLE_OPERATION_TIMEDOUT))
      throw CurlBodyDisconnect(std::string("HTTP response body was interrupted: ")+curl_easy_strerror(result)+".");
     if(!headersComplete&&(result==CURLE_GOT_NOTHING||result==CURLE_SEND_ERROR||result==CURLE_RECV_ERROR||result==CURLE_HTTP2_STREAM))
@@ -197,7 +223,7 @@ public:
   }
   // Headers belonging to the origin must never be placed on HTTPS CONNECT.
   s.set(CURLOPT_HEADEROPT,(long)CURLHEADER_SEPARATE);
-  if(body){s.postBody=*body;s.set(CURLOPT_POSTFIELDSIZE_LARGE,(curl_off_t)s.postBody.size());s.set(CURLOPT_POSTFIELDS,s.postBody.empty()?"":reinterpret_cast<const char*>(s.postBody.data()));s.append("Expect:");}
+  if(body){s.submission=true;s.postBody=*body;s.set(CURLOPT_POSTFIELDSIZE_LARGE,(curl_off_t)s.postBody.size());s.set(CURLOPT_POSTFIELDS,s.postBody.empty()?"":reinterpret_cast<const char*>(s.postBody.data()));s.set(CURLOPT_PREREQFUNCTION,State::prerequest);s.set(CURLOPT_PREREQDATA,&s);s.append("Expect:");}
   if(head)s.set(CURLOPT_NOBODY,1L);
   if(s.digest){s.set(CURLOPT_HTTPAUTH,(long)CURLAUTH_DIGEST);s.set(CURLOPT_USERNAME,digest.first.c_str());s.set(CURLOPT_PASSWORD,digest.second.c_str());}
   s.set(CURLOPT_HTTPHEADER,s.outgoing);s.set(CURLOPT_HEADERFUNCTION,State::header);s.set(CURLOPT_HEADERDATA,&s);
@@ -232,6 +258,7 @@ public:
    s.set(CURLOPT_PROXYAUTH,(long)CURLAUTH_NEGOTIATE);
    s.set(CURLOPT_FRESH_CONNECT,1L);
    s.complete=false;s.result=CURLE_OK;s.status=0;s.ready=false;s.headersComplete=false;
+   if(body)s.requestIssued=false; // The rejected CONNECT proved no origin request crossed the tunnel.
    s.paused=false;s.offset=0;s.buffer.clear();s.response.clear();s.cookies.clear();
    // Retain cumulative headerBytes to bound the entire authentication exchange.
    session->require(curl_multi_add_handle(session->multi,s.easy));s.attached=true;
@@ -242,7 +269,7 @@ public:
   while(!s.ready&&!s.complete){
    // A response wait can expire after the request has already been sent.
    // Report a receive failure so it does not trigger proxy-route failover.
-   if(!session->wait(lock,cancel,deadline))throw CurlResponseDisconnect("HTTP proxy timed out waiting for response headers.");
+   if(!session->wait(lock,cancel,deadline))throw CurlResponseDisconnect("HTTP proxy timed out waiting for response headers.",ERROR_WINHTTP_TIMEOUT);
    checkHeaders();
   }
   if(s.status<100)throw std::runtime_error("The proxy returned no HTTP response.");

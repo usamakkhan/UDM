@@ -1,0 +1,5287 @@
+{
+  "version": "7.31",
+  "browserVersion": "0.70.95",
+  "build": "passed",
+  "incrementalBase": "7.30",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "1C82AC7645EB5F367A36E67914EADDC833C810E08143F59D7666D8F975E4D373"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "D70F2396D920F6F03584BF0D59935D1BDC5D1462971BAB7981000F3675A9C488"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "2FA65CBC3E69A9EEBED9CCAE7ECAAEBDBBEC002B1258D56732A91993B2685683"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D99C14B1D783DFB0119A64C46F3686A76E67E0289EB1496C656FDD5653F56C67"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "6E240C892B79074909547DE3097F93CF3A5698A27D64B50EBEEF14B9F05C9498"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "23E1BD44CE94E27BAA63F1348DF78032B67F7033C14509C4C3CBD22B1ED82114"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "05215551A7C8F4E9DC386184B8AE3A8EDA3F17D538ACBE734FEDF21CFE5F7E31"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "tests/youtube-pending-captures.browser.cjs",
+      "sha256": "D2F0A2B8A3777D3EAE242BB9FF75CF8B632605325008D9F9BDC42A232E2765D7"
+    },
+    {
+      "path": "tests/youtube-stream-readers.browser.cjs",
+      "sha256": "C1E98D1021D99CA93C0B054EF26D938BCC93879C361E5A730B246E42C267D70F"
+    },
+    {
+      "path": "tests/streaming-capture.test.cjs",
+      "sha256": "987D5AB8FDD4492935991D659A3554CF0D665976307E8A2C54A795792E614251"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "E777E5D4EE1BC3791B3D3122EDCF9621C916DFBF837B882F0B49235898C29BAD"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "805B375305B9192A8757BBABB88A6C6DBF7AC40045C3F628143846E8AD45F0B0"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "E2ACD8A735B773F744C644E7EC5C912F79D11D6DC3371003D6D1B88DA7E7288B"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.31",
+      "sha256": "11ECB9DB58BF4D0045CA1CD362CC8A75E10C664E6240385B00C4282C269386A7"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.31",
+      "sha256": "9507DB668B72431BAD3572AAEA1F0DBF6FA9D1333A5B11C79A1EAAF6D1ED911E"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.31",
+      "sha256": "22C879A291C644E7BDFFF4F1883986A9F20602DC4E935BB0F8D78961F812BFE8"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.31",
+      "sha256": "31B1479B763279FB094989CFD1DF18D4728431DBBA9964DD2659F2456C1DD219"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.31",
+      "sha256": "62583F8B39D8BE48BDF4FFD6FF516F1BF6F1CAEA205FDE94376F5A835747926A"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "qualification": {
+    "expanded": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "chromium capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a newer revision on a retired object waits until content playback is current",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first revision comparison preserves increments beyond JavaScript integer precision",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first one advancing format cannot hide a backwards companion revision",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first ambiguous duplicate format revisions cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a newer revision on a retired object waits until content playback is current",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first revision comparison preserves increments beyond JavaScript integer precision",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first one advancing format cannot hide a backwards companion revision",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first ambiguous duplicate format revisions cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a newer revision on a retired object waits until content playback is current",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first revision comparison preserves increments beyond JavaScript integer precision",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first one advancing format cannot hide a backwards companion revision",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first ambiguous duplicate format revisions cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a newer revision on a retired object waits until content playback is current",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first revision comparison preserves increments beyond JavaScript integer precision",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first one advancing format cannot hide a backwards companion revision",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first ambiguous duplicate format revisions cannot refresh a retired response",
+          "passed": true
+        }
+      ],
+      "passedChecks": 100,
+      "failedChecks": 0,
+      "scope": "Owned responses in headless Edge; both bundles and both observer wrapping orders. No personal browser profile or real video download."
+    },
+    "pending": {
+      "passed": true,
+      "passedChecks": 48,
+      "failedChecks": 0,
+      "checks": [
+        {
+          "name": "chromium capture-first navigation releases the actual copied body before headers arrive",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first twelve header-stalled requests retain at most eight copied bodies",
+          "passed": true,
+          "observation": {
+            "copies": 12,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 12,
+              "verified": 7,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a pending-header deadline clears copied bytes without finishing the site request",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first newly verified capture releases older pending-header snapshots",
+          "passed": true,
+          "observation": {
+            "copies": 2,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first late body production cannot restore a retired capture snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first fetch reject leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first fetch throw leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first navigation releases an XHR snapshot and keeps the caller load handler",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first XHR abort releases its snapshot and preserves the caller abort event",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first XHR reopen removes the old capture listener from an unrelated response",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an invalid second XHR send preserves the first capture and native error",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a large XHR is inspected through a bounded prefix while the caller receives every byte",
+          "passed": true,
+          "observation": {
+            "copies": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first navigation releases the actual copied body before headers arrive",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first twelve header-stalled requests retain at most eight copied bodies",
+          "passed": true,
+          "observation": {
+            "copies": 12,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 12,
+              "verified": 8,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a pending-header deadline clears copied bytes without finishing the site request",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first newly verified capture releases older pending-header snapshots",
+          "passed": true,
+          "observation": {
+            "copies": 2,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first late body production cannot restore a retired capture snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first fetch reject leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first fetch throw leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first navigation releases an XHR snapshot and keeps the caller load handler",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first XHR abort releases its snapshot and preserves the caller abort event",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first XHR reopen removes the old capture listener from an unrelated response",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an invalid second XHR send preserves the first capture and native error",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a large XHR is inspected through a bounded prefix while the caller receives every byte",
+          "passed": true,
+          "observation": {
+            "copies": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first navigation releases the actual copied body before headers arrive",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first twelve header-stalled requests retain at most eight copied bodies",
+          "passed": true,
+          "observation": {
+            "copies": 12,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 12,
+              "verified": 8,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a pending-header deadline clears copied bytes without finishing the site request",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first newly verified capture releases older pending-header snapshots",
+          "passed": true,
+          "observation": {
+            "copies": 2,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first late body production cannot restore a retired capture snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first fetch reject leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first fetch throw leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first navigation releases an XHR snapshot and keeps the caller load handler",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first XHR abort releases its snapshot and preserves the caller abort event",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first XHR reopen removes the old capture listener from an unrelated response",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an invalid second XHR send preserves the first capture and native error",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a large XHR is inspected through a bounded prefix while the caller receives every byte",
+          "passed": true,
+          "observation": {
+            "copies": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first navigation releases the actual copied body before headers arrive",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first twelve header-stalled requests retain at most eight copied bodies",
+          "passed": true,
+          "observation": {
+            "copies": 12,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 12,
+              "verified": 8,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a pending-header deadline clears copied bytes without finishing the site request",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first newly verified capture releases older pending-header snapshots",
+          "passed": true,
+          "observation": {
+            "copies": 2,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first late body production cannot restore a retired capture snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first fetch reject leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first fetch throw leaves no copied request snapshot",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first navigation releases an XHR snapshot and keeps the caller load handler",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first XHR abort releases its snapshot and preserves the caller abort event",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first XHR reopen removes the old capture listener from an unrelated response",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an invalid second XHR send preserves the first capture and native error",
+          "passed": true,
+          "observation": {
+            "copies": 1,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a large XHR is inspected through a bounded prefix while the caller receives every byte",
+          "passed": true,
+          "observation": {
+            "copies": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        }
+      ],
+      "scope": "Owned fetch promises, real XHR routes and native Web Streams in headless Edge. Weak references and forced GC check actual observer copies. Deterministic deadline callback; no real video download."
+    },
+    "readers": {
+      "passed": true,
+      "passedChecks": 32,
+      "failedChecks": 0,
+      "checks": [
+        {
+          "name": "chromium capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 0,
+              "streamTaskBytes": 0
+            }
+          }
+        }
+      ],
+      "scope": "Owned Web Streams in headless Edge, both bundles and observer orders. Deadline callback invoked deterministically; no thirty-second timing claim."
+    },
+    "streams": {
+      "passed": true,
+      "passedChecks": 52,
+      "failedChecks": 0,
+      "checks": [
+        {
+          "name": "chromium capture-first navigation releases a blocked streaming response clone",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first navigation releases both clones while the original upload remains unfinished",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first eight blocked captures retain at most four request and four response inspections",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 4,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 8,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 8,
+              "verified": 4,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 4,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 4,
+              "requestReadCancels": 4,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first newly verified streaming metadata retires older response inspection",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first equal timestamps cannot let an older verified session replace the newer request",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a deadline releases upload and response clones before either original body ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an unrelated response releases its request inspection without cloning the response",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first original fetch reject releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first original fetch throw releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a valid streamed request is captured exactly before the original response ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first oversized streamed requests release their clone and preserve the original upload",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first Blob inspection uses the native body instead of a page override",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first real XHR captures retain the newer request at equal timestamps",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first navigation releases a blocked streaming response clone",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first navigation releases both clones while the original upload remains unfinished",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first eight blocked captures retain at most four request and four response inspections",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 4,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 8,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 8,
+              "verified": 4,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 4,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 4,
+              "requestReadCancels": 4,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first newly verified streaming metadata retires older response inspection",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first equal timestamps cannot let an older verified session replace the newer request",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a deadline releases upload and response clones before either original body ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an unrelated response releases its request inspection without cloning the response",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first original fetch reject releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first original fetch throw releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a valid streamed request is captured exactly before the original response ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first oversized streamed requests release their clone and preserve the original upload",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first Blob inspection uses the native body instead of a page override",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first real XHR captures retain the newer request at equal timestamps",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first navigation releases a blocked streaming response clone",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first navigation releases both clones while the original upload remains unfinished",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first eight blocked captures retain at most four request and four response inspections",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 4,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 8,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 8,
+              "verified": 4,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 4,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 4,
+              "requestReadCancels": 4,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first newly verified streaming metadata retires older response inspection",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first equal timestamps cannot let an older verified session replace the newer request",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a deadline releases upload and response clones before either original body ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an unrelated response releases its request inspection without cloning the response",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first original fetch reject releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first original fetch throw releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a valid streamed request is captured exactly before the original response ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first oversized streamed requests release their clone and preserve the original upload",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first Blob inspection uses the native body instead of a page override",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first real XHR captures retain the newer request at equal timestamps",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first navigation releases a blocked streaming response clone",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first navigation releases both clones while the original upload remains unfinished",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first eight blocked captures retain at most four request and four response inspections",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 4,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 8,
+              "opened": 8,
+              "released": 8,
+              "awaiting": 0,
+              "cancels": 8,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 8,
+              "verified": 4,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 4,
+              "sabrReadCancels": 8,
+              "requestReads": 0,
+              "requestReadPeak": 4,
+              "requestReadCancels": 4,
+              "streamTasks": 0,
+              "streamTaskPeak": 8,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first newly verified streaming metadata retires older response inspection",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first equal timestamps cannot let an older verified session replace the newer request",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 2,
+              "opened": 2,
+              "released": 2,
+              "awaiting": 0,
+              "cancels": 2,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 2,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 2,
+              "sabrReadCancels": 2,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a deadline releases upload and response clones before either original body ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an unrelated response releases its request inspection without cloning the response",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first original fetch reject releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first original fetch throw releases its request clone and preserves the error",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 0,
+              "sabrReadCancels": 0,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a valid streamed request is captured exactly before the original response ends",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first oversized streamed requests release their clone and preserve the original upload",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 1,
+              "requestReadCancels": 1,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first Blob inspection uses the native body instead of a page override",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 1,
+              "streamTaskBytes": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first real XHR captures retain the newer request at equal timestamps",
+          "passed": true,
+          "observation": {
+            "request": {
+              "clones": 0,
+              "opened": 0,
+              "released": 0,
+              "awaiting": 0,
+              "cancels": 0,
+              "sourceCancels": 0
+            },
+            "response": {
+              "clones": 1,
+              "opened": 1,
+              "released": 1,
+              "awaiting": 0,
+              "cancels": 1,
+              "sourceCancels": 0
+            },
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 1,
+              "verified": 1,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0,
+              "sabrReads": 0,
+              "sabrReadPeak": 1,
+              "sabrReadCancels": 1,
+              "requestReads": 0,
+              "requestReadPeak": 0,
+              "requestReadCancels": 0,
+              "streamTasks": 0,
+              "streamTaskPeak": 2,
+              "streamTaskBytes": 0
+            }
+          }
+        }
+      ],
+      "scope": "Owned Web Streams and valid bounded UMP identity/request fixtures in headless Edge. Both bundles and observer orders; deterministic deadline callback, no real video payload."
+    },
+    "baseline": {
+      "passed": false,
+      "checks": [
+        {
+          "name": "chromium capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'New'\n"
+        },
+        {
+          "name": "chromium capture-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a newer revision on a retired object waits until content playback is current",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'Old'\n"
+        },
+        {
+          "name": "chromium observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'New'\n"
+        },
+        {
+          "name": "chromium observer-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a newer revision on a retired object waits until content playback is current",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'Old'\n"
+        },
+        {
+          "name": "firefox capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'New'\n"
+        },
+        {
+          "name": "firefox capture-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a newer revision on a retired object waits until content playback is current",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'Old'\n"
+        },
+        {
+          "name": "firefox observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first fresh clones of stale getter metadata cannot replace accepted API fields",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first new API revisions replace authority without a stale getter rolling them back",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first snapshot-only formats can change revision without overriding API formats",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first getter additions cannot evict API formats at the catalog bound",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first stale getters cannot change lifecycle after accepted API content",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a reused response object with a newer media revision can enter the returning visit",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'New'\n"
+        },
+        {
+          "name": "firefox observer-first title-only edits do not make a retired response fresh",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a backwards media revision cannot refresh a retired response",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a newer revision on a retired object waits until content playback is current",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\nnull !== 'Old'\n"
+        }
+      ],
+      "passedChecks": 80,
+      "failedChecks": 8,
+      "scope": "Owned responses in headless Edge; both bundles and both observer wrapping orders. No personal browser profile or real video download."
+    },
+    "regressions": [
+      {
+        "test": "capture.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "youtube-ad-markers.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "youtube-ad-page-capture.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "streaming-capture.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "format-context.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "youtube-audio.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "youtube-captions.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "video-readiness.test.cjs",
+        "exitCode": 0
+      },
+      {
+        "test": "streaming-capture.test.cjs (Firefox source)",
+        "exitCode": 0
+      }
+    ],
+    "logs": [
+      {
+        "name": "capture.test.cjs.log",
+        "sha256": "D4498164AEF2DF8F3CAE21DE13251FD5B8FEAABB0917404AA121C40F9F049653"
+      },
+      {
+        "name": "format-context.test.cjs.log",
+        "sha256": "EC458B597AA3F3F47C8947B476F38A7F41F39DB18702C9032F8FC8F6D5BCA3C4"
+      },
+      {
+        "name": "streaming-capture-firefox.log",
+        "sha256": "39E688AC56DE8B28F3F6A51471370E7BB97C71E97A8554161907B228CC78407B"
+      },
+      {
+        "name": "streaming-capture.test.cjs.log",
+        "sha256": "39E688AC56DE8B28F3F6A51471370E7BB97C71E97A8554161907B228CC78407B"
+      },
+      {
+        "name": "video-readiness.test.cjs.log",
+        "sha256": "993F99244E00028F1D1968868028EDA6F3BFF00BEAB6394894F6BA5266027503"
+      },
+      {
+        "name": "youtube-ad-markers.test.cjs.log",
+        "sha256": "DB44EC317668CE49E25A330C4B48568D879B2CECA53650C87A833DB6A84D86ED"
+      },
+      {
+        "name": "youtube-ad-page-capture.test.cjs.log",
+        "sha256": "346CF669F121989E32FFDD48F13B0873C0B24EDDE1240216CAF8B8F2C7F57931"
+      },
+      {
+        "name": "youtube-audio.test.cjs.log",
+        "sha256": "206DE63273CFD36B93B00F62ED29440597B0AFB57A1840B8C853BB3210871A2A"
+      },
+      {
+        "name": "youtube-captions.test.cjs.log",
+        "sha256": "F7DCEFC3CB46C07C4F1808477ECFA7DC34AEBB0834796B3A0AAFEBCBD1B6C570"
+      }
+    ]
+  },
+  "scope": {
+    "baseline": "88 cases on 7.30: 80 passed, eight failed",
+    "final": "100 metadata cases; 48 pending capture; 32 JSON readers; 52 streaming readers; nine Node regression runs",
+    "addedControls": "Twelve large-revision, backwards-companion and ambiguous-duplicate cases added after baseline",
+    "engine": "Owned headless Edge profiles for both bundle sources and wrapping orders; Firefox engine not exercised",
+    "sourceAndBinaryHashesRechecked": true,
+    "installedDesktop": "7.11",
+    "installedBrowserPackage": "0.70.75",
+    "activePersonalBrowserVersion": "Not verified",
+    "installerCreated": false,
+    "personalBrowserOrCatalogUsed": false,
+    "publicVideoDownloadVerified": false,
+    "pairedIdmTimingVerified": false,
+    "limitations": "Revision witnesses do not establish general getter freshness. Signature-only refreshes, caption-only mutations and fresh clones on new visits remain. Bounds are per-object format counts and revision digit length, not total browser-memory limits."
+  }
+}

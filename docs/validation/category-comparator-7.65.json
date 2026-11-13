@@ -1,0 +1,26 @@
+{
+  "mismatches": [],
+  "checks": 204,
+  "skippedLocales": 0,
+  "passed": true,
+  "sourceSha256": "6be3e7d727c6d3d64e23925b09eb284f87d5266797796e7ee46a0e80de11c8fb",
+  "exeSha256": "f77e70101a8c7cdc654cfdb21d350df02470cfc999d3897f630240e6cfdfa558",
+  "version": "7.65",
+  "helper": "native/CategoryLabels.hpp",
+  "helperSha256": "B8748391A518DAC837C1D9309F90849252175A0EAFDCFDDFF662090D4947B205",
+  "method": "Owned hidden Win32 combo box, actual product comparison helper versus native CB_FINDSTRINGEXACT for every query; no personal desktop automation.",
+  "declaredLocaleEntries": [
+    1033,
+    1033,
+    1031,
+    1055,
+    1041,
+    1025
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/controls/cb-findstringexact",
+    "https://learn.microsoft.com/en-us/windows/win32/controls/cb-setlocale",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-comparestringw"
+  ],
+  "distinctLocaleCount": 5
+}

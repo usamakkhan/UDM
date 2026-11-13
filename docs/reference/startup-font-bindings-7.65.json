@@ -1,0 +1,57 @@
+{
+  "version": "7.65",
+  "scope": "Actual owned-thread WM_SETFONT observations before eliminating temporary startup bindings",
+  "cases": [
+    {
+      "case": "default",
+      "dpi": 120,
+      "fontHeight": 11,
+      "fontMessagesAtStartup": {
+        "categoryHeading": 2,
+        "clipboard": 2,
+        "search": 2,
+        "searchClose": 2,
+        "searchFind": 2,
+        "searchLabel": 2,
+        "searchSettings": 2,
+        "status": 2,
+        "table": 2,
+        "tree": 2
+      },
+      "fontName": "Tahoma",
+      "fontWeight": 400
+    },
+    {
+      "case": "custom",
+      "dpi": 120,
+      "fontHeight": 18,
+      "fontMessagesAtStartup": {
+        "categoryHeading": 2,
+        "clipboard": 2,
+        "search": 2,
+        "searchClose": 2,
+        "searchFind": 2,
+        "searchLabel": 2,
+        "searchSettings": 2,
+        "status": 2,
+        "table": 2,
+        "tree": 2
+      },
+      "fontName": "Consolas",
+      "fontWeight": 700
+    }
+  ],
+  "checks": 128,
+  "build": {
+    "version": "7.65",
+    "sources": {
+      "native/StartupFontUiTests.cpp": "05B3096B3C5A8C35466105B6510D2C841FD36E51B891488E2C316882EE908153",
+      "native/App.cpp": "F76B4DD19BC05CECB787EA5C7424B705235016E7B8DAE730C30F746AFD9D5941",
+      "native/MainFeatures.hpp": "7AA766D8F1EBB2F2689A2FAC3B031A8B692C532E95BAFB7F5EC9FE6DCF06DF57",
+      "native/Ui.hpp": "CC6B80C9B8B2453115723C3BA2B6746D32B3F9153462865C63AD231BD65245C2",
+      "candidates/native-build-current/out-nosymbols/App.res": "B708F5D026FBF95195196B34264A6CAB4BAB725CDABE43FB6DF4CBBAD22E6640"
+    },
+    "exeSha256": "3F9110AF85B77A083C6D069D79986F711A9AA3D99B1993B0F0C03C28F5D6A268"
+  },
+  "privateCatalogsOnly": true
+}

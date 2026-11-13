@@ -196,6 +196,7 @@ inline Json defaultQueue(){return defaultQueue("Main queue",4);}
 bool inWindow(const Json&,i64 now=0,bool manual=false);
 class QueueWakeTimer;
 class Monitor;
+class CatalogAdmissionRegistry;
 class Manager {
  // Short leases protect callbacks retained by independently closing previews.
  // The lease mutex is never held while taking the catalog lock or doing IO.
@@ -206,6 +207,7 @@ class Manager {
  std::shared_ptr<CallbackState> callbackState=std::make_shared<CallbackState>(this);
  friend struct CapturedResponseTestAccess;
  friend struct RenderedGrabberTestAccess;
+ friend struct CatalogCheckpointTestAccess;
  friend void saveRenderedGrabberState(Manager&,const Json&);
  std::map<std::string,std::shared_ptr<Cancel>> active;
  std::string relocationId;
@@ -257,10 +259,12 @@ class Manager {
  // Detached snapshots are serialized outside mutex; file writes use this mutex
  // in sequence order, so an earlier snapshot cannot overwrite a later one.
  std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
+ std::unique_ptr<CatalogAdmissionRegistry> admissionRegistry;
  static bool jobMatchesCheckpoint(const Job&,const Json&);
  const Json* latestDownloadCheckpoint(const Job&)const;
  bool prefetchCheckpointMatches(const Job&)const;
  bool checkpointChanged()const;
+ void saveCatalog(bool changedOnly,const std::function<void(const char*)>* observation=nullptr);
  void checkpointPeriodic();
  void checkpointMediaStart(const JobPtr&);
  int ticks=0;
@@ -301,6 +305,7 @@ public:
  std::atomic_bool browserSettingsRequested{false};
  std::atomic_bool browserQualityHelpRequested{false};
  std::atomic_bool browserRecoveryRequested{false};
+ std::atomic_bool fileInfoDecisionPending{false};
  std::function<void(JobPtr,bool)> event;
  std::function<void(JobPtr)> filePublished;
  std::function<void(bool)> queueSound;
@@ -309,6 +314,8 @@ public:
  explicit Manager(fs::path,StartupRecovery=StartupRecovery::Immediate);
  ~Manager();
  void save();Json snapshot()const;bool completionSaved(JobPtr)const;
+ bool pendingMediaAdmission(const std::string&)const;
+ bool pendingMediaDestination(const fs::path&,const JobPtr& owner={})const;
  std::function<void(const Json&)> browserSessionPersistence(JobPtr,Json expected,std::shared_ptr<const Cancel> cancel={});
  void tick();void stop();
  bool canStopQueue(const std::string& name)const;
@@ -527,10 +534,12 @@ void sabrTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,StreamTransport
 std::string execute(const fs::path&,const std::vector<std::wstring>&,int,const Cancel&);
 Json explore(const Json&,const Json&,const Cancel&,std::function<void(std::string)> report={});
 std::string pipeName();Json send(const Json&,int timeout=1500);
+class PendingFileInfoInbox;
 class PipeServer {
  Manager& manager;std::thread thread;std::atomic_bool stopping{false};HANDLE stopEvent=nullptr;std::function<void()> show,present,dispatchQueue;
+ std::shared_ptr<PendingFileInfoInbox> preparedInbox;std::function<bool(uint64_t)> preparedNotify;
  void listen();
-public:PipeServer(Manager&,std::function<void()>,std::function<void()> present={},std::function<void()> dispatchQueue={});~PipeServer();
+public:PipeServer(Manager&,std::function<void()>,std::function<void()> present={},std::function<void()> dispatchQueue={},std::shared_ptr<PendingFileInfoInbox> inbox={},std::function<bool(uint64_t)> notify={});~PipeServer();
 };
 int nativeHost();
 Json diagnostics(),endpoints();

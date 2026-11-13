@@ -1,0 +1,226 @@
+[
+  {
+    "path": "/nested",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "closed": true
+  },
+  {
+    "path": "/video.mp4",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1771847",
+      "content-type": "video/mp4",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/outer.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  },
+  {
+    "path": "/favicon.ico",
+    "method": "GET",
+    "status": 404,
+    "finished": true,
+    "headers": {},
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  },
+  {
+    "path": "/nested/master.m3u8",
+    "method": "GET",
+    "status": 302,
+    "finished": true,
+    "headers": {},
+    "closed": true
+  },
+  {
+    "path": "/v/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "225",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "225",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-type": "application/vnd.apple.mpegurl"
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "253",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "225",
+      "content-type": "application/vnd.apple.mpegurl",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index3.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1684292",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index2.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1649512",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index1.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1681096",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/v720/index0.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "1607964",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index0.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "27072",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index1.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "26320",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index2.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "26320",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index3.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "26132",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  },
+  {
+    "path": "/es/index4.ts",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "headers": {
+      "content-length": "940",
+      "content-type": "video/mp2t",
+      "etag": "\"audio-fixture\""
+    },
+    "closed": true
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/nested",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/video.mp4",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/favicon.ico",
+    "method": "GET",
+    "status": 404,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/outer.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/nested/master.m3u8",
+    "method": "GET",
+    "status": 302,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/v/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/v720/index.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  },
+  {
+    "path": "/real/master.m3u8",
+    "method": "GET",
+    "status": 200,
+    "finished": true,
+    "closed": true
+  }
+]

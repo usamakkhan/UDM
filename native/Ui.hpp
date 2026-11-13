@@ -1,4 +1,11 @@
 #include "ProgressPresentation.hpp"
+#include "CategoryLabels.hpp"
+#include "ProgressRateHistory.hpp"
+#include "PropertiesRequestDraft.hpp"
+#include "PostResponse.hpp"
+#include "ProgressRecordView.hpp"
+#include "FileInfoDecision.hpp"
+#include "UiTaskSignal.hpp"
 #pragma once
 #include "SchedulerNumber.hpp"
 #include "SchedulerTime.hpp"
@@ -20,11 +27,14 @@
 #include "QueueRetry.hpp"
 #include "CaptureExclusions.hpp"
 #include "GuiModels.hpp"
+#include "FileInfoInitialView.hpp"
+#include "PendingFileInfoInbox.hpp"
 #include "ServerConnections.hpp"
 #include "SiteLogins.hpp"
 #include "DownloadPreview.hpp"
 #include "PreviewFilename.hpp"
 #include "AsyncFileIcons.hpp"
+#include "AsyncFileStatus.hpp"
 #include "ZipPreview.hpp"
 #include "BrowserSession.hpp"
 #include "Scanner.hpp"
@@ -46,6 +56,25 @@ inline std::function<void(const char*)> capturePresentationTrace;
 inline void traceCapturePresentation(const char* stage){if(capturePresentationTrace)capturePresentationTrace(stage);}
 inline double formClockMs(){LARGE_INTEGER value,frequency;QueryPerformanceCounter(&value);QueryPerformanceFrequency(&frequency);return 1000.0*value.QuadPart/frequency.QuadPart;}
 inline void formStage(const std::string& caption,UINT id,const char* stage,double start){if(caption=="Download File Info")formInitializationTiming.push_back({{"id",id},{"stage",stage},{"ms",formClockMs()-start}});}
+inline std::optional<double> formThreadCpuMs(){
+ FILETIME created{},exited{},kernel{},user{};
+ if(!GetThreadTimes(GetCurrentThread(),&created,&exited,&kernel,&user))return {};
+ const auto ticks=[](FILETIME value){return (static_cast<ULONGLONG>(value.dwHighDateTime)<<32)|value.dwLowDateTime;};
+ return static_cast<double>(ticks(kernel)+ticks(user))/10000.0;
+}
+class FormStageScope {
+ const std::string& caption;UINT id;const char* stage;double start=formClockMs();
+ std::optional<double> cpuStart=formThreadCpuMs();
+public:
+ FormStageScope(const std::string& caption,UINT id,const char* stage):caption(caption),id(id),stage(stage){}
+ ~FormStageScope(){
+  const auto elapsed=formClockMs()-start;const auto cpuEnd=formThreadCpuMs();
+  if(caption!="Download File Info")return;
+  Json record={{"id",id},{"stage",stage},{"ms",elapsed}};
+  if(cpuStart&&cpuEnd)record["threadCpuMs"]=std::max(0.0,*cpuEnd-*cpuStart);
+  formInitializationTiming.push_back(std::move(record));
+ }
+};
 #endif
 inline bool uiDark=false;
 inline bool useDarkUi(bool requested,bool highContrast){return requested&&!highContrast;}
@@ -116,6 +145,9 @@ public:
 enum class ResizeAnchor {StretchWidth,StretchBoth,BottomLeft,BottomRight};
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
+ std::shared_ptr<UiTaskSignal> taskSignal;
+ afx_msg LRESULT OnTaskPulse(WPARAM key,LPARAM){if(taskSignal&&taskSignal->matches(key))OnTimer(pulseTimer);return 0;}
+ afx_msg void OnNcDestroy(){if(taskSignal)taskSignal->disarm();CDialog::OnNcDestroy();}
  MenuBarTheme popupTheme;
  std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
  std::map<HWND,ResizeAnchor> resizeAnchors;
@@ -205,9 +237,19 @@ protected:
   popupTheme.apply(m_hWnd,nullptr,uiDark,HIWORD(dpi));Invalidate(TRUE);return 0;
  }
  BOOL OnInitDialog()override{
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  const auto traceForm=[this](const char* stage){if(caption=="Download File Info")traceCapturePresentation(stage);};
+  traceForm("form-init-entry");
+#endif
   CDialog::OnInitDialog();
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  traceForm("form-base-ready");
+#endif
   SetDialogDpiChangeBehavior(m_hWnd,DDC_DISABLE_ALL,DDC_DISABLE_ALL);
   measureFont(GetDpiForWindow(m_hWnd));
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  traceForm("form-font-ready");
+#endif
   SetWindowText(cs(caption));
   if(resizable){
    ModifyStyleEx(WS_EX_DLGMODALFRAME,0);
@@ -220,11 +262,17 @@ protected:
   CenterWindow();
   keepOnScreen();
   popupTheme.apply(m_hWnd,nullptr,uiDark,GetDpiForWindow(m_hWnd));
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  traceForm("form-frame-ready");
+#endif
   if(init)init();
   layoutAnchoredControls();
   refreshTheme(false);
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+  traceForm("form-theme-ready");
+#endif
   if(afterInit)afterInit();
-  if(pulse)SetTimer(pulseTimer,pulseInterval,nullptr);
+  if(pulse)SetTimer(pulseTimer,pulsePeriod,nullptr);
   return TRUE;
  }
  BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));const auto code=HIWORD(w);if(it!=actions.end()&&code==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(code==EN_CHANGE||code==CBN_SELCHANGE||code==CBN_EDITCHANGE)){try{changed->second(code);}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
@@ -232,7 +280,9 @@ protected:
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
  static constexpr UINT_PTR pulseTimer=7;
+ std::function<void()> taskNotifier(){if(!GetSafeHwnd())throw std::runtime_error("The task dialog is not ready.");if(!taskSignal)taskSignal=std::make_shared<UiTaskSignal>();taskSignal->arm(GetSafeHwnd());return taskSignal->notifier();}
  static constexpr UINT pulseInterval=250;
+ UINT pulsePeriod=pulseInterval;
  BOOL PreTranslateMessage(MSG* message)override{
   if(message->message==WM_KEYDOWN&&(message->wParam==VK_TAB||message->wParam==VK_PRIOR||message->wParam==VK_NEXT)&&(GetKeyState(VK_CONTROL)&0x8000)&&!(GetKeyState(VK_MENU)&0x8000)&&(message->hwnd==m_hWnd||::IsChild(m_hWnd,message->hwnd))){
    for(auto& control:controls)if(auto tabs=dynamic_cast<CTabCtrl*>(control.get());tabs&&tabs->IsWindowVisible()&&tabs->IsWindowEnabled()&&tabs->GetItemCount()>1){
@@ -287,7 +337,11 @@ public:
  void defaultButton(CWnd* control){if(auto button=dynamic_cast<ActionButton*>(control)){button->primary=true;if(!uiDark&&!button->hyperlink)button->ModifyStyle(BS_TYPEMASK,BS_DEFPUSHBUTTON);button->Invalidate();}}
  int pixelsX(int value)const{return dialogUnits?units.px(value):(int)(value*scale);}
  CRect rect(int x,int y,int w,int h){if(dialogUnits)return CRect(units.rect(x,y,w,h));return CRect((int)(x*scale),(int)(y*scale),(int)((x+w)*scale),(int)((y+h)*scale));}
- template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0,bool redrawFont=true){using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");
+ template<class T>T* make(DWORD style,int x,int y,int w,int h,UINT id=0,bool redrawFont=true){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ FormStageScope timing(caption,id?id:nextId,"typed-control-total");
+#endif
+ using Native=std::conditional_t<std::is_same_v<T,CListCtrl>,ThemeList,T>;auto control=std::make_unique<Native>();if(!control->Create(style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,id?id:nextId++))throw std::runtime_error("Cannot create interface control.");
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  const double fontStart=formClockMs();
 #endif
@@ -296,11 +350,19 @@ public:
  formStage(caption,control->GetDlgCtrlID(),"font",fontStart);
 #endif
 if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"",L"");auto p=control.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
- CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CWnd* control(const wchar_t* type,std::string value,DWORD style,int x,int y,int w,int h,DWORD ex=0){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ FormStageScope timing(caption,nextId,"window-control-total");
+#endif
+ auto c=std::make_unique<CWnd>();if(!c->CreateEx(ex,type,cs(value),style|WS_CHILD|WS_VISIBLE,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface control.");if(uiDark&&!_wcsicmp(type,L"BUTTON")&&(style&BS_TYPEMASK)==BS_GROUPBOX)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* label(std::string s,int x,int y,int w,int h=-1){return control(L"STATIC",s,SS_LEFT,x,y,w,h<0?(dialogUnits?9:18):h);}
  CWnd* edit(std::string s,int x,int y,int w,int h=-1,bool readonly=false,bool multi=false,bool secret=false){if(h<0)h=dialogUnits?14:23;auto c=control(L"EDIT",s,WS_TABSTOP|ES_AUTOHSCROLL|(readonly?ES_READONLY:0)|(multi?ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL:0)|(secret?ES_PASSWORD:0),x,y,w,h,WS_EX_CLIENTEDGE);c->SendMessage(EM_SETLIMITTEXT,multi?1024*1024:32768);return c;}
  CWnd* check(std::string s,bool value,int x,int y,int w,int h=-1){auto c=control(L"BUTTON",s,WS_TABSTOP|BS_AUTOCHECKBOX|BS_MULTILINE,x,y,w,h<0?(dialogUnits?10:21):h);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);return c;}
- CWnd* button(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?14:25;auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
+ CWnd* button(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){
+#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+ FormStageScope timing(caption,nextId,"button-total");
+#endif
+ if(h<0)h=dialogUnits?14:25;auto c=std::make_unique<ActionButton>();if(!c->Create(cs(s),WS_CHILD|WS_VISIBLE|WS_TABSTOP|(uiDark?BS_OWNERDRAW:BS_PUSHBUTTON),rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create interface button.");c->SetFont(&font,c->IsWindowVisible());auto p=c.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
  CWnd* link(std::string s,int x,int y,int w,std::function<void()> action,int h=-1){auto value=button(s,x,y,w,std::move(action),h<0?(dialogUnits?9:18):h);auto button=static_cast<ActionButton*>(value);button->hyperlink=true;button->ModifyStyle(BS_TYPEMASK,BS_OWNERDRAW);return value;}
  CWnd* staticLink(std::string value,int x,int y,int w,std::function<void()> action,int h=-1){if(h<0)h=dialogUnits?9:18;auto control=std::make_unique<StaticHyperlink>();if(!control->Create(cs(value),WS_CHILD|WS_VISIBLE|WS_TABSTOP|SS_OWNERDRAW|SS_NOTIFY,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create source-page link");control->SetFont(&font);auto p=control.get();actions[p->GetDlgCtrlID()]=std::move(action);logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(control));return p;}
  CWnd* glyphCheck(std::string name,bool value,int x,int y,int w,int h=10){auto c=std::make_unique<GlyphCheckBox>(cs(name));if(!c->Create(L"",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_AUTOCHECKBOX,rect(x,y,w,h),this,nextId++))throw std::runtime_error("Cannot create checkbox.");c->SetFont(&font);if(uiDark)SetWindowTheme(c->GetSafeHwnd(),L"",L"");c->SendMessage(BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED);auto p=c.get();logicalRects[p->GetSafeHwnd()]=CRect(x,y,x+w,y+h);controls.push_back(std::move(c));return p;}
@@ -345,6 +407,8 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
  void close(int code=IDOK){if(modeless)DestroyWindow();else EndDialog(code);}
 };
 BEGIN_MESSAGE_MAP(Form,CDialog)
+ ON_MESSAGE(UiTaskSignal::message,OnTaskPulse)
+ ON_WM_NCDESTROY()
  ON_WM_TIMER()
  ON_WM_SIZE()
  ON_WM_GETMINMAXINFO()
@@ -384,9 +448,15 @@ inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner,bool applyTheme=true
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("owned-show-returned");
 #endif
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ nativeUiTraceRecord("owned-show-returned");
+#endif
  dialog.UpdateWindow();
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("owned-paint-returned");
+#endif
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ nativeUiTraceRecord("owned-paint-returned");
 #endif
  dialog.SetForegroundWindow();
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
@@ -727,10 +797,13 @@ public:
  ~CaptureDialogOwner(){if(window.GetSafeHwnd())window.DestroyWindow();if(enabled&&main&&main->GetSafeHwnd())main->EnableWindow(TRUE);}
  CWnd* get(CWnd* original){return window.GetSafeHwnd()?&window:original;}
 };
-inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false){
+inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false,std::shared_ptr<const FileInfoInitialView> preparedView={}){
  CaptureDialogOwner captureOwner(owner,automatic);owner=captureOwner.get(owner);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("dialog-owner-ready");
+#endif
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ nativeUiTraceRecord("dialog-owner-ready");
 #endif
  auto context=automatic?manager.takeAutomaticCapture(job):Json::object();bool cancelled=false;
  try{
@@ -742,26 +815,34 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
    else{
     bool freshBrowserOffer=false;
     if(automatic){Lock lock(manager.mutex);freshBrowserOffer=str(job->data,"Status")=="Awaiting confirmation";}
-    cancelled=!downloadInfo(owner,manager,job,false,freshBrowserOffer);
+    cancelled=!downloadInfo(owner,manager,job,false,freshBrowserOffer,std::move(preparedView));
    }
   }
  }catch(...){manager.finishAutomaticCapture(context,false);throw;}
  auto offer=manager.finishAutomaticCapture(context,cancelled);if(!offer.empty()){CaptureExclusionOffer dialog(owner,manager,offer);dialog.DoModal();}
 }
 #include "CaptureReviewUi.hpp"
-inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer){
+inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer,std::shared_ptr<const FileInfoInitialView> preparedView={}){
  auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("offer-restored");
+#endif
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ nativeUiTraceRecord("offer-restored");
 #endif
  if(str(offer,"kind")=="refresh"){
   CaptureDialogOwner captureOwner(owner,true);
   refreshDownloadAddress(captureOwner.get(owner),manager,job,false);
  }
- else presentDownload(owner,manager,job,true);
+ else presentDownload(owner,manager,job,true,std::move(preparedView));
  // Only the tokens offered to this dialog are acknowledged. A later request
  // must retain its own pending presentation if it arrived during the modal loop.
  manager.finishBrowserPresentation(offer);return true;
+}
+inline void presentPendingBrowserCapture(CWnd* owner,Manager& manager,std::shared_ptr<const PendingFileInfoInbox::Operation> operation){
+ CaptureDialogOwner captureOwner(owner,true);bool bound=false;
+ downloadInfo(captureOwner.get(owner),manager,{},false,true,operation->view,operation,&bound);
+ if(bound&&!operation->token.empty())manager.finishBrowserPresentation(Json{{"tokens",Json::array({operation->token})}});
 }
 inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=""){
  Form d("Enter new address to download",373,57,parent);d.dialogUnits=true;JobPtr job;

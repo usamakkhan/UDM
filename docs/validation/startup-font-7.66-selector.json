@@ -1,0 +1,20 @@
+{
+  "guards": [
+    {
+      "combination": [
+        "-StartupFontUiTestsOnly",
+        "-ProductionOnly"
+      ],
+      "rejectedBeforeBuild": true
+    },
+    {
+      "combination": [
+        "-StartupFontUiTestsOnly",
+        "-AppOnly"
+      ],
+      "rejectedBeforeBuild": true
+    }
+  ],
+  "fullFixtureBuiltViaPinnedCompiler": true,
+  "publicSelectorFullBuildExecuted": false
+}

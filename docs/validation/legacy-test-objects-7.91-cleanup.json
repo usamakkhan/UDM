@@ -1,0 +1,24 @@
+{
+  "version": "7.91",
+  "purpose": "Remove ignored obsolete generated test objects from D; preserve all source, current core cache, shared tools and executables",
+  "removedFiles": 3,
+  "removedBytes": 223202545,
+  "files": [
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/CapturePresentationUiTests.obj",
+      "bytes": 75505543,
+      "sha256": "B9A0CE0FCCDEA98C7B845A3B62996B768127B898F8F4A63948B9C64ABAD0A033"
+    },
+    {
+      "path": "candidates/file-info-and-range-5.48-live/out/CapturePresentationUiTests.obj",
+      "bytes": 73923152,
+      "sha256": "38DE957C1FE407BB027910DFDDB2E55D63C23927C6F1135602FD74CEF1096842"
+    },
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/SchedulerNumberUiTests.obj",
+      "bytes": 73773850,
+      "sha256": "186C797E8EECDEB04A90202D7013052043D250DE78E839CAC673013C202CCC88"
+    }
+  ],
+  "recursiveDeletionUsed": false
+}

@@ -1,0 +1,196 @@
+{
+  "version": "7.71",
+  "browserVersion": "0.71.35",
+  "allQualifiedRunsPassed": true,
+  "nativeSuites": [
+    {
+      "suite": "detached-tests",
+      "checks": 26
+    },
+    {
+      "suite": "registry-tests",
+      "checks": 36
+    },
+    {
+      "suite": "reservation-tests",
+      "checks": 73
+    },
+    {
+      "suite": "coordinator-tests",
+      "checks": 13
+    },
+    {
+      "suite": "catalog-tests",
+      "checks": 14
+    },
+    {
+      "suite": "idle-tests",
+      "checks": 7
+    }
+  ],
+  "cases": [
+    {
+      "case": "cold-trace-a",
+      "selectionToExternalActionableMs": 639,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.0958
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0004
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 84.6756
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 14.2901
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 255.8077
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0247
+        }
+      ]
+    },
+    {
+      "case": "warm-original-a",
+      "selectionToExternalActionableMs": 279,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "cold-original-a",
+      "selectionToExternalActionableMs": 510,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0
+    },
+    {
+      "case": "warm-trace-a",
+      "selectionToExternalActionableMs": 229,
+      "runnerChecks": 8,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "catalogReadRetries": 0,
+      "phases": [
+        {
+          "start": "save-snapshot-ready",
+          "end": "save-serialized",
+          "wallMs": 0.0903
+        },
+        {
+          "start": "save-write-wait",
+          "end": "save-write-acquired",
+          "wallMs": 0.0006
+        },
+        {
+          "start": "save-bytes-written",
+          "end": "save-buffer-flushed",
+          "wallMs": 30.922
+        },
+        {
+          "start": "temporary-flushed",
+          "end": "save-file-published",
+          "wallMs": 13.8021
+        },
+        {
+          "start": "manager-ready",
+          "end": "frame-created",
+          "wallMs": 279.4972
+        },
+        {
+          "start": "pipe-receive-return",
+          "end": "capture-posted",
+          "wallMs": 0.0278
+        }
+      ]
+    }
+  ],
+  "payloads": [
+    {
+      "path": "candidates/detached-admission-7.71/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/detached-admission-7.71/warm-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/detached-admission-7.71/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    },
+    {
+      "path": "candidates/detached-admission-7.71/warm-trace-a/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+    }
+  ],
+  "preliminary": [],
+  "inputHashes": {
+    "sharedHelpers": [
+      {
+        "path": "C:/Program Files/UDM/tools/ffmpeg.exe",
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+      },
+      {
+        "path": "C:/Program Files/UDM/tools/ffprobe.exe",
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+      }
+    ],
+    "testSources": [
+      {
+        "path": "tests/hls-catalog.native-live.cjs",
+        "sha256": "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+      },
+      {
+        "path": "tests/observe-cold-file-info.py",
+        "sha256": "2E1A24176B15CFFCB3A053776AB1A4D001744AB86A5CB5AEB9FDF91CA29C0013"
+      }
+    ]
+  },
+  "build": "detached-admission-7.71-build.json",
+  "limits": [
+    "Concurrent registry ownership and snapshot publication tickets are integrated in the current synchronous admission path. Eligible new media jobs persist detached without holding the manager lock. Existing/duplicate/refresh and direct-audio paths retain the synchronous fallback. Early File Info presentation and a queued writer remain unimplemented.",
+    "Small unpaired timing samples do not establish an overall speedup or IDM parity.",
+    "Coordinator tests cover actual file bytes/backups, repeated/older sequences, failure/retry, concurrent writers and unlocked result observation; existing checkpoint/idle suites retain their persistence coverage.",
+    "Overlay conflicts and actual synchronous admission/recovery are covered; registry component tests cover concurrent ownership and separately captured publication tickets; gated application tests cover containing-write success and failed-write resolution. A general asynchronous queue and pending UI decisions are not yet enabled. No whole-dialog speedup or early paint is established.",
+    "Isolated Edge/native selected HLS fixture; installed/personal browser and fresh IDM comparisons remain open.",
+    "The existing idle polling reader retains its original deadline and keeps malformed JSON fatal."
+  ],
+  "cleanup": "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See detached-admission-7.71-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

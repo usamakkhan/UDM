@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "name": "Token ownership is visible before a job is prepared",
+      "passed": true
+    },
+    {
+      "name": "A second owner cannot reuse an in-flight token",
+      "passed": true
+    },
+    {
+      "name": "Changing the binding cannot take an in-flight token",
+      "passed": true
+    },
+    {
+      "name": "A prepared reservation must match its owner token",
+      "passed": true
+    },
+    {
+      "name": "A prepared reservation must match its owner binding",
+      "passed": true
+    },
+    {
+      "name": "Preparing the same immutable object is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Ordinal Unicode case-insensitive destination collisions are rejected",
+      "passed": true
+    },
+    {
+      "name": "A second operation cannot mutate an already reserved job identity",
+      "passed": true
+    },
+    {
+      "name": "A persistence ticket captures every prepared reservation in its snapshot",
+      "passed": true
+    },
+    {
+      "name": "Building a snapshot does not acknowledge acceptance",
+      "passed": true
+    },
+    {
+      "name": "A zero sequence cannot prove publication",
+      "passed": true
+    },
+    {
+      "name": "Successful publication acknowledges only the included reservations",
+      "passed": true
+    },
+    {
+      "name": "A late older publication cannot downgrade a durable proof",
+      "passed": true
+    },
+    {
+      "name": "Committed reservations remain in snapshots until live-state installation",
+      "passed": true
+    },
+    {
+      "name": "Installed jobs stop being overlaid and must come from the live catalog",
+      "passed": true
+    },
+    {
+      "name": "Outstanding snapshot tickets keep token ownership after owner release",
+      "passed": true
+    },
+    {
+      "name": "Installed token ownership retires after its final snapshot completes",
+      "passed": true
+    },
+    {
+      "name": "Independent installed ownership retires without affecting other tokens",
+      "passed": true
+    },
+    {
+      "name": "An earlier snapshot that omits a token cannot prove its later admission",
+      "passed": true
+    },
+    {
+      "name": "A containing newer success survives failure of another captured write",
+      "passed": true
+    },
+    {
+      "name": "Completing the accepted handoff releases all transient ownership",
+      "passed": true
+    },
+    {
+      "name": "An abandoned owner cannot release a token while its snapshot is in flight",
+      "passed": true
+    },
+    {
+      "name": "A failed terminal snapshot releases abandoned uncommitted ownership",
+      "passed": true
+    },
+    {
+      "name": "Abandoned accepted data remains overlaid until an explicit live-state handoff",
+      "passed": true
+    },
+    {
+      "name": "Concurrent owner acquisition completes",
+      "passed": true
+    },
+    {
+      "name": "Concurrent acquisition admits exactly one owner for a token",
+      "passed": true
+    },
+    {
+      "name": "Moving a lease across threads preserves correct retirement",
+      "passed": true
+    },
+    {
+      "name": "An outstanding lease safely retains state after its registry facade is destroyed",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

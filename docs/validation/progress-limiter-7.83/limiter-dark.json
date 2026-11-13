@@ -1,0 +1,315 @@
+{
+  "checks": [
+    {
+      "name": "Create isolated limiter owner",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Successful limiter edits do not raise a warning",
+      "passed": true
+    },
+    {
+      "name": "A remembered rate is committed exactly once",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Limiter persistence preserves and acknowledges its actual backend error once",
+      "passed": true
+    },
+    {
+      "name": "A failed latest edit restores the actual rolled-back limiter state",
+      "passed": true
+    },
+    {
+      "name": "An explicit new edit retries once after the failure",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Successful limiter edits do not raise a warning",
+      "passed": true
+    },
+    {
+      "name": "Only the active and newest queued valid rates are submitted",
+      "passed": true
+    },
+    {
+      "name": "Completion and older failures preserve the newer text draft without normalization",
+      "passed": true
+    },
+    {
+      "name": "Background completion preserves the current edit selection",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Limiter persistence preserves and acknowledges its actual backend error once",
+      "passed": true
+    },
+    {
+      "name": "Only the active and newest queued valid rates are submitted",
+      "passed": true
+    },
+    {
+      "name": "Completion and older failures preserve the newer text draft without normalization",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Successful limiter edits do not raise a warning",
+      "passed": true
+    },
+    {
+      "name": "A newer invalid draft remains visible and never replaces the accepted valid rate",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for remembered limiter edits",
+      "passed": true
+    },
+    {
+      "name": "A remembered edit returns while its real catalog write is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "Limiter fields remain editable while competing commands are disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary and Close cannot discard an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Graph switching and painting continue during limiter persistence",
+      "passed": true
+    },
+    {
+      "name": "Posted completion drains limiter edits with polling removed",
+      "passed": true
+    },
+    {
+      "name": "Limiter persistence preserves and acknowledges its actual backend error once",
+      "passed": true
+    },
+    {
+      "name": "A newer invalid draft remains visible and never replaces the accepted valid rate",
+      "passed": true
+    },
+    {
+      "name": "The last accepted remembered rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog for a temporary limiter override",
+      "passed": true
+    },
+    {
+      "name": "A competing backend owns the model before the temporary edit",
+      "passed": true
+    },
+    {
+      "name": "Temporary edits queue without waiting for model ownership or dropping typed digits",
+      "passed": true
+    },
+    {
+      "name": "The newest temporary override changes no persisted rate or catalog bytes",
+      "passed": true
+    },
+    {
+      "name": "Temporary completion leaves the user's numeric spelling intact",
+      "passed": true
+    },
+    {
+      "name": "Create two actual progress windows for queued-edit exit ordering",
+      "passed": true
+    },
+    {
+      "name": "Another accepted command holds publication before a limiter edit",
+      "passed": true
+    },
+    {
+      "name": "An edit waits as owned data while another window owns the shared decision guard",
+      "passed": true
+    },
+    {
+      "name": "Exit first joins existing commands, then flushes the latest waiting limiter edit",
+      "passed": true
+    },
+    {
+      "name": "The final catalog contains both drained user decisions exactly once",
+      "passed": true
+    },
+    {
+      "name": "The live limiter fixture accepts its loopback HTTP server only",
+      "passed": true
+    },
+    {
+      "name": "Create actual limiter controls beside a real HTTP transfer",
+      "passed": true
+    },
+    {
+      "name": "The limiter edit targets an active receiving download",
+      "passed": true
+    },
+    {
+      "name": "The active transfer receives the newest temporary override without changing its saved rate",
+      "passed": true
+    },
+    {
+      "name": "Remembering the active rate replaces the temporary override with persisted settings",
+      "passed": true
+    },
+    {
+      "name": "The rate changes preserve a complete one-MiB HTTP download",
+      "passed": true
+    },
+    {
+      "name": "The completed HTTP file matches every expected source byte",
+      "passed": true
+    },
+    {
+      "name": "The completed download and remembered rate survive reopening together",
+      "passed": true
+    }
+  ],
+  "darkMode": true,
+  "error": "",
+  "passed": true
+}

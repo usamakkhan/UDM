@@ -1,0 +1,812 @@
+{
+  "version": "7.38",
+  "browserVersion": "0.71.2",
+  "build": "passed",
+  "incrementalBase": "7.37",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "BE65060F886926F0C3C1A6BC2F86D5F1D63EBDEE1E5030B10B3B603E84B3BC2C"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "F08779F3E9D9685875043096EAC49E8E3C390ED9D0D77AAF299256981AF2A234"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D700F46E9700516D8E29770026B81E1C543075856CA36BD78CB3BE8F513698BC"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "6E240C892B79074909547DE3097F93CF3A5698A27D64B50EBEEF14B9F05C9498"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "23E1BD44CE94E27BAA63F1348DF78032B67F7033C14509C4C3CBD22B1ED82114"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "1B3B754B38429BBEFBBBBFEE37B25C5B8AD4F9C5FDD374629AB8A9701C530541"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "tests/panel-track-refresh.browser.cjs",
+      "sha256": "77A6FF4E3F786933635C94AB0002565A13354A97034E2493F2383A7E3E2ED5ED"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "tests/youtube-pending-captures.browser.cjs",
+      "sha256": "D2F0A2B8A3777D3EAE242BB9FF75CF8B632605325008D9F9BDC42A232E2765D7"
+    },
+    {
+      "path": "tests/youtube-stream-readers.browser.cjs",
+      "sha256": "C1E98D1021D99CA93C0B054EF26D938BCC93879C361E5A730B246E42C267D70F"
+    },
+    {
+      "path": "tests/streaming-capture.test.cjs",
+      "sha256": "987D5AB8FDD4492935991D659A3554CF0D665976307E8A2C54A795792E614251"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "E777E5D4EE1BC3791B3D3122EDCF9621C916DFBF837B882F0B49235898C29BAD"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "BB319200A42CCF2A192156E4739FC67435FCDD3DA16B835CF86096631B920C7E"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "ECB1D1BD188BF88E4D9EF180A5755C234E388B27365A51B552DD8635E75BE758"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.38",
+      "sha256": "663668903B1AB0D74773718D86BC6214B3CD60121387DD49DE53B7BD2FE9616E"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.38",
+      "sha256": "5067B923E05862342C438DE5357A3DB6E188FD4D8E3C9F84E4EEABC8DB21C616"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.38",
+      "sha256": "9C9CD6B6D926B55728363C540222DCD59502D7D3EF04226CD936DBDB52EFF3FB"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.38",
+      "sha256": "63BAD7DC03DE4527766CB3ED36E952AF487D0A26A319C114A2E899317C2986DD"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.38",
+      "sha256": "81F81C69891259613F15A94F594861215A626294352BE878FE5D87B30EA1EB1C"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "qualification": {
+    "baseline": {
+      "passed": false,
+      "passedChecks": 0,
+      "failedChecks": 10,
+      "checks": [
+        {
+          "name": "chromium retain",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(audio.options.some(o=>o.value==='fr'))\n\n    at tests\\panel-track-refresh.browser.cjs:32:149"
+        },
+        {
+          "name": "chromium audio-removed",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:35:5"
+        },
+        {
+          "name": "chromium subtitle-removed",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:38:5"
+        },
+        {
+          "name": "chromium restore",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:41:127"
+        },
+        {
+          "name": "chromium choose-new",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:44:113"
+        },
+        {
+          "name": "firefox retain",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(audio.options.some(o=>o.value==='fr'))\n\n    at tests\\panel-track-refresh.browser.cjs:32:149"
+        },
+        {
+          "name": "firefox audio-removed",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:35:5"
+        },
+        {
+          "name": "firefox subtitle-removed",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:38:5"
+        },
+        {
+          "name": "firefox restore",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:41:127"
+        },
+        {
+          "name": "firefox choose-new",
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await state('Download video')).disabled)\n\n    at tests\\panel-track-refresh.browser.cjs:44:113"
+        }
+      ],
+      "scope": "Owned headless Edge pages; both bundle sources; trusted keyboard input and actual outgoing extension message payloads. No personal browser, desktop handoff or video transfer."
+    },
+    "final": {
+      "passed": true,
+      "passedChecks": 16,
+      "failedChecks": 0,
+      "checks": [
+        {
+          "name": "chromium retain",
+          "passed": true
+        },
+        {
+          "name": "chromium audio-removed",
+          "passed": true
+        },
+        {
+          "name": "chromium subtitle-removed",
+          "passed": true
+        },
+        {
+          "name": "chromium restore",
+          "passed": true
+        },
+        {
+          "name": "chromium choose-new",
+          "passed": true
+        },
+        {
+          "name": "chromium implicit-audio",
+          "passed": true
+        },
+        {
+          "name": "chromium format-return",
+          "passed": true
+        },
+        {
+          "name": "chromium audio-permission",
+          "passed": true
+        },
+        {
+          "name": "firefox retain",
+          "passed": true
+        },
+        {
+          "name": "firefox audio-removed",
+          "passed": true
+        },
+        {
+          "name": "firefox subtitle-removed",
+          "passed": true
+        },
+        {
+          "name": "firefox restore",
+          "passed": true
+        },
+        {
+          "name": "firefox choose-new",
+          "passed": true
+        },
+        {
+          "name": "firefox implicit-audio",
+          "passed": true
+        },
+        {
+          "name": "firefox format-return",
+          "passed": true
+        },
+        {
+          "name": "firefox audio-permission",
+          "passed": true
+        }
+      ],
+      "scope": "Owned headless Edge pages; both bundle sources; trusted keyboard input and actual outgoing extension message payloads. No personal browser, desktop handoff or video transfer."
+    },
+    "regressions": [
+      {
+        "family": "chromium",
+        "test": "panel-keyboard-refresh.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "family": "chromium",
+          "checks": [
+            "A removed format cannot silently redirect Enter to a different quality",
+            "A catalog refresh that removes Download all leaves focus on the panel",
+            "Track options retain keyboard focus when an earlier row arrives",
+            "A replaced offer blocks both old handoffs and leaves Back focused",
+            "The same offer can return without closing the chooser",
+            "A finalized catalog preserves the chooser and Back restores its opening control",
+            "Back returns to the audio-only control",
+            "Escape returns to the video panel",
+            "Download all keeps the visible batch during a catalog refresh under the pointer",
+            "Releasing outside the batch action applies the deferred refresh without sending a download"
+          ]
+        },
+        "logSha256": "2897180F6EE157398D9D85EB6946E745FD9B01ACA9439622E582330037F77636"
+      },
+      {
+        "family": "chromium",
+        "test": "panel-controls.browser.cjs",
+        "exitCode": 0,
+        "results": [
+          {
+            "name": "Full panel displays short format labels",
+            "passed": true
+          },
+          {
+            "name": "Arrow Down on the open toggle focuses the first format",
+            "passed": true
+          },
+          {
+            "name": "Escape from a format closes the menu",
+            "passed": true
+          },
+          {
+            "name": "Arrow Up opens the closed toggle and focuses the cached format without requesting it again",
+            "passed": true
+          },
+          {
+            "name": "Panel options open separately without requesting formats",
+            "passed": true
+          },
+          {
+            "name": "Refresh returns to the format menu and requests a new catalog",
+            "passed": true
+          },
+          {
+            "name": "Reset position restores a dragged panel and confirms it",
+            "passed": true
+          },
+          {
+            "name": "Minimize closes the menu and leaves the compact icon and close button",
+            "passed": true
+          },
+          {
+            "name": "Compact menu shows the player title and aligns with the right edge of its strip",
+            "passed": true
+          },
+          {
+            "name": "Compact options open from keyboard and context click and can restore the full strip",
+            "passed": true
+          },
+          {
+            "name": "Close dismisses menu and keeps download button",
+            "passed": true
+          },
+          {
+            "name": "Arrow Up selects the last format when several formats exist",
+            "passed": true
+          },
+          {
+            "name": "Closing during lookup prevents delayed keyboard focus from reopening the menu",
+            "passed": true
+          },
+          {
+            "name": "Stalled worker lookup releases the panel with a recovery message",
+            "passed": true
+          },
+          {
+            "name": "Late lookup response cannot replace the timeout state",
+            "passed": true
+          },
+          {
+            "name": "Refresh works after a worker lookup timeout",
+            "passed": true
+          },
+          {
+            "name": "Uncertain download acknowledgement warns to check the list and is never retried automatically",
+            "passed": true
+          },
+          {
+            "name": "Late download acknowledgement cannot trigger another submission",
+            "passed": true
+          },
+          {
+            "name": "Hide here removes the panel from view",
+            "passed": true
+          }
+        ],
+        "logSha256": "FE040C7A78BB78BC1903CE36DFB0B287EC8C64851B9DF0017CD0D7CE85E7E6CE"
+      },
+      {
+        "family": "chromium",
+        "test": "panel-ad-ready.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "bundle": "chromium",
+          "channel": "msedge",
+          "results": [
+            {
+              "name": "Ads and readiness for another video leave all panels hidden",
+              "passed": true
+            },
+            {
+              "name": "A verified video ID cannot choose between ambiguous players",
+              "passed": true
+            },
+            {
+              "name": "Only the primary player shows and prepares verified choices before media metadata",
+              "passed": true
+            },
+            {
+              "name": "The first click shows both prepared choices without requesting formats again or starting a download",
+              "passed": true
+            },
+            {
+              "name": "Independent ad flags and expired readiness suppress the panel",
+              "passed": true
+            },
+            {
+              "name": "A sole player works without the primary class and normal playback needs no marker",
+              "passed": true
+            }
+          ]
+        },
+        "logSha256": "F5E01FFA59A95BB68965BA6BB3005BAC9800084B6A7F59CE9F36F939C831100A"
+      },
+      {
+        "family": "chromium",
+        "test": "panel-source-race.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "scope": "Both browser content bundles executed in real Edge with controlled source-change events and delayed extension replies.",
+          "results": [
+            {
+              "name": "chromium same-player reload starts a fresh format lookup immediately",
+              "passed": true
+            },
+            {
+              "name": "chromium stale success cannot replace the pending catalog",
+              "passed": true
+            },
+            {
+              "name": "chromium current response populates the still-open panel and keeps keyboard intent",
+              "passed": true
+            },
+            {
+              "name": "chromium stale failure cannot overwrite newer formats",
+              "passed": true
+            },
+            {
+              "name": "chromium rapid source events have distinct capture identities",
+              "passed": true
+            },
+            {
+              "name": "chromium panel remains usable after repeated source changes",
+              "passed": true
+            },
+            {
+              "name": "chromium source change during handoff recovers without resubmitting the old download",
+              "passed": true
+            },
+            {
+              "name": "chromium uncertain earlier handoff remains visible while newer formats recover",
+              "passed": true
+            },
+            {
+              "name": "chromium metadata during a pending lookup is coalesced into one automatic empty-result refresh",
+              "passed": true
+            },
+            {
+              "name": "chromium closing during metadata lookup suppresses the queued refresh and keeps the menu closed",
+              "passed": true
+            },
+            {
+              "name": "chromium reopening starts a fresh lookup immediately while the canceled reply is pending",
+              "passed": true
+            },
+            {
+              "name": "chromium a different player source closes the stale menu until a fresh selection",
+              "passed": true
+            },
+            {
+              "name": "firefox same-player reload starts a fresh format lookup immediately",
+              "passed": true
+            },
+            {
+              "name": "firefox stale success cannot replace the pending catalog",
+              "passed": true
+            },
+            {
+              "name": "firefox current response populates the still-open panel and keeps keyboard intent",
+              "passed": true
+            },
+            {
+              "name": "firefox stale failure cannot overwrite newer formats",
+              "passed": true
+            },
+            {
+              "name": "firefox rapid source events have distinct capture identities",
+              "passed": true
+            },
+            {
+              "name": "firefox panel remains usable after repeated source changes",
+              "passed": true
+            },
+            {
+              "name": "firefox source change during handoff recovers without resubmitting the old download",
+              "passed": true
+            },
+            {
+              "name": "firefox uncertain earlier handoff remains visible while newer formats recover",
+              "passed": true
+            },
+            {
+              "name": "firefox metadata during a pending lookup is coalesced into one automatic empty-result refresh",
+              "passed": true
+            },
+            {
+              "name": "firefox closing during metadata lookup suppresses the queued refresh and keeps the menu closed",
+              "passed": true
+            },
+            {
+              "name": "firefox reopening starts a fresh lookup immediately while the canceled reply is pending",
+              "passed": true
+            },
+            {
+              "name": "firefox a different player source closes the stale menu until a fresh selection",
+              "passed": true
+            }
+          ]
+        },
+        "logSha256": "D560DCB9895528FDFDA085A8C82F0C9242B2E7B17130819E14180A6AF0F6D9AB"
+      },
+      {
+        "family": "firefox",
+        "test": "panel-keyboard-refresh.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "family": "firefox",
+          "checks": [
+            "A removed format cannot silently redirect Enter to a different quality",
+            "A catalog refresh that removes Download all leaves focus on the panel",
+            "Track options retain keyboard focus when an earlier row arrives",
+            "A replaced offer blocks both old handoffs and leaves Back focused",
+            "The same offer can return without closing the chooser",
+            "A finalized catalog preserves the chooser and Back restores its opening control",
+            "Back returns to the audio-only control",
+            "Escape returns to the video panel",
+            "Download all keeps the visible batch during a catalog refresh under the pointer",
+            "Releasing outside the batch action applies the deferred refresh without sending a download"
+          ]
+        },
+        "logSha256": "2897180F6EE157398D9D85EB6946E745FD9B01ACA9439622E582330037F77636"
+      },
+      {
+        "family": "firefox",
+        "test": "panel-controls.browser.cjs",
+        "exitCode": 0,
+        "results": [
+          {
+            "name": "Full panel displays short format labels",
+            "passed": true
+          },
+          {
+            "name": "Arrow Down on the open toggle focuses the first format",
+            "passed": true
+          },
+          {
+            "name": "Escape from a format closes the menu",
+            "passed": true
+          },
+          {
+            "name": "Arrow Up opens the closed toggle and focuses the cached format without requesting it again",
+            "passed": true
+          },
+          {
+            "name": "Panel options open separately without requesting formats",
+            "passed": true
+          },
+          {
+            "name": "Refresh returns to the format menu and requests a new catalog",
+            "passed": true
+          },
+          {
+            "name": "Reset position restores a dragged panel and confirms it",
+            "passed": true
+          },
+          {
+            "name": "Minimize closes the menu and leaves the compact icon and close button",
+            "passed": true
+          },
+          {
+            "name": "Compact menu shows the player title and aligns with the right edge of its strip",
+            "passed": true
+          },
+          {
+            "name": "Compact options open from keyboard and context click and can restore the full strip",
+            "passed": true
+          },
+          {
+            "name": "Close dismisses menu and keeps download button",
+            "passed": true
+          },
+          {
+            "name": "Arrow Up selects the last format when several formats exist",
+            "passed": true
+          },
+          {
+            "name": "Closing during lookup prevents delayed keyboard focus from reopening the menu",
+            "passed": true
+          },
+          {
+            "name": "Stalled worker lookup releases the panel with a recovery message",
+            "passed": true
+          },
+          {
+            "name": "Late lookup response cannot replace the timeout state",
+            "passed": true
+          },
+          {
+            "name": "Refresh works after a worker lookup timeout",
+            "passed": true
+          },
+          {
+            "name": "Uncertain download acknowledgement warns to check the list and is never retried automatically",
+            "passed": true
+          },
+          {
+            "name": "Late download acknowledgement cannot trigger another submission",
+            "passed": true
+          },
+          {
+            "name": "Hide here removes the panel from view",
+            "passed": true
+          }
+        ],
+        "logSha256": "FE040C7A78BB78BC1903CE36DFB0B287EC8C64851B9DF0017CD0D7CE85E7E6CE"
+      },
+      {
+        "family": "firefox",
+        "test": "panel-ad-ready.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "bundle": "firefox",
+          "channel": "msedge",
+          "results": [
+            {
+              "name": "Ads and readiness for another video leave all panels hidden",
+              "passed": true
+            },
+            {
+              "name": "A verified video ID cannot choose between ambiguous players",
+              "passed": true
+            },
+            {
+              "name": "Only the primary player shows and prepares verified choices before media metadata",
+              "passed": true
+            },
+            {
+              "name": "The first click shows both prepared choices without requesting formats again or starting a download",
+              "passed": true
+            },
+            {
+              "name": "Independent ad flags and expired readiness suppress the panel",
+              "passed": true
+            },
+            {
+              "name": "A sole player works without the primary class and normal playback needs no marker",
+              "passed": true
+            }
+          ]
+        },
+        "logSha256": "F5E01FFA59A95BB68965BA6BB3005BAC9800084B6A7F59CE9F36F939C831100A"
+      },
+      {
+        "family": "firefox",
+        "test": "panel-source-race.browser.cjs",
+        "exitCode": 0,
+        "results": {
+          "scope": "Both browser content bundles executed in real Edge with controlled source-change events and delayed extension replies.",
+          "results": [
+            {
+              "name": "chromium same-player reload starts a fresh format lookup immediately",
+              "passed": true
+            },
+            {
+              "name": "chromium stale success cannot replace the pending catalog",
+              "passed": true
+            },
+            {
+              "name": "chromium current response populates the still-open panel and keeps keyboard intent",
+              "passed": true
+            },
+            {
+              "name": "chromium stale failure cannot overwrite newer formats",
+              "passed": true
+            },
+            {
+              "name": "chromium rapid source events have distinct capture identities",
+              "passed": true
+            },
+            {
+              "name": "chromium panel remains usable after repeated source changes",
+              "passed": true
+            },
+            {
+              "name": "chromium source change during handoff recovers without resubmitting the old download",
+              "passed": true
+            },
+            {
+              "name": "chromium uncertain earlier handoff remains visible while newer formats recover",
+              "passed": true
+            },
+            {
+              "name": "chromium metadata during a pending lookup is coalesced into one automatic empty-result refresh",
+              "passed": true
+            },
+            {
+              "name": "chromium closing during metadata lookup suppresses the queued refresh and keeps the menu closed",
+              "passed": true
+            },
+            {
+              "name": "chromium reopening starts a fresh lookup immediately while the canceled reply is pending",
+              "passed": true
+            },
+            {
+              "name": "chromium a different player source closes the stale menu until a fresh selection",
+              "passed": true
+            },
+            {
+              "name": "firefox same-player reload starts a fresh format lookup immediately",
+              "passed": true
+            },
+            {
+              "name": "firefox stale success cannot replace the pending catalog",
+              "passed": true
+            },
+            {
+              "name": "firefox current response populates the still-open panel and keeps keyboard intent",
+              "passed": true
+            },
+            {
+              "name": "firefox stale failure cannot overwrite newer formats",
+              "passed": true
+            },
+            {
+              "name": "firefox rapid source events have distinct capture identities",
+              "passed": true
+            },
+            {
+              "name": "firefox panel remains usable after repeated source changes",
+              "passed": true
+            },
+            {
+              "name": "firefox source change during handoff recovers without resubmitting the old download",
+              "passed": true
+            },
+            {
+              "name": "firefox uncertain earlier handoff remains visible while newer formats recover",
+              "passed": true
+            },
+            {
+              "name": "firefox metadata during a pending lookup is coalesced into one automatic empty-result refresh",
+              "passed": true
+            },
+            {
+              "name": "firefox closing during metadata lookup suppresses the queued refresh and keeps the menu closed",
+              "passed": true
+            },
+            {
+              "name": "firefox reopening starts a fresh lookup immediately while the canceled reply is pending",
+              "passed": true
+            },
+            {
+              "name": "firefox a different player source closes the stale menu until a fresh selection",
+              "passed": true
+            }
+          ]
+        },
+        "logSha256": "D560DCB9895528FDFDA085A8C82F0C9242B2E7B17130819E14180A6AF0F6D9AB"
+      }
+    ],
+    "sourceHashesRechecked": true,
+    "productionHashesRechecked": true,
+    "screenshot": {
+      "path": "docs/validation/panel-tracks-7.38/updated-chooser.png",
+      "sha256": "7E02984658E45983D90C96A21BE2321604E04D3818EA0133F78202C39493AC7F",
+      "bothBundleScreenshotsIdentical": true,
+      "visuallyInspected": true
+    },
+    "scope": "Owned headless Edge pages and both bundle sources. Trusted keyboard input and actual outgoing runtime message payloads. Sixteen final cases; ten original baseline cases failed before the fix; six controls added afterward.",
+    "regressionScope": "Eight runs of four unique scripts. Keyboard, controls and ad-ready use family selection; source-race internally tests both sources and was run twice.",
+    "installedDesktop": "7.11",
+    "installedBrowserPackage": "0.70.75",
+    "installerCreated": false,
+    "videoDownloaded": false,
+    "personalBrowserUsed": false,
+    "limitations": "Generic site catalog update cases, not public YouTube catalog delivery, native handoff or complete-file assembly. No Firefox engine, physical DPI/zoom, installed acceptance or fresh paired IDM geometry/timing. Screenshot viewport 1200 by 800."
+  }
+}

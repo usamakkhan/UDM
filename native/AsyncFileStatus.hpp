@@ -6,13 +6,15 @@
 #include <thread>
 
 namespace udm {
-// Advisory menu state only. Operations must revalidate the current filesystem.
+// Advisory UI state only. Operations must revalidate the current filesystem.
 // Four shared-state workers bound blocked probes without retaining HWND/Manager.
 class AsyncFileStatus {
 public:
+ using Probe=fs::file_status(*)(const fs::path&,std::error_code&);
  struct Result {
-  uint64_t generation=0;std::map<fs::path,bool> files;
-  bool regular(const fs::path& path)const{const auto found=files.find(path);return found!=files.end()&&found->second;}
+  uint64_t generation=0;std::map<fs::path,fs::file_type> files;
+  bool regular(const fs::path& path)const{const auto found=files.find(path);return found!=files.end()&&found->second==fs::file_type::regular;}
+  bool missing(const fs::path& path)const{const auto found=files.find(path);return found!=files.end()&&found->second==fs::file_type::not_found;}
  };
 private:
  static constexpr unsigned WorkerLimit=4;
@@ -22,11 +24,13 @@ private:
   Request(uint64_t generation,std::shared_ptr<const std::vector<fs::path>> wanted):paths(std::move(wanted)),remaining(paths->size()){result.generation=generation;}
  };
  struct State {
+  explicit State(Probe selected):probe(selected){}
+  const Probe probe;
   std::mutex mutex;std::condition_variable wake;bool closing=false,started=false,disabled=false;
   unsigned workers=0;uint64_t publishedRevision=0;
   std::shared_ptr<Request> request;std::shared_ptr<const Result> completed;
  };
- std::shared_ptr<State> state=std::make_shared<State>();
+ std::shared_ptr<State> state;
  // Only the UI thread accesses wanted/generation/lastQueued.
  std::shared_ptr<const std::vector<fs::path>> wanted;uint64_t generation=0;ULONGLONG lastQueued=0;
  static void run(const std::shared_ptr<State>& current)noexcept{
@@ -38,12 +42,13 @@ private:
     request=current->request;index=request->next++;
    }
    const auto& path=(*request->paths)[index];std::error_code error;
-   const bool regular=fs::is_regular_file(path,error)&&!error;
+   auto type=current->probe(path,error).type();
+   if(error&&type!=fs::file_type::not_found)type=fs::file_type::none;
    {std::lock_guard<std::mutex> lock(current->mutex);
     if(current->closing||current->disabled)return;
     if(current->request==request){
      const auto found=request->result.files.find(path);
-     if(found==request->result.files.end()||found->second!=regular){request->result.files[path]=regular;++request->revision;}
+     if(found==request->result.files.end()||found->second!=type){request->result.files[path]=type;++request->revision;}
      --request->remaining;
     }
    }
@@ -53,7 +58,8 @@ private:
   }
  }
 public:
- AsyncFileStatus()=default;AsyncFileStatus(const AsyncFileStatus&)=delete;AsyncFileStatus& operator=(const AsyncFileStatus&)=delete;
+ explicit AsyncFileStatus(Probe probe=[](const fs::path& path,std::error_code& error){return fs::status(path,error);}):state(std::make_shared<State>(probe)){}
+ AsyncFileStatus(const AsyncFileStatus&)=delete;AsyncFileStatus& operator=(const AsyncFileStatus&)=delete;
  ~AsyncFileStatus(){stop();}
  std::shared_ptr<const Result> observe(std::vector<fs::path> paths){
   std::sort(paths.begin(),paths.end());paths.erase(std::unique(paths.begin(),paths.end()),paths.end());

@@ -1,0 +1,2159 @@
+{
+  "checks": [
+    {
+      "name": "Media receipt stages a replacement on the original job",
+      "passed": true
+    },
+    {
+      "name": "Media receipt stages a replacement on the original job",
+      "passed": true
+    },
+    {
+      "name": "Eleven browser presentations are durably prepared before restart",
+      "passed": true
+    },
+    {
+      "name": "Real browser pipe prepares isolated focus fixture",
+      "passed": true
+    },
+    {
+      "name": "Preparing a browser capture does not present an uncommitted download",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser capture never requests main-window activation",
+      "passed": true
+    },
+    {
+      "name": "Accepted capture immediately notifies the UI without waiting for polling",
+      "passed": true
+    },
+    {
+      "name": "Direct browser download handoff never requests main-window activation",
+      "passed": true
+    },
+    {
+      "name": "Direct browser handoff immediately notifies the UI without activation",
+      "passed": true
+    },
+    {
+      "name": "Browser offers awaiting File Info do not request a queue dispatch",
+      "passed": true
+    },
+    {
+      "name": "Read-only browser requests do not schedule a presentation",
+      "passed": true
+    },
+    {
+      "name": "A saved direct browser download requests a queue dispatch without activation",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later does not request a queue dispatch",
+      "passed": true
+    },
+    {
+      "name": "Preparing a browser download does not request a queue dispatch",
+      "passed": true
+    },
+    {
+      "name": "An accepted queued capture requests a queue dispatch without activation",
+      "passed": true
+    },
+    {
+      "name": "Explicit show command still activates the main window",
+      "passed": true
+    },
+    {
+      "name": "Capture owner keeps the main window hidden and disables modal reentry",
+      "passed": true
+    },
+    {
+      "name": "Capture has its own invisible owner",
+      "passed": true
+    },
+    {
+      "name": "Closing the capture owner restores availability without showing the main window",
+      "passed": true
+    },
+    {
+      "name": "Restart fixture has no elevated helper executable",
+      "passed": true
+    },
+    {
+      "name": "Restart reports missing replacement helper without elevation",
+      "passed": true
+    },
+    {
+      "name": "Failed restart clears stale monitor and capture state",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles partial bytes and pauses the old capture before replacement",
+      "passed": true
+    },
+    {
+      "name": "Interrupted capture recovery survives reopening after failed restart",
+      "passed": true
+    },
+    {
+      "name": "A disabled main window retains every pending presentation",
+      "passed": true
+    },
+    {
+      "name": "Native timing installs a process-scoped show-event observer",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Compact File Info does not create advanced controls before More",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "More displays queue and login controls",
+      "passed": true
+    },
+    {
+      "name": "More lets the user select another queue",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Expanded File Info accepts a login draft",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Less hides advanced controls",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Reopening More preserves the login draft and controls",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered refresh dialog shows the captured replacement URL",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Save keeps the dialog open and displays a newly arrived address for review",
+      "passed": true
+    },
+    {
+      "name": "The first Save cannot apply an address that changed before the click",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered media dialog retains its captured session across catalog restart",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "First media Save reviews a replacement that changed before the click",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered media dialog retains its captured session across catalog restart",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native timing receives the File Info show-event timestamp",
+      "passed": true
+    },
+    {
+      "name": "Immediate capture opens dialogs before rebuilding the download history",
+      "passed": true
+    },
+    {
+      "name": "Restart opens the expected File Info, duplicate and refresh dialogs",
+      "passed": true
+    },
+    {
+      "name": "Cancel cannot acknowledge a newer captured address that was not displayed",
+      "passed": true
+    },
+    {
+      "name": "The later browser link survives cancellation of the earlier dialog",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Recovered media dialog retains its captured session across catalog restart",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "The undisplayed replacement address opens its own refresh dialog",
+      "passed": true
+    },
+    {
+      "name": "Completed native dialog actions consume their saved presentations",
+      "passed": true
+    },
+    {
+      "name": "Media Save applies the latest reviewed session to the original download",
+      "passed": true
+    },
+    {
+      "name": "Refreshed adaptive segments require validation before reuse",
+      "passed": true
+    },
+    {
+      "name": "Media Save applies the latest reviewed session to the original download",
+      "passed": true
+    },
+    {
+      "name": "Refreshed adaptive segments require validation before reuse",
+      "passed": true
+    },
+    {
+      "name": "Restored existing-download choice opens the real native progress dialog",
+      "passed": true
+    },
+    {
+      "name": "Restored completed-file choice opens the real Download complete dialog",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Restored Start Download queues the original record",
+      "passed": true
+    },
+    {
+      "name": "Restored Later and Cancel leave their original records paused",
+      "passed": true
+    },
+    {
+      "name": "Download Later saves the queue selected before collapsing More",
+      "passed": true
+    },
+    {
+      "name": "Restored Save address updates the intended download",
+      "passed": true
+    },
+    {
+      "name": "The subsequent refresh applies the newer address to the original record",
+      "passed": true
+    },
+    {
+      "name": "Reviewing the changed address then saving applies the newer address",
+      "passed": true
+    },
+    {
+      "name": "Further refreshes do not reopen handled modal dialogs",
+      "passed": true
+    },
+    {
+      "name": "Changed target is retained as a native review",
+      "passed": true
+    },
+    {
+      "name": "Changed target is retained as a native review",
+      "passed": true
+    },
+    {
+      "name": "Changed target is retained as a native review",
+      "passed": true
+    },
+    {
+      "name": "Changed target is retained as a native review",
+      "passed": true
+    },
+    {
+      "name": "Changed target is retained as a native review",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Deleted-target review shows its original file",
+      "passed": true
+    },
+    {
+      "name": "Deleted original disables replacement review",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Completed original disables replacement review",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel command preserves its saved request until review is reopened",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "A removed target keeps review open and disables replacement",
+      "passed": true
+    },
+    {
+      "name": "Stale click retains the captured request for another choice",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Every changed/deleted target opens its native review once",
+      "passed": true
+    },
+    {
+      "name": "Review replacement leaves current address unchanged until the address dialog is saved",
+      "passed": true
+    },
+    {
+      "name": "Later is the only undecided review after the first pass",
+      "passed": true
+    },
+    {
+      "name": "Recovered refresh dialog shows the captured replacement URL",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "File Info is visible before the screenshot helper can show it",
+      "passed": true
+    },
+    {
+      "name": "Browser File Info remains reachable without main-window foreground permission",
+      "passed": true
+    },
+    {
+      "name": "Automatic File Info is owned independently of the main window",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Reviewed new files and replacement open their ordinary dialogs without reopening Later",
+      "passed": true
+    },
+    {
+      "name": "Reviewed replacement Save applies to its original record",
+      "passed": true
+    },
+    {
+      "name": "New-file review Later leaves both new records paused",
+      "passed": true
+    },
+    {
+      "name": "Deleted original identities are never reused for new files",
+      "passed": true
+    },
+    {
+      "name": "Undecided Later review survives reopening its catalog",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Manual Recover reopens Later and its discard resolves the review",
+      "passed": true
+    },
+    {
+      "name": "Every native review choice preserves original partial bytes",
+      "passed": true
+    },
+    {
+      "name": "Every native review choice preserves original partial bytes",
+      "passed": true
+    },
+    {
+      "name": "Every native review choice preserves original partial bytes",
+      "passed": true
+    },
+    {
+      "name": "Every native review choice preserves original partial bytes",
+      "passed": true
+    },
+    {
+      "name": "Every native review choice preserves original partial bytes",
+      "passed": true
+    },
+    {
+      "name": "Review decisions leave no unhandled File Info or refresh dialogs",
+      "passed": true
+    },
+    {
+      "name": "Unknown-admission capture appears in the real download list",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged capture enables Stop and blocks Resume and Remove",
+      "passed": true
+    },
+    {
+      "name": "Pending helper ownership blocks catalog recovery and queue reassignment",
+      "passed": true
+    },
+    {
+      "name": "Disabled commands cannot start or remove an uncertain capture",
+      "passed": true
+    },
+    {
+      "name": "Main-window Stop persists pause intent before admission is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "Pausing retains ownership until the response writer releases its files",
+      "passed": true
+    },
+    {
+      "name": "Released uncertain capture recovers to an idle paused download",
+      "passed": true
+    },
+    {
+      "name": "Recovered download exposes Resume and Remove and disables Stop",
+      "passed": true
+    },
+    {
+      "name": "Size fixture has a visible list row",
+      "passed": true
+    },
+    {
+      "name": "Size fixture row is in the modal refresh viewport",
+      "passed": true
+    },
+    {
+      "name": "Modal refresh shows verified final size instead of track size",
+      "passed": true
+    },
+    {
+      "name": "Modal size refresh preserves the guard and does not reenter presentations",
+      "passed": true
+    },
+    {
+      "name": "Unverified phase cannot display a stale final-size claim",
+      "passed": true
+    },
+    {
+      "name": "Confirmed download no longer displays a stale prefetch size",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown retains items and requested selection",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown retains missing-selection fallback",
+      "passed": true
+    },
+    {
+      "name": "Batched editable dropdown retains unsaved text",
+      "passed": true
+    },
+    {
+      "name": "Batched empty dropdown stays unselected",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown restores visibility and redraw",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown restores visibility and redraw",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown restores visibility and redraw",
+      "passed": true
+    },
+    {
+      "name": "Batched dropdown restores visibility and redraw",
+      "passed": true
+    },
+    {
+      "name": "A real queue download records its login challenge without retrying it",
+      "passed": true
+    },
+    {
+      "name": "The failed queue stays silent during a main window refresh",
+      "passed": true
+    },
+    {
+      "name": "Create progress for the failed queue download",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Cancel from progress keeps the saved challenge and makes no extra request",
+      "passed": true
+    },
+    {
+      "name": "The failed queue download is selectable in the main list",
+      "passed": true
+    },
+    {
+      "name": "Saved queue challenge opens the native login fields",
+      "passed": true
+    },
+    {
+      "name": "Native presentation button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Resume from the main list asks for login before scheduling an individual retry",
+      "passed": true
+    },
+    {
+      "name": "The next request authenticates and saves the complete file without another challenge",
+      "passed": true
+    },
+    {
+      "name": "Resume fixture job appears in the download list",
+      "passed": true
+    },
+    {
+      "name": "Resume fixture job appears in the download list",
+      "passed": true
+    },
+    {
+      "name": "Resume fixture job appears in the download list",
+      "passed": true
+    },
+    {
+      "name": "The action opens one media recovery dialog with the saved playback position",
+      "passed": true
+    },
+    {
+      "name": "Mixed Resume advances the ordinary download before opening recovery",
+      "passed": true
+    },
+    {
+      "name": "Cancel keeps both held downloads and their checkpoints",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for a held download",
+      "passed": true
+    },
+    {
+      "name": "Held progress exposes an enabled Refresh button",
+      "passed": true
+    },
+    {
+      "name": "The action opens one media recovery dialog with the saved playback position",
+      "passed": true
+    },
+    {
+      "name": "Cancel from progress keeps the job held without starting it",
+      "passed": true
+    },
+    {
+      "name": "Handled presentations remain consumed after closing and reopening UDM",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "formStages": [
+    {
+      "id": 1000,
+      "ms": 2.0164999961853027,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 3.579000011086464,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 1.8356000036001205,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 16.84860000014305,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 40.58859999477863,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 40.718700006604195,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0015999972820281982,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0007000118494033813,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 2.9887000024318695,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 2.3183999955654144,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 2.104100003838539,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 2.022799998521805,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 4.342999994754791,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 2.095899999141693,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 2.216700002551079,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 2.2450000047683716,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 13.624500006437302,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 42.91110000014305,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1012,
+      "ms": 42.91799999773502,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 3.5954000055789948,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0010999888181686401,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 2.351700007915497,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.1923999935388565,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 4.724600002169609,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 2.259100005030632,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 1.7159000039100647,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 2.125900000333786,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 2.059900000691414,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 2.2021999955177307,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 1.9502999931573868,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1022,
+      "ms": 2.2205999940633774,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 1.8518999963998795,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1024,
+      "ms": 1.6058000028133392,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1025,
+      "ms": 1.8092000037431717,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 3.167800009250641,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 2.6967999935150146,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 2.225399985909462,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 17.45720000565052,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 46.07670000195503,
+      "stage": "typed-control-total",
+      "threadCpuMs": 46.875
+    },
+    {
+      "id": 1003,
+      "ms": 46.08370000123978,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0013000071048736572,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0004999935626983643,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 2.4180999994277954,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 1.6979999989271164,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 6.3747000098228455,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 1.7259999960660934,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 1.9500000029802322,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 2.083399996161461,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1010,
+      "ms": 2.0763999968767166,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 1.9749000072479248,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 17.19999998807907,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 38.44779999554157,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1012,
+      "ms": 38.45499999821186,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 3.9499000012874603,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0007000118494033813,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 2.3121000081300735,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.228200003504753,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 2.365200012922287,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 2.3969999998807907,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 2.0286999940872192,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 2.127900004386902,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1019,
+      "ms": 1.9270000010728836,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 1.814400002360344,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 5.280600011348724,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 2.518199995160103,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 2.1433999985456467,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1024,
+      "ms": 2.100399985909462,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1025,
+      "ms": 2.012600004673004,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 1.6203000098466873,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 2.382200002670288,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 2.019999995827675,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 17.133200004696846,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 42.705799996852875,
+      "stage": "typed-control-total",
+      "threadCpuMs": 31.25
+    },
+    {
+      "id": 1003,
+      "ms": 42.71269999444485,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0009000003337860107,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0004999935626983643,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 2.27810001373291,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 2.366699993610382,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 2.117499992251396,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 2.1746000051498413,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 1.765600010752678,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 6.2584999948740005,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 1.882200002670288,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 2.282800003886223,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1012,
+      "ms": 12.865600004792213,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 37.8885999917984,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1012,
+      "ms": 37.89620000123978,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 24.106700003147125,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.001100003719329834,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 2.0249999910593033,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.4000000059604645,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 5.604699999094009,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 2.4822999984025955,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 1.8275000005960464,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1018,
+      "ms": 1.8931999951601028,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 1.7673999965190887,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 4.137299999594688,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 2.0694999992847443,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 2.356000006198883,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 2.337599992752075,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1024,
+      "ms": 2.1066000014543533,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1025,
+      "ms": 2.8264999985694885,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1026,
+      "ms": 6.8399999886751175,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1027,
+      "ms": 4.603100001811981,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1028,
+      "ms": 3.633000001311302,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1029,
+      "ms": 10.758000001311302,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1030,
+      "ms": 4.259199991822243,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1031,
+      "ms": 6.008100003004074,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1032,
+      "ms": 16.026000007987022,
+      "stage": "font"
+    },
+    {
+      "id": 1032,
+      "ms": 49.78130000829697,
+      "stage": "typed-control-total",
+      "threadCpuMs": 46.875
+    },
+    {
+      "id": 1032,
+      "ms": 49.80859999358654,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1032,
+      "ms": 0.03639999032020569,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1032,
+      "ms": 0.39240001142024994,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1033,
+      "ms": 4.0157999992370605,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1034,
+      "ms": 4.989599987864494,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1035,
+      "ms": 2.8281999975442886,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1036,
+      "ms": 7.245500013232231,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1037,
+      "ms": 2.7886000126600266,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1038,
+      "ms": 6.636999994516373,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1039,
+      "ms": 6.077800005674362,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1040,
+      "ms": 4.261500000953674,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1041,
+      "ms": 4.201899990439415,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1042,
+      "ms": 3.855000004172325,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 2.0257000029087067,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 2.5830000042915344,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 1.896699994802475,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 19.310599997639656,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 40.186199992895126,
+      "stage": "typed-control-total",
+      "threadCpuMs": 31.25
+    },
+    {
+      "id": 1003,
+      "ms": 40.220399990677834,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.01860000193119049,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.001900002360343933,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 3.5927999913692474,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 2.75450000166893,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 2.304399996995926,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 1.8751999884843826,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 4.8783999979496,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 4.087200000882149,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 1.9619000107049942,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 2.2854999899864197,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 17.3086000084877,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 44.012700006365776,
+      "stage": "typed-control-total",
+      "threadCpuMs": 31.25
+    },
+    {
+      "id": 1012,
+      "ms": 44.03059999644756,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 29.13409999012947,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0023000091314315796,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 3.1625999957323074,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.1084000021219254,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 2.792499989271164,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 2.5417999923229218,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 2.225400000810623,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 2.4264000058174133,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 2.2035000026226044,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 2.1789000034332275,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 5.5557000041008,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1022,
+      "ms": 2.2977000027894974,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 2.3974000066518784,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1024,
+      "ms": 2.4987000077962875,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1025,
+      "ms": 2.432099997997284,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 2.967399999499321,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 3.1247000098228455,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1002,
+      "ms": 2.088499993085861,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 26.40600000321865,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 55.79169999063015,
+      "stage": "typed-control-total",
+      "threadCpuMs": 31.25
+    },
+    {
+      "id": 1003,
+      "ms": 55.79850000143051,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0010000020265579224,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0005000084638595581,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 35.25909999012947,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 2.842600002884865,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 8.29679998755455,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1007,
+      "ms": 1.9386000037193298,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 2.1617999970912933,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 2.3826999962329865,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1010,
+      "ms": 1.9835000038146973,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1011,
+      "ms": 2.4842000007629395,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 27.506899997591972,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 57.6262000054121,
+      "stage": "typed-control-total",
+      "threadCpuMs": 31.25
+    },
+    {
+      "id": 1012,
+      "ms": 57.77629999816418,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 34.644900009036064,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.0012999922037124634,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 4.6256000101566315,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.655699998140335,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 2.879399999976158,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 4.026900008320808,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 2.134900003671646,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 3.003800004720688,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 3.0900999903678894,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 2.8530000001192093,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1021,
+      "ms": 2.9886000007390976,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1022,
+      "ms": 5.449599996209145,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 4.071700006723404,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1024,
+      "ms": 2.265500009059906,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1025,
+      "ms": 2.7013999968767166,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1000,
+      "ms": 2.278200000524521,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1001,
+      "ms": 3.2117000073194504,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1002,
+      "ms": 1.9804999977350235,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1003,
+      "ms": 15.730099990963936,
+      "stage": "font"
+    },
+    {
+      "id": 1003,
+      "ms": 40.17069999873638,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1003,
+      "ms": 40.177099987864494,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0012000054121017456,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1003,
+      "ms": 0.0004999935626983643,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1004,
+      "ms": 2.780799999833107,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1005,
+      "ms": 2.4752999991178513,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1006,
+      "ms": 2.7883999943733215,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1007,
+      "ms": 2.3434999883174896,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1008,
+      "ms": 4.569999992847443,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1009,
+      "ms": 5.588499993085861,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1010,
+      "ms": 2.57430000603199,
+      "stage": "window-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1011,
+      "ms": 2.444700002670288,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1012,
+      "ms": 24.845899999141693,
+      "stage": "font"
+    },
+    {
+      "id": 1012,
+      "ms": 60.809900000691414,
+      "stage": "typed-control-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1012,
+      "ms": 60.88580000400543,
+      "stage": "create-and-font"
+    },
+    {
+      "id": 1012,
+      "ms": 33.2107999920845,
+      "stage": "populate-and-select"
+    },
+    {
+      "id": 1012,
+      "ms": 0.001900002360343933,
+      "stage": "restore-redraw"
+    },
+    {
+      "id": 1013,
+      "ms": 2.955299988389015,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1014,
+      "ms": 2.55799999833107,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1015,
+      "ms": 5.956799998879433,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1016,
+      "ms": 2.4513999968767166,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1017,
+      "ms": 1.7180999964475632,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1018,
+      "ms": 2.1190000027418137,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1019,
+      "ms": 3.481200009584427,
+      "stage": "window-control-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1020,
+      "ms": 2.512700006365776,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1021,
+      "ms": 2.7413000017404556,
+      "stage": "button-total",
+      "threadCpuMs": 15.625
+    },
+    {
+      "id": 1022,
+      "ms": 2.739099994301796,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1023,
+      "ms": 2.2812999933958054,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1024,
+      "ms": 2.676600009202957,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    },
+    {
+      "id": 1025,
+      "ms": 5.763900011777878,
+      "stage": "button-total",
+      "threadCpuMs": 0.0
+    }
+  ],
+  "passed": true,
+  "timing": {
+    "childCreates": [
+      {
+        "class": "Static",
+        "id": 1000,
+        "ms": 47
+      },
+      {
+        "class": "Edit",
+        "id": 1001,
+        "ms": 47
+      },
+      {
+        "class": "Static",
+        "id": 1002,
+        "ms": 47
+      },
+      {
+        "class": "ComboBox",
+        "id": 1003,
+        "ms": 78
+      },
+      {
+        "class": "Button",
+        "id": 1004,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1005,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1006,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1007,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1008,
+        "ms": 172
+      },
+      {
+        "class": "Button",
+        "id": 1009,
+        "ms": 172
+      },
+      {
+        "class": "Static",
+        "id": 1010,
+        "ms": 188
+      },
+      {
+        "class": "Static",
+        "id": 1011,
+        "ms": 188
+      },
+      {
+        "class": "ComboBox",
+        "id": 1012,
+        "ms": 219
+      },
+      {
+        "class": "Button",
+        "id": 1013,
+        "ms": 235
+      },
+      {
+        "class": "Button",
+        "id": 1014,
+        "ms": 235
+      },
+      {
+        "class": "Edit",
+        "id": 1015,
+        "ms": 235
+      },
+      {
+        "class": "Button",
+        "id": 1016,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1017,
+        "ms": 250
+      },
+      {
+        "class": "Edit",
+        "id": 1018,
+        "ms": 250
+      },
+      {
+        "class": "Static",
+        "id": 1019,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1020,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1021,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1022,
+        "ms": 250
+      },
+      {
+        "class": "Button",
+        "id": 1023,
+        "ms": 266
+      },
+      {
+        "class": "Button",
+        "id": 1024,
+        "ms": 266
+      },
+      {
+        "class": "Button",
+        "id": 1025,
+        "ms": 266
+      }
+    ],
+    "nativeDispatchToInfoCreateMs": 32,
+    "nativeDispatchToInfoShowMs": 266,
+    "nativeDispatchToInfoTitleMs": 32
+  }
+}

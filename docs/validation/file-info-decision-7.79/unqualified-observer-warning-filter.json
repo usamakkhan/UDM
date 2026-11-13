@@ -1,0 +1,37 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 3,
+  "failed": 1,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794493444009,
+      "observerReadyEpochMs": 1794493444303
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 44,
+      "labels": [
+        "127.0.0.1 \u00b7 MP4 \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 MP4 \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "Error: Audio fixture timed out\n    at until (D:\\UDM\\tests\\hls-catalog.native-live.cjs:35:147)\n    at async choose (D:\\UDM\\tests\\hls-catalog.native-live.cjs:73:18)\n    at async D:\\UDM\\tests\\hls-catalog.native-live.cjs:253:3"
+    }
+  ]
+}

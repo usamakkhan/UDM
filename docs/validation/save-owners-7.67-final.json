@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "completeBrowserTransfers": 4,
+  "browserChecks": 32,
+  "decoderChecks": 8,
+  "saveWriters": 5,
+  "automaticWriters": 1,
+  "admission": [
+    {
+      "case": "cold-trace-a",
+      "flushMs": 46.8755,
+      "writeWaitMs": 0.0003
+    },
+    {
+      "case": "warm-trace-a",
+      "flushMs": 338.9133,
+      "writeWaitMs": 0.0003
+    },
+    {
+      "case": "warm-trace-b",
+      "flushMs": 50.1519,
+      "writeWaitMs": 0.0004
+    },
+    {
+      "case": "cold-trace-b",
+      "flushMs": 40.9965,
+      "writeWaitMs": 0.0003
+    }
+  ],
+  "productionBinariesUnchanged": 5,
+  "sharedCoreObjectsUnchanged": 42,
+  "toolJunctionsRemoved": 4,
+  "generatedObjectsRemoved": 3,
+  "productVersion": "7.67",
+  "browserVersion": "0.71.31",
+  "installedVersion": "7.11",
+  "installedThisCandidate": false
+}

@@ -1,0 +1,2336 @@
+{
+  "version": "7.27",
+  "browserVersion": "0.70.91",
+  "build": "passed",
+  "incrementalBase": "7.26",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "1C82AC7645EB5F367A36E67914EADDC833C810E08143F59D7666D8F975E4D373"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "D70F2396D920F6F03584BF0D59935D1BDC5D1462971BAB7981000F3675A9C488"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "2FA65CBC3E69A9EEBED9CCAE7ECAAEBDBBEC002B1258D56732A91993B2685683"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D99C14B1D783DFB0119A64C46F3686A76E67E0289EB1496C656FDD5653F56C67"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "6E240C892B79074909547DE3097F93CF3A5698A27D64B50EBEEF14B9F05C9498"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "23E1BD44CE94E27BAA63F1348DF78032B67F7033C14509C4C3CBD22B1ED82114"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "7890B73C26DAB9A5FA424BCEC199303570902FF974570F3033276A11A6605198"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "ACA8C04822CAE6868BE250FEB27A15745CAA4275DC83E8663850204C6DFE4C2C"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "ACA8C04822CAE6868BE250FEB27A15745CAA4275DC83E8663850204C6DFE4C2C"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "B0DB5510EB0859C0E73C842B034E3FCCE53C1615C36440089A5C333E45BF97FF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "FA9E7DBBDCBDD53741944A7D6D89F7A6DD3CCFFA5E0DE3A0D7AC964CE09C2250"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "901BE2BAF0A77D8F2019A03E723E56ECA4FC0BDD257764A30D120CEF1B98BCD0"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.27",
+      "sha256": "0DC4A07720F74EB224CA932C4EDA5E61D7B6970D0DDD66F804B109A0905C135A"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.27",
+      "sha256": "102B53DB894D2FEED2F76823C6039BD96060B717954D38E13DA51A16B0E0E1FC"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.27",
+      "sha256": "B98A7D901420FF7A3AE9CFD9BE2DB1091F3B0CFD3A3248C50223F45DB2D1EE7F"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.27",
+      "sha256": "D3751B8138F308F0D35EAB42886ECF56F174219A21166377E4AFB126F47180F5"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.27",
+      "sha256": "0FBD90A8FD4290E963F599A0C7B238B43AAE0BD26804C7B8AEDB737C2923AC87"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "validation": {
+    "passed": true,
+    "readerChecks": 32,
+    "readerResults": {
+      "passed": true,
+      "passedChecks": 32,
+      "failedChecks": 0,
+      "checks": [
+        {
+          "name": "chromium capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": true,
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 8,
+            "awaiting": 0,
+            "cancelCalls": 4,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 4,
+              "playerReadCancels": 4
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 2,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an advertised oversized response is declined before cloning",
+          "passed": true,
+          "observation": {
+            "clones": 0,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 0,
+              "playerReadCancels": 0
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": "",
+              "playerReads": 0,
+              "playerReadPeak": 1,
+              "playerReadCancels": 1
+            }
+          }
+        }
+      ],
+      "scope": "Owned Web Streams in headless Edge, both bundles and observer orders. Deadline callback invoked deterministically; no thirty-second timing claim."
+    },
+    "baseline": {
+      "passed": false,
+      "passedChecks": 8,
+      "failedChecks": 24,
+      "checks": [
+        {
+          "name": "chromium capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": true,
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 2,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        }
+      ],
+      "scope": "Owned Web Streams in headless Edge, both bundles and observer orders. Deadline callback invoked deterministically; no thirty-second timing claim."
+    },
+    "initialFixture": {
+      "passed": false,
+      "passedChecks": 4,
+      "failedChecks": 28,
+      "checks": [
+        {
+          "name": "chromium capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Failed to fetch'\n- 'owned stream failure'\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "chromium observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Failed to fetch'\n- 'owned stream failure'\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox capture-first a response-body error releases the inspection and preserves the site error",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Failed to fetch'\n- 'owned stream failure'\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first retiring a visit releases its blocked clone reader before the site finishes",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first same-URL state updates retain a productive reader",
+          "passed": true,
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first eight slow responses retain at most four actual inspection readers",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert((await state()).awaiting<=4)\n",
+          "observation": {
+            "clones": 8,
+            "opened": 8,
+            "released": 0,
+            "awaiting": 8,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first accepting newer metadata cancels an older blocked inspection",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 2,
+            "opened": 2,
+            "released": 1,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first byte-limit cancellation releases without awaiting the other tee branch",
+          "passed": false,
+          "error": "page.waitForFunction: Timeout 1000ms exceeded.",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 1,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first an advertised oversized response is declined before cloning",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n1 !== 0\n",
+          "observation": {
+            "clones": 1,
+            "opened": 0,
+            "released": 0,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first the thirty-second inspection deadline releases only the clone",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n0 !== 1\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 0,
+            "awaiting": 1,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        },
+        {
+          "name": "firefox observer-first a response-body error releases the inspection and preserves the site error",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Failed to fetch'\n- 'owned stream failure'\n",
+          "observation": {
+            "clones": 1,
+            "opened": 1,
+            "released": 1,
+            "awaiting": 0,
+            "cancelCalls": 0,
+            "sourceCancels": 0,
+            "deadlines": 0,
+            "diagnostics": {
+              "requests": 0,
+              "verified": 0,
+              "error": ""
+            }
+          }
+        }
+      ],
+      "scope": "Owned Web Streams in headless Edge, both bundles and observer orders. Deadline callback invoked deterministically; no thirty-second timing claim."
+    },
+    "fixtureCorrection": "Initial synthetic error check expected its injected error message. Added a native Response.clone control; corrected baseline passes 8 controls and fails 24 resource cases. Final same fixture passes all 32.",
+    "baselineProvenance": "Expected 7.26 capture source from prior build receipt; the baseline fixture did not independently record module hashes.",
+    "raceChecks": 52,
+    "raceResults": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "chromium capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        }
+      ],
+      "passedChecks": 52,
+      "failedChecks": 0,
+      "scope": "Owned responses in headless Edge; both bundles and both observer wrapping orders. No personal browser profile or real video download."
+    },
+    "nodeSuites": [
+      {
+        "test": "capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "DC5224E7096471208C8F3BE307A1AA6DCF388F1603908D87B5857B88737FABE0",
+        "stdout": "PASS early player response capture preserves request, response body and promise\r\nPASS later partial player metadata retains early capture URLs\r\nPASS ad response cannot replace current video catalog\r\nPASS unrelated endpoints and mismatched preparation are rejected\r\nPASS same-itag audio languages and bitrate metadata survive repeated capture\r\nPASS current player metadata wins over the initial page snapshot\r\nPASS a changed format revision does not inherit a previous direct URL\r\nALL 7 CAPTURE CHECKS PASSED\r\n",
+        "logSha256": "D4498164AEF2DF8F3CAE21DE13251FD5B8FEAABB0917404AA121C40F9F049653"
+      },
+      {
+        "test": "youtube-ad-markers.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "D9928E9F437C203A40D725B09821FCD21F9CFE9CA1935EDBE1C4A3B56CE6A57C",
+        "stdout": "{\"passed\":74,\"failed\":0}\r\n",
+        "logSha256": "DB44EC317668CE49E25A330C4B48568D879B2CECA53650C87A833DB6A84D86ED"
+      },
+      {
+        "test": "youtube-ad-page-capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "8AE391EF67DA065387D6478096B80179A22EFA0414FC214886BBB8A3F3E8E98C",
+        "stdout": "{\"passed\":192,\"failed\":0}\r\n",
+        "logSha256": "346CF669F121989E32FFDD48F13B0873C0B24EDDE1240216CAF8B8F2C7F57931"
+      },
+      {
+        "test": "streaming-capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "4DFC10D0B525E4CE03D695D1D86C03FB65E333019374A2D5CCFF8FA38E2CCCC0",
+        "stdout": "PASS Browser API captures a matched successful streaming POST without relying on page fetch wrappers\r\nPASS Saved streaming sessions revalidate ad markers after an extension reload\r\nPASS Streaming offers stay bound to video, frame and document\r\nPASS Returning to the same video cannot reuse a capture from its previous visit\r\nPASS An older request finishing late cannot replace the latest accepted capture\r\nPASS Navigation clearing removes streaming request context\r\nPASS A delayed identity lookup cannot restore a capture after navigation\r\nPASS A response from a request removed by navigation cannot create a new offer\r\nPASS Redirected and rejected streaming responses are not offered\r\nPASS A raw MP4 response is not mistaken for framed UMP\r\nPASS Ads/unmatched players, changed documents and private tabs do not create capture offers\r\nPASS Multi-chunk browser request bodies are reconstructed exactly\r\nPASS Unavailable, file-backed, oversized and malformed request bodies are rejected\r\nPASS Unassociated worker requests are counted instead of assigned to an arbitrary player\r\nPASS Response document identity must match the captured request\r\nPASS Failed requests release their pending capture\r\nPASS Streaming observation is restricted to HTTPS playback endpoints\r\nPASS A downloadable codec at the selected quality takes priority over an unavailable preferred codec\r\nPASS Framed SABR URLs are never sent as ordinary MP4 links\r\nPASS An explicit ad state blocks the format menu even if the player retains the content video ID\r\nPASS Quality preparation supports Shorts and embedded players\r\nALL 21 VIDEO CAPTURE REGRESSIONS PASSED\r\n",
+        "logSha256": "E03B7F5621D1E80395D5F6446371E8FC8722C59168AC01FDE35CBEE210116DC8"
+      },
+      {
+        "test": "format-context.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "4DB68757892993B949970680422689C8BF43E4A9D7E12976F3BB5A5B3AF113F4",
+        "stdout": "PASS Document-bound panel formats do not wait on unrelated current-tab lookup or document idle\r\nPASS Navigation to a different document cannot populate the old panel\r\nPASS Private content-script contexts remain rejected\r\nPASS Missing injection document identity retains a current-tab verification\r\nPASS Legacy senders retain both original current-tab checks\r\nPASS Download handoff cannot request the display-only shortcut or trust a stale sender tab\r\nPASS Popup format requests still verify current browser tab state\r\nPASS Playlist navigation accepts current player with original sender URL\r\nPASS Playlist fallback rejects changed or missing document identity\r\nPASS Playlist fallback rejects changed or missing document identity\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback verifies current tab video\r\nALL 14 FORMAT CONTEXT CHECKS PASSED\r\n",
+        "logSha256": "EC458B597AA3F3F47C8947B476F38A7F41F39DB18702C9032F8FC8F6D5BCA3C4"
+      },
+      {
+        "test": "youtube-audio.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "9E81027077597A25FF7135116AB7AE2A39C0D24560FA3757EC88F669FEFBD151",
+        "stdout": "PASS Same-itag audio languages remain distinct and show codec and bitrate\r\nPASS Live and unrelated-video audio are absent\r\nPASS Reject muxed video as an audio-only file\r\nPASS Reject Opus/WebM as an audio-only file\r\nPASS Reject unknown codec as an audio-only file\r\nPASS Reject wrong itag as an audio-only file\r\nPASS Reject missing resource as an audio-only file\r\nPASS Reject missing expiry as an audio-only file\r\nPASS Reject expired as an audio-only file\r\nPASS Reject non-numeric expiry as an audio-only file\r\nPASS Reject lookalike host as an audio-only file\r\nPASS Reject embedded credentials as an audio-only file\r\nPASS Reject custom port as an audio-only file\r\nPASS Reject SABR as an audio-only file\r\nPASS Reject UMP as an audio-only file\r\nPASS Reject sequence stream as an audio-only file\r\nPASS Reject untransformed n as an audio-only file\r\nPASS Reject signed byte range as an audio-only file\r\nPASS Unsigned playback byte limits are removed for a whole-file download\r\nPASS Captured default audio cannot replace another language with the same itag\r\nPASS Matching observed playback supplies a transformed direct audio URL\r\nPASS An older audio revision cannot supply the current track\r\nPASS Ambiguous duplicate track metadata is rejected\r\nPASS Selected audio uses one ordinary native add without player retrieval, SABR or video\r\nPASS Audio-only metadata produces a useful menu without signed URLs or native prefetch\r\nPASS Runtime message dispatch acknowledges the audio job\r\nPASS The renewed audio URL supplies the only request context and the current size\r\nPASS A second URL change during request preparation cannot submit stale audio\r\nPASS No native job after document navigation\r\nPASS No native job after changed video\r\nPASS No native job after advertisement\r\nPASS No native job after removed selected language\r\nPASS No native job after changed resource\r\nPASS No native job after changed metadata revision\r\nPASS No native job after changed signed revision\r\nPASS No native job after fallback document navigation\r\nPASS No native job after unknown document identity\r\nPASS Firefox-style document binding uses unchanged performance timeOrigin\r\nPASS Desktop panel policy applies to audio-only handoff\r\nPASS Private tabs cannot hand off audio\r\nPASS Sender document must match the injected player\r\nPASS A forged audio selection cannot supply its own URL\r\nPASS Native rejection is reported without success or retry\r\nPASS Real page reader preserves bounded audio metadata and excludes DRM tracks\r\nPASS Real page reader retains IDM-style nested reported content length\r\nPASS Real page reader rejects an active advertisement\r\nALL 46 YOUTUBE AUDIO CHECKS PASSED\r\n",
+        "logSha256": "206DE63273CFD36B93B00F62ED29440597B0AFB57A1840B8C853BB3210871A2A"
+      },
+      {
+        "test": "youtube-captions.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "9BCAE3E5660C44BBD51F2CEEF081018B501B3B7702DE24F2738DCCDB957D8E29",
+        "stdout": "PASS chromium manual and ASR tracks have distinct TTML entries\r\nPASS chromium matched observed address preserves session and signed parameters\r\nPASS chromium different video, language or signature cannot contribute a session\r\nPASS chromium signed format and expired or translated tracks are rejected\r\nPASS chromium relative YouTube caption URLs resolve and identical rows deduplicate\r\nPASS firefox manual and ASR tracks have distinct TTML entries\r\nPASS firefox matched observed address preserves session and signed parameters\r\nPASS firefox different video, language or signature cannot contribute a session\r\nPASS firefox signed format and expired or translated tracks are rejected\r\nPASS firefox relative YouTube caption URLs resolve and identical rows deduplicate\r\nALL 10 YOUTUBE CAPTION CHECKS PASSED\r\n",
+        "logSha256": "F7DCEFC3CB46C07C4F1808477ECFA7DC34AEBB0834796B3A0AAFEBCBD1B6C570"
+      },
+      {
+        "test": "video-readiness.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "00BFCD8173B7B0DB27D3638440E20424F3A1764278A136BE22202D41483D6362",
+        "stdout": "PASS An unobserved combined stream cannot outrank a usable same-quality adaptive selection\r\nPASS An unresolved combined stream alone keeps its actual quality without claiming a ready URL\r\nPASS An unobserved n value in the video prevents direct pair handoff\r\nPASS An unobserved n value in default audio prevents direct pair handoff\r\nPASS The next usable default audio can supply a valid pair\r\nPASS A secondary-language track cannot silently replace default audio\r\nPASS Successful playback with matching resource identity enables a combined stream\r\nPASS A same-itag advertisement cannot make the content URL ready\r\nPASS Expired playback observations cannot promote unresolved links\r\nPASS Observation flags must be explicit booleans\r\nPASS A combined URL without n retains the existing ready-file path\r\nPASS An observed URL still needs a valid expiry\r\nPASS Playback-scoped signed ranges are never expanded into a full-file URL\r\nPASS An unresolved MP4 adaptive route wins over an unsupported combined fallback without inventing heights\r\nPASS Audio-only selection uses the same readiness rule\r\nPASS Observed adaptive video and audio retain their transformed parameters\r\nPASS Quality labels render clean separators without mojibake\r\nALL 17 VIDEO READINESS CHECKS PASSED\r\n",
+        "logSha256": "993F99244E00028F1D1968868028EDA6F3BFF00BEAB6394894F6BA5266027503"
+      }
+    ],
+    "limits": {
+      "retainedPlayerApiInspections": 4,
+      "actualResponseBytes": 2097152,
+      "deadlineMilliseconds": 30000,
+      "scope": "JSON player-API fetch response clones only; not total browser/site buffering."
+    },
+    "deadlineQualification": "The browser registered a 30000 ms timer. Fixture invokes that callback deterministically and checks cancellation, lock release, original promise/body and cleanup. No real-time 30-second expiry measurement.",
+    "streamErrorQualification": "Matches native-clone control in Edge; no assertion that synthetic source error messages survive native tee cloning unchanged.",
+    "installedVersion": "7.11",
+    "installedBrowser": "0.70.75",
+    "installerCreated": false,
+    "personalBrowserProfileUsed": false,
+    "personalCatalogUsed": false,
+    "realVideoDownloaded": false,
+    "responsePayloadFilesPersisted": false,
+    "limitations": [
+      "Both bundle implementations run in headless Edge; actual Firefox engine and active personal-profile integration remain unqualified.",
+      "SABR/UMP response and streamed request-body readers require their own cancellation and budget qualification.",
+      "Source authority for fresh clones of stale player objects and legitimate in-place mutations remains open.",
+      "Live public pre-roll, desktop handoff, exact final-file verification, installed 7.27 acceptance, full suite and paired IDM timing remain outstanding."
+    ]
+  }
+}

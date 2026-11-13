@@ -1,0 +1,461 @@
+{
+  "version": "7.41",
+  "browserVersion": "0.71.5",
+  "build": "passed",
+  "incrementalBase": "7.40",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "BE65060F886926F0C3C1A6BC2F86D5F1D63EBDEE1E5030B10B3B603E84B3BC2C"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "F08779F3E9D9685875043096EAC49E8E3C390ED9D0D77AAF299256981AF2A234"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D700F46E9700516D8E29770026B81E1C543075856CA36BD78CB3BE8F513698BC"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "B4FF004D41B128B5FE2DFD97223700499DA248C74D963C203342DB4D1213466A"
+    },
+    {
+      "path": "native/ProgressRateHistoryTests.cpp",
+      "sha256": "4037083906BD564C4A89C2D57FEB4304B122BBADB5B0CC77B78D64B829834C40"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "823FED010B58392F65C91B9CEDFC44D963452C353ACA7FCD920E7F47784F8627"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "44B514D2BE64BA3CDBC8324B608E77A428EEBB096228A8D13BBE56860F246641"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "33E4B2343E2F60DBBFFFC178A7C724E0C71E1DD2F1DC2F1EFAFFB80CA5A6393D"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "33E4B2343E2F60DBBFFFC178A7C724E0C71E1DD2F1DC2F1EFAFFB80CA5A6393D"
+    },
+    {
+      "path": "tests/browser.test.cjs",
+      "sha256": "709376EECED8685E41FAEB414FC0A6C15816FE51730AE340CC6353334E7F41B9"
+    },
+    {
+      "path": "tests/browser-preflight-state.test.cjs",
+      "sha256": "C0070FB74175D03F978CAC0DC5C798296B3A7E5D85408A868125091394048044"
+    },
+    {
+      "path": "tests/browser-received-response.test.cjs",
+      "sha256": "1D256B44255C271A17A69C47C10CB391EDBE65F6DAF42EF0A5FC6271B38D964B"
+    },
+    {
+      "path": "tests/capture-transaction.test.cjs",
+      "sha256": "DDF6236CA134D8682454194B359C293E0E16487AB54FFE84AE5944C5A712E9EF"
+    },
+    {
+      "path": "tests/capture-recovery.test.cjs",
+      "sha256": "7B25B99941E13FAF00F055F9921E6EFE4E50DEE9EBC54605E6D9B793F1657240"
+    },
+    {
+      "path": "browser/chromium/capture-recovery.js",
+      "sha256": "047CBF8B4071D32463D4F79A377EC31F0754AB89245DA8182DE19D7B9FAB6BC5"
+    },
+    {
+      "path": "browser/firefox/capture-recovery.js",
+      "sha256": "047CBF8B4071D32463D4F79A377EC31F0754AB89245DA8182DE19D7B9FAB6BC5"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "tests/panel-track-refresh.browser.cjs",
+      "sha256": "77A6FF4E3F786933635C94AB0002565A13354A97034E2493F2383A7E3E2ED5ED"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "tests/youtube-pending-captures.browser.cjs",
+      "sha256": "D2F0A2B8A3777D3EAE242BB9FF75CF8B632605325008D9F9BDC42A232E2765D7"
+    },
+    {
+      "path": "tests/youtube-stream-readers.browser.cjs",
+      "sha256": "C1E98D1021D99CA93C0B054EF26D938BCC93879C361E5A730B246E42C267D70F"
+    },
+    {
+      "path": "tests/streaming-capture.test.cjs",
+      "sha256": "987D5AB8FDD4492935991D659A3554CF0D665976307E8A2C54A795792E614251"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "E777E5D4EE1BC3791B3D3122EDCF9621C916DFBF837B882F0B49235898C29BAD"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "B4773BB5C7487D5AF8DFC13E1F724AA369335D5EE626C344B23D09581F7A4299"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "E1723D3E2CD447A3E4F08B2D39012C7AE3E70A85213C997124EFB94C93959CAB"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.41",
+      "sha256": "EAA696AF17A51CAD8A3C0896B2936ECD1DE732EAA5AFF5E8BAD58EB071303E39"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.41",
+      "sha256": "A6950E28E282E20DA9D0A1946A620C170539FEF6C222521341680980771DEF9F"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.41",
+      "sha256": "FD4BF094F06BEDCD8B47E3169B0035699590A685B88F87372C8E09F050312BF8"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.41",
+      "sha256": "FBDF1CA291EAA8F532A1CAE24A7B52E660B900FD055F5E1CE8232236B5182C15"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.41",
+      "sha256": "0D61475B9FC974EFE74EAAFF3C4A36042E5AEFDFC076CB55610CFF4C167DCD00"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "candidateStatus": "rejected; do not install",
+  "rejection": {
+    "reason": "Real Edge reports totalBytes 0 for unknown in-progress chunked downloads too; zero alone cannot establish empty response completion.",
+    "observations": "candidates/received-response-7.41/edge-byte-counts/results.json",
+    "installed": false,
+    "supersededBy": "7.42 / browser 0.71.6",
+    "liveEdgeCounterEvidence": {
+      "scope": "Real isolated Edge downloads API, synthetic empty and 64 KiB chunked responses; UDM and the personal browser were not loaded",
+      "observations": [
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "empty",
+          "state": "complete",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 32768
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 65536
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 65536,
+          "bytesReceived": 65536
+        },
+        {
+          "case": "unknown",
+          "state": "in_progress",
+          "totalBytes": 65536,
+          "bytesReceived": 65536
+        },
+        {
+          "case": "unknown",
+          "state": "complete",
+          "totalBytes": 65536,
+          "bytesReceived": 65536
+        },
+        {
+          "id": 1,
+          "event": "created",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "case": "empty"
+        },
+        {
+          "id": 2,
+          "event": "created",
+          "state": "in_progress",
+          "totalBytes": 0,
+          "bytesReceived": 0,
+          "case": "unknown"
+        }
+      ],
+      "checks": [
+        {
+          "name": "empty response completed with expected browser/file byte count",
+          "passed": true,
+          "bytes": 0
+        },
+        {
+          "name": "unknown response completed with expected browser/file byte count",
+          "passed": true,
+          "bytes": 65536
+        },
+        {
+          "passed": false,
+          "error": "AssertionError [ERR_ASSERTION]: Unknown size was not observed as -1 while receiving\n    at D:\\UDM\\tests\\browser-download-byte-counts.native-live.cjs:29:2"
+        }
+      ]
+    },
+    "documentationDiscrepancy": "Chrome documents -1 for unknown totalBytes, but this real Edge run reported 0 for an unfinished chunked response. Use observed behavior as well as documentation."
+  }
+}

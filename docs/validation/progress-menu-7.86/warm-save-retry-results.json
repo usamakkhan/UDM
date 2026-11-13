@@ -1,0 +1,133 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "previewOnly": false,
+  "httpDiagnostics": false,
+  "previewMalformedResponse": false,
+  "netlogSummaryWritten": false,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 8,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794508914117,
+      "observerReadyEpochMs": 1794508914366
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 149,
+      "labels": [
+        "127.0.0.1 \u00b7 MP4 \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 MP4 \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "name": "Cold HLS File Info opens before verification and publishes the exact output shown before Start",
+      "passed": true,
+      "actionableEpochMs": 1794508915391,
+      "exactVisibleEpochMs": 1794508916133,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "startEpochMs": 1794508916151,
+      "catalogReadRetries": 0,
+      "admissionRetried": true,
+      "sameDialogAfterRetry": true,
+      "retryEpochMs": 1794508915309,
+      "rejectedCatalogDownloads": 0,
+      "decisionWriteRetried": true,
+      "sameDialogAfterDecisionFailure": true,
+      "sameJobAfterDecisionFailure": true,
+      "productionCold": false,
+      "productionExecutable": true,
+      "productionReadyBeforeSelection": true,
+      "selectionToActionableMs": 261,
+      "selectionToExactMs": 1003,
+      "selectionToFirstSegmentMs": 272,
+      "lastSegmentToExactMs": 668,
+      "segments": [
+        {
+          "path": "/v720/index0.ts",
+          "startedMs": 272,
+          "finishedMs": 277
+        },
+        {
+          "path": "/v720/index3.ts",
+          "startedMs": 278,
+          "finishedMs": 281
+        },
+        {
+          "path": "/v720/index1.ts",
+          "startedMs": 281,
+          "finishedMs": 284
+        },
+        {
+          "path": "/v720/index2.ts",
+          "startedMs": 284,
+          "finishedMs": 289
+        },
+        {
+          "path": "/es/index0.ts",
+          "startedMs": 294,
+          "finishedMs": 295
+        },
+        {
+          "path": "/es/index1.ts",
+          "startedMs": 304,
+          "finishedMs": 305
+        },
+        {
+          "path": "/es/index2.ts",
+          "startedMs": 306,
+          "finishedMs": 307
+        },
+        {
+          "path": "/es/index3.ts",
+          "startedMs": 318,
+          "finishedMs": 319
+        },
+        {
+          "path": "/es/index4.ts",
+          "startedMs": 334,
+          "finishedMs": 335
+        }
+      ],
+      "checkpointsBeforeFirstSegment": null
+    },
+    {
+      "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+      "passed": true,
+      "duration": 8.021333,
+      "videoFrames": 192,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 output contains the selected audio and language tag",
+      "passed": true,
+      "language": "es",
+      "frequencyHz": 880,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+      "passed": true
+    },
+    {
+      "name": "Audio selection pages have no script errors",
+      "passed": true
+    }
+  ]
+}

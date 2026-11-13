@@ -1,0 +1,479 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 8,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 58,
+      "labels": [
+        "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "name": "Cold HLS File Info opens before verification and publishes the exact output shown before Start",
+      "passed": true,
+      "actionableEpochMs": 1794440877628,
+      "admissionEpochMs": 1794440877228,
+      "admissionToActionableMs": 406,
+      "catalogSaveObserved": false,
+      "checks": [
+        {
+          "name": "File Info is actionable while the main list stays hidden",
+          "passed": true
+        },
+        {
+          "name": "First actionable compact File Info has no advanced queue control",
+          "passed": true
+        },
+        {
+          "name": "Media File Info does not create the ordinary server filename action",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The browser selection creates exactly one native job",
+          "passed": true
+        },
+        {
+          "name": "The compact exact size matches verified staging before Start and the final file is absent",
+          "passed": true
+        },
+        {
+          "name": "The browser download receives bytes before confirmation and completes after Start",
+          "passed": true
+        },
+        {
+          "name": "Published file matches the exact size and hash verified before Start",
+          "passed": true
+        }
+      ],
+      "exactVisibleEpochMs": 1794440878877,
+      "firstReceivedObservationEpochMs": 1794440878008,
+      "formStages": [],
+      "held": null,
+      "publishedEpochMs": 1794440879771,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "sizeBeforeStart": 6560076,
+      "startEpochMs": 1794440878947,
+      "startWhileReceiving": false,
+      "status": "Complete",
+      "trace": [],
+      "productionCold": false,
+      "selectionToAdmissionMs": 865,
+      "selectionToFirstReceivedObservationMs": 1645,
+      "selectionToActionableMs": 1265,
+      "selectionToExactMs": 2514,
+      "selectionToFirstSegmentMs": 1634,
+      "lastSegmentToExactMs": 451,
+      "segments": [
+        {
+          "path": "/v720/index1.ts",
+          "startedMs": 1634,
+          "finishedMs": 1637
+        },
+        {
+          "path": "/v720/index0.ts",
+          "startedMs": 1637,
+          "finishedMs": 1641
+        },
+        {
+          "path": "/v720/index2.ts",
+          "startedMs": 1642,
+          "finishedMs": 1647
+        },
+        {
+          "path": "/v720/index3.ts",
+          "startedMs": 1649,
+          "finishedMs": 1653
+        },
+        {
+          "path": "/es/index0.ts",
+          "startedMs": 1769,
+          "finishedMs": 1771
+        },
+        {
+          "path": "/es/index1.ts",
+          "startedMs": 1852,
+          "finishedMs": 1852
+        },
+        {
+          "path": "/es/index2.ts",
+          "startedMs": 1893,
+          "finishedMs": 1895
+        },
+        {
+          "path": "/es/index3.ts",
+          "startedMs": 1895,
+          "finishedMs": 1899
+        },
+        {
+          "path": "/es/index4.ts",
+          "startedMs": 2062,
+          "finishedMs": 2063
+        }
+      ],
+      "checkpointsBeforeFirstSegment": null
+    },
+    {
+      "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+      "passed": true,
+      "duration": 8.021333,
+      "videoFrames": 192,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 output contains the selected audio and language tag",
+      "passed": true,
+      "language": "es",
+      "frequencyHz": 880,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+      "passed": true
+    },
+    {
+      "name": "Audio selection pages have no script errors",
+      "passed": true
+    }
+  ]
+}

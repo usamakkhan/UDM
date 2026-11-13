@@ -3,6 +3,9 @@
 #include "OriginalResponsePolicy.hpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "MediaAdmission.hpp"
+#include "CatalogAdmissionRegistry.hpp"
+#include "BrowserAdmissionContext.hpp"
+#include "FileInfoInitialView.hpp"
 #include "MediaStorage.hpp"
 #include "Scanner.hpp"
 #include "FileIdentity.hpp"
@@ -21,7 +24,7 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
    throw std::runtime_error("Direct audio receipts require an M4A download.");
  }
  auto request=message;request.erase("mediaToken");request.erase("requestId");auto fingerprint=mediaAdmissionDigest(request);
- Lock lock(mutex);const auto now=epoch();const auto& savedRows=captureStoreView(*this);
+ std::unique_lock<std::recursive_mutex> lock(mutex);const auto now=epoch();const auto& savedRows=captureStoreView(*this);
  if(const auto found=savedRows.find(token);found!=savedRows.end()){
   const auto& row=*found;
   if(num(row,"protocol")!=3||str(row,"status")!="accepted")throw std::runtime_error("This media operation was released or belongs to another request. Check its receipt.");
@@ -34,6 +37,7 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
  captureSpace(rows,now);
  if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress.");
  const auto protectedFingerprint=protect(fingerprint);
+ auto admission=admissionRegistry->acquire(token,protectedFingerprint,fingerprint);
  // Ordinary direct-audio admission can resolve a duplicate or retarget receipts.
  // Video and adaptive admission either append a job or update the armed refresh offer.
  auto previousState=directAudio?state:Json();auto previousJobs=jobs;auto previousOffers=pendingOffers;auto previousExisting=existingOffers;
@@ -48,7 +52,17 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
  }else if(!refreshId.empty()&&refreshUntil>=now){
   for(auto job:jobs)if(job->id()==refreshId){before.push_back({job,job->data});break;}
  }
- auto oldRefresh=refreshId;auto oldRefreshUntil=refreshUntil;JobPtr admitted;
+ auto oldRefresh=refreshId;auto oldRefreshUntil=refreshUntil;JobPtr admitted;bool detached=false;Json preparedReceipt;
+ const auto installDetached=[&]{
+  auto liveRows=captureStore(*this);if(liveRows.contains(token)&&liveRows.at(token)!=preparedReceipt)throw std::runtime_error("The accepted media operation conflicts with the current download history.");
+  liveRows[token]=preparedReceipt;
+  const auto found=std::find_if(jobs.begin(),jobs.end(),[&](const JobPtr& job){return job->id()==admitted->id();});
+  if(found!=jobs.end()&&*found!=admitted)throw std::runtime_error("The accepted media identity is already in use.");
+  const bool insert=found==jobs.end();if(insert)jobs.reserve(jobs.size()+1);
+  if(!state.contains("BrowserCaptures"))state["BrowserCaptures"]=Json::object();
+  state.at("BrowserCaptures").swap(liveRows);if(insert)jobs.push_back(admitted);
+  admission.installed();detached=false;
+ };
  catalogCheckpoint=checkpoint;catalogTransaction=true;
  try{
   admitted=receive(request);
@@ -73,10 +87,42 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
   rows[token]=std::move(receipt);
   if(directAudio)state["BrowserCaptures"]=std::move(rows);
   else{state["BrowserCaptures"].swap(rows);swappedReceipts=true;}
-  if(checkpoint)checkpoint("before-commit");
-  catalogTransaction=false;save();
+  admission.prepare(std::make_shared<const CatalogAdmissionReservation>(token,admitted->snapshot(),state.at("BrowserCaptures").at(token)));
+  const bool newOnly=detachedBrowserAdmissionAllowed&&!directAudio&&!refreshed&&before.empty()&&jobs.size()==previousJobs.size()+1&&jobs.back()==admitted&&
+   std::equal(previousJobs.begin(),previousJobs.end(),jobs.begin())&&pendingOffers==previousOffers&&existingOffers==previousExisting&&
+   refreshId==oldRefresh&&refreshUntil==oldRefreshUntil&&str(admitted->data,"DuplicateOf").empty();
+  if(newOnly){
+   const auto initialView=preparedBrowserFileInfo&&str(state.at("BrowserCaptures").at(token).value("presentation",Json::object()),"kind")=="download"?captureFileInfoInitialView(*this,*admitted):nullptr;
+   preparedReceipt=state.at("BrowserCaptures").at(token);jobs.pop_back();
+   if(hadReceipts)state.at("BrowserCaptures").swap(rows);else state.erase("BrowserCaptures");
+   swappedReceipts=false;catalogTransaction=false;catalogCheckpoint={};detached=true;
+   if(checkpoint)checkpoint("before-commit");
+   lock.unlock();std::exception_ptr failure;
+   try{if(initialView)(*preparedBrowserFileInfo)(initialView);if(checkpoint)checkpoint("detached-ready");saveCatalog(false,&checkpoint);}catch(...){failure=std::current_exception();}
+   const bool accepted=admission.resolve();lock.lock();
+   if(!accepted){if(failure)std::rethrow_exception(failure);throw std::runtime_error("The media operation has not been durably accepted.");}
+   // Another containing write may have succeeded even if this writer failed.
+   installDetached();
+  }else{
+   if(checkpoint)checkpoint("before-commit");
+   catalogTransaction=false;saveCatalog(false);
+   if(!admission.committed())throw std::runtime_error("The media operation has not been durably accepted.");
+   admission.installed();
+  }
  }catch(...){
+  if(detached){
+   const auto failure=std::current_exception();if(lock.owns_lock())lock.unlock();const bool accepted=admission.resolve();
+   if(!accepted)notifyRejectedBrowserFileInfo(admitted->id());
+   lock.lock();
+   catalogTransaction=false;catalogCheckpoint={};if(accepted)installDetached();
+   // The tentative live state was already restored before unlocking. Preserve
+   // unrelated edits/jobs that arrived while the detached write was running.
+   std::rethrow_exception(failure);
+  }
   catalogTransaction=false;catalogCheckpoint={};
+  // A successful containing snapshot wins over a later failed acknowledgement
+  // or obsolete write. Never undo an acceptance proven by published bytes.
+  if(admission.committed()){admission.installed();throw;}
   if(directAudio)state.swap(previousState);
   else if(swappedReceipts){
    if(hadReceipts)state.at("BrowserCaptures").swap(rows);

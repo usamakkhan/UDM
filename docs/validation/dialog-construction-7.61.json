@@ -1,0 +1,138 @@
+{
+  "applicationVersionInvestigated": "7.61",
+  "productionVersionUnchangedByPrototype": true,
+  "source": "benchmarks/ui/DialogConstructionProbe.cpp",
+  "sourceSha256": "b02e30e2873645f69f190f28a2f8772720788299560541ff626655e8fe712f6d",
+  "helper": "benchmarks/ui/dialog_construction.py",
+  "helperSha256": "30b4ada36856dcc524463eee7b799c4aab8e9f0908dd717a4998cc8995682ab8",
+  "build": {
+    "sourceSha256": "b02e30e2873645f69f190f28a2f8772720788299560541ff626655e8fe712f6d",
+    "resourceSourceSha256": "3451c7642f5531046001513e1b89dcfb472c7b6cfeac239faaf96652987f8161",
+    "exeSha256": "98ed4201a7789a0e342ab42276d29be43c0fb558cfc18d3af14caf0a4e689c48",
+    "scope": "Isolated hidden MFC manual-versus-resource construction prototype, 24 representative controls; no product changes or personal UI automation."
+  },
+  "modes": {
+    "0": "Manual creation",
+    "1": "Resource template plus second font assignment",
+    "2": "Manual creation without parent creation notifications",
+    "3": "Resource template reusing its assigned font"
+  },
+  "constructions": 48,
+  "warmupRounds": 2,
+  "measuredSamplesPerMode": 10,
+  "dpi": 120,
+  "fontHeight": -13,
+  "matrixSha256": "6ec7ce1d17bc3820953a7ddebe3c589c3eb0425adf62bf9e30607b651c76ed74",
+  "summaries": [
+    {
+      "mode": 0,
+      "count": 10,
+      "medianMs": 253.024,
+      "minMs": 201.247,
+      "maxMs": 280.332,
+      "parentCreateNotifications": [
+        27
+      ],
+      "comboExtendedStyles": [
+        0
+      ]
+    },
+    {
+      "mode": 1,
+      "count": 10,
+      "medianMs": 269.009,
+      "minMs": 229.904,
+      "maxMs": 294.821,
+      "parentCreateNotifications": [
+        0
+      ],
+      "comboExtendedStyles": [
+        4
+      ]
+    },
+    {
+      "mode": 2,
+      "count": 10,
+      "medianMs": 255.364,
+      "minMs": 218.778,
+      "maxMs": 283.025,
+      "parentCreateNotifications": [
+        0
+      ],
+      "comboExtendedStyles": [
+        4
+      ]
+    },
+    {
+      "mode": 3,
+      "count": 10,
+      "medianMs": 256.9145,
+      "minMs": 216.045,
+      "maxMs": 789.374,
+      "parentCreateNotifications": [
+        0
+      ],
+      "comboExtendedStyles": [
+        4
+      ]
+    }
+  ],
+  "decision": "No construction approach demonstrated a material gain in this prototype. Do not replace production File Info with a resource template or suppress parent notifications on this evidence.",
+  "helperValidation": {
+    "buildAndExecution": "passed",
+    "constructions": 48,
+    "report": {
+      "sourceSha256": "b02e30e2873645f69f190f28a2f8772720788299560541ff626655e8fe712f6d",
+      "resourceSourceSha256": "3451c7642f5531046001513e1b89dcfb472c7b6cfeac239faaf96652987f8161",
+      "exeSha256": "9919193100361a5f045bd2378b6e17719ac203ab0bd8e62a609601a09f7bdfa4",
+      "scope": "Hidden MFC prototype, 24 representative controls; not the actual File Info dialog, installed UDM or IDM.",
+      "modes": {
+        "0": "Manual creation",
+        "1": "Resource template plus second font assignment",
+        "2": "Manual creation without parent creation notifications",
+        "3": "Resource template reusing its assigned font"
+      },
+      "warmupRounds": 2,
+      "summaries": [
+        {
+          "mode": 0,
+          "count": 10,
+          "medianMs": 361.615,
+          "minMs": 289.888,
+          "maxMs": 585.363
+        },
+        {
+          "mode": 1,
+          "count": 10,
+          "medianMs": 365.6325,
+          "minMs": 290.39,
+          "maxMs": 1447.16
+        },
+        {
+          "mode": 2,
+          "count": 10,
+          "medianMs": 333.9525,
+          "minMs": 255.756,
+          "maxMs": 737.153
+        },
+        {
+          "mode": 3,
+          "count": 10,
+          "medianMs": 370.87850000000003,
+          "minMs": 266.908,
+          "maxMs": 459.163
+        }
+      ],
+      "matrixSha256": "8c7fd5d6b376ab144ea4b04bfdc4694a7609d38418b281a4f96779129ff4b4e7"
+    },
+    "context": "Concurrent native menu-fixture compilation. Validation timings are retained but excluded from the construction architecture comparison."
+  },
+  "limits": [
+    "Hidden representative MFC controls; excludes actual UDM Form/ThemeCombo behavior, first paint, modal ownership and the real browser workload.",
+    "No installed-app or IDM speed measurement.",
+    "Matching font height, required styles, 24 direct controls, combo items/selection and hidden/disabled states were asserted; complete visual/tab/accessibility parity was not checked.",
+    "The resource-plus-second-font mode deliberately retains extra work; font reuse is measured separately.",
+    "Two earlier prototype attempts had an overly strict style assertion: Windows removes WS_VSCROLL from the outer combo. They are excluded from these successful samples.",
+    "No outlier was discarded from the measured rounds."
+  ]
+}

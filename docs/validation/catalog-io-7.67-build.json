@@ -1,0 +1,54 @@
+{
+  "productVersion": "7.67",
+  "experimentOnly": true,
+  "source": "benchmarks/ui/catalog_io_probe.cpp",
+  "sourceSha256": "DAAB8284763E2F1C22AED1CC26CE5ABF25A842A4D56B67DD30E5CA754F3961B7",
+  "compilerSha256": "FE251EF50A1545B1B0835EE17B1E785459712B38D79E45B5C1D3D28970A36619",
+  "command": [
+    "D:\\UDM\\.media-cache\\driver-toolchain\\Microsoft.VC.14.44.17.14.Tools.HostX64.TargetX64.base\\Contents\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+    "/nologo",
+    "/bigobj",
+    "/std:c++17",
+    "/EHsc",
+    "/MT",
+    "/O2",
+    "/W4",
+    "/utf-8",
+    "/permissive-",
+    "/DUNICODE",
+    "/D_UNICODE",
+    "/DNOMINMAX",
+    "/D_WIN32_WINNT=0x0A00",
+    "/DWINVER=0x0A00",
+    "/D_CRT_SECURE_NO_WARNINGS",
+    "/Zc:__cplusplus",
+    "/DCURL_STATICLIB",
+    "/ID:\\UDM\\native\\vendor\\curl\\include",
+    "/ID:\\UDM\\candidates\\native-build-current\\out-nosymbols",
+    "/ID:\\UDM\\native\\vendor\\brotli\\c\\include",
+    "D:\\UDM\\benchmarks\\ui\\catalog_io_probe.cpp",
+    "/FoD:\\UDM\\candidates\\catalog-io-7.67\\CatalogIoProbe.obj",
+    "/FeD:\\UDM\\candidates\\catalog-io-7.67\\CatalogIoProbe.exe",
+    "/link",
+    "kernel32.lib",
+    "/SUBSYSTEM:CONSOLE",
+    "/DYNAMICBASE",
+    "/NXCOMPAT",
+    "/HIGHENTROPYVA",
+    "/INCREMENTAL:NO",
+    "/MANIFEST:NO"
+  ],
+  "generated": [
+    {
+      "path": "candidates/catalog-io-7.67/CatalogIoProbe.exe",
+      "bytes": 370176,
+      "sha256": "772A20838E1766D928F9E68CF5707CAE9FBF3B264722F6C2FA37B1346265D5CA"
+    },
+    {
+      "path": "candidates/catalog-io-7.67/CatalogIoProbe.obj",
+      "bytes": 2814931,
+      "sha256": "EE5F1374CEA28C5610C545EDDEF920DC9785A99966EF78A130D16DE73216993B"
+    }
+  ],
+  "method": "Pinned optimized standalone Win32 probe; no application/core/FFmpeg linking, no product policy change."
+}

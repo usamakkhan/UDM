@@ -45,10 +45,27 @@
  };if(d.DoModal()==IDOK){applyFindFilter();findNext();}}
 
  void findNext(){
-  if(str(findQuery,"Text").empty())return;refresh();const DownloadSearch matcher(findQuery);findCursor.prepare(findQuery);
-  do{for(size_t index=findCursor.nextRow();index<visible.size();++index){Json record;
-    {Lock lock(manager.mutex);record=matcher.snapshot(visible[index]->data);}
-    if(matcher.matches(record)){table.SetItemState(-1,0,LVIS_SELECTED|LVIS_FOCUSED);table.SetFocus();table.EnsureVisible((int)index,TRUE);table.SetItemState((int)index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);findCursor.found(index);return;}
+  if(str(findQuery,"Text").empty()||(!yes(findQuery,"FileName",true)&&!yes(findQuery,"Description")&&!yes(findQuery,"Address")))return;
+  refresh();const DownloadSearch matcher(findQuery);findCursor.prepare(findQuery);
+  // Saved/accepted queries are canonical. Borrow that UI-owned value while
+  // lookups only compare memory; take an immutable witness before any miss can
+  // decrypt or parse, and normalize exceptional partial queries only as needed.
+  std::optional<Json> queryWitness;
+  const Json* expected=&findQuery;
+  if(!findFilterCache.isFor(findQuery)){queryWitness=normalizedFindQuery(findQuery);expected=&*queryWitness;}
+  do{for(size_t index=findCursor.nextRow();index<visible.size();++index){const auto candidate=visible[index];Json record;std::optional<bool> matched;
+    {Lock lock(manager.mutex);
+     // The cache belongs to the saved query even while filtering is hidden.
+     // Recheck source equality under the job lock; changed rows still need an
+     // owned snapshot and matching outside it.
+     if(findFilterCache.isFor(*expected))matched=findFilterCache.cached(candidate,candidate->data,matcher);
+     if(!matched.has_value())record=matcher.snapshot(candidate->data);
+    }
+    if(!matched.has_value()&&!queryWitness){queryWitness=*expected;expected=&*queryWitness;}
+    const bool found=matched.has_value()?*matched:findFilterCache.matches(candidate,std::move(record),matcher,expected);
+    if(!matched.has_value()&&(findQuery!=*expected&&normalizedFindQuery(findQuery)!=*expected))return;
+    if(index>=visible.size()||visible[index]!=candidate)return;
+    if(found){table.SetItemState(-1,0,LVIS_SELECTED|LVIS_FOCUSED);table.SetFocus();table.EnsureVisible((int)index,TRUE);table.SetItemState((int)index,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);findCursor.found(index);return;}
    }
   }while(findCursor.wrap());
   MessageBox(L"No matching file was found in the current category or filtered list.",L"Find file",MB_OK|MB_ICONINFORMATION);

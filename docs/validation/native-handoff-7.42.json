@@ -1,0 +1,439 @@
+{
+  "version": "7.42",
+  "browserVersion": "0.71.6",
+  "productionBehaviorChanged": false,
+  "scope": "Real isolated headless Edge, complete current Chromium bundle and production native pair. Private UDM catalog and native messaging registration.",
+  "browserEngineVersion": "157.0.4341.46",
+  "runnerSha256": "3CE5EFE07ADE9BEC2962B063431B5260C0B0AC36E49CD923FEB90600922A8E0C",
+  "nativeBinaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.42",
+      "sha256": "E7398B0C5CB4A7F1C06A8FC24005FA31166A11DD53239D7B6A38F78E1705D7D4"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.42",
+      "sha256": "FDC5B80437AC111C776DB38B7D17272F1859C49A0E41DE0DA99CD8FBA57E5EE5"
+    }
+  ],
+  "acceptance": {
+    "checks": [
+      {
+        "passed": true,
+        "name": "Native 7.42 connection uses an isolated test catalog"
+      },
+      {
+        "passed": true,
+        "name": "legacy captures the file with matching output bytes",
+        "bytes": 2097280,
+        "browserFilename": "old.udmfixture",
+        "nativeFilename": "old.udmfixture.zip",
+        "mime": "application/octet-stream",
+        "elapsedMs": 3028
+      },
+      {
+        "passed": true,
+        "name": "legacy finishes with Edge canceled and native ownership",
+        "state": "interrupted"
+      },
+      {
+        "passed": true,
+        "name": "unselected-custom remains complete in Edge with one original request",
+        "bytes": 2097280,
+        "filename": "untouched.udmcontrol",
+        "mime": "application/octet-stream",
+        "elapsedMs": 2261
+      },
+      {
+        "passed": true,
+        "name": "All handoffs share one persistent native connection"
+      }
+    ],
+    "baseline": false,
+    "bind": "::1",
+    "tls": false,
+    "requestCount": 3,
+    "registryRemoved": true
+  },
+  "proof": {
+    "extensionVersion": "0.71.6",
+    "extensionFiles": [
+      {
+        "path": "awesome-downloader-LICENSE.txt",
+        "sourceSha256": "3a9b062310770fc5192ca2fd617f3ee46cfe288f5c60b6783e22517d5caecd27",
+        "stagedSha256": "3a9b062310770fc5192ca2fd617f3ee46cfe288f5c60b6783e22517d5caecd27",
+        "matchesExpected": true
+      },
+      {
+        "path": "background.js",
+        "sourceSha256": "a65a52363786b9f77be75d60eb6668623e5b827ec8d32791df85219b73e95869",
+        "stagedSha256": "2bbfa7ee104c5b80c0bac4980fb02dc80280ea105b9e122be96ed94746e4fad9",
+        "matchesExpected": true
+      },
+      {
+        "path": "browser-controls.js",
+        "sourceSha256": "c6947f547a9580de4a66344b451cac5c96a5231664a5c56a794cca65c44b66d1",
+        "stagedSha256": "c6947f547a9580de4a66344b451cac5c96a5231664a5c56a794cca65c44b66d1",
+        "matchesExpected": true
+      },
+      {
+        "path": "capture-recovery.js",
+        "sourceSha256": "b273563813d8732e46908abdd8126ab37c252b9c90a1972ff977b7549b5c0e5c",
+        "stagedSha256": "b273563813d8732e46908abdd8126ab37c252b9c90a1972ff977b7549b5c0e5c",
+        "matchesExpected": true
+      },
+      {
+        "path": "capture-rules.js",
+        "sourceSha256": "195c327685aa3dbb51717a71e44d38823bd5e884dc8e5e9374b7de3de04316a7",
+        "stagedSha256": "195c327685aa3dbb51717a71e44d38823bd5e884dc8e5e9374b7de3de04316a7",
+        "matchesExpected": true
+      },
+      {
+        "path": "capture.js",
+        "sourceSha256": "05379ab05656ff6b1e7fd7d754281d17e1a929654dcaa7f4571abc2bdd48cd6e",
+        "stagedSha256": "05379ab05656ff6b1e7fd7d754281d17e1a929654dcaa7f4571abc2bdd48cd6e",
+        "matchesExpected": true
+      },
+      {
+        "path": "chromium-proxy.js",
+        "sourceSha256": "114efeb08ad70e1edba41cda4352ffc8518194798f4c8bbb35cab90e53d32a9e",
+        "stagedSha256": "114efeb08ad70e1edba41cda4352ffc8518194798f4c8bbb35cab90e53d32a9e",
+        "matchesExpected": true
+      },
+      {
+        "path": "content.js",
+        "sourceSha256": "afd5c8bf9e0db00012e27d4bd9d78c1cfc2e0cb6ee1ea63a7a340092c1e4d9e9",
+        "stagedSha256": "afd5c8bf9e0db00012e27d4bd9d78c1cfc2e0cb6ee1ea63a7a340092c1e4d9e9",
+        "matchesExpected": true
+      },
+      {
+        "path": "diagnostics.html",
+        "sourceSha256": "f3815850570ffbc047661f07cd85835f455943371de613960c1e4924a92fc963",
+        "stagedSha256": "f3815850570ffbc047661f07cd85835f455943371de613960c1e4924a92fc963",
+        "matchesExpected": true
+      },
+      {
+        "path": "diagnostics.js",
+        "sourceSha256": "af884a6e54f4a2c7f7c9e585e454d6ea6567ffc35ae738c4e81b25b69193b8be",
+        "stagedSha256": "af884a6e54f4a2c7f7c9e585e454d6ea6567ffc35ae738c4e81b25b69193b8be",
+        "matchesExpected": true
+      },
+      {
+        "path": "download-session.js",
+        "sourceSha256": "329e023154cc11a1ccb8f7d4c41827e4a1a3957a16eccab3bea8ec3644c7028c",
+        "stagedSha256": "329e023154cc11a1ccb8f7d4c41827e4a1a3957a16eccab3bea8ec3644c7028c",
+        "matchesExpected": true
+      },
+      {
+        "path": "file-recognition.js",
+        "sourceSha256": "e20a5cd237b18ebe2ba1889123cbe8003a2cc8e2267366b2290e85ba74f3c785",
+        "stagedSha256": "e20a5cd237b18ebe2ba1889123cbe8003a2cc8e2267366b2290e85ba74f3c785",
+        "matchesExpected": true
+      },
+      {
+        "path": "formats.js",
+        "sourceSha256": "1f3764e7f9c01eb36c97b8db30e094e61e9216d0a13a3c2b35e0d10525923372",
+        "stagedSha256": "1f3764e7f9c01eb36c97b8db30e094e61e9216d0a13a3c2b35e0d10525923372",
+        "matchesExpected": true
+      },
+      {
+        "path": "forms.js",
+        "sourceSha256": "cbd99f38b20bc541e6113c23eece5dbf1c4abe3910aba0ee32c77126d12655c1",
+        "stagedSha256": "cbd99f38b20bc541e6113c23eece5dbf1c4abe3910aba0ee32c77126d12655c1",
+        "matchesExpected": true
+      },
+      {
+        "path": "grabber-rendered.js",
+        "sourceSha256": "19ea49de21ed5e1c73049a0d91c0b6ad6fadc43fd1bfd3ca557ffc620e18f162",
+        "stagedSha256": "19ea49de21ed5e1c73049a0d91c0b6ad6fadc43fd1bfd3ca557ffc620e18f162",
+        "matchesExpected": true
+      },
+      {
+        "path": "grabber-session.js",
+        "sourceSha256": "212d0749873536c14b8c99b3e860bdfda4c4044cc5c0985626dc00fb80032b8b",
+        "stagedSha256": "212d0749873536c14b8c99b3e860bdfda4c4044cc5c0985626dc00fb80032b8b",
+        "matchesExpected": true
+      },
+      {
+        "path": "icon.png",
+        "sourceSha256": "f96864c558a6b9ec7220be56ee664cc3e78a0b32cd9920294e56a694ba98e2f7",
+        "stagedSha256": "f96864c558a6b9ec7220be56ee664cc3e78a0b32cd9920294e56a694ba98e2f7",
+        "matchesExpected": true
+      },
+      {
+        "path": "key-capture.js",
+        "sourceSha256": "3982b843d5067facf1595035ddd76bc066bd16d7db1933afe07861afa1b8500f",
+        "stagedSha256": "3982b843d5067facf1595035ddd76bc066bd16d7db1933afe07861afa1b8500f",
+        "matchesExpected": true
+      },
+      {
+        "path": "links.css",
+        "sourceSha256": "9fc45a6f5da9248fc96d372cc975a6d93a34dbe7c15f0606ac5de88cf1d52abc",
+        "stagedSha256": "9fc45a6f5da9248fc96d372cc975a6d93a34dbe7c15f0606ac5de88cf1d52abc",
+        "matchesExpected": true
+      },
+      {
+        "path": "links.html",
+        "sourceSha256": "b3b0df0d71466a2562b7ae54a9013e050f03c8ef7cac4eb3c23f5e5524e8fb45",
+        "stagedSha256": "b3b0df0d71466a2562b7ae54a9013e050f03c8ef7cac4eb3c23f5e5524e8fb45",
+        "matchesExpected": true
+      },
+      {
+        "path": "links.js",
+        "sourceSha256": "622efdec83416257a8ae808af7a81c1624d4048549ed129b72c6ebf7ce1a583d",
+        "stagedSha256": "622efdec83416257a8ae808af7a81c1624d4048549ed129b72c6ebf7ce1a583d",
+        "matchesExpected": true
+      },
+      {
+        "path": "manifest.json",
+        "sourceSha256": "902ec36cba03c036c6233bccffef11ba9d0d083ffcdd6b0d25e8b3e4338f7f23",
+        "stagedSha256": "902ec36cba03c036c6233bccffef11ba9d0d083ffcdd6b0d25e8b3e4338f7f23",
+        "matchesExpected": true
+      },
+      {
+        "path": "media-receipts.js",
+        "sourceSha256": "026d71f462df4f27f06bbaee9f499da1dd3d6e2b83716796c3cccb1792eab63a",
+        "stagedSha256": "026d71f462df4f27f06bbaee9f499da1dd3d6e2b83716796c3cccb1792eab63a",
+        "matchesExpected": true
+      },
+      {
+        "path": "media-recovery.html",
+        "sourceSha256": "77fcf16f3b63cdd119c2d76f6da7a4446c98531153fe47fa57d51f9c1a18cd64",
+        "stagedSha256": "77fcf16f3b63cdd119c2d76f6da7a4446c98531153fe47fa57d51f9c1a18cd64",
+        "matchesExpected": true
+      },
+      {
+        "path": "media-recovery.js",
+        "sourceSha256": "c109a01c01010dece4a31fa82c4d81eb60746268af1284dafe2611d4833387fd",
+        "stagedSha256": "c109a01c01010dece4a31fa82c4d81eb60746268af1284dafe2611d4833387fd",
+        "matchesExpected": true
+      },
+      {
+        "path": "media.js",
+        "sourceSha256": "b8d4ed5d153b545fa3964525fcc4bb55b56a2b38831b2912ee37cff87a0d11aa",
+        "stagedSha256": "b8d4ed5d153b545fa3964525fcc4bb55b56a2b38831b2912ee37cff87a0d11aa",
+        "matchesExpected": true
+      },
+      {
+        "path": "mime-db-LICENSE.txt",
+        "sourceSha256": "cc1dfd4dafa27271e8212cd3b274eeb3f262e40a6fdab36ddc3f9696f706f58b",
+        "stagedSha256": "cc1dfd4dafa27271e8212cd3b274eeb3f262e40a6fdab36ddc3f9696f706f58b",
+        "matchesExpected": true
+      },
+      {
+        "path": "multipart.js",
+        "sourceSha256": "fcb46e9833c1945eaa63422553a771dcfef96cfae076ea9c4e963a98fe98feb6",
+        "stagedSha256": "fcb46e9833c1945eaa63422553a771dcfef96cfae076ea9c4e963a98fe98feb6",
+        "matchesExpected": true
+      },
+      {
+        "path": "native-bridge.js",
+        "sourceSha256": "de859ae5d4af2d8987429341f3707ce288ad48e974b06877b750e4a580381aed",
+        "stagedSha256": "de859ae5d4af2d8987429341f3707ce288ad48e974b06877b750e4a580381aed",
+        "matchesExpected": true
+      },
+      {
+        "path": "navigation.js",
+        "sourceSha256": "9e0dc73bdf0b0e97e4e71f813dff4167f5adea54f992cc312f9d1372fa5c8cd2",
+        "stagedSha256": "9e0dc73bdf0b0e97e4e71f813dff4167f5adea54f992cc312f9d1372fa5c8cd2",
+        "matchesExpected": true
+      },
+      {
+        "path": "page-observer.js",
+        "sourceSha256": "e0b6e8d83a7b20b28ac9e4158172ac319cf6061805fdfc3d697454d8444231b9",
+        "stagedSha256": "e0b6e8d83a7b20b28ac9e4158172ac319cf6061805fdfc3d697454d8444231b9",
+        "matchesExpected": true
+      },
+      {
+        "path": "panels-diagnostics.html",
+        "sourceSha256": "5dbb219f8f555081b64cc591ea22f495e9500da2032e7e49c7e58fe2027835d3",
+        "stagedSha256": "5dbb219f8f555081b64cc591ea22f495e9500da2032e7e49c7e58fe2027835d3",
+        "matchesExpected": true
+      },
+      {
+        "path": "panels-diagnostics.js",
+        "sourceSha256": "a7d668419814944c9b55ad839e04fe73ce75935381e3ed45f4ee4d7858f78c51",
+        "stagedSha256": "a7d668419814944c9b55ad839e04fe73ce75935381e3ed45f4ee4d7858f78c51",
+        "matchesExpected": true
+      },
+      {
+        "path": "popup.css",
+        "sourceSha256": "c7f3c67862bf71107f79c66e935659335c584f804c8071801d4366ed214d6df3",
+        "stagedSha256": "c7f3c67862bf71107f79c66e935659335c584f804c8071801d4366ed214d6df3",
+        "matchesExpected": true
+      },
+      {
+        "path": "popup.html",
+        "sourceSha256": "2c1dbe3d7a43f435f1378bc210c750214ec323328340036cb9b2fabface71acc",
+        "stagedSha256": "2c1dbe3d7a43f435f1378bc210c750214ec323328340036cb9b2fabface71acc",
+        "matchesExpected": true
+      },
+      {
+        "path": "popup.js",
+        "sourceSha256": "4ac8e21060fd3479925ea91c2b46e6689b439b3990425c745f9a40ad1d6b0cd0",
+        "stagedSha256": "4ac8e21060fd3479925ea91c2b46e6689b439b3990425c745f9a40ad1d6b0cd0",
+        "matchesExpected": true
+      },
+      {
+        "path": "recovery.css",
+        "sourceSha256": "80e2697228fe1414f0ab7e62e319751486250b72ce1b82504f18c3718f037690",
+        "stagedSha256": "80e2697228fe1414f0ab7e62e319751486250b72ce1b82504f18c3718f037690",
+        "matchesExpected": true
+      },
+      {
+        "path": "recovery.html",
+        "sourceSha256": "872f32f45bd365f594adcf20d9f7948fdd8d00d6f491bdc2600951f58ee5f8ce",
+        "stagedSha256": "872f32f45bd365f594adcf20d9f7948fdd8d00d6f491bdc2600951f58ee5f8ce",
+        "matchesExpected": true
+      },
+      {
+        "path": "recovery.js",
+        "sourceSha256": "8719f66d4abb9a3342d48a4cb10672d614056814c59484f0c61dc198321b47a8",
+        "stagedSha256": "8719f66d4abb9a3342d48a4cb10672d614056814c59484f0c61dc198321b47a8",
+        "matchesExpected": true
+      },
+      {
+        "path": "request-context.js",
+        "sourceSha256": "23aec8afa5b920c564e19e406a38e0b4e7f05e3c231435797121ca9a61234bf4",
+        "stagedSha256": "23aec8afa5b920c564e19e406a38e0b4e7f05e3c231435797121ca9a61234bf4",
+        "matchesExpected": true
+      },
+      {
+        "path": "selection.js",
+        "sourceSha256": "eed6e7a5cad13ad7ab044f52c04ad80f50665ba6e2118194295717fa9016f4b9",
+        "stagedSha256": "eed6e7a5cad13ad7ab044f52c04ad80f50665ba6e2118194295717fa9016f4b9",
+        "matchesExpected": true
+      },
+      {
+        "path": "site-access.js",
+        "sourceSha256": "979301d97a87a72810dc80010339070c8e9f2861d2d62b54f61bbe95e075dc56",
+        "stagedSha256": "979301d97a87a72810dc80010339070c8e9f2861d2d62b54f61bbe95e075dc56",
+        "matchesExpected": true
+      },
+      {
+        "path": "sites.js",
+        "sourceSha256": "880af7c01a8e53b505eb63be2a5215aa2fd9f52f5fa85dbb842444c5b31a4823",
+        "stagedSha256": "880af7c01a8e53b505eb63be2a5215aa2fd9f52f5fa85dbb842444c5b31a4823",
+        "matchesExpected": true
+      },
+      {
+        "path": "streaming-capture.js",
+        "sourceSha256": "2ab027b7c09afad0e3b2c56b92cef5b9d0ea3e1e137c2756f50c900d3a3d0ef6",
+        "stagedSha256": "2ab027b7c09afad0e3b2c56b92cef5b9d0ea3e1e137c2756f50c900d3a3d0ef6",
+        "matchesExpected": true
+      },
+      {
+        "path": "toolbar-disabled.png",
+        "sourceSha256": "264879dc031662d62f9cfd4fca8008ed981c87da456289062ef5cd2fe13513cd",
+        "stagedSha256": "264879dc031662d62f9cfd4fca8008ed981c87da456289062ef5cd2fe13513cd",
+        "matchesExpected": true
+      },
+      {
+        "path": "toolbar.png",
+        "sourceSha256": "dfdeb28a9d64e273217cea98a17029abc2e778b608b8db747345862903e98fbf",
+        "stagedSha256": "dfdeb28a9d64e273217cea98a17029abc2e778b608b8db747345862903e98fbf",
+        "matchesExpected": true
+      },
+      {
+        "path": "ump.js",
+        "sourceSha256": "3a37604193f1203864719170c4a3722368230a361242fc6c5d5de5ffc7807225",
+        "stagedSha256": "3a37604193f1203864719170c4a3722368230a361242fc6c5d5de5ffc7807225",
+        "matchesExpected": true
+      }
+    ],
+    "scope": "Only background native-host literal adapted for private registration; other staged files match current source",
+    "downloads": 1,
+    "bytes": 2097280,
+    "sha256": "1adf91df00ad81edd01c4fe3d31ad0fc19d527cc50a1addfbf6d934dbfbb4a15",
+    "nativeAndBrowserOutputsMatchOrigin": true,
+    "nativeFilename": "old.udmfixture.zip",
+    "browserFilename": "untouched.udmcontrol"
+  },
+  "requestCounts": {
+    "total": 3,
+    "unselected": 1,
+    "selected": 2
+  },
+  "evidenceGuard": {
+    "passed": true,
+    "priorResultSha256": "19DCE000B3CA846B02F9B5AD3D60128C1717682DCAA4BC8D6ECA3CBB20C4B832",
+    "unchanged": true,
+    "runnerSha256": "3CE5EFE07ADE9BEC2962B063431B5260C0B0AC36E49CD923FEB90600922A8E0C"
+  },
+  "earlierInterference": {
+    "browserObservedHttpStatus": 204,
+    "scope": "Socket-owner observation supports interception in these local tests only; not a timing comparison or proof about YouTube",
+    "status": "PDF/bin attempts were intercepted before Edge download creation",
+    "requests": [
+      {
+        "method": "GET",
+        "range": "",
+        "processes": [
+          "msedge.exe"
+        ],
+        "originResponseStatus": 200,
+        "originResponseFinished": false
+      },
+      {
+        "method": "GET",
+        "range": "",
+        "processes": [
+          "IDMan.exe"
+        ],
+        "originResponseStatus": null,
+        "originResponseFinished": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=236100-2097586",
+        "processes": [
+          "IDMan.exe"
+        ],
+        "originResponseStatus": null,
+        "originResponseFinished": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=1178619-2097586",
+        "processes": [
+          "IDMan.exe"
+        ],
+        "originResponseStatus": null,
+        "originResponseFinished": null
+      },
+      {
+        "method": "GET",
+        "range": "bytes=1638102-2097586",
+        "processes": [
+          "IDMan.exe"
+        ],
+        "originResponseStatus": null,
+        "originResponseFinished": null
+      }
+    ],
+    "identifiedProcess": "IDMan.exe"
+  },
+  "harnessMaintenance": [
+    "Reject existing output root before finally handlers can overwrite evidence",
+    "Snapshot requests after origin shutdown so summary and request log agree",
+    "Record origin response status/finish state",
+    "Add an unregistered custom-extension passthrough control"
+  ],
+  "installed": false,
+  "installerCreated": false,
+  "personalBrowserUsed": false,
+  "timingParityEstablished": false,
+  "uiScope": "File Info skipped; progress/completion suppressed; no live dialog comparison",
+  "cleanup": {
+    "recursiveDeletionAttempted": false,
+    "fixtureFilesRetained": true,
+    "nativeRegistrationRemoved": true
+  },
+  "limitations": [
+    "PDF/bin UDM acceptance remains unverified because IDM intercepted those cases",
+    "Custom file type, plain loopback HTTP, no HTTPS/POST/session or public-video acceptance",
+    "Actual Firefox engine and installed personal browser remain open",
+    "Filename changed from old.udmfixture to old.udmfixture.zip; filename parity not established"
+  ]
+}

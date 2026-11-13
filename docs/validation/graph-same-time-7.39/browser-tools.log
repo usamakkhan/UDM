@@ -1,0 +1,5 @@
+PASS chromium lists formats from the source tab and warms the native channel without waiting or submitting a download
+PASS chromium Browser Tools commands stay trusted and a selected format submits once
+PASS firefox lists formats from the source tab and warms the native channel without waiting or submitting a download
+PASS firefox Browser Tools commands stay trusted and a selected format submits once
+ALL 4 BROWSER TOOLS HANDOFF CHECKS PASSED

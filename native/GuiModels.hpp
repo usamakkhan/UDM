@@ -4,6 +4,8 @@
 #include "FindState.hpp"
 #include <regex>
 #include <algorithm>
+#include <list>
+#include <iterator>
 namespace udm {
 inline std::string subtitleCaptureSummary(const Json& data){
  if(!data.contains("SubtitleCueCount")||!data["SubtitleCueCount"].is_number_integer())return {};
@@ -71,15 +73,38 @@ class DownloadSearch {
  }
 public:
  explicit DownloadSearch(const Json& query):needle(findSearchNeedle(query)),sensitive(yes(query,"MatchCase")),whole(yes(query,"WholeString")),filename(yes(query,"FileName",true)),description(yes(query,"Description")),address(yes(query,"Address")){}
- // Caller protects the source while making this owned, scope-specific copy.
- // Decryption, parsing and matching belong outside the manager lock.
- Json snapshot(const Json& source)const{
-  Json result=Json::object();auto copy=[&](const char* key){auto found=source.find(key);if(found!=source.end())result[key]=*found;};
-  if(filename)copy("FileName");if(description)copy("Description");
-  if(address){for(const auto* key:{"Url","DownloadPage","ProtectedHeaders","ProtectedResolvedUrl","ProtectedAdaptive","ProtectedSabr","SourceUrl","MediaOutput"})copy(key);
-   for(const auto* key:{"Video","Audio"}){auto found=source.find(key);if(found!=source.end()&&found->is_object()){auto url=found->find("Url");result[key]=Json::object();if(url!=found->end())result[key]["Url"]=*url;}}
+private:
+ template<class Visitor> void visitSnapshot(const Json& source,Visitor&& visit)const{
+  const auto field=[&](const char* key){auto found=source.find(key);if(found!=source.end())visit(key,&*found,false);};
+  if(filename)field("FileName");if(description)field("Description");
+  if(address){
+   for(const auto* key:{"Url","DownloadPage","ProtectedHeaders","ProtectedResolvedUrl","ProtectedAdaptive","ProtectedSabr","SourceUrl","MediaOutput"})field(key);
+   for(const auto* key:{"Video","Audio"}){
+    auto track=source.find(key);if(track==source.end()||!track->is_object())continue;
+    auto url=track->find("Url");visit(key,url==track->end()?nullptr:&*url,true);
+   }
   }
+ }
+public:
+ // Caller protects the source while taking an owned snapshot or comparing its
+ // selected fields. Decryption and matching remain outside the manager lock.
+ Json snapshot(const Json& source)const{
+  Json result=Json::object();
+  visitSnapshot(source,[&](const char* key,const Json* value,bool track){
+   if(!track)result[key]=*value;
+   else{result[key]=Json::object();if(value)result[key]["Url"]=*value;}
+  });
   return result;
+ }
+ bool snapshotUnchanged(const Json& source,const Json& snapshot)const{
+  if(!snapshot.is_object())return false;
+  bool same=true;size_t count=0;
+  visitSnapshot(source,[&](const char* key,const Json* value,bool track){
+   ++count;auto found=snapshot.find(key);if(found==snapshot.end()){same=false;return;}
+   if(!track){if(*found!=*value)same=false;}
+   else if(!found->is_object()||found->size()!=(value?1u:0u)||(value&&(!found->contains("Url")||found->at("Url")!=*value)))same=false;
+  });
+  return same&&snapshot.size()==count;
  }
  bool matches(const Json& data)const{
   if(needle.empty())return false;
@@ -95,46 +120,133 @@ inline bool matchesDownload(const Json& data,const Json& query){return DownloadS
 // UI-owned filter cache. Only source/encrypted metadata and match booleans are
 // retained; decrypted addresses/headers never become cache keys or persisted data.
 class DownloadFilterCache {
- struct Entry {Json record;bool matched=false;uint64_t seen=0;};
- Json query;std::map<JobPtr,Entry> entries;uint64_t generation=0;
-public:
- void begin(const Json& next){if(query!=next){entries.clear();query=next;}++generation;}
- bool matches(const JobPtr& job,const Json& record,const DownloadSearch& matcher){
-  auto found=entries.find(job);
-  if(found!=entries.end()&&found->second.record==record){found->second.seen=generation;return found->second.matched;}
-  const bool matched=matcher.matches(record);entries[job]=Entry{record,matched,generation};return matched;
+ using Order=std::list<JobPtr>;
+ struct Entry {Json record;bool matched=false;uint64_t seen=0;size_t cost=0;Order::iterator order;};
+ using Entries=std::map<JobPtr,Entry>;
+ Json query;Entries entries;Order order;uint64_t generation=0;
+ size_t retained=0,byteLimit,entryLimit;
+ // A bounded logical cost: JSON values, object key strings and string payloads.
+ // This is not an RSS measurement. Stop once the configured budget is exceeded.
+ size_t recordCost(const Json& record)const{
+  size_t cost=0;
+  const auto add=[&](size_t amount){if(amount>byteLimit-cost){cost=byteLimit+1;return false;}cost+=amount;return true;};
+  const auto visit=[&](const auto& self,const Json& value)->bool{
+   if(!add(sizeof(Json)))return false;
+   if(value.is_string())return add(value.get_ref<const std::string&>().size());
+   if(value.is_object()){for(auto it=value.begin();it!=value.end();++it)if(!add(sizeof(std::string))||!add(it.key().size())||!self(self,it.value()))return false;}
+   else if(value.is_array()){for(const auto& item:value)if(!self(self,item))return false;}
+   return true;
+  };
+  visit(visit,record);return cost;
  }
- void finish(){for(auto it=entries.begin();it!=entries.end();)if(it->second.seen!=generation)it=entries.erase(it);else ++it;}
+ void touch(Entry& entry){entry.seen=generation;order.splice(order.end(),order,entry.order);}
+ Entries::iterator erase(Entries::iterator entry){retained-=entry->second.cost;order.erase(entry->second.order);return entries.erase(entry);}
+public:
+ explicit DownloadFilterCache(size_t bytes=32u*1024*1024,size_t count=8192):byteLimit(std::min(bytes,size_t(32u*1024*1024))),entryLimit(std::min(count,size_t(8192))){}
+ DownloadFilterCache(const DownloadFilterCache&)=delete;
+ DownloadFilterCache& operator=(const DownloadFilterCache&)=delete;
+ void begin(const Json& next){if(query!=next){entries.clear();order.clear();retained=0;query=next;}++generation;}
+ bool isFor(const Json& expected)const{return query==expected;}
+ size_t retainedCost()const{return retained;}
+ size_t entryCount()const{return entries.size();}
+ // Mark cohort membership without promoting an unused entry in the LRU order.
+ // An inactive filter retains only entries for current category/queue candidates.
+ void keep(const JobPtr& job){auto found=entries.find(job);if(found!=entries.end())found->second.seen=generation;}
+ // UI-owned cache; caller locks the job while comparing the live source.
+ // An engaged false result is a cache hit too. Never decrypt under this lock.
+ std::optional<bool> cached(const JobPtr& job,const Json& source,const DownloadSearch& matcher){
+  auto found=entries.find(job);
+  if(found==entries.end()||!matcher.snapshotUnchanged(source,found->second.record))return std::nullopt;
+  touch(found->second);return found->second.matched;
+ }
+ bool matches(const JobPtr& job,Json record,const DownloadSearch& matcher,const Json* expectedQuery=nullptr){
+  auto found=entries.find(job);
+  if((!expectedQuery||isFor(*expectedQuery))&&found!=entries.end()&&found->second.record==record){touch(found->second);return found->second.matched;}
+  const bool matched=matcher.matches(record);
+  // Matching may call Windows APIs. A reentrant query change must not publish
+  // this result into another query's cache, or reuse its existing opposite result.
+  if(expectedQuery&&!isFor(*expectedQuery))return matched;
+  found=entries.find(job);if(found!=entries.end())erase(found);
+  const auto cost=recordCost(record);
+  if(!entryLimit||cost>byteLimit)return matched;
+  while(!entries.empty()&&(entries.size()>=entryLimit||cost>byteLimit-retained))erase(entries.find(order.front()));
+  order.push_back(job);auto position=std::prev(order.end());
+  try{entries.emplace(job,Entry{std::move(record),matched,generation,cost,position});}catch(...){order.pop_back();throw;}
+  retained+=cost;return matched;
+ }
+ void finish(){for(auto it=entries.begin();it!=entries.end();)if(it->second.seen!=generation)it=erase(it);else ++it;}
 };
 
-// The caller holds the manager lock while copying the display inputs.
-inline Json downloadAddressInputs(const Job& job){
+// The caller holds the manager lock while visiting/copying display inputs.
+// Views borrow string JSON values; absent/nonstring fields retain str(..., "") semantics.
+inline const Json& addressInputString(const Json& record,const char* key){
+ static const Json empty="";const auto value=record.find(key);
+ return value!=record.end()&&value->is_string()?*value:empty;
+}
+template<class Visitor> inline void visitDownloadAddressInputs(const Job& job,Visitor&& visit){
  const auto& record=job.data;
+ const auto field=[&](const char* key){visit(key,addressInputString(record,key),false);};
  if(hasNonemptyString(record,"ProtectedSabr")){
   if(yes(record,"SabrTrackAddressBound")&&job.audio){
-   const auto endpoint=str(job.audio->data,"Url");
-   const bool audioOnly=str(record,"MediaOutput")=="audio";
+   const auto& endpoint=addressInputString(job.audio->data,"Url");
+   const bool audioOnly=addressInputString(record,"MediaOutput")=="audio";
    // Admission and refresh bind this URL to the protected session in the same write.
-   if(!endpoint.empty()&&(audioOnly?!job.video:job.video&&str(job.video->data,"Url")==endpoint))
-    return {{"Url",endpoint}};
+   if(!endpoint.get_ref<const std::string&>().empty()&&(audioOnly?!job.video:job.video&&addressInputString(job.video->data,"Url")==endpoint)){
+    visit("Url",endpoint,false);return;
+   }
   }
-  return {{"ProtectedSabr",record.at("ProtectedSabr")},{"MediaOutput",str(record,"MediaOutput")}};
+  field("ProtectedSabr");field("MediaOutput");return;
  }
- if(hasNonemptyString(record,"ProtectedAdaptiveDisplayAddress"))
-  return {{"ProtectedAdaptiveDisplayAddress",record.at("ProtectedAdaptiveDisplayAddress")}};
- if(hasNonemptyString(record,"ProtectedAdaptive"))
-  return {{"ProtectedAdaptive",record.at("ProtectedAdaptive")}};
+ if(hasNonemptyString(record,"ProtectedAdaptiveDisplayAddress")){field("ProtectedAdaptiveDisplayAddress");return;}
+ if(hasNonemptyString(record,"ProtectedAdaptive")){field("ProtectedAdaptive");return;}
  if(hasNonemptyString(record,"SourceUrl")){
-  Json inputs={{"SourceUrl",record.at("SourceUrl")}};
-  if(job.video)inputs["Video"]={{"Url",str(job.video->data,"Url")}};
-  if(job.audio)inputs["Audio"]={{"Url",str(job.audio->data,"Url")}};
-  return inputs;
+  field("SourceUrl");
+  if(job.video&&hasNonemptyString(job.video->data,"Url"))visit("Video",addressInputString(job.video->data,"Url"),true);
+  else if(job.audio&&hasNonemptyString(job.audio->data,"Url"))visit("Audio",addressInputString(job.audio->data,"Url"),true);
+  return;
  }
- return {{"Url",str(record,"Url")},{"ProtectedResolvedUrl",str(record,"ProtectedResolvedUrl")}};
+ field("Url");if(!hasNonemptyString(record,"Url"))field("ProtectedResolvedUrl");
+}
+inline Json downloadAddressInputs(const Job& job){
+ Json inputs=Json::object();
+ visitDownloadAddressInputs(job,[&](const char* key,const Json& value,bool track){
+  if(track)inputs[key]={{"Url",value}};else inputs[key]=value;
+ });
+ return inputs;
+}
+// Compare against the UI-owned snapshot without cloning large encrypted plans.
+// Only changed inputs need an owned copy and address decryption outside the lock.
+inline bool downloadAddressInputsUnchanged(const Job& job,const Json& inputs){
+ if(!inputs.is_object())return false;
+ bool same=true;size_t count=0;
+ visitDownloadAddressInputs(job,[&](const char* key,const Json& value,bool track){
+  ++count;const auto found=inputs.find(key);
+  if(found==inputs.end()){same=false;return;}
+  if(track){
+   if(!found->is_object()||found->size()!=1||!found->contains("Url")||found->at("Url")!=value)same=false;
+  }else if(*found!=value)same=false;
+ });
+ return same&&count==inputs.size();
 }
 inline std::string downloadAddress(const Json& data){
  if(!hasNonemptyString(data,"ProtectedSabr")&&hasNonemptyString(data,"ProtectedAdaptiveDisplayAddress")){
   auto address=reveal(str(data,"ProtectedAdaptiveDisplayAddress"));
+  if(!address.empty())(void)Url(address);
+  return address;
+ }
+ // Display only the first selected link. The full Links view still resolves
+ // and validates every address; an unused redirect/audio link must not add
+ // decryption or parsing work to a valid primary display address.
+ if(!hasNonemptyString(data,"ProtectedSabr")&&!hasNonemptyString(data,"ProtectedAdaptive")){
+  std::string address;
+  if(hasNonemptyString(data,"SourceUrl")){
+   for(const char* key:{"Video","Audio"}){
+    const auto track=data.find(key);
+    if(track!=data.end()&&track->is_object()&&hasNonemptyString(*track,"Url")){address=str(*track,"Url");break;}
+   }
+  }else{
+   address=str(data,"Url");if(address.empty())address=reveal(str(data,"ProtectedResolvedUrl"));
+  }
   if(!address.empty())(void)Url(address);
   return address;
  }

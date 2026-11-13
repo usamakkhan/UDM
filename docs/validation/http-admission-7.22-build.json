@@ -1,0 +1,1045 @@
+{
+  "version": "7.22",
+  "browserVersion": "0.70.86",
+  "build": "passed",
+  "incrementalBase": "7.21",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/Version.hpp",
+      "sha256": "F2708994AE941CFBF7CC04463A78960827B0AE4A414B3D8FB15852CCCCB7F2E0"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "1E150D8BD58221D985E13D5FD56F5B760A1619861A989C5B2FD3FB5E39ECB56D"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "6013115FFDC38ADBEE8EB39D43CEEBE3AE2D2ADDE8C44C2617969275579B2AE8"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.22",
+      "sha256": "01D4F526FD84C7ED21154292FE335D0E2C1CA2D033CFAEBCBBF4B49D74CF07F3"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.22",
+      "sha256": "462A9DC1647A90CEB7517116D2D40C9AEAA3DA8F9FE694B83BF0AD37ACC12667"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.22",
+      "sha256": "196975343CCC671E20B165C5D04F209D8E2D3F8FA2CAC9ECCC1A150D7DF0EB04"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.22",
+      "sha256": "4BD8B4BD8E475C0B623674026AA7B7BA24572108A467F9F8F06A87474588EFB7"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.22",
+      "sha256": "9C13E8CF05F226002D4B157B8BBD7145B4F0BE5321AD15E8F1EF3A3F704BB9F0"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Core.cpp effectiveLimitKbps clamp was supplied concurrently and preserved.",
+  "validation": {
+    "focusedChecks": 105,
+    "unitReceipt": {
+      "checks": [
+        {
+          "name": "Origin admission ignores file paths and normalizes header names",
+          "passed": true
+        },
+        {
+          "name": "Different origin ports have separate admission contexts",
+          "passed": true
+        },
+        {
+          "name": "Different website cookies isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Different server credentials isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-UTF-8 header bytes remain distinct in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Duplicate header names retain every value in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Direct and explicit proxy routes remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different resolved proxy endpoints remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different proxy credentials remain separate",
+          "passed": true
+        },
+        {
+          "name": "The credential fixture uses independently randomized DPAPI blobs",
+          "passed": true
+        },
+        {
+          "name": "The same proxy credential shares admission after independent encryption",
+          "passed": true
+        },
+        {
+          "name": "Different proxy usernames remain isolated with the same password",
+          "passed": true
+        },
+        {
+          "name": "A changed proxy password cannot reuse the old account's capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "An unreadable protected credential never collapses to an empty identity",
+          "passed": true
+        },
+        {
+          "name": "Only refused or reset opens qualify as connection-cap evidence",
+          "passed": true
+        },
+        {
+          "name": "Timeouts, DNS errors and authentication failures cannot establish a connection cap",
+          "passed": true
+        },
+        {
+          "name": "A lost post-challenge proxy response is a receive disconnect rather than a terminal authentication rejection",
+          "passed": true
+        },
+        {
+          "name": "A lost Digest authentication continuation retains receive-disconnect classification",
+          "passed": true
+        },
+        {
+          "name": "A complete terminal proxy rejection remains available to authentication policy",
+          "passed": true
+        },
+        {
+          "name": "Rejected proxy credentials do not become transient capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "A proxy authentication response timeout retains its receive-timeout identity",
+          "passed": true
+        },
+        {
+          "name": "Digest continuation timeouts remain receive failures instead of credential rejection",
+          "passed": true
+        },
+        {
+          "name": "An interrupted terminal policy response keeps its existing body/status path",
+          "passed": true
+        },
+        {
+          "name": "A header-parser failure takes priority over authentication transport retry",
+          "passed": true
+        },
+        {
+          "name": "Receive timeout and actual disconnect exceptions carry distinct admission evidence",
+          "passed": true
+        },
+        {
+          "name": "A receive timeout preserves existing protocol fallback eligibility",
+          "passed": true
+        },
+        {
+          "name": "The first POST request is admitted before transport submission",
+          "passed": true
+        },
+        {
+          "name": "A fresh proxy rejection permits one authentication continuation",
+          "passed": true
+        },
+        {
+          "name": "A lost continuation cannot replay an empty or nonempty POST",
+          "passed": true
+        },
+        {
+          "name": "Replay prevention propagates an explicit submission-recovery error",
+          "passed": true
+        },
+        {
+          "name": "A fresh Digest rejection permits its authenticated POST continuation",
+          "passed": true
+        },
+        {
+          "name": "The Digest rejection cannot authorize another submission after response loss",
+          "passed": true
+        },
+        {
+          "name": "Non-submission request retry policy stays with the GET transport",
+          "passed": true
+        },
+        {
+          "name": "A terminal policy response cannot authorize POST replay",
+          "passed": true
+        },
+        {
+          "name": "An unproven automatic route cannot join a shared context",
+          "passed": true
+        },
+        {
+          "name": "Opaque Windows route sessions cannot share learned capacity",
+          "passed": true
+        },
+        {
+          "name": "Browser session scope is part of admission identity",
+          "passed": true
+        },
+        {
+          "name": "Connection policy changes isolate admission evidence",
+          "passed": true
+        },
+        {
+          "name": "Default proxy mode selects Windows while explicit direct mode does not",
+          "passed": true
+        },
+        {
+          "name": "An implicit configured fixed proxy does not become Windows automatic mode",
+          "passed": true
+        },
+        {
+          "name": "A Windows direct result becomes an explicit direct transport",
+          "passed": true
+        },
+        {
+          "name": "A direct route drops proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "A pinned route cannot recursively resolve stale proxy configuration",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows direct routes share evidence across independent sessions",
+          "passed": true
+        },
+        {
+          "name": "A Windows HTTPS proxy result preserves scheme and IPv6 endpoint",
+          "passed": true
+        },
+        {
+          "name": "A selected proxy retains its configured credential context",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows routes still isolate different proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "Windows bypass results are pinned to direct transport",
+          "passed": true
+        },
+        {
+          "name": "A malformed selected proxy never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "An unsupported selected proxy scheme never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "Response headers alone do not establish productive capacity",
+          "passed": true
+        },
+        {
+          "name": "Earlier refusals become capacity evidence only after a matching peer delivers payload",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A new independent connection waits while proven capacity is occupied",
+          "passed": true
+        },
+        {
+          "name": "Cancel promptly wakes an admission waiter",
+          "passed": true
+        },
+        {
+          "name": "Cancellation leaves the admission queue without opening a connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An occupied origin keeps a new transport queued",
+          "passed": true
+        },
+        {
+          "name": "Drained keepalive responses retain capacity while their transport is alive",
+          "passed": true
+        },
+        {
+          "name": "The same transport reuses its idle slot without admitting another transport",
+          "passed": true
+        },
+        {
+          "name": "Releasing an idle transport frees capacity for a queued download",
+          "passed": true
+        },
+        {
+          "name": "The queued connection receives the released slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Multiple independent waiters respect the learned bound",
+          "passed": true
+        },
+        {
+          "name": "One released slot admits exactly one waiter",
+          "passed": true
+        },
+        {
+          "name": "The next waiter advances after the first releases its slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An existing transfer retains its own worker admission policy",
+          "passed": true
+        },
+        {
+          "name": "An existing producer's optional worker uses within-transfer refusal recovery",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A refusal after a productive close retains shared recovery instead of spending ordinary retries",
+          "passed": true
+        },
+        {
+          "name": "Recovery opens are paced during the server's close transition",
+          "passed": true
+        },
+        {
+          "name": "One transient refusal cannot lower a proven two-connection bound",
+          "passed": true
+        },
+        {
+          "name": "A newly proven successful open invalidates older lower-capacity observations",
+          "passed": true
+        },
+        {
+          "name": "A later close transition requires fresh evidence before lowering capacity",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Sustained fresh refusals can establish a genuinely reduced server capacity",
+          "passed": true
+        },
+        {
+          "name": "A confirmed lower bound prevents repeated excess opens",
+          "passed": true
+        },
+        {
+          "name": "A lower-capacity waiter advances when its productive peer releases the slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A retry can immediately reuse its own transport's idle connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed stream failure does not establish an origin connection cap",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed transport still occupies one independent origin slot",
+          "passed": true
+        },
+        {
+          "name": "Multiple streams on one transport count as one occupied connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Closing an unread multiplexed stream retains its reusable transport slot",
+          "passed": true
+        },
+        {
+          "name": "Closing the multiplexed transport releases its retained slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Expired capacity evidence permits a bounded recovery probe",
+          "passed": true
+        },
+        {
+          "name": "Only one capacity probe can be outstanding above the learned bound",
+          "passed": true
+        },
+        {
+          "name": "A successful probe restores admission when server capacity increases",
+          "passed": true
+        },
+        {
+          "name": "The bounded context cache admits its supported live contexts",
+          "passed": true
+        },
+        {
+          "name": "The context cache falls back without exceeding its live-context bound",
+          "passed": true
+        },
+        {
+          "name": "An unused context can be evicted for a new origin",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "baseline721": {
+      "passed": false,
+      "cases": [
+        {
+          "case": "direct-loss",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP response failed (Windows error 12152).",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 0
+          }
+        },
+        {
+          "case": "proxy-loss",
+          "passed": false,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP connection closed before authentication completed: Server returned nothing (no headers, no data).",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              },
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-empty-loss",
+          "passed": false,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP connection closed before authentication completed: Server returned nothing (no headers, no data).",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              {
+                "method": "POST",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-timeout",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP proxy timed out waiting for response headers.",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-explicit",
+          "passed": false,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": false,
+            "postAttempted": true,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              },
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-success",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": true,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "get-queue-retry",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 1,
+            "blockedAfterAutomatic": false,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": false,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              }
+            ],
+            "challenges": 0
+          }
+        }
+      ],
+      "fixture_sha256": "832da0116fa09525afdaa5b4aeec7aabfaa812f4aa672a90f42097883b2168f3",
+      "temporary_payloads_removed": true
+    },
+    "recoveryCases": {
+      "passed": true,
+      "cases": [
+        {
+          "case": "direct-loss",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP response failed (Windows error 12152).",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 0
+          }
+        },
+        {
+          "case": "proxy-loss",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "The request may already have been submitted. Start this download explicitly to submit it again.",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-empty-loss",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "The request may already have been submitted. Start this download explicitly to submit it again.",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-timeout",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "HTTP proxy timed out waiting for response headers.",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-explicit",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              },
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 2
+          }
+        },
+        {
+          "case": "proxy-success",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": true,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "proxy-get-retry",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": false,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": false,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              }
+            ],
+            "challenges": 1
+          }
+        },
+        {
+          "case": "get-queue-retry",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 1,
+            "blockedAfterAutomatic": false,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": false,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              },
+              {
+                "method": "GET",
+                "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "bytes": 0
+              }
+            ],
+            "challenges": 0
+          }
+        }
+      ],
+      "fixture_sha256": "1f4f960cb659b01324cd117d6f1151ca69d64a8f8242a559f045c5fbdd31dd16",
+      "temporary_payloads_removed": true
+    },
+    "digestCases": {
+      "passed": true,
+      "cases": [
+        {
+          "case": "proxy-digest-loss",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Failed",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "The request may already have been submitted. Start this download explicitly to submit it again.",
+            "finalStatus": "Failed",
+            "initialStatus": "Failed",
+            "passed": true,
+            "postAttempted": true,
+            "published": false,
+            "sha256_ok": false
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1,
+            "digest_checks": [
+              {
+                "uri_matches": true,
+                "response_matches": true,
+                "username_matches": true,
+                "qop_auth": true
+              }
+            ]
+          }
+        },
+        {
+          "case": "proxy-digest-success",
+          "passed": true,
+          "native": {
+            "afterAutomaticStatus": "Complete",
+            "automaticQueueRetries": 0,
+            "blockedAfterAutomatic": true,
+            "error": "",
+            "finalStatus": "Complete",
+            "initialStatus": "Complete",
+            "passed": true,
+            "postAttempted": true,
+            "published": true,
+            "sha256_ok": true
+          },
+          "traffic": {
+            "requests": [
+              {
+                "method": "POST",
+                "body_sha256": "43a5a544e4f3f16c6011bc26d99bc98e22e074cb08295caddffee199523659eb",
+                "bytes": 1919
+              }
+            ],
+            "challenges": 1,
+            "digest_checks": [
+              {
+                "uri_matches": true,
+                "response_matches": true,
+                "username_matches": true,
+                "qop_auth": true
+              }
+            ]
+          }
+        }
+      ],
+      "fixture_sha256": "1f4f960cb659b01324cd117d6f1151ca69d64a8f8242a559f045c5fbdd31dd16",
+      "temporary_payloads_removed": true
+    },
+    "liveCases": 10,
+    "successfulFiles": 5,
+    "fixtureSha256": "1F4F960CB659B01324CD117D6F1151CA69D64A8F8242A559F045C5FBDD31DD16",
+    "fixtureSourceSha256": "3B4568F055D5A3E93C766A26EAF887C070D6BCC2147F05A01E6D67A2487B2083",
+    "harnessSha256": "FA0157490D7F6C6B50B0A81721FCECA08D530508FCC2E3FD8E1631ED153B7300",
+    "harnessRevisionNote": "Eight original cases ran before adding two Digest cases; same native fixture. Initial Digest fixture incorrectly rejected path-form digest URI; corrected verifier validates matching absolute or path-form URI and digest response.",
+    "temporaryPayloadsRemoved": true,
+    "temporaryFixtureCleanup": "Pending; automatic approval review rejected the combined cleanup command.",
+    "installedVersion": "7.11",
+    "installedBrowser": "0.70.75",
+    "installerCreated": false,
+    "systemProxySettingsChanged": false,
+    "limitations": [
+      "Controlled plain HTTP/1.1 direct, Basic and Digest proxy coverage only.",
+      "HTTPS CONNECT, NTLM/Negotiate, enterprise authentication, VPN/WPAD, live cap reduction and full streaming regression remain unqualified.",
+      "Full-suite release acceptance and paired IDM timing remain outstanding."
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "previewOnly": false,
+  "httpDiagnostics": false,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 1,
+  "failed": 1,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794506312385,
+      "observerReadyEpochMs": 1794506312651
+    },
+    {
+      "passed": false,
+      "error": "page.waitForFunction: Timeout 30000ms exceeded.\n    at choose (D:\\UDM\\tests\\hls-catalog.native-live.cjs:57:115)\n    at async D:\\UDM\\tests\\hls-catalog.native-live.cjs:262:3"
+    }
+  ]
+}

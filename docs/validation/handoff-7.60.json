@@ -1,0 +1,277 @@
+{
+  "version": "7.60",
+  "browserVersion": "0.71.24",
+  "scope": "Isolated real Edge extension/native file and HLS workflows; File Info cases use the owned observer with actual App.cpp, not the personal installed desktop. Installed version remains 7.11.",
+  "runnerSha256": {
+    "hls-catalog.native-live.cjs": "4baf05e9544c0267ca17a9819bad3f4df5fddf15cc6a3cded130b0148ed6aaa3",
+    "file-recognition.native-live.cjs": "ed578e34a8bb4c249c13a3e33f199a797b2ab5d968da9d0d08e2343014edacac"
+  },
+  "nativeBuildReceipt": "docs/validation/native-deadlines-7.60-build.json",
+  "fixtureBuildReceipt": "docs/validation/handoff-7.60-capture-fixture-build.json",
+  "cases": [
+    {
+      "case": "edge",
+      "checks": 5,
+      "resultsSha256": "ea792d85ba135c2ae40ddbe5606f3a4d0fc0112a8d5f4a2ca98007df17c37243",
+      "extensionFilesVerified": 47,
+      "extensionSubstitution": "Private native-host literal only",
+      "outputs": [
+        {
+          "bytes": 2097284,
+          "sha256": "3b0e5e5fb306f3513ee2056b58b79ca3e627109fcd00b3ebd12569e6635c89e2",
+          "suffix": ".udmfixture"
+        }
+      ],
+      "completeOutputChecks": []
+    },
+    {
+      "case": "hls-diagnostic",
+      "checks": 30,
+      "resultsSha256": "c42ed8d73483f3a8ea4920b1bb607b50223e5293d3dffb66e7b4b3898e34ef46",
+      "extensionFilesVerified": 47,
+      "extensionSubstitution": "Private native-host literal only",
+      "outputs": [
+        {
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+          "suffix": ".mp4"
+        },
+        {
+          "bytes": 98791,
+          "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+          "suffix": ".m4a"
+        },
+        {
+          "bytes": 1961216,
+          "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+          "suffix": ".ts"
+        },
+        {
+          "bytes": 1873982,
+          "sha256": "8a246e608b09084dfe4f639997c6bb7b57c9122fdc8d5bef1c59d27a99bd1a64",
+          "suffix": ".mp4"
+        },
+        {
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+          "suffix": ".mp4"
+        }
+      ],
+      "completeOutputChecks": [
+        {
+          "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 192,
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+        },
+        {
+          "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 0,
+          "bytes": 98791,
+          "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+        },
+        {
+          "name": "nested TS complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8,
+          "videoFrames": 192,
+          "bytes": 1961216,
+          "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+        },
+        {
+          "name": "flat MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 192,
+          "bytes": 1873982,
+          "sha256": "8a246e608b09084dfe4f639997c6bb7b57c9122fdc8d5bef1c59d27a99bd1a64"
+        },
+        {
+          "name": "cycle MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 192,
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+        }
+      ]
+    },
+    {
+      "case": "file-info-mp4",
+      "checks": 8,
+      "resultsSha256": "f490fdfb30ae774835f587524c2594edefbf90ae7875a1d088bd4e798ae9f8d7",
+      "extensionFilesVerified": 47,
+      "extensionSubstitution": "Private native-host literal only",
+      "outputs": [
+        {
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+          "suffix": ".mp4"
+        }
+      ],
+      "completeOutputChecks": [
+        {
+          "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 192,
+          "bytes": 6560076,
+          "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+        }
+      ],
+      "fileInfo": {
+        "sizeBeforeStart": 6560076,
+        "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+        "admissionToActionableMs": 2047,
+        "selectionToActionableMs": 2561,
+        "selectionToExactMs": 4886,
+        "selectionToFirstSegmentMs": 3121,
+        "productionCold": false,
+        "firstReceivedBeforeStart": true,
+        "mainListHiddenAtActionable": true,
+        "assertions": 142,
+        "screenshot": "docs/validation/handoff-7.60/file-info-mp4.png"
+      }
+    },
+    {
+      "case": "file-info-ts",
+      "checks": 8,
+      "resultsSha256": "4b38c3420b7fd56ef8dac36a484d77dbf2f1380b6a8ab3eccecd785fe0e1b906",
+      "extensionFilesVerified": 47,
+      "extensionSubstitution": "Private native-host literal only",
+      "outputs": [
+        {
+          "bytes": 1961216,
+          "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+          "suffix": ".ts"
+        }
+      ],
+      "completeOutputChecks": [
+        {
+          "name": "nested TS complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8,
+          "videoFrames": 192,
+          "bytes": 1961216,
+          "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+        }
+      ],
+      "fileInfo": {
+        "sizeBeforeStart": 1961216,
+        "sha256BeforeStart": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d",
+        "admissionToActionableMs": 609,
+        "selectionToActionableMs": 769,
+        "selectionToExactMs": 1915,
+        "selectionToFirstSegmentMs": 1018,
+        "productionCold": false,
+        "firstReceivedBeforeStart": true,
+        "mainListHiddenAtActionable": true,
+        "assertions": 81,
+        "screenshot": "docs/validation/handoff-7.60/file-info-ts.png"
+      }
+    },
+    {
+      "case": "file-info-m4a",
+      "checks": 9,
+      "resultsSha256": "1abdaa9a42e49d21f42cb34afbda1ecb6c045f9d4adafb902bea616bb417066d",
+      "extensionFilesVerified": 47,
+      "extensionSubstitution": "Private native-host literal only",
+      "outputs": [
+        {
+          "bytes": 98791,
+          "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+          "suffix": ".m4a"
+        }
+      ],
+      "completeOutputChecks": [
+        {
+          "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+          "passed": true,
+          "duration": 8.021333,
+          "videoFrames": 0,
+          "bytes": 98791,
+          "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+        }
+      ],
+      "fileInfo": {
+        "sizeBeforeStart": 98791,
+        "sha256BeforeStart": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de",
+        "admissionToActionableMs": 828,
+        "selectionToActionableMs": 1025,
+        "selectionToExactMs": 2158,
+        "selectionToFirstSegmentMs": 1323,
+        "productionCold": false,
+        "firstReceivedBeforeStart": true,
+        "mainListHiddenAtActionable": true,
+        "assertions": 80,
+        "screenshot": "docs/validation/handoff-7.60/file-info-m4a.png"
+      }
+    }
+  ],
+  "initialFailure": {
+    "case": "hls",
+    "checksPassed": 1,
+    "checksFailed": 1,
+    "resultsSha256": "f87d2f79564bec733deed8248eb4f823ef34f45c9b1f4bd690bf51864ee256a8",
+    "cause": "Player readiness timeout; valid generated media. A diagnostic rerun and three File Info cases succeeded using unchanged product code and reused media. Cause remains unproven."
+  },
+  "limits": [
+    "Local eight-second synthetic media; no public-site, personal-browser or installed-app acceptance.",
+    "No fresh IDM timing comparison or speed-parity claim.",
+    "File Info MP4/TS/M4A runs are component-observed; production cold startup was not tested. The historical runner check label says Cold despite productionCold=false.",
+    "Repeated native observer assertions are not unique feature checks.",
+    "Only selected file recognition cases ran; not the entire browser capture suite."
+  ],
+  "payloads": [
+    {
+      "path": "candidates/handoff-7.60/edge/downloads/old.udmfixture",
+      "bytes": 2097284,
+      "sha256": "3b0e5e5fb306f3513ee2056b58b79ca3e627109fcd00b3ebd12569e6635c89e2"
+    },
+    {
+      "path": "candidates/handoff-7.60/hls-diagnostic/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "path": "candidates/handoff-7.60/hls-diagnostic/downloads/UDM alternate audio fixture.m4a",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+    },
+    {
+      "path": "candidates/handoff-7.60/hls-diagnostic/downloads/UDM alternate audio fixture.ts",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+    },
+    {
+      "path": "candidates/handoff-7.60/hls-diagnostic/downloads/UDM alternate audio fixture (1).mp4",
+      "bytes": 1873982,
+      "sha256": "8a246e608b09084dfe4f639997c6bb7b57c9122fdc8d5bef1c59d27a99bd1a64"
+    },
+    {
+      "path": "candidates/handoff-7.60/hls-diagnostic/downloads/UDM alternate audio fixture (2).mp4",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "path": "candidates/handoff-7.60/file-info-mp4/downloads/UDM alternate audio fixture.mp4",
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "path": "candidates/handoff-7.60/file-info-ts/downloads/UDM alternate audio fixture.ts",
+      "bytes": 1961216,
+      "sha256": "99d1c7dd7f3f53aa55675d2dd96a7091447f1461519f6e05bce1a6950b27f11d"
+    },
+    {
+      "path": "candidates/handoff-7.60/file-info-m4a/downloads/UDM alternate audio fixture.m4a",
+      "bytes": 98791,
+      "sha256": "6cbf4a429198f996617432dda28347f32905625ae2d763de41c7af127e7a33de"
+    }
+  ],
+  "cleanup": "Nine published synthetic outputs removed after checksum verification; see docs/validation/handoff-7.60-cleanup.json. Reusable source media, closed profiles and logs retained."
+}

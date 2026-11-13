@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  function create(api,host){
-  const channels=new Map();let playerLane=0,sequence=0,connections=0,completed=0,failures=0;
+  const channels=new Map(),requests=new Set();let playerLane=0,sequence=0,connections=0,completed=0,failures=0;
   const connectionError=(message,beforeSend=false)=>Object.assign(Error(message),{nativeConnectionLost:true,nativeBeforeSend:beforeSend});
   const next=()=>sequence=sequence>=2147483646?1:sequence+1;
   function channel(name){
@@ -71,21 +71,41 @@
    // Reconnect once after a failure before dispatch. Only token-bound status
    // lookups may be repeated after dispatch.
    const statusRead=message.action==='capture-status',deadline=Math.max(1000,Math.min(timeout,statusRead?10000:45000));
-   for(let attempt=0;;attempt++){
-    try{
-     const port=await connect(state);
-     // Revalidate after startup and on any reconnect before exchange.
-     if(validateSelection)await validateSelection(message);
-     if(!port){beforeSend?.();return await api.runtime.sendNativeMessage(host,message);}
-     // A plain hello reads static host metadata. Reuse only the reply from
-     // this port, and give callers a copy so they cannot change the cache.
-     if(state.port===port&&message.action==='hello'&&Object.keys(message).length===1&&state.hello)
-      return JSON.parse(JSON.stringify(state.hello));
-     return await exchange(state,port,message,deadline,false,beforeSend);
-    }catch(error){if(attempt!==0||error?.nativeConnectionLost!==true||(!statusRead&&!error.nativeBeforeSend))throw error;}
-   }
+   let stopped=false,dispatched=false,validating=false,reason,timer,cancel;
+   const check=()=>{if(stopped)throw reason;};
+   const markDispatched=()=>{check();beforeSend?.();check();dispatched=true;};
+   // Include startup and browser validation, not just a posted port message.
+   // A status read retains one safe retry within a two-attempt total budget.
+   const expiration=new Promise((_,reject)=>{
+    const stop=error=>{if(stopped)return;reason=error;stopped=true;reject(error);};
+    cancel=()=>stop(Error('UDM connection closed.'));
+    requests.add(cancel);
+    timer=setTimeout(()=>{
+     const error=dispatched?connectionError('UDM did not acknowledge the request. Check its download list before trying again.'):
+      Object.assign(Error(validating?'Browser verification did not finish. No download request was sent.':'UDM did not become ready in time. No download request was sent.'),{nativeBeforeSend:true});
+     stop(error);
+     if(dispatched){failures++;if(state.port)close(state,error);}
+    },deadline*(statusRead?2:1));
+   });
+   const send=async()=>{
+    for(let attempt=0;;attempt++){
+     try{
+      check();const port=await connect(state);check();
+      // A late validation result must never dispatch after timeout/disconnect.
+      if(validateSelection){validating=true;try{await validateSelection(message);}finally{validating=false;}}
+      check();
+      if(!port){markDispatched();const reply=await api.runtime.sendNativeMessage(host,message);check();return reply;}
+      // A plain hello reads static host metadata. Reuse only this port's reply.
+      if(state.port===port&&message.action==='hello'&&Object.keys(message).length===1&&state.hello)
+       return JSON.parse(JSON.stringify(state.hello));
+      return await exchange(state,port,message,deadline,false,markDispatched);
+     }catch(error){check();if(attempt!==0||error?.nativeConnectionLost!==true||(!statusRead&&!error.nativeBeforeSend))throw error;}
+    }
+   };
+   try{return await Promise.race([send(),expiration]);}
+   finally{clearTimeout(timer);requests.delete(cancel);}
   }
-  function disconnect(){for(const state of channels.values())close(state,Error('UDM connection closed.'));channels.clear();}
+  function disconnect(){for(const state of channels.values())close(state,Error('UDM connection closed.'));channels.clear();for(const cancel of requests)cancel();}
   return {request,warmControl,disconnect,diagnostics:()=>({connections,completed,failures,pending:[...channels.values()].reduce((n,s)=>n+s.pending.size,0),persistent:[...channels.values()].filter(s=>!!s.port).length})};
  }
  root.UdmNativeBridge={create};if(typeof module==='object'&&module.exports)module.exports=root.UdmNativeBridge;

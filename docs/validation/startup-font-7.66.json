@@ -1,0 +1,319 @@
+{
+    "version":  "7.66",
+    "browserVersion":  "0.71.30",
+    "kind":  "Saved font binding once at startup, avoiding ten temporary assignments",
+    "allQualifiedRunsPassed":  true,
+    "fontBaseline":  "docs/reference/startup-font-bindings-7.65.json",
+    "fontChecks":  128,
+    "fontCasesAfter":  [
+                           {
+                               "case":  "default",
+                               "dpi":  120,
+                               "fontHeight":  11,
+                               "fontMessagesAtStartup":  {
+                                                             "categoryHeading":  1,
+                                                             "clipboard":  1,
+                                                             "search":  1,
+                                                             "searchClose":  1,
+                                                             "searchFind":  1,
+                                                             "searchLabel":  1,
+                                                             "searchSettings":  1,
+                                                             "status":  1,
+                                                             "table":  1,
+                                                             "tree":  1
+                                                         },
+                               "fontName":  "Tahoma",
+                               "fontWeight":  400
+                           },
+                           {
+                               "case":  "custom",
+                               "dpi":  120,
+                               "fontHeight":  18,
+                               "fontMessagesAtStartup":  {
+                                                             "categoryHeading":  1,
+                                                             "clipboard":  1,
+                                                             "search":  1,
+                                                             "searchClose":  1,
+                                                             "searchFind":  1,
+                                                             "searchLabel":  1,
+                                                             "searchSettings":  1,
+                                                             "status":  1,
+                                                             "table":  1,
+                                                             "tree":  1
+                                                         },
+                               "fontName":  "Consolas",
+                               "fontWeight":  700
+                           }
+                       ],
+    "fontBindingReduction":  {
+                                 "controls":  10,
+                                 "beforePerControl":  2,
+                                 "afterPerControl":  1,
+                                 "hostDpi":  120
+                             },
+    "cases":  [
+                  {
+                      "case":  "cold-trace-a",
+                      "warm":  false,
+                      "traced":  true,
+                      "selectionToExternalActionableMs":  936,
+                      "selectionToExactMs":  1941,
+                      "selectionToJobAddedMs":  665,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true,
+                      "phases":  [
+                                     {
+                                         "start":  "app-init-entry",
+                                         "end":  "manager-ready",
+                                         "wallMs":  12.4728
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  297.327
+                                     },
+                                     {
+                                         "start":  "automation-start",
+                                         "end":  "automation-finished",
+                                         "wallMs":  0.5367
+                                     },
+                                     {
+                                         "start":  "file-info-entry",
+                                         "end":  "file-info-controls-start",
+                                         "wallMs":  8.7985
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  48.8941
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  25.4515
+                                     }
+                                 ],
+                      "startupEntryAfterSelectionApproxMs":  320.686767578125,
+                      "pipeReadyAfterSelectionApproxMs":  630.6572265625,
+                      "capturePostedAfterSelectionApproxMs":  817.725341796875,
+                      "jobAddedAfterPipeReadyApproxMs":  34.3427734375,
+                      "paintAfterSelectionApproxMs":  912.203125
+                  },
+                  {
+                      "case":  "cold-original-a",
+                      "warm":  false,
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  665,
+                      "selectionToExactMs":  2369,
+                      "selectionToJobAddedMs":  471,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true
+                  },
+                  {
+                      "case":  "cold-original-b",
+                      "warm":  false,
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  548,
+                      "selectionToExactMs":  1588,
+                      "selectionToJobAddedMs":  369,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true
+                  },
+                  {
+                      "case":  "cold-trace-b",
+                      "warm":  false,
+                      "traced":  true,
+                      "selectionToExternalActionableMs":  684,
+                      "selectionToExactMs":  1526,
+                      "selectionToJobAddedMs":  399,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true,
+                      "phases":  [
+                                     {
+                                         "start":  "app-init-entry",
+                                         "end":  "manager-ready",
+                                         "wallMs":  12.2065
+                                     },
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  254.0961
+                                     },
+                                     {
+                                         "start":  "automation-start",
+                                         "end":  "automation-finished",
+                                         "wallMs":  0.4771
+                                     },
+                                     {
+                                         "start":  "file-info-entry",
+                                         "end":  "file-info-controls-start",
+                                         "wallMs":  15.5898
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  58.7134
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  20.1939
+                                     }
+                                 ],
+                      "startupEntryAfterSelectionApproxMs":  80.09326171875,
+                      "pipeReadyAfterSelectionApproxMs":  346.5263671875,
+                      "capturePostedAfterSelectionApproxMs":  550.658447265625,
+                      "jobAddedAfterPipeReadyApproxMs":  52.4736328125,
+                      "paintAfterSelectionApproxMs":  663.030029296875
+                  },
+                  {
+                      "case":  "warm-original-a",
+                      "warm":  true,
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  217,
+                      "selectionToExactMs":  1507,
+                      "selectionToJobAddedMs":  39,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true
+                  },
+                  {
+                      "case":  "warm-original-b",
+                      "warm":  true,
+                      "traced":  false,
+                      "selectionToExternalActionableMs":  277,
+                      "selectionToExactMs":  1535,
+                      "selectionToJobAddedMs":  42,
+                      "runnerChecks":  8,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "prefetchFinishedBeforeStart":  true
+                  }
+              ],
+    "preliminary":  [
+
+                    ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/startup-font-7.66/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/startup-font-7.66/cold-original-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/startup-font-7.66/cold-original-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/startup-font-7.66/cold-trace-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/startup-font-7.66/warm-original-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/startup-font-7.66/warm-original-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     }
+                 ],
+    "inputHashes":  {
+                        "productionAndFixtureHashes":  [
+                                                           {
+                                                               "name":  "UDM.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "11D34B3EA38A2897B908912143DE5D0A834936FCBCA8B87168770D58B1430782"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.NativeHost.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "4C053BC0D4079618A0293968811CCA34106456393519BC5FB9F73FCC56EBE553"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.Monitor.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "085AB04664A20F335A7C3022C81D9F367D2C9B088C6947DEEDE2F4A7FD9433B5"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.SetupHelper.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "B3DA9C404587570B6DBDEF4E790494086239375858FDF7B49B95902D42BC0239"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.Automation.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "766BE2BC6CC86D6A54EF5EA0D88B6E06ACD1451E08AC994D5693958E1A2FD8EE"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.StartupFontUiTests.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "760F94DDA9B8BA030112D6EC96F632443D7DA4653E70B6333969E29E4BA215BE"
+                                                           },
+                                                           {
+                                                               "name":  "Udm.ProductionUiTimingTests.exe",
+                                                               "version":  "7.66",
+                                                               "sha256":  "41C73E3A0D8239592150539EFF0BE39EE2527F532E168B53A7FC4597037BEBFA"
+                                                           }
+                                                       ],
+                        "sharedHelpers":  [
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffmpeg.exe",
+                                                  "sha256":  "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+                                              },
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffprobe.exe",
+                                                  "sha256":  "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+                                              }
+                                          ],
+                        "testSources":  [
+                                            {
+                                                "path":  "tests/hls-catalog.native-live.cjs",
+                                                "sha256":  "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+                                            },
+                                            {
+                                                "path":  "tests/observe-cold-file-info.py",
+                                                "sha256":  "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970"
+                                            }
+                                        ]
+                    },
+    "build":  "startup-font-7.66-build.json",
+    "beforeColdBaseline":  "cold-capture-7.65.json",
+    "limits":  [
+                   "Two cold original and two cold traced observations per version, plus two new warm original observations. Not load-matched pairs or a stable speed distribution.",
+                   "The font fixture uses the actual host 120 DPI. Other physical monitor/DPI configurations are not verified here.",
+                   "Correct final fonts, runtime updates and the actual ten-message reduction are verified independently of noisy wall timings.",
+                   "Cold tests require the desktop to remain closed through quality/audio selection; warm tests answer diagnostics before selection but can overlap residual startup.",
+                   "Selected HLS MP4 Spanish fixture; public YouTube, installed/personal browser and fresh IDM comparisons remain open.",
+                   "Absolute phase alignment uses a coarse FILETIME anchor; stage deltas use QPC."
+               ],
+    "cleanup":  "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See startup-font-7.66-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

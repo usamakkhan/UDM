@@ -1,0 +1,326 @@
+{
+  "version": "7.75",
+  "browserVersion": "0.71.39",
+  "allQualifiedRunsPassed": true,
+  "nativeChecks": 330,
+  "nativeSuites": [
+    {
+      "suite": "pending-ui-light",
+      "checks": 67
+    },
+    {
+      "suite": "pending-ui-dark",
+      "checks": 67
+    },
+    {
+      "suite": "detached-tests",
+      "checks": 53
+    },
+    {
+      "suite": "registry-tests",
+      "checks": 36
+    },
+    {
+      "suite": "reservation-tests",
+      "checks": 73
+    },
+    {
+      "suite": "coordinator-tests",
+      "checks": 13
+    },
+    {
+      "suite": "catalog-tests",
+      "checks": 14
+    },
+    {
+      "suite": "idle-tests",
+      "checks": 7
+    }
+  ],
+  "cases": [
+    {
+      "case": "cold-trace-b",
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 663,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "earlyDialogUsed": true,
+      "paintBeforeFlushCompletion": false
+    },
+    {
+      "case": "warm-original-a",
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 140,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "case": "cold-original-a",
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 469,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "case": "warm-trace-a",
+      "runnerChecks": 8,
+      "selectionToExternalActionableMs": 138,
+      "oneCompleteJob": true,
+      "mainListHidden": true,
+      "prefetchBeforeStart": true,
+      "exactSizeBeforeAndAfter": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "earlyDialogUsed": true,
+      "paintBeforeFlushCompletion": false
+    }
+  ],
+  "build": "pending-errors-7.75-build.json",
+  "assets": [
+    {
+      "name": "add.png",
+      "bytes": 580,
+      "sha256": "709051C82C86A72B67D55F704F0BCF91BE6F4A613DDD843FD45440BE2DAA7CE9"
+    },
+    {
+      "name": "all.png",
+      "bytes": 618,
+      "sha256": "48962BF37CA04840E08D96CF580E794DCF5BE26BBE3CDCA58D25D4B3A6BA3074"
+    },
+    {
+      "name": "app.png",
+      "bytes": 1757,
+      "sha256": "F96864C558A6B9EC7220BE56EE664CC3E78A0B32CD9920294E56A694BA98E2F7"
+    },
+    {
+      "name": "archives.png",
+      "bytes": 794,
+      "sha256": "CFCE40C41B53372C4EEB22200BF33DD34EFDCE13868FFEF8F7679FD4C3558D80"
+    },
+    {
+      "name": "browser.png",
+      "bytes": 2052,
+      "sha256": "C7502F85879CFCC48A99BAD17B40E4C71124053C79697B1F0FA08D1EB1586F60"
+    },
+    {
+      "name": "complete.png",
+      "bytes": 1731,
+      "sha256": "7E7C4A2211C5306FF8C6220763AFFA8B871832DB981E61390C458596CD91D238"
+    },
+    {
+      "name": "documents.png",
+      "bytes": 733,
+      "sha256": "0BA5B3522C8FAB28E690E354E284FC51041B3F4C146FD5DA1140FCDB71C850AF"
+    },
+    {
+      "name": "export.png",
+      "bytes": 837,
+      "sha256": "51C46B395826F0F10E23040A3AF39F8FA16D76CE1C6E60C6EE3594718C69D97E"
+    },
+    {
+      "name": "failed.png",
+      "bytes": 1636,
+      "sha256": "08E38E3C51D69AAA31A630D6A4096FC4E8390B1FDED0DB5391E453067726B9D7"
+    },
+    {
+      "name": "folder.png",
+      "bytes": 545,
+      "sha256": "3DA0A269E48FF61640764724ACA8D71BFB7D64657E9A37D87CE55F18C0C28CEF"
+    },
+    {
+      "name": "grabber.png",
+      "bytes": 2052,
+      "sha256": "C7502F85879CFCC48A99BAD17B40E4C71124053C79697B1F0FA08D1EB1586F60"
+    },
+    {
+      "name": "icon-preview.png",
+      "bytes": 48182,
+      "sha256": "6462B328B28907B88D378067F6D178619D686964CCC7529CA8E18FBEC4036A0D"
+    },
+    {
+      "name": "images.png",
+      "bytes": 1017,
+      "sha256": "3637BE93BD6478ECED65F9B6A2F386B38BD86CAE59FE2C7185FFCFF48D93B8AA"
+    },
+    {
+      "name": "import.png",
+      "bytes": 880,
+      "sha256": "2476AAADCE3862E6FB084E0F34BF9024887A1BE81102CD30D35665846158C505"
+    },
+    {
+      "name": "info.png",
+      "bytes": 1226,
+      "sha256": "31A99B8360CBF3D053AB5D4A5C3956A1B98928543CD961E7E12262E8832C5BF3"
+    },
+    {
+      "name": "link.png",
+      "bytes": 1013,
+      "sha256": "406E2370758FF2A807BDC76602ABC17D089CB8C89840031F282647CF839782D1"
+    },
+    {
+      "name": "music.png",
+      "bytes": 924,
+      "sha256": "83A1C3D87B628162BF2F7C6ADF8DA3FC369B07C355F5E68162AEB8F43DF11820"
+    },
+    {
+      "name": "other.png",
+      "bytes": 553,
+      "sha256": "58024963F569D1D45E6A68088CD3EBC841D2103244C179D67678EF4F020B995E"
+    },
+    {
+      "name": "pause.png",
+      "bytes": 988,
+      "sha256": "BB9AE9004219AD074AC8BC4878396AE6609CB0828FF13BCE238F4C8C4DA441C6"
+    },
+    {
+      "name": "programs.png",
+      "bytes": 648,
+      "sha256": "23C93D8630D892B8342BD4A79DDF1786E2EC1B45DC60340A12DBC5310BE17835"
+    },
+    {
+      "name": "Public-Suffix-LICENSE.txt",
+      "bytes": 16727,
+      "sha256": "66A3107D5AD6A058AAB753EAAC2047CCB2ED0E39465DD0FE5844DA3E300D5172"
+    },
+    {
+      "name": "public_suffix_list.dat",
+      "bytes": 334666,
+      "sha256": "007BEEC490D5D2A8FF05F527FC9545852858685F8A281B7998E09DE418FE4D7E"
+    },
+    {
+      "name": "queue.png",
+      "bytes": 603,
+      "sha256": "12F1B3ABB7D6607DFAE6798BB6BE8311E9E2F855C2837EFA24630BC67A9467A5"
+    },
+    {
+      "name": "remove.png",
+      "bytes": 1020,
+      "sha256": "C626347E1386B0FE61BB6784AEBB858456D8ECF7568C637DE6CDABCEA4E6FA3A"
+    },
+    {
+      "name": "resume.png",
+      "bytes": 1562,
+      "sha256": "65B67A23D239B6D364E30AF5D59A8CC5D2FACFA4C57240722D8D3CA089A92720"
+    },
+    {
+      "name": "schedule.png",
+      "bytes": 1651,
+      "sha256": "0A69677D4037CF04189EF7488590432BAB71903BF7C54B1A93B9A464EC98277E"
+    },
+    {
+      "name": "settings.png",
+      "bytes": 1659,
+      "sha256": "9241B6E4A421307735E89D0577AC8F92ECD0E33C38CCE75F3D3ED9437F0EEF41"
+    },
+    {
+      "name": "startqueue.png",
+      "bytes": 800,
+      "sha256": "B3DA19663F9303F8E3B65DE8ED7F2A1ED17C16571A06FE20C0355CEF461AD5F6"
+    },
+    {
+      "name": "stop.png",
+      "bytes": 1362,
+      "sha256": "65E90E2341BC1606CF0237307874E62AF2C58F7390C93D47B6443D08F60B58A7"
+    },
+    {
+      "name": "stopall.png",
+      "bytes": 1222,
+      "sha256": "5E5AD6B754D999D32A524FFFDB1622D309126A756EA64BE86BBF3CEF67CAB69D"
+    },
+    {
+      "name": "stopqueue.png",
+      "bytes": 746,
+      "sha256": "9F134F1197994B988CE9138DF74F3101571A34754AE9271388BA5451F6A708CD"
+    },
+    {
+      "name": "udm.ico",
+      "bytes": 16078,
+      "sha256": "85EC8C9827FEF5B5DA95EC2CB6219CB5598943D41F566035F632675294C1A761"
+    },
+    {
+      "name": "video.png",
+      "bytes": 924,
+      "sha256": "936A190F6A66B28176F599900EDFF6D745B4B75D2B0E20F03DF64683DC6566DB"
+    }
+  ],
+  "regressionBefore": {
+    "expectedFailure": true,
+    "reason": "Old queued Start exception disappeared into the Form timer catch-all; the fixture timed out waiting for the warning."
+  },
+  "constructionExperiment": {
+    "accepted": false,
+    "samples": [
+      {
+        "mode": "light",
+        "case": "cancel",
+        "baselineMs": 69.39209999889135,
+        "prototypeMs": 92.49820000119507
+      },
+      {
+        "mode": "light",
+        "case": "later",
+        "baselineMs": 76.64560000039637,
+        "prototypeMs": 90.01429999992251
+      },
+      {
+        "mode": "light",
+        "case": "review",
+        "baselineMs": 83.20600000023842,
+        "prototypeMs": 99.3374000005424
+      },
+      {
+        "mode": "light",
+        "case": "start",
+        "baselineMs": 73.1781999990344,
+        "prototypeMs": 86.64699999988079
+      },
+      {
+        "mode": "dark",
+        "case": "cancel",
+        "baselineMs": 77.13440000079572,
+        "prototypeMs": 92.39240000024438
+      },
+      {
+        "mode": "dark",
+        "case": "later",
+        "baselineMs": 82.5566000007093,
+        "prototypeMs": 90.31680000014603
+      },
+      {
+        "mode": "dark",
+        "case": "review",
+        "baselineMs": 92.87450000084937,
+        "prototypeMs": 97.20969999954104
+      },
+      {
+        "mode": "dark",
+        "case": "start",
+        "baselineMs": 75.10329999960959,
+        "prototypeMs": 90.58929999917746
+      }
+    ],
+    "reason": "Resource-template prototype was slower in all eight measured first-paint samples and added WS_EX_NOPARENTNOTIFY. Removed from product; Ui.hpp and App.rc equal the 7.74 source hashes. This does not rule out other resource strategies."
+  },
+  "preliminary": [
+    {
+      "case": "cold-trace-a",
+      "qualified": false,
+      "reason": "Relocated native output lacked assets; failed before browser workflow. Assets copied and hashed; fresh cold-trace-b passed."
+    }
+  ],
+  "limits": [
+    "Recoverable queued decision validation is covered; failed admission before acceptance still lacks an inline retry.",
+    "Advanced actions enable after acceptance. Direct-audio, existing-record, duplicate and refresh paths retain synchronous fallbacks.",
+    "Four isolated Edge/native selected HLS MP4 downloads do not prove personal installed-browser behavior, all formats, overall speedup or IDM parity.",
+    "Concurrent modal capture, shutdown/session-end, canonical UI fixture build integration, non-UI accepted-decision persistence and cold-frame startup overlap remain open."
+  ],
+  "artifacts": "Build outputs, profiles and payloads retained under LOCALAPPDATA/UDM-Development on C; no installer or installation performed; media tools shared without copies."
+}

@@ -1,11 +1,9 @@
 // Included inside udm after progressBytes.
 class ProgressRateGraph:public CWnd {
  DECLARE_MESSAGE_MAP()
- using Clock=std::chrono::steady_clock;
- static constexpr auto history=std::chrono::seconds(30);
- static constexpr auto interval=std::chrono::milliseconds(500);
- struct Sample {Clock::time_point time;std::optional<double> rate;};
- std::deque<Sample> samples;
+ using Clock=ProgressRateHistory::Clock;
+ using Sample=ProgressRateHistory::Sample;
+ ProgressRateHistory history;
  std::optional<int> pointerX;
  static std::wstring speedText(double rate){return wide(progressBytes(rate)+"/s");}
  void draw(CDC& dc,CRect frame){
@@ -24,9 +22,9 @@ class ProgressRateGraph:public CWnd {
   const int row=std::max(12L,font.tmHeight+2),pad=std::max(5,row/3);
   CRect plot=frame;plot.DeflateRect(pad,row+pad);
   if(plot.Width()<2||plot.Height()<2){dc.RestoreDC(saved);return;}
-  const auto end=samples.empty()?Clock::time_point{}:samples.back().time;
-  const auto begin=end-history;
-  const auto x=[&](Clock::time_point t){return plot.left+static_cast<int>(plot.Width()*std::chrono::duration<double>(t-begin).count()/history.count());};
+  const auto samples=history.visibleValues();
+  const auto end=history.end(),begin=end-ProgressRateHistory::window;
+  const auto x=[&](Clock::time_point t){return plot.left+static_cast<int>(plot.Width()*std::chrono::duration<double>(t-begin).count()/ProgressRateHistory::window.count());};
   double peak=0;
   for(const auto& sample:samples)if(sample.rate)peak=std::max(peak,*sample.rate);
   const double scale=std::max(peak,1.0);
@@ -52,32 +50,47 @@ class ProgressRateGraph:public CWnd {
    }else dc.FillSolidRect(points.front().x,points.front().y,2,2,line);
    points.clear();
   };
-  const Sample* selected=nullptr;
+  const auto hovered=pointerX?begin+std::chrono::duration_cast<Clock::duration>(ProgressRateHistory::window*static_cast<double>(std::clamp<int>(*pointerX-plot.left,0,plot.Width()))/plot.Width()):end;
+  const auto select=[&]() -> const Sample*{
+   if(!pointerX||*pointerX<plot.left||*pointerX>=plot.right)return nullptr;
+   const Sample* previous=nullptr;
+   for(const auto& sample:samples){
+    if(sample.time>hovered){
+     if(!previous||!previous->rate||!sample.rate)return previous;
+     return hovered-previous->time<=sample.time-hovered?previous:&sample;
+    }
+    previous=&sample;
+   }
+   return previous;
+  };
+  const auto* selected=select();
   for(const auto& sample:samples){
    if(!sample.rate){paintTrace();continue;}
    points.push_back({std::clamp<LONG>(x(sample.time),plot.left,plot.right-1),y(*sample.rate)});
-   if(pointerX&&(!selected||std::abs(x(sample.time)-*pointerX)<std::abs(x(selected->time)-*pointerX)))selected=&sample;
   }
   paintTrace();
   if(selected){
-   const int mark=std::min<int>(plot.right-1,x(selected->time));
+   const int mark=std::clamp<int>(selected->rate?x(selected->time):*pointerX,plot.left,plot.right-1);
    dc.FillSolidRect(mark,plot.top,1,plot.Height(),line);
   }
   const auto peakLabel=peak>0?L"Peak " + speedText(peak):L"Transfer rate";
   std::wstring value;
   if(selected){
-   const auto age=std::chrono::duration_cast<std::chrono::seconds>(end-selected->time).count();
-   value=speedText(*selected->rate)+L"  (-"+std::to_wstring(age)+L" s)";
+   const auto age=std::chrono::duration<double>(end-(selected->rate?selected->time:hovered)).count();
+   std::wostringstream seconds;seconds<<std::fixed<<std::setprecision(1)<<age;
+   value=(selected->rate?speedText(*selected->rate):L"No transfer")+L"  (-"+seconds.str()+L" s)";
   }else if(!samples.empty()&&samples.back().rate)value=speedText(*samples.back().rate);
   CRect caption(frame.left+pad,frame.top+pad,frame.right-pad,plot.top);
-  dc.DrawTextW(peakLabel.c_str(),-1,&caption,DT_LEFT|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
-  if(!value.empty()&&dc.GetTextExtent(peakLabel.c_str()).cx+dc.GetTextExtent(value.c_str()).cx+pad<caption.Width())
+  const bool fits=!value.empty()&&dc.GetTextExtent(peakLabel.c_str()).cx+dc.GetTextExtent(value.c_str()).cx+pad<caption.Width();
+  const auto& leading=selected&&!fits?value:peakLabel;
+  dc.DrawTextW(leading.c_str(),-1,&caption,DT_LEFT|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
+  if(fits)
    dc.DrawTextW(value.c_str(),-1,&caption,DT_RIGHT|DT_SINGLELINE|DT_NOPREFIX);
   CRect axis(plot.left,plot.bottom+pad,plot.right,frame.bottom);
   dc.DrawTextW(L"30 s ago",-1,&axis,DT_LEFT|DT_SINGLELINE);
   dc.DrawTextW(L"Latest",-1,&axis,DT_RIGHT|DT_SINGLELINE);
   if(std::none_of(samples.begin(),samples.end(),[](const Sample& sample){return sample.rate.has_value();}))
-   dc.DrawTextW(L"Waiting for transfer samples",-1,&plot,DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
+   dc.DrawTextW(samples.empty()?L"Waiting for transfer samples":L"No transfer in the last 30 s",-1,&plot,DT_CENTER|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
   dc.RestoreDC(saved);
  }
  afx_msg void OnPaint(){
@@ -97,12 +110,7 @@ class ProgressRateGraph:public CWnd {
 public:
  BOOL Create(DWORD style,const RECT& rect,CWnd* parent,UINT id){return CWnd::Create(AfxRegisterWndClass(0),L"Transfer rate history",style,rect,parent,id);}
  void record(Clock::time_point now,std::optional<double> rate){
-  if(rate&&(!std::isfinite(*rate)||*rate<0))rate.reset();
-  if(samples.empty()&&!rate)return;
-  if(!samples.empty()&&samples.back().rate.has_value()==rate.has_value()&&(!rate||now-samples.back().time<interval))return;
-  samples.push_back({now,rate});
-  while(now-samples.front().time>history)samples.pop_front();
-  if(IsWindowVisible())Invalidate(FALSE);
+  if(history.record(now,rate)&&IsWindowVisible())Invalidate(FALSE);
  }
 };
 BEGIN_MESSAGE_MAP(ProgressRateGraph,CWnd)

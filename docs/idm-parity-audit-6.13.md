@@ -1,5 +1,133 @@
 # UDM 6.13 and IDM 6.43.10.2 parity plan
 
+## Current increment: 7.91 / browser 0.71.55
+
+Main Options selected-connection Apply now runs on the joined decision worker, using only the current protected credential draft. It preserves other unfinished connections and unrelated unaccepted controls, freezes conflicting actions through store completion/error acknowledgement and supports explicit retry. Success masks the password and restores a clean disabled Apply button. Cancel retains explicitly applied credentials without repeating writes or saving other settings. Final focused validation passes 919 checks; 11 current binaries are version/hash verified. No network payload or installer; installed app remains 7.11. Next: initial settings/credential loading and Connect pre-apply; synchronous category/properties/refresh actions; broader shutdown/interruption lifetimes; natural preview HTTP diagnosis and fresh live IDM comparisons. Full parity remains unproven. [Evidence](validation/dial-apply-7.91.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.90 / browser 0.71.54
+
+Main Options final persistence now runs on a joined worker with owned settings/protected credential drafts, current-settings merge, current external startup-state preservation, original-error rollback/retry, partial credential acknowledgement and success-only Restart/close. Conflicting controls freeze while the modal repaints; the shared guard remains active through error acknowledgement. Final focused validation passes 800 native checks; 23 native binaries are version-verified. No new network payload or installer; installed app remains 7.11. Next: initial Options loading, sound-file validation and category/per-connection synchronous actions; remaining properties/refresh/main-window commands; broader modal/shutdown and interruption matrices; natural preview HTTP diagnosis and fresh live IDM comparisons. Full parity remains unproven. [Evidence](validation/options-save-7.90.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.89 / browser 0.71.53
+
+Progress customization now opens from cached values and saves dirty progress fields asynchronously, preserving newer unrelated settings, no-write Cancel/no-op OK, More draft boundaries, rollback/retry and immediate committed cache values. The new maintained fixture passes 88 checks per theme; all focused native checks total 1,893, plus two real HTTP transfers and three complete isolated browser workflows. Twenty-one binaries/staged extension sources verified. Next: Options parent persistence and remaining synchronous properties/refresh/main-window commands, broader modal/shutdown lifetimes, live-recording interruption, natural preview HTTP root cause and fresh IDM comparisons. Installed app remains 7.11; no setup/install. Full parity remains unproven. [Evidence](validation/progress-preferences-7.89.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.88 / browser 0.71.52
+
+Popup tracking now defers automatic completion close through nested refreshes while preserving existing opening-rate grace. Nested popup requests are ignored. Menu fixtures pass 88 checks per theme; all focused native checks total 1,717, plus two active HTTP and three complete isolated browser workflows. Twenty binaries/staged extension sources verified. Progress-dialog wrapper observation was aligned with other runners after its initial late completion; fresh corrected-wrapper run passed. Next: remaining synchronous dialogs/main-window commands, broader popup/manual-close/global-shutdown lifetimes, actual live-recording interruption, natural preview HTTP root cause and fresh IDM comparisons. Installed app remains 7.11; no setup/install. Full parity remains unproven. [Evidence](validation/progress-popup-lifetime-7.88.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.87 / browser 0.71.51
+
+Unrelated progress menus remain available while another decision saves: Hide and read-only Information work, model-dependent choices gray out and stale selections are rechecked. Owning accepted/queued work retains its popup deferral. Final menu fixtures pass 81 checks per theme; all focused native checks total 1,703, plus two active HTTP transfers and three complete isolated browser workflows. Twenty binaries and staged extension sources verified. Next: remaining synchronous dialogs/main-window commands, own-window popup/lifetime design, actual live-recording interruption, natural preview HTTP root cause, full shutdown/crash qualification and fresh IDM comparisons. Installed app remains 7.11; no setup/install. Full parity remains unproven. [Evidence](validation/progress-menu-busy-7.87.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.86 / browser 0.71.50
+
+Snapshot-based progress menus open without acquiring the Manager lock. Selected worker commands revalidate current state and retain rollback/retry; recording Resume resynchronizes its temporary limiter. Final menu fixtures pass 53 checks per theme; all focused native checks total 1,647, with two active HTTP transfers and three complete production browser workflows. Twenty binaries and staged extension sources verified. Initial dark checkpoint failure remains unexplained despite final passes. Next: shared-guard menu behavior, remaining synchronous dialogs/main-window commands, natural preview HTTP root cause, actual live-recording interruption, full shutdown/crash qualification and fresh IDM timings. Installed app remains 7.11; no setup/install. Full parity remains unproven. [Evidence](validation/progress-menu-7.86.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+Preview diagnostics only (runtime unchanged at 7.85 / browser 0.71.49): opt-in HTTP diagnostics now capture a private NetLog and export owned-loopback parser/header/byte-count summaries. Thirteen privacy/event checks and five guards pass. A guarded intentionally malformed preview verifies actual parser-error capture with zero admissions. Final diagnostic and ordinary complete recovery controls pass, but the intermittent natural failure stays unresolved. No native rebuild/install; prior binary/core hashes remain frozen and installed app remains 7.11. Raw logs/payloads were removed after summary verification; earlier blocked artifacts were untouched. [Evidence](validation/preview-http-7.85.json) · [Scope](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.85 / browser 0.71.49
+
+Additional completion options now persist through the joined worker, keeping the modal repaintable with rollback, retained draft/retry and Cancel without writes. Workers revalidate current job/policy; thin cached snapshots supply all initial settings. Completion fixtures pass 133 checks per theme; all focused native suites total 1,541, plus two active HTTP transfers, three ordinary complete browser workflows and one instrumented recovery. Nineteen binaries verified. Initial fixture assertions were corrected; the preview HTTP failure recurred and remains unresolved despite later passing diagnostic/control runs. Next: remaining context-menu/main-window and modal writes, preview HTTP root cause, full shutdown/crash qualification and fresh IDM comparisons. Installed app remains 7.11; no setup/install. Full parity remains unproven. [Evidence](validation/progress-options-7.85.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+## Current increment: 7.84 / browser 0.71.48
+
+Completion-tab visibility/power/force saves now run on the joined worker, with rollback, per-attempt UI consent, stale-state checks and exit draining. Validation: 1,499 native checks, two active HTTP transfers and three complete isolated browser downloads; 19 binaries verified. Test-only dark consent identification and mixed Retry observation were corrected, with original failures preserved. Installed desktop remains 7.11; no setup/install. Further work: additional completion-options modal and remaining modeless/main-window writes, unresolved preview HTTP bootstrap, full crash/session-end qualification and fresh paired IDM timings. Full parity remains unproven. [Evidence](validation/progress-completion-7.84.json) · [Architecture](file-info-pending-admission-architecture.md)
+
+Responsive progress limiter (7.83 / browser 0.71.47): temporary and remembered edits now use owned background commands while rate/enable/remember controls remain editable. A bounded newest-valid draft coalesces rapid input; generations preserve newer invalid text, numeric spelling and selection through completion or older failures. Backend validation/rollback stay intact. Graph/details remain usable, and exit joins existing commands before flushing queued rates and taking the final catalog snapshot. The canonical limiter fixture passes 77 checks per theme, including active HTTP transfers from a tracked one-MiB in-memory source, exact output bytes and reopened rate/catalog. All focused native checks total 1,275; three complete browser workflows pass 24 checks with exact size/checksum, selected-track decode, prefetch and hidden main list. Five products and thirteen fixtures have verified 7.83 resources. Seven payloads and eighteen temporary objects were verified and removed (223,541,027 logical bytes); reusable C outputs/shared helpers remain. The older blocked preview artifacts remain untouched. A hash-verified ignored 7.11 installer was preserved on C when D filled during report writing. Other synchronous commands, full crash/session-end behavior, the earlier preview HTTP failure and fresh IDM timings remain open. Installed desktop remains 7.11; no installer or installation. [Evidence](validation/progress-limiter-7.83.json) · [Cleanup](validation/progress-limiter-7.83-artifacts.json) · [Relocation](validation/legacy-installer-relocation-7.83.json)
+
+Preview HTTP investigation (diagnostic only; product 7.82 / browser 0.71.46 unchanged): 16 instrumented private preview probes passed without admissions, but the earlier invalid-HTTP-response failure was not reproduced and remains unresolved. The maintained HLS runner now offers opt-in preview-only and sanitized owned-loopback protocol/server-header tracing. Six collector checks, five configuration guards, two final preview cases and two final complete-download cases pass; full cases match exact pre-Start/final size/checksum and decode selected tracks. Preview results explicitly cannot count as completed-download acceptance. Runtime sources, 17 binaries and 42 core objects remain unchanged. Automatic approval review rejected cleanup with blocked by policy; 26 private profiles and five synthetic movies remain on C (324,928,507 logical bytes). Next capture an actually failing preview before selecting a product fix. Installed desktop remains 7.11; no version increment, rebuild, installer or installation. [Evidence](validation/preview-http-7.82.json) · [Artifact status](validation/preview-http-7.82-artifacts.json)
+
+Responsive progress commands (7.82 / browser 0.71.46): primary actions and accepted Cancel now run owned, revalidated backend requests on a joined worker. Competing actions are disabled while graph/detail controls remain usable; errors restore the same window and controls for explicit retry. Displayed Close immediately dismisses without the Manager lock. Exit drains accepted commands before the final catalog snapshot and safely handles already-consumed modal errors. The progress fixture passes 410 checks, including light/dark held writes and explicit failure/retry, plus exit-ordering checks; all focused native checks total 1,121. Five products and twelve fixtures have verified 7.82 resources. Three fresh final browser downloads pass 24 checks with full selected-track decode, exact pre-Start/final size/checksum, prefetch and hidden main list. Earlier validation includes five complete transfers and two pre-selection preview HTTP failures; the latter remain unresolved despite successful replacements. Two cleanup passes removed 29 generated file versions at 25 distinct paths (372,518,038 logical bytes; four UI object paths were rebuilt between passes). Reusable C core cache/executables and shared helpers remain. Login/refresh modal persistence, live finalization, limiter/options/context-menu writes, broader shutdown/crash lifetimes and matched IDM timings remain open. Installed desktop remains 7.11; no installer or installation. [Evidence](validation/progress-commands-7.82.json) · [Cleanup](validation/progress-commands-7.82-artifacts.json)
+
+Nonblocking progress refresh (7.81 / browser 0.71.45): the download window tries one Manager snapshot, including quota status, instead of waiting at either of its former model acquisitions. Busy refresh retains the last complete view; graph switching, details resizing and painting keep responding, and the next snapshot catches up without fabricated rate samples. Actual light/dark contention gates cover both snapshot capture and subsequent painting. The progress fixture passes 281 checks; all focused native checks total 992. Five products and twelve fixtures have verified 7.81 resources. Three complete isolated production browser downloads pass 24 checks with full selected-track decode, exact pre-Start/final size and checksum, prefetch and hidden main list. Twenty generated payload/object files were individually verified and removed (206,065,634 logical bytes). Reusable core cache/executables and shared helpers remain on C. State-changing commands can still block; installed-browser coverage, full shutdown lifetimes and fresh matched IDM timings remain open. Installed desktop remains 7.11; no installer or installation. [Evidence](validation/progress-refresh-7.81.json) · [Cleanup](validation/progress-refresh-7.81-artifacts.json)
+
+Scheduled wizard commits (7.80 / browser 0.71.44): new, listed-download, revised and File Info schedules now save owned commands on a joined worker. The wizard keeps pumping during persistence, disables competing actions, and restores the same review draft after a prepublication failure for explicit retry. Posted completion works with polling disabled; the delayed callback owns its heading pointer. All 711 native checks pass, including 208 wizard and 250 existing File Info UI checks. Three complete isolated production browser downloads pass 24 checks with exact pre-Start/final size of 6,560,076 bytes, matching checksum, full selected-track decode, prefetch and hidden main list. All five products and eleven fixtures have verified 7.80 resources. Nineteen generated payload/object files were hash-verified and removed (159,247,132 logical bytes); reusable C cache/executables and shared tools remain. Installed desktop remains 7.11; no installer or installation. Postpublication/lost-acknowledgement failures, session-end/crash lifetimes, unrelated Manager-lock waits, installed-browser formats and fresh IDM timings remain open. [Evidence](validation/scheduled-wizard-7.80.json) · [Cleanup](validation/scheduled-wizard-7.80-artifacts.json)
+
+Responsive accepted decisions (7.79 / browser 0.71.43): ordinary File Info Start/Later now execute an owned draft on a joined worker, preserving edits and restoring control states on backend failure. A unique integer-key completion signal posts only after the result is ready; held-write UI cases kill their polling timer and still complete. The presentation guard remains held through UI acknowledgement, deferring periodic main/progress refresh and update/queue dispatch; queued individual Start dispatches on the worker after saving. All 502 native checks pass (250 UI and 252 backend). Three complete isolated browser downloads pass 24 runner checks. One forces admission failure/retry and Start-save failure/retry in the same window/job, then fully decodes the selected HLS MP4 at exactly 6,560,076 bytes both before Start and after completion, with matching checksum, prefetch and hidden main list. An observer filter error was unqualified; its corrected replacement passed. Five products and ten fixtures have verified 7.79 resources. Scheduled-wizard commits remain synchronous and other modeless commands may still wait for the Manager lock; live updater deferral, full session-end/crash handling, installed-browser formats, cold-frame overlap and fresh IDM timing comparisons remain open. No overall speedup or IDM parity is claimed. Generated payloads and temporary test/link objects were removed (153,233,711 logical bytes); reusable core cache/executables remain on C with shared helpers. Legacy root ZIP backups were hash-verified and preserved on C to free D. No installer or installation; installed UDM remains 7.11. [Evidence](validation/file-info-decision-7.79.json) · [Artifacts](validation/file-info-decision-7.79-artifacts.json)
+
+Inline File Info retry (7.78 / browser 0.71.42): eligible new video admissions can retry a proven rejection after the previous producer finishes, retaining the original token, same window and edited draft while following a fresh accepted job identity. The stable presentation session, bounded retry queue, separate joined cancellation worker and private presentation claim prevent duplicate decisions/dialogs and carry Cancel through later generations. Uncertain outcomes cannot resubmit automatically. All 434 native checks pass (200 UI, 27 retry and 207 maintained backend), and three complete cold/warm isolated browser downloads pass 24 runner checks. One production case forces a catalog-write failure, clicks Retry, retains the same HWND and completes the selected HLS MP4 at exactly 6,560,076 bytes before Start and after completion, with matching checksum, full decode, selected audio, real prefetch and hidden main list. All five products and eight fixtures have verified 7.78 resources. The three new test payloads were removed individually after verification; profiles and native outputs remain on C with shared helpers. Token-expiry/browser-refresh UX, other admission variants/formats, concurrent browser retry, installed-browser/session-end coverage, non-UI accepted-decision persistence and cold-frame overlap remain open. No overall speedup or fresh IDM parity is claimed. No installer or installation; installed UDM remains 7.11. [Evidence](validation/pending-retry-7.78.json) · [Artifacts](validation/pending-retry-7.78-artifacts.json)
+
+Proven admission rejection (7.77 / browser 0.71.41): the detached owner reports Rejected only after resolving captured writes without acceptance, outside the Manager lock. Observer failure preserves the original persistence exception; a matching job identity is required, and rejection cannot downgrade accepted state. Pending File Info now distinguishes a definite rejection from an uncertain acknowledgement and advises checking history before recapture when acceptance is unknown. All 385 focused native checks pass (178 actual light/dark UI checks and 207 backend checks). Two complete cold/warm isolated Edge/native selected HLS MP4 downloads pass 16 runner checks, matching the exact 6,560,076-byte pre-Start/final size and checksum, full decode, selected audio, prefetch and hidden main list. All five production executables and seven fixtures have verified 7.77 resources. No overall speedup or fresh IDM parity is claimed. Inline admission retry is still unfinished: the next controller must own attempt generations, wait for the previous worker to release its lease, reconcile the original token and preserve one same-window draft without duplicate offers. See the retry delivery specification in [architecture](file-info-pending-admission-architecture.md). Outputs and retained evidence artifacts are on C with shared media tools; no installer or installation. Installed UDM remains 7.11. [Qualification](validation/pending-outcome-7.77.json)
+
+Standard pending File Info verification (7.76 / browser 0.71.40): added -PendingFileInfoUiTestsOnly to native/build.ps1 and a maintained light/dark runner, native/test-pending-file-info.ps1. Both modes pass 67 held-write UI checks (134 total), with five runner lifecycle checks, six conflicting selector checks and missing-helper preflight also passing. The runner preserves earlier output, restores its flags and reports a live PID on timeout. All five production executables and the fixture built through the standard script with 7.76 resources. Build/test outputs remain on C; installed media helpers are shared through a checked junction, with no new FFmpeg copies. The initial missing-helper attempt is unqualified and preserved. This delivery closes standard fixture integration; it does not change runtime download behavior or establish a speedup. Browser qualification remains the separate 7.75 evidence. Inline failed-admission retry, other admission variants, concurrent modal capture, shutdown/session-end, non-UI accepted-decision persistence and cold-frame overlap remain next work. No installer or installation; installed UDM remains 7.11. [Evidence](validation/pending-ui-standard-7.76.json)
+
+Queued File Info recovery (7.75 / browser 0.71.39): Start and Download Later queued during admission now show validation errors after acceptance instead of losing them in the timer exception handler. The same window retains edits, unlocks its controls and allows correction/retry; the original intent is consumed once. Destination-conflict recovery is covered in both light and dark modes (67 UI checks each), alongside 196 admission/registry/recovery/persistence checks: 330 native checks pass. Four complete isolated Edge/native selected HLS MP4 downloads pass 32 runner checks, matching the exact 6,560,076-byte pre-Start size and checksum, full decode, selected audio, prefetch and hidden main list. Five products and eight fixtures are built on C under LOCALAPPDATA/UDM-Development/native-build-7.75/release-native; assets are included and hashed, media helpers shared. An initial browser attempt lacked assets and is unqualified; its fresh replacement passed. The resource-template layout experiment was slower in all eight measured first-paint samples and was removed. No overall speedup or IDM parity is established. First paint followed flush completion in both browser traces. Failed admission before acceptance still lacks inline retry; concurrent modal capture, shutdown/session-end, canonical UI fixture build integration, non-UI decision persistence and cold-frame overlap remain open. Outputs and test artifacts remain on C; no installer or installation was performed. Installed UDM is still 7.11. [Qualification](validation/pending-errors-7.75.json) · [Build](validation/pending-errors-7.75-build.json) · [Final checks](validation/pending-errors-7.75-final.json)
+
+Pending File Info (7.74 / browser 0.71.38): eligible new browser video offers can create the actual File Info form from immutable render inputs while catalog admission is pending. The same window binds to the registered accepted job and retains destination/description edits. Start and Download Later freeze one local draft intent until acceptance; pending Cancel returns without waiting for the held write, then a joined worker removes only the still-unconfirmed accepted offer. Advanced actions enable after binding. Pre-modal cache pruning preserves later arrivals. Forty held-write native UI checks cover review, Start, Later and Cancel, including preservation of an unrelated download; 196 maintained admission/registry/recovery/persistence checks also pass. Four complete isolated Edge/native HLS MP4 downloads pass 32 runner checks, exact 6,560,076-byte pre-Start/final output, matching checksum, full selected-track decode, prefetch and hidden main list. Both diagnostic browser runs used the pending form and bound it afterward, but their first paint followed flush completion; the held-write fixture proves absence of the admission dependency, not a measured overall speedup. Fresh IDM and personal installed-browser acceptance, other admission variants, failed-admission retry and multi-modal/shutdown stress remain open. Five products and eight fixtures have verified 7.74 resources. D filled during an unqualified fourth run; a fresh replacement passed after four generated objects were safely relocated to C. Automatic approval review blocked deletion, so test profiles/payloads remain retained. Installed UDM remains 7.11. [Qualification](validation/pending-file-info-7.74.json) · [Build](validation/pending-file-info-7.74-build.json) · [Artifact disposition](validation/pending-file-info-7.74-cleanup.json)
+
+Owned prepared File Info inbox (7.73 / browser 0.71.37): the production browser pipe now posts process-unique integer keys for immutable prepared views. A bounded inbox transfers ownership to the UI; worker tickets distinguish accepted and uncertain outcomes without carrying a JobPtr, window or plaintext request on the message boundary. Closing/restarting integration cannot reuse stale keys or revoke a later durable acceptance. The committed-offer timer can claim by job identity before the posted message is dispatched. Accepted views feed the existing File Info dialog only when all render inputs still match; later edits use a fresh projection. The extended admission/inbox fixture passes 53 checks; registry/recovery/persistence add 143. Five products and seven fixtures have verified 7.73 resources; four complete isolated Edge/native downloads pass 32 runner checks, exact pre-Start/final size and checksum, full selected-track decoding, real prefetch and hidden main list. Both diagnostic traces prove pre-write posting, UI claim and actual prepared-view use. Early dialog paint and pending Start/Later/Cancel remain unfinished; no overall speedup or IDM parity is established. Owned generated files, four tool junctions and nine diagnostic/test objects were individually verified and removed. Installed UDM remains 7.11. [Qualification](validation/file-info-inbox-7.73.json) · [Build](validation/file-info-inbox-7.73-build.json) · [Cleanup](validation/file-info-inbox-7.73-cleanup.json)
+
+Immutable File Info render inputs (7.72 / browser 0.71.36): the actual File Info dialog now initializes its display fields, destination, request/media flags, saved-size summary and initial category choices from FileInfoInitialView. It owns copied inputs without a JobPtr or Manager reference. Eligible detached admission can deliver the same view through a scoped in-process consumer before persistence and outside the Manager lock; a consumer failure preserves uncommitted retry behavior. The production browser pipe does not yet install an early-view consumer, and existing pulses/actions still use the accepted job. No earlier dialog paint or speedup is claimed. The extended admission fixture passes 36 checks; registry/recovery/persistence add 143, and four complete isolated Edge/native transfers pass 32 runner checks with exact pre-Start/final size, matching checksum, full selected-track decoding, prefetch and hidden main list. Five products and seven fixtures have verified 7.72 resources. Owned temporary files, four tool junctions and nine diagnostic/test objects were removed individually after hash checks. Installed UDM remains 7.11. Next add the application-owned view inbox and same-window pending/accepted binding, then pending Start/Later/Cancel intents. [Qualification](validation/file-info-view-7.72.json) · [Build](validation/file-info-view-7.72-build.json) · [Cleanup](validation/file-info-view-7.72-cleanup.json)
+
+Detached browser media persistence (7.71 / browser 0.71.35): eligible new video jobs now save without retaining the outer Manager lock. Tentative jobs stay out of history, pending destinations participate in ordinary filename allocation, and recovery reports the existing uncertain status until acceptance resolves. A successful containing write preserves acceptance after an original-write failure. The pipe opts in from a known lock-free entry point; nested legacy, direct-audio, existing/duplicate and refresh callers retain synchronous behavior. Identical concurrent pending selections are rejected as busy rather than joined. The 26 gated integration checks, 36 registry checks and 107 retained reservation/recovery/persistence checks pass. Five products and seven fixtures have verified 7.71 resources; four complete isolated Edge/native transfers pass 32 runner checks, full selected-track decode, matching exact pre-Start/final size and checksum, real prefetch, one job and hidden main list. File Info still follows durable acceptance; early immutable presentation and pending Start/Later/Cancel remain next. No overall speedup or IDM parity is established. Owned generated files, four tool junctions and nine diagnostic/test objects were removed individually after hash checks; installed UDM remains 7.11. [Qualification](validation/detached-admission-7.71.json) · [Build](validation/detached-admission-7.71-build.json) · [Cleanup](validation/detached-admission-7.71-cleanup.json)
+
+Immutable media admission snapshot (7.69 / browser 0.71.33): receiveBrowserMedia now constructs a per-commit CatalogAdmissionReservation and binds it into the detached persistence snapshot before publication. It owns copies of the validated job and accepted receipt, merges missing pairs, rejects conflicting IDs/content/tokens or a missing reservation's destination collision, and preserves unrelated snapshot entries. This is not a concurrent reservation registry. The new fixture passes 73 checks: 14 overlay/identity checks plus the maintained media admission/recovery cases, including injected failure, lost reply, four termination phases and applied-refresh termination. Existing coordinator/checkpoint/idle fixtures add 34 passing checks. Every backend C++ unit was rebuilt for the Core interface change; five products and five fixtures have verified 7.69 resources. Four isolated Edge/native transfers pass 32 checks, full selected-video/audio decoding, exact pre-Start/final size (6,560,076 bytes) and SHA-256, prefetch before Start, one complete job and hidden main list. Actionable observations were 718/427/500/204 ms in cold-traced/warm-original/cold-original/warm-traced order; small unmatched-load observations establish no speedup or IDM parity. The integrated fixture/browser cases cover adaptive/HLS paths; this is not a complete direct-media/SABR/audio quality matrix. Current admission still holds its outer manager lock and acknowledges only after synchronous persistence. Concurrent ownership, asynchronously queued snapshot reconciliation and early File Info presentation remain unimplemented. Generated payloads/private catalogs, four tool junctions and seven test/diagnostic objects were removed individually after hashing. Installed UDM remains 7.11; no installer or installation. [Qualification](validation/admission-reservation-7.69.json) · [Build](validation/admission-reservation-7.69-build.json) · [Cleanup](validation/admission-reservation-7.69-cleanup.json)
+
+Catalog commit sequencing foundation (7.68 / browser 0.71.32): Manager.saveCatalog now uses CatalogCommitCoordinator over the existing writer mutex/sequence state. It returns explicit published, already-published and superseded results after releasing the writer lock. Failed writes do not advance the durable sequence, and observation callbacks must be noexcept; acquisition/publication trace markers remain inside the write bracket while the release marker runs afterward. A sequence result alone does not prove a media receipt's contents. The new fixture passes 13 checks covering real file/backup contents, repeated/older sequences, failure/retry, concurrent writers and released-lock observation; checkpoint and idle suites add 21 passing checks. Five production targets and four relevant fixtures built with 7.68 resources. Four isolated Edge/native transfers pass 32 checks, full selected-video/audio decoding, exact pre-Start/final size (6,560,076 bytes) and SHA-256, prefetch before Start, one complete job and hidden main list. Actionable observations were 685/351/1061/286 ms in cold-traced/warm-original/cold-original/warm-traced order; these small unmatched-load samples establish no speedup or IDM parity. This integrates the ordering foundation only: reservations, overlay snapshots, asynchronous admission, pending decisions and early File Info paint remain unimplemented. Browser success still follows synchronous durable admission. Generated payloads/private catalogs/profiles, four tool junctions and six diagnostic/test objects were removed individually after hashing. Installed UDM remains 7.11; no installer or installation. [Qualification](validation/commit-coordinator-7.68.json) · [Build](validation/commit-coordinator-7.68-build.json) · [Cleanup](validation/commit-coordinator-7.68-cleanup.json)
+
+Durable I/O comparison (7.67, experiment only): the standalone Win32 probe completed 72 verified commits across two runs, each containing eight alternating replacement pairs at 4 KiB and 64 KiB plus creation seeds. Both modes retain explicit FlushFileBuffers and the same atomic replacement/backup behavior; the variant adds FILE_FLAG_WRITE_THROUGH. The variant won 15 of 32 replacement pairs, with paired median differences of +1.76/-1.67/+2.56/-1.67 ms across the four run/size windows. Aggregate and paired results are mixed; the second 4 KiB window was slower in seven of eight pairs. This does not justify a production flag change or establish a stable distribution. It does not rule out other durable I/O designs, and no hardware power-loss behavior was tested. All published and backup bytes matched. About 2.39 MiB of logical JSON payload was written; generated payloads/backups and the standalone probe/object (18 files total) were individually hash-verified and removed. Product/shared-core hashes remain unchanged. The implementation plan now specifies the detached admission/coordinator, immutable view, pending decisions, receipt reconciliation, UI timer dependencies, shutdown and failure gates needed to paint File Info independently of persistence. Product remains 7.67 / browser 0.71.31; installed desktop remains 7.11. [Measurements](validation/catalog-io-7.67.json) · [Probe build](validation/catalog-io-7.67-build.json) · [Cleanup](validation/catalog-io-7.67-cleanup.json) · [Pending admission architecture](file-info-pending-admission-architecture.md)
+
+Catalog save ownership (7.67, diagnostic only): bounded auto-/forced- markers now identify all catalog writers up to File Info's first paint. Four isolated Edge/native runs pass 32 checks, complete selected-video/audio decoding, exact pre-Start/final size (6,560,076 bytes) and SHA-256, prefetch before Start, one complete job and hidden main list. Each admission maps to one complete forced save on its admission thread inside the before-commit/committed bracket. Their flushes took 46.88/338.91/50.15/41.00 ms; all write-lock waits were below 0.001 ms with no overlapping recorded writer. The slow warm run contains an earlier automatic writer (30.24 ms flush), but it finished before admission. Thus the observed 338.91 ms delay belongs to admission's own flush, rather than overlapping periodic work. The historical 52 ms wait remains unattributed. External actionable observations were 992/554/215/1012 ms; these small unmatched-load diagnostic samples establish no speedup or IDM parity. Eight decoder checks cover interleaved threads, overlap, repeated same-thread writes, cutoff and old trace compatibility. No dropped/incomplete records occurred; traces use 49–60 of 128 records. The normal Core projection, five production binaries and 42 shared objects remain unchanged. Temporary payloads/profiles, four tool junctions and three diagnostic objects were removed individually after hashing. Installed UDM remains 7.11; no product increment or installation. [Ownership evidence](validation/save-owners-7.67.json) · [Build/projection](validation/save-owners-7.67-build.json) · [Decoder checks](validation/save-owners-7.67-decoder.json) · [Cleanup](validation/save-owners-7.67-cleanup.json)
+
+Automatic checkpoint recheck (7.67 / browser 0.71.31): periodic saving now tests dirty state and takes its snapshot under one catalog-lock acquisition. This closes the source-proven window where an explicit commit could finish after the worker's dirty check and before its snapshot, causing a redundant durable write. Forced saves still write, storage-error retries still run, transactions remain deferred, and stopping suppresses only automatic work. The private checkpoint fixture passes 14 assertions and the existing idle/nested-media worker fixture passes seven. All five production targets and three relevant fixtures built with 7.67 resources. Four isolated Edge/native transfers pass all 32 checks, full selected-video/audio decoding, matching exact pre-Start/final size (6,560,076 bytes) and SHA-256, prefetch before Start, one complete job and hidden main list. Actionable observations were 1087/314/742/222 ms in cold-traced/warm-original/cold-original/warm-traced order. Two traced write-lock waits were under 0.001 ms, but these small unmatched-load samples do not establish a uniform speedup or identify the writer from the earlier 52 ms wait. Flushing remains variable (149.59/35.19 ms in these traces). The initial idle test read failure and its bounded observer-only correction are retained separately; the product fix preserves durability. Temporary payloads, owned fixture catalogs/profiles, four tool junctions and five generated test/diagnostic objects were removed individually after hashing. Installed UDM remains 7.11; no installer or installation. [Qualification](validation/checkpoint-recheck-7.67.json) · [Build](validation/checkpoint-recheck-7.67-build.json) · [Cleanup](validation/checkpoint-recheck-7.67-cleanup.json)
+
+Fine save-phase tracing (7.66, diagnostic only): four fresh isolated Edge/native runs pass all 32 checks, full selected-video/audio decoding, prefetch before Start, exactly one complete job, a hidden main list and matching exact pre-Start/final size of 6,560,076 bytes and SHA-256. Measured FlushFileBuffers intervals were 59.23/14.50/29.61/133.77 ms; write-mutex waits were under 0.001 ms in three runs and 52.04 ms in one. Serialization took 0.087–0.100 ms, and file replacement took 12.70–20.51 ms. Thus flush/contending file I/O dominated this save interval in these samples, while the earlier 627 ms aggregate spike was not reproduced. Cold actionable observations were 645/680 ms, warm 227/464 ms; these are unmatched-load diagnostic samples, not IDM parity or a product speedup. The diagnostic target links separate Core and Bridge objects; the normal Core source projection, all five production binaries and all 42 shared objects are unchanged. A preliminary warm observer failed while reading a catalog being atomically replaced. Its failure is retained separately; the observer now retries only missing/permission-denied catalog reads within the original deadline, keeps malformed JSON/invariant failures fatal and retains its original actionable timestamp. The four fresh runs needed zero retries, so they do not exercise the transient branch. Generated files, six tool junctions and three diagnostic objects were removed individually after hashing; shared media helpers remain unchanged. No product version increment or installation. [Measurements and raw traces](validation/save-phases-7.66.json) · [Build/projection proof](validation/save-phases-7.66-build.json) · [Cleanup](validation/save-phases-7.66-cleanup.json)
+
+Admission-save tracing (7.66, diagnostic only): four isolated production-path Edge/native trials now observe the existing media receipt checkpoints. The pre-commit-to-temporary-flushed interval was 555.58/626.57/401.70/20.73 ms; temporary-flushed-to-committed was 38.47/13.57/14.41/14.44 ms. The former interval includes snapshot, serialization, write-lock wait, file creation/write and FlushFileBuffers; it does not identify an individual syscall as the cause. Admission before commit took 4.29–15.47 ms. Receive-return-to-presentation-callback took 0.031–0.063 ms. Cold actionable observations were 1728/1005 ms, warm observations 788/291 ms; unmatched load and diagnostic overhead prevent a stable latency claim. All four outputs fully decode to 192 frames and selected Spanish audio, match the exact 6,560,076 bytes and SHA-256 before Start, prefetch before Start and retain exactly one complete job with the main list hidden. The guarded production Bridge projection, all five production binary hashes and all 42 original core objects remain unchanged. Separate diagnostic Bridge linking is maintained in build.ps1. Generated files, four shared-tool junctions and two diagnostic objects were removed after hash verification; no media helpers were copied or changed. No product version increment, installer or installation. [Admission evidence](validation/admission-timing-7.66.json) · [Build/projection proof](validation/admission-timing-7.66-build.json) · [Cleanup](validation/admission-timing-7.66-cleanup.json)
+
+Startup font initialization (7.66 / browser 0.71.30): ten main-frame controls now receive the saved appearance font once, removing ten temporary startup WM_SETFONT messages. The owned-thread fixture verifies the before/after count (two to one per control), default and custom saved fonts at the host's 120 DPI, header/toolbar fonts, runtime appearance changes and hidden-frame behavior: 128 assertions pass. All five production targets and both relevant fixtures built. Six isolated Edge/native transfers pass complete selected-video decoding, 192 frames, Spanish audio, prefetch before Start, one completed job and a hidden main list. Exact pre-Start and final size is 6,560,076 bytes with matching SHA-256. Cold actionable observations were 936/665/548/684 ms; warm originals were 217/277 ms. The earlier cold originals were 703/741 ms. These small, unpaired samples do not establish a uniform speedup or IDM parity. Temporary payloads, private profiles and staged binaries were removed individually; ten shared-tool junctions across the baseline and updated runs were unlinked without traversing their targets. Shared helpers and current binaries remain intact. Installed UDM remains 7.11; this candidate was not installed. [Qualification](validation/startup-font-7.66.json) · [Build](validation/startup-font-7.66-build.json) · [Cold baseline](validation/cold-capture-7.65.json) · [Cleanup](validation/startup-font-7.66-cleanup.json)
+
+Production-path phase tracing (7.65, diagnostic only): a separate optimized executable uses the real Application entry point and a fixed 8,256-byte mapped trace. Three traced, two trace-disabled and two original-production runs pass complete selected-video decoding, 192 frames, Spanish audio and exact pre-Start/final size (6,560,076 bytes) and SHA-256; each private catalog contains exactly one complete job. External actionable observations were 192–299 ms across these seven runs. In the traces, controls took 46.19–60.80 ms and completed paint after show took 19.64–20.08 ms. The two message-driven offers dispatched/restored in under 0.3 ms. A third offer was restored by a refresh before its capture notification was dispatched; later modal-loop notifications are not pre-dialog delay. Automation registration took 0.48–0.67 ms, and startup had returned over 1.3 seconds before selection. The limiter/frame setup interval at process start was 216–286 ms, separate from warm File Info. These runs did not reproduce the older 871 ms outlier. Record-copy/timestamp work peaked at 0.0005 ms, excluding atomic reservation/commit and mapping setup; the small mixed-order controls do not establish a causal overhead estimate or IDM parity. Guarded source projections and all original binary/core hashes are unchanged. No product version increment or installation. The maintained build target and decoder now avoid required ignored-local metadata. Generated payloads, profiles, native hardlink entries, seven tool junctions and one diagnostic object were removed after verification; the current diagnostic executable and compact traces are retained. [Phase evidence](validation/production-timing-7.65.json) · [Build/projection proof](validation/production-timing-7.65-build.json) · [Tool checks](validation/production-timing-7.65-tools.json) · [Cleanup](validation/production-timing-7.65-cleanup.json)
+
+
+Production File Info observation (7.65, diagnostic only): the actual production executable completed three isolated Edge/native selections, kept the main list hidden through confirmation, showed 6,560,076 exact bytes before Start and published the same fully decoded selected video and SHA-256. The corrected six-run comparison uses the same executable/PID/catalog-guarded external observer. Production observations were 545/871/383 ms (descriptive median 545); component observations were 340/575/264 ms (median 340). The fixture counters alone do not explain the remaining delay. Selection-to-job-creation was 32–101 ms; most elapsed time followed job creation. Both paths answered diagnostics first, but remaining startup work can overlap and the entry points differ. These small unmatched-load samples establish neither a stable performance distribution nor IDM parity. One preliminary HTTP bootstrap failure remains unresolved; a separate cold-only assertion was corrected for warm mode, and both failures are retained outside the timing comparison. Seven completed payloads and staged files were hash-verified and removed; five tool-directory junctions were unlinked without traversing their targets. No FFmpeg copies, product changes, installers or installation. [Qualified observations and limits](validation/production-observer-7.65.json) · [Cleanup](validation/production-observer-7.65-cleanup.json)
+
+
+File Info load investigation (7.65, diagnostic only): six fresh isolated Edge/native transfers pass exact pre-Start/final size and SHA-256, full decoding, 192 video frames and selected Spanish audio. With identical production/fixture binaries, QPC actionable observations were 498.10/255.05/258.83/120.05/189.14/177.07 ms; four runs sampled load and two controls omitted the sampler. Aggregate CPU busy readings in the approximate sampled windows were 84–100%. The slowest window recorded 93.75 ms of process CPU over a 556.85 ms counter span, while a faster window also recorded 93.75 ms over 203.01 ms. This is consistent with a scheduling/blocking contribution, not proof of its owner or mechanism. Counter reads and the sampler itself were expensive in one run, so these samples do not establish a latency distribution, an observer effect or an IDM comparison. No production change/version increment or installation occurred. Keep controlled native-call attribution and the installed/licensed-reference gates open. [Load evidence and raw observations](validation/load-window-7.65.json) · [Collector self-check](validation/load-window-7.65-selfcheck.json)
+
+
+File Info in-memory label resolution (7.65 / browser 0.71.29): category collision checks use the selector's Windows locale and equal UTF-16 length, preserving native empty-search behavior and falling back to native search if comparison fails. The helper avoids repeated combo-box search messages while retaining insertion order, alias/custom-label suffixes and key selection. The standalone native oracle passes 204 queries across six locale entries (five distinct); the actual component fixture additionally checks collision output against native searches and observes zero native searches during ordinary helper population. All five production targets and three UI fixtures built. 341 focused UI assertions and 32 browser-run assertions passed; all four selected videos fully decoded with 192 video frames, Spanish audio and matching exact pre-Start/final size and SHA-256. Detailed category phases were 39.80/209.83 ms; actionable observations in trace-on/off/off/on order were 391/359/328/969 ms. These unpaired small samples do not establish overall dialog speed or IDM parity. API-error fallback is present but not forced in the browser trials. Installed UDM remains 7.11. [Qualification](validation/category-labels-7.65.json) · [Native oracle](validation/category-comparator-7.65.json) · [Build](validation/category-labels-7.65-build.json) · [Cleanup](validation/category-labels-7.65-cleanup.json)
+
+
+File Info category batching (7.64 / browser 0.71.28): redraw is suspended during category reset, native locale-aware collision checks, item insertion and key selection, then restored to the prior visible state. Seven new component checks cover aliases/custom collisions, rebuilds, missing keys, hidden selectors and an empty list. All five production targets and three UI fixtures built. Four isolated Edge/native downloads pass full decode, 192 video frames, the selected Spanish audio, exact pre-Start size (6,560,076 bytes) and final SHA-256. Category population phases were 91.78/36.08 ms; first actionable observations in trace-on/off/off/on order were 828/812/422/391 ms. The earlier 7.63 category phases were 120.34/168.51 ms, but the small unpaired samples do not establish whole-dialog or IDM speed parity. Installed UDM remains 7.11. Generated payloads, closed profiles/staged extensions and fixture objects were individually hashed and removed. [Qualification](validation/category-batch-7.64.json) · [Build](validation/category-batch-7.64-build.json) · [Cleanup](validation/category-batch-7.64-cleanup.json)
+
+
+File Info construction investigation (7.63, diagnostic only): four fresh isolated Edge/native component runs passed, with first actionable observations of 437/406/469/891 ms in trace-on/off/off/on order. Both detailed traces put category population at 120.34/168.51 ms and category creation at 54.42/74.04 ms. Normal initialization, font and theme phases are now separate observations. These small samples do not establish a trace effect, a latency distribution, a speedup or IDM parity. All four exact-before-Start sizes (6,560,076 bytes) matched the complete decoded output and hash; 204 focused UI checks also passed. Investigate category list population/window-message work next, preserving mapped labels, custom-label collisions and selection identity before changing behavior. Historical trace notes are corrected: the catalog hook observes ordinary saves rather than injecting an extra write. Production/native version remains 7.63, browser 0.71.27; this is test instrumentation and evidence correction only. Installed UDM remains 7.11. [Phase evidence](validation/file-info-stages-7.63.json) · [Observer correction](validation/file-info-trace-interpretation-7.63.json)
+
+
+Explicit viewport transitions (7.63 / browser 0.71.27): sorting, category and search changes now start at row zero even when the same row order is retained. Automatic additions/removals/metadata updates keep their anchor; normalized fallback to the same view does not cause a delayed reset. Nine native viewport observations verify these branches. The broader menu suite now passes all 456 checks after qualification fixtures were aligned with actual navigation nodes and existing missing-file synchronization restoration policy. Find, presentation, first-paint and two complete Edge/native media cases bring this increment to 767 executed assertions. All five native targets and three fixtures built. This closes the reproduced viewport failure, not the separate File Info latency or fresh IDM comparison gates. Installed UDM remains 7.11. [Evidence, earlier failures and limits](validation/viewport-reset-7.63.json)
+
+Layout snapshot contention (7.62 / browser 0.71.26): `rememberLayout` now reads Windows controls outside the shared catalog lock, matching the snapshot boundary already used by list rendering. Catalog availability during the actual 13 layout queries improves from 0/13 to 13/13; unrelated preferences and resized/reordered widths remain correct. The native build and 236 focused checks pass. The broader menu suite stops at a viewport-reset assertion after explicit sorting (301 preceding checks pass), so broad UI qualification remains incomplete. The next correction must separate explicit view resets from automatic history anchoring, including equal-order view changes. The separate 48-construction prototype does not justify changing production dialog resources or parent-notification policy. Installed UDM remains 7.11, with no new IDM comparison. [Qualification and open failure](validation/layout-snapshot-7.62.json) · [Construction experiment](validation/dialog-construction-7.61.json)
+
+Initial prefetch scheduling (7.61 / browser 0.71.25): the owned 7.60 regression starts prefetch only after 512 posted notifications drain. The corrected MP4/TS/M4A runs start after the first notification, following completed paint and preserving earlier queued input. All five production targets and the UI fixture built; 237 suite checks pass, including complete media, exact-before-Start sizes and an untraced early-Start TS case that retains 131,072 bytes without replaying segments. This closes the reproduced timer-starvation gap only. Initial control construction still costs 375–716 ms in the current traces; two earlier traces measured 600–1,148 ms. These varying observations do not establish a stable speedup or paired IDM parity. Correction: the trace registers an observer of normal catalog saves at the first pulse; it does not trigger an additional save. Trace callbacks add measurement overhead. Installed UDM remains 7.11. [Qualification and limits](validation/file-info-kick-7.61.json) · [Pre-change traces](validation/file-info-latency-7.60.json)
+
+Native request lifecycle (7.59–7.60 / browser 0.71.23–0.71.24): ordinary request budgets now include startup, browser validation and legacy acknowledgements. A late read cannot send after expiry; explicit disconnect rejects validation/legacy waits and blocks later reconnect, including cancellation inside beforeSend. Capture-status retains one safe retry within a two-attempt total budget. Six pre-change cases reproduced the unbounded waits in Chromium/Firefox source; the final direct suites pass 32 combined checks, alongside the existing integration/recovery/transaction suites. Six isolated Edge/native-host cases also pass with only static hello messages and controlled stalls. The final native build is 7.60; 7.59 is an accounted development increment without a separate artifact. Already dispatched commands may continue and require receipt reconciliation; this does not prove personal video capture, live Firefox or IDM timing parity. [Qualification and limitations](validation/native-deadlines-7.60.json)
+
+Primary display-address work (7.58 / browser 0.71.22): primary requested/video addresses no longer copy, decrypt or parse unused redirect/audio context. Removing a primary selects the existing fallback and invalidates the UI snapshot; selected invalid addresses remain errors. Full Links and address search still handle secondary links. The pre-change model fixture reproduced failure on unreadable unused redirect context; all 785 final model, real-window and transfer checks pass. All 24 core objects, five native targets and seven fixtures were rebuilt, avoiding mixed inline definitions. A valid-redirect helper replay improves from median 0.2027 to 0.00144 ms, with seven alternating 128-call trials; this does not measure dialog paint, browser handoff or IDM timing. The inspected completion render shows the real primary despite unreadable secondary context. First/changed legacy plans, full-Link unreadable-context presentation and installed comparison remain open. [Evidence and limits](validation/primary-address-7.58.json)
+
+Completion metadata isolation (7.57 / browser 0.71.21): a bad saved address no longer prevents the completed local file's dialog from opening. The source field stays empty and read-only with an unavailable label; destination, scanner policy and file actions retain their existing behavior, and the saved context is not erased. The pre-change owned fixture reproduced a decryption exception before window creation; the final fixture passes 252 checks covering bad ciphertext, malformed decrypted JSON and an invalid decrypted URL, plus existing completion behavior and geometry. All five native targets built and the render was inspected. Real account migration, personal/IDM window acceptance, synchronous large-plan address cost and universal latency parity remain unverified. [Evidence and limits](validation/completion-address-7.57.json)
+
+Decoded destination staging (7.56 / browser 0.71.20): gzip output is prepared beside the saved destination while encoded recovery data stays in the original spool. This removes the ordinary cross-volume decoded copy/hash pass; a destination edit after prefetch retains verified relocation. All five targets built and 276 GET/form checks pass, including pre-Start held sibling bytes on C:, relocation back to D: with one response, aliases, exact size and retained-response recovery. Eight paired outputs and both actual cross-drive four-MiB probe files match. This is functional and path evidence; single descriptive launch samples and an unavailable baseline phase breakdown do not prove a consistent latency win. Installed/browser and broader disk-fault acceptance remain open. [Evidence and limits](validation/gzip-destination-7.56.json)
+
+Gzip alias gap closed in the controlled transfer path (7.55 / browser 0.71.19): paired actual-executable probes show IDM accepting x-gzip while 7.54 rejected it. 7.55 normalizes the alias before acceptance and persistence; all eight post-fix paired outputs match the expected decoded 67,200-byte payload. All five native targets built and 258 GET/form checks pass, including canonical/alias/mixed-case headers, saved-response reuse, pre-Start size equality and alias-to-canonical range resume. Temporary payloads were hashed and removed. This establishes functional parity for these controlled responses, not dialog timing, streaming-decode speed or personal-browser acceptance. [Evidence and limits](validation/gzip-alias-7.55.json)
+
+Visible graph-window update (7.54 / browser 0.71.18): retained history anchors no longer create expired peaks or spikes at the chart's left edge. Active crossing lines interpolate at the boundary; pause markers remain visible after old rates expire, and hover selection uses the same visible projection. All five native targets built and 294 focused checks passed. Owned pause/gap renders were inspected; rate calculations, installed-app acceptance and paired IDM speed remain separate. [Qualification and limits](validation/graph-window-7.54.json)
+
+Query ownership update (7.53 / browser 0.71.17): canonical hot Find Next lookups avoid a second normalized query allocation; misses retain an immutable witness before matching outside the manager lock. A stable candidate reference and query/view guards prevent stale selection. All five targets built and 246 checks passed. Forced message reentrancy remains unverified. Alternating timing samples do not establish a consistent speed improvement over the 7.52 cached-handler replay, so broad latency parity remains open. [Qualification and retained timing runs](validation/find-query-witness-7.53.json)
+
+Hidden-search update (7.52 / browser 0.71.16): Find Next can reuse positive and negative results without showing/filtering the list. Source comparisons remain under the job lock, matching stays outside it, and category/queue cohort changes remove stale retention. The shared cache uses bounded LRU retention and refuses publication into a different query. All 243 targeted checks pass, including hidden-source changes, restored matches and category return. Protected-capture handler replay/current medians improve strongly, while filename medians are about 0.1 ms higher in this run with overlapping ranges; investigate that small-case effect before claiming uniform speed improvement. The logical snapshot budget does not bound total application RSS or initial snapshot batches. Current production/test output is `candidates/native-build-current/release-native` on D:, reusing C: core objects after a disk-full failure. Installed UDM remains 7.11. [Qualification, resource recovery and remaining work](validation/find-hidden-cache-7.52.json)
+
+Find Next update (7.51 / browser 0.71.15): reuse an active filter's match only when the refreshed query and current source still agree. Changed sources and unfiltered navigation keep owned-snapshot matching outside the job lock. The reference's all-fields-disabled early return is implemented; thirteen guard/return instructions match installed IDM bytes. All 216 targeted checks pass. The same-window prior-handler replay/current-handler medians were 119.36/3.15 ms for a protected capture and 1.33/1.22 ms for ordinary filename Find. These are implementation-path diagnostics with shared current backend code, not older-binary or IDM timings. Unfiltered caching, first/changed-source latency and installed comparison remain open. [Qualification and remaining work](validation/find-next-cache-7.51.json) · [Reference byte checks](reference/find-next-7.51.json)
+
+Search refresh update (7.50 / browser 0.71.14): unchanged positive and negative filter results are reused before taking another owned encrypted snapshot. Selected-field changes and query changes still invalidate results, and matching/decryption stays outside the manager lock. All 208 targeted checks pass, including actual list filtering with a three-MiB protected playlist and category scoping. Synthetic snapshot median: 3.26 ms copying/comparing versus 1.24 ms borrowed comparison; current full-window refresh: 3.63 ms over eight frames with no earlier UI/IDM baseline. [Qualification and render](validation/find-filter-cache-7.50.json).
+
+The earlier sigma question is resolved at the static-path/host-API level: the installed binary matches the historical export, and the relevant uppercase calls and matcher call edges match its bytes. IDM uses Windows uppercase folding for query and candidate text; the host API leaves final sigma distinct from ordinary sigma. UDM's folding remains unchanged and the contrary fixture expectation is corrected. A live IDM Find replay remains separate; the desktop helper still fails initialization. [Reference evidence and limits](reference/find-windows-fold-7.50.json).
+
+Progress address update (7.49 / browser 0.71.13): steady-state timers compare the selected address fields by reference before taking an owned snapshot. Changed sources, removed tracks and playlist/SABR precedence still invalidate the display snapshot. Eighty-two model and 263 real progress-dialog checks pass; the component graph render was inspected. First-seen/changed legacy plan resolution and byte-by-byte comparison costs remain. The additional address-search fixture has one unresolved sigma-folding expectation (24/25 checks pass): compare IDM Find for U+03C2 and U+03C3 before changing search behavior. [Build, timings and open work](validation/progress-address-7.49.json)
+
+Progress refresh update (7.48 / browser 0.71.12): protected transport payloads and complete recovery receipts are excluded from display snapshots; request capability is derived from the original record before redaction. All 399 targeted checks passed. Synthetic snapshot median: 10.17 ms before, 1.00 ms after. The real component timer fixture and saved-response render also pass, but no fresh IDM timing or installed acceptance is established. Visible connection maps and legacy adaptive address resolution remain profiling work. [Evidence and limits](validation/progress-snapshot-7.48.json)
+
 November 8, 2026. This is the execution plan for the latest development build. It extends the [P0–P6 architecture](idm-parity-architecture-plan.md), [detailed inventory](idm-parity-execution-plan-20261107.md), and [5.45 comparison](idm-parity-architecture-audit-5.45.md). Parity means equivalent behavior, reliability, and interaction under matched conditions. UDM uses its own name, implementation, and artwork.
 
 ## Candidate and evidence boundaries
@@ -12,7 +140,124 @@ November 8, 2026. This is the execution plan for the latest development build. I
 | Reference | The installed IDM executable reports 6.43.10.2. Current paired evidence comes from running it against the same owned origin as UDM. Current interactive reference observations require a targetable IDM window. Use the retained geometry and vendor behavior as separate evidence. |
 | Scheduling | The one-time wizard accepts local start and optional stop dates, editable folder and filename, category, description, retries, and wake behavior. 6.12 added relative date/time shortcuts and a full destination preview. 6.13 added max connections and per-file speed limit for direct and waiting jobs. These are source and compile observations until the specific UI and reload steps pass. |
 
+### HTTP representation decoding gap observed on 7.43
+
+A small local CLI probe returned the same synthetic 67,200-byte representation
+as identity and as HTTP gzip, deliberately ignoring both clients' identity
+encoding request for the gzip case. Both clients produced the expected identity
+file. IDM produced the decoded gzip file with that same SHA-256; UDM rejected it
+with "The server ignored identity encoding." The persisted outputs were checked
+again after the probe. This is functional evidence for one local response, not a
+speed comparison. No IDM settings, queue-start or quit commands were used.
+[Probe and component evidence](validation/http-gzip-foundation-7.43.json)
+
+`HttpGzipDecoder.hpp` is a new incremental component with a fixed 64 KiB output
+buffer, configurable output/member limits, concatenated-member handling and
+checksum/end-of-stream validation. Its 17 focused checks cover arbitrary input
+boundaries, compressed output spanning several buffers, empty output, corruption,
+truncation, trailing data, cancellation and writer failures. It is registered in
+the native backend test manifest and builds against the existing inflate-only
+zlib objects. At the 7.43 checkpoint it was **not referenced by the production HTTP path**.
+The 7.44 integration and its limits are recorded below; installation remains a
+separate step. The format basis is
+[RFC 1952](https://www.rfc-editor.org/rfc/rfc1952.html); the existing zlib decoder
+supplies the format/checksum machinery.
+
+The integration was planned against these gates (the 7.44 qualification below
+distinguishes completed checks from remaining acceptance):
+
+1. **Define representation ownership before accepting gzip.** Inspect the
+   ordinary response admission in `Transfer.cpp` and make an explicit distinction
+   between encoded response offsets and decoded output offsets. Keep the current
+   rejection for unsupported coding combinations. Do not globally remove the
+   identity-encoding check: range workers, saved partials and media callers share
+   HTTP helpers and need separate admission rules.
+2. **Keep durable wire checkpoints separate from output staging.** Preserve
+   encoded bytes and their validator/length/encoding identity as the recovery
+   source. Decode into a separate unpublished file. A pause, crash, checksum
+   failure or disk error must never leave decoded bytes under an encoded range
+   plan. Specify whether a first implementation restarts the encoded response or
+   replays a validated retained prefix; qualify that choice before enabling it.
+3. **Preserve rate and quota units.** Network accounting and limiters must consume
+   actual wire bytes. Decoded bytes need their own count/size; do not feed them
+   into speed or prefetch-peak samples. Audit progress, catalog snapshots,
+   segment totals and quota checks together so a compressed Content-Length does
+   not become an incorrect final-file percentage or size.
+4. **Decode incrementally and finish verification before publication.** Feed the
+   new decoder from the existing bounded read path, check cancellation between
+   output writes, and qualify output/member limits for large legitimate files.
+   Verify EOF, member trailers and any applicable wire digest before declaring
+   success. A wire digest and a requested final-file checksum have different
+   representations and must not be silently substituted for one another.
+5. **Use decoded bytes for file validation and final hashing.** Run
+   `checkDownloadedContent` on the decoded staging file. Invalidate or separate
+   `PrefixHasher` state computed for encoded bytes. Reuse the existing publication
+   transaction only after proving its staging/binding invariants also hold for an
+   ordinary decoded HTTP file. Keep recoverable encoded parts until publication
+   and its catalog commit succeed.
+6. **Keep File Info truthful and actionable.** Do not label compressed response
+   length as final output size. Show a pending final size until decoded staging
+   has verified length/hash; then compare that displayed value with the published
+   file. Start during receiving must retain the same transfer, and Cancel/Later,
+   folder edits and reopening must keep their existing durable semantics.
+7. **Qualify failures through the actual HTTP path.** Add owned origins for
+   truncated/invalid gzip, CRC/size mismatch, concatenated and empty members,
+   unknown wire length, interrupted receiving, Stop/Resume, a changed validator,
+   changed encoding on retry, catalog failure, low-disk/writer failure and a
+   canceled publication. Check request counts and exact final hashes alongside
+   stage counters. The isolated decoder tests cannot establish these properties.
+8. **Deliver and compare.** Advance desktop and both browser versions when the
+   functional path is integrated, finish all native targets, rerun the identity
+   and gzip CLI comparison, and then exercise File Info and browser ownership.
+   Installation, other HTTP codings, actual Firefox and paired timing remain
+   separate gates. Do not report gzip parity merely because the decoder exists.
+
+### Gzip integration qualified on 7.44 / browser 0.71.8
+
+The ordinary GET path now accepts gzip without changing encoded transport
+coordinates. It decodes the completed spool into separate bounded staging,
+verifies member trailers and any server wire digest, applies content/prefix
+policy to decoded bytes, and commits through the existing publication journal.
+File Info and list/progress helpers use output size rather than encoded length.
+The verified size before Start matched the final complete file in the isolated
+Manager acceptance case. Download Later resumed without another response;
+Pause resumed a genuine partial encoded stream using If-Range and overlap.
+
+All five native targets compiled. The decoder's 17 checks, 36 production-core
+integration checks, 19 pause-transaction, 16 terminal-action and 47 media-size
+checks passed. A new actual-executable CLI comparison produced the same complete
+67,200-byte SHA-256 in UDM and IDM, with one UDM GET for each identity/gzip case.
+The original candidate's early rejection and subsequent correction are retained
+in qualification evidence rather than hidden by the passing rerun.
+[7.44 evidence](validation/http-gzip-7.44.json) ·
+[Ownership design and remaining work](http-representation-decoding.md)
+
+The final decoded size becomes known after EOF and verification; this does not
+promise immediate preflight size. Decode/network overlap, POST replay binding,
+other content encodings, crash/fault-injection coverage, installed browser and
+File Info visual acceptance, and paired latency/throughput remain open. The
+installed application was not replaced by this development build.
+
 ### Current paired transfer comparison
+
+The later [7.47 qualification](validation/plain-form-recovery-7.47.json) covers
+plain-form failure recovery and the ASCII PDF notice case found during 7.46.
+It includes a publication-journal fault, a destination collision, exact
+pre-Start/output lengths, request binding and a success-path receipt observer.
+These are current production-core checks; they do not update the historical
+paired timings below or establish personal-browser/installed acceptance.
+
+The later 7.45 form-response work is qualified separately in
+[form gzip evidence](validation/form-gzip-7.45.json). It closes the observed
+gzip POST rejection and verifies request-bound reuse of already received gzip
+responses. The 49 form checks include an exact 140,000-byte pre-Start/final-size
+match, Download Later/reopen reuse and a damaged saved response that sends no
+replacement POST until a separate explicit Restart. Fresh form prefetch remains
+disabled. The paired reference COM request differs by a trailing NUL and retries
+POST ranges on the fixed identity fixture, so this is response-output evidence,
+not arbitrary form-submission or timing parity. See the
+[ownership design](http-representation-decoding.md#form-response-ownership-in-745)
+for the remaining gates and UI/worker validation distinction.
 
 The 18 outputs matched the expected length and SHA-256. The apps ran sequentially on the same Windows machine and destination volume. The four 16–24 MiB cases alternated launch order across two trials. The harness polled in 100 ms steps and measured dispatch through hash verification. UDM used an isolated catalog and an eight-connection setting. IDM used its existing profile and its setting was unverified. The compiler and setup packager were active during portions of the comparison. These are diagnostic timings with limited samples. [Sanitized run records](validation/idm-transfer-audit-6.13.json)
 
@@ -63,6 +308,795 @@ The native bridge posts the same scheduling message when an accepted browser job
 The native host stayed connected to an isolated running desktop. Each sample saved the same 32 KiB payload in one GET and matched its bytes. Preparation created no job or HTTP request, a repeated commit returned the same job, and Download Later stayed paused with no request. This measures host-command dispatch on loopback. Browser click, worker startup, and File Info timings have different boundaries. Real Edge HLS tests passed 25 checks with File Info skipped, including complete MP4, TS, M4A and subtitle outputs. [Build receipt](validation/browser-queue-dispatch-6.16-build.json)
 
 The native presentation fixture passed 168 checks, including dispatch without activation and no dispatch for pending confirmation, Download Later, or an uncommitted capture. A separate cold Edge HLS test kept File Info enabled. In that run the dialog was actionable 156 ms after admission while the main list stayed hidden. UDM received data before Start and displayed exactly 6,560,076 bytes. The final 720p MP4 matched that byte count and the pre-Start SHA-256, and decoded with the selected audio. This is one controlled admission-to-dialog observation. [Native presentation fixture](../native/CapturePresentationUiTests.cpp) · [Edge HLS fixture](../tests/hls-catalog.native-live.cjs)
+
+### Concurrent-job admission failure reproduced on 7.14
+
+The fresh range-negotiation review completed three 16 MiB downloads with matching SHA-256. An origin advertising `Accept-Ranges: none` used one request. An origin ignoring the helper range used two requests while retaining the full original response. An origin with unadvertised range support used four accepted responses. Their dispatch times differed before the first origin request, so these samples do not establish a range-policy timing change. [Review evidence](validation/host-concurrency-7.14.json)
+
+A separate workload exposed a gap across independent downloads. Three jobs each requested one connection against an origin accepting two connections, serving 8 MiB files at 512 KiB/s per connection. In both corrected trials, two files completed with matching SHA-256 and the third job failed after four refused opens. Within-transfer refusal recovery therefore does not establish fairness or admission across downloads. The corrected trials kept the process open without `/q`. An earlier pilot using `/q` was excluded because it paused a different job after its launching download completed.
+
+The reusable [host concurrency fixture](../benchmarks/speed/host_concurrency.py) records every requested job, hashes its published file, returns failure for incomplete or failed jobs, and removes its generated payloads. Its one-job control passed. The default three-job workload currently fails on 7.14. Existing IDM instances were open, so the paired harness's disposable-profile guard was preserved and this review claims no new IDM result. [Review evidence](validation/host-concurrency-7.14.json)
+
+The next NET-03 implementation gate is shared initial-connection admission. Keep its reservations separate from per-download checkpoints and identify the normalized origin, resolved transport route and authentication context. Count pending opens separately from productive responses. Infer capacity only from repeated connection refusals while matching peers are productive. Preserve explicit retry limits, including zero retries, and keep HTTP authentication errors, policy errors and Retry-After on their existing paths. Retire stale route evidence, permit a bounded capacity probe after expiry, and wake canceled waiters without taking the Manager lock while waiting.
+
+Required acceptance includes all three files completing under the two-connection cap, cap removal restoring capacity, independent proxy/account contexts, cancellation during admission, idle keepalive connections, and mixed healthy and failed workers. Every published file must match its expected bytes. Compare request counts and admission delays after those correctness gates pass.
+
+### File Info pre-Start proof and timing on the 7.38 component
+
+The current File Info presentation fixture was rebuilt from App.cpp and its
+current headers, reusing the verified production core cache. It ran with the
+real staged 0.71.2 extension and production native host, a private catalog and
+a fresh Edge profile for each case. Browser selection used actual controls;
+the fixture observed only its own native thread's windows and posted the normal
+Start button action after exact proof became visible.
+
+All four runs pass: MP4, TS, M4A and one M4A repeat. In every case media arrived
+before confirmation, the main list was hidden at first actionability, and the
+destination did not exist while the verified exact size was shown. Published
+length and SHA-256 matched the values displayed/verified before Start. Full
+decode, selected tone/language and eight-second timeline checks pass; independent
+post-run frame counting confirms all 192 video frames where video is present.
+
+| Case | Exact bytes before Start and after publication | Selection to actionable | Selection to exact proof |
+| --- | ---: | ---: | ---: |
+| 720p Spanish MP4 | 6,560,076 | 309 ms | 2,478 ms |
+| 360p English TS | 1,961,216 | 1,115 ms | 3,619 ms |
+| Spanish M4A | 98,791 | 568 ms | 2,793 ms |
+| Spanish M4A repeat | 98,791 | 359 ms | 1,511 ms |
+
+These are traced component runs with the process and host connection ready
+before selection, not production cold-start or paired IDM benchmarks. Start was
+deliberately held until proof appeared; this does not establish an exact size at
+first paint. Same-format timing varies without app-code changes. The TS trace
+places 486 ms in control construction; the M4A repeat places 130 ms there.
+Separate that work, pre-admission time, scheduling/resource load and tracing
+overhead before changing the implementation or promising a latency bound.
+[Full records, traces and hashes](validation/file-info-selected-7.38.json) ·
+[MP4 pre-Start screenshot](validation/file-info-selected-7.38/mp4-before-start.png)
+
+The runner now accepts UDM_TEST_MEDIA_ROOT as read-only source-fixture reuse,
+hash-checks all 31 input files afterward, and rejects completed output roots
+before its finally handler can overwrite evidence. A negative reuse test kept
+the earlier result hash unchanged; the guarded runner passed the M4A repeat.
+App source/version remains 7.38 and no installer was created. Public media,
+personal-browser foreground behavior, production cold/warm paths, the Firefox
+engine and fresh IDM comparison remain open. Temporary fixtures remain; the
+earlier checked cleanup command was rejected by automatic approval review with
+only “blocked by policy,” and no alternate deletion route was attempted.
+
+### Real selected-track HLS outputs on the unchanged 7.38 build
+
+The real staged Chromium 0.71.2 extension connected to the hash-verified 7.38
+desktop and native host through a unique temporary native-messaging registration.
+All 47 extension files matched source, with only the background host-name literal
+changed for that private registration. The test verified its empty private
+catalog and application/extension versions before selecting media. It used a
+fresh headless Edge profile and did not touch the personal browser or catalog.
+
+All 25 existing HLS catalog checks pass. Five published outputs cover nested
+720p Spanish MP4, Spanish M4A, 360p English TS, flat 360p Spanish MP4 with Spanish
+subtitles, and a cyclic-master 720p Spanish MP4. The test decodes each complete
+output, checks codec/resolution and language, and measures the selected 880 Hz
+or 440 Hz tone. Caption verification checks Unicode, timing and unique cues.
+Request paths exclude the unselected audio and overridden parent group. The
+audio-only native transfer excludes video segments; the browser still fetches
+the small MP4 preview for its player.
+
+Additional post-run verification counts all 192 expected video frames in each
+video output, checks every eight-second timeline within 150 ms, and independently
+hashes every published file against its nonempty saved catalog digest. The five
+outputs total 17,054,141 bytes. No application source changed and no version bump
+or new installer was needed for this verification. [Complete results and hashes](validation/hls-selected-tracks-7.38.json) ·
+[Inspected real selection](validation/hls-selected-tracks-7.38/spanish-selection.png)
+
+These are static selected-track native cases. Dynamic changes while the chooser
+is open remain separately qualified by the browser-only 7.38 fixture, not this
+native run. File Info was skipped, so this does not prove pre-Start size display,
+prefetch presentation or focus/timing. Public sites, the Firefox engine,
+installed 7.38 acceptance and fresh paired IDM observations remain open.
+
+The temporary host registration was removed and no fixture desktop/native-host
+process remained before cleanup. Existing workspace FFmpeg/FFprobe were accessed
+through a directory junction; no media-tool binaries were copied. Automatic
+approval review rejected the checked temporary-root removal with only the reason
+“blocked by policy,” before the command started. The root
+`candidates/hls-selected-tracks-7.38` and its `native/tools` junction therefore
+remain. The planned cleanup detached that junction before recursive removal;
+the shared tools remain unchanged. This cleanup is explicitly incomplete.
+
+### Live audio/subtitle chooser reconciliation in 7.38
+
+The new owned-browser reproducer failed all ten original cases on 7.37.
+The chooser only checked whether its format key remained available; it did
+not reconcile audio/subtitle lists, labels or selection validity. A removed
+track remained actionable and newly available tracks stayed absent.
+
+7.38 updates the existing select controls from the current matching offer,
+retains selection by key and uses the latest offer for handoff. Missing selected
+tracks remain visible as disabled placeholders. A missing audio selection blocks
+both outputs, while a missing subtitle blocks video but leaves audio-only
+available. The user must select an available track, None, or explicit default
+audio before the affected output becomes actionable. Returning selections become
+available again. Revoked audio-only actions are hidden, unavailable formats
+disable their controls, and displaced action focus moves to a useful chooser
+control or Back. Native handoff validation remains separate.
+
+All sixteen expanded cases pass for both bundle sources in headless Edge.
+They use trusted keyboard input and inspect actual outgoing runtime-message
+payloads for the selected audio/subtitle keys. The six added cases cover explicit
+default audio, format return with new tracks and revoked audio-only permission.
+Eight regression runs pass across keyboard refresh, panel controls, pre-roll
+readiness and source-change races. The source-race script itself covers both
+bundles and was invoked twice by the family driver; this is four unique scripts,
+not eight distinct suites. All five production executables build as 7.38.
+[Fixture](../tests/panel-track-refresh.browser.cjs) ·
+[Build and complete qualification](validation/panel-tracks-7.38-build.json) ·
+[Inspected updated chooser](validation/panel-tracks-7.38/updated-chooser.png)
+
+The two retained-source screenshots have identical hashes; one image is kept
+in tracked documentation. They establish the controlled 1200-by-800 layout,
+not physical DPI/zoom or paired IDM geometry. The new cases exercise the generic
+site catalog-refresh path, not public YouTube catalog delivery or native media
+assembly. Neither real Firefox nor the personal browser was used, and no video
+was downloaded. Native/installed acceptance and complete-file track verification
+remain separate. The installed desktop is still 7.11; no setup is created.
+
+### Target-origin ownership of staged headers in 7.37
+
+The 7.36 native origin reproducer failed after 16 passing checks. It injected
+a different-site target URL and that target's session after Properties staged
+a typed login. The request patch was accepted for the new origin instead of
+remaining attached to the opening target.
+
+7.37 binds the staged patch to the dialog's opening URL origin. A nonempty
+owned Authorization, Cookie, Referer or Origin value requires the current
+target to retain that normalized origin at commit. A scheme, host or nondefault
+port change rejects the patch before modifying the staged edit or current
+record. The dialog stays open with typed controls intact. Same-origin URL
+refreshes, ordinary header edits, explicit removals/empty authorization
+suppression, and untouched sessions remain available. Explicit URL editing
+still uses the existing manager cross-origin stripping policy.
+
+New policy cases check normalized hostname/default-port identity, host/scheme/
+port rejection, each sensitive logical header, non-sensitive User-Agent edits,
+clearing and untouched patches. The native dialog test injects the target and
+session change after staging, invokes the actual acceptance callback, and
+checks the rejection, unchanged fresh authentication/cookie and retained login
+draft. All 522 native dialog and 42 policy checks pass. All five production
+executables build as 7.37. [Policy](../native/PropertiesRequestDraft.hpp) ·
+[Native build and qualification](validation/properties-origin-7.37-build.json)
+
+The origin witness covers the logical job URL, not HTTP redirect-header policy
+or arbitrary browser-cookie scoping. The injection is deterministic and does
+not contact an authentication server. Physical installed-app, mixed-DPI,
+assistive technology and paired IDM observations remain separate. Capture code
+is unchanged from 7.31; manifests advance to 0.71.1. The installed desktop
+remains 7.11. No setup is created here.
+
+### Per-header ownership at Properties commit in 7.36
+
+7.35 failed the late-session native reproducer after 22 passing checks. A
+typed login caused the entire staged ProtectedHeaders record to replace a
+cookie refreshed after staging. The unchanged-request control preserved its
+protected bytes, isolating the failure to a partially edited request record.
+
+7.36 computes a case-insensitive logical header patch from the original and
+staged request records. Only changed header values and explicit removals are
+owned. Applying that patch reads the current job, preserves unrelated headers,
+and protects the merged result under the same recursive manager lock as the
+configure/updateCompleted commit. Completed-file moves finish before taking
+this lock. Header-name casing alone does not claim a value, an empty
+Authorization marker remains distinct from absence, and satisfied/no-op patches
+avoid re-encryption. Existing early validation and draft staging remain.
+
+The focused request policy passes 30 checks, including all 18 previous draft
+cases. New cases cover refreshed cookies/authentication, logical casing,
+removal, explicit empty overrides, no-op and already-satisfied patches,
+protection failure with unchanged staged output, retry, and invalid headers.
+The expanded native dialog fixture covers all login/Referer edit combinations
+with a session injected after staging, exact protected-byte retention for the
+untouched control, and ordinary/captured completed-file relocation with byte
+comparison. All 519 native dialog checks pass, and all five production
+executables built as 7.36 before the origin follow-up. [Policy](../native/PropertiesRequestDraft.hpp) ·
+[Unit fixture](../native/PropertiesRequestDraftTests.cpp) ·
+[Native build and qualification](validation/properties-headers-7.36-build.json)
+
+The injection is deterministic and precedes relocation; it is not a live
+authentication-server test or cross-thread soak. Broader capture-origin changes,
+interactive Advanced-menu session-refresh coverage, installed acceptance,
+physical mixed-DPI and assistive technology remain separate gates. Capture
+source is unchanged from 7.31; paired manifests roll from 0.70.99 to 0.71.0.
+The installed desktop remains 7.11 and no setup is created here.
+
+### Untouched incomplete destinations in Properties in 7.35
+
+7.34 failed the new native destination check after 16 passing checks. An
+external folder and filename update was replaced by the old Save To text when
+the actual OK callback ran before its timer refresh. The plain-field sparse
+patch did not yet cover incomplete destinations.
+
+7.35 includes Folder and FileName in the edit patch only when Save To differs
+from its displayed destination baseline. Untouched fields merge from the
+manager's current record at commit time. Explicit paths still use the existing
+destination validation. Completed-file relocation keeps its separate physical
+move workflow.
+
+The expanded native fixture covers changes before refresh, deterministic late
+folder/filename updates at the destination-read boundary, explicit override,
+visible refresh and acceptance, empty-path rejection, and correction while
+retaining the typed description. The same fixture contains all earlier
+Properties validation, request drafts, live-field, lifecycle, relocation and
+scan cases. All 496 native checks pass. [Fixture](../native/PropertiesDialogUiTests.cpp) ·
+[Native build and qualification](validation/properties-destination-7.35-build.json)
+
+These are isolated native windows and catalog changes. The new incomplete-file
+cases do not transfer payloads, qualify interrupted partial-file relocation or
+establish cross-thread soak behavior. Edited request-header field ownership is
+the next Properties concurrency gate. Installed acceptance, physical mixed-DPI,
+assistive technology and paired IDM observations remain separate. Capture code
+is unchanged from 7.31; the manifests advance to 0.70.99, and the next browser
+increment must roll over to 0.71.0. The installed desktop remains 7.11. No setup
+is created here.
+
+### Commit-time ownership of Properties plain fields in 7.34
+
+7.33 failed the controlled commit-boundary test after 17 passing checks. The
+fixture updated the job's URL and description after Properties had staged its
+changes, immediately before the destination read and manager call. Both live
+values were then replaced by the earlier acceptance snapshot.
+
+7.34 sends a sparse edit patch: URL is included only for an explicitly edited
+ordinary address, and description only when its control differs from its
+displayed baseline. Captured-media URLs are omitted. Manager::configure and
+Manager::updateCompleted already merge edits into the current job while holding
+the manager lock. Untouched values therefore survive updates between staging
+and commit, including the modal completed-file relocation. Explicit changes
+remain intentional replacements. The 7.33 visible-field reconciliation remains.
+
+The native reproducer subclasses only its own destination edit. Its first
+WM_GETTEXT during acceptance injects the late metadata update after changes
+have been staged, without adding a production test hook. Final coverage checks
+all four address/description edit combinations, plus ordinary and captured
+completed-file relocation with byte comparison. Baseline coverage stopped at
+the first untouched-field failure; the mixed-edit cases were added afterward.
+All 486 native checks pass, and all five production executables build as 7.34.
+[Fixture](../native/PropertiesDialogUiTests.cpp) ·
+[Native build and qualification](validation/properties-commit-7.34-build.json)
+
+This closes commit-time ownership for URL and description. Untouched incomplete
+destination paths and field-level merging of edited request headers still need
+the same ownership review. The deterministic injection precedes the file move;
+it is not a cross-thread soak or a forced filesystem interruption test. These
+are isolated native windows and data, not installed-app or paired IDM acceptance.
+Browser capture source is unchanged from 7.31; both manifests advance to
+0.70.98. The installed desktop remains 7.11. No installer is created here.
+
+### Live address and description drafts in Properties in 7.33
+
+The new native reproducer failed on 7.32 after 16 passing checks: changing the
+job's URL and description externally, then invoking the actual Properties OK
+callback before its timer ran, saved the old displayed values over the new
+metadata. Existing credential draft protection did not cover these plain fields.
+
+7.33 tracks the displayed baseline for address and description independently.
+Refresh updates a control only while its text still equals that baseline.
+Explicit edits remain untouched. When accepting, unchanged fields are read from
+the current job under its lock rather than from stale controls. The address of
+captured media also comes from the current job. Selection offsets survive an
+untouched-address refresh; typed address and description drafts retain their
+selections and take precedence over background values.
+
+The expanded native fixture covers acceptance before the timer, a typed
+description alongside a refreshed URL, a typed URL alongside a refreshed
+description, and selected text in both refreshed and edited addresses. Existing
+control-state, request validation, completion, relocation and scan checks remain
+in the run. All 472 native checks pass and all five production executables
+build as 7.33. [Fixture](../native/PropertiesDialogUiTests.cpp) ·
+[Native build and qualification](validation/properties-live-fields-7.33-build.json)
+
+This establishes reconciliation through the acceptance snapshot. It does not
+yet qualify an update interleaved after that lock is released and before the
+manager commits, including a long completed-file relocation; untouched-field
+commit merging is the next concurrency gate. The tests operate isolated native
+windows and data, not the installed app or IDM. Physical mixed-monitor,
+assistive-technology and installed acceptance remain separate. Capture source
+is unchanged from 7.31; both manifests advance to 0.70.97. The installed desktop
+remains 7.11 and this increment creates no installer.
+
+### Stable Properties control state during refresh in 7.32
+
+The native Properties fixture reproduced a timer-state defect on 7.31. Its
+ordinary controls passed the stable-state and background start/stop checks,
+but captured-media login fields were enabled by the generic inactive-fields
+loop and immediately disabled by a second rule on every refresh. The baseline
+stopped at its first failed assertion, with 39 checks passing and one failing.
+
+7.32 computes the intended credential state directly: editable only when the
+download is inactive and is not captured media. Ordinary fields retain the
+inactive-download policy. Each field calls EnableWindow only when its intended
+state differs from the actual state. The same pulse initializes the controls,
+removing separate credential and active-state initialization rules.
+
+The expanded native fixture subclasses only its own edit controls and counts
+actual WM_ENABLE notifications. It checks five unchanged refreshes, a background
+start followed by five refreshes, and a background stop followed by five more,
+for both ordinary and captured-media downloads. It also verifies that the
+description text and selection survive the transitions. Existing validation,
+draft persistence, destination relocation, completion and scan-gating cases
+remain in the same run. All 463 native dialog checks pass. The capture and
+streaming-provider Node checks also pass (7 and 25 checks). All five production
+executables build as 7.32. [Fixture](../native/PropertiesDialogUiTests.cpp) ·
+[Build and native qualification](validation/properties-controls-7.32-build.json)
+
+This is an isolated native-window behavior check, not installed-app or paired
+IDM visual/timing acceptance. It does not establish physical mixed-monitor,
+screen-reader or keyboard-focus behavior. Browser capture source is unchanged
+from 7.31; both manifests advance to 0.70.96 under the paired version policy.
+The installed desktop remains 7.11. No installer is created for this increment.
+
+### Reused player objects with advancing media revisions in 7.31
+
+7.30 passed 80 controls and failed eight checks in the expanded navigation
+fixture. A response object correctly retired on departure remained rejected
+after its media revision changed in place. The failure also remained after a
+pre-roll ended and content playback became current.
+
+7.31 records bounded per-format decimal revisions with the weak object visit
+record. A retired object can re-enter only when the player identifies the
+requested video without an ad marker, every previously known revision is still
+present and nondecreasing, and at least one advances. Title-only edits, removed
+companion revisions, backwards revisions and conflicting duplicate identities
+do not qualify. Decimal string comparison preserves increments beyond
+JavaScript's exact integer range. Inspection covers at most 200 ordinary and
+200 adaptive entries and revisions of at most 20 digits; it creates no network
+requests and retains no additional strong references to page response objects.
+API authority from 7.30 still applies after this visit check.
+
+All 100 expanded metadata cases pass across both bundle sources and wrapping
+orders. The original 88 cases include the failing baseline and twelve added
+cases cover large revisions, a backwards companion and ambiguous duplicates.
+[Fixture](../tests/youtube-player-races.browser.cjs) ·
+[Native build and qualification](validation/player-revisions-7.31-build.json)
+
+This is a media-revision witness for a previously observed object, not proof
+of general getter freshness. A signature refresh with no advancing media
+revision, caption-only mutations and a fresh clone on a new visit remain
+separate cases. Missing or nonnumeric revision metadata cannot establish an
+advance. Both bundles run in owned headless Edge profiles; deployed Chrome,
+the Firefox engine, public-video downloads and fresh paired IDM timing remain
+unverified for this candidate. The installed desktop remains 7.11 and no setup
+is created for this increment.
+
+### Player API authority over stale getter clones in 7.30
+
+The expanded metadata fixture passed 52 prior controls and failed twelve new
+checks on 7.29. A player getter returning fresh copies of old metadata could
+replace a newer accepted API response's title and transfer URL. Object identity
+and request ordering alone did not protect the catalog from the synchronous
+getter read that follows an API capture.
+
+7.30 retains a bounded normalized authority snapshot at API acceptance. Getter
+metadata cannot replace its owned fields, change its lifecycle, or combine a
+different revision with its transfer URL. Matching partial metadata may fill
+missing fields, and formats not supplied at that boundary can still be added
+and update their revisions. Those additions cannot evict authoritative formats
+at the 200-format cap. The next accepted API response renews the authority;
+visit retirement and catalog eviction discard it. This performs no additional
+network requests and does not change the original fetch promise or XHR body.
+
+All 72 expanded metadata cases pass across both bundle sources and observer
+orders. These include the twelve failing baseline cases and eight additional
+format-cap and lifecycle checks. The 48 pending-capture cases also pass.
+[Fixture](../tests/youtube-player-races.browser.cjs) ·
+[Build and qualification](validation/player-authority-7.30-build.json)
+
+This closes same-visit conflicting getter rollback after an accepted API
+response. It does not establish freshness for getter-only metadata on a new
+visit, and getter-only additions still lack an independent network provenance.
+Legitimate mutations of objects seen on previous visits remain a separate
+revision problem. Both bundles were exercised in owned headless Edge profiles;
+actual Firefox, activated personal-profile extension behavior, public-video
+capture, final-size comparisons and fresh paired IDM timings remain separate.
+The installed desktop is still 7.11; this increment creates no installer.
+
+### Pending capture retention before response headers in 7.29
+
+The 7.28 baseline passed eight controls and failed 32 of 40 pending-capture
+checks. Fulfilled body promises retained copied upload buffers while response
+headers never arrived. Navigation could retire a reader without releasing that
+snapshot. XHR load listeners also retained obsolete capture state across abort,
+navigation and reuse. These are resource and correctness gaps in the capture
+path, separate from download-engine throughput.
+
+7.29 retains at most eight pending streaming tasks per observer, each with a
+30-second deadline from request creation. Readiness promises resolve without a
+byte value; only the active task owns the copied bytes. Retirement clears that
+ownership, resolves its stop signal and cancels matching clone readers. Late
+body production cannot restore a retired snapshot. A newer verified session,
+navigation, budget eviction and failed fetch all retire matching work.
+
+XHR retirement removes only the observer's own lifecycle handlers. Reopening
+an XHR cannot apply its old streaming context to an unrelated response. An
+invalid second send preserves both the native error and the first capture.
+The inspector copies only a 256 KiB prefix of a large response while leaving
+the page's original response intact.
+
+All 48 expanded pending-capture checks pass. Weak references and forced garbage
+collection verify that the observer's actual copied buffers are reclaimable
+while the site's fetch remains pending. The eight added checks cover invalid
+second sends and a 1 MiB XHR: its caller receives the entire response with a
+matching SHA-256 while the inspector copies exactly 262,144 bytes. The 52
+streaming checks, 32 JSON-reader checks, 52 metadata races and nine Node
+regression runs also pass. Every recorded source hash and all five 7.29
+production binary hashes and versions were rechecked. Both browser bundles
+are 0.70.93. [Fixture](../tests/youtube-pending-captures.browser.cjs) ·
+[Build, baseline and complete qualification](validation/pending-captures-7.29-build.json)
+
+These are owned headless Edge tests for both bundle sources, not a Firefox
+engine or personal-browser qualification. Deadline callbacks are invoked
+deterministically. Buffer reclamation does not establish zeroization or a cap
+on total browser memory; diagnostic byte counts describe logical views, not
+all backing storage. A native Blob read may finish after retirement, but its
+result is ignored. Mixed-kind pressure still needs qualification. Fresh clones
+of stale page metadata and legitimate in-place mutations remain the next
+source-authority cases. Public-video end-to-end checks, exact final-size
+comparisons, installed acceptance and paired IDM timing remain outstanding.
+The installed desktop remains 7.11; this increment created no installer.
+
+### Streaming capture lifetime and ordering in 7.28
+
+The 7.27 streaming fixture passed eight controls and failed 36 of 44 cases.
+Streaming-response clones and streamed request clones remained retained after
+navigation, fetch failure or a newer verified capture. No deadline or reader
+budget covered those paths. A separate browser-level capture reproducer also
+failed when two requests shared a wall-clock timestamp: the older response could
+replace the newer capture. That preferred browser-level path needed the same
+ordering guarantee as the page observer.
+
+7.28 adds separate four-reader pools for streaming responses and streamed
+request-body clones. Visit retirement, deadlines, budget pressure and newer
+verified sessions cancel obsolete clones without awaiting the site's other tee
+branch. A stop signal also releases an inspector waiting for its request body.
+Unrelated responses and synchronous/asynchronous fetch failures release the
+matching request inspection. The existing 128-KiB request and 256-KiB UMP prefix
+bounds remain. Blob inspection invokes the native body reader rather than a
+page-supplied instance override. Original arguments, promises, errors and site
+body consumers retain their controlled-fixture behavior.
+
+Both page and browser capture now use request order rather than timestamp ties.
+Browser capture stores worker-scoped ordering fields internally, keeps them out
+of returned streaming offers, and uses timestamp compatibility only for records
+from another worker/legacy scope. Tests cover equal timestamps, a same-worker
+backward clock adjustment and a simulated worker restart with retained storage.
+These tests do not establish all real browser-worker lifecycle behavior.
+
+All 52 expanded streaming cases pass. They use the actual UMP request/identity
+parser, instrument request and response clones, verify complete original body
+bytes and include a real XHR with owned CORS responses. The 44 baseline cases
+remain in the final set; eight added cases cover a Blob instance override and
+equal-timestamp XHR completion in both bundles/observer orders. A valid session
+is captured before the original response ends. The eight-capture burst retains
+at most four inspections of each new kind and records zero underlying-source
+cancellations. The 32 JSON reader cases, 52 metadata races and nine regression
+runs also pass, including 25 browser-capture checks against each bundle source.
+[Fixture](../tests/youtube-stream-readers.browser.cjs) · [Build and results](validation/stream-readers-7.28-build.json)
+
+Deadlines are checked by invoking the registered 30-second callback, not by a
+wall-clock expiry measurement. Both bundles run in Edge's engine. Reader limits
+are per observer and per kind, not a cap on all browser/site buffering; mixed-kind
+pressure and byte snapshots retained before response headers still need focused
+qualification. Next, bound pending capture descriptors and retire their retained
+body snapshots when headers never arrive, then establish source authority for
+fresh clones of stale page metadata and legitimate in-place mutations. Activated
+Chrome/Firefox, public media/pre-roll, desktop/file completion, full-suite
+acceptance and a new paired IDM comparison remain open. No installer is created
+for this development increment; the installed version is recorded separately.
+
+### Player-API inspection lifetime and budget in 7.27
+
+The owned Web Streams fixture reproduced the resource gap left by 7.26. Retired
+player-API inspections stayed blocked on their cloned response bodies, eight
+slow responses retained eight inspections, and accepting newer metadata left an
+older inspection waiting. The byte-limit path awaited reader cancellation; the
+browser's tee cancellation promise could wait for the site's original response
+to finish before the inspection released its lock. Advertised oversized bodies
+were cloned before their length was declined. No inspection deadline was set.
+
+The corrected baseline passed eight controls and failed 24 of 32 cases across
+both bundles and both observer orders. The first fixture had additionally
+expected the synthetic source error's original message. Edge's native clone
+changes that message, so a native-clone control was added before rerunning the
+baseline. Both baseline records are retained; the corrected run separates that
+fixture issue from the resource failures.
+
+7.27 tracks retained JSON player-API readers. Retiring a visit cancels those
+clones, and accepting newer metadata cancels older matching inspections. A
+four-inspection budget retires the oldest inspection under pressure. Each has
+a 30-second deadline and the existing two-MiB actual-byte bound; an advertised
+larger response is declined before cloning. Cancellation is not awaited: the
+pending read can settle and release its lock while the site still owns the other
+tee branch. Completion, body error, overflow, eviction and deadline clear the
+inspection's timer and ownership. Diagnostics contain counts rather than body
+or request data.
+
+All 32 cases now pass. The fixture instruments actual clone readers, pending
+reads, cancellation and lock release, rather than relying only on the observer's
+registry. Navigation releases the observer before finishing the original body;
+positive site-body cases complete exactly and their fetch promises stay the same.
+The deliberate body-error case matches the browser's native-clone error control.
+The eight-response case records a retained inspection peak of four and zero
+underlying-source cancellations. Same-URL updates preserve the productive reader.
+The deadline's registered 30-second callback is invoked deterministically; this
+is not a measured 30-second wall-clock expiry. The 52 metadata race cases and
+eight Node regression suites also pass.
+[Reader fixture](../tests/youtube-player-readers.browser.cjs) · [Build and results](validation/player-readers-7.27-build.json)
+
+This budget covers JSON player-API fetch inspections. SABR/UMP response and
+streamed request-body inspection lifetime still need equivalent qualification.
+The limit is not a bound on all browser buffering or site-owned response bytes.
+Source authority for freshly cloned stale player objects and legitimate in-place
+mutations remains open, as do activated Firefox, public pre-roll, end-to-end
+desktop/file verification, full-suite acceptance and paired IDM timing. Installed
+UDM remains 7.11; no installer was created for this development increment.
+
+### Player-API metadata ownership in 7.26
+
+The new owned-browser reproducer found 32 failures in 36 baseline cases across
+both bundles and both wrapper installation orders. Late fetch and XHR responses
+replaced newer metadata, an old cloned body could populate a later visit, and
+reopening an unsent XHR retained its player listener on an unrelated request.
+The initial page snapshot could overwrite accepted API data, and previously seen
+page objects reappeared after returning to the same video. The same-URL and
+rejected cross-origin history controls passed. These observations use injected
+owned responses in headless Edge, not a public YouTube session.
+
+7.26 records visit and sequence before each player fetch and at XHR send. It
+checks the current visit and selected video again before publishing metadata,
+then rejects request sequences older than the newest successfully accepted one.
+XHR listeners are retired on reopen; unsuccessful XHR responses are ignored.
+History wrappers preserve the original result and exception, retain same-URL
+updates, and retire round-trip visits. Known page objects retain their original
+visit identity. An initial global snapshot cannot overwrite an accepted API
+catalog. The capture observer still forwards the original promise and consumes
+only cloned fetch responses, with its existing two-MiB inspection limit.
+
+All 52 expanded browser cases pass, including the original 36 and 16 additional
+checks for mismatched video IDs, HTTP 500, open-before-navigation/send-after and
+back/forward. Each bundle also passes six panel ad-readiness checks: only the
+verified primary player becomes selectable before media metadata, ambiguous or
+independently ad-marked players remain hidden, and opening the prepared menu adds
+no format request or download. Eight Node regression suites pass. Both bundles
+were run in Edge's engine; actual Firefox activation is a separate gate.
+[Fixture](../tests/youtube-player-races.browser.cjs) · [Build and results](validation/player-metadata-7.26-build.json)
+
+Next, cancel an obsolete inspection reader immediately on visit retirement and
+bound simultaneous metadata inspections; the current implementation rejects its
+result but can keep awaiting a slow cloned body. Add explicit source authority
+and revision checks for a player getter returning fresh clones of stale metadata,
+while permitting legitimate same-object mutations in a new visit. Test those
+cases before relying on object identity alone. Public pre-roll, Shorts/embed,
+activated Chrome/Firefox, desktop handoff, exact-size/file completion and paired
+IDM timing remain unqualified by this controlled capture run. Installed UDM is
+still 7.11; this change does not claim full capture or visual parity.
+
+### Transactional Properties request edits in 7.25
+
+The 7.24 review left credential baseline rollback after validation failure open.
+Its request-edit policy advanced the displayed-field baseline before validating
+headers or protecting credentials. An extracted-policy fixture reproduced a
+failure: the first oversized Referer was rejected without saving, but repeating
+the same input appeared unchanged and could accept the old headers. Correcting
+that field could also lose other typed credential changes. This reproducer tests
+the extracted policy, not a launched historical 7.24 executable.
+
+7.25 moves the request-edit policy into a shared draft helper used by Properties.
+It constructs and validates the candidate headers, protects the changed values,
+and only then swaps them into the draft and advances the control baseline. A
+validation or protection failure therefore retains both the previous request and
+the pending control differences. Unchanged fields still preserve a newer session;
+unchanged protected values are not encrypted again. Advanced Properties can
+explicitly reset the baseline after its reviewed fields are accepted.
+
+All 18 policy checks passed, including repeated rejection, correction retaining
+login changes, controlled protection failure and recovery, refreshed sessions,
+explicit clearing, unchanged protected representation and edits after Advanced.
+The native dialog fixture passed 424 checks and separately exercises a real oversized Referer control,
+repeated Save rejection, correction, Cancel and a later URL-validation failure.
+Its current result and the source-guarded production build are recorded in the
+[qualification receipt](validation/properties-request-7.25-build.json).
+
+The protection failure is an injected policy fault, not an observed Windows DPAPI
+failure. This update does not establish installed behavior or paired IDM timing.
+Full-suite release acceptance and actual scheduler/network lifecycle qualification
+remain outstanding.
+
+### Properties lifecycle and retained edits in 7.24
+
+The source review found that Properties captured its active/completed flags when
+opening. Controls, Save and the destination action could therefore describe an
+earlier lifecycle state. IDM documents Properties as the place to inspect download
+information, change URL/location/description and open a saved file; the current
+live-transition behavior of the reference has not been measured. [Vendor workflow](https://www.internetdownloadmanager.com/support/using_idm/properties.html)
+
+7.24 updates status, size, filename, field enablement and Browse/Move from current
+job state. Both Save and destination actions recheck activity at invocation. An
+editable draft stays open if a download starts before Save; stopping the job
+re-enables the same fields without discarding input. A dialog opened while active
+can edit completed metadata once publication finishes. Untouched metadata follows
+current state, so saving cannot reinstate pre-publication queue membership or
+replace a refreshed request session with unchanged login/Referer fields. The
+timer reads the required scalar values under the manager lock instead of copying
+the full download and child-track snapshots on every tick.
+
+A destination typed before completion is preserved. Explicit Save applies it
+through the existing relocation progress window and completed-file transaction,
+then saves other metadata. A destination collision keeps the original file, the
+occupied destination and the draft; correcting the path retries the move. Normal
+completed destinations stay read-only and use Move. The native fixture checks
+these paths with owned 13-byte files, not a live network download.
+
+All 411 Properties checks passed, including the retained geometry, asynchronous
+Shell/location and scanner-action cases. The initial lifecycle fixture timed out
+on its completion Save. The review corrected its publication state to clear
+ordinary queue membership and changed production Save to merge untouched fields
+instead of restoring the old draft membership. That first failed result remains
+in the build evidence. An initial production build was discarded because its
+source changed during implementation; the final source-guarded build reports
+7.24 across all five executables and 0.70.88 in both browser manifests.
+[Build, fixture records and limitations](validation/properties-lifecycle-7.24-build.json)
+
+The inspected completion-transition render retains the reference control layout.
+Installed UDM remains 7.11; no installer was created. Real scheduler-driven
+transitions, cross-volume transition moves, validation-failure credential edits,
+full-suite acceptance and a fresh paired IDM interaction comparison remain open.
+
+### Paused speed-graph intervals in 7.23
+
+The graph previously chose the nearest numeric sample even when the pointer was
+inside an inactive interval. Repeated inactive updates also returned before
+advancing the timeline or expiring older values. This could leave a paused
+download displaying an old rate next to a frozen 30-second window.
+
+7.23 separates the bounded history from GDI rendering. Inactive intervals remain
+gaps, a measured zero rate remains a numeric sample, and hover cannot borrow a
+rate across a pause. The timeline advances and expires old data during inactivity,
+retaining one boundary anchor. Both sampling and idle timeline updates are capped
+at two per second; state transitions are immediate. Out-of-order updates cannot
+rewind the graph. Hover labels show tenths of a second and take priority over the
+peak caption when the chart is too narrow to fit both.
+
+Nineteen deterministic history checks pass, including pause/resume boundaries,
+long-pause expiration, invalid rates, measured zero, stale updates and bounded
+history over 10,000 observations. The production build advances all five binaries
+to 7.23 and both browser manifests to 0.70.87. The isolated Win32 dialog fixture
+passed 250 checks, including retained IDM control geometry checks. Inspected light
+and dark renders show an explicit hover gap; a long pause clears expired numeric
+data. The first long-pause fixture omitted its pause-start sample. Recording that
+transition before advancing time corrected the fixture, and all 250 checks passed
+again. [Build evidence and limitations](validation/progress-history-7.23-build.json) · [Gap render](validation/progress-history-7.23/progress-speed-graph-gap.png) · [Long-pause render](validation/progress-history-7.23/progress-speed-graph-long-pause.png)
+This preserves UDM's optional graph without changing rate calculation. It makes
+no paired IDM timing claim; installation and full-suite acceptance remain separate.
+
+### Live connection-limit transitions qualified on 7.22
+
+The controlled proxy now exercises a real limit reduction, rather than only a
+state-model transition. Two matching-account downloads first receive payload at
+the proven two-response cap. A third download enters admission waiting. Pausing
+the first response retains 475,136 bytes and changes the proxy's cap to one.
+The waiter remains without payload during the following 1.5-second observation,
+then the saved partial and both other matching-account files finish at the new
+limit. An independent account still starts while the first account is full.
+All four 2 MiB files match SHA-256.
+
+A second run restores the cap to two after the first response accepted at the
+reduced limit. The next matching-account response starts with two responses
+active, about 4.42 seconds after restoration, before the existing response ends.
+All four outputs again match SHA-256. This qualifies eventual concurrency
+recovery; it does not establish immediate detection of a server policy change.
+The proxy observed 20 refused GET attempts in the reduction-only run and 18 in
+the restoration run, including safe libcurl reconnects. The restoration trace
+shows paced lower-limit evidence followed by a roughly five-second gap before
+another excess probe, rather than continuous refusal retries.
+
+The fixture's 105 focused checks passed. Production source and all five binary
+hashes still match the 7.22 build receipt; this qualification changes the test
+harness, not the product version. Generated payloads were removed. The installed
+application remains 7.11. These are two controlled HTTP/1.1 Automatic-to-Basic
+proxy runs, measuring active responses rather than all idle TCP sockets. They
+do not qualify enterprise authentication, HTTPS CONNECT, VPN/WPAD, full streaming
+regression, the full suite or paired IDM timing. [Receipts, hashes and scope](validation/http-cap-transitions-7.22.json)
+
+### Interrupted form submissions and transport replay in 7.22
+
+The 7.21 form-recovery baseline confirmed that the queue guard worked, but found a replay below that guard. After a proxy authentication exchange, libcurl submitted both nonempty and empty POSTs twice when the first authenticated request lost its response. Queue retries remained at zero. A second fixture returned a successful file for the repeated request: UDM completed the download before an explicit restart, proving that queue-only checks were insufficient. The direct lost-response case and ordinary successful forms passed. [Retained baseline and final qualification](validation/http-admission-7.22-build.json)
+
+7.22 registers libcurl's pre-request callback only for submissions. The first request is allowed. A fresh configured proxy 407 or Digest 401 rejection can authorize one authentication continuation; that rejection is consumed before the continuation starts. A later connection loss therefore cannot reuse the old rejection to send again. Empty POSTs use the same rule because a request can have side effects without uploading bytes. Parser failures retain priority. The existing strictly checked rejected-CONNECT path can still start its Negotiate attempt before any origin request crossed the tunnel. GET/HEAD transport behavior is unchanged. [Pre-request callback contract](https://curl.se/libcurl/c/CURLOPT_PREREQFUNCTION.html)
+
+All 105 focused checks passed. Ten live cases covered direct loss, Basic proxy loss, empty POST loss, post-authentication receive timeout, explicit user resubmission, successful Basic and Digest forms, Digest response loss, safe proxy GET retry and ordinary queue GET retry. Ambiguous submissions reached the fixture once; their queue retry count stayed zero and no file was published. Explicit restart reached it twice by intent and produced the correct response. The direct GET control used one queue retry, and the proxy GET recovered through its safe transport retry. Five successful response files matched SHA-256. The fixture records body digests and counts, not passwords or authorization headers. [Reusable form recovery fixture](../benchmarks/speed/post_recovery.py)
+
+The first Digest fixture incorrectly required an absolute-form Digest URI; curl uses the target path. Accepting the matching absolute or path form while still checking the method, nonce, username, qop and computed response corrected that fixture. Both Digest cases then passed without another product change. [Pinned curl Digest implementation](https://github.com/curl/curl/blob/curl-8_22_0/lib/http_digest.c)
+
+Five native binaries report 7.22, and both extension manifests report 0.70.86. No installer was created and installed UDM remains 7.11. Generated payloads were removed after evidence collection. Automatic approval review blocked removal of the generated fixture binaries and objects (about 22 MiB), which remain pending cleanup. These controlled HTTP/1.1 recovery cases establish no paired IDM speed claim. HTTPS CONNECT/NTLM/Negotiate combinations, live cap reduction, deployed enterprise proxy behavior, full streaming regression and full-suite release acceptance remain qualification gates.
+
+### Saved-partial handoff and capacity recovery in 7.21
+
+The 7.20 active-pause baseline preserved every file, including a resumed range, but failed the slot-handoff check. After the proxy finished the aborted response, no new response on that account began for about 4.95 seconds. A transient refusal during teardown immediately lowered the learned bound from two productive connections to one. The existing waiter did not begin receiving during the 1.5-second observation window, and a later capacity probe finally restored use of the free slot. This was a scheduling delay, not corrupted saved data.
+
+7.21 retains the last proven bound during that transition. Recovery opens are paced, and lowering the bound requires fresh refusals at the smaller productive count sustained over a short evidence window. A successful new open clears older lower-capacity observations. Existing-connection reuse and productive workers keep their existing paths. Capacity-count scans run on new acceptance, not every payload progress update.
+
+All 97 focused checks passed, including transition recovery, expiration of old observations after a successful open, learning a genuinely lower bound, cancellation, idle reuse, multiplexed streams and registry bounds. In the final live case, the paused file retained 491,520 bytes, its waiter began receiving about 155.5 ms after pause acknowledgement, and the original file resumed with a nonzero HTTP range. All four 2 MiB files matched SHA-256. The proxy's observed interval from the aborted response ending to the next account response starting was about 72.6 ms in that run. These are controlled observations of UDM's handoff stage; they establish no paired IDM lead or universal latency guarantee. [Build, failing baseline and qualification record](validation/http-admission-7.21-build.json)
+
+A post-407 timeout regression control still made exactly two stalled requests for one configured retry, never entered admission wait, and published no failed-request file. Its three healthy outputs matched SHA-256. The independent proxy account was accepted while both of the first account's slots were occupied, as observed directly by the fixture. Seven successful outputs were therefore verified across the final controls.
+
+Five native executables report 7.21, and both extension manifests advance to 0.70.85. No installer was created; installed UDM remains 7.11. An initial build was discarded by its source guard after the hot-path correction. The final build recompiled the changed transfer owner and relinked the completed versioned entries; its source and binary hashes were verified. Temporary payloads and fixture binaries were removed after evidence collection.
+
+The sustained lower-bound case is covered by focused state tests; a live server-cap reduction remains a release qualification gate. Interrupted POST submission and method-specific replay, enterprise authentication, VPN/per-interface selection, WPAD, fresh paired IDM timing and full-suite acceptance remain outstanding.
+
+### Receive timeout and admission cancellation in 7.20
+
+A silent-response control reproduced a retry-budget violation on the 7.19 core. Two matching peers were receiving normally while a third request held its connection open without sending headers. That third job used a one-second response deadline and one retry. The proxy refused no connections, but UDM inferred capacity from the timeouts, entered admission waiting and made three stalled requests before failing. The correct upper bound for that HTTP/1.1 control is two attempts.
+
+`CurlResponseDisconnect` now carries a transport error code. Explicit response deadlines and authentication-continuation timeouts retain `ERROR_WINHTTP_TIMEOUT`; resets retain their connection-error identity. A shared predicate admits only refused/reset opens as capacity evidence. The HTTP constructor and the within-transfer refusal-recovery path use the same predicate. The initial connection retry loop receives the original timeout code, and existing protocol fallback eligibility is preserved. This keeps receive failures distinct from proxy connection-establishment failover.
+
+All 85 focused checks passed. The preemptive and post-407 silent-response controls each made exactly two stalled requests, never entered admission wait and published no file for the failed request. Their three healthy files all matched SHA-256. In a separate Automatic-authentication case, pausing the actual admission waiter acknowledged cancellation in about 90.8 ms while both original peers remained active. Resuming through normal queue dispatch completed that file, and all four outputs matched. That measured interval includes native cancellation acknowledgement and catalog work; it is not a paired IDM timing result. [Build, failing baseline and final qualification](validation/http-admission-7.20-build.json)
+
+Five native binaries report 7.20, and both browser manifests report 0.70.84. No installer was created; installed UDM remains 7.11. Temporary payloads and fixture binaries were removed after recording results. The ten successful files across the final live controls were verified, while the two intentionally timed-out requests failed without publication.
+
+Next recovery gates include method-specific replay protection across authentication interruption, saved partials during admission cancellation, actual enterprise authentication and route changes. VPN/per-interface selection, WPAD, fresh paired IDM measurements and full-suite release acceptance remain outstanding.
+
+### Authentication-continuation recovery in 7.19
+
+The additional 7.18 Automatic-authentication case showed a distinct failure after fixing credential identity. The proxy's intermediate 407 headers left `headersComplete` set while the transport waited for the authenticated response. A subsequent empty receive then became a generic proxy error, bypassing connection retry and shared admission. Two capped-account files and the independent-account file completed; the third capped-account job failed. This failing result remains in the 7.18 record.
+
+7.19 distinguishes that incomplete authentication exchange from a terminal response. An empty receive, failed send, receive error or HTTP/2 stream interruption while awaiting the authentication continuation is a `CurlResponseDisconnect`. It remains outside the proxy connection-establishment failover class. Final credential rejection, complete 407 responses, terminal policy responses and parser failures retain their existing paths. The change also covers the equivalent Digest continuation state.
+
+The final linked core passed 79 focused checks and four additional live PAC checks. In Automatic mode, the controlled Basic proxy issued seven 407 challenges, capped the first account at two active responses and served the independent account concurrently. All four 2 MiB files completed with matching hashes, and the third matching-account job visibly entered its admission-wait state before continuing. A separate preemptive Basic control also completed all four files. These are controlled native queue/transport tests, not claims about a deployed enterprise authentication service. [Build and qualification record](validation/http-admission-7.19-build.json)
+
+The native build contains five executables reporting 7.19; Chromium and Firefox manifests report 0.70.83. It includes the 7.18 credential-identity fix. No installer was created, and installed UDM remains 7.11. Generated payloads and temporary fixture binaries were removed after evidence collection. The six-job Windows-mode result remains a 7.18 control; this increment makes no new paired IDM timing claim.
+
+Next recovery qualification should distinguish receive timeouts from actual connection refusals, exercise cancellation and resume while admission waits, and check method-specific replay rules during authentication interruption. Enterprise Digest/NTLM/Negotiate deployment, VPN/per-interface selection, WPAD and full-suite release acceptance remain outstanding.
+
+### Matching proxy credentials and multiple waiting jobs in 7.18
+
+7.17 included the encrypted `ProxySecret` blob in its admission key. Independently encrypted copies of the same login therefore produced different contexts. A controlled Basic-authenticated proxy reproduced the failure through UDM's normal native queue dispatch: two downloads on the first account completed, a third exhausted its connection retries, and a separate account continued. Every successful file matched SHA-256. The fixture used four isolated catalogs inside one native process so the shared registry and production transfer code were exercised without touching the user's downloads.
+
+7.18 fingerprints the decrypted password before constructing the complete admission digest. The key continues to include the proxy user, selected endpoint, authentication mode, request identity and connection policy. Only digests enter the admission registry; the temporary plaintext credential is cleared on scope exit, including exceptions. Saved settings keep their existing encrypted representation. Unreadable encrypted settings fail instead of joining an empty credential context. [Windows data-protection API](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata) · [Decryption and sensitive-memory handling](https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata)
+
+The final core passed 73 focused checks and four additional live PAC checks. The authenticated fixture now completes all four 2 MiB files with matching hashes. Its third same-account job waits for a released slot; the other account starts receiving before either initial capped response finishes. The first account stays at two active responses and the second at one. Independently encrypted copies produce the same admission key. [Reusable account fixture](../benchmarks/speed/proxy_accounts.py)
+
+The final app also completed six independent 1 MiB Windows-mode jobs through a two-connection origin, with six accepted payload requests and matching hashes for every file. This is a bounded no-starvation observation for that workload, not a general scheduling or performance proof. The cases ran independently and establish no new IDM timing advantage. Five native binaries report 7.18; both extension manifests advance to 0.70.82. No installer was created and installed UDM remains 7.11. Generated payloads and fixture binaries were removed after recording evidence. [Build and qualification record](validation/http-admission-7.18-build.json)
+
+This 7.18 fixture used preemptive Basic authentication. The additional Automatic-authentication run received four 407 challenges and exposed a remaining disconnect classification: the third download failed after its challenge exchange instead of waiting for capacity. The credential keys matched correctly, isolating this failure from the encrypted-identity issue. That failure is retained in the 7.18 receipt and addressed in 7.19. Actual enterprise Digest, NTLM and Negotiate deployments, VPN/per-interface selection, WPAD, fresh paired IDM timing and full-suite release acceptance remain outstanding.
+
+### Windows-selected routes in 7.17
+
+The 7.16 admission key deliberately kept unresolved Windows automatic sessions separate. Its Windows-mode baseline therefore still completed only two of the three 8 MiB jobs under the two-connection cap. Querying `WINHTTP_OPTION_PROXY` did not establish an effective route: the local probe returned a direct configuration before and after the request, while querying the result-entry option failed with error 87. That observation cannot identify arbitrary Windows-selected routes.
+
+7.17 uses the existing asynchronous, cancelable resolver with `WINHTTP_AUTOPROXY_ALLOW_AUTOCONFIG`, `WINHTTP_AUTOPROXY_ALLOW_STATIC` and `WINHTTP_AUTOPROXY_ALLOW_CM`. Windows resolves the exact URL before admission. Each returned route becomes explicit transport settings; requests use that same route and retain Windows' result order for connection-establishment failover. Direct results discard proxy credentials, and a resolved route cannot recursively invoke its old PAC source. Lookup failure cannot synthesize a direct alternative. The system flags were introduced in Windows 10 version 1703; earlier Windows builds have not been qualified. [Windows automatic proxy options](https://learn.microsoft.com/en-us/windows/win32/api/winhttp/ns-winhttp-winhttp_autoproxy_options) · [Asynchronous URL-specific lookup](https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpgetproxyforurlex)
+
+All 68 focused admission and route-conversion checks passed. Four additional live PAC checks confirmed complete ordered results, distinct routes for different paths at one origin, explicitly returned direct alternatives and pre-canceled Windows lookup. The final app completed all three Windows-mode files under the cap; removing the cap restored peak concurrency to three. Every completed file matched SHA-256. The explicit-direct control passed too. These independent runs establish correctness rather than an IDM timing comparison. [Build and qualification record](validation/http-admission-7.17-build.json)
+
+The routed-transfer fixture also passed proxy-only delivery, dead-first-proxy failover, failure without an unreturned direct route, and Windows' explicit local bypass. The first two fixture trials incorrectly expected local destinations to remain proxied. A separate native resolver probe returned `fProxy=false, fBypass=true` for the constant-proxy PAC script; UDM correctly followed that returned bypass. The corrected negative case uses an invalid destination name and requires the selected proxy's connection-refusal error, zero body requests and no published file. Three positive 1 MiB outputs matched their hashes. [Reusable transfer fixture](../benchmarks/speed/proxy_routes.py)
+
+Five native executables report 7.17, and both browser manifests report 0.70.81. No installer was created; the installed app remains 7.11. Generated payloads and fixture binaries were removed after recording evidence. Actual enterprise proxy authentication, VPN/per-interface selection, WPAD deployment, fresh paired IDM timing and full-suite release acceptance remain outstanding. These are qualification gaps, not claims of installed parity.
+
+### Shared HTTP admission in 7.15 and 7.16
+
+The HTTP layer now coordinates independent downloads by normalized origin, resolved proxy route, effective headers, browser session and protocol policy. The key is a SHA-256 digest; credentials and cookies are not stored in the admission registry. Refusals establish a capacity bound only when a matching peer has delivered payload. Pending opens, accepted responses and reusable idle transports have distinct lifetimes. Admission waits remain cancelable and run outside the Manager lock. Existing transfers retain their own worker-refusal recovery; HTTP/2 and HTTP/3 streams on one transport count as one transport. The registry is bounded to 256 contexts.
+
+7.15 completed the original three-job workload, but the slower 128 KiB/s case exposed a first-payload race: retries could exhaust before two refusals had been recorded alongside payload evidence. 7.16 retains earlier refusals while matching responses are open, then requires actual payload progress before learning the bound. Response headers alone still cannot establish capacity. [7.15 build and failed-case record](validation/http-admission-7.15-build.json)
+
+The final 7.16 executable passed 56 focused checks covering identity isolation, cancellation, idle reuse, multiple waiters, multiplexed streams, bounded recovery probes and cache eviction. Against the two-connection origin, all three 8 MiB downloads completed with matching hashes and three accepted body requests. Removing the cap during the slower 2 MiB workload restored peak concurrency to three, and all files matched. The zero-retry negative control completed two files and failed the third after exactly one refusal. A separate 16 MiB transfer requesting eight workers still completed correctly through two accepted responses, matching the installed 7.11 control's request and refusal counts. These concurrently run fixtures establish correctness, not a timing advantage. [Build and live qualification](validation/http-admission-7.16-build.json)
+
+Both browser packages advance to 0.70.80; all five native binaries report 7.16. No installer was created and Program Files remains on 7.11. The fixtures removed their temporary payloads. Fixed routes and explicit resolved PAC routes can share evidence. Opaque Windows automatic routes remain session-local until the selected route can be identified; that is the next NET-03 integration gap. Fresh paired IDM timing, default Windows-proxy qualification and full-suite release acceptance remain outstanding.
+
+### Checking Properties file locations in 7.14
+
+File Properties also performed a synchronous existence check before creating its destination field and after returning from Move. 7.14 shows the saved destination immediately and uses `AsyncFileStatus` to refresh completed-file locations through the existing dialog timer. The shared worker pool bounds outstanding probes and retains no window or Manager reference. A result for an old destination cannot replace the current destination's status.
+
+The status result now retains the filesystem type. Regular files, directories, confirmed missing paths and lookup errors remain distinct. Properties shows the moved-file message only for a confirmed missing path. A failed or pending lookup preserves the saved destination, and the existing command checks continue to require a regular file. [Microsoft filesystem function semantics](https://learn.microsoft.com/en-us/cpp/standard-library/filesystem-functions?view=msvc-170)
+
+All 376 Properties checks passed. A blocked status probe stayed on a worker while the dialog opened, closed and reopened. Injected missing, permission-denied, directory and restored-file results refreshed the same completed-file view while preserving edited descriptions and saved metadata. The existing Shell, scanner, editing and reference geometry checks passed across five DPI settings. The first run exposed an observer that selected a disabled parent during the nested Audio Metadata dialog. Skipping disabled parent windows corrected the fixture, and the full rerun passed. The native build contains five executables reporting 7.14, with browser manifests at 0.70.78. [Build and validation receipt](validation/properties-location-7.14-build.json)
 
 ### Keeping File Properties responsive in 7.13
 

@@ -1,0 +1,26 @@
+{
+  "scope": "One inactive, unshared old generated Properties test executable. Standard per-file NTFS compression; no recursion, directory policy or system compression settings.",
+  "path": "candidates/properties-origin-7.37/ui/release-native/Udm.PropertiesDialogUiTests.exe",
+  "command": "compact.exe /c /q <exact-file>",
+  "documentation": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/compact",
+  "exitCode": 1,
+  "output": "\r\n Compressing files in D:\\UDM\\candidates\\properties-origin-7.37\\ui\\release-native\\\r\n\r\nUdm.PropertiesDialogUiTests.exe [ERR]\r\n\r\n0 files within 1 directories were compressed.\r\n0 total bytes of data are stored in 0 bytes.\r\nThe compression ratio is 1.0 to 1.\r\n",
+  "sha256Before": "BA57F3B5932530B14D1BB9DE578F5BB97488E213936CFB42F18C76CE18B40499",
+  "sha256After": "BA57F3B5932530B14D1BB9DE578F5BB97488E213936CFB42F18C76CE18B40499",
+  "contentUnchanged": true,
+  "fileIdentityUnchanged": true,
+  "linkCount": 1,
+  "allocatedBefore": 11081216,
+  "allocatedAfter": 11081216,
+  "allocatedBytesSaved": 0,
+  "parentAttributesUnchanged": true,
+  "compressedAttribute": false,
+  "deletions": 0,
+  "volume": {
+    "drive": "D:",
+    "fileSystem": "NTFS",
+    "clusterBytes": 131072,
+    "standardCompressionSupported": false,
+    "limitDocumentation": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc753770(v=ws.11)"
+  }
+}

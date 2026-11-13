@@ -17,6 +17,9 @@ inline Json mediaAdmissionStatus(Manager& manager,const std::string& token){
   bool present=false;for(auto job:manager.jobs)if(job->id()==str(row,"id"))present=true;
   return {{"ok",true},{"status","accepted"},{"id",str(row,"id")},{"present",present}};
  }
+ // Legacy clients already understand uncertainty and never replay it. Do not
+ // create a released barrier while a detached reservation is still resolving.
+ if(manager.pendingMediaAdmission(token))return {{"ok",true},{"status","uncertain"}};
  if(created<now-600000||created>now+60000)return {{"ok",true},{"status","uncertain"}};
  // A durable missing-receipt barrier wins against any later arriving submission.
  captureSpace(rows,now);rows[token]={{"created",created},{"protocol",3},{"status","released"}};saveCaptureStore(manager,rows);

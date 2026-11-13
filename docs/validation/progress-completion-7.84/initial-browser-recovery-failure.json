@@ -1,0 +1,39 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "previewOnly": false,
+  "httpDiagnostics": false,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 3,
+  "failed": 1,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794505562274,
+      "observerReadyEpochMs": 1794505562424
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 71,
+      "labels": [
+        "127.0.0.1 \u00c2\u00b7 MP4 \u00c2\u00b7 720p HD \u00c2\u00b7 3000 kbps \u00c2\u00b7 2 audio tracks",
+        "127.0.0.1 \u00c2\u00b7 TS \u00c2\u00b7 720p HD \u00c2\u00b7 3000 kbps \u00c2\u00b7 2 audio tracks",
+        "127.0.0.1 \u00c2\u00b7 MP4 \u00c2\u00b7 360p \u00c2\u00b7 1000 kbps \u00c2\u00b7 2 audio tracks",
+        "127.0.0.1 \u00c2\u00b7 TS \u00c2\u00b7 360p \u00c2\u00b7 1000 kbps \u00c2\u00b7 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "Error: Traceback (most recent call last):\r\n  File \"D:\\UDM\\tests\\observe-cold-file-info.py\", line 160, in <module>\r\n    assert 'UDM could not accept this download. Your edits are retained; choose Retry.' in items\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError\r\n\n    at D:\\UDM\\tests\\hls-catalog.native-live.cjs:82:102\n    at until (D:\\UDM\\tests\\hls-catalog.native-live.cjs:39:105)\n    at async choose (D:\\UDM\\tests\\hls-catalog.native-live.cjs:82:18)\n    at async D:\\UDM\\tests\\hls-catalog.native-live.cjs:262:3"
+    }
+  ]
+}

@@ -1,0 +1,1225 @@
+{
+  "desktop": "7.57",
+  "browser": "0.71.21",
+  "status": "All five native targets built and completion component checks passed; not installed or packaged",
+  "build": "completion-address-7.57-build.json",
+  "before": {
+    "scope": "Owned MainWindow completion fixture compiled from the 7.56 production source with three new unreadable-context cases",
+    "receipt": {
+      "executableSha256": "A114E7CE864D575351D5EAAF68C4B0442792DF57E012EB22E3E29EB172164F76",
+      "sourceSha256": "981F2702E1ECB01DAA2EE8CBE8ABAE18C8DF423F1CB64E5EB65AEF9AC77D0087",
+      "exitCode": 1,
+      "checks": 39,
+      "passed": false,
+      "error": "This encrypted setting cannot be opened by the current Windows account."
+    },
+    "checksDetail": [
+      {
+        "name": "Captured completion callback observes published bytes and zero live speed",
+        "passed": true
+      },
+      {
+        "name": "Repeated captured publication emits one completion dialog callback",
+        "passed": true
+      },
+      {
+        "name": "Captured response publication opens the native completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Captured completion dialog displays the published destination",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completion dialog closes normally",
+        "passed": true
+      },
+      {
+        "name": "Completed file is visible in the main download list",
+        "passed": true
+      },
+      {
+        "name": "An idle completed selection supplies its saved file to the main-list drag",
+        "passed": true
+      },
+      {
+        "name": "A scan starting before the next list refresh blocks the selected file drag",
+        "passed": true
+      },
+      {
+        "name": "Pending scanner work disables both file actions while the folder remains accessible",
+        "passed": true
+      },
+      {
+        "name": "Invoking a pending-scan command does not reach the file action",
+        "passed": true
+      },
+      {
+        "name": "Invoking a pending-scan command does not reach the file action",
+        "passed": true
+      },
+      {
+        "name": "An idle completed job still offers explicit file actions after an interrupted scan",
+        "passed": true
+      },
+      {
+        "name": "Main-list file actions reject a directory substituted for the saved file",
+        "passed": true
+      },
+      {
+        "name": "Main-list file actions reject a directory substituted for the saved file",
+        "passed": true
+      },
+      {
+        "name": "Enter on the selected row uses the configured Open action",
+        "passed": true
+      },
+      {
+        "name": "Enter does not activate a focused but unselected row",
+        "passed": true
+      },
+      {
+        "name": "The same row remains available for the properties action",
+        "passed": true
+      },
+      {
+        "name": "Enter opens File Properties when it is the configured action",
+        "passed": true
+      },
+      {
+        "name": "The paused row is available for keyboard activation",
+        "passed": true
+      },
+      {
+        "name": "Enter opens the progress window for the paused row",
+        "passed": true
+      },
+      {
+        "name": "Completed selection enables batch Move/Rename and keeps Open single-file",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename updates both saved paths and preserves names",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename preserves both files' bytes",
+        "passed": true
+      },
+      {
+        "name": "A mixed main-list drag includes the ready relocated file and skips the running scan",
+        "passed": true
+      },
+      {
+        "name": "A finished scan restores the relocated file to the drag in selection order",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename identifies the failing file and reports prior work",
+        "passed": true
+      },
+      {
+        "name": "A later collision leaves the earlier move committed and overwrites nothing",
+        "passed": true
+      },
+      {
+        "name": "Mixed completed and unfinished selection disables Move/Rename",
+        "passed": true
+      },
+      {
+        "name": "A paused file cannot enter a mixed completed-file drag even when its path exists",
+        "passed": true
+      },
+      {
+        "name": "Reference contains Download complete dialog 286",
+        "passed": true
+      },
+      {
+        "name": "Split completion address copies only track URLs even with populated journals",
+        "passed": true
+      },
+      {
+        "name": "Split completion displays the selected video URL and final saved path",
+        "passed": true
+      },
+      {
+        "name": "Legacy adaptive completion retains its manifest address",
+        "passed": true
+      },
+      {
+        "name": "Cached manifest display excludes the full adaptive plan",
+        "passed": true
+      },
+      {
+        "name": "SABR keeps address precedence over cached adaptive metadata",
+        "passed": true
+      }
+    ],
+    "error": "This encrypted setting cannot be opened by the current Windows account."
+  },
+  "after": {
+    "receipt": {
+      "executableSha256": "B09D1714469A3E3E611D166FB55C3CC6E74CDC3D9AF848AC1F82EC0B86BCB145",
+      "sourceSha256": "205CA5A904BB189D6C845005D85194E26D27EE42E7FD062883CC000E99132FB5",
+      "exitCode": 0,
+      "checks": 252,
+      "passed": true,
+      "error": ""
+    },
+    "checksDetail": [
+      {
+        "name": "Captured completion callback observes published bytes and zero live speed",
+        "passed": true
+      },
+      {
+        "name": "Repeated captured publication emits one completion dialog callback",
+        "passed": true
+      },
+      {
+        "name": "Captured response publication opens the native completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Captured completion dialog displays the published destination",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completed file enables its standard file actions",
+        "passed": true
+      },
+      {
+        "name": "Captured completion dialog closes normally",
+        "passed": true
+      },
+      {
+        "name": "Completed file is visible in the main download list",
+        "passed": true
+      },
+      {
+        "name": "An idle completed selection supplies its saved file to the main-list drag",
+        "passed": true
+      },
+      {
+        "name": "A scan starting before the next list refresh blocks the selected file drag",
+        "passed": true
+      },
+      {
+        "name": "Pending scanner work disables both file actions while the folder remains accessible",
+        "passed": true
+      },
+      {
+        "name": "Invoking a pending-scan command does not reach the file action",
+        "passed": true
+      },
+      {
+        "name": "Invoking a pending-scan command does not reach the file action",
+        "passed": true
+      },
+      {
+        "name": "An idle completed job still offers explicit file actions after an interrupted scan",
+        "passed": true
+      },
+      {
+        "name": "Main-list file actions reject a directory substituted for the saved file",
+        "passed": true
+      },
+      {
+        "name": "Main-list file actions reject a directory substituted for the saved file",
+        "passed": true
+      },
+      {
+        "name": "Enter on the selected row uses the configured Open action",
+        "passed": true
+      },
+      {
+        "name": "Enter does not activate a focused but unselected row",
+        "passed": true
+      },
+      {
+        "name": "The same row remains available for the properties action",
+        "passed": true
+      },
+      {
+        "name": "Enter opens File Properties when it is the configured action",
+        "passed": true
+      },
+      {
+        "name": "The paused row is available for keyboard activation",
+        "passed": true
+      },
+      {
+        "name": "Enter opens the progress window for the paused row",
+        "passed": true
+      },
+      {
+        "name": "Completed selection enables batch Move/Rename and keeps Open single-file",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename updates both saved paths and preserves names",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename preserves both files' bytes",
+        "passed": true
+      },
+      {
+        "name": "A mixed main-list drag includes the ready relocated file and skips the running scan",
+        "passed": true
+      },
+      {
+        "name": "A finished scan restores the relocated file to the drag in selection order",
+        "passed": true
+      },
+      {
+        "name": "Batch Move/Rename identifies the failing file and reports prior work",
+        "passed": true
+      },
+      {
+        "name": "A later collision leaves the earlier move committed and overwrites nothing",
+        "passed": true
+      },
+      {
+        "name": "Mixed completed and unfinished selection disables Move/Rename",
+        "passed": true
+      },
+      {
+        "name": "A paused file cannot enter a mixed completed-file drag even when its path exists",
+        "passed": true
+      },
+      {
+        "name": "Reference contains Download complete dialog 286",
+        "passed": true
+      },
+      {
+        "name": "Split completion address copies only track URLs even with populated journals",
+        "passed": true
+      },
+      {
+        "name": "Split completion displays the selected video URL and final saved path",
+        "passed": true
+      },
+      {
+        "name": "Legacy adaptive completion retains its manifest address",
+        "passed": true
+      },
+      {
+        "name": "Cached manifest display excludes the full adaptive plan",
+        "passed": true
+      },
+      {
+        "name": "SABR keeps address precedence over cached adaptive metadata",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Unreadable saved address context cannot prevent completion from opening",
+        "passed": true
+      },
+      {
+        "name": "Unreadable address is identified without hiding the verified destination",
+        "passed": true
+      },
+      {
+        "name": "Unavailable address stays empty and read-only rather than guessing a different source",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Unreadable remote metadata leaves local completion actions enabled",
+        "passed": true
+      },
+      {
+        "name": "Viewing completion does not erase unreadable saved request context",
+        "passed": true
+      },
+      {
+        "name": "Completion with unreadable metadata closes normally",
+        "passed": true
+      },
+      {
+        "name": "Actual completed record opens its completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Completion action is enabled for a saved file",
+        "passed": true
+      },
+      {
+        "name": "Completion action is enabled for a saved file",
+        "passed": true
+      },
+      {
+        "name": "Completion action is enabled for a saved file",
+        "passed": true
+      },
+      {
+        "name": "Completion action is enabled for a saved file",
+        "passed": true
+      },
+      {
+        "name": "Drag area contains one icon without clipped filename text",
+        "passed": true
+      },
+      {
+        "name": "Completion shows exact source and saved destination",
+        "passed": true
+      },
+      {
+        "name": "Completion source and destination are read-only",
+        "passed": true
+      },
+      {
+        "name": "Completion source and destination are read-only",
+        "passed": true
+      },
+      {
+        "name": "Completion tab order and wrap match the reference",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Completion reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "A directory at the saved file path is rejected by both completion file actions",
+        "passed": true
+      },
+      {
+        "name": "Rejecting the substituted directory leaves it untouched",
+        "passed": true
+      },
+      {
+        "name": "Open explains the moved file and retains completion",
+        "passed": true
+      },
+      {
+        "name": "Open with explains the moved file and retains completion",
+        "passed": true
+      },
+      {
+        "name": "Completion text fields use the reference plain border",
+        "passed": true
+      },
+      {
+        "name": "The completion dialog exposes both native drag controls",
+        "passed": true
+      },
+      {
+        "name": "The old destination is still displayed before a timer tick",
+        "passed": true
+      },
+      {
+        "name": "The large icon resolves the current file when dragged before a timer tick",
+        "passed": true
+      },
+      {
+        "name": "The list handle still displays the previous path before its next drag",
+        "passed": true
+      },
+      {
+        "name": "The list handle resolves the renamed Unicode file before a timer tick",
+        "passed": true
+      },
+      {
+        "name": "A committed Move/Rename updates the read-only saved path without replacing the completion window",
+        "passed": true
+      },
+      {
+        "name": "Both drag controls follow the same Unicode destination as the path field",
+        "passed": true
+      },
+      {
+        "name": "Windows reads the exact renamed Unicode path from the large icon's file drop",
+        "passed": true
+      },
+      {
+        "name": "Windows reads the exact renamed Unicode path from the list handle's file drop",
+        "passed": true
+      },
+      {
+        "name": "The shared multi-file drop preserves file order and skips missing files and folders",
+        "passed": true
+      },
+      {
+        "name": "A new scan can arrive before the completion controls refresh",
+        "passed": true
+      },
+      {
+        "name": "A queued completion command rechecks the pending scan before using its path",
+        "passed": true
+      },
+      {
+        "name": "A queued completion command rechecks the pending scan before using its path",
+        "passed": true
+      },
+      {
+        "name": "Pending scanning disables completion file actions while the folder and Close remain available",
+        "passed": true
+      },
+      {
+        "name": "Neither completion drag control supplies a path during a scan",
+        "passed": true
+      },
+      {
+        "name": "After scanning the existing dialog restores both actions and both drag paths",
+        "passed": true
+      },
+      {
+        "name": "A file moved outside UDM yields no stale file-drop data",
+        "passed": true
+      },
+      {
+        "name": "Open reports the updated destination if the relocated file is later moved externally",
+        "passed": true
+      },
+      {
+        "name": "Hold the catalog write lock for a failed suppression change",
+        "passed": true
+      },
+      {
+        "name": "A failed suppression write restores the checkbox and keeps completion open",
+        "passed": true
+      },
+      {
+        "name": "Checking Don't show again saves the preference before either completion dialog closes",
+        "passed": true
+      },
+      {
+        "name": "Completion suppression survives catalog reopen before closing the dialog",
+        "passed": true
+      },
+      {
+        "name": "A later automatic completion is suppressed while the first dialog is still open",
+        "passed": true
+      },
+      {
+        "name": "Another open completion reflects the shared preference",
+        "passed": true
+      },
+      {
+        "name": "Unchecking restores automatic completion and synchronizes the first dialog",
+        "passed": true
+      },
+      {
+        "name": "Automatic completion opens again after unchecking suppression",
+        "passed": true
+      },
+      {
+        "name": "The reactivated completion saves suppression again before Close",
+        "passed": true
+      },
+      {
+        "name": "Close dismisses only its own completion and preserves the saved preference",
+        "passed": true
+      },
+      {
+        "name": "An explicit completion still opens and shows the current suppression preference",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused light completion Open button",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused light completion Open with button",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused light Close button",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused dark completion Open button",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused dark completion Open with button",
+        "passed": true
+      },
+      {
+        "name": "Enter invokes the focused dark Close button",
+        "passed": true
+      },
+      {
+        "name": "The publication event shows completion before the transfer finishes its cleanup",
+        "passed": true
+      },
+      {
+        "name": "Finishing cleanup does not reopen a dismissed publication dialog",
+        "passed": true
+      },
+      {
+        "name": "A pending scan prevents early completion presentation",
+        "passed": true
+      },
+      {
+        "name": "Early publication respects completion suppression",
+        "passed": true
+      },
+      {
+        "name": "A finished transfer with automatic close skips a stale Start event",
+        "passed": true
+      },
+      {
+        "name": "A completed prefetch honors the keep-open progress preference",
+        "passed": true
+      },
+      {
+        "name": "The retained progress window shows the measured prefetch peak",
+        "passed": true
+      },
+      {
+        "name": "Scanner result opens the expanded completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Initial scanner actions and suppression control fit",
+        "passed": true
+      },
+      {
+        "name": "Install the enlarged frame metrics fixture",
+        "passed": true
+      },
+      {
+        "name": "Scanner actions fit when the actual frame exceeds the calculated frame",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner dialog closes normally",
+        "passed": true
+      },
+      {
+        "name": "Scanner result opens the expanded completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Initial scanner actions and suppression control fit",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner dialog closes normally",
+        "passed": true
+      },
+      {
+        "name": "Scanner result opens the expanded completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Initial scanner actions and suppression control fit",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner dialog closes normally",
+        "passed": true
+      },
+      {
+        "name": "Scanner result opens the expanded completion dialog",
+        "passed": true
+      },
+      {
+        "name": "Initial scanner actions and suppression control fit",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Long scanner diagnostic scrolls while retaining its complete text",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Long scanner diagnostic scrolls while retaining its complete text",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Long scanner diagnostic scrolls while retaining its complete text",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Scanner summary fits above actions without overlap",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner actions and suppression control stay inside the dialog",
+        "passed": true
+      },
+      {
+        "name": "Long scanner diagnostic scrolls while retaining its complete text",
+        "passed": true
+      },
+      {
+        "name": "Complete scanner diagnostic is readable or scrollable at each DPI",
+        "passed": true
+      },
+      {
+        "name": "Expanded scanner dialog closes normally",
+        "passed": true
+      }
+    ],
+    "checks": 252,
+    "passed": true
+  },
+  "change": "Resolve the saved display address with an exception boundary before constructing Download complete. Unreadable metadata leaves an empty read-only field labelled Address (unavailable); local output, actions, scanner policy and saved transport context remain independent.",
+  "coverage": [
+    "Unreadable ciphertext in SABR, adaptive and cached adaptive-display inputs",
+    "Decryptable but malformed SABR/adaptive JSON",
+    "Decryptable invalid cached display URL",
+    "Window creation, unchanged saved context, empty read-only source, valid local action enablement and normal close",
+    "Existing completion layout/tab order/DPI, suppression, scanner, drag, local relocation and keyboard checks"
+  ],
+  "visual": {
+    "path": "completion-address-7.57.png",
+    "sha256": "9BC44A757A6C12429A88CA0E6785E5471BF5F5711DB5CAC0D815D26286CCC270",
+    "scope": "Owned component render inspected. Address-unavailable label fits without resizing; source stays blank and saved destination/file actions are visible. No new personal-app or IDM-window replay."
+  },
+  "reference": {
+    "path": "docs/reference/completion-dialog.json",
+    "sha256": "F9A7E7F88B87F8D0AF425B419F12AD7512D21359E338A70ACFEA83F5E4C91932",
+    "scope": "Previously retained control metadata; normal layout unchanged. No inference about IDM encrypted metadata internals."
+  },
+  "installedDesktop": "7.11",
+  "limits": [
+    "No real account migration performed; malformed ciphertext exercises the unreadable-context failure",
+    "No speed improvement or dialog latency parity measurement",
+    "Address resolution remains synchronous; first-seen large legacy plan cost remains open",
+    "File Info/properties/link-detail failures outside completion are not addressed by this change",
+    "No installer, installation, push or release performed"
+  ],
+  "cleanup": "completion-address-7.57-cleanup.json"
+}

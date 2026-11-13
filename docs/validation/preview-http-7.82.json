@@ -1,0 +1,217 @@
+{
+  "productVersion": "7.82",
+  "browserVersion": "0.71.46",
+  "runtimeCodeChanged": false,
+  "rebuildRequired": false,
+  "nativeSourcesVerifiedUnchanged": 429,
+  "productAndFixtureBinariesVerifiedUnchanged": 17,
+  "coreObjectsVerifiedUnchanged": 42,
+  "sourceHashes": [
+    {
+      "path": "tests/hls-catalog.native-live.cjs",
+      "sha256": "47F5A52BD02247E76950BA72A8521932305C54DB18C2092803ED183F243610D3"
+    },
+    {
+      "path": "tests/loopback-http-diagnostics.cjs",
+      "sha256": "2ABBA575DEBFDB5E98ACBC90FA89AE761BEEC91ADF9550746EFC3F28B916B41E"
+    },
+    {
+      "path": "tests/loopback-http-diagnostics.test.cjs",
+      "sha256": "4D4589FBCCB4F796C0550443EFDD95B1D05C6DFB71C3BE81647F9FB3C230931C"
+    }
+  ],
+  "diagnosticUnitChecks": 6,
+  "configurationGuardChecks": 5,
+  "liveCases": [
+    {
+      "case": "canonical-preview-diagnostic-verified",
+      "previewOnly": true,
+      "httpDiagnostics": true,
+      "checks": 3,
+      "registryRemoved": true,
+      "sourceMediaUnchanged": true,
+      "downloadAdmissions": 0
+    },
+    {
+      "case": "canonical-preview-default-final",
+      "previewOnly": true,
+      "httpDiagnostics": false,
+      "checks": 3,
+      "registryRemoved": true,
+      "sourceMediaUnchanged": true,
+      "downloadAdmissions": 0
+    },
+    {
+      "case": "cold-full-control-final",
+      "previewOnly": false,
+      "httpDiagnostics": false,
+      "checks": 8,
+      "registryRemoved": true,
+      "sourceMediaUnchanged": true,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "completeSelectedTracksDecoded": true
+    },
+    {
+      "case": "warm-full-diagnostic-verified",
+      "previewOnly": false,
+      "httpDiagnostics": true,
+      "checks": 8,
+      "registryRemoved": true,
+      "sourceMediaUnchanged": true,
+      "exactBytesBeforeAndAfter": 6560076,
+      "sha256": "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30",
+      "completeSelectedTracksDecoded": true
+    }
+  ],
+  "preliminaryPreviewProbes": [
+    {
+      "case": "warm-preview-1",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "99A035E65FC554EBBC59446F7AFF80FAFF16E072D79518708F7E9079C8821D98"
+    },
+    {
+      "case": "warm-preview-2",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "B0EB0986354100A4AA8A7BDE7B0D03EEDDC3AE3A403B10443A3FA295962BF0B0"
+    },
+    {
+      "case": "warm-preview-3",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "905663A7982390B002F5C75C95C6879D78C8C5F5FD771424DA39FFFD01B7A232"
+    },
+    {
+      "case": "warm-preview-4",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "E0286CB7BCADE32A774102BF6D318D8730D8D0C6D80AF75E785660FED0F1A2FE"
+    },
+    {
+      "case": "warm-preview-5",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "BB29D7B19ADC1E2AE81D5B4FE98255CE7B293655C76A21786731F36F58BCEEE0"
+    },
+    {
+      "case": "warm-preview-6",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "7AEE1A4CA15CC907F30F5589FBA7F7B39EFA39642BDA2FE0B6B137F70CBE6A5D"
+    },
+    {
+      "case": "warm-preview-7",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "D9C0FC486734D48386D1412164EEEAC21B1620EE5A4084C1F7BDC75F609F37BB"
+    },
+    {
+      "case": "warm-preview-8",
+      "instrumentation": "Everything network log",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "5F26F3369B049B7A9BC7CFAA51489226DA998BBF08BCCFD554F92D4D9231F17D"
+    },
+    {
+      "case": "warm-protocol-1",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "D554BABAD5A44C84EFF5A2296E5FA1155C84F5D19C42B43EFB591F4E1CB62978"
+    },
+    {
+      "case": "warm-protocol-2",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "B5A2E1DBD1816774CCAD4B39E88C4AE229A063D9FB7817D71E01DFF614068976"
+    },
+    {
+      "case": "warm-protocol-3",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "A639B4A4E7464DE71106CE2BF3DF151ECF062310B08DA54512C8650CE1780AE3"
+    },
+    {
+      "case": "warm-protocol-4",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "90E4B7AD03F768A86EB01A1691B298EB4BFF6693A44A05847A210EE49411F965"
+    },
+    {
+      "case": "warm-protocol-5",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "45FB2D3889A7C25315C0B92B528EA478F4567A4A6555C1CC9E5E053C982936CE"
+    },
+    {
+      "case": "warm-protocol-6",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "B38BF2B9CFEF07EA6464CE0669CE8993A91EB8B278EE251E12DBE70E448BC884"
+    },
+    {
+      "case": "warm-protocol-7",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "23DE7272567D31F27A856995CB06818FFB01C0FA38E006621DA7CC1C204D5F37"
+    },
+    {
+      "case": "warm-protocol-8",
+      "instrumentation": "in-memory CDP and server headers",
+      "previewReady": true,
+      "downloadAdmissions": 0,
+      "scope": "Private preliminary projection returns after preview readiness; its inherited full-workflow label is not a completed-download result",
+      "resultSha256": "6088994EFA3C2A1DFB4A1C04C81E18342821431D3C8791A475C2A6D9ADFB95B2"
+    }
+  ],
+  "findings": [
+    "Sixteen fresh preliminary preview-only probes passed: eight with Everything-mode network logging and eight with in-memory protocol/server-header collection. Each private catalog retained zero downloads.",
+    "The final maintained diagnostic mode records owned-loopback request histories, allowed framing headers, completion byte counts and network error codes. URL queries, credential-bearing requests and unrelated headers are omitted. A cross-origin redirect reusing a request ID excludes that entire chain.",
+    "Preview-only results explicitly identify their scope and assert zero admissions. This mode cannot be combined with a cold/unready desktop or download fault injection. Optional diagnostic recording is off in ordinary runs.",
+    "Two final preview cases and two final complete-download cases pass. The latter decode complete selected tracks and match the exact pre-Start/final size/checksum, including same-dialog admission/Start-save recovery."
+  ],
+  "limits": [
+    "The two earlier invalid-HTTP-response failures were not reproduced. These passing probes do not establish a cause, a fix, an instrumentation effect or IDM parity. The issue stays open.",
+    "The sixteen preliminary private projections inherit a broad fixture label; only preview readiness and zero download admissions are qualified from them. They are not full workflow/download tests.",
+    "An initial diagnostic qualification found Blob media URLs sharing the HTTP origin in protocol output; the final collector explicitly rejects non-HTTP schemes, and the corrected diagnostic preview/full-download cases passed. Earlier canonical controls predate that stricter trace filter and are not the final traced cases.",
+    "Network logging and protocol attachment can change timing. No latency improvement or stable failure rate is inferred.",
+    "No app runtime changes, version increment, native rebuild, installer or installation. Installed desktop remains 7.11."
+  ],
+  "nextAction": "Capture an actually failed preview fetch with maintained UDM_TEST_HTTP_DIAGNOSTICS=1; compare browser framing/error events with the same request server headers before changing product behavior.",
+  "bootstrapFailureOpen": true,
+  "installedDesktop": "7.11",
+  "installed": false,
+  "installerCreated": false,
+  "artifactDisposition": "Automatic approval review rejected the cleanup command with blocked by policy before execution. All 26 private test profiles and five synthetic movies remain on C; evidence, shared tools, source media, current binaries and core cache are preserved. No retry through another deletion mechanism.",
+  "artifacts": "preview-http-7.82-artifacts.json"
+}

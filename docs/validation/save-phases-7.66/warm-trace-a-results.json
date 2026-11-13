@@ -1,0 +1,37 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 3,
+  "failed": 1,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794465934409,
+      "observerReadyEpochMs": 1794465935010
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 73,
+      "labels": [
+        "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "Error: Traceback (most recent call last):\r\n  File \"D:\\UDM\\tests\\observe-cold-file-info.py\", line 132, in <module>\r\n    catalog = json.loads((root / \"state\" / \"state.json\").read_text(encoding=\"utf-8-sig\"))\r\n                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib\\pathlib\\_local.py\", line 546, in read_text\r\n    return PathBase.read_text(self, encoding, errors, newline)\r\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib\\pathlib\\_abc.py\", line 632, in read_text\r\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\r\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib\\pathlib\\_local.py\", line 537, in open\r\n    return io.open(self, mode, buffering, encoding, errors, newline)\r\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nPermissionError: [Errno 13] Permission denied: 'D:\\\\UDM\\\\candidates\\\\save-phases-7.66\\\\warm-trace-a\\\\state\\\\state.json'\r\n\n    at D:\\UDM\\tests\\hls-catalog.native-live.cjs:69:102\n    at until (D:\\UDM\\tests\\hls-catalog.native-live.cjs:31:105)\n    at async choose (D:\\UDM\\tests\\hls-catalog.native-live.cjs:69:18)\n    at async D:\\UDM\\tests\\hls-catalog.native-live.cjs:249:3"
+    }
+  ]
+}

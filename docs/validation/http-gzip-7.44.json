@@ -1,0 +1,514 @@
+{
+  "desktop": "7.44",
+  "browser": "0.71.8",
+  "installed": false,
+  "installerCreated": false,
+  "scope": "Ordinary GET gzip decoding. Private catalogs and owned loopback fixtures; no personal browser or catalog used.",
+  "buildReceipt": "http-gzip-7.44-build.json",
+  "initialFailure": {
+    "error": "The server ignored identity encoding.",
+    "checksReached": 0,
+    "cause": "Earlier probe admission still used identity-only success check",
+    "corrected": true,
+    "receipt": "http-gzip-7.44-build-initial.json"
+  },
+  "decoder": {
+    "checks": [
+      {
+        "name": "Compressed dynamic-Huffman input drains multiple bounded output buffers",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Concatenated gzip members preserve all output",
+        "passed": true
+      },
+      {
+        "name": "A valid empty gzip file remains valid",
+        "passed": true
+      },
+      {
+        "name": "truncated",
+        "passed": true
+      },
+      {
+        "name": "checksum",
+        "passed": true
+      },
+      {
+        "name": "trailing",
+        "passed": true
+      },
+      {
+        "name": "raw",
+        "passed": true
+      },
+      {
+        "name": "empty-wire",
+        "passed": true
+      },
+      {
+        "name": "limit",
+        "passed": true
+      },
+      {
+        "name": "members",
+        "passed": true
+      },
+      {
+        "name": "canceled",
+        "passed": true
+      },
+      {
+        "name": "write-failure",
+        "passed": true
+      },
+      {
+        "name": "Data after final completion is rejected",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "productionCoreIntegration": {
+    "checks": [
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch starts before confirmation",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch reaches verified confirmation without publishing",
+        "passed": true
+      },
+      {
+        "name": "Before Start size is verified decoded output and target is absent",
+        "passed": true
+      },
+      {
+        "name": "Start confirms the existing prefetched response",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches the size shown before Start",
+        "passed": true
+      },
+      {
+        "name": "Download Later fixture has fully decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Ending confirmation keeps the destination unpublished",
+        "passed": true
+      },
+      {
+        "name": "Resume reuses verified encoded bytes without a second response",
+        "passed": true
+      },
+      {
+        "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Pause retains a genuine partial encoded response",
+        "passed": true
+      },
+      {
+        "name": "Encoded-byte range resume decodes to the complete original file",
+        "passed": true
+      },
+      {
+        "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+        "passed": true
+      },
+      {
+        "name": "Output projection leaves authoritative wire metadata unchanged",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "requestAudit": {
+    "payloadBytes": 524288,
+    "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+    "gzipBytes": 1943,
+    "requests": [
+      {
+        "route": "known",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "unknown",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "concatenated",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 2105
+      },
+      {
+        "route": "empty",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 19
+      },
+      {
+        "route": "crc",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "truncated",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1941
+      },
+      {
+        "route": "trailing",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1943
+      },
+      {
+        "route": "unsupported",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "prefetch",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "deferred",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 1942
+      },
+      {
+        "route": "paused",
+        "range": "",
+        "ifRange": "",
+        "start": 0,
+        "end": 524380
+      },
+      {
+        "route": "paused",
+        "range": "bytes=262080-524380",
+        "ifRange": "\"gzip-fixture-v1\"",
+        "start": 262080,
+        "end": 524380
+      }
+    ]
+  },
+  "regression": [
+    {
+      "name": "PauseTransactionTests",
+      "passed": true,
+      "checks": 19
+    },
+    {
+      "name": "TerminalActionTests",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "name": "MediaSizeTests",
+      "passed": true,
+      "checks": 47
+    }
+  ],
+  "browserChecks": {
+    "passed": true,
+    "general": 56,
+    "preflight": 14,
+    "receivedResponse": 10
+  },
+  "persistedOutputChecks": [
+    {
+      "name": "concatenated.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    },
+    {
+      "name": "deferred.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    },
+    {
+      "name": "empty.udmcodec",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "known.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    },
+    {
+      "name": "paused.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    },
+    {
+      "name": "prefetch.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    },
+    {
+      "name": "unknown.udmcodec",
+      "bytes": 524288,
+      "sha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997"
+    }
+  ],
+  "pairedActualExecutables": {
+    "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+    "payloadBytes": 67200,
+    "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+    "compressedBytes": 280,
+    "cases": [
+      {
+        "client": "udm",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "encoding": "gzip",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/udm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-67199",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/idm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      }
+    ]
+  },
+  "testSources": [
+    {
+      "path": "native/HttpGzipTransferTests.cpp",
+      "sha256": "396F7638C3C5CD48D55BD483CE9EF2096132E4CB0AB58B4A62646E0530090058"
+    },
+    {
+      "path": "native/HttpGzipDecoderTests.cpp",
+      "sha256": "D82442326AE3F859260F992AD9111E41B50E3FE8E3A6575239F950BA5BAA9E44"
+    },
+    {
+      "path": "tests/http-gzip.native-live.cjs",
+      "sha256": "628BABE02782676B27DDA7E82E6FE3F9EBD212C3607D92F041141D5EF362E963"
+    },
+    {
+      "path": "tests/http-content-encoding.native-live.cjs",
+      "sha256": "4E6D89B6DED7E3AA30062C0BBF7662F718094D877D8C6C2B88AE001EBF13456D"
+    }
+  ],
+  "limitations": [
+    "Decoding follows wire EOF; no decode/network overlap speed claim.",
+    "No installed browser/File Info visual acceptance.",
+    "No paired timing or throughput acceptance.",
+    "POST, other content encodings, synchronization probes, streaming and crawler admission remain unchanged.",
+    "Crash/disk-fault injection and compressed HTML/prefix UI cases remain separate coverage."
+  ],
+  "cleanup": "Small fixture outputs retained in candidates; no media-helper copies. No deletion attempted after the earlier cleanup policy rejection."
+}

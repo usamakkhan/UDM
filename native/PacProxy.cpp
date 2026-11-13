@@ -17,6 +17,17 @@ void validatePacSettings(const Json& prefs){
  Url url(address);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Proxy scripts require an HTTP or HTTPS address.");
 }
 bool retryPacConnection(DWORD error){return error==ERROR_WINHTTP_CANNOT_CONNECT||error==ERROR_WINHTTP_CONNECTION_ERROR||error==ERROR_WINHTTP_NAME_NOT_RESOLVED||error==ERROR_WINHTTP_TIMEOUT;}
+Json proxyRouteSettings(const Json& prefs,const WINHTTP_PROXY_RESULT_ENTRY& entry){
+ Json route=prefs;route.erase("ProtocolProxies");route.erase("ProxyAutoConfigUrl");route.erase("ProxyAutoConfigScript");route.erase("ResolvedPacProxyScheme");route["ProxyBypass"]="";
+ if(!entry.fProxy||entry.fBypass){route["ProxyMode"]="Connect directly";route["Proxy"]="";route["ProxyUser"]="";route["ProxySecret"]="";}
+ else{
+  auto host=entry.pwszProxy?utf8(entry.pwszProxy):"";if(host.empty()||!entry.ProxyPort)throw std::runtime_error("Proxy lookup returned an invalid server.");if(host.find(':')!=std::string::npos&&host.front()!='[')host="["+host+"]";route["Proxy"]=host+":"+std::to_string(entry.ProxyPort);
+  if(entry.ProxyScheme==INTERNET_SCHEME_HTTP||entry.ProxyScheme==INTERNET_SCHEME_HTTPS){route["ProxyMode"]="Use a proxy server";route["ResolvedPacProxyScheme"]=entry.ProxyScheme==INTERNET_SCHEME_HTTPS?"https":"http";validateConnectProxy(route);}
+  else if(entry.ProxyScheme==INTERNET_SCHEME_SOCKS){route["ProxyMode"]="Use a SOCKS4 / 4a proxy";validateSocksSettings(route);}
+  else throw std::runtime_error("Proxy lookup returned an unsupported proxy protocol.");
+ }
+ return route;
+}
 namespace {
 struct PacState {
  std::mutex mutex;std::condition_variable changed;bool complete=false,closed=false;DWORD error=0;
@@ -44,22 +55,16 @@ public:
  }catch(...){close();throw;}}
  ~Lookup(){close();}
  std::vector<Json> run(const Json& prefs,const Url& url,const Cancel& cancel){
-  cancel.check();auto script=wide(str(prefs,"ProxyAutoConfigUrl")),address=wide(url.full);WINHTTP_AUTOPROXY_OPTIONS options{};if(yes(prefs,"ProxyAutoDetect")&&script.empty()){options.dwFlags=WINHTTP_AUTOPROXY_AUTO_DETECT;options.dwAutoDetectFlags=WINHTTP_AUTO_DETECT_TYPE_DHCP|WINHTTP_AUTO_DETECT_TYPE_DNS_A;}else{options.dwFlags=WINHTTP_AUTOPROXY_CONFIG_URL;options.lpszAutoConfigUrl=script.c_str();}options.fAutoLogonIfChallenged=FALSE;
+  cancel.check();auto script=wide(str(prefs,"ProxyAutoConfigUrl")),address=wide(url.full);WINHTTP_AUTOPROXY_OPTIONS options{};
+  if(usesWindowsProxy(prefs))options.dwFlags=WINHTTP_AUTOPROXY_ALLOW_AUTOCONFIG|WINHTTP_AUTOPROXY_ALLOW_STATIC|WINHTTP_AUTOPROXY_ALLOW_CM;
+  else if(yes(prefs,"ProxyAutoDetect")&&script.empty()){options.dwFlags=WINHTTP_AUTOPROXY_AUTO_DETECT;options.dwAutoDetectFlags=WINHTTP_AUTO_DETECT_TYPE_DHCP|WINHTTP_AUTO_DETECT_TYPE_DNS_A;}else{options.dwFlags=WINHTTP_AUTOPROXY_CONFIG_URL;options.lpszAutoConfigUrl=script.c_str();}options.fAutoLogonIfChallenged=FALSE;
   auto error=WinHttpGetProxyForUrlEx(resolver,address.c_str(),&options,reinterpret_cast<DWORD_PTR>(state.get()));if(error!=ERROR_IO_PENDING)throw std::runtime_error("Proxy script lookup failed (Windows error "+std::to_string(error)+").");
   const auto deadline=GetTickCount64()+30000;{std::unique_lock<std::mutex> lock(state->mutex);while(!state->complete){if(cancel.cancelled()){lock.unlock();close();throw Cancelled();}if(GetTickCount64()>=deadline){lock.unlock();close();throw std::runtime_error("Proxy script lookup timed out.");}state->changed.wait_for(lock,std::chrono::milliseconds(25));}error=state->error;}
   cancel.check();if(error)throw std::runtime_error("Proxy script failed (Windows error "+std::to_string(error)+"). No direct fallback was used.");
   WINHTTP_PROXY_RESULT result{};error=WinHttpGetProxyResult(resolver,&result);if(error)throw std::runtime_error("Cannot read proxy script result (Windows error "+std::to_string(error)+").");
   struct Release{WINHTTP_PROXY_RESULT* result;~Release(){WinHttpFreeProxyResult(result);}} release{&result};
   if(!result.cEntries||result.cEntries>32)throw std::runtime_error("Proxy script returned no usable route or too many alternatives.");
-  std::vector<Json> routes;for(DWORD i=0;i<result.cEntries;++i){const auto& entry=result.pEntries[i];Json route=prefs;route.erase("ProtocolProxies");route.erase("ProxyAutoConfigUrl");route.erase("ProxyAutoConfigScript");route["ProxyBypass"]="";
-   if(!entry.fProxy||entry.fBypass){route["ProxyMode"]="Connect directly";route["Proxy"]="";route["ProxyUser"]="";route["ProxySecret"]="";}
-   else{
-    auto host=entry.pwszProxy?utf8(entry.pwszProxy):"";if(host.empty()||!entry.ProxyPort)throw std::runtime_error("Proxy script returned an invalid server.");if(host.find(':')!=std::string::npos&&host.front()!='[')host="["+host+"]";route["Proxy"]=host+":"+std::to_string(entry.ProxyPort);
-    if(entry.ProxyScheme==INTERNET_SCHEME_HTTP||entry.ProxyScheme==INTERNET_SCHEME_HTTPS){route["ProxyMode"]="Use a proxy server";route["ResolvedPacProxyScheme"]=entry.ProxyScheme==INTERNET_SCHEME_HTTPS?"https":"http";validateConnectProxy(route);}
-    else if(entry.ProxyScheme==INTERNET_SCHEME_SOCKS){route["ProxyMode"]="Use a SOCKS4 / 4a proxy";validateSocksSettings(route);}
-    else throw std::runtime_error("Proxy script returned an unsupported proxy protocol.");
-   }routes.push_back(std::move(route));
-  }return routes;
+  std::vector<Json> routes;for(DWORD i=0;i<result.cEntries;++i)routes.push_back(proxyRouteSettings(prefs,result.pEntries[i]));return routes;
  }
 };
 }
@@ -69,5 +74,9 @@ std::vector<Json> resolvePacRoutes(const Json& prefs,const Url& url,const Cancel
  std::unique_ptr<InlinePacSource> inlineSource;auto effective=prefs;
  if(prefs.contains("ProxyAutoConfigScript")){inlineSource=std::make_unique<InlinePacSource>(str(prefs,"ProxyAutoConfigScript"));effective.erase("ProxyAutoConfigScript");effective["ProxyAutoConfigUrl"]=inlineSource->url();}
  Lookup lookup;return lookup.run(effective,url,cancel);
+}
+std::vector<Json> resolveWindowsProxyRoutes(const Json& prefs,const Url& url,const Cancel& cancel){
+ cancel.check();if(!usesWindowsProxy(prefs))return {prefs};
+ Lookup lookup;return lookup.run(prefs,url,cancel);
 }
 }

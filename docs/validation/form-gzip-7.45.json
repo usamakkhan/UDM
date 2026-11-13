@@ -1,0 +1,1878 @@
+{
+  "desktop": "7.45",
+  "browser": "0.71.9",
+  "buildReceipt": "form-gzip-7.45-build.json",
+  "installed": false,
+  "installedDesktopObserved": "7.11",
+  "installerCreated": false,
+  "scope": "Ordinary HTTP form responses with gzip. Private catalogs, owned loopback servers and owned UI fixture windows. No personal browser validation.",
+  "decoder": {
+    "checks": [
+      {
+        "name": "Compressed dynamic-Huffman input drains multiple bounded output buffers",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+        "passed": true
+      },
+      {
+        "name": "Concatenated gzip members preserve all output",
+        "passed": true
+      },
+      {
+        "name": "A valid empty gzip file remains valid",
+        "passed": true
+      },
+      {
+        "name": "truncated",
+        "passed": true
+      },
+      {
+        "name": "checksum",
+        "passed": true
+      },
+      {
+        "name": "trailing",
+        "passed": true
+      },
+      {
+        "name": "raw",
+        "passed": true
+      },
+      {
+        "name": "empty-wire",
+        "passed": true
+      },
+      {
+        "name": "limit",
+        "passed": true
+      },
+      {
+        "name": "members",
+        "passed": true
+      },
+      {
+        "name": "canceled",
+        "passed": true
+      },
+      {
+        "name": "write-failure",
+        "passed": true
+      },
+      {
+        "name": "Data after final completion is rejected",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "getRegression": {
+    "checks": [
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Valid gzip response publishes through the production transfer path",
+        "passed": true
+      },
+      {
+        "name": "Published decoded bytes match the independently generated payload",
+        "passed": true
+      },
+      {
+        "name": "Completion records output bytes rather than encoded offsets",
+        "passed": true
+      },
+      {
+        "name": "Completion preserves a separate wire-byte audit",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Invalid gzip durably invalidates its completed wire receipt",
+        "passed": true
+      },
+      {
+        "name": "Malformed or unsupported encoded response never publishes a final file",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch starts before confirmation",
+        "passed": true
+      },
+      {
+        "name": "Gzip prefetch reaches verified confirmation without publishing",
+        "passed": true
+      },
+      {
+        "name": "Before Start size is verified decoded output and target is absent",
+        "passed": true
+      },
+      {
+        "name": "Start confirms the existing prefetched response",
+        "passed": true
+      },
+      {
+        "name": "Final file exactly matches the size shown before Start",
+        "passed": true
+      },
+      {
+        "name": "Download Later fixture has fully decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Ending confirmation keeps the destination unpublished",
+        "passed": true
+      },
+      {
+        "name": "Resume reuses verified encoded bytes without a second response",
+        "passed": true
+      },
+      {
+        "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Pause retains a genuine partial encoded response",
+        "passed": true
+      },
+      {
+        "name": "Encoded-byte range resume decodes to the complete original file",
+        "passed": true
+      },
+      {
+        "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+        "passed": true
+      },
+      {
+        "name": "Output projection leaves authoritative wire metadata unchanged",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "forms": {
+    "checks": [
+      {
+        "name": "Opening fresh form File Info never submits the POST speculatively",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "An actual form response decodes and publishes the complete original bytes",
+        "passed": true
+      },
+      {
+        "name": "Form completion keeps encoded and decoded byte counts separate",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Reopening File Info verifies a completed form response without submitting again",
+        "passed": true
+      },
+      {
+        "announcedBytes": 140000,
+        "name": "A verified decoded size is available before Start while the target remains absent",
+        "passed": true
+      },
+      {
+        "name": "Start publishes exactly the form file size shown before confirmation",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+        "passed": true
+      },
+      {
+        "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+        "passed": true
+      },
+      {
+        "name": "Confirmation remains usable after a rejected transfer-property edit",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Completed form response is ready for Download Later",
+        "passed": true
+      },
+      {
+        "name": "Download Later leaves the saved form response unpublished",
+        "passed": true
+      },
+      {
+        "name": "Resume after Download Later uses the saved form response",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Changing the form request invalidates reuse and sends no replacement request",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "A damaged saved response fails Resume without replaying POST",
+        "passed": true
+      },
+      {
+        "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+        "passed": true
+      },
+      {
+        "name": "Interrupted POST has no complete receipt and stays failed",
+        "passed": true
+      },
+      {
+        "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "Matching receipt metadata permits worker verification",
+        "passed": true
+      },
+      {
+        "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+        "passed": true
+      },
+      {
+        "name": "A final checksum rejection does not publish or resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "The complete encoded response has a request-bound reusable receipt",
+        "passed": true
+      },
+      {
+        "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+        "passed": true
+      },
+      {
+        "name": "Request-bound completed response survives catalog reopening",
+        "passed": true
+      },
+      {
+        "name": "A reopened catalog publishes saved form bytes without another POST",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "formTraffic": {
+    "payloadBytes": 140000,
+    "payloadSha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8",
+    "wireBytes": 481,
+    "requestBodyBytes": 11,
+    "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+    "requests": [
+      {
+        "route": "post-known",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-unknown",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-redirect",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "redirected-get",
+        "method": "GET",
+        "bytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "range": ""
+      },
+      {
+        "route": "post-info",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-confirmed-hash",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-later",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-changed",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-damaged",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-damaged",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-loss",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      },
+      {
+        "route": "post-reopened",
+        "method": "POST",
+        "bytes": 11,
+        "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "range": ""
+      }
+    ]
+  },
+  "progressUi": {
+    "checks": [
+      {
+        "name": "Reference contains IDM download-status dialog 363",
+        "passed": true
+      },
+      {
+        "name": "A short tick keeps its bytes in the open sample",
+        "passed": true
+      },
+      {
+        "name": "The first measured window includes bytes from the early tick",
+        "passed": true
+      },
+      {
+        "name": "A one-millisecond final slice cannot replace the measured peak",
+        "passed": true
+      },
+      {
+        "name": "A short prefetch keeps its average through confirmation",
+        "passed": true
+      },
+      {
+        "name": "An idle tick cannot turn the first credited buffer into a one-millisecond peak",
+        "passed": true
+      },
+      {
+        "name": "Create isolated owner",
+        "passed": true
+      },
+      {
+        "name": "Create actual progress dialog",
+        "passed": true
+      },
+      {
+        "name": "Progress URL uses the reference Static control class",
+        "passed": true
+      },
+      {
+        "name": "Progress URL uses reference single-line static style",
+        "passed": true
+      },
+      {
+        "name": "Progress URL has no edit-box edge",
+        "passed": true
+      },
+      {
+        "name": "URL ampersands are displayed literally rather than as keyboard mnemonics",
+        "passed": true
+      },
+      {
+        "name": "Progress dialog exposes its native progress bar",
+        "passed": true
+      },
+      {
+        "name": "Progress bar position agrees with the downloaded byte percentage",
+        "passed": true
+      },
+      {
+        "name": "Downloaded value includes exact percentage",
+        "passed": true
+      },
+      {
+        "name": "Downloaded percentage retains reference hundredth precision",
+        "passed": true
+      },
+      {
+        "name": "Progress bar retains its integer range while the label preserves hundredths",
+        "passed": true
+      },
+      {
+        "name": "Progress retains known track size while final size is unresolved",
+        "passed": true
+      },
+      {
+        "name": "Progress credits bytes received before confirmation",
+        "passed": true
+      },
+      {
+        "name": "Progress shows measured prefetch peak separately from the current transfer rate",
+        "passed": true
+      },
+      {
+        "name": "Opening progress shows the measured prefetch peak",
+        "passed": true
+      },
+      {
+        "name": "Live rate returns after the opening prefetch display",
+        "passed": true
+      },
+      {
+        "name": "Final size replaces the track-size fallback",
+        "passed": true
+      },
+      {
+        "name": "Progress dialog exposes its connection details",
+        "passed": true
+      },
+      {
+        "name": "Offline prefetch reuse displays verified saved bytes without a connection number",
+        "passed": true
+      },
+      {
+        "name": "Completed connections retain their number and bytes while unused rows disappear",
+        "passed": true
+      },
+      {
+        "name": "A paused partial file with range support offers Resume",
+        "passed": true
+      },
+      {
+        "name": "A paused partial offers Resume while its range capability is still unknown",
+        "passed": true
+      },
+      {
+        "name": "A failed partial with unknown range support can also be resumed",
+        "passed": true
+      },
+      {
+        "name": "An unstarted download with unknown range support offers Start",
+        "passed": true
+      },
+      {
+        "name": "Captured browser response does not falsely report unsupported resume",
+        "passed": true
+      },
+      {
+        "name": "Confirmed unsupported server displays No and offers Start",
+        "passed": true
+      },
+      {
+        "name": "Pausing disables the primary progress action and shows the transition",
+        "passed": true
+      },
+      {
+        "name": "Enter cannot restart a download while its primary action is disabled",
+        "passed": true
+      },
+      {
+        "name": "Primary action rechecks state before the next display timer",
+        "passed": true
+      },
+      {
+        "name": "Unready active live recording disables the shared primary action",
+        "passed": true
+      },
+      {
+        "name": "Ready live recording permits Stop and save",
+        "passed": true
+      },
+      {
+        "name": "Live recording already saving rejects a second primary action",
+        "passed": true
+      },
+      {
+        "name": "Unresolved duplicate cannot activate the primary action",
+        "passed": true
+      },
+      {
+        "name": "Unsubmitted form retains the Start action",
+        "passed": true
+      },
+      {
+        "name": "Interrupted form advertises Restart rather than byte resume",
+        "passed": true
+      },
+      {
+        "name": "Paused form explains that restarting submits the request again",
+        "passed": true
+      },
+      {
+        "name": "Form request cannot claim byte resume even with a stale range flag",
+        "passed": true
+      },
+      {
+        "name": "Existing transfer error takes precedence over the form hint",
+        "passed": true
+      },
+      {
+        "name": "Resumable POST-to-GET continuation does not resubmit the form",
+        "passed": true
+      },
+      {
+        "name": "Saved encoded form response offers Resume after output-size projection",
+        "passed": true
+      },
+      {
+        "name": "Saved response capability is distinct from HTTP byte ranges",
+        "passed": true
+      },
+      {
+        "name": "Matching form receipt does not advertise another submission",
+        "passed": true
+      },
+      {
+        "name": "Rejected saved form response advertises explicit Restart",
+        "passed": true
+      },
+      {
+        "name": "Rejected form receipt cannot claim resumability through a stale redirect range flag",
+        "passed": true
+      },
+      {
+        "name": "Rejected completed response explains resubmission even after a POST-to-GET redirect",
+        "passed": true
+      },
+      {
+        "name": "Untested audio track keeps combined resume capability unknown",
+        "passed": true
+      },
+      {
+        "name": "Confirmed unsupported track takes precedence over an unknown track",
+        "passed": true
+      },
+      {
+        "name": "Both verified tracks display Yes",
+        "passed": true
+      },
+      {
+        "name": "Saved media retains its distinct resume capability",
+        "passed": true
+      },
+      {
+        "name": "Expanded progress starts in the connections view",
+        "passed": true
+      },
+      {
+        "name": "Speed graph replaces connection details without resizing the window",
+        "passed": true
+      },
+      {
+        "name": "Compact progress hides the chart and view switch",
+        "passed": true
+      },
+      {
+        "name": "Expanding restores the selected chart view",
+        "passed": true
+      },
+      {
+        "name": "The switch restores the connection map",
+        "passed": true
+      },
+      {
+        "name": "Progress status uses reference Tahoma point size at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Hide details updates the native button caption",
+        "passed": true
+      },
+      {
+        "name": "Hide details removes the expected connection-area height at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Hide details hides connection caption",
+        "passed": true
+      },
+      {
+        "name": "Show details restores the previous expanded client height",
+        "passed": true
+      },
+      {
+        "name": "Progress status uses reference Tahoma point size at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Hide details updates the native button caption",
+        "passed": true
+      },
+      {
+        "name": "Hide details removes the expected connection-area height at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Hide details hides connection caption",
+        "passed": true
+      },
+      {
+        "name": "Show details restores the previous expanded client height",
+        "passed": true
+      },
+      {
+        "name": "Progress status uses reference Tahoma point size at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Progress status reference control class, label and geometry match",
+        "passed": true
+      },
+      {
+        "name": "Hide details updates the native button caption",
+        "passed": true
+      },
+      {
+        "name": "Hide details removes the expected connection-area height at tested DPI",
+        "passed": true
+      },
+      {
+        "name": "Hide details hides connection caption",
+        "passed": true
+      },
+      {
+        "name": "Show details restores the previous expanded client height",
+        "passed": true
+      },
+      {
+        "name": "Progress window exposes its native tab control",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Reference contains the selected progress options panel",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Visible progress options control matches reference class, label and geometry",
+        "passed": true
+      },
+      {
+        "name": "Speed tab hides URL and displays limiter controls",
+        "passed": true
+      },
+      {
+        "name": "Disabled limiter keeps its rate field disabled",
+        "passed": true
+      },
+      {
+        "name": "Enabling limiter applies its default temporary rate",
+        "passed": true
+      },
+      {
+        "name": "Editing temporary limiter does not change remembered rate",
+        "passed": true
+      },
+      {
+        "name": "Remember checkbox persists the entered rate",
+        "passed": true
+      },
+      {
+        "name": "Remembered GUI rate survives catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Invalid GUI rate preserves the saved setting and displays its valid range",
+        "passed": true
+      },
+      {
+        "name": "Disabling remembered limiter saves zero and disables the rate field",
+        "passed": true
+      },
+      {
+        "name": "Completion tab hides URL and displays completion controls",
+        "passed": true
+      },
+      {
+        "name": "Load Windows accessibility provider",
+        "passed": true
+      },
+      {
+        "name": "Windows exposes native accessibility inspection",
+        "passed": true
+      },
+      {
+        "name": "Blank checkbox exposes native accessibility object",
+        "passed": true
+      },
+      {
+        "name": "Glyph retains its meaningful accessible name and checkbox role",
+        "passed": true
+      },
+      {
+        "name": "Blank checkbox exposes native accessibility object",
+        "passed": true
+      },
+      {
+        "name": "Glyph retains its meaningful accessible name and checkbox role",
+        "passed": true
+      },
+      {
+        "name": "Blank checkbox exposes native accessibility object",
+        "passed": true
+      },
+      {
+        "name": "Glyph retains its meaningful accessible name and checkbox role",
+        "passed": true
+      },
+      {
+        "name": "Blank checkbox exposes native accessibility object",
+        "passed": true
+      },
+      {
+        "name": "Glyph retains its meaningful accessible name and checkbox role",
+        "passed": true
+      },
+      {
+        "name": "All four blank glyphs expose their distinct completion-option names",
+        "passed": true
+      },
+      {
+        "name": "Showing the completion dialog disables power options",
+        "passed": true
+      },
+      {
+        "name": "Hiding the completion dialog saves the preference and enables power options",
+        "passed": true
+      },
+      {
+        "name": "Completion preference survives catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Clicking the separate exit label checks the glyph and saves its plan without executing it",
+        "passed": true
+      },
+      {
+        "name": "Clicking the glyph clears the completion plan",
+        "passed": true
+      },
+      {
+        "name": "Completion checkbox supports accessibility action inspection",
+        "passed": true
+      },
+      {
+        "name": "Completion checkbox describes its accessible default action",
+        "passed": true
+      },
+      {
+        "name": "Accessible default action toggles and reports the persisted completion option",
+        "passed": true
+      },
+      {
+        "name": "Accessible default action toggles the option off again",
+        "passed": true
+      },
+      {
+        "name": "Space key dispatch toggles the checkbox and saves its option",
+        "passed": true
+      },
+      {
+        "name": "Showing the completion dialog again clears and disables the selected exit action",
+        "passed": true
+      },
+      {
+        "name": "Returning to status restores the URL label",
+        "passed": true
+      },
+      {
+        "name": "Refresh updates the literal displayed URL without changing control role",
+        "passed": true
+      },
+      {
+        "name": "Hiding Speed Limiter removes only that tab and returns to status",
+        "passed": true
+      },
+      {
+        "name": "Hiding speed tab preserves completion tab preference",
+        "passed": true
+      },
+      {
+        "name": "Completion tab remains correctly mapped after speed tab removal",
+        "passed": true
+      },
+      {
+        "name": "Hiding completion tab leaves status available",
+        "passed": true
+      },
+      {
+        "name": "Hidden tab preferences survive catalog reopen",
+        "passed": true
+      },
+      {
+        "name": "Reopen actual progress dialog after hiding tabs",
+        "passed": true
+      },
+      {
+        "name": "Reopened progress dialog respects both hidden tab preferences",
+        "passed": true
+      },
+      {
+        "name": "Cancel still stops an active download",
+        "passed": true
+      },
+      {
+        "name": "Closing during a completed file's scanner wait does not cancel it",
+        "passed": true
+      },
+      {
+        "name": "Closing during a pause does not submit another pause",
+        "passed": true
+      },
+      {
+        "name": "Create progress window for dismissal",
+        "passed": true
+      },
+      {
+        "name": "Dismissal destroys the Paused progress window",
+        "passed": true
+      },
+      {
+        "name": "Dismissal preserves the Paused job and catalog",
+        "passed": true
+      },
+      {
+        "name": "Create progress window for dismissal",
+        "passed": true
+      },
+      {
+        "name": "Dismissal destroys the Failed progress window",
+        "passed": true
+      },
+      {
+        "name": "Dismissal preserves the Failed job and catalog",
+        "passed": true
+      },
+      {
+        "name": "Create progress window for dismissal",
+        "passed": true
+      },
+      {
+        "name": "Dismissal destroys the Complete progress window",
+        "passed": true
+      },
+      {
+        "name": "Dismissal preserves the Complete job and catalog",
+        "passed": true
+      },
+      {
+        "name": "Create progress window for dismissal",
+        "passed": true
+      },
+      {
+        "name": "Cancel stops a queued download and closes its progress window",
+        "passed": true
+      },
+      {
+        "name": "Create progress window for action transitions",
+        "passed": true
+      },
+      {
+        "name": "A stale Start click cannot stop a newly queued download",
+        "passed": true
+      },
+      {
+        "name": "A stale Pause keyboard action cannot resume a stopped download",
+        "passed": true
+      },
+      {
+        "name": "A refreshed Start still queues the download",
+        "passed": true
+      },
+      {
+        "name": "A refreshed Pause still stops the queued download",
+        "passed": true
+      },
+      {
+        "name": "Close never cancels a job queued before the next progress refresh",
+        "passed": true
+      },
+      {
+        "name": "A completed job busy outside the scanner cannot open or stop a scanner",
+        "passed": true
+      },
+      {
+        "name": "Locate the inert scanner fixture",
+        "passed": true
+      },
+      {
+        "name": "Create completed progress dialog for scanner transitions",
+        "passed": true
+      },
+      {
+        "name": "Pending scan disables Open",
+        "passed": true
+      },
+      {
+        "name": "Enter does not bypass a pending scan",
+        "passed": true
+      },
+      {
+        "name": "An active scanner offers Stop wait",
+        "passed": true
+      },
+      {
+        "name": "Stop wait interrupts monitoring and restores the manual Open action",
+        "passed": true
+      },
+      {
+        "name": "Stopping the scan wait preserves the saved file",
+        "passed": true
+      },
+      {
+        "name": "The scanner process finishes after monitoring stops",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "renderedDialog": {
+    "artifact": "candidates/form-gzip-7.45/progress-ui/run-corrected/form-saved-response.png",
+    "sha256": "406FCDFA02D33F03970DB6A8FC8B303598C8F778FB23E8855CAF72647C2AF92A",
+    "inspected": true,
+    "observation": "Decoded size, Resume button and Response saved capability are visible without clipping. This is an owned component fixture, not the installed desktop."
+  },
+  "coreRegressions": [
+    {
+      "name": "PauseTransactionTests",
+      "passed": true,
+      "checks": 19
+    },
+    {
+      "name": "TerminalActionTests",
+      "passed": true,
+      "checks": 16
+    },
+    {
+      "name": "MediaSizeTests",
+      "passed": true,
+      "checks": 47
+    }
+  ],
+  "persistedOutputChecks": [
+    {
+      "name": "post-confirmed-hash.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-damaged.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-info.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-known.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-later.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-redirect.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-unknown.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    },
+    {
+      "name": "post-reopened.udmform",
+      "bytes": 140000,
+      "sha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8"
+    }
+  ],
+  "referenceInstalledFile": {
+    "version": "6, 43, 10, 2",
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "scope": "Installed file identity; COM can be served by an already running IDM instance."
+  },
+  "baselineActualClients": {
+    "scope": "Owned loopback POST comparison; private UDM catalog and named IDM fixture downloads only. No settings, queue-start or quit commands sent to IDM.",
+    "api": "https://www.internetdownloadmanager.com/support/idm_api.html",
+    "requestBodyBytes": 25,
+    "requestBodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+    "payloadBytes": 67200,
+    "payloadSha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+    "cases": [
+      {
+        "client": "udm",
+        "version": "7.44",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "POST",
+            "requestBytes": 25,
+            "bodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "version": "7.44",
+        "encoding": "gzip",
+        "state": "Failed",
+        "error": "The server ignored identity encoding.",
+        "bytes": null,
+        "matchesDecoded": false,
+        "requests": [
+          {
+            "path": "/udm/gzip",
+            "method": "POST",
+            "requestBytes": 25,
+            "bodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "version": "installed IDM via published COM API",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "",
+            "acceptEncoding": "identity"
+          },
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "bytes=39612-67199",
+            "acceptEncoding": "identity"
+          },
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "bytes=39612-",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "version": "installed IDM via published COM API",
+        "encoding": "gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/idm/gzip",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      }
+    ]
+  },
+  "finalActualClients": {
+    "scope": "Owned loopback POST comparison; private UDM catalog and named IDM fixture downloads only. No settings, queue-start or quit commands sent to IDM.",
+    "api": "https://www.internetdownloadmanager.com/support/idm_api.html",
+    "requestBodyBytes": 25,
+    "requestBodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+    "payloadBytes": 67200,
+    "payloadSha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+    "cases": [
+      {
+        "client": "udm",
+        "version": "7.45",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "POST",
+            "requestBytes": 25,
+            "bodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "version": "7.45",
+        "encoding": "gzip",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/udm/gzip",
+            "method": "POST",
+            "requestBytes": 25,
+            "bodySha256": "07f0b110d15d5241a170f924d4252d56991ea82e193f66857fd8f9eef8bb99c4",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "version": "installed IDM via published COM API",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "",
+            "acceptEncoding": "identity"
+          },
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "bytes=39612-67199",
+            "acceptEncoding": "identity"
+          },
+          {
+            "path": "/idm/identity",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "bytes=39612-",
+            "acceptEncoding": "identity"
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "version": "installed IDM via published COM API",
+        "encoding": "gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "d8fe6404aee03a6590f398580a94807b161db7fbe4fa9d61cf1e9ff33db60aa9",
+        "matchesDecoded": true,
+        "requests": [
+          {
+            "path": "/idm/gzip",
+            "method": "POST",
+            "requestBytes": 26,
+            "bodySha256": "7358ee08905051d65eee9b1c693f02c15c0011d4a0266221bb61f6ca37fb9dfa",
+            "range": "",
+            "acceptEncoding": "identity"
+          }
+        ]
+      }
+    ]
+  },
+  "referenceDifferences": [
+    "UDM preserves the exact declared 25-byte ASCII API body. IDM sent 26 bytes with the hash of that body plus a trailing NUL. The response fixture returns a fixed payload, so this compares response decoding, not equivalence of arbitrary form submissions.",
+    "The identity origin ignores byte ranges; IDM made additional POST range attempts. UDM made one POST per paired download. Replaying a business form is not a parity target."
+  ],
+  "fixtureCorrections": [
+    "Initial form fixture compile lacked fstream; corrected before execution.",
+    "Initial integration reached 17 passing checks, then attempted a checksum edit that active prefetch intentionally rejects. The corrected fixture verifies rejection/rollback and successful subsequent confirmation.",
+    "An initial direct UI invocation omitted its reference argument and produced no evidence. Only the subsequent repository runner result with 256 checks is counted."
+  ],
+  "validationSources": [
+    {
+      "path": "native/HttpPostGzipTests.cpp",
+      "sha256": "B3F91FC41804919E9E929AD1757AA75A081568A71807696166AD981A3B8E80B3"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "82AD601501AA5BA4EFCE38AD9CF95593D7100EF83CD5D79BF07F85DA5950B8C7"
+    },
+    {
+      "path": "tests/http-post-gzip.native-live.cjs",
+      "sha256": "DED3C078C2FDFCE38021B669D61A3A3B5947099232F76BBF951D343FC7B85E96"
+    },
+    {
+      "path": "tests/http-post-encoding.paired.cjs",
+      "sha256": "52A5F0EEB537580FFDDCD07A0D4F67AE836E7B950ECAF53ACFADE162F1FF3F87"
+    },
+    {
+      "path": "benchmarks/speed/idm_post_probe.cpp",
+      "sha256": "C9840E55AE53EB12986AE2D6B1FBA1D1821CC4E49240CCE1F4CB3BCB9011A99C"
+    }
+  ],
+  "limitations": [
+    "Fresh POST requests remain excluded from speculative prefetch. Pre-Start size is qualified for already received and verified form responses.",
+    "Decoding still follows network EOF; no paired speed or latency acceptance is claimed.",
+    "Other HTTP content encodings, broader form/redirect combinations, large staged-body resource behavior and crash/disk-fault injection remain separate gates.",
+    "The installed app and extension have not been upgraded by this work."
+  ],
+  "cleanup": "Small fixture artifacts retained. No FFmpeg copies, installer creation or retry of the previously rejected cleanup."
+}

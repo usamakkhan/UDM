@@ -1,0 +1,221 @@
+{
+  "applicationSourceVersion": "7.43",
+  "productionGzipSupport": "still rejected; integration pending",
+  "referenceInstalledFile": {
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "version": "6, 43, 10, 2",
+    "scope": "Installed file metadata; CLI submission may be handled by an already running IDM instance"
+  },
+  "probe": {
+    "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+    "payloadBytes": 67200,
+    "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+    "compressedBytes": 280,
+    "cases": [
+      {
+        "client": "udm",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "encoding": "gzip",
+        "state": "Failed",
+        "error": "The server ignored identity encoding.",
+        "bytes": null,
+        "matchesDecoded": false,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/udm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-67199",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/idm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      }
+    ]
+  },
+  "persistedOutputProof": [
+    {
+      "name": "udm-identity.udmcodec",
+      "bytes": 67200,
+      "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+      "matchesExpected": true
+    },
+    {
+      "name": "idm-identity.udmcodec",
+      "bytes": 67200,
+      "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+      "matchesExpected": true
+    },
+    {
+      "name": "idm-gzip.udmcodec",
+      "bytes": 67200,
+      "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+      "matchesExpected": true
+    }
+  ],
+  "probeRunnerSha256": "4E6D89B6DED7E3AA30062C0BBF7662F718094D877D8C6C2B88AE001EBF13456D",
+  "decoderComponent": {
+    "result": {
+      "checks": [
+        {
+          "name": "Compressed dynamic-Huffman input drains multiple bounded output buffers",
+          "passed": true
+        },
+        {
+          "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+          "passed": true
+        },
+        {
+          "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+          "passed": true
+        },
+        {
+          "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+          "passed": true
+        },
+        {
+          "name": "Arbitrary wire boundaries produce exact bounded decoded output",
+          "passed": true
+        },
+        {
+          "name": "Concatenated gzip members preserve all output",
+          "passed": true
+        },
+        {
+          "name": "A valid empty gzip file remains valid",
+          "passed": true
+        },
+        {
+          "name": "truncated",
+          "passed": true
+        },
+        {
+          "name": "checksum",
+          "passed": true
+        },
+        {
+          "name": "trailing",
+          "passed": true
+        },
+        {
+          "name": "raw",
+          "passed": true
+        },
+        {
+          "name": "empty-wire",
+          "passed": true
+        },
+        {
+          "name": "limit",
+          "passed": true
+        },
+        {
+          "name": "members",
+          "passed": true
+        },
+        {
+          "name": "canceled",
+          "passed": true
+        },
+        {
+          "name": "write-failure",
+          "passed": true
+        },
+        {
+          "name": "Data after final completion is rejected",
+          "passed": true
+        }
+      ],
+      "error": "",
+      "passed": true
+    },
+    "headerSha256": "02AC17A807F8B45E11B32243C9C53942981DBABFDE194FDA607A23BEC94579FD",
+    "wireAccountingChanged": false,
+    "productionReferenced": false,
+    "defaultMemberLimit": 1024,
+    "configurableOutputLimit": true,
+    "testSourceSha256": "D82442326AE3F859260F992AD9111E41B50E3FE8E3A6575239F950BA5BAA9E44",
+    "exeVersion": "7.43",
+    "exeSha256": "4093D4C716C78437749D4CB865CEE1638ABE6890AB42D018669C82B6CB7EBF22",
+    "fixedOutputBufferBytes": 65536
+  },
+  "formatReference": "https://www.rfc-editor.org/rfc/rfc1952.html",
+  "zlibManual": "https://www.zlib.net/manual.html",
+  "limitations": [
+    "One local functional probe per encoding/client; no comparative timing claim",
+    "Gzip decoder is not wired into HTTP transfer, File Info, checkpointing or publication",
+    "Only gzip component; no deflate/Brotli HTTP parity claim",
+    "Default decoder resource limits need integration-level qualification",
+    "No installation or installer; no IDM settings/queue/termination command was used"
+  ]
+}

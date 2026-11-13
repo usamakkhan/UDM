@@ -546,7 +546,7 @@ Json Manager::takeDownloadCompletion(JobPtr job){
 PrefetchAdmission Manager::beginPrefetch(JobPtr job){
  Lock lock(mutex);
  if(stopping||catalogTransaction||job->data.contains("OfflineProject")||!str(job->data,"DuplicateOf").empty()||
-    !str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||
+    (!str(job->data,"ProtectedRequest").empty()&&!completedPostResponseCandidate(job->data))||yes(job->data,"RequiresRequestCapture")||
     !yes(state["Settings"],"PrefetchFileInfo")||isActive(job)||str(job->data,"Status")=="Complete"||
     yes(job->data,"AuthenticationPromptPending")||fileInfoRequiresExplicitHttpRetry(job->data)||!serverRetryReady(job->data,epoch())||
     (!str(job->data,"SourceUrl").empty()&&!job->video&&!job->audio)||yes(job->data,"RequiresMediaCapture")||

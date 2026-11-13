@@ -5,6 +5,11 @@
 #include "RecoveryAvailability.hpp"
 #include "BrowserProxy.hpp"
 #include "Core.hpp"
+#include "BrowserAdmissionContext.hpp"
+#include "PendingFileInfoInbox.hpp"
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#endif
 #include "PostBodyStore.hpp"
 #include "CliCompletion.hpp"
 #include "AdaptiveCapture.hpp"
@@ -326,6 +331,13 @@ static JobPtr receiveStreamingAudio(Manager& m,const Json& message){
  }catch(...){m.jobs.erase(std::remove(m.jobs.begin(),m.jobs.end(),job),m.jobs.end());m.save();throw;}
 }
 JobPtr Manager::receive(const Json& message){
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(message.contains("mediaToken")){
+  nativeUiTraceRecord("admission-enter");
+  auto job=receiveBrowserMedia(message,[](const char* stage){nativeUiTraceRecord(stage);});
+  nativeUiTraceRecord("admission-return");return job;
+ }
+#endif
  if(message.contains("mediaToken"))return receiveBrowserMedia(message);
  if(auto replacement=captureMediaRefresh(message))return replacement;
  if(str(message,"action")=="sabr"&&str(message,"output")=="audio")return receiveStreamingAudio(*this,message);
@@ -402,7 +414,7 @@ if(!existing&&importProperties.contains("description"))job->data["Description"]=
   return job;
  }catch(...){jobs.erase(std::remove(jobs.begin(),jobs.end(),job),jobs.end());save();throw;}
 }
-PipeServer::PipeServer(Manager& m,std::function<void()> s,std::function<void()> p,std::function<void()> queue):manager(m),show(std::move(s)),present(std::move(p)),dispatchQueue(std::move(queue)){stopEvent=CreateEventW(nullptr,TRUE,FALSE,nullptr);if(!stopEvent)throw std::runtime_error("Cannot initialize browser integration.");thread=std::thread([this]{listen();});}
+PipeServer::PipeServer(Manager& m,std::function<void()> s,std::function<void()> p,std::function<void()> queue,std::shared_ptr<PendingFileInfoInbox> inbox,std::function<bool(uint64_t)> notify):manager(m),show(std::move(s)),present(std::move(p)),dispatchQueue(std::move(queue)),preparedInbox(std::move(inbox)),preparedNotify(std::move(notify)){stopEvent=CreateEventW(nullptr,TRUE,FALSE,nullptr);if(!stopEvent)throw std::runtime_error("Cannot initialize browser integration.");thread=std::thread([this]{listen();});}
 PipeServer::~PipeServer(){stopping=true;SetEvent(stopEvent);if(thread.joinable())thread.join();CloseHandle(stopEvent);}
 void PipeServer::listen(){try{HANDLE token=nullptr;if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&token))throw std::runtime_error("Cannot read Windows identity.");Handle t(token);DWORD n=0;GetTokenInformation(t.h,TokenUser,nullptr,0,&n);Bytes data(n);if(!GetTokenInformation(t.h,TokenUser,data.data(),n,&n))throw std::runtime_error("Cannot read Windows identity.");LPWSTR sid=nullptr;ConvertSidToStringSidW(((TOKEN_USER*)data.data())->User.Sid,&sid);if(!sid)throw std::runtime_error("Cannot read Windows identity.");std::wstring acl=L"D:P(A;;GA;;;"+std::wstring(sid)+L")";LocalFree(sid);PSECURITY_DESCRIPTOR descriptor=nullptr;if(!ConvertStringSecurityDescriptorToSecurityDescriptorW(acl.c_str(),SDDL_REVISION_1,&descriptor,nullptr))throw std::runtime_error("Cannot secure browser connection.");std::unique_ptr<void,decltype(&LocalFree)> security(descriptor,LocalFree);SECURITY_ATTRIBUTES sa{sizeof(sa),descriptor,FALSE};auto name=L"\\\\.\\pipe\\"+wide(pipeName());while(!stopping){Handle pipe(CreateNamedPipeW(name.c_str(),PIPE_ACCESS_DUPLEX|FILE_FLAG_OVERLAPPED|FILE_FLAG_FIRST_PIPE_INSTANCE,PIPE_TYPE_BYTE|PIPE_READMODE_BYTE|PIPE_WAIT|PIPE_REJECT_REMOTE_CLIENTS,1,4096,4096,0,&sa));if(!pipe)throw std::runtime_error("Cannot create UDM browser connection. Another UDM instance may be running.");Handle ready(CreateEventW(nullptr,TRUE,FALSE,nullptr));OVERLAPPED ov{};ov.hEvent=ready.h;BOOL connected=ConnectNamedPipe(pipe.h,&ov);DWORD error=connected?ERROR_SUCCESS:GetLastError();if(!connected&&error==ERROR_IO_PENDING){HANDLE waits[]={ready.h,stopEvent};if(WaitForMultipleObjects(2,waits,FALSE,INFINITE)!=WAIT_OBJECT_0){CancelIoEx(pipe.h,&ov);DWORD ignored;GetOverlappedResult(pipe.h,&ov,&ignored,TRUE);break;}DWORD ignored;if(!GetOverlappedResult(pipe.h,&ov,&ignored,FALSE))continue;}else if(!connected&&error!=ERROR_PIPE_CONNECTED)continue;try{Json reply;try{auto message=readMessage(pipe.h,10000,stopEvent);auto action=str(message,"action");if(action=="grabber-rendered-projects")reply={{"ok",true},{"projects",renderedGrabberProjects(manager,str(message,"url"))}};
 else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);else if(action=="post-body-chunk")reply=appendStagedPostBody(manager,message);else if(action=="post-body-finish")reply=finishStagedPostBody(manager,message);
@@ -435,7 +447,20 @@ else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);els
   if(!yes(message,"background"))show();
   reply={{"ok",true}};
  }else{
+  PendingFileInfoInbox::Ticket preparedOperation;
+  std::shared_ptr<const PendingFileInfoInbox::RetryHandler> retry;
+  const PreparedFileInfoSink preparedSink=[&](std::shared_ptr<const FileInfoInitialView> view){if(!retry)retry=std::make_shared<const PendingFileInfoInbox::RetryHandler>([source=&manager,request=message](const PreparedFileInfoSink& prepared,const RejectedFileInfoSink& rejected){BrowserAdmissionContext context(true,&prepared,&rejected);auto job=source->receive(request);Lock lock(source->mutex);return captureFileInfoInitialView(*source,*job);});preparedOperation=preparedInbox->publish(std::move(view),preparedNotify,str(message,"mediaToken"),retry);
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+   nativeUiTraceRecord("prepared-view-posted");
+#endif
+  };
+  const RejectedFileInfoSink rejectedSink=[&](const std::string& id){preparedOperation.rejected(id);};
+  BrowserAdmissionContext admissionContext(true,preparedInbox&&preparedNotify?&preparedSink:nullptr,&rejectedSink);
   auto j=manager.receive(message);
+  preparedOperation.accepted(j->id());
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  nativeUiTraceRecord("pipe-receive-return");
+#endif
   const bool browserDownload=action=="add"||action=="media"||action=="sabr"||action=="adaptive";
   const bool silentCli=action=="cli-add"&&yes(message,"silent")&&!yes(message,"paused");
   if(dispatchQueue&&(browserDownload||silentCli)){

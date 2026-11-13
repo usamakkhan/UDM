@@ -1,0 +1,6 @@
+{
+  "version": "7.62",
+  "sourceSha256": "96283942A64997BABE163036E8B8D3597DCAA5C8F8A3FBF447993B4DB0F6DE87",
+  "exeSha256": "1A374C25CEAD6D949478E389551EC2B682B907C1F4A8E678425FF7813C871530",
+  "qualification": "Tooltip filtering uses an actual empty category and asserts it stays selected; queue infotips assert the display label rather than the internal Main queue key. Nonexistent categories intentionally fall back to All Downloads, and built-in queue roles have reference display labels. Production sources and core remain the verified 7.62 build."
+}

@@ -1,0 +1,122 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 8,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794488403621,
+      "observerReadyEpochMs": 1794488403909
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 63,
+      "labels": [
+        "127.0.0.1 · MP4 · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 720p HD · 3000 kbps · 2 audio tracks",
+        "127.0.0.1 · MP4 · 360p · 1000 kbps · 2 audio tracks",
+        "127.0.0.1 · TS · 360p · 1000 kbps · 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "name": "Cold HLS File Info opens before verification and publishes the exact output shown before Start",
+      "passed": true,
+      "actionableEpochMs": 1794488405200,
+      "exactVisibleEpochMs": 1794488405627,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "startEpochMs": 1794488405645,
+      "catalogReadRetries": 0,
+      "productionCold": true,
+      "productionExecutable": true,
+      "productionReadyBeforeSelection": false,
+      "selectionToActionableMs": 516,
+      "selectionToExactMs": 943,
+      "selectionToFirstSegmentMs": 552,
+      "lastSegmentToExactMs": 332,
+      "segments": [
+        {
+          "path": "/v720/index2.ts",
+          "startedMs": 552,
+          "finishedMs": 555
+        },
+        {
+          "path": "/v720/index0.ts",
+          "startedMs": 557,
+          "finishedMs": 559
+        },
+        {
+          "path": "/v720/index3.ts",
+          "startedMs": 559,
+          "finishedMs": 562
+        },
+        {
+          "path": "/v720/index1.ts",
+          "startedMs": 562,
+          "finishedMs": 565
+        },
+        {
+          "path": "/es/index0.ts",
+          "startedMs": 581,
+          "finishedMs": 582
+        },
+        {
+          "path": "/es/index1.ts",
+          "startedMs": 583,
+          "finishedMs": 584
+        },
+        {
+          "path": "/es/index2.ts",
+          "startedMs": 588,
+          "finishedMs": 589
+        },
+        {
+          "path": "/es/index3.ts",
+          "startedMs": 605,
+          "finishedMs": 606
+        },
+        {
+          "path": "/es/index4.ts",
+          "startedMs": 611,
+          "finishedMs": 611
+        }
+      ],
+      "checkpointsBeforeFirstSegment": null
+    },
+    {
+      "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+      "passed": true,
+      "duration": 8.021333,
+      "videoFrames": 192,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 output contains the selected audio and language tag",
+      "passed": true,
+      "language": "es",
+      "frequencyHz": 880,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+      "passed": true
+    },
+    {
+      "name": "Audio selection pages have no script errors",
+      "passed": true
+    }
+  ]
+}

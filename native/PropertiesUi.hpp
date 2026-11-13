@@ -27,12 +27,21 @@ inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
   d.button("OK",339,395,88,d.accept);d.button("Cancel",437,395,88,[&]{d.close(IDCANCEL);});
  };d.DoModal();
 }
-inline std::string propertiesLocation(JobPtr job,bool complete){std::error_code error;if(complete&&!fs::exists(job->target(),error)&&!error)return "The file has been moved.";return utf8(job->target().wstring());}
-inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::function<int(CMenu&,CPoint,CWnd*)>& selectMenu={}){
- Json draft;{Lock lock(manager.mutex);draft=job->snapshot();}const bool complete=str(draft,"Status")=="Complete",active=manager.isActive(job);Form d("File Properties",318,246,parent);d.dialogUnits=true;HICON fileIcon=nullptr;
+inline std::string propertiesLocation(const fs::path& target,const AsyncFileStatus::Result* status=nullptr){return status&&status->missing(target)?"The file has been moved.":utf8(target.wstring());}
+inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::function<int(CMenu&,CPoint,CWnd*)>& selectMenu={},AsyncFileStatus* locationProbe=nullptr){
+ Json draft;bool active;{Lock lock(manager.mutex);draft=job->snapshot();active=manager.isActive(job);}bool complete=str(draft,"Status")=="Complete",everEditable=!active;Form d("File Properties",318,246,parent);d.dialogUnits=true;HICON fileIcon=nullptr;
+ static constexpr const char* editableMetadata[]={"Category","Queue","QueueMember","Connections","LimitKbps","ExpectedSha256","SuppressCompletionDialog","ProtectedHeaders","DownloadPage"};
+ const auto requestTarget=str(draft,"Url");
+ Json originalProperties=Json::object();for(auto key:editableMetadata)if(draft.contains(key))originalProperties[key]=draft[key];
+ auto mergeMetadataLocked=[&]{for(auto key:editableMetadata)if(draft.value(key,Json())==originalProperties.value(key,Json())){
+  if(job->data.contains(key)){draft[key]=job->data[key];originalProperties[key]=job->data[key];}
+  else{draft.erase(key);originalProperties.erase(key);}
+ }};
  // Share a bounded worker even if a Shell extension stalls during lookup.
  static AsyncFileIcons fileDetails(FileIconMode::LargeWithType);
  static std::deque<std::pair<ULONGLONG,FileIconResult>> recentFileDetails;
+ static AsyncFileStatus fileLocations;
+ auto& locationStatus=locationProbe?*locationProbe:fileLocations;
  auto extension=lower(utf8(fs::path(wide(str(draft,"FileName"))).extension().wstring()));
  bool fileDetailsApplied=false;
  d.init=[&]{
@@ -40,24 +49,26 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   auto rule=[&](int y){d.control(L"STATIC","",SS_ETCHEDHORZ,7,y,304,1);};rule(31);
   d.label("Type:",7,36,44);auto type=d.control(L"STATIC","File",SS_ENDELLIPSIS,58,36,253,9);
   std::string state=str(draft,"Status");if(!complete&&num(draft,"Size")>0){std::ostringstream value;value<<std::fixed<<std::setprecision(2)<<(100.0*num(draft,"Received")/num(draft,"Size"));state+=" ("+value.str()+"% complete)";}
-  d.label("Status:",7,48,43);d.control(L"STATIC",state,SS_ENDELLIPSIS,58,48,253,9);
+  d.label("Status:",7,48,43);auto statusText=d.control(L"STATIC",state,SS_ENDELLIPSIS,58,48,253,9);
   const auto savedSize=savedMediaOutputSize(draft);
   const auto length=savedSize>=0?savedSize:num(draft,"Size",-1);
-  d.label("Size:",7,60,43);d.control(L"STATIC",length<0?"Unknown":bytes(length)+" ("+std::to_string(length)+" Bytes)"+(savedSize>=0?" — saved output":""),SS_ENDELLIPSIS,58,60,253,9);
-  d.label("Save To:",7,77,45);auto path=d.edit(propertiesLocation(job,complete),58,74,197,14,complete);
-  auto relocate=d.button(complete?"&Move":"&Browse...",261,74,50,[&,name,path]{if(complete){moveCompleted(&d,manager,job);Lock lock(manager.mutex);draft["Folder"]=job->data["Folder"];draft["FileName"]=job->data["FileName"];name->SetWindowText(cs(str(draft,"FileName")));path->SetWindowText(cs(propertiesLocation(job,complete)));}else{CFileDialog chooser(FALSE,nullptr,wide(text(path)).c_str(),OFN_PATHMUSTEXIST,L"All files|*.*||",&d);if(chooser.DoModal()==IDOK)path->SetWindowText(chooser.GetPathName());}});relocate->EnableWindow(!active);
+  d.label("Size:",7,60,43);auto sizeText=d.control(L"STATIC",length<0?"Unknown":bytes(length)+" ("+std::to_string(length)+" Bytes)"+(savedSize>=0?" — saved output":""),SS_ENDELLIPSIS,58,60,253,9);
+  d.label("Save To:",7,77,45);auto path=d.edit(propertiesLocation(job->target()),58,74,197,14,complete);
+  auto displayedDestination=std::make_shared<std::string>(text(path));
+  auto relocate=d.button(complete?"&Move":"&Browse...",261,74,50,[&,name,path,displayedDestination]{bool finished;{Lock lock(manager.mutex);if(manager.isActive(job))return;finished=str(job->data,"Status")=="Complete";}if(finished){moveCompleted(&d,manager,job);Lock lock(manager.mutex);draft["Folder"]=job->data["Folder"];draft["FileName"]=job->data["FileName"];name->SetWindowText(cs(str(draft,"FileName")));*displayedDestination=propertiesLocation(job->target());path->SetWindowText(cs(*displayedDestination));}else{CFileDialog chooser(FALSE,nullptr,wide(text(path)).c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All files|*.*||",&d);if(chooser.DoModal()==IDOK)path->SetWindowText(chooser.GetPathName());}});relocate->EnableWindow(!active);
   d.label("Address:",7,96,44);auto address=d.edit(capturedMedia(draft)?downloadAddress(draft):str(draft,"Url"),58,93,253,14,capturedMedia(draft));
   d.label("Description:",7,115,47);auto desc=d.edit(str(draft,"Description"),58,112,253);rule(131);
+  auto displayedAddress=std::make_shared<std::string>(text(address)),displayedDescription=std::make_shared<std::string>(text(desc));
   d.label("The web page from which this file was obtained:",7,136,304);
   auto page=d.staticLink(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft),7,149,304,[&]{Url url(recoveryPage(draft));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("No HTTP or HTTPS source page is available.");openFile(&d,fs::path(wide(url.full)));});page->EnableWindow(!recoveryPage(draft).empty());rule(161);
-  Json loginPrefs;{Lock lock(manager.mutex);loginPrefs=manager.state["Settings"];}auto headers=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto initial=basicLogin(headers);auto displayed=std::make_shared<std::pair<std::string,std::string>>(initial);
+  Json loginPrefs;{Lock lock(manager.mutex);loginPrefs=manager.state["Settings"];}auto headers=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto initial=basicLogin(headers);auto requestDraft=std::make_shared<PropertiesRequestDraft>(PropertiesRequestInput{initial.first,initial.second,headerValue(headers,"Referer")});
   d.label("Referer:",7,171,47);auto referer=d.edit(headerValue(headers,"Referer"),58,167,253);
   d.control(L"STATIC","Login",SS_RIGHT,23,188,50,9);auto user=d.edit(initial.first,80,185,126,13);
-  d.control(L"STATIC","Password",SS_RIGHT,21,205,52,9);auto password=d.edit(initial.second,80,203,126,13,false,false,true);if(capturedMedia(draft)){user->EnableWindow(FALSE);password->EnableWindow(FALSE);}rule(220);
-  auto syncAuth=[&,user,password,referer,displayed]{auto h=readHeaders(draft);setHeader(h,"Referer",trim(text(referer)));if(text(user)!=displayed->first||text(password)!=displayed->second)setBasicLogin(h,text(user),text(password),!text(user).empty()||!text(password).empty());*displayed={text(user),text(password)};validateHeaders(h);draft["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());};
-  auto more=d.button("More...",7,227,50,[]{});d.bind(more,[&,syncAuth,user,password,referer,displayed,page,loginPrefs,more]{
-   CMenu menu;menu.CreatePopupMenu();menu.AppendMenu(MF_STRING|(active?MF_GRAYED:MF_ENABLED),1,L"Advanced properties...");menu.AppendMenu(MF_STRING,2,L"Download links...");menu.AppendMenu(MF_STRING,3,L"Virus check...");menu.AppendMenu(MF_STRING,4,L"Last attempt and result...");menu.AppendMenu(MF_STRING|(capturedMedia(draft)||active?MF_GRAYED:MF_ENABLED)|(password->SendMessage(EM_GETPASSWORDCHAR)?MF_UNCHECKED:MF_CHECKED),5,L"Show password");if(hasAudioMetadata(draft))menu.AppendMenu(MF_STRING,7,L"Audio metadata...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Cancel edits");CRect anchor;more->GetWindowRect(&anchor);CPoint point(anchor.left,anchor.bottom);const auto choice=selectMenu?selectMenu(menu,point,&d):menu.TrackPopupMenu(TPM_RETURNCMD,point.x,point.y,&d);
-   if(choice==1&&!active){syncAuth();advancedProperties(&d,manager,draft);auto h=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto login=basicLogin(h);*displayed=login;user->SetWindowText(cs(login.first));password->SetWindowText(cs(login.second));referer->SetWindowText(cs(headerValue(h,"Referer")));page->SetWindowText(cs(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft)));page->EnableWindow(!recoveryPage(draft).empty());}
+  d.control(L"STATIC","Password",SS_RIGHT,21,205,52,9);auto password=d.edit(initial.second,80,203,126,13,false,false,true);rule(220);
+  auto syncAuth=[&,user,password,referer,requestDraft]{requestDraft->apply(draft,{text(user),text(password),text(referer)});};
+  auto more=d.button("More...",7,227,50,[]{});d.bind(more,[&,syncAuth,user,password,referer,requestDraft,page,loginPrefs,more]{
+   {Lock lock(manager.mutex);active=manager.isActive(job);}CMenu menu;menu.CreatePopupMenu();menu.AppendMenu(MF_STRING|(active?MF_GRAYED:MF_ENABLED),1,L"Advanced properties...");menu.AppendMenu(MF_STRING,2,L"Download links...");menu.AppendMenu(MF_STRING,3,L"Virus check...");menu.AppendMenu(MF_STRING,4,L"Last attempt and result...");menu.AppendMenu(MF_STRING|(capturedMedia(draft)||active?MF_GRAYED:MF_ENABLED)|(password->SendMessage(EM_GETPASSWORDCHAR)?MF_UNCHECKED:MF_CHECKED),5,L"Show password");if(hasAudioMetadata(draft))menu.AppendMenu(MF_STRING,7,L"Audio metadata...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Cancel edits");CRect anchor;more->GetWindowRect(&anchor);CPoint point(anchor.left,anchor.bottom);const auto choice=selectMenu?selectMenu(menu,point,&d):menu.TrackPopupMenu(TPM_RETURNCMD,point.x,point.y,&d);{Lock lock(manager.mutex);active=manager.isActive(job);}
+   if(choice==1&&!active){syncAuth();advancedProperties(&d,manager,draft);auto h=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto login=basicLogin(h);requestDraft->reset({login.first,login.second,headerValue(h,"Referer")});user->SetWindowText(cs(login.first));password->SetWindowText(cs(login.second));referer->SetWindowText(cs(headerValue(h,"Referer")));page->SetWindowText(cs(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft)));page->EnableWindow(!recoveryPage(draft).empty());}
    else if(choice==2)downloadLinkDetails(&d,manager,job);else if(choice==3)fileScanner(&d,manager,job);
    else if(choice==4){auto result=str(draft,"Error");if(result.empty())result=complete?"Download completed successfully.":"Saved data: "+bytes(num(draft,"Received"));const auto captions=subtitleCaptureSummary(draft);if(!captions.empty())result+="\r\n"+captions;d.MessageBox(cs("Last try: "+displayDate(draft.value("LastAttempt",Json()))+"\r\n\r\nResult: "+result),L"Download details",MB_OK|MB_ICONINFORMATION);}
    else if(choice==7&&hasAudioMetadata(draft))audioMetadataProperties(&d,draft);
@@ -74,7 +85,7 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    openDownloadedFile(&d,target);
   });
   open->EnableWindow(FALSE);
-  d.pulse=[&,open,canOpenLocked,icon,type]{
+  d.pulse=[&,open,canOpenLocked,icon,type,path,name,statusText,sizeText,address,desc,referer,user,password,relocate,displayedDestination,displayedAddress,displayedDescription]{
    const auto currentExtension=lower(utf8(fs::path(wide(str(draft,"FileName"))).extension().wstring()));
    if(extension!=currentExtension){
     extension=currentExtension;fileDetailsApplied=false;
@@ -104,12 +115,75 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    std::unique_lock lock(manager.mutex,std::try_to_lock);
    if(!lock)return;
    const bool ready=canOpenLocked();
+   const auto target=job->target();const auto currentFileName=str(job->data,"FileName"),currentFolder=str(job->data,"Folder");
+   const auto currentUrl=str(job->data,"Url"),currentDescription=str(job->data,"Description"),currentAddress=capturedMedia(job->data)?downloadAddress(job->data):currentUrl;
+   auto currentState=str(job->data,"Status");const auto currentTotal=num(job->data,"Size",-1),currentReceived=num(job->data,"Received"),savedLength=savedMediaOutputSize(job->data);
+   active=manager.isActive(job);complete=currentState=="Complete";
+   // Merge untouched metadata so publication's queue and session changes cannot
+   // be undone by a dialog opened before the transfer finished.
+   mergeMetadataLocked();
    lock.unlock();
+   const auto refreshUntouched=[](CWnd* field,std::string& displayed,const std::string& value){
+    if(text(field)!=displayed)return;
+    if(displayed!=value){
+     DWORD begin=0,end=0;field->SendMessage(EM_GETSEL,reinterpret_cast<WPARAM>(&begin),reinterpret_cast<LPARAM>(&end));
+     field->SetWindowText(cs(value));field->SendMessage(EM_SETSEL,begin,end);
+    }
+    displayed=value;
+   };
+   refreshUntouched(address,*displayedAddress,currentAddress);refreshUntouched(desc,*displayedDescription,currentDescription);
+   draft["Url"]=currentUrl;
+   draft["FileName"]=currentFileName;draft["Folder"]=currentFolder;everEditable|=!active;
+   for(auto field:{address,desc,path,referer})if((field->IsWindowEnabled()!=FALSE)!=!active)field->EnableWindow(!active);
+   const bool credentialsEditable=!active&&!capturedMedia(draft);
+   for(auto field:{user,password})if((field->IsWindowEnabled()!=FALSE)!=credentialsEditable)field->EnableWindow(credentialsEditable);
+   if((relocate->IsWindowEnabled()!=FALSE)!=!active)relocate->EnableWindow(!active);
+   const auto buttonLabel=complete?"&Move":"&Browse...";if(text(relocate)!=buttonLabel)relocate->SetWindowText(cs(buttonLabel));
+   if(!complete&&currentTotal>0){std::ostringstream percent;percent<<std::fixed<<std::setprecision(2)<<(100.0*currentReceived/currentTotal);currentState+=" ("+percent.str()+"% complete)";}
+   if(text(statusText)!=currentState)statusText->SetWindowText(cs(currentState));
+   const auto currentLength=savedLength>=0?savedLength:currentTotal;
+   const auto currentSize=currentLength<0?std::string("Unknown"):bytes(currentLength)+" ("+std::to_string(currentLength)+" Bytes)"+(savedLength>=0?" — saved output":"");
+   if(text(sizeText)!=currentSize)sizeText->SetWindowText(cs(currentSize));
+   if(text(name)!=currentFileName)name->SetWindowText(cs(currentFileName));
+   const bool destinationEdited=text(path)!=*displayedDestination;
+   if((path->GetStyle()&ES_READONLY)!=(complete&&!destinationEdited?ES_READONLY:0))path->SendMessage(EM_SETREADONLY,complete&&!destinationEdited);
+   if(!destinationEdited){
+    auto location=propertiesLocation(target);
+    if(complete){
+    const auto status=locationStatus.observe({target});
+     location=propertiesLocation(target,status.get());
+    }
+    if(text(path)!=location)path->SetWindowText(cs(location));
+    *displayedDestination=location;
+   }
    if((open->IsWindowEnabled()!=FALSE)!=ready)open->EnableWindow(ready);
   };
   d.pulse();
-  if(active)for(auto field:{address,desc,path,referer,user,password})field->EnableWindow(FALSE);
-  d.accept=[&,address,desc,path,syncAuth]{if(active){d.close();return;}syncAuth();Json changes;for(auto key:{"Category","Queue","QueueMember","Connections","LimitKbps","ExpectedSha256","SuppressCompletionDialog","ProtectedHeaders","DownloadPage"})if(draft.contains(key))changes[key]=draft[key];changes["Url"]=capturedMedia(draft)?str(draft,"Url"):trim(text(address));changes["Description"]=text(desc);if(complete)manager.updateCompleted(job,changes);else{auto destination=fs::path(wide(trim(text(path))));changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());manager.configure(job,changes);}d.close();};
+  d.accept=[&,address,desc,path,syncAuth,displayedDestination,displayedAddress,displayedDescription]{
+   bool finished;Json changes=Json::object();
+   {
+    Lock lock(manager.mutex);
+    if(manager.isActive(job)){if(everEditable)throw std::runtime_error("Stop the download before saving its properties. Your edits are still in this dialog.");d.close();return;}
+    finished=str(job->data,"Status")=="Complete";mergeMetadataLocked();
+    // Omit untouched fields. Manager merges this patch with the current job
+    // under its lock, including changes made while a relocation is running.
+    if(!capturedMedia(job->data)&&text(address)!=*displayedAddress)changes["Url"]=trim(text(address));
+    if(text(desc)!=*displayedDescription)changes["Description"]=text(desc);
+   }
+   syncAuth();
+   const PropertiesHeaderPatch requestChanges(readHeaders(originalProperties),readHeaders(draft),requestTarget);
+   for(auto key:editableMetadata)if(std::string(key)!="ProtectedHeaders"&&draft.contains(key)&&draft.value(key,Json())!=originalProperties.value(key,Json()))changes[key]=draft[key];
+   if(finished){
+    if(text(path)!=*displayedDestination){const auto destination=fs::path(wide(trim(text(path))));RelocationWorkDialog progress(&d,manager,job,destination);progress.run();{Lock lock(manager.mutex);if(job->target().lexically_normal()!=destination.lexically_normal())return;}}
+    Lock lock(manager.mutex);requestChanges.apply(changes,job->data);manager.updateCompleted(job,changes);
+   }else{
+    if(text(path)!=*displayedDestination){
+     auto destination=fs::path(wide(trim(text(path))));changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());
+    }
+    Lock lock(manager.mutex);requestChanges.apply(changes,job->data);manager.configure(job,changes);
+   }
+   d.close();
+  };
   d.defaultButton(d.button("OK",261,227,50,d.accept));
  };try{d.DoModal();}catch(...){if(fileIcon)DestroyIcon(fileIcon);throw;}if(fileIcon)DestroyIcon(fileIcon);
 }

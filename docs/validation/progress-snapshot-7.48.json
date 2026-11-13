@@ -1,0 +1,94 @@
+{
+  "desktop": "7.48",
+  "browser": "0.71.12",
+  "status": "Development build; not installed or packaged",
+  "installedDesktop": "7.11",
+  "build": "progress-snapshot-7.48-build.json",
+  "sourceAndBinaryHashesVerified": true,
+  "checks": 399,
+  "tests": [
+    {
+      "name": "model",
+      "passed": true,
+      "checks": 39,
+      "results": "candidates/progress-snapshot-7.48/model/results.json",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.48",
+      "sha256": "C37B2321CDA57F41F162DA8FD56D81239CBEF4960A1BAF44D82216D571338609"
+    },
+    {
+      "name": "ui",
+      "passed": true,
+      "checks": 258,
+      "results": "candidates/progress-snapshot-7.48/ui/results.json",
+      "executable": "Udm.ProgressDialogUiTests.exe",
+      "version": "7.48",
+      "sha256": "84E8044B98CEF527E5BA432791082FAD6A3E444815A29E87640A4280D283753A"
+    },
+    {
+      "name": "plain",
+      "passed": true,
+      "checks": 53,
+      "results": "candidates/progress-snapshot-7.48/plain/native/results.json",
+      "executable": "Udm.HttpPostIdentityTests.exe",
+      "version": "7.48",
+      "sha256": "392FAD95274EFDB4C7C4F328D13EADB0E2F64BBB3E7A7B658655BC7E7B96169F"
+    },
+    {
+      "name": "gzip",
+      "passed": true,
+      "checks": 49,
+      "results": "candidates/progress-snapshot-7.48/gzip/native/results.json",
+      "executable": "Udm.HttpPostGzipTests.exe",
+      "version": "7.48",
+      "sha256": "9700B82B5870F17525117F00DCD31572CF50F0EF001C773AB3269294B32F8909"
+    }
+  ],
+  "snapshotTiming": {
+    "currentMedianMs": 0.99545,
+    "currentMsPerFrame": [
+      0.8623625,
+      1.04385,
+      2.517325,
+      1.3248625,
+      0.926225,
+      0.7279625,
+      0.99545
+    ],
+    "framesPerTrial": 8,
+    "hiddenSerializedBytes": 480,
+    "legacyMedianMs": 10.167575,
+    "legacyMsPerFrame": [
+      10.5567375,
+      9.5057125,
+      10.167575,
+      10.416125,
+      10.0277125,
+      9.4116625,
+      10.5785125
+    ],
+    "legacySerializedBytes": 10474210,
+    "scope": "Synthetic in-memory snapshot comparison, not complete UI-frame or IDM timing",
+    "sink": 1792,
+    "visibleSerializedBytes": 59040
+  },
+  "timerTiming": [
+    {
+      "frames": 16,
+      "largeContextMsPerFrame": 0.3369875,
+      "scope": "Synthetic owned progress window; current timer handler only, no IDM or earlier UI-frame baseline",
+      "smallContextMsPerFrame": 0.56664375
+    }
+  ],
+  "visualInspection": "Owned component saved-response screenshot inspected: size, status and controls readable, no observed clipping",
+  "networkRegression": "Plain and gzip Node origin audits passed; worker request fingerprint, retained response and publication behavior covered",
+  "artifactPolicy": "Reused shared current test-build cache and production output; no installer or media-tool copies; no cleanup attempted",
+  "limits": [
+    "Synthetic measurements do not measure whole-app speed or IDM parity",
+    "No installed-window or personal-browser acceptance this increment",
+    "Visible range maps still scale with range count",
+    "Legacy address resolution can still copy adaptive context",
+    "Other nonprotected display metadata is not universally bounded"
+  ],
+  "semantics": "Original job data and worker authorization retained. Request state derived before redaction and output projection; protected refresh invalidation preserved."
+}

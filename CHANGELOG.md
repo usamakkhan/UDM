@@ -4,7 +4,341 @@ Milestone headings use the reconciled two-digit sequence. Parenthetical recorded
 
 ## Unreleased
 
+- Developer diagnostics: the isolated HLS fixture can capture a private NetLog and export sanitized owned-loopback parser errors, response framing and body-byte counts. Added privacy checks and a guarded intentionally malformed preview to verify actual error capture without admitting a download. Product versions/behavior remain unchanged; the intermittent natural preview failure remains unresolved.
+
 - Transfer finish after review: the advisory SHA-256 computed after publication now stops with the download (Stop or exit no longer waits for a full-file hash) and, for a file copied to another volume, reads the published copy after the parts are cleared; a copy onto a network or removable destination is flushed before completion is committed, and a fixed-disk copy whose writeback cannot be confirmed keeps its parts and records a warning; the stale keep-alive retry honours Retries=0; speed limits are clamped the same way everywhere.
+## 7.91 / browser 0.71.55
+
+- Main Options → Dial Up / VPN → connection Apply now writes and reads the selected connection on the joined decision worker. It snapshots only that connection's protected credential draft; unrelated Options controls and other connection drafts are neither collected nor applied. Clean Apply performs no store write or worker dispatch.
+- Pending edits, duplicate Apply, final OK and Close defer while the dialog repaints. Original write errors retain the shared guard through acknowledgement and leave the same entries available for explicit retry. Success masks the accepted password and leaves Apply disabled; restored enablement can no longer overwrite that clean state.
+- Explicit connection Apply survives parent Cancel without saving unrelated settings or repeating the credential update. A different unfinished invalid connection identity remains a local draft. Credential-only completion does not reload the whole Options settings draft or write the UDM catalog.
+- Final focused validation passes 919 checks: credential behavior (76 per theme), Options (286 per theme), customization (88 per theme), decision (13) and notification (6). Eleven current product/fixture binaries report 7.91. No network payload, installer package, installation or live IDM timing claim. Initial credential reads, Connect's pre-apply path and broader parity/lifetime work remain open. [Evidence](docs/validation/dial-apply-7.91.json)
+
+## 7.90 / browser 0.71.54
+
+- Main Options OK and General Restart now save on the joined decision worker. The UI collects an owned draft, freezes conflicting edits and repaints while the worker waits for the catalog lock or publication. OK closes only after success; Restart runs only after success and keeps the reloaded window open.
+- Settings still merge against the current catalog. The worker initializes COM for startup services and preserves the current startup state when that checkbox was unchanged. Credential drafts contain protected password values and no controls. Successfully saved connections are acknowledged after joining, including partial-failure cases, so retry does not repeat them.
+- Catalog/startup failures preserve the original error, roll settings back and keep the same edited controls for retry. The shared decision guard remains active until the error is acknowledged. Rollback failures add context to the original error. Cancel before acceptance performs no write.
+- Final focused validation passes 800 native checks: Options in both themes, credential behavior, progress customization in both themes, shared decision and lifetime-bound notification checks. Twenty-three native binaries report 7.90. The initial compile/name collision and two fixture failures are preserved separately. No new network payload, installer, installation, live IDM timing or personal-browser claim. [Evidence](docs/validation/options-save-7.90.json)
+
+## 7.89 / browser 0.71.53
+
+- Progress-window customization now opens from a six-field cached view and saves changed choices on the joined decision worker. Cancel and unchanged OK perform no settings write. The worker merges only dirty progress fields into current settings, preserving newer unrelated and untouched progress choices, and delegates to existing validation/publication/rollback.
+- More acceptance participates in the parent draft; More/parent cancellation preserve unaccepted values. Failed persistence retains the original error and same dialog/draft for retry. Controls repaint while model/persistence work is held, conflicting actions defer, and posted completion works with polling removed. Committed choices are merged into the caller cache immediately; cancellation cannot replace that cache.
+- Added a maintained preferences target/runner with 88 checks per theme, including pure Options-page behavior, real held-write recovery, cached entry and parent-polling-removed cases. Final focused validation passes 1,893 native checks, two actual HTTP transfers and three complete isolated browser workflows. Twenty-one binaries report 7.89; both browser packages are 0.71.53. Installed app remains 7.11; no setup/install. [Evidence](docs/validation/progress-preferences-7.89.json)
+
+## 7.88 / browser 0.71.52
+
+- Automatic completion-close requests retain the progress owner while its context menu is tracking. Both direct close requests and nested refreshes defer destruction until tracking ends; nested popup requests are ignored. The existing opening-rate display grace is still captured and preserved before popup deferral.
+- Actual popup regressions exercise close requests and nested timer messages, then normal closure after tracking. A separate grace case verifies retention and uses a test-only deadline expiration to exercise the normal timer close branch. Seven affected UI targets were rebuilt after final grace review; thirteen unaffected targets/core hashes were retained.
+- Final focused validation passes 1,717 native checks, two real HTTP limiter transfers and three complete isolated browser workflows. Twenty binaries report 7.88; both packages are 0.71.52 and staged Chromium sources match. The progress-dialog wrapper's initial 30-second observation expired before its process completed all 410 checks; its observation limit now matches the other runners, and a fresh run qualified normal exit without changing fixture assertions. Installed app remains 7.11; no setup/install. [Evidence](docs/validation/progress-popup-lifetime-7.88.json)
+
+## 7.87 / browser 0.71.51
+
+- An idle progress view now opens its cached popup while another window saves a download decision. Hide and Download information remain available; backend-dependent choices are visibly disabled. Choices are checked again after the popup returns, so an item displayed before a competing save cannot bypass that guard.
+- Hiding the unrelated view does not wait for or release the other window's task. Read-only Information opens/closes while the other publication remains held. The owning view retains popup deferral during accepted/queued work; synthetic Hide/Information cannot destroy or reenter it. Normal eligible choices return after success or acknowledged failure.
+- Menu fixtures pass 81 checks per theme; all focused native checks total 1,703. Two real HTTP transfers and three complete isolated browser workflows pass exact-size/integrity/selected-track/prefetch/hidden-main checks. Twenty binaries report 7.87; 94 browser source hashes and staged Chromium copies verified. Installed app remains 7.11; no setup/install. Broader synchronous dialogs, shutdown/crash behavior and fresh IDM comparisons remain open. [Evidence](docs/validation/progress-menu-busy-7.87.json)
+
+## 7.86 / browser 0.71.50
+
+- Progress context menus now render cached flags from the displayed snapshot without taking the backend lock. Refresh eligibility caches the backend-relevant inputs and encrypted adaptive plan, avoiding repeated plan decryption when unchanged. Later refresh catches up automatically; keyboard invocation anchors to the progress window.
+- Copy address, Open folder, Open with and recording Pause/Resume capture owned requests on the joined worker. Current membership, file/scanner/relocation state and recording action are rechecked before returning results or changing the job. Clipboard and Windows shell operations remain UI followups. Recording commands preserve graph responsiveness, original errors, rollback and explicit retry; Resume refreshes limiter controls after clearing a temporary override.
+- Added a maintained menu fixture/runner: 53 checks per theme, including actual popup opening under model contention and inert recording publication/error cases. All focused native suites total 1,647 checks; two active HTTP transfers and three complete isolated browser workflows pass. Twenty binaries report 7.86, and staged extension source copies are verified. One initial dark checkpoint failure did not recur and remains unexplained. Shared decision guards and other synchronous commands still need work; full IDM parity remains unproven. Installed app remains 7.11; no setup/install. [Evidence](docs/validation/progress-menu-7.86.json)
+
+## 7.85 / browser 0.71.49
+
+- Additional completion options now open from the cached completion snapshot and submit an owned flags/countdown draft to the joined decision worker. The modal keeps repainting during catalog persistence, disables conflicting inputs, ignores duplicate OK/Close while saving and closes only after success. Failed publication retains the original error, restores the whole job and preserves the same dialog/draft for explicit retry. Cancel after editing writes nothing.
+- The worker revalidates download membership, completion status and countdown bounds, retaining existing power/force actions and current completion-dialog policy. Flags and completion plan roll back together. Expanded thin snapshots include every modal setting while excluding unrelated protected request data.
+- Light/dark completion fixtures pass 133 checks each; focused native checks total 1,541. Two active HTTP limiter transfers and three ordinary complete isolated browser downloads pass, with an additional instrumented complete recovery. The initial preview HTTP failure recurred before UDM selection and remains unresolved; later passing runs do not prove a fix. Initial fixture expectation failures are retained. Nineteen binaries report 7.85. Installed desktop remains 7.11; no installer/install. [Evidence](docs/validation/progress-options-7.85.json)
+
+## 7.84 / browser 0.71.48
+
+- Completion-tab visibility and power/force settings now capture owned edits and save on the joined decision worker. Graph painting remains available during persistence, while conflicting actions defer. Failed writes retain the original error, restore settings and permit explicit retry in the same window. Workers revalidate membership, completion and current dialog policy before changing a job.
+- Force-action consent remains on the UI thread and is required for every enabling attempt. Declined or stale consent cannot publish a forced action. App exit joins existing commands before flushing a completion choice waiting behind another progress window. Completion render snapshots omit unrelated protected request data.
+- Added a maintained completion UI target and light/dark runner. All focused native suites pass 1,499 checks; two active HTTP limiter transfers and three production Edge/native HLS workflows pass complete-file validation. The initial dark fixture and browser recovery observer failures are retained in the evidence; both test-only observation errors were corrected before final qualification. Nineteen binaries report 7.84. Installed desktop remains 7.11; no setup or installation. Additional-options/modal commands, crash/session-end behavior and a fresh IDM timing comparison remain open. [Evidence](docs/validation/progress-completion-7.84.json)
+
+## 7.83 / browser 0.71.47
+
+- Speed-limiter edits in the progress window now submit owned numeric/remember choices to the joined decision worker. The rate, enable and remember controls remain editable while saving; one bounded pending value coalesces rapid valid edits. Generation tracking keeps completion or older failures from overwriting newer text, including invalid text and leading zeroes. Remembered-write failures retain the original exception and restore the rolled-back setting when appropriate. Temporary overrides retain their existing nonpersistent behavior. Graph/details remain usable, while conflicting commands and Close defer during pending edits.
+- Exit now joins existing progress commands across all windows before flushing queued limiter edits and taking the final catalog snapshot. Added a canonical limiter UI build target/runner, held-write/error/coalescing cases and a tracked in-memory loopback server. Live checks change temporary and remembered rates during active HTTP receipt, verify every completed byte and reopen the saved rate with the completed download.
+
+## 7.82 / browser 0.71.46
+
+- Progress primary actions and accepted Cancel now submit owned commands to a joined worker, rechecking the current download and displayed action before applying backend changes. A displayed Close dismisses immediately without the model lock and cannot cancel a newer transfer. Competing actions stay disabled while graph/detail controls remain usable; posted completion restores controls on failure and supports explicit retry without replacing the window. Backend errors retain their original details. Exit drains accepted commands before the final Manager snapshot and avoids consuming an acknowledged modal exception twice. Login, address refresh and file opening remain UI followups, and login refreshes the limiter afterward. Progress retains its 500 ms polling period through a per-form setting; ordinary forms retain 250 ms.
+- Added actual light/dark held-write and forced-prepublication-failure checks for Resume, Pause and Cancel, including duplicate-action rejection and completion with polling disabled. Browser validation also recorded two unresolved preview bootstrap HTTP errors before any UDM selection; successful replacement runs do not establish that issue is fixed.
+
+## 7.81 / browser 0.71.45
+
+- Progress-window refresh now takes a nonblocking model snapshot and keeps the last complete display while another backend thread owns the catalog lock. Quota status is captured with that snapshot, removing a second blocking acquisition during painting. Graph switching, detail resizing and painting remain responsive during contention, and the next available refresh catches up without generating artificial rate samples. Added actual light/dark progress-dialog contention checks before and after snapshot capture.
+
+## 7.80 / browser 0.71.44
+
+- Scheduled-download wizard saves now run on the joined decision worker for new downloads, existing-download scheduling, schedule revision and File Info scheduling. The wizard keeps painting while the catalog is saved, prevents conflicting decisions, and restores the same review draft after a failed save. Completion arrives through the lifetime-bound notification, including when polling is disabled. The delayed review callback retains its heading pointer by value. Added the maintained scheduled-wizard build target and light/dark runner, with success and forced-save-failure recovery across all four entry paths.
+
+## 7.79 / browser 0.71.43
+
+- Ordinary File Info Start and Download Later now submit an owned draft to a joined worker instead of saving on the UI thread. The dialog continues painting during persistence, prevents a conflicting second decision and restores the original field states on error. A lifetime-bound completion signal closes or recovers the form without waiting for a polling timer; completion presentation waits for File Info acknowledgement. Queued individual Start work is dispatched after saving, and periodic main/progress refreshes defer while the decision is pending. Scheduled-wizard commits retain their synchronous path.
+
+## 7.78 / browser 0.71.42
+
+- Eligible browser video downloads can retry a rejected admission from File Info without losing destination/description edits or replacing the window. Retry waits for the previous producer to finish, retains the original receipt token and follows the new accepted job identity. Uncertain outcomes cannot resubmit automatically. Separate joined retry/cancellation workers share presentation ownership and cancellation completion; ordinary polling cannot open a second confirmation while retry owns the offer. Added repeated-failure, existing-receipt, cancellation and close-order tests, plus a production browser test that forces a catalog-write failure, retries in the same dialog and downloads the complete video with an exact pre-Start/final size match.
+
+## 7.77 / browser 0.71.41
+
+- Pending File Info now distinguishes a proven uncommitted rejection from an uncertain acknowledgement. Rejection is delivered only after the owning admission has resolved captured writes without acceptance, outside the Manager lock; observer failure preserves the original persistence error. A successful containing write, accepted result or lost acknowledgement cannot be downgraded to rejection. Uncertain dialogs retain their draft and ask users to check history before recapturing. This establishes the rejection proof needed for inline retry; inline admission retry is still unfinished.
+
+## 7.76 / browser 0.71.40
+
+- Added the Pending File Info fixture to the standard native build selector and a maintained light/dark runner. The runner exercises every held-write decision and destination-conflict recovery case, preserves previous results, restores its environment flags and reports a still-running process instead of silently launching another test. This delivery changes build/verification integration; it does not claim a new download-speed improvement.
+
+## 7.75 / browser 0.71.39
+
+- Errors applying a queued File Info Start or Download Later decision now display the same warning as a direct button action. The queued intent is consumed once, the edited draft stays in the same window, and its controls unlock for correction and retry. Added regression cases for a destination owned by another download in both light and dark modes. A measured native-resource layout prototype was rejected because it increased total time to first paint; the existing layout is retained.
+
+## 7.74 / browser 0.71.38
+
+- Eligible new browser video offers can open File Info from private render inputs while durable admission is still writing. The same window keeps destination and description edits when it binds to the accepted job. Start and Download Later retain one frozen local intent until acceptance; pending Cancel closes immediately and delegates removal of only the still-unconfirmed offer to a joined cancellation worker. Advanced actions enable after acceptance. Prepared-view pruning now runs against pre-modal terminal candidates so newly arriving offers retain their views. Existing-record, refresh and direct-audio variants keep their synchronous fallback.
+
+## 7.73 / browser 0.71.37
+
+- The production browser pipe now delivers prepared File Info views through a bounded application-owned inbox using process-unique integer message keys. Worker tickets preserve accepted versus uncertain outcomes independently of UI lifetime; closing/restarting integration cannot reuse a stale key. Accepted views feed the existing dialog only when their complete render inputs still match the live job; changed offers fall back to a fresh snapshot. Early display and pending decisions remain unfinished.
+
+## 7.72 / browser 0.71.36
+
+- File Info now initializes from an immutable owned render snapshot, including category choices, without retaining a live job in that view. Eligible detached media admission can hand this snapshot to an in-process consumer outside the Manager lock before persistence; callback failure preserves uncommitted retry behavior. The existing dialog still opens after durable acceptance while early presentation and pending decisions are integrated.
+
+## 7.71 / browser 0.71.35
+
+- New standalone media jobs now persist from detached reservations without holding the manager lock through disk I/O. Pending destinations remain reserved, history excludes the tentative job, and uncertain recovery queries cannot release an in-flight token. Publication resolves against all captured writes before failure; a successful containing write preserves acceptance even when the original writer fails. Existing/duplicate/refresh and direct-audio admissions retain their synchronous path. File Info presentation still follows durable admission.
+
+## 7.70 / browser 0.71.34
+
+- Media admission now owns an in-flight token and prepared job/destination lease. Persistence snapshots capture the prepared reservations they include, and a successful publication marks only those entries durably accepted without allocating after the write. Pending ownership survives outstanding snapshot tickets, and a proven acceptance cannot be rolled back by a later error. Admission and File Info presentation remain synchronous while detached preparation and pending UI decisions are implemented.
+
+## 7.69 / browser 0.71.33
+
+- Media admission now binds an immutable job/receipt reservation into its detached catalog snapshot before persistence. Conflicting token, job or destination data is rejected before publication; overlays preserve unrelated entries and cannot silently omit the reserved receipt/job pair. Browser acceptance remains synchronous; concurrent reservation ownership and early File Info presentation are still pending.
+
+## 7.68 / browser 0.71.32
+
+- Catalog writes now use a shared commit coordinator with explicit published, already-published and superseded outcomes. Older or repeated sequences cannot write over a newer checkpoint; failed writes preserve the durable sequence for retry, and commit results return after releasing the writer lock. Browser acceptance remains synchronous while the pending-admission architecture is developed.
+
+## 7.67 / browser 0.71.31
+
+- Automatic catalog checkpoints now check whether state still needs saving in the same lock as their snapshot. A completed explicit save can supersede queued automatic work without a redundant durable write. Explicit saves, storage-error retries and transaction deferral retain their existing persistence behavior.
+
+## 7.66 / browser 0.71.30
+
+- Main-window startup binds ten controls directly to the saved appearance font after construction, avoiding an earlier temporary-font assignment and its synchronous font/layout messages. Default/custom fonts, column-header and toolbar fonts, DPI-scaled metrics and runtime appearance changes remain covered by the owned font fixture.
+
+## 7.65 / browser 0.71.29
+
+- File Info resolves category label collisions in memory using the selector's Windows locale, equal-length matching and native empty-search behavior. Repeated category searches no longer send combo-box messages; a Windows comparison error falls back to the native search. Category keys, aliases and redraw batching remain preserved.
+
+## 7.64 / browser 0.71.28
+
+- File Info batches category-selector rebuilds with redraw suspended, preserving native locale-aware label collision checks, category-key selection, missing-key fallback and previously hidden controls. This avoids intermediate list redraw work during initial construction and after adding a category.
+
+## 7.63 / browser 0.71.27
+
+- Explicit sort, category and search transitions start at the top of the effective download view, including changes that leave row order unchanged. Automatic history updates keep their viewport anchor. Navigation fallback is resolved before comparing views, avoiding a delayed reset after an unavailable category falls back to All Downloads.
+
+## 7.62 / browser 0.71.26
+
+- Main-window layout snapshots read Windows column controls before taking the shared download catalog lock, so download/native operations can access the catalog during those UI queries. Only changed layout data is assigned; unrelated concurrent preferences, resized/reordered columns and sort settings remain preserved. This removes a reproduced lock-contention path, without claiming an overall File Info latency fix.
+
+## 7.61 / browser 0.71.25
+
+- File Info queues its first prefetch pulse after painting instead of waiting for a generated low-priority timer. Queued notification traffic can no longer postpone initial admission until the queue empties. Earlier queued input keeps its order; recurring updates and the timer failure fallback remain available. This addresses prefetch scheduling, not the separate control-construction delay.
+
+## 7.60 / browser 0.71.24
+
+- Disconnect cancels native requests still waiting on validation or legacy replies. Late results cannot reconnect or dispatch an abandoned selection. Includes the 7.59 deadline increment in the final 7.60 native build; no separate 7.59 package or release was created.
+
+## 7.59 / browser 0.71.23
+
+- Bound the complete native request lifecycle, including startup, browser validation and legacy one-shot acknowledgements. Preserve one safe capture-status retry within a bounded two-attempt budget; never replay an unacknowledged download. Delivered together with 7.60.
+
+## 7.58 / browser 0.71.22
+
+- Resolve and snapshot only the selected primary display address for dialogs. A valid requested URL no longer decrypts its secondary redirect, and a selected video no longer parses an unused audio URL. Preserve resolved/audio fallbacks when no primary is present; the full Links view and address search still use all links.
+
+## 7.57 / browser 0.71.21
+
+- Keep Download complete available when its saved encrypted media address cannot be read. Mark the address unavailable without guessing another URL or erasing the saved context. Preserve local file actions, scanner gates and the normal completion layout.
+
+## 7.56 / browser 0.71.20
+
+- Decode gzip responses into a temporary sibling of the selected destination, avoiding a second decoded-file copy and hash across drives during ordinary publication. Keep encoded recovery data, flushes, checksum checks and the publication journal; destination changes during confirmation retain the existing relocation fallback.
+
+## 7.55 / browser 0.71.19
+
+- Accept the `x-gzip` HTTP content-coding alias through the existing verified gzip path. Keep canonical gzip metadata for exact decoded size, retained responses and encoded-offset resume, including a server switching between the two equivalent names.
+
+## 7.54 / browser 0.71.18
+
+- Clip the speed graph to its actual 30-second window. Interpolate a crossing line at the left edge and exclude expired samples from the visible peak and hover selection, preserving gaps during pauses.
+
+## 7.53 / browser 0.71.17
+
+- Avoid a second normalized query allocation on hot Find Next cache hits. Capture an immutable query witness only before fresh matching, recheck cache identity for every candidate, and retain a candidate reference across matching. Cancel a stale scan if the query or visible candidate changes instead of selecting an outdated row.
+
+## 7.52 / browser 0.71.16
+
+- Keep query-bound Find results when the search bar is hidden, and reuse verified positive and negative results during unfiltered Find Next. Preserve category/queue eviction and source/query invalidation. Bound retained search snapshots to a 32 MiB logical payload/node budget and 8,192 entries with least-recently-used eviction; oversized snapshots are matched without retention. Refuse to publish a result into another query's cache if the query changes during matching.
+
+## 7.51 / browser 0.71.15
+
+- Reuse source-checked filter results during Find Next instead of copying and decrypting an unchanged protected capture again after list refresh. Changed records and unfiltered navigation retain outside-lock matching. Find Next with all search fields disabled returns immediately, following the retained IDM guard. Keep cursor, wrapping and selection behavior intact.
+
+## 7.50 / browser 0.71.14
+
+- Reuse main-window search-filter results before cloning encrypted searchable metadata. Refreshes compare only selected fields while holding the job lock; changed records are copied once and matched outside it. Preserve negative results, query invalidation and removed-job eviction. Correct the dormant sigma test using the byte-identical IDM specimen's Windows-uppercase search path rather than changing matching semantics to satisfy the old assumption.
+
+## 7.49 / browser 0.71.13
+
+- Compare progress-window address inputs by reference before copying them. Unchanged legacy playlist and streaming captures no longer clone their encrypted plan on every refresh; changed sources, track bindings and manifest-address precedence still update the address.
+
+## 7.48 / browser 0.71.12
+
+- Keep protected request bodies, captured page plans and full recovery receipts out of progress-window refresh copies. Derive form Resume/Restart state from the original record and retain only the receipt/state summaries used by the display. Compare saved form metadata by reference instead of copying segment arrays and header strings; keep worker verification and transport data unchanged.
+
+## 7.47 / browser 0.71.11
+
+- Recognize an ASCII-only PDF after a completed HTML/body notice before classifying the response as HTML. Require a standalone numeric PDF version header and whitespace after the closing notice; preserve embedded HTML/script examples, incomplete windows and the existing 2,000-byte prefix bound. This resolves the text-only PDF case exposed by the 7.46 form-recovery qualification.
+
+## 7.46 / browser 0.71.10
+
+- Preserve completed plain HTTP form responses after verification/content/publication failures, using request-bound receipts without adding a receipt/hash pass to successful downloads. Reopen File Info with verified final size, including approved prefix removal, or resume after Download Later, catalog reopening and destination changes without another form submission. Keep damaged-response Restart explicit, preserve the original failure reason and pending publication recovery, and discard obsolete response receipts after completion.
+- Qualification found an ASCII-only PDF notice case still classified as HTML; 7.47 fixes that separate detector gap. This intermediate development build was not installed or packaged.
+
+## 7.45 / browser 0.71.9
+
+- Decode gzip form responses, including POST-to-GET redirects. Bind completed response receipts to a fingerprint of the protected form request, headers and redirect identity; Resume verifies saved bytes instead of resubmitting the form. A failed verification requires a separately displayed Restart before another submission. Keep fresh POST forms out of speculative prefetch. Preserve wire/output size separation and recheck the confirmed final checksum before publication.
+
+## 7.44 / browser 0.71.8
+
+- Decode ordinary GET responses served with HTTP gzip content encoding, retaining encoded-byte offsets and validators for safe resume. Verify gzip members and checksums before publication; retain reusable encoded prefetch receipts after Download Later. Show verified decoded size rather than compressed Content-Length in File Info and output progress. Completed records retain both wire and output counts. POST and other encodings retain their existing admission policy.
+
+## 7.43 / browser 0.71.7
+
+- Preserve long explicit alphanumeric filename extensions during content verification. A name such as old.udmfixture or package.unitypackage no longer gains an extra content-type suffix solely because its extension exceeds eight characters. Keep numeric version handling and generic/script suffix correction; recognize the existing long temporary crdownload suffix under the same correction policy.
+
+## 7.42 / browser 0.71.6
+
+- Keep browser responses with a fully received positive byte total in the browser before creating a capture journal or pausing a legacy transfer. If the body finishes during pause, resume the original response without a native Add. Preserve capture eligibility for both -1 and zero length placeholders: an isolated Edge run reported zero for both an empty response and an unfinished chunked response. Completed empty responses still use the browser's complete state.
+
+## 7.41 / browser 0.71.5 — rejected development candidate
+
+- Built a received-response candidate that treated a zero total as proof of an empty, received response. The real Edge byte-counter check contradicted that assumption: unfinished chunked responses also reported zero. This candidate was not installed or packaged and is superseded by 7.42 / browser 0.71.6.
+
+## 7.40 / browser 0.71.4
+
+- Recheck a browser download after policy/request preparation and before pausing it for legacy desktop capture. Downloads canceled, completed, removed or paused during that wait stay untouched, and failed state lookups send no download. Keep the existing post-pause check so a user resume can still prevent handoff; unchanged live transfers retain one acknowledged desktop submission.
+
+## 7.39 / browser 0.71.3
+
+- Replace superseded same-timestamp speed-graph states instead of retaining duplicate drawable samples. A pause immediately after a measurement no longer leaves that retired value in the trace/peak; a same-tick resume retains the latest state without growing history. Later measurements and real pause intervals retain their existing history.
+
+## 7.38 / browser 0.71.2
+
+- Refresh an open audio/subtitle chooser from the current format catalog. Retain selected track keys and updated labels, block stale handoffs when a selected track disappears, and require an explicit replacement or None/default choice. Restore returning selections, update revoked audio-only actions, preserve keyboard focus, and send the chosen current track keys.
+
+## 7.37 / browser 0.71.1
+
+- Bind staged sensitive Properties header values to the target origin present when the dialog opened. Reject a late scheme/host/port change before applying Authorization, Cookie, Referer or Origin edits, preserving the current session and typed draft. Keep same-origin refreshes, ordinary header edits, explicit clearing and untouched-session commits available.
+
+## 7.36 / browser 0.71.0
+
+- Merge Properties request edits per logical header under the manager's commit lock. Login, Referer and Advanced header edits preserve unrelated cookies and authentication refreshed after staging or completed-file relocation. Preserve explicit removals and empty Authorization overrides, skip unnecessary re-encryption, and retain staged edits after protection failure. Roll browser versions from 0.70.99 to 0.71.0.
+
+## 7.35 / browser 0.70.99
+
+- Preserve an incomplete download's current destination when Properties' Save To field is untouched. External folder/filename changes survive acceptance before refresh and late changes at the commit boundary. Explicit path edits still take precedence and undergo the existing validation, including empty-path rejection and correction without losing the draft.
+
+## 7.34 / browser 0.70.98
+
+- Submit only explicitly changed Properties addresses and descriptions. Untouched fields now merge from the manager's latest record under its commit lock, preserving updates after acceptance staging and across completed-file relocation; captured-media addresses are not resubmitted from an old snapshot.
+
+## 7.33 / browser 0.70.97
+
+- Keep untouched Properties addresses and descriptions current when another workflow refreshes the download. Saving before a timer refresh preserves those live values; explicit edits remain the user's draft. Preserve selection offsets while refreshing an untouched address and keep selections in typed fields intact.
+
+## 7.32 / browser 0.70.96
+
+- Keep Properties field enablement stable during refresh. Captured-video login and password controls remain disabled instead of briefly enabling on each timer tick; ordinary fields change state once on background start/stop while retaining typed text and selection. Apply the same state policy during initialization.
+
+## 7.31 / browser 0.70.95
+
+- Accept a reused player response on a returning visit when its known media revisions advance, none regress or disappear, and the player is showing the requested content. Keep unchanged, title-only, backwards and ambiguous revisions retired. Compare bounded decimal revision strings without losing large-integer precision; retain API authority over supplementary getter metadata.
+
+## 7.30 / browser 0.70.94
+
+- Keep accepted player-API metadata authoritative when a getter returns fresh clones of stale data. Preserve API format revisions, transfer URLs, titles and lifecycle state while allowing getter-only formats to supplement partial metadata and update their own revisions. Getter additions cannot evict API formats at the 200-format bound; a newer accepted API response renews authority.
+
+## 7.29 / browser 0.70.93
+
+- Bound pending streaming captures before response headers arrive, release their copied bodies on retirement, and prevent late body production from restoring retired state. Clean up XHR capture listeners on navigation, abort and reuse, preserve native second-send errors, and inspect only a bounded XHR prefix while the caller retains the complete response.
+
+## 7.28 / browser 0.70.92
+
+- Bound and retire streaming response and streamed request-body inspections, with four retained readers of each kind and 30-second deadlines. Navigation, newer verified sessions and fetch failures release observer clones while preserving the site's uploads and playback bodies. Use request sequence ordering for equal timestamps in both page and browser-level capture; keep ordering metadata out of streaming offers and separate sequences between worker instances.
+
+## 7.27 / browser 0.70.91
+
+- Release obsolete player-API metadata readers on navigation or newer accepted metadata, cap concurrent inspections at four, and add a 30-second inspection deadline. Reject advertised oversized responses before cloning, and release oversized-body inspections without waiting for playback's original response to finish. These limits apply to the metadata clone, preserving the site's request, response body and promise.
+
+## 7.26 / browser 0.70.90
+
+- Bind YouTube player-API metadata to its actual visit and request order. Reject late fetch/XHR responses after navigation, stale cloned-body results, mismatched video responses and failed XHR responses. Retire reopened XHR listeners, keep an old initial snapshot from overwriting accepted API data, and prevent previously seen page objects from repopulating a later visit. Preserve site promises, response bodies and valid same-URL history updates without adding format requests.
+
+## 7.25 / browser 0.70.89
+
+- Keep Properties request edits transactional through header validation and credential-protection failures. Retrying invalid input remains rejected, correcting it retains the other typed login changes, and Cancel preserves the saved request. Untouched fields keep a refreshed session and avoid unnecessary credential re-encryption.
+
+## 7.24 / browser 0.70.88
+
+- Keep File Properties current when a download starts, stops or completes while the dialog is open. Preserve typed edits, recheck activity before actions and Save, and use the completed-file metadata transaction after completion. A destination entered before completion is applied through the existing physical file-move workflow; a failed move retains the draft for correction.
+
+## 7.23 / browser 0.70.87
+
+- Keep the speed graph's 30-second timeline moving during pauses, expire old rates, and show inactive hover intervals as “No transfer” instead of borrowing a neighboring rate. Preserve measured zero rates, display tenths of a second, and keep the selected readout visible in narrow charts. Sampling and idle timeline redraws remain limited to two per second.
+
+## 7.22 / browser 0.70.86
+
+- Block transport-level POST replay after an authentication continuation loses its response, including empty submissions. Fresh authentication rejections still permit their continuation, and explicit user restarts can submit again.
+
+## 7.21 / browser 0.70.85
+
+- Retain proven server capacity through transient refusals after a productive connection closes. Pace recovery opens and require fresh, sustained evidence before lowering the learned bound, so paused downloads can release their slots promptly.
+
+## 7.20 / browser 0.70.84
+
+- Preserve receive-timeout identity through proxy and authentication continuations. Silent response deadlines consume the configured retry budget and no longer establish shared or within-transfer connection-cap evidence.
+
+## 7.19 / browser 0.70.83
+
+- Classify a connection lost during proxy or Digest authentication continuation as a receive disconnect. Automatic proxy authentication can then use existing connection retry and shared admission without treating a final rejection or malformed response as capacity evidence.
+
+## 7.18 / browser 0.70.82
+
+- Identify proxy admission by the decrypted credential fingerprint rather than its randomized encrypted storage blob. Independently saved copies of the same proxy login share capacity evidence while distinct users and passwords stay isolated.
+
+## 7.17 / browser 0.70.81
+
+- Resolve Windows automatic proxy settings for each exact HTTP URL before connection admission. Pin the returned direct or proxy route to the transport, preserve returned failover order, and share capacity evidence across matching resolved routes.
+
+## 7.16 / browser 0.70.80
+
+- Retain recent refused opens while matching responses await their first payload. Learn the shared connection bound only after payload progress, so slow first reads do not discard earlier refusal evidence.
+
+## 7.15 / browser 0.70.79
+
+- Coordinate HTTP admission across downloads sharing a resolved route and request identity. Park connections when repeated refusals establish occupied capacity, preserve reusable idle slots, and keep admission waits cancelable.
+
+## 7.14 / browser 0.70.78
+
+- Check completed file locations in the background while Properties opens. Refresh the location after a file is removed or restored, and distinguish missing files from lookup errors.
 
 ## 7.13 / browser 0.70.77
 

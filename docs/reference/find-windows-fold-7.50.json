@@ -1,0 +1,86 @@
+{
+  "referenceSha256": "03cc62e9adb77a380f9dc12f67ccaaee5106f12844aa73ce32c914ddd16d607c",
+  "matchesExistingGhidraSpecimen": true,
+  "charUpperBuffWIat": "0x694720",
+  "installedByteChecks": {
+    "query": [
+      {
+        "address": "0x4b1786",
+        "bytes": "ff1520476900",
+        "bytesMatchInstalledBinary": true
+      }
+    ],
+    "candidate-address": [
+      {
+        "address": "0x45acf1",
+        "bytes": "ff1520476900",
+        "bytesMatchInstalledBinary": true
+      }
+    ],
+    "filename-uppercase-helper": [
+      {
+        "address": "0x454401",
+        "bytes": "ff1520476900",
+        "bytesMatchInstalledBinary": true
+      }
+    ]
+  },
+  "export": "benchmarks/idm-complete-20260927/ghidra/03cc62e9adb7__IDMan.exe",
+  "searchQueryProcedure": "0x004b1560",
+  "searchRecordProcedure": "0x0045fd40",
+  "searchAddressProcedure": "0x0045ac70",
+  "filenameUppercaseHelper": "0x004543e0",
+  "windowsApiFolds": [
+    {
+      "input": "\u03c2.bin",
+      "output": "\u03c2.BIN",
+      "units": 5
+    },
+    {
+      "input": "\u03c3.bin",
+      "output": "\u03a3.BIN",
+      "units": 5
+    },
+    {
+      "input": "\u03a3.bin",
+      "output": "\u03a3.BIN",
+      "units": 5
+    }
+  ],
+  "conclusion": "Static reference paths uppercase query and candidate text through CharUpperBuffW. On this host final sigma and ordinary sigma remain distinct under that API; preserve existing UDM matching and correct the contrary fixture expectation.",
+  "authority": "Byte-matched static IDM export plus observed host API; not an IDM UI replay.",
+  "rea": "REA 6.5.0 initialized. GPR opening rejected; installed PE opened after child-only Ghidra/Java configuration. Function query exceeded 240 seconds without returning evidence. No matching REA/Ghidra child remained after client exit.",
+  "desktopControl": "Fresh initialization and reset/retry both failed: failed to write kernel assets: The system cannot find the path specified. (os error 3).",
+  "recordMatcherCallEdges": [
+    {
+      "caller": "0x0045fd40",
+      "callSite": "0x45fdfe",
+      "target": "0x4543e0",
+      "bytesMatchInstalledBinary": true
+    },
+    {
+      "caller": "0x0045fd40",
+      "callSite": "0x45ff03",
+      "target": "0x4543e0",
+      "bytesMatchInstalledBinary": true
+    },
+    {
+      "caller": "0x0045fd40",
+      "callSite": "0x45ffd7",
+      "target": "0x45ac70",
+      "bytesMatchInstalledBinary": true
+    },
+    {
+      "caller": "0x0045fd40",
+      "callSite": "0x460026",
+      "target": "0x45ac70",
+      "bytesMatchInstalledBinary": true
+    },
+    {
+      "caller": "0x0045fd40",
+      "callSite": "0x460065",
+      "target": "0x45ac70",
+      "bytesMatchInstalledBinary": true
+    }
+  ]
+}

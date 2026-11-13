@@ -1,0 +1,141 @@
+{
+  "desktop": "7.51",
+  "browser": "0.71.15",
+  "status": "Development build complete; all targeted checks passed; not installed or packaged",
+  "installedDesktop": "7.11",
+  "build": "progress-snapshot-7.51-build.json",
+  "checks": 216,
+  "tests": [
+    {
+      "name": "filter",
+      "checks": 30,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.51/filter/results.json",
+      "source": "native/FindFilterCacheTests.cpp",
+      "sourceSha256": "DB182D524B70B8BE2538C398BDE997D705F8802919DDF13090075A3204BD87D2",
+      "executable": "Udm.FindFilterCacheTests.exe",
+      "version": "7.51",
+      "sha256": "59BFC2C9357E363B0AFDABE6C1E6926C920C3B4968A0F0FD175F8AD0B03DDE70"
+    },
+    {
+      "name": "address",
+      "checks": 27,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.51/address/results.json",
+      "source": "native/FindAddressTests.cpp",
+      "sourceSha256": "0B6B33A1839281F58CD87FB83884D1B11A2CBAB7DE4479C6C12FC08DFD951945",
+      "executable": "Udm.FindAddressTests.exe",
+      "version": "7.51",
+      "sha256": "98A3B287A8872C5D2B13EC1CC81D2C69C2328CE84E4D464DCB5B4127EA57B0E3"
+    },
+    {
+      "name": "progress",
+      "checks": 82,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.51/model/results.json",
+      "source": "native/ProgressRecordViewTests.cpp",
+      "sourceSha256": "3061B9093CD693FAB4FE223F87AE3EDFBB12F8389A5BEEB24014A05FB2598CED",
+      "executable": "Udm.ProgressRecordViewTests.exe",
+      "version": "7.51",
+      "sha256": "D620485F7D521E3E0ACA2E47A0E0F4B65DFDBC728BD11650FE5DBC595F7426B8"
+    },
+    {
+      "name": "ui",
+      "checks": 77,
+      "passed": true,
+      "results": "candidates/progress-snapshot-7.51/ui/results.json",
+      "source": "native/FindDialogUiTests.cpp",
+      "sourceSha256": "9A55613F0FFDBF825A4EDA746AF73628058752763CAC7A5852F372B42A6E781E",
+      "executable": "Udm.FindDialogUiTests.exe",
+      "version": "7.51",
+      "sha256": "F29B0DF1E07D21AF09D1F770A39C2491ECDB4BA8A47E7B8F82467D834762A0EE"
+    }
+  ],
+  "windowTiming": [
+    {
+      "frames": 8,
+      "msPerFrame": 2.797775,
+      "scope": "Current main-window refresh with a three-MiB protected capture; no earlier UI or IDM baseline"
+    },
+    {
+      "currentMedianMs": 3.1536,
+      "currentMsPerFrame": [
+        3.926425,
+        3.5859375,
+        3.0795375,
+        3.05185,
+        3.1536,
+        3.415875,
+        2.95905
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 119.3628625,
+      "priorMsPerFrame": [
+        351.0685875,
+        111.8055375,
+        116.0777875,
+        112.014875,
+        119.3628625,
+        151.2488,
+        203.723775
+      ],
+      "scope": "Pre-7.51 Find Next handler replay versus actual current handler in the same owned window; shared current refresh/backend, not old executable or IDM timing"
+    },
+    {
+      "currentMedianMs": 1.21685,
+      "currentMsPerFrame": [
+        1.4147,
+        1.1036625,
+        1.21155,
+        1.2627375,
+        1.21685,
+        1.1652125,
+        1.2190125
+      ],
+      "framesPerTrial": 8,
+      "priorMedianMs": 1.3336875,
+      "priorMsPerFrame": [
+        1.549025,
+        1.36485,
+        1.3336875,
+        1.19195,
+        1.1218375,
+        1.395075,
+        1.3050375
+      ],
+      "scope": "Pre-7.51 handler replay versus actual current handler for an ordinary filename in the same owned window; not old executable or IDM timing"
+    }
+  ],
+  "timingMethod": "Previous Find Next handler replay versus actual current handler, same owned window and shared current list-refresh/backend. Seven alternating trials of eight calls per case. Native compiler idle during UI measurements. No timing pass threshold.",
+  "timingInterpretation": "Protected capture: prior median 119.3628625 ms, current 3.1536 ms. Ordinary filename: prior 1.3336875 ms, current 1.21685 ms. These are implementation-path comparisons, not an older executable, installed app or IDM latency comparison.",
+  "reference": "../reference/find-next-7.51.json",
+  "referenceConclusion": "Thirteen guard/return instructions match current installed IDM bytes. Empty query and all-disabled fields return before list scanning. The current UDM dialog fixture verifies disabled-field return without a modal or view change.",
+  "semantics": "After refresh, require the refreshed view query to match the current normalized query before consulting the active filter cache. Compare source fields again under the manager lock. Use an owned snapshot and outside-lock matching on misses and when filtering is inactive. Preserve cursor/wrap/selection and transport source state.",
+  "coverage": [
+    "Protected address match selection and repeated wrap",
+    "Ordinary filename selection and repeated wrap",
+    "Returning from a filename query to a protected address query",
+    "Disabled-field return without modal/view change",
+    "Hiding filter restores all four fixture records",
+    "Unfiltered Find Next still matches protected metadata",
+    "Existing query/source invalidation and progress projection regressions"
+  ],
+  "postBuildFixtureChange": "Added ordinary filename benchmark after the production build. No production source changed; build-time and qualification fixture hashes are retained separately in the build receipt.",
+  "visual": "find-filter-7.50.png",
+  "freshVisualSha256": "4176EC1C1B80A01572B8B682BF0BDDE72A019C1DEEFF55604D4BBB5967475E56",
+  "visualScope": "Fresh 7.51 Find render matches the previously inspected tracked 7.50 render byte-for-byte. Reused that documentation image instead of adding an identical copy; no new visual design acceptance claim.",
+  "artifactPolicy": "Shared production/test caches reused. No installer, installed update, media-tool copy, new tracked render, network payload or cleanup attempt.",
+  "limitations": [
+    "Unfiltered Find Next still snapshots/decrypts candidates; its fallback is functionally checked, not accelerated by this increment",
+    "First or changed sources still require projection and decryption on the UI thread outside the job lock",
+    "Query/source equality comparisons still have size-dependent costs",
+    "No forced race injection between refresh and candidate recheck",
+    "No fresh personal-browser, installed-window or live IDM timing acceptance",
+    "No whole-app speed or complete IDM parity claim"
+  ],
+  "next": [
+    "Extend query-bound cache reuse to unfiltered Find Next with bounded retention and eviction",
+    "Profile first/changed-candidate matching separately from unchanged matches",
+    "Continue matched installed dialog/handoff and transfer latency comparisons"
+  ]
+}

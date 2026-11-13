@@ -1,0 +1,57 @@
+PASS automatic capture is disabled by default
+PASS browser download cancels only after desktop acknowledgement
+PASS failed desktop handoff resumes the browser download
+PASS excluded hosts stay in the browser
+PASS private and blob downloads are not captured
+PASS cookies require explicit browser permission
+PASS Chromium and Firefox manifests parse
+PASS concurrent video/audio captures are grouped and playback range removed
+PASS verified current-player streams reach the desktop directly with exact quality
+PASS encapsulated UMP responses are not treated as raw MP4
+PASS uncaptured streams never invoke a resolver or create a doomed desktop job
+PASS stale video pages cannot reuse another video capture
+PASS invalid quality rejected before native handoff
+PASS messages from other extensions rejected
+PASS navigation clears prior media captures
+PASS early page capture and player controls are registered across websites
+PASS 1080p metadata never advertises invented 2K, 4K or 8K choices and only permits player preparation
+PASS chromium accepts same-document YouTube Home navigation but rejects changed documents, origins and frames
+PASS firefox accepts same-document YouTube Home navigation but rejects changed documents, origins and frames
+PASS unavailable resolution is rejected before native handoff
+PASS advertisement or stale player response cannot provide the current video menu
+PASS actual AV1 4K and 8K streams are listed by their metadata
+PASS player-level fallback lists only observed heights and unknown metadata stays empty
+PASS expired captured links require fresh browser playback
+PASS a progressive video with its own audio needs no unrelated audio capture
+PASS cropped video keeps its nominal quality and actual verification dimensions
+PASS page reader rejects an ad player identity before reading its streams
+PASS network playback URL matches the current player resource identity, never an ad with the same format
+PASS selected-link handoff deduplicates links and acknowledges every native job
+PASS selected-link handoff validates the entire selection before sending any job
+PASS selected-link handoff rejects private tabs
+PASS selected-link handoff rejects a changed source page
+PASS bypass keeps download in browser without contacting or starting UDM
+PASS force captures a URL-bound file outside the normal extension filter
+PASS force cannot enable browser capture and is consumed by the first download
+PASS force cannot override local exclusions
+PASS force cannot override desktop address exceptions; browser stays untouched
+PASS force cannot override the desktop capture switch; browser stays untouched
+PASS shortcut intent cannot affect an unrelated download URL
+PASS stale or private source pages cannot record a capture gesture
+PASS capture gestures reject embedded credentials and oversized addresses
+PASS eligible download stays active until desktop preferences finish
+PASS unavailable desktop preferences leave the browser transfer untouched
+PASS desktop file-type rejection leaves the browser transfer untouched
+PASS local address exclusions do not pause or contact UDM
+PASS already-completed browser downloads are left intact
+PASS download waits for pending bypass gesture validation
+PASS download waits for pending force gesture validation
+PASS pending validation failure cannot force a download
+PASS user-canceled browser transfer is not handed off after desktop rules return
+PASS user-resumed browser transfer is not handed off after desktop rules return
+PASS user-removed browser transfer is not handed off after desktop rules return
+PASS stalled page read times out and its late result cannot create a native job
+PASS stalled native handoff explains uncertain acceptance and never retries automatically
+PASS accepted handoff does not wait for badge or error-storage updates
+PASS stalled format lookup has a deadline and late results have no download side effects
+ALL 56 BROWSER CHECKS PASSED

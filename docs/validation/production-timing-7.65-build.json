@@ -1,0 +1,63 @@
+{
+  "version": "7.65",
+  "kind": "Owned diagnostic executable compiled from the real Application path with fixed-buffer high-level trace hooks; not a new product build",
+  "sourceHashes": [
+    {
+      "path": "native/App.cpp",
+      "sha256": "F76B4DD19BC05CECB787EA5C7424B705235016E7B8DAE730C30F746AFD9D5941"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "CC6B80C9B8B2453115723C3BA2B6746D32B3F9153462865C63AD231BD65245C2"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "1C369A5229CDADD6AF14044234FDE9F80669E9E8A6DAF7DAA7B2147DCE83DF6E"
+    },
+    {
+      "path": "native/ProductionUiTiming.hpp",
+      "sha256": "8019EF3CB1A69C3E0352A7CF60E098F322D16EADC8AE476F231755A73D40421E"
+    },
+    {
+      "path": "candidates/native-build-current/out-nosymbols/App.res",
+      "sha256": "B708F5D026FBF95195196B34264A6CAB4BAB725CDABE43FB6DF4CBBAD22E6640"
+    }
+  ],
+  "macro": "UDM_PRODUCTION_UI_TIMING_TEST",
+  "productionProjectionVerified": true,
+  "currentProductionAndExistingFixtureBinariesUnchanged": true,
+  "exe": "candidates/native-build-current/release-native/Udm.ProductionUiTimingTests.exe",
+  "exeSha256": "B8A4D68772CE624654CA9768C0465E90953AE2322E8A14D1C33168CDA69B75AE",
+  "coreObjectsVerified": 42,
+  "traceFormat": {
+    "headerBytes": 64,
+    "eventBytes": 64,
+    "capacity": 128,
+    "fileBytes": 8256
+  },
+  "method": "Pinned production /O2 /MT toolchain; same 7.65 resource and shared backend objects. One diagnostic executable, no installers or media tool copies.",
+  "productionProjectionProof": {
+    "native/App.cpp": {
+      "sha256": "B0FB31A40D27AB2957A634CD34D8C20E6628F46D8723C264E873ED50F5922B6A",
+      "productionTextSha256": "4257FBB8669D14C3047363FE770BB55F21EECA050C421D7A04DB71A2416AB96B"
+    },
+    "native/Ui.hpp": {
+      "sha256": "8FB8552634AE591B0061099D695402475DCD5BAB0D33CC1C6C13278FC35A69C2",
+      "productionTextSha256": "8FB8552634AE591B0061099D695402475DCD5BAB0D33CC1C6C13278FC35A69C2"
+    },
+    "native/DownloadInfoUi.hpp": {
+      "sha256": "F16BBA9D0A79372C54AC7B9B3EC9C91C04F2ADB039F519F56C09C8ED4A0DC0AF",
+      "productionTextSha256": "CE159A538C04BB636412D0023E821E32A65CB5DA09CF7A5C074A72D359C60C49"
+    }
+  },
+  "rebuildTarget": "native/build.ps1 -ProductionUiTimingTestsOnly -OmitDebugSymbols",
+  "decoder": "benchmarks/ui/production_ui_trace.py",
+  "maintainedBuildSelector": {
+    "currentRecipeSha256": "09879C0CE66B9B71D7890335B38491BFCDE6CF3FC07FB09B4B8E6D9C1CD97060",
+    "normalCommonCoreSystemAndDefaultTargetLinesUnchanged": true,
+    "newTranslationUnit": "native/ProductionUiTimingTests.cpp",
+    "note": "The recorded executable used the same App.cpp path with the flag supplied directly. The dedicated translation unit defines the same flag; its syntax is checked separately.",
+    "originalRecipeNormalizedTextSha256": "80F235F5A607FD62DE619463F08A2864223BA109360CDE285DF0013E922B79FA"
+  },
+  "maintainedToolValidation": "production-timing-7.65-tools.json"
+}

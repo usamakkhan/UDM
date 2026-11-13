@@ -1,0 +1,1657 @@
+{
+  "checks": [
+    {
+      "name": "Reference contains IDM download-status dialog 363",
+      "passed": true
+    },
+    {
+      "name": "A short tick keeps its bytes in the open sample",
+      "passed": true
+    },
+    {
+      "name": "The first measured window includes bytes from the early tick",
+      "passed": true
+    },
+    {
+      "name": "A one-millisecond final slice cannot replace the measured peak",
+      "passed": true
+    },
+    {
+      "name": "A short prefetch keeps its average through confirmation",
+      "passed": true
+    },
+    {
+      "name": "An idle tick cannot turn the first credited buffer into a one-millisecond peak",
+      "passed": true
+    },
+    {
+      "name": "Create isolated owner",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress dialog",
+      "passed": true
+    },
+    {
+      "name": "Progress URL uses the reference Static control class",
+      "passed": true
+    },
+    {
+      "name": "Progress URL uses reference single-line static style",
+      "passed": true
+    },
+    {
+      "name": "Progress URL has no edit-box edge",
+      "passed": true
+    },
+    {
+      "name": "URL ampersands are displayed literally rather than as keyboard mnemonics",
+      "passed": true
+    },
+    {
+      "name": "Progress dialog exposes its native progress bar",
+      "passed": true
+    },
+    {
+      "name": "Progress bar position agrees with the downloaded byte percentage",
+      "passed": true
+    },
+    {
+      "name": "Downloaded value includes exact percentage",
+      "passed": true
+    },
+    {
+      "name": "Downloaded percentage retains reference hundredth precision",
+      "passed": true
+    },
+    {
+      "name": "Progress bar retains its integer range while the label preserves hundredths",
+      "passed": true
+    },
+    {
+      "name": "Progress retains known track size while final size is unresolved",
+      "passed": true
+    },
+    {
+      "name": "Progress credits bytes received before confirmation",
+      "passed": true
+    },
+    {
+      "name": "Progress shows measured prefetch peak separately from the current transfer rate",
+      "passed": true
+    },
+    {
+      "name": "Opening progress shows the measured prefetch peak",
+      "passed": true
+    },
+    {
+      "name": "Live rate returns after the opening prefetch display",
+      "passed": true
+    },
+    {
+      "name": "Final size replaces the track-size fallback",
+      "passed": true
+    },
+    {
+      "name": "Progress dialog exposes its connection details",
+      "passed": true
+    },
+    {
+      "name": "Offline prefetch reuse displays verified saved bytes without a connection number",
+      "passed": true
+    },
+    {
+      "name": "Completed connections retain their number and bytes while unused rows disappear",
+      "passed": true
+    },
+    {
+      "name": "A paused partial file with range support offers Resume",
+      "passed": true
+    },
+    {
+      "name": "A paused partial offers Resume while its range capability is still unknown",
+      "passed": true
+    },
+    {
+      "name": "A failed partial with unknown range support can also be resumed",
+      "passed": true
+    },
+    {
+      "name": "An unstarted download with unknown range support offers Start",
+      "passed": true
+    },
+    {
+      "name": "Captured browser response does not falsely report unsupported resume",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unsupported server displays No and offers Start",
+      "passed": true
+    },
+    {
+      "name": "Pausing disables the primary progress action and shows the transition",
+      "passed": true
+    },
+    {
+      "name": "Enter cannot restart a download while its primary action is disabled",
+      "passed": true
+    },
+    {
+      "name": "Primary action rechecks state before the next display timer",
+      "passed": true
+    },
+    {
+      "name": "Unready active live recording disables the shared primary action",
+      "passed": true
+    },
+    {
+      "name": "Ready live recording permits Stop and save",
+      "passed": true
+    },
+    {
+      "name": "Live recording already saving rejects a second primary action",
+      "passed": true
+    },
+    {
+      "name": "Unresolved duplicate cannot activate the primary action",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted form retains the Start action",
+      "passed": true
+    },
+    {
+      "name": "Interrupted form advertises Restart rather than byte resume",
+      "passed": true
+    },
+    {
+      "name": "Paused form explains that restarting submits the request again",
+      "passed": true
+    },
+    {
+      "name": "Form request cannot claim byte resume even with a stale range flag",
+      "passed": true
+    },
+    {
+      "name": "Existing transfer error takes precedence over the form hint",
+      "passed": true
+    },
+    {
+      "name": "Resumable POST-to-GET continuation does not resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "Saved encoded form response offers Resume after output-size projection",
+      "passed": true
+    },
+    {
+      "name": "Saved response capability is distinct from HTTP byte ranges",
+      "passed": true
+    },
+    {
+      "name": "Matching form receipt does not advertise another submission",
+      "passed": true
+    },
+    {
+      "name": "Rejected saved form response advertises explicit Restart",
+      "passed": true
+    },
+    {
+      "name": "Rejected form receipt cannot claim resumability through a stale redirect range flag",
+      "passed": true
+    },
+    {
+      "name": "Rejected completed response explains resubmission even after a POST-to-GET redirect",
+      "passed": true
+    },
+    {
+      "name": "Large opaque form context preserves real progress Resume/Restart controls",
+      "passed": true
+    },
+    {
+      "name": "Repeated real progress refreshes leave the large original request untouched",
+      "passed": true,
+      "timing": {
+        "frames": 16,
+        "largeContextMsPerFrame": 0.070225,
+        "scope": "Synthetic owned progress window; current timer handler only, no IDM or earlier UI-frame baseline",
+        "smallContextMsPerFrame": 0.07951875
+      }
+    },
+    {
+      "name": "Untested audio track keeps combined resume capability unknown",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unsupported track takes precedence over an unknown track",
+      "passed": true
+    },
+    {
+      "name": "Both verified tracks display Yes",
+      "passed": true
+    },
+    {
+      "name": "Saved media retains its distinct resume capability",
+      "passed": true
+    },
+    {
+      "name": "Legacy playlist address appears in the real progress control",
+      "passed": true
+    },
+    {
+      "name": "Repeated refreshes retain the large legacy playlist address",
+      "passed": true,
+      "timing": {
+        "frames": 16,
+        "msPerFrame": 1.09784375,
+        "scope": "Current real component timer with unchanged three-MiB protected adaptive payload; no earlier UI or IDM baseline"
+      }
+    },
+    {
+      "name": "New cached display address replaces a legacy playlist in the real progress control",
+      "passed": true
+    },
+    {
+      "name": "SABR precedence changes the real displayed address despite a cached playlist",
+      "passed": true
+    },
+    {
+      "name": "Removing capture context restores the ordinary progress address",
+      "passed": true
+    },
+    {
+      "name": "Expanded progress starts in the connections view",
+      "passed": true
+    },
+    {
+      "name": "Speed graph replaces connection details without resizing the window",
+      "passed": true
+    },
+    {
+      "name": "Compact progress hides the chart and view switch",
+      "passed": true
+    },
+    {
+      "name": "Expanding restores the selected chart view",
+      "passed": true
+    },
+    {
+      "name": "The switch restores the connection map",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress status uses reference Tahoma point size at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Progress status reference control class, label and geometry match",
+      "passed": true
+    },
+    {
+      "name": "Hide details updates the native button caption",
+      "passed": true
+    },
+    {
+      "name": "Hide details removes the expected connection-area height at tested DPI",
+      "passed": true
+    },
+    {
+      "name": "Hide details hides connection caption",
+      "passed": true
+    },
+    {
+      "name": "Show details restores the previous expanded client height",
+      "passed": true
+    },
+    {
+      "name": "Progress window exposes its native tab control",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Reference contains the selected progress options panel",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Visible progress options control matches reference class, label and geometry",
+      "passed": true
+    },
+    {
+      "name": "Speed tab hides URL and displays limiter controls",
+      "passed": true
+    },
+    {
+      "name": "Disabled limiter keeps its rate field disabled",
+      "passed": true
+    },
+    {
+      "name": "Enabling limiter applies its default temporary rate",
+      "passed": true
+    },
+    {
+      "name": "Editing temporary limiter does not change remembered rate",
+      "passed": true
+    },
+    {
+      "name": "Remember checkbox persists the entered rate",
+      "passed": true
+    },
+    {
+      "name": "Remembered GUI rate survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Invalid GUI rate preserves the saved setting and displays its valid range",
+      "passed": true
+    },
+    {
+      "name": "Disabling remembered limiter saves zero and disables the rate field",
+      "passed": true
+    },
+    {
+      "name": "Completion tab hides URL and displays completion controls",
+      "passed": true
+    },
+    {
+      "name": "Load Windows accessibility provider",
+      "passed": true
+    },
+    {
+      "name": "Windows exposes native accessibility inspection",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "Blank checkbox exposes native accessibility object",
+      "passed": true
+    },
+    {
+      "name": "Glyph retains its meaningful accessible name and checkbox role",
+      "passed": true
+    },
+    {
+      "name": "All four blank glyphs expose their distinct completion-option names",
+      "passed": true
+    },
+    {
+      "name": "Showing the completion dialog disables power options",
+      "passed": true
+    },
+    {
+      "name": "Hiding the completion dialog saves the preference and enables power options",
+      "passed": true
+    },
+    {
+      "name": "Completion preference survives catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Clicking the separate exit label checks the glyph and saves its plan without executing it",
+      "passed": true
+    },
+    {
+      "name": "Clicking the glyph clears the completion plan",
+      "passed": true
+    },
+    {
+      "name": "Completion checkbox supports accessibility action inspection",
+      "passed": true
+    },
+    {
+      "name": "Completion checkbox describes its accessible default action",
+      "passed": true
+    },
+    {
+      "name": "Accessible default action toggles and reports the persisted completion option",
+      "passed": true
+    },
+    {
+      "name": "Accessible default action toggles the option off again",
+      "passed": true
+    },
+    {
+      "name": "Space key dispatch toggles the checkbox and saves its option",
+      "passed": true
+    },
+    {
+      "name": "Showing the completion dialog again clears and disables the selected exit action",
+      "passed": true
+    },
+    {
+      "name": "Returning to status restores the URL label",
+      "passed": true
+    },
+    {
+      "name": "Refresh updates the literal displayed URL without changing control role",
+      "passed": true
+    },
+    {
+      "name": "Hiding Speed Limiter removes only that tab and returns to status",
+      "passed": true
+    },
+    {
+      "name": "Hiding speed tab preserves completion tab preference",
+      "passed": true
+    },
+    {
+      "name": "Completion tab remains correctly mapped after speed tab removal",
+      "passed": true
+    },
+    {
+      "name": "Hiding completion tab leaves status available",
+      "passed": true
+    },
+    {
+      "name": "Hidden tab preferences survive catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Reopen actual progress dialog after hiding tabs",
+      "passed": true
+    },
+    {
+      "name": "Reopened progress dialog respects both hidden tab preferences",
+      "passed": true
+    },
+    {
+      "name": "Cancel still stops an active download",
+      "passed": true
+    },
+    {
+      "name": "Closing during a completed file's scanner wait does not cancel it",
+      "passed": true
+    },
+    {
+      "name": "Closing during a pause does not submit another pause",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for dismissal",
+      "passed": true
+    },
+    {
+      "name": "Dismissal destroys the Paused progress window",
+      "passed": true
+    },
+    {
+      "name": "Dismissal preserves the Paused job and catalog",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for dismissal",
+      "passed": true
+    },
+    {
+      "name": "Dismissal destroys the Failed progress window",
+      "passed": true
+    },
+    {
+      "name": "Dismissal preserves the Failed job and catalog",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for dismissal",
+      "passed": true
+    },
+    {
+      "name": "Dismissal destroys the Complete progress window",
+      "passed": true
+    },
+    {
+      "name": "Dismissal preserves the Complete job and catalog",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for dismissal",
+      "passed": true
+    },
+    {
+      "name": "Cancel stops a queued download and closes its progress window",
+      "passed": true
+    },
+    {
+      "name": "Create progress window for action transitions",
+      "passed": true
+    },
+    {
+      "name": "A stale Start click cannot stop a newly queued download",
+      "passed": true
+    },
+    {
+      "name": "A stale Pause keyboard action cannot resume a stopped download",
+      "passed": true
+    },
+    {
+      "name": "A refreshed Start still queues the download",
+      "passed": true
+    },
+    {
+      "name": "A refreshed Pause still stops the queued download",
+      "passed": true
+    },
+    {
+      "name": "Close never cancels a job queued before the next progress refresh",
+      "passed": true
+    },
+    {
+      "name": "A completed job busy outside the scanner cannot open or stop a scanner",
+      "passed": true
+    },
+    {
+      "name": "Locate the inert scanner fixture",
+      "passed": true
+    },
+    {
+      "name": "Create completed progress dialog for scanner transitions",
+      "passed": true
+    },
+    {
+      "name": "Pending scan disables Open",
+      "passed": true
+    },
+    {
+      "name": "Enter does not bypass a pending scan",
+      "passed": true
+    },
+    {
+      "name": "An active scanner offers Stop wait",
+      "passed": true
+    },
+    {
+      "name": "Stop wait interrupts monitoring and restores the manual Open action",
+      "passed": true
+    },
+    {
+      "name": "Stopping the scan wait preserves the saved file",
+      "passed": true
+    },
+    {
+      "name": "The scanner process finishes after monitoring stops",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for backend contention",
+      "passed": true
+    },
+    {
+      "name": "A competing backend owns the model without a File Info guard",
+      "passed": true
+    },
+    {
+      "name": "A busy model skips refresh without waiting or partially replacing displayed fields",
+      "passed": true
+    },
+    {
+      "name": "Graph switching remains responsive while the backend owns the model",
+      "passed": true
+    },
+    {
+      "name": "Details resizing and painting do not wait for a busy backend",
+      "passed": true
+    },
+    {
+      "name": "The next refresh catches up automatically after model ownership ends",
+      "passed": true
+    },
+    {
+      "name": "Install an owned snapshot-to-paint boundary observer",
+      "passed": true
+    },
+    {
+      "name": "Painting the snapshot never reacquires the model for quota status",
+      "passed": true
+    },
+    {
+      "name": "The completed refresh displays the snapshot destination during later backend contention",
+      "passed": true
+    },
+    {
+      "name": "Hold the backend while closing an idle progress view",
+      "passed": true
+    },
+    {
+      "name": "A displayed Close dismisses immediately without taking the backend lock",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for backend contention",
+      "passed": true
+    },
+    {
+      "name": "A competing backend owns the model without a File Info guard",
+      "passed": true
+    },
+    {
+      "name": "A busy model skips refresh without waiting or partially replacing displayed fields",
+      "passed": true
+    },
+    {
+      "name": "Graph switching remains responsive while the backend owns the model",
+      "passed": true
+    },
+    {
+      "name": "Details resizing and painting do not wait for a busy backend",
+      "passed": true
+    },
+    {
+      "name": "The next refresh catches up automatically after model ownership ends",
+      "passed": true
+    },
+    {
+      "name": "Install an owned snapshot-to-paint boundary observer",
+      "passed": true
+    },
+    {
+      "name": "Painting the snapshot never reacquires the model for quota status",
+      "passed": true
+    },
+    {
+      "name": "The completed refresh displays the snapshot destination during later backend contention",
+      "passed": true
+    },
+    {
+      "name": "Hold the backend while closing an idle progress view",
+      "passed": true
+    },
+    {
+      "name": "A displayed Close dismisses immediately without taking the backend lock",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "Shutdown draining inside the error modal does not consume its already-read exception twice",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A successful command publishes once without an error warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for an asynchronous command",
+      "passed": true
+    },
+    {
+      "name": "The command click returns while its real catalog publication is held on the worker",
+      "passed": true
+    },
+    {
+      "name": "A saving command disables competing state changes",
+      "passed": true
+    },
+    {
+      "name": "Duplicate primary and close messages cannot replace an accepted command",
+      "passed": true
+    },
+    {
+      "name": "The graph remains usable while command persistence owns the backend",
+      "passed": true
+    },
+    {
+      "name": "Posted command completion acknowledges success or failure without polling",
+      "passed": true
+    },
+    {
+      "name": "A failed command shows its real error and preserves the same window, job and enabled controls",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry publishes exactly one replacement command without another warning",
+      "passed": true
+    },
+    {
+      "name": "The accepted command preserves the backend Resume or Pause result",
+      "passed": true
+    },
+    {
+      "name": "Only accepted Cancel closes the progress window after persistence",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for exit ordering",
+      "passed": true
+    },
+    {
+      "name": "Exit encounters the actual accepted command before its publication completes",
+      "passed": true
+    },
+    {
+      "name": "Exit draining joins the command and restores controls before Manager shutdown",
+      "passed": true
+    },
+    {
+      "name": "Exit draining completes the accepted command before the final catalog save",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown catalog includes the drained command outcome exactly once",
+      "passed": true
+    },
+    {
+      "name": "Create actual progress window for exit ordering",
+      "passed": true
+    },
+    {
+      "name": "Exit encounters the actual accepted command before its publication completes",
+      "passed": true
+    },
+    {
+      "name": "Exit draining joins the command and restores controls before Manager shutdown",
+      "passed": true
+    },
+    {
+      "name": "Exit draining surfaces the original error and preserves the rejected command's state",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown catalog includes the drained command outcome exactly once",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

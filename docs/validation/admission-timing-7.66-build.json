@@ -1,0 +1,283 @@
+{
+  "version": "7.66",
+  "diagnosticOnly": true,
+  "originalProductionBridgeProjectionSha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E",
+  "sourceHashes": [
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "C0599CE4FFF6F39911100429F9795C96513D7F9F09362D54FC18D1F55BD30162"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "2AB5AEF58094841156FE63B43CA2C07F8419E50A61A19FBE8017094A5D5D5547"
+    },
+    {
+      "path": "native/ProductionUiTiming.hpp",
+      "sha256": "8019EF3CB1A69C3E0352A7CF60E098F322D16EADC8AE476F231755A73D40421E"
+    },
+    {
+      "path": "native/ProductionUiTimingTests.cpp",
+      "sha256": "2A88F35EB52655E7B37E3CF7820AAF5CEC04E9F35CE53E0DED1F25E742E28FA6"
+    },
+    {
+      "path": "tests/hls-catalog.native-live.cjs",
+      "sha256": "5B256BF07C694622F646E2C6367CA4CA49426BCBF1181989F339CDC5875E7ED0"
+    },
+    {
+      "path": "tests/observe-cold-file-info.py",
+      "sha256": "511467069C2FA086FD8B392A74B3BA310F34A4D2D88387F06C8A9A36AAF9E970"
+    }
+  ],
+  "exe": "candidates/native-build-current/release-native/Udm.ProductionUiTimingTests.exe",
+  "exeSha256": "16C3846B288C115F666FFC5768F09A7CB3C8667D6FF8F4BC8E8BC68F0ADC5A80",
+  "productionBinariesUnchanged": [
+    {
+      "name": "UDM.exe",
+      "version": "7.66",
+      "sha256": "11D34B3EA38A2897B908912143DE5D0A834936FCBCA8B87168770D58B1430782"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.66",
+      "sha256": "4C053BC0D4079618A0293968811CCA34106456393519BC5FB9F73FCC56EBE553"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.66",
+      "sha256": "085AB04664A20F335A7C3022C81D9F367D2C9B088C6947DEEDE2F4A7FD9433B5"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.66",
+      "sha256": "B3DA9C404587570B6DBDEF4E790494086239375858FDF7B49B95902D42BC0239"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.66",
+      "sha256": "766BE2BC6CC86D6A54EF5EA0D88B6E06ACD1451E08AC994D5693958E1A2FD8EE"
+    }
+  ],
+  "coreObjectsUnchanged": [
+    {
+      "name": "Core.obj",
+      "sha256": "ABE548DD3B2F5C12D0227C641F5939291DED30B854283CFF3D2ED1BEA6A84B7C",
+      "rebuilt": false
+    },
+    {
+      "name": "PacProxy.obj",
+      "sha256": "C80E4CC2909C821A6812DC91AF1FF6C65CEFEF6B12982317F20AD10FC4554F93",
+      "rebuilt": false
+    },
+    {
+      "name": "Queue.obj",
+      "sha256": "74ADB03CDA4D26C1DBB408686F052B18D9B16453ADD3016AFE767B8E5C39E5E7",
+      "rebuilt": false
+    },
+    {
+      "name": "FileWorkflows.obj",
+      "sha256": "4B22458E6F9DFA3013987C524A85783D9A5241DAF96F48458929A386A6979AE8",
+      "rebuilt": false
+    },
+    {
+      "name": "Duplicates.obj",
+      "sha256": "5F12F796709C1D08B7F1AA603D0CB96F973C9BF2C88AD03A3CBD677DAE9BF884",
+      "rebuilt": false
+    },
+    {
+      "name": "Transfer.obj",
+      "sha256": "3A331A001637F65A321DAA5C5774BFB4257E180687FCF3A9A295DF10DA0C1B1F",
+      "rebuilt": false
+    },
+    {
+      "name": "Grabber.obj",
+      "sha256": "67A9F60B50DEB503D9498D841F74F345DAC7A3FEA1357A3E6C3CF76B34C13BAE",
+      "rebuilt": false
+    },
+    {
+      "name": "GrabberLinks.obj",
+      "sha256": "81EE9B53D8F98A0E643088EE9C50F0EBE082D019C54BB7748079D038FF441A70",
+      "rebuilt": false
+    },
+    {
+      "name": "Streaming.obj",
+      "sha256": "EF28D0E96AC2883DA22DE7155B0816F1F0D11DCDAF321EF79908A50294580F86",
+      "rebuilt": false
+    },
+    {
+      "name": "Adaptive.obj",
+      "sha256": "1CEE15AAA1A7236D1B861BDF5E58945DE684AB6CD30D0DB74E2F941998665D24",
+      "rebuilt": false
+    },
+    {
+      "name": "DashManifest.obj",
+      "sha256": "863B732F91EC3894778FFBF2F2D93882BC9BFEFA3D204CB2F2FB4E3312E78A4D",
+      "rebuilt": false
+    },
+    {
+      "name": "YouTubePlayer.obj",
+      "sha256": "DCC8C85487D180BB589C0AE602B2046F1C0290720CCC7EF1C421DA9EF3AB6BAD",
+      "rebuilt": false
+    },
+    {
+      "name": "Bridge.obj",
+      "sha256": "33D4E706E6D565E008D8EC844F6E24F394622A82324DC223B7CC9B3CF8B6F8E7",
+      "rebuilt": true
+    },
+    {
+      "name": "Network.obj",
+      "sha256": "0380166D688DAEE82B6FE7559E24AA74973E0488F86E5DC09EB1F5ACDE8A3F1E",
+      "rebuilt": false
+    },
+    {
+      "name": "SocksProxy.obj",
+      "sha256": "1E9F79FA1FC076CC495F501C828EFDB50FAB5C0123C7FD33C3AE4D66CF4F3D72",
+      "rebuilt": false
+    },
+    {
+      "name": "OfflineSite.obj",
+      "sha256": "28F0F1B1ECB3984B8C968575E4E7029052DBE76AC9AEB6768A957D09B7015159",
+      "rebuilt": false
+    },
+    {
+      "name": "DialUp.obj",
+      "sha256": "0FA9C21AB7E906BDE97C61F07B488EB30843F71DBE8F8DDF0B57E287403E3BA8",
+      "rebuilt": false
+    },
+    {
+      "name": "Ftp.obj",
+      "sha256": "5C838EDBEED56429CACCFDCE6E26A5B331C67681501D81107D7E7B0FDC2FAA5C",
+      "rebuilt": false
+    },
+    {
+      "name": "DownloadPreview.obj",
+      "sha256": "8F16043853E9F732A05D7C0A1A0F9766047D722E2D139D11391F8D4C35BD7189",
+      "rebuilt": false
+    },
+    {
+      "name": "ZipPreview.obj",
+      "sha256": "4E2695A1845E5ED83F067AA2D5886E08BAD2E5DCB80D1D378D08EEA0FF47FF14",
+      "rebuilt": false
+    },
+    {
+      "name": "QueueWake.obj",
+      "sha256": "5230795BB6C6FAA1CA89D2DD1C89885E076168B2FE89C259C1DE5A98C95F4C24",
+      "rebuilt": false
+    },
+    {
+      "name": "Scanner.obj",
+      "sha256": "006E50776AA53F664EEA0A55DE0B38418006F3E0053F44CF0B1FF42475F23A24",
+      "rebuilt": false
+    },
+    {
+      "name": "CaptureExclusions.obj",
+      "sha256": "C7FDCE1E8742321E5C85BFBE6823B0C31E6240B6132453D50D85A457BC85F3A6",
+      "rebuilt": false
+    },
+    {
+      "name": "CaptureAdmission.obj",
+      "sha256": "126714B4B906125C1E1482CAFDF784B4FA9C5DC8C6A948D9E007715ABDB98CB9",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-adler32.obj",
+      "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-crc32.obj",
+      "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-inffast.obj",
+      "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-inflate.obj",
+      "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-inftrees.obj",
+      "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A",
+      "rebuilt": false
+    },
+    {
+      "name": "zlib-zutil.obj",
+      "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-constants.obj",
+      "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-context.obj",
+      "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-dictionary.obj",
+      "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-platform.obj",
+      "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-shared_dictionary.obj",
+      "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-common-transform.obj",
+      "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-bit_reader.obj",
+      "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-decode.obj",
+      "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-huffman.obj",
+      "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-prefix.obj",
+      "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-state.obj",
+      "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1",
+      "rebuilt": false
+    },
+    {
+      "name": "brotli-dec-static_init.obj",
+      "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188",
+      "rebuilt": false
+    }
+  ],
+  "generatedObjects": [
+    {
+      "path": "candidates/native-build-current/out-nosymbols/ProductionUiTimingBridge.obj",
+      "sha256": "15D2C7A67201B8F5C01A8B457D9438DA0470148427F070A7D6E2A4EEB1949D3B"
+    },
+    {
+      "path": "candidates/native-build-current/out-nosymbols/ProductionUiTimingTests.obj",
+      "sha256": "B05A5EE6AFD15E78C532263B2269084EB5127B95582237C0EB4F8E47C5A6691C"
+    }
+  ],
+  "method": "Pinned optimized compiler; separate diagnostic Bridge object; original production/core objects untouched; no product increment"
+}

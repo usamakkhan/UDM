@@ -19,7 +19,13 @@
  void preference(const char* key,const Json& value){auto p=preferences();p[key]=value;manager.setSettings(p);}
  Json listLayout(){Json widths=Json::array(),order=Json::array();int indices[columnCount]{};table.GetColumnOrderArray(indices,columnCount);for(int i=0;i<columnCount;++i){widths.push_back(logicalColumnWidth(i,table.GetColumnWidth(i),windowDpi()));order.push_back(indices[i]);}return {{"Widths",widths},{"Order",order},{"SortColumn",sortColumn},{"Ascending",ascending}};}
  void restoreLayout(){auto p=preferences();auto layout=p.value("ListLayout",Json::object());if(layout.contains("Widths")&&layout["Widths"].is_array()&&layout["Widths"].size()==columnCount)for(int i=0;i<columnCount;++i){int width=std::clamp<int>((int)layout["Widths"][i],0,1200);table.SetColumnWidth(i,scaledColumnWidth(i,width,windowDpi()));}if(layout.contains("Order")&&layout["Order"].is_array()&&layout["Order"].size()==columnCount){int order[columnCount]{};std::set<int> seen;for(int i=0;i<columnCount;++i){order[i]=layout["Order"][i];if(order[i]<0||order[i]>=columnCount||!seen.insert(order[i]).second)return;}table.SetColumnOrderArray(columnCount,order);}sortColumn=(int)std::clamp<i64>(num(layout,"SortColumn",-1),-1,columnCount-1);ascending=yes(layout,"Ascending",true);table.sortIndicator(sortColumn,ascending);}
- void rememberLayout(){if(!table.GetSafeHwnd())return;Lock lock(manager.mutex);manager.state["Settings"]["ListLayout"]=listLayout();}
+ void rememberLayout(){
+  if(!table.GetSafeHwnd())return;
+  // Read thread-owned Windows controls before taking the shared catalog lock.
+  auto next=listLayout();
+  Lock lock(manager.mutex);auto& saved=manager.state["Settings"]["ListLayout"];
+  if(saved!=next)saved=std::move(next);
+ }
  void customizeColumns(){
   struct ColumnsForm:Form{using Form::Form;std::function<void(NMHDR*)> changed;BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{if(changed)changed(reinterpret_cast<NMHDR*>(l));return Form::OnNotify(w,l,result);}};
   ColumnsForm d("Columns",236,177,this);d.dialogUnits=true;std::vector<int> order(columnCount),widths(columnCount);std::vector<bool> shown(columnCount);table.GetColumnOrderArray(order.data(),columnCount);for(int i=0;i<columnCount;++i){auto saved=preferences().value("ColumnWidths",Json::array());widths[i]=table.GetColumnWidth(i)>0?logicalColumnWidth(i,table.GetColumnWidth(i),windowDpi()):saved.is_array()&&saved.size()==columnCount?(int)saved[i]:defaultColumnWidths[i];shown[i]=table.GetColumnWidth(i)>0;}

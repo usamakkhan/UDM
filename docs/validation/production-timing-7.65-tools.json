@@ -1,0 +1,24 @@
+{
+  "translationUnitSyntaxPassed": true,
+  "selectorMutualExclusionGuards": [
+    {
+      "combination": [
+        "-ProductionUiTimingTestsOnly",
+        "-ProductionOnly"
+      ],
+      "rejectedBeforeBuild": true
+    },
+    {
+      "combination": [
+        "-ProductionUiTimingTestsOnly",
+        "-AppOnly"
+      ],
+      "rejectedBeforeBuild": true
+    }
+  ],
+  "maintainedDecoderMatchesRawCases": 3,
+  "fullSelectorBuildExecuted": false,
+  "note": "Recorded diagnostic binary was directly compiled from App.cpp with the same flag. The maintained translation unit and selector support reproducing it without ignored local metadata.",
+  "decoderSha256": "a26b5f90019be86627fc95cd7dd0af23daebcfa87dd9b36294f75a5c8f41f823",
+  "translationUnitSha256": "2a88f35eb52655e7b37e3cf7820aaf5cec04e9f35ce53e0ded1f25e742e28fa6"
+}

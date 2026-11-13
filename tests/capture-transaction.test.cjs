@@ -31,6 +31,27 @@ async function begin(h,running=false){const m=h.module();if(running)h.item.pause
 async function check(family,name,fn){await fn();passed++;console.log('PASS '+family+' '+name);}
 (async()=>{
  for(const family of ['chromium','firefox']){
+  for(const running of [false,true])for(const size of [0,4096])await check(family,'received-byte eligibility for '+size+', running='+running,async()=>{
+   const h=harness(family),[m,r]=await begin(h,running);Object.assign(h.item,{bytesReceived:size,totalBytes:size});
+   if(size===0){
+    assert.equal((await m.submit(r,download)).status,'accepted');await m.finish(r);
+    assert.equal(h.calls.filter(call=>call==='capture-prepare').length,1);assert.equal(h.calls.filter(call=>call==='capture-commit').length,1);assert.equal(h.count(),0);return;
+   }
+   assert.equal((await m.submit(r,download)).browserRetained,true);await m.finish(r);
+   assert(!h.calls.includes('capture-prepare'));assert(!h.calls.includes('cancel'));assert(!h.calls.includes('capture-commit'));assert.equal(h.count(),0);
+   if(running)assert(!h.calls.includes('resume'));
+  });
+  await check(family,'completed empty response arriving during preparation releases native request',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);
+   h.hooks['capture-prepare']=async()=>Object.assign(h.item,{state:'complete',totalBytes:0,bytesReceived:0});
+   assert.equal((await m.submit(r,download)).browserRetained,true);await m.finish(r);
+   assert(h.calls.includes('capture-release'));assert(!h.calls.includes('cancel'));assert(!h.calls.includes('capture-commit'));assert(!h.calls.includes('resume'));assert.equal(h.count(),0);
+  });
+  await check(family,'unknown-length empty-so-far response can still transfer ownership',async()=>{
+   const h=harness(family),[m,r]=await begin(h,true);Object.assign(h.item,{totalBytes:-1,bytesReceived:0});
+   assert.equal((await m.submit(r,download)).status,'accepted');
+   assert.deepEqual(h.calls,['capture-prepare','cancel','capture-commit']);await m.finish(r);assert.equal(h.count(),0);
+  });
   for(const failure of ['none','reply','storage'])await check(family,'native review survives '+failure+' without browser resume or request replay',async()=>{
    const h=harness(family),[m,r]=await begin(h);
    h.hooks['capture-commit']=async(message,result)=>{h.native.set(message.captureToken,{status:'review'});Object.assign(result,{status:'review',id:undefined});if(failure==='reply')throw Error('lost review reply');};

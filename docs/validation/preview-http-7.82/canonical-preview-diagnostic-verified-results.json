@@ -1,0 +1,28 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "previewOnly": true,
+  "httpDiagnostics": true,
+  "scope": "Preview bootstrap only; no panel selection, transfer or completed-file validation",
+  "browser": "msedge",
+  "passed": 3,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794501099432,
+      "observerReadyEpochMs": 1794501099695
+    },
+    {
+      "name": "Preview bootstrap reaches a decoded 360p frame without selecting or downloading a file",
+      "passed": true
+    },
+    {
+      "name": "Audio selection pages have no script errors",
+      "passed": true
+    }
+  ]
+}

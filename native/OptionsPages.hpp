@@ -186,7 +186,7 @@ inline void Options::dialPage(){
  heading("Dial up / VPN settings",OptionsPageIcon::DialUp,53,40,256);
  auto enabled=C("Use Windows Dial Up / VPN Networking",yes(prefs,"DialEnabled"),9,30,281);bindFlag(enabled,"DialEnabled");
  G("Connection options",8,44,289,110);L("Connection:",20,62,65,10);auto choice=Q({},"",91,59,178);auto entries=std::make_shared<std::vector<DialEntry>>();auto status=L("",15,214,275,26);
- dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore);
+ dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore,[this]{applyConnectionCredentials();});
  auto selected=[entries,choice]{auto row=choice->GetCurSel();if(row<0||row>=(int)entries->size())throw std::runtime_error("Select a Windows connection.");return entries->at(row);};
  auto load=[this,selected,status]{try{dialCredentials->load(selected());}catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
  auto refresh=[this,entries,choice,status,load]{try{
@@ -196,7 +196,7 @@ inline void Options::dialPage(){
   if(entries->empty()){dialCredentials->clear();status->SetWindowText(L"No Windows connections found. Use More to create one.");}else load();
  }catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
  bindChange(choice,load);
- B("Connect...",91,243,80,[this,selected]{dialCredentials->applyCurrent();auto entry=selected();auto name=wide(entry.name),book=wide(entry.phonebook);RASDIALDLG info{};info.dwSize=sizeof(info);info.hwndOwner=m_hWnd;RasDialDlgW(book.empty()?nullptr:book.data(),name.data(),nullptr,&info);if(info.dwError)throw std::runtime_error("Windows connection failed ("+std::to_string(info.dwError)+").");});
+ B("Connect...",91,243,80,[this,selected]{auto entry=selected();applyConnectionCredentials([this,entry]{showConnectionDialog(entry);});});
  B("More...",233,243,57,[this,refresh]{collect();Form d("Windows connection options",602,410,this);std::vector<std::function<void()>> apply;d.init=[&]{dialUpOptions(d,prefs,apply);d.accept=[&]{for(auto& action:apply)action();d.close();};d.button("OK",407,376,83,d.accept);d.button("Cancel",502,376,83,[&]{d.close(IDCANCEL);});};d.DoModal();refresh();reload();});
  G("Redial options",8,158,289,54);L("Redial attempts (zero if endlessly):",15,172,150,10);auto attempts=E(std::to_string(num(prefs,"DialAttempts",3)),172,169,32);L("times",209,172,77,10);L("Time between redial attempts:",16,192,149,10);auto delay=E(std::to_string(num(prefs,"DialRetrySeconds",10)),172,189,32);L("seconds",209,192,79,10);bindText(attempts,"DialAttempts",true);bindText(delay,"DialRetrySeconds",true);
  bindings.push_back([this,selected]{try{auto entry=selected();prefs["DialEntry"]=entry.name;prefs["DialPhonebook"]=entry.phonebook;}catch(...){if(yes(prefs,"DialEnabled"))throw;}});refresh();

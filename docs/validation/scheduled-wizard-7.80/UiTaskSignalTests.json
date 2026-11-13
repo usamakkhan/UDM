@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "name": "Create a private message-only signal target",
+      "passed": true
+    },
+    {
+      "name": "A worker posts only the target's owned integer identity",
+      "passed": true
+    },
+    {
+      "name": "A newer target rejects an older completion identity even on the same HWND",
+      "passed": true
+    },
+    {
+      "name": "Disarmed targets do not post another completion",
+      "passed": true
+    },
+    {
+      "name": "Notifications cannot keep or access a destroyed target",
+      "passed": true
+    },
+    {
+      "name": "A fresh target continues to receive its own completions",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

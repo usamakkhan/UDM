@@ -1,0 +1,303 @@
+{
+  "version": "7.47",
+  "browserVersion": "0.71.11",
+  "build": "passed",
+  "incrementalBase": "7.46",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/HttpGzipDecoder.hpp",
+      "sha256": "7956BAA50EB4A8B51EF553FBF0D33F7EDB50B8471638140BAD112ACAD0D4C272"
+    },
+    {
+      "path": "native/HttpGzipDecoderTests.cpp",
+      "sha256": "D82442326AE3F859260F992AD9111E41B50E3FE8E3A6575239F950BA5BAA9E44"
+    },
+    {
+      "path": "native/HttpGzipTransferTests.cpp",
+      "sha256": "396F7638C3C5CD48D55BD483CE9EF2096132E4CB0AB58B4A62646E0530090058"
+    },
+    {
+      "path": "native/PostResponse.hpp",
+      "sha256": "43224E9D0A9FB873AAE19B90747D473AB93DBA4C92A0F8F562758A8C0A7D36C4"
+    },
+    {
+      "path": "native/QueueRetry.hpp",
+      "sha256": "418776B07BB4D7E237004F95AEB4DECC7D524AAA779A7B5D7EA989E7EED31D3C"
+    },
+    {
+      "path": "native/FileWorkflows.cpp",
+      "sha256": "C96FACF093227F0BB84873951C703B88B7325DA04737F968F80DEB608893D939"
+    },
+    {
+      "path": "native/HttpPostGzipTests.cpp",
+      "sha256": "2B6436F66F19A6F6578989564B07855E3761254CD39608054C3A3F8C0E3AF4A4"
+    },
+    {
+      "path": "native/HttpPostIdentityTests.cpp",
+      "sha256": "087A658645CCF91BBF9B66C89C4C93CB722A5967AD8F96C552A54DAE03C04C70"
+    },
+    {
+      "path": "native/ContentSniffNoticeTests.cpp",
+      "sha256": "31625150836121C7D9EF1676718FECA2188A0EBB5A83706712E5D946C712A8B8"
+    },
+    {
+      "path": "tests/http-post-identity.native-live.cjs",
+      "sha256": "B9C1EFD5A47C1FABD0BA90C369F191EBE0F8BDA8ACBD2DB02A8C23389372F785"
+    },
+    {
+      "path": "native/ProgressDialogUiTests.cpp",
+      "sha256": "82AD601501AA5BA4EFCE38AD9CF95593D7100EF83CD5D79BF07F85DA5950B8C7"
+    },
+    {
+      "path": "tests/http-post-gzip.native-live.cjs",
+      "sha256": "DED3C078C2FDFCE38021B669D61A3A3B5947099232F76BBF951D343FC7B85E96"
+    },
+    {
+      "path": "tests/http-post-encoding.paired.cjs",
+      "sha256": "52A5F0EEB537580FFDDCD07A0D4F67AE836E7B950ECAF53ACFADE162F1FF3F87"
+    },
+    {
+      "path": "benchmarks/speed/idm_post_probe.cpp",
+      "sha256": "C9840E55AE53EB12986AE2D6B1FBA1D1821CC4E49240CCE1F4CB3BCB9011A99C"
+    },
+    {
+      "path": "native/build.ps1",
+      "sha256": "F9E4F6645D61BCC034D44790E4130D6A4F2F2E6CD8A5F3374102DA2F4373A8A9"
+    },
+    {
+      "path": "native/HttpRepresentation.hpp",
+      "sha256": "5C2A7400737737ADF84347C7E6F2F8BB0F5F984A7E07A27300DD512E670A9004"
+    },
+    {
+      "path": "native/MediaSize.hpp",
+      "sha256": "F66713329D6152E57F142385DF24FF6CBE9E915591FD10F8857C84036AFDB55E"
+    },
+    {
+      "path": "native/StreamProgress.hpp",
+      "sha256": "C684010E12630414C7FEDFD0E9D2680A2048287AD56E2A0003D5258DC5069C78"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "sha256": "63CFD9A2688B9EB9FBF0F7DA1098B872BEF0C9F2A3CF25BE07B1A010BA2EB7BC"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "424196BD2CFA0128E778E59BEE2D126CAB1AC05E345443C74418D5036EE5E44C"
+    },
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "BE65060F886926F0C3C1A6BC2F86D5F1D63EBDEE1E5030B10B3B603E84B3BC2C"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "F08779F3E9D9685875043096EAC49E8E3C390ED9D0D77AAF299256981AF2A234"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D700F46E9700516D8E29770026B81E1C543075856CA36BD78CB3BE8F513698BC"
+    },
+    {
+      "path": "native/ContentSniff.hpp",
+      "sha256": "CCAC54F3BDD67FC9998D1602753BDFE91FA4752135236F6C3C703BAFC21B6946"
+    },
+    {
+      "path": "native/ContentSniffNamingTests.cpp",
+      "sha256": "3BBC577564D292133A78807D0EBC761E9BA942F53ACB7C1547158733F7662697"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "sha256": "B4063C0FCF6ED07F445139D3EED809C66F369A7DADEF8019E7FAABC9515EDC9F"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "B4FF004D41B128B5FE2DFD97223700499DA248C74D963C203342DB4D1213466A"
+    },
+    {
+      "path": "native/ProgressRateHistoryTests.cpp",
+      "sha256": "4037083906BD564C4A89C2D57FEB4304B122BBADB5B0CC77B78D64B829834C40"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "A4767EDA97B84B70D4194007B5D3FFD3DFE60806BD8A8CA41F4FAD3E7C81396B"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "E9B72ABA6ED1E9AAC42B1A831E77974FD4F509422854B5244DFA7BB8C4D151F7"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "6C79898A999A32F2103739263634B3BA5D906ACF598BF146208F1D13EA9C189B"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "853DF13C6D0BFD3C9AEEDC158B6466ED7EF03A5B932537822DC54505686FB918"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "7D4DDC7F90CEC5F7B105D28DA27E2DAFCEC8A652913930A847A9C32C56FC4DD2"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "DEAB58FBE96F422CE95CC97E83B0127F67C70A8FA493BE75D540D76CD887E953"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "path": "browser/firefox/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "path": "tests/browser.test.cjs",
+      "sha256": "709376EECED8685E41FAEB414FC0A6C15816FE51730AE340CC6353334E7F41B9"
+    },
+    {
+      "path": "tests/browser-preflight-state.test.cjs",
+      "sha256": "C0070FB74175D03F978CAC0DC5C798296B3A7E5D85408A868125091394048044"
+    },
+    {
+      "path": "tests/browser-received-response.test.cjs",
+      "sha256": "A808C90EC3DA3F39408C63ACEC800FA305B97518E1F9A4ADB6A55AF8377EA650"
+    },
+    {
+      "path": "tests/browser-download-byte-counts.native-live.cjs",
+      "sha256": "7B3FCC86E0522748399C0831D5BBECA2E48153B2BA63B450B057A70D4305BE7A"
+    },
+    {
+      "path": "tests/capture-transaction.test.cjs",
+      "sha256": "7F959AD3B0CF9F551F96BA44AF866A31390EEA656018E923DB8856D3A7CC7EA4"
+    },
+    {
+      "path": "tests/capture-recovery.test.cjs",
+      "sha256": "A38F2607657CBEB70DBD699B8C475C1D0D1D8864A9B7468FEB99EBBAB46E4AB6"
+    },
+    {
+      "path": "browser/chromium/capture-recovery.js",
+      "sha256": "B273563813D8732E46908ABDD8126AB37C252B9C90A1972FF977B7549B5C0E5C"
+    },
+    {
+      "path": "browser/firefox/capture-recovery.js",
+      "sha256": "B273563813D8732E46908ABDD8126AB37C252B9C90A1972FF977B7549B5C0E5C"
+    },
+    {
+      "path": "browser/chromium/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "browser/firefox/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "path": "tests/panel-track-refresh.browser.cjs",
+      "sha256": "77A6FF4E3F786933635C94AB0002565A13354A97034E2493F2383A7E3E2ED5ED"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "path": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "path": "tests/youtube-pending-captures.browser.cjs",
+      "sha256": "D2F0A2B8A3777D3EAE242BB9FF75CF8B632605325008D9F9BDC42A232E2765D7"
+    },
+    {
+      "path": "tests/youtube-stream-readers.browser.cjs",
+      "sha256": "C1E98D1021D99CA93C0B054EF26D938BCC93879C361E5A730B246E42C267D70F"
+    },
+    {
+      "path": "tests/streaming-capture.test.cjs",
+      "sha256": "987D5AB8FDD4492935991D659A3554CF0D665976307E8A2C54A795792E614251"
+    },
+    {
+      "path": "tests/youtube-player-readers.browser.cjs",
+      "sha256": "E343919BA22E80D2295B6FFA64E6C8A80BBF0D4A8698E687BA0A99AC28F813C0"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "E777E5D4EE1BC3791B3D3122EDCF9621C916DFBF837B882F0B49235898C29BAD"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "7F8F9CE0BBDC656CE5E8FF263ECDB0EBD37A4B9572074A762BB7662247159264"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "A9901D1C18AEC5F61764AC5D562100D363D4FCFBCC3B173DB5EACB1DF36877BC"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.47",
+      "sha256": "47B95A3FC2A9A022A66835782E804B7F5D343B9702DDC98F28898BBFE183FA39"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.47",
+      "sha256": "2F12E9A0EB52641AC06A902314D7253CF2E43A51EA0BD8E01FE67CFF4B492D5B"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.47",
+      "sha256": "0A0CCD3E5C7ADB282B64B52B72F34CD38D56A6037E3D1088ABAB77637638AF16"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.47",
+      "sha256": "B727AA469ADBD850ACAC4F071B066211ADD0779A76A057996EF60DE5AE8E7C1D"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.47",
+      "sha256": "9B40774416DCB0FDC910E32040FE79F9AD0F7A0DE71E4BCCB251F7309C04C2E3"
+    }
+  ],
+  "output": "%LOCALAPPDATA%\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "qualification": "Full native build passed; final sources unchanged through targeted qualification. Development build only; not installed, packaged or published."
+}

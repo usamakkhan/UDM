@@ -1,0 +1,678 @@
+{
+  "version": "7.26",
+  "browserVersion": "0.70.90",
+  "build": "passed",
+  "incrementalBase": "7.25",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "sha256": "1C82AC7645EB5F367A36E67914EADDC833C810E08143F59D7666D8F975E4D373"
+    },
+    {
+      "path": "native/PropertiesRequestDraftTests.cpp",
+      "sha256": "D70F2396D920F6F03584BF0D59935D1BDC5D1462971BAB7981000F3675A9C488"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "sha256": "2FA65CBC3E69A9EEBED9CCAE7ECAAEBDBBEC002B1258D56732A91993B2685683"
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "sha256": "D99C14B1D783DFB0119A64C46F3686A76E67E0289EB1496C656FDD5653F56C67"
+    },
+    {
+      "path": "native/ProgressRateHistory.hpp",
+      "sha256": "6E240C892B79074909547DE3097F93CF3A5698A27D64B50EBEEF14B9F05C9498"
+    },
+    {
+      "path": "native/ProgressGraphUi.hpp",
+      "sha256": "DE49B06975164859B925EF407FEFF9301FC43E034D55149D0D83BCF0466BE75E"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "sha256": "82ACC37D76F2EBF6D8652C94C5DFC82E904404F5B69C933F9255027E6475ED93"
+    },
+    {
+      "path": "native/Ui.hpp",
+      "sha256": "23E1BD44CE94E27BAA63F1348DF78032B67F7033C14509C4C3CBD22B1ED82114"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "A373F8767F28C355CF85DAA804830E7BB2097844AFDF52F767C702119879D071"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7467721162AC17924D84140B79D9FF1BD008B4F6732B451B7F676E3833D47189"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "094F3E6FDB595315B566A40A97D3CE070DDBB80C916C333F22FD5804539EF52A"
+    },
+    {
+      "path": "browser/chromium/capture.js",
+      "sha256": "1FB38F16D7EBD5791C481E0AA43EC525A72B0FC08045788D65799F38DDF11777"
+    },
+    {
+      "path": "browser/firefox/capture.js",
+      "sha256": "1FB38F16D7EBD5791C481E0AA43EC525A72B0FC08045788D65799F38DDF11777"
+    },
+    {
+      "path": "tests/youtube-player-races.browser.cjs",
+      "sha256": "B0DB5510EB0859C0E73C842B034E3FCCE53C1615C36440089A5C333E45BF97FF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "E0F3ADEE9FBFF506440B5D4B9082A10E702F7DC77FF8303651BF03252F76C39F"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "F877FBD17F44C95244097160E52A1CA8F5889D6F5E122370946BE13946284832"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.26",
+      "sha256": "484810AFD5917512F8FC1B731C7B888063D6A63BC0795D52367A39BBF18ADEEB"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.26",
+      "sha256": "6EBB34F8D2231369D53C000F0B398A4D648B1D1E73130B12F4A5BF49C6517AF5"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.26",
+      "sha256": "B725C47FD0A3473883999D6232B70B52D809E5CE99303021B02284E2136CEFB5"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.26",
+      "sha256": "36A836E9E14593AFA23C862CA09BE737CB79FF061ACBF57D8BDE1C3EB0572E52"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.26",
+      "sha256": "9B6F9C7D1C37ED478DF1CEBEA0FB8B6ADBD7FBD656FD4DCA22F492C8FB2B9811"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Existing concurrent Core.cpp changes preserved.",
+  "validation": {
+    "passed": true,
+    "browserRaceChecks": 52,
+    "browserRaces": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "chromium capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "chromium observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox capture-first back and forward visits retire an outstanding request",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first newest player request wins reversed fetch completion",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-video route revisit rejects an earlier fetch",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first navigation while reading a cloned body rejects its metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier text XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same-route navigation rejects earlier json XHR",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first reopening an unsent XHR cannot retain its old player listener",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first initial snapshot cannot overwrite accepted API metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first earlier page objects cannot reappear after a visit changes",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first same URL and rejected history updates preserve the catalog and exceptions",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first a player response for another video cannot enter this visit",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first an unsuccessful XHR response cannot become playable metadata",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first XHR ownership begins at send after open precedes navigation",
+          "passed": true
+        },
+        {
+          "name": "firefox observer-first back and forward visits retire an outstanding request",
+          "passed": true
+        }
+      ],
+      "passedChecks": 52,
+      "failedChecks": 0,
+      "scope": "Owned responses in headless Edge; both bundles and both observer wrapping orders. No personal browser profile or real video download."
+    },
+    "baseline": {
+      "captureSha256": "ED44256E26240BD6D9C5A25984577213AB214C7E7393F8E1E4299D1A22DD096F",
+      "result": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "chromium capture-first newest player request wins reversed fetch completion",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium capture-first same-video route revisit rejects an earlier fetch",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium capture-first navigation while reading a cloned body rejects its metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Old stream'\n- 'New'\n"
+          },
+          {
+            "name": "chromium capture-first same-route navigation rejects earlier text XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium capture-first same-route navigation rejects earlier json XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium capture-first reopening an unsent XHR cannot retain its old player listener",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Unrelated'\n- null\n"
+          },
+          {
+            "name": "chromium capture-first initial snapshot cannot overwrite accepted API metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== 'New'\n"
+          },
+          {
+            "name": "chromium capture-first earlier page objects cannot reappear after a visit changes",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== null\n"
+          },
+          {
+            "name": "chromium capture-first same URL and rejected history updates preserve the catalog and exceptions",
+            "passed": true
+          },
+          {
+            "name": "chromium observer-first newest player request wins reversed fetch completion",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium observer-first same-video route revisit rejects an earlier fetch",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium observer-first navigation while reading a cloned body rejects its metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Old stream'\n- 'New'\n"
+          },
+          {
+            "name": "chromium observer-first same-route navigation rejects earlier text XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium observer-first same-route navigation rejects earlier json XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "chromium observer-first reopening an unsent XHR cannot retain its old player listener",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Unrelated'\n- null\n"
+          },
+          {
+            "name": "chromium observer-first initial snapshot cannot overwrite accepted API metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== 'New'\n"
+          },
+          {
+            "name": "chromium observer-first earlier page objects cannot reappear after a visit changes",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== null\n"
+          },
+          {
+            "name": "chromium observer-first same URL and rejected history updates preserve the catalog and exceptions",
+            "passed": true
+          },
+          {
+            "name": "firefox capture-first newest player request wins reversed fetch completion",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox capture-first same-video route revisit rejects an earlier fetch",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox capture-first navigation while reading a cloned body rejects its metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Old stream'\n- 'New'\n"
+          },
+          {
+            "name": "firefox capture-first same-route navigation rejects earlier text XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox capture-first same-route navigation rejects earlier json XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox capture-first reopening an unsent XHR cannot retain its old player listener",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Unrelated'\n- null\n"
+          },
+          {
+            "name": "firefox capture-first initial snapshot cannot overwrite accepted API metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== 'New'\n"
+          },
+          {
+            "name": "firefox capture-first earlier page objects cannot reappear after a visit changes",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== null\n"
+          },
+          {
+            "name": "firefox capture-first same URL and rejected history updates preserve the catalog and exceptions",
+            "passed": true
+          },
+          {
+            "name": "firefox observer-first newest player request wins reversed fetch completion",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox observer-first same-video route revisit rejects an earlier fetch",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox observer-first navigation while reading a cloned body rejects its metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Old stream'\n- 'New'\n"
+          },
+          {
+            "name": "firefox observer-first same-route navigation rejects earlier text XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox observer-first same-route navigation rejects earlier json XHR",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Old' !== 'New'\n"
+          },
+          {
+            "name": "firefox observer-first reopening an unsent XHR cannot retain its old player listener",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Unrelated'\n- null\n"
+          },
+          {
+            "name": "firefox observer-first initial snapshot cannot overwrite accepted API metadata",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== 'New'\n"
+          },
+          {
+            "name": "firefox observer-first earlier page objects cannot reappear after a visit changes",
+            "passed": false,
+            "error": "Expected values to be strictly equal:\n\n'Initial' !== null\n"
+          },
+          {
+            "name": "firefox observer-first same URL and rejected history updates preserve the catalog and exceptions",
+            "passed": true
+          }
+        ],
+        "passedChecks": 4,
+        "failedChecks": 32,
+        "scope": "Owned responses in headless Edge; both bundles and both observer wrapping orders. No personal browser profile or real video download."
+      },
+      "coverageNote": "Baseline has the original 36 cases. Final run includes those same 36 and 16 additional cases; baseline harness hash was not separately captured."
+    },
+    "panelChecks": 12,
+    "panels": [
+      {
+        "bundle": "chromium",
+        "channel": "msedge",
+        "results": [
+          {
+            "name": "Ads and readiness for another video leave all panels hidden",
+            "passed": true
+          },
+          {
+            "name": "A verified video ID cannot choose between ambiguous players",
+            "passed": true
+          },
+          {
+            "name": "Only the primary player shows and prepares verified choices before media metadata",
+            "passed": true
+          },
+          {
+            "name": "The first click shows both prepared choices without requesting formats again or starting a download",
+            "passed": true
+          },
+          {
+            "name": "Independent ad flags and expired readiness suppress the panel",
+            "passed": true
+          },
+          {
+            "name": "A sole player works without the primary class and normal playback needs no marker",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "bundle": "firefox",
+        "channel": "msedge",
+        "results": [
+          {
+            "name": "Ads and readiness for another video leave all panels hidden",
+            "passed": true
+          },
+          {
+            "name": "A verified video ID cannot choose between ambiguous players",
+            "passed": true
+          },
+          {
+            "name": "Only the primary player shows and prepares verified choices before media metadata",
+            "passed": true
+          },
+          {
+            "name": "The first click shows both prepared choices without requesting formats again or starting a download",
+            "passed": true
+          },
+          {
+            "name": "Independent ad flags and expired readiness suppress the panel",
+            "passed": true
+          },
+          {
+            "name": "A sole player works without the primary class and normal playback needs no marker",
+            "passed": true
+          }
+        ]
+      }
+    ],
+    "panelFixtureSha256": "DBB99089B6970EFB60FB9F284B74D96F77FFC4921C40D662AE144138A8765697",
+    "nodeSuites": [
+      {
+        "test": "capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "DC5224E7096471208C8F3BE307A1AA6DCF388F1603908D87B5857B88737FABE0",
+        "stdout": "PASS early player response capture preserves request, response body and promise\r\nPASS later partial player metadata retains early capture URLs\r\nPASS ad response cannot replace current video catalog\r\nPASS unrelated endpoints and mismatched preparation are rejected\r\nPASS same-itag audio languages and bitrate metadata survive repeated capture\r\nPASS current player metadata wins over the initial page snapshot\r\nPASS a changed format revision does not inherit a previous direct URL\r\nALL 7 CAPTURE CHECKS PASSED\r\n",
+        "logSha256": "D4498164AEF2DF8F3CAE21DE13251FD5B8FEAABB0917404AA121C40F9F049653"
+      },
+      {
+        "test": "youtube-ad-markers.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "D9928E9F437C203A40D725B09821FCD21F9CFE9CA1935EDBE1C4A3B56CE6A57C",
+        "stdout": "{\"passed\":74,\"failed\":0}\r\n",
+        "logSha256": "DB44EC317668CE49E25A330C4B48568D879B2CECA53650C87A833DB6A84D86ED"
+      },
+      {
+        "test": "youtube-ad-page-capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "8AE391EF67DA065387D6478096B80179A22EFA0414FC214886BBB8A3F3E8E98C",
+        "stdout": "{\"passed\":192,\"failed\":0}\r\n",
+        "logSha256": "346CF669F121989E32FFDD48F13B0873C0B24EDDE1240216CAF8B8F2C7F57931"
+      },
+      {
+        "test": "streaming-capture.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "4DFC10D0B525E4CE03D695D1D86C03FB65E333019374A2D5CCFF8FA38E2CCCC0",
+        "stdout": "PASS Browser API captures a matched successful streaming POST without relying on page fetch wrappers\r\nPASS Saved streaming sessions revalidate ad markers after an extension reload\r\nPASS Streaming offers stay bound to video, frame and document\r\nPASS Returning to the same video cannot reuse a capture from its previous visit\r\nPASS An older request finishing late cannot replace the latest accepted capture\r\nPASS Navigation clearing removes streaming request context\r\nPASS A delayed identity lookup cannot restore a capture after navigation\r\nPASS A response from a request removed by navigation cannot create a new offer\r\nPASS Redirected and rejected streaming responses are not offered\r\nPASS A raw MP4 response is not mistaken for framed UMP\r\nPASS Ads/unmatched players, changed documents and private tabs do not create capture offers\r\nPASS Multi-chunk browser request bodies are reconstructed exactly\r\nPASS Unavailable, file-backed, oversized and malformed request bodies are rejected\r\nPASS Unassociated worker requests are counted instead of assigned to an arbitrary player\r\nPASS Response document identity must match the captured request\r\nPASS Failed requests release their pending capture\r\nPASS Streaming observation is restricted to HTTPS playback endpoints\r\nPASS A downloadable codec at the selected quality takes priority over an unavailable preferred codec\r\nPASS Framed SABR URLs are never sent as ordinary MP4 links\r\nPASS An explicit ad state blocks the format menu even if the player retains the content video ID\r\nPASS Quality preparation supports Shorts and embedded players\r\nALL 21 VIDEO CAPTURE REGRESSIONS PASSED\r\n",
+        "logSha256": "E03B7F5621D1E80395D5F6446371E8FC8722C59168AC01FDE35CBEE210116DC8"
+      },
+      {
+        "test": "youtube-audio.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "9E81027077597A25FF7135116AB7AE2A39C0D24560FA3757EC88F669FEFBD151",
+        "stdout": "PASS Same-itag audio languages remain distinct and show codec and bitrate\r\nPASS Live and unrelated-video audio are absent\r\nPASS Reject muxed video as an audio-only file\r\nPASS Reject Opus/WebM as an audio-only file\r\nPASS Reject unknown codec as an audio-only file\r\nPASS Reject wrong itag as an audio-only file\r\nPASS Reject missing resource as an audio-only file\r\nPASS Reject missing expiry as an audio-only file\r\nPASS Reject expired as an audio-only file\r\nPASS Reject non-numeric expiry as an audio-only file\r\nPASS Reject lookalike host as an audio-only file\r\nPASS Reject embedded credentials as an audio-only file\r\nPASS Reject custom port as an audio-only file\r\nPASS Reject SABR as an audio-only file\r\nPASS Reject UMP as an audio-only file\r\nPASS Reject sequence stream as an audio-only file\r\nPASS Reject untransformed n as an audio-only file\r\nPASS Reject signed byte range as an audio-only file\r\nPASS Unsigned playback byte limits are removed for a whole-file download\r\nPASS Captured default audio cannot replace another language with the same itag\r\nPASS Matching observed playback supplies a transformed direct audio URL\r\nPASS An older audio revision cannot supply the current track\r\nPASS Ambiguous duplicate track metadata is rejected\r\nPASS Selected audio uses one ordinary native add without player retrieval, SABR or video\r\nPASS Audio-only metadata produces a useful menu without signed URLs or native prefetch\r\nPASS Runtime message dispatch acknowledges the audio job\r\nPASS The renewed audio URL supplies the only request context and the current size\r\nPASS A second URL change during request preparation cannot submit stale audio\r\nPASS No native job after document navigation\r\nPASS No native job after changed video\r\nPASS No native job after advertisement\r\nPASS No native job after removed selected language\r\nPASS No native job after changed resource\r\nPASS No native job after changed metadata revision\r\nPASS No native job after changed signed revision\r\nPASS No native job after fallback document navigation\r\nPASS No native job after unknown document identity\r\nPASS Firefox-style document binding uses unchanged performance timeOrigin\r\nPASS Desktop panel policy applies to audio-only handoff\r\nPASS Private tabs cannot hand off audio\r\nPASS Sender document must match the injected player\r\nPASS A forged audio selection cannot supply its own URL\r\nPASS Native rejection is reported without success or retry\r\nPASS Real page reader preserves bounded audio metadata and excludes DRM tracks\r\nPASS Real page reader retains IDM-style nested reported content length\r\nPASS Real page reader rejects an active advertisement\r\nALL 46 YOUTUBE AUDIO CHECKS PASSED\r\n",
+        "logSha256": "206DE63273CFD36B93B00F62ED29440597B0AFB57A1840B8C853BB3210871A2A"
+      },
+      {
+        "test": "video-readiness.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "00BFCD8173B7B0DB27D3638440E20424F3A1764278A136BE22202D41483D6362",
+        "stdout": "PASS An unobserved combined stream cannot outrank a usable same-quality adaptive selection\r\nPASS An unresolved combined stream alone keeps its actual quality without claiming a ready URL\r\nPASS An unobserved n value in the video prevents direct pair handoff\r\nPASS An unobserved n value in default audio prevents direct pair handoff\r\nPASS The next usable default audio can supply a valid pair\r\nPASS A secondary-language track cannot silently replace default audio\r\nPASS Successful playback with matching resource identity enables a combined stream\r\nPASS A same-itag advertisement cannot make the content URL ready\r\nPASS Expired playback observations cannot promote unresolved links\r\nPASS Observation flags must be explicit booleans\r\nPASS A combined URL without n retains the existing ready-file path\r\nPASS An observed URL still needs a valid expiry\r\nPASS Playback-scoped signed ranges are never expanded into a full-file URL\r\nPASS An unresolved MP4 adaptive route wins over an unsupported combined fallback without inventing heights\r\nPASS Audio-only selection uses the same readiness rule\r\nPASS Observed adaptive video and audio retain their transformed parameters\r\nPASS Quality labels render clean separators without mojibake\r\nALL 17 VIDEO READINESS CHECKS PASSED\r\n",
+        "logSha256": "993F99244E00028F1D1968868028EDA6F3BFF00BEAB6394894F6BA5266027503"
+      },
+      {
+        "test": "format-context.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "4DB68757892993B949970680422689C8BF43E4A9D7E12976F3BB5A5B3AF113F4",
+        "stdout": "PASS Document-bound panel formats do not wait on unrelated current-tab lookup or document idle\r\nPASS Navigation to a different document cannot populate the old panel\r\nPASS Private content-script contexts remain rejected\r\nPASS Missing injection document identity retains a current-tab verification\r\nPASS Legacy senders retain both original current-tab checks\r\nPASS Download handoff cannot request the display-only shortcut or trust a stale sender tab\r\nPASS Popup format requests still verify current browser tab state\r\nPASS Playlist navigation accepts current player with original sender URL\r\nPASS Playlist fallback rejects changed or missing document identity\r\nPASS Playlist fallback rejects changed or missing document identity\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback rejects untrusted or unbound sender\r\nPASS Playlist fallback verifies current tab video\r\nALL 14 FORMAT CONTEXT CHECKS PASSED\r\n",
+        "logSha256": "EC458B597AA3F3F47C8947B476F38A7F41F39DB18702C9032F8FC8F6D5BCA3C4"
+      },
+      {
+        "test": "youtube-captions.test.cjs",
+        "exitCode": 0,
+        "sourceSha256": "9BCAE3E5660C44BBD51F2CEEF081018B501B3B7702DE24F2738DCCDB957D8E29",
+        "stdout": "PASS chromium manual and ASR tracks have distinct TTML entries\r\nPASS chromium matched observed address preserves session and signed parameters\r\nPASS chromium different video, language or signature cannot contribute a session\r\nPASS chromium signed format and expired or translated tracks are rejected\r\nPASS chromium relative YouTube caption URLs resolve and identical rows deduplicate\r\nPASS firefox manual and ASR tracks have distinct TTML entries\r\nPASS firefox matched observed address preserves session and signed parameters\r\nPASS firefox different video, language or signature cannot contribute a session\r\nPASS firefox signed format and expired or translated tracks are rejected\r\nPASS firefox relative YouTube caption URLs resolve and identical rows deduplicate\r\nALL 10 YOUTUBE CAPTION CHECKS PASSED\r\n",
+        "logSha256": "F7DCEFC3CB46C07C4F1808477ECFA7DC34AEBB0834796B3A0AAFEBCBD1B6C570"
+      }
+    ],
+    "excludedRunnerError": {
+      "requested": "tests/formats.test.cjs",
+      "reason": "Nonexistent test name; Node failed to locate it. Correct format-context.test.cjs and caption suite were then run and passed.",
+      "log": "node:internal/modules/cjs/loader:1503\r\n  throw err;\r\n  ^\r\n\r\nError: Cannot find module 'D:\\UDM\\tests\\formats.test.cjs'\r\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1500:15)\r\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\r\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1116:12)\r\n    at Module._load (node:internal/modules/cjs/loader:1285:25)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\r\n    at node:internal/main/run_main_module:33:47 {\r\n  code: 'MODULE_NOT_FOUND',\r\n  requireStack: []\r\n}\r\n\r\nNode.js v24.17.0\r\n"
+    },
+    "installedVersion": "7.11",
+    "installedBrowser": "0.70.75",
+    "installerCreated": false,
+    "personalBrowserProfileUsed": false,
+    "personalCatalogUsed": false,
+    "realVideoDownloaded": false,
+    "limitations": [
+      "Both Chromium and Firefox bundle code ran in headless Edge; actual Firefox engine and activation not exercised.",
+      "Owned injected responses only, not live public YouTube pre-roll, Shorts/embed, desktop handoff or final video output.",
+      "Obsolete player inspection results are rejected, but immediate reader cancellation and a concurrent-inspection limit remain follow-ups.",
+      "Fresh clones of stale player getter metadata and legitimate same-object mutation across visits need explicit revision/source authority qualification.",
+      "Full-suite acceptance, installed 7.26 behavior and paired IDM timing remain outstanding."
+    ]
+  }
+}

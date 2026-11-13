@@ -1,0 +1,2173 @@
+{
+  "desktop": "7.55",
+  "browser": "0.71.19",
+  "status": "All native targets built; focused GET/POST and actual-executable comparison passed; not installed or packaged",
+  "build": "gzip-alias-7.55-build.json",
+  "checks": 258,
+  "tests": [
+    {
+      "method": "get",
+      "coding": "gzip",
+      "checks": 37,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/get-canonical",
+      "resumeResponse": "gzip",
+      "checksDetail": [
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch starts before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch reaches verified confirmation without publishing",
+          "passed": true
+        },
+        {
+          "name": "Gzip aliases persist the canonical representation for output size and retained-response reuse",
+          "passed": true
+        },
+        {
+          "name": "Before Start size is verified decoded output and target is absent",
+          "passed": true
+        },
+        {
+          "name": "Start confirms the existing prefetched response",
+          "passed": true
+        },
+        {
+          "name": "Final file exactly matches the size shown before Start",
+          "passed": true
+        },
+        {
+          "name": "Download Later fixture has fully decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Ending confirmation keeps the destination unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume reuses verified encoded bytes without a second response",
+          "passed": true
+        },
+        {
+          "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Pause retains a genuine partial encoded response",
+          "passed": true
+        },
+        {
+          "name": "Encoded-byte range resume decodes to the complete original file",
+          "passed": true
+        },
+        {
+          "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+          "passed": true
+        },
+        {
+          "name": "Output projection leaves authoritative wire metadata unchanged",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 524288,
+        "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+        "gzipBytes": 1943,
+        "requests": [
+          {
+            "route": "known",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "unknown",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "concatenated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 2105
+          },
+          {
+            "route": "empty",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 19
+          },
+          {
+            "route": "crc",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "truncated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1941
+          },
+          {
+            "route": "trailing",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1943
+          },
+          {
+            "route": "unsupported",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "prefetch",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "deferred",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "paused",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 524380
+          },
+          {
+            "route": "paused",
+            "range": "bytes=262080-524380",
+            "ifRange": "\"gzip-fixture-v1\"",
+            "start": 262080,
+            "end": 524380
+          }
+        ]
+      }
+    },
+    {
+      "method": "post",
+      "coding": "gzip",
+      "checks": 49,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/post-canonical",
+      "resumeResponse": null,
+      "checksDetail": [
+        {
+          "name": "Opening fresh form File Info never submits the POST speculatively",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Reopening File Info verifies a completed form response without submitting again",
+          "passed": true
+        },
+        {
+          "announcedBytes": 140000,
+          "name": "A verified decoded size is available before Start while the target remains absent",
+          "passed": true
+        },
+        {
+          "name": "Start publishes exactly the form file size shown before confirmation",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+          "passed": true
+        },
+        {
+          "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+          "passed": true
+        },
+        {
+          "name": "Confirmation remains usable after a rejected transfer-property edit",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Completed form response is ready for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later leaves the saved form response unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume after Download Later uses the saved form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Changing the form request invalidates reuse and sends no replacement request",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "A damaged saved response fails Resume without replaying POST",
+          "passed": true
+        },
+        {
+          "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+          "passed": true
+        },
+        {
+          "name": "Interrupted POST has no complete receipt and stays failed",
+          "passed": true
+        },
+        {
+          "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Request-bound completed response survives catalog reopening",
+          "passed": true
+        },
+        {
+          "name": "A reopened catalog publishes saved form bytes without another POST",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 140000,
+        "payloadSha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8",
+        "wireBytes": 481,
+        "requestBodyBytes": 11,
+        "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "requests": [
+          {
+            "route": "post-known",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-unknown",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-redirect",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "redirected-get",
+            "method": "GET",
+            "bytes": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "range": ""
+          },
+          {
+            "route": "post-info",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-confirmed-hash",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-later",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-changed",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-loss",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-reopened",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          }
+        ]
+      }
+    },
+    {
+      "method": "get",
+      "coding": "x-gzip",
+      "checks": 37,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/get-alias",
+      "resumeResponse": "gzip",
+      "checksDetail": [
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch starts before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch reaches verified confirmation without publishing",
+          "passed": true
+        },
+        {
+          "name": "Gzip aliases persist the canonical representation for output size and retained-response reuse",
+          "passed": true
+        },
+        {
+          "name": "Before Start size is verified decoded output and target is absent",
+          "passed": true
+        },
+        {
+          "name": "Start confirms the existing prefetched response",
+          "passed": true
+        },
+        {
+          "name": "Final file exactly matches the size shown before Start",
+          "passed": true
+        },
+        {
+          "name": "Download Later fixture has fully decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Ending confirmation keeps the destination unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume reuses verified encoded bytes without a second response",
+          "passed": true
+        },
+        {
+          "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Pause retains a genuine partial encoded response",
+          "passed": true
+        },
+        {
+          "name": "Encoded-byte range resume decodes to the complete original file",
+          "passed": true
+        },
+        {
+          "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+          "passed": true
+        },
+        {
+          "name": "Output projection leaves authoritative wire metadata unchanged",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 524288,
+        "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+        "gzipBytes": 1943,
+        "requests": [
+          {
+            "route": "known",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "unknown",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "concatenated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 2105
+          },
+          {
+            "route": "empty",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 19
+          },
+          {
+            "route": "crc",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "truncated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1941
+          },
+          {
+            "route": "trailing",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1943
+          },
+          {
+            "route": "unsupported",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "prefetch",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "deferred",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "paused",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 524380
+          },
+          {
+            "route": "paused",
+            "range": "bytes=262080-524380",
+            "ifRange": "\"gzip-fixture-v1\"",
+            "start": 262080,
+            "end": 524380
+          }
+        ]
+      }
+    },
+    {
+      "method": "post",
+      "coding": "x-gzip",
+      "checks": 49,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/post-alias",
+      "resumeResponse": null,
+      "checksDetail": [
+        {
+          "name": "Opening fresh form File Info never submits the POST speculatively",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Reopening File Info verifies a completed form response without submitting again",
+          "passed": true
+        },
+        {
+          "announcedBytes": 140000,
+          "name": "A verified decoded size is available before Start while the target remains absent",
+          "passed": true
+        },
+        {
+          "name": "Start publishes exactly the form file size shown before confirmation",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+          "passed": true
+        },
+        {
+          "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+          "passed": true
+        },
+        {
+          "name": "Confirmation remains usable after a rejected transfer-property edit",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Completed form response is ready for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later leaves the saved form response unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume after Download Later uses the saved form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Changing the form request invalidates reuse and sends no replacement request",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "A damaged saved response fails Resume without replaying POST",
+          "passed": true
+        },
+        {
+          "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+          "passed": true
+        },
+        {
+          "name": "Interrupted POST has no complete receipt and stays failed",
+          "passed": true
+        },
+        {
+          "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Request-bound completed response survives catalog reopening",
+          "passed": true
+        },
+        {
+          "name": "A reopened catalog publishes saved form bytes without another POST",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 140000,
+        "payloadSha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8",
+        "wireBytes": 481,
+        "requestBodyBytes": 11,
+        "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "requests": [
+          {
+            "route": "post-known",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-unknown",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-redirect",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "redirected-get",
+            "method": "GET",
+            "bytes": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "range": ""
+          },
+          {
+            "route": "post-info",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-confirmed-hash",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-later",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-changed",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-loss",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-reopened",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          }
+        ]
+      }
+    },
+    {
+      "method": "get",
+      "coding": "X-GZip",
+      "checks": 37,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/get-mixed-case",
+      "resumeResponse": "gzip",
+      "checksDetail": [
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Valid gzip response publishes through the production transfer path",
+          "passed": true
+        },
+        {
+          "name": "Published decoded bytes match the independently generated payload",
+          "passed": true
+        },
+        {
+          "name": "Completion records output bytes rather than encoded offsets",
+          "passed": true
+        },
+        {
+          "name": "Completion preserves a separate wire-byte audit",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Invalid gzip durably invalidates its completed wire receipt",
+          "passed": true
+        },
+        {
+          "name": "Malformed or unsupported encoded response never publishes a final file",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch starts before confirmation",
+          "passed": true
+        },
+        {
+          "name": "Gzip prefetch reaches verified confirmation without publishing",
+          "passed": true
+        },
+        {
+          "name": "Gzip aliases persist the canonical representation for output size and retained-response reuse",
+          "passed": true
+        },
+        {
+          "name": "Before Start size is verified decoded output and target is absent",
+          "passed": true
+        },
+        {
+          "name": "Start confirms the existing prefetched response",
+          "passed": true
+        },
+        {
+          "name": "Final file exactly matches the size shown before Start",
+          "passed": true
+        },
+        {
+          "name": "Download Later fixture has fully decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Ending confirmation keeps the destination unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume reuses verified encoded bytes without a second response",
+          "passed": true
+        },
+        {
+          "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+          "passed": true
+        },
+        {
+          "name": "Pause retains a genuine partial encoded response",
+          "passed": true
+        },
+        {
+          "name": "Encoded-byte range resume decodes to the complete original file",
+          "passed": true
+        },
+        {
+          "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+          "passed": true
+        },
+        {
+          "name": "Output projection leaves authoritative wire metadata unchanged",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 524288,
+        "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+        "gzipBytes": 1943,
+        "requests": [
+          {
+            "route": "known",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "unknown",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "concatenated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 2105
+          },
+          {
+            "route": "empty",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 19
+          },
+          {
+            "route": "crc",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "truncated",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1941
+          },
+          {
+            "route": "trailing",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1943
+          },
+          {
+            "route": "unsupported",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "prefetch",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "deferred",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 1942
+          },
+          {
+            "route": "paused",
+            "range": "",
+            "ifRange": "",
+            "start": 0,
+            "end": 524380
+          },
+          {
+            "route": "paused",
+            "range": "bytes=262080-524380",
+            "ifRange": "\"gzip-fixture-v1\"",
+            "start": 262080,
+            "end": 524380
+          }
+        ]
+      }
+    },
+    {
+      "method": "post",
+      "coding": "X-GZip",
+      "checks": 49,
+      "passed": true,
+      "path": "candidates/gzip-alias-7.55/post-mixed-case",
+      "resumeResponse": null,
+      "checksDetail": [
+        {
+          "name": "Opening fresh form File Info never submits the POST speculatively",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "An actual form response decodes and publishes the complete original bytes",
+          "passed": true
+        },
+        {
+          "name": "Form completion keeps encoded and decoded byte counts separate",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Reopening File Info verifies a completed form response without submitting again",
+          "passed": true
+        },
+        {
+          "announcedBytes": 140000,
+          "name": "A verified decoded size is available before Start while the target remains absent",
+          "passed": true
+        },
+        {
+          "name": "Start publishes exactly the form file size shown before confirmation",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+          "passed": true
+        },
+        {
+          "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+          "passed": true
+        },
+        {
+          "name": "Confirmation remains usable after a rejected transfer-property edit",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Completed form response is ready for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later leaves the saved form response unpublished",
+          "passed": true
+        },
+        {
+          "name": "Resume after Download Later uses the saved form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Changing the form request invalidates reuse and sends no replacement request",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "A damaged saved response fails Resume without replaying POST",
+          "passed": true
+        },
+        {
+          "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+          "passed": true
+        },
+        {
+          "name": "Interrupted POST has no complete receipt and stays failed",
+          "passed": true
+        },
+        {
+          "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "Matching receipt metadata permits worker verification",
+          "passed": true
+        },
+        {
+          "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+          "passed": true
+        },
+        {
+          "name": "A final checksum rejection does not publish or resubmit the form",
+          "passed": true
+        },
+        {
+          "name": "The complete encoded response has a request-bound reusable receipt",
+          "passed": true
+        },
+        {
+          "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+          "passed": true
+        },
+        {
+          "name": "Request-bound completed response survives catalog reopening",
+          "passed": true
+        },
+        {
+          "name": "A reopened catalog publishes saved form bytes without another POST",
+          "passed": true
+        }
+      ],
+      "requests": {
+        "payloadBytes": 140000,
+        "payloadSha256": "4e2f7dd7f7767ec814f9456a4f018e7f8ea4834ededda46fbb8dcda1f1f725a8",
+        "wireBytes": 481,
+        "requestBodyBytes": 11,
+        "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+        "requests": [
+          {
+            "route": "post-known",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-unknown",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-redirect",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "redirected-get",
+            "method": "GET",
+            "bytes": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "range": ""
+          },
+          {
+            "route": "post-info",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-confirmed-hash",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-later",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-changed",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-damaged",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-loss",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          },
+          {
+            "route": "post-reopened",
+            "method": "POST",
+            "bytes": 11,
+            "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+            "range": ""
+          }
+        ]
+      }
+    }
+  ],
+  "beforeAlias": {
+    "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+    "payloadBytes": 67200,
+    "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+    "compressedBytes": 280,
+    "cases": [
+      {
+        "client": "udm",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "encoding": "x-gzip",
+        "state": "Failed",
+        "error": "The server ignored identity encoding.",
+        "bytes": null,
+        "matchesDecoded": false,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/udm/x-gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-67199",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "x-gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/idm/x-gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      }
+    ]
+  },
+  "beforeCanonical": {
+    "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+    "payloadBytes": 67200,
+    "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+    "compressedBytes": 280,
+    "cases": [
+      {
+        "client": "udm",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "encoding": "gzip",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/udm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-67199",
+            "acceptEncoding": "identity",
+            "gzip": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-",
+            "acceptEncoding": "identity",
+            "gzip": false
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "gzip",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/idm/gzip",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "gzip": true
+          }
+        ]
+      }
+    ]
+  },
+  "separateDeflateObservation": {
+    "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+    "payloadBytes": 67200,
+    "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+    "compressedBytes": 268,
+    "cases": [
+      {
+        "client": "udm",
+        "encoding": "identity",
+        "state": "Complete",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/udm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "deflate": false
+          }
+        ]
+      },
+      {
+        "client": "udm",
+        "encoding": "deflate",
+        "state": "Failed",
+        "error": "The server ignored identity encoding.",
+        "bytes": null,
+        "matchesDecoded": false,
+        "matchesWire": false,
+        "requests": [
+          {
+            "path": "/udm/deflate",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "deflate": true
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "identity",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 67200,
+        "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+        "matchesDecoded": true,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "deflate": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-67199",
+            "acceptEncoding": "identity",
+            "deflate": false
+          },
+          {
+            "path": "/idm/identity",
+            "method": "GET",
+            "range": "bytes=39582-",
+            "acceptEncoding": "identity",
+            "deflate": false
+          }
+        ]
+      },
+      {
+        "client": "idm",
+        "encoding": "deflate",
+        "state": "file-observed",
+        "error": "",
+        "bytes": 268,
+        "sha256": "0404409dcb81cae11412e919dac547fe2d268561876607951dcfa6b69104e785",
+        "matchesDecoded": false,
+        "matchesWire": true,
+        "requests": [
+          {
+            "path": "/idm/deflate",
+            "method": "GET",
+            "range": "",
+            "acceptEncoding": "identity",
+            "deflate": true
+          }
+        ]
+      }
+    ]
+  },
+  "afterPaired": [
+    {
+      "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+      "payloadBytes": 67200,
+      "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+      "compressedBytes": 280,
+      "cases": [
+        {
+          "client": "udm",
+          "encoding": "identity",
+          "state": "Complete",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": true,
+          "requests": [
+            {
+              "path": "/udm/identity",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": false
+            }
+          ]
+        },
+        {
+          "client": "udm",
+          "encoding": "gzip",
+          "state": "Complete",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": false,
+          "requests": [
+            {
+              "path": "/udm/gzip",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": true
+            }
+          ]
+        },
+        {
+          "client": "idm",
+          "encoding": "identity",
+          "state": "file-observed",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": true,
+          "requests": [
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": false
+            },
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "bytes=39582-67199",
+              "acceptEncoding": "identity",
+              "gzip": false
+            },
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "bytes=39582-",
+              "acceptEncoding": "identity",
+              "gzip": false
+            }
+          ]
+        },
+        {
+          "client": "idm",
+          "encoding": "gzip",
+          "state": "file-observed",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": false,
+          "requests": [
+            {
+              "path": "/idm/gzip",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "Small synthetic loopback CLI comparison. UDM uses a private catalog. IDM receives only named fixture downloads; no /q, queue command, process termination or settings modification.",
+      "payloadBytes": 67200,
+      "payloadSha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+      "compressedBytes": 280,
+      "cases": [
+        {
+          "client": "udm",
+          "encoding": "identity",
+          "state": "Complete",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": true,
+          "requests": [
+            {
+              "path": "/udm/identity",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": false
+            }
+          ]
+        },
+        {
+          "client": "udm",
+          "encoding": "x-gzip",
+          "state": "Complete",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": false,
+          "requests": [
+            {
+              "path": "/udm/x-gzip",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": true
+            }
+          ]
+        },
+        {
+          "client": "idm",
+          "encoding": "identity",
+          "state": "file-observed",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": true,
+          "requests": [
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": false
+            },
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "bytes=39582-67199",
+              "acceptEncoding": "identity",
+              "gzip": false
+            },
+            {
+              "path": "/idm/identity",
+              "method": "GET",
+              "range": "bytes=39582-",
+              "acceptEncoding": "identity",
+              "gzip": false
+            }
+          ]
+        },
+        {
+          "client": "idm",
+          "encoding": "x-gzip",
+          "state": "file-observed",
+          "error": "",
+          "bytes": 67200,
+          "sha256": "05ec2b9dcd7aa9bf0b5b3fcbafa5179490368b246a3ddb1718f9903472506bd7",
+          "matchesDecoded": true,
+          "matchesWire": false,
+          "requests": [
+            {
+              "path": "/idm/x-gzip",
+              "method": "GET",
+              "range": "",
+              "acceptEncoding": "identity",
+              "gzip": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reference": {
+    "fileVersion": "6.43.10.2",
+    "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+    "scope": "Installed reference executable via its CLI. Only named fixture downloads; no settings, queue-start, quit or process termination commands."
+  },
+  "standard": "https://www.rfc-editor.org/rfc/rfc9110.html#section-8.4.1.3",
+  "change": "Normalize the x-gzip response coding to gzip before response acceptance and persistence. The existing gzip decoder, validators, saved-wire reuse and output-size projection remain responsible for the bytes.",
+  "coverage": [
+    "gzip, x-gzip and mixed-case X-GZip for GET and form responses",
+    "Exact decoded size before Start equals final file size",
+    "One-response prefetch and deferred response reuse",
+    "Encoded-offset range resume with x-gzip/X-GZip initial headers and canonical gzip resumed headers",
+    "Corruption/truncation/trailing-data and unsupported coding rejection",
+    "No speculative fresh form submission; exact binary form body, redirects and explicit-only restart"
+  ],
+  "qualificationNotes": [
+    "The initial build guard correctly stopped when the test-runner hash changed without an allowlist entry; the three intended runner changes were then included before compilation. No failed compiler result was accepted."
+  ],
+  "installedDesktop": "7.11",
+  "limits": [
+    "No fresh personal-browser acceptance or dialog-paint timing comparison",
+    "Small loopback paired probe establishes functional output and request counts, not speed parity",
+    "Gzip decode still follows network completion; streaming overlap remains separate work",
+    "Deflate is not covered by the fix: IDM saved its encoded bytes in the discovery probe while UDM rejected it",
+    "No installer or installed update created"
+  ],
+  "artifactPolicy": "Single shared native build directory, no FFmpeg/media-tool copy. Only controlled synthetic test payloads; their hashes and removal are recorded separately."
+}

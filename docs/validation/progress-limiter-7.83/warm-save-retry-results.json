@@ -1,0 +1,131 @@
+{
+  "registryRemoved": true,
+  "reuseMedia": true,
+  "reusedMediaUnchanged": true,
+  "reusedMediaFiles": 31,
+  "previewOnly": false,
+  "httpDiagnostics": false,
+  "scope": "Real isolated Edge and native app; nested/flat/cyclic HLS, actual panel clicks, full output decoding and selected audio/language verification",
+  "browser": "msedge",
+  "passed": 8,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Updated extension and native app connect only to the isolated audio fixture",
+      "passed": true,
+      "diagnosticsReadyEpochMs": 1794503269758,
+      "observerReadyEpochMs": 1794503269909
+    },
+    {
+      "name": "nested panel exposes each actual quality/container once",
+      "passed": true,
+      "elapsedMs": 69,
+      "labels": [
+        "127.0.0.1 \u00b7 MP4 \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 720p HD \u00b7 3000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 MP4 \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks",
+        "127.0.0.1 \u00b7 TS \u00b7 360p \u00b7 1000 kbps \u00b7 2 audio tracks"
+      ]
+    },
+    {
+      "name": "nested MP4 presents declared default audio before creating a download",
+      "passed": true
+    },
+    {
+      "name": "Cold HLS File Info opens before verification and publishes the exact output shown before Start",
+      "passed": true,
+      "actionableEpochMs": 1794503270869,
+      "exactVisibleEpochMs": 1794503271549,
+      "sizeBeforeStart": 6560076,
+      "sha256BeforeStart": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+      "startEpochMs": 1794503271567,
+      "catalogReadRetries": 0,
+      "admissionRetried": true,
+      "sameDialogAfterRetry": true,
+      "retryEpochMs": 1794503270784,
+      "rejectedCatalogDownloads": 0,
+      "decisionWriteRetried": true,
+      "sameDialogAfterDecisionFailure": true,
+      "sameJobAfterDecisionFailure": true,
+      "productionCold": false,
+      "productionExecutable": true,
+      "productionReadyBeforeSelection": true,
+      "selectionToActionableMs": 242,
+      "selectionToExactMs": 922,
+      "selectionToFirstSegmentMs": 252,
+      "lastSegmentToExactMs": 595,
+      "segments": [
+        {
+          "path": "/v720/index1.ts",
+          "startedMs": 252,
+          "finishedMs": 254
+        },
+        {
+          "path": "/v720/index0.ts",
+          "startedMs": 255,
+          "finishedMs": 258
+        },
+        {
+          "path": "/v720/index2.ts",
+          "startedMs": 260,
+          "finishedMs": 264
+        },
+        {
+          "path": "/v720/index3.ts",
+          "startedMs": 265,
+          "finishedMs": 291
+        },
+        {
+          "path": "/es/index0.ts",
+          "startedMs": 291,
+          "finishedMs": 292
+        },
+        {
+          "path": "/es/index1.ts",
+          "startedMs": 292,
+          "finishedMs": 299
+        },
+        {
+          "path": "/es/index2.ts",
+          "startedMs": 299,
+          "finishedMs": 316
+        },
+        {
+          "path": "/es/index3.ts",
+          "startedMs": 316,
+          "finishedMs": 317
+        },
+        {
+          "path": "/es/index4.ts",
+          "startedMs": 317,
+          "finishedMs": 327
+        }
+      ],
+      "checkpointsBeforeFirstSegment": null
+    },
+    {
+      "name": "nested MP4 complete output matches its timeline, frame count, size and checksum",
+      "passed": true,
+      "duration": 8.021333,
+      "videoFrames": 192,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 output contains the selected audio and language tag",
+      "passed": true,
+      "language": "es",
+      "frequencyHz": 880,
+      "bytes": 6560076,
+      "sha256": "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+    },
+    {
+      "name": "nested MP4 never fetches unselected audio or the overridden parent group",
+      "passed": true
+    },
+    {
+      "name": "Audio selection pages have no script errors",
+      "passed": true
+    }
+  ]
+}

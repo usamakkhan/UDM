@@ -1,0 +1,28 @@
+PASS Final submission does not replay a browser complete response
+PASS Final submission does not replay a browser received response
+PASS Final submission does not replay a browser resumed response
+PASS Final submission does not replay a browser removed response
+PASS Final submission does not replay a browser identity response
+PASS Firefox zero-byte paused response still reaches native ownership
+PASS Worker restart releases a download held before submission
+PASS Acknowledged ownership survives restart and cancels the browser
+PASS Lost acknowledgement reconciles accepted without replay
+PASS Lost acknowledgement reconciles released without replay
+PASS Lost acknowledgement reconciles uncertain without replay
+PASS Missing native host keeps an ambiguous transfer for later reconciliation
+PASS Older desktop ambiguity never replays or resumes automatically
+PASS Failed cancellation is retained and retried without another Add
+PASS Failed resume retains the recovery record
+PASS Reused download ID cannot target a different URL
+PASS Reused ID and URL with a different start time are not touched
+PASS Removed and completed records are pruned without browser operations
+PASS An unpaused preflight download is left running
+PASS Firefox zero-byte pause resumes after preflight worker loss
+PASS Active handoffs are skipped by overlapping alarm recovery
+PASS Concurrent records do not overwrite each other
+PASS Journal never stores the URL, credentials or POST data
+PASS A failed initial checkpoint rejects before native submission
+PASS Duplicate browser IDs cannot start two ownership journals
+PASS Missing stable browser identity is rejected
+PASS Corrupt journals cause no transfer actions
+ALL 27 CAPTURE RECOVERY CHECKS PASSED

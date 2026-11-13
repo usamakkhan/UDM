@@ -1,0 +1,1453 @@
+{
+  "version": "7.19",
+  "browserVersion": "0.70.83",
+  "build": "passed",
+  "incrementalBase": "7.18",
+  "sourceHead": "fb7fe74f7f6cbd28db7b2d73bc914ff42dca0629",
+  "sourceHashes": [
+    {
+      "path": "native/Version.hpp",
+      "sha256": "AB5522219348EDC57BE2FACEA57F7643EADF8ADB212906B52B985F9F9120062D"
+    },
+    {
+      "path": "native/Core.cpp",
+      "sha256": "5F547FDC96DF248B6EACD213A575FDAE411204D40486EF1B2296C397260ACE0B"
+    },
+    {
+      "path": "native/Core.hpp",
+      "sha256": "CCF780FF2668AC17E3DF8A2DAD817B7872FE4AA4B6CA8A7A177F96E405D601F3"
+    },
+    {
+      "path": "native/App.cpp",
+      "sha256": "69A66E14C597A7221BDA8249B657E6EDDDD3301DF34D3617E19BC6727239BE93"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "3EED1FF52C63F8F1CC7DFD4CDC082D1E269873A390943DE77FB0AE951A59C7EB"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "DDB2612E3E5541A360B77C4B310AA9110E86FD0A5F5ACBA3B3C01A60A1409C62"
+    },
+    {
+      "path": "native/Bridge.cpp",
+      "sha256": "36C714BB4F240D68573710A06598B38828393A7A713170FE05C30BCC13E5BE4E"
+    },
+    {
+      "path": "native/PacProxy.hpp",
+      "sha256": "906498489A826A16332C7CB39786E5C6A4D7531F6C604A5EB529ADBF4447DD22"
+    },
+    {
+      "path": "native/PacProxy.cpp",
+      "sha256": "F197B619DAFDC1D383401ECB7A826E9DDD27A84968319246AACFCCF1A7319387"
+    },
+    {
+      "path": "native/CurlHttp.hpp",
+      "sha256": "F389BBB245B305E42D85D378AF80E47CED2AF92CD9AE4CD041260183CACE3043"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "5C81E821FF49F8B3908F9F517B66AA0419BA7696340285F30961433791B56DC9"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "05CBE9EAA063CF9A58B95A16A1785E30399B0BD41706087FE39A65D0CDD17932"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "UDM.exe",
+      "version": "7.19",
+      "sha256": "9B5237D2F66A528369CF143BE37E6652477F512E119FDC49015F7BC91808C154"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "7.19",
+      "sha256": "971973F52AA92D108F4EE18AA41359590AAF1E1329689A1BB7A9EA2BC3AA4B23"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "7.19",
+      "sha256": "1F39DFA6A3965AB2186B0ECBEABC787118980CDB981DFDA92A61413C206A9C38"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "7.19",
+      "sha256": "A5F34142807F9CE29803FD47D92116CB335779921CCF97DC03B2ADD0647B077A"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "version": "7.19",
+      "sha256": "7455099E45DFB37696FF2252D83394E67157C704F0689DAC75456B52CCC56AEA"
+    }
+  ],
+  "output": "C:\\Users\\Usama\\AppData\\Local\\UDM-Development\\native-work\\release-native",
+  "concurrentSourceChange": "Core.cpp effectiveLimitKbps clamp was supplied concurrently and preserved.",
+  "validation": {
+    "unit": {
+      "checks": [
+        {
+          "name": "Origin admission ignores file paths and normalizes header names",
+          "passed": true
+        },
+        {
+          "name": "Different origin ports have separate admission contexts",
+          "passed": true
+        },
+        {
+          "name": "Different website cookies isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Different server credentials isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-UTF-8 header bytes remain distinct in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Duplicate header names retain every value in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Direct and explicit proxy routes remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different resolved proxy endpoints remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different proxy credentials remain separate",
+          "passed": true
+        },
+        {
+          "name": "The credential fixture uses independently randomized DPAPI blobs",
+          "passed": true
+        },
+        {
+          "name": "The same proxy credential shares admission after independent encryption",
+          "passed": true
+        },
+        {
+          "name": "Different proxy usernames remain isolated with the same password",
+          "passed": true
+        },
+        {
+          "name": "A changed proxy password cannot reuse the old account's capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "An unreadable protected credential never collapses to an empty identity",
+          "passed": true
+        },
+        {
+          "name": "A lost post-challenge proxy response is a receive disconnect rather than a terminal authentication rejection",
+          "passed": true
+        },
+        {
+          "name": "A lost Digest authentication continuation retains receive-disconnect classification",
+          "passed": true
+        },
+        {
+          "name": "A complete terminal proxy rejection remains available to authentication policy",
+          "passed": true
+        },
+        {
+          "name": "Rejected proxy credentials do not become transient capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "An interrupted terminal policy response keeps its existing body/status path",
+          "passed": true
+        },
+        {
+          "name": "A header-parser failure takes priority over authentication transport retry",
+          "passed": true
+        },
+        {
+          "name": "An unproven automatic route cannot join a shared context",
+          "passed": true
+        },
+        {
+          "name": "Opaque Windows route sessions cannot share learned capacity",
+          "passed": true
+        },
+        {
+          "name": "Browser session scope is part of admission identity",
+          "passed": true
+        },
+        {
+          "name": "Connection policy changes isolate admission evidence",
+          "passed": true
+        },
+        {
+          "name": "Default proxy mode selects Windows while explicit direct mode does not",
+          "passed": true
+        },
+        {
+          "name": "An implicit configured fixed proxy does not become Windows automatic mode",
+          "passed": true
+        },
+        {
+          "name": "A Windows direct result becomes an explicit direct transport",
+          "passed": true
+        },
+        {
+          "name": "A direct route drops proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "A pinned route cannot recursively resolve stale proxy configuration",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows direct routes share evidence across independent sessions",
+          "passed": true
+        },
+        {
+          "name": "A Windows HTTPS proxy result preserves scheme and IPv6 endpoint",
+          "passed": true
+        },
+        {
+          "name": "A selected proxy retains its configured credential context",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows routes still isolate different proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "Windows bypass results are pinned to direct transport",
+          "passed": true
+        },
+        {
+          "name": "A malformed selected proxy never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "An unsupported selected proxy scheme never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "Response headers alone do not establish productive capacity",
+          "passed": true
+        },
+        {
+          "name": "Earlier refusals become capacity evidence only after a matching peer delivers payload",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A new independent connection waits while proven capacity is occupied",
+          "passed": true
+        },
+        {
+          "name": "Cancel promptly wakes an admission waiter",
+          "passed": true
+        },
+        {
+          "name": "Cancellation leaves the admission queue without opening a connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An occupied origin keeps a new transport queued",
+          "passed": true
+        },
+        {
+          "name": "Drained keepalive responses retain capacity while their transport is alive",
+          "passed": true
+        },
+        {
+          "name": "The same transport reuses its idle slot without admitting another transport",
+          "passed": true
+        },
+        {
+          "name": "Releasing an idle transport frees capacity for a queued download",
+          "passed": true
+        },
+        {
+          "name": "The queued connection receives the released slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Multiple independent waiters respect the learned bound",
+          "passed": true
+        },
+        {
+          "name": "One released slot admits exactly one waiter",
+          "passed": true
+        },
+        {
+          "name": "The next waiter advances after the first releases its slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An existing transfer retains its own worker admission policy",
+          "passed": true
+        },
+        {
+          "name": "An existing producer's optional worker uses within-transfer refusal recovery",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A retry can immediately reuse its own transport's idle connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed stream failure does not establish an origin connection cap",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed transport still occupies one independent origin slot",
+          "passed": true
+        },
+        {
+          "name": "Multiple streams on one transport count as one occupied connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Closing an unread multiplexed stream retains its reusable transport slot",
+          "passed": true
+        },
+        {
+          "name": "Closing the multiplexed transport releases its retained slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Expired capacity evidence permits a bounded recovery probe",
+          "passed": true
+        },
+        {
+          "name": "Only one capacity probe can be outstanding above the learned bound",
+          "passed": true
+        },
+        {
+          "name": "A successful probe restores admission when server capacity increases",
+          "passed": true
+        },
+        {
+          "name": "The bounded context cache admits its supported live contexts",
+          "passed": true
+        },
+        {
+          "name": "The context cache falls back without exceeding its live-context bound",
+          "passed": true
+        },
+        {
+          "name": "An unused context can be evicted for a new origin",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "livePac": {
+      "checks": [
+        {
+          "name": "Origin admission ignores file paths and normalizes header names",
+          "passed": true
+        },
+        {
+          "name": "Different origin ports have separate admission contexts",
+          "passed": true
+        },
+        {
+          "name": "Different website cookies isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Different server credentials isolate capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "Non-UTF-8 header bytes remain distinct in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Duplicate header names retain every value in admission identity",
+          "passed": true
+        },
+        {
+          "name": "Direct and explicit proxy routes remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different resolved proxy endpoints remain separate",
+          "passed": true
+        },
+        {
+          "name": "Different proxy credentials remain separate",
+          "passed": true
+        },
+        {
+          "name": "The credential fixture uses independently randomized DPAPI blobs",
+          "passed": true
+        },
+        {
+          "name": "The same proxy credential shares admission after independent encryption",
+          "passed": true
+        },
+        {
+          "name": "Different proxy usernames remain isolated with the same password",
+          "passed": true
+        },
+        {
+          "name": "A changed proxy password cannot reuse the old account's capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "An unreadable protected credential never collapses to an empty identity",
+          "passed": true
+        },
+        {
+          "name": "A lost post-challenge proxy response is a receive disconnect rather than a terminal authentication rejection",
+          "passed": true
+        },
+        {
+          "name": "A lost Digest authentication continuation retains receive-disconnect classification",
+          "passed": true
+        },
+        {
+          "name": "A complete terminal proxy rejection remains available to authentication policy",
+          "passed": true
+        },
+        {
+          "name": "Rejected proxy credentials do not become transient capacity evidence",
+          "passed": true
+        },
+        {
+          "name": "An interrupted terminal policy response keeps its existing body/status path",
+          "passed": true
+        },
+        {
+          "name": "A header-parser failure takes priority over authentication transport retry",
+          "passed": true
+        },
+        {
+          "name": "An unproven automatic route cannot join a shared context",
+          "passed": true
+        },
+        {
+          "name": "Opaque Windows route sessions cannot share learned capacity",
+          "passed": true
+        },
+        {
+          "name": "Browser session scope is part of admission identity",
+          "passed": true
+        },
+        {
+          "name": "Connection policy changes isolate admission evidence",
+          "passed": true
+        },
+        {
+          "name": "Default proxy mode selects Windows while explicit direct mode does not",
+          "passed": true
+        },
+        {
+          "name": "An implicit configured fixed proxy does not become Windows automatic mode",
+          "passed": true
+        },
+        {
+          "name": "A Windows direct result becomes an explicit direct transport",
+          "passed": true
+        },
+        {
+          "name": "A direct route drops proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "A pinned route cannot recursively resolve stale proxy configuration",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows direct routes share evidence across independent sessions",
+          "passed": true
+        },
+        {
+          "name": "A Windows HTTPS proxy result preserves scheme and IPv6 endpoint",
+          "passed": true
+        },
+        {
+          "name": "A selected proxy retains its configured credential context",
+          "passed": true
+        },
+        {
+          "name": "Resolved Windows routes still isolate different proxy credentials",
+          "passed": true
+        },
+        {
+          "name": "Windows bypass results are pinned to direct transport",
+          "passed": true
+        },
+        {
+          "name": "A malformed selected proxy never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "An unsupported selected proxy scheme never silently becomes a direct route",
+          "passed": true
+        },
+        {
+          "name": "Response headers alone do not establish productive capacity",
+          "passed": true
+        },
+        {
+          "name": "Earlier refusals become capacity evidence only after a matching peer delivers payload",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A new independent connection waits while proven capacity is occupied",
+          "passed": true
+        },
+        {
+          "name": "Cancel promptly wakes an admission waiter",
+          "passed": true
+        },
+        {
+          "name": "Cancellation leaves the admission queue without opening a connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An occupied origin keeps a new transport queued",
+          "passed": true
+        },
+        {
+          "name": "Drained keepalive responses retain capacity while their transport is alive",
+          "passed": true
+        },
+        {
+          "name": "The same transport reuses its idle slot without admitting another transport",
+          "passed": true
+        },
+        {
+          "name": "Releasing an idle transport frees capacity for a queued download",
+          "passed": true
+        },
+        {
+          "name": "The queued connection receives the released slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Multiple independent waiters respect the learned bound",
+          "passed": true
+        },
+        {
+          "name": "One released slot admits exactly one waiter",
+          "passed": true
+        },
+        {
+          "name": "The next waiter advances after the first releases its slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "An existing transfer retains its own worker admission policy",
+          "passed": true
+        },
+        {
+          "name": "An existing producer's optional worker uses within-transfer refusal recovery",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A retry can immediately reuse its own transport's idle connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed stream failure does not establish an origin connection cap",
+          "passed": true
+        },
+        {
+          "name": "A multiplexed transport still occupies one independent origin slot",
+          "passed": true
+        },
+        {
+          "name": "Multiple streams on one transport count as one occupied connection",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Closing an unread multiplexed stream retains its reusable transport slot",
+          "passed": true
+        },
+        {
+          "name": "Closing the multiplexed transport releases its retained slot",
+          "passed": true
+        },
+        {
+          "name": "One refused open does not establish capacity",
+          "passed": true
+        },
+        {
+          "name": "Repeated refusal with productive peers establishes capacity",
+          "passed": true
+        },
+        {
+          "name": "Expired capacity evidence permits a bounded recovery probe",
+          "passed": true
+        },
+        {
+          "name": "Only one capacity probe can be outstanding above the learned bound",
+          "passed": true
+        },
+        {
+          "name": "A successful probe restores admission when server capacity increases",
+          "passed": true
+        },
+        {
+          "name": "The bounded context cache admits its supported live contexts",
+          "passed": true
+        },
+        {
+          "name": "The context cache falls back without exceeding its live-context bound",
+          "passed": true
+        },
+        {
+          "name": "An unused context can be evicted for a new origin",
+          "passed": true
+        },
+        {
+          "name": "The Windows resolver preserves the complete ordered PAC result",
+          "passed": true
+        },
+        {
+          "name": "Proxy lookup uses each exact URL rather than an origin-wide route cache",
+          "passed": true
+        },
+        {
+          "name": "Only explicitly returned direct alternatives are retained",
+          "passed": true
+        },
+        {
+          "name": "A canceled Windows automatic lookup exits before route discovery",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "fixtureSourceSha256": "D250A897CF2D631ACB33B33E1E66DA756201FAB6B8CB5FAB58AB97578D45EB5C",
+    "fixtureBinarySha256": "E5AE8842B602C39EEF1AA6923FB563E9A637F030E35E089BCB22FD6CC5225662",
+    "sharedProductionCoreObjects": [
+      {
+        "name": "Transfer",
+        "sha256": "28BBB0270621EBC00B998FE8F705ED48CEBFB84D2496194F0130A3DB4EEFEE6D"
+      },
+      {
+        "name": "Streaming",
+        "sha256": "939CA65CC9D68F15AA13CB5D9D39CB79F15C439CE9B47CDE949EB6E02553F976"
+      },
+      {
+        "name": "Adaptive",
+        "sha256": "1E95CD27D44FD970B160723FB6420D478818FE553075B83E746B5E18554AEA9F"
+      },
+      {
+        "name": "PacProxy",
+        "sha256": "735ABF9B6D93B6E3F9C378C44E27D2D41FD568A0AEA183C10AF142782FDE82EA"
+      }
+    ],
+    "baselineAutomaticChallenge": {
+      "passed": false,
+      "native": {
+        "differentCiphertexts": true,
+        "jobs": [
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "HTTP proxy request failed: Server returned nothing (no headers, no data).",
+            "sha256_ok": false,
+            "status": "Failed"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          }
+        ],
+        "passed": false,
+        "peersReceiving": true,
+        "queuedBeforeIndependent": false,
+        "sameCredentialKey": true
+      },
+      "fixture_exit_code": 1,
+      "independent_account_started_while_cap_occupied": true,
+      "account_peak": {
+        "account-a": 2,
+        "account-b": 1
+      },
+      "refused": {
+        "account-a": 2,
+        "account-b": 0
+      },
+      "started": {
+        "account-a": [
+          0.2038,
+          0.2998
+        ],
+        "account-b": [
+          4.694
+        ]
+      },
+      "finished": {
+        "account-a": [
+          8.2045,
+          8.3004
+        ],
+        "account-b": [
+          12.6947
+        ]
+      },
+      "challenges": 4,
+      "origin": {
+        "connections": 5,
+        "rejected_connections": 0,
+        "requests": 3,
+        "bytes_sent": 6291456,
+        "drops": 0,
+        "peak_concurrent": 3,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.20309980000092764,
+            "closed": 8.205403800000568,
+            "peer_port": 62441,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.20381230000020878,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.204505800000334,
+                "outcome": "complete",
+                "headers_sent": 0.2039055000004737,
+                "first_body_sent": 0.2669616000002861,
+                "last_body_sent": 8.204502700000376
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 2,
+            "opened": 0.299213400001463,
+            "closed": 8.301260500000353,
+            "peer_port": 62442,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.29979460000140534,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.300364200000331,
+                "outcome": "complete",
+                "headers_sent": 0.29987640000035753,
+                "first_body_sent": 0.3629235000007611,
+                "last_body_sent": 8.3003615000016
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 3,
+            "opened": 1.4614410000012867,
+            "closed": 1.4632046000006085,
+            "peer_port": 62443,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 4,
+            "opened": 1.4641813000016555,
+            "closed": 1.473001900001691,
+            "peer_port": 62444,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 5,
+            "opened": 4.690603600000031,
+            "closed": 12.695586900001217,
+            "peer_port": 62445,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 4.694032600000355,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 12.69465990000026,
+                "outcome": "complete",
+                "headers_sent": 4.694161100000201,
+                "first_body_sent": 4.757018800000878,
+                "last_body_sent": 12.694658100001107
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          }
+        ]
+      },
+      "authentication_mode": "Automatic",
+      "fixture_sha256": "1590e0d906a8a8a710f246a914079e73fc90bac960d7992bc164dbe683a0b7d7",
+      "temporary_payloads_removed": true
+    },
+    "preemptiveBasic": {
+      "passed": true,
+      "native": {
+        "differentCiphertexts": true,
+        "jobs": [
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          }
+        ],
+        "passed": true,
+        "peersReceiving": true,
+        "queuedBeforeIndependent": true,
+        "sameCredentialKey": true
+      },
+      "fixture_exit_code": 0,
+      "independent_account_started_while_cap_occupied": true,
+      "account_peak": {
+        "account-a": 2,
+        "account-b": 1
+      },
+      "refused": {
+        "account-a": 3,
+        "account-b": 0
+      },
+      "started": {
+        "account-a": [
+          0.2223,
+          0.357,
+          8.3648
+        ],
+        "account-b": [
+          3.0712
+        ]
+      },
+      "finished": {
+        "account-a": [
+          8.2393,
+          8.3666,
+          16.3689
+        ],
+        "account-b": [
+          11.072
+        ]
+      },
+      "challenges": 0,
+      "origin": {
+        "connections": 7,
+        "rejected_connections": 0,
+        "requests": 4,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 4,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.22047100000054343,
+            "closed": 8.274205300000176,
+            "peer_port": 49993,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.22227440000096976,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.23925600000075,
+                "outcome": "complete",
+                "headers_sent": 0.22239509999963047,
+                "first_body_sent": 0.285695399999895,
+                "last_body_sent": 8.239253100000496
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 2,
+            "opened": 0.35643770000024233,
+            "closed": 8.393245999999635,
+            "peer_port": 49994,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.35703210000065155,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.366545299999416,
+                "outcome": "complete",
+                "headers_sent": 0.3572609000002558,
+                "first_body_sent": 0.42084220000106143,
+                "last_body_sent": 8.366541499999585
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 3,
+            "opened": 2.158962200001042,
+            "closed": 2.1819876999998087,
+            "peer_port": 49998,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 4,
+            "opened": 2.873281500000303,
+            "closed": 2.8850390999996307,
+            "peer_port": 50260,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 5,
+            "opened": 3.0566274000011617,
+            "closed": 11.356413600000451,
+            "peer_port": 50261,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 3.071217599999727,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 11.0719638999999,
+                "outcome": "complete",
+                "headers_sent": 3.071417500001189,
+                "first_body_sent": 3.1347383000011178,
+                "last_body_sent": 11.071962100000746
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 6,
+            "opened": 7.9390639000012015,
+            "closed": 8.022508899999593,
+            "peer_port": 50373,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 7,
+            "opened": 8.321413600000596,
+            "closed": 16.38740189999953,
+            "peer_port": 50375,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 8.36477399999967,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 16.36887139999999,
+                "outcome": "complete",
+                "headers_sent": 8.36501010000029,
+                "first_body_sent": 8.436033500000121,
+                "last_body_sent": 16.368869500000073
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          }
+        ]
+      },
+      "authentication_mode": "Basic",
+      "fixture_sha256": "e5ae8842b602c39eef1aa6923fb563e9a637f030e35e089bcb22fd6cc5225662",
+      "temporary_payloads_removed": true
+    },
+    "automaticChallenge": {
+      "passed": true,
+      "native": {
+        "differentCiphertexts": true,
+        "jobs": [
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          },
+          {
+            "error": "",
+            "sha256_ok": true,
+            "status": "Complete"
+          }
+        ],
+        "passed": true,
+        "peersReceiving": true,
+        "queuedBeforeIndependent": true,
+        "sameCredentialKey": true
+      },
+      "fixture_exit_code": 0,
+      "independent_account_started_while_cap_occupied": true,
+      "account_peak": {
+        "account-a": 2,
+        "account-b": 1
+      },
+      "refused": {
+        "account-a": 6,
+        "account-b": 0
+      },
+      "started": {
+        "account-a": [
+          0.4583,
+          0.5979,
+          8.7885
+        ],
+        "account-b": [
+          3.0191
+        ]
+      },
+      "finished": {
+        "account-a": [
+          8.5087,
+          8.6705,
+          16.7971
+        ],
+        "account-b": [
+          11.0256
+        ]
+      },
+      "challenges": 7,
+      "origin": {
+        "connections": 10,
+        "rejected_connections": 0,
+        "requests": 4,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 5,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.39386689999992086,
+            "closed": 8.665906999998697,
+            "peer_port": 62839,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.4583495999995648,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.508697599998413,
+                "outcome": "complete",
+                "headers_sent": 0.45845419999932346,
+                "first_body_sent": 0.5212364999988495,
+                "last_body_sent": 8.508694899999682
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 2,
+            "opened": 0.5644988999993075,
+            "closed": 8.788888199998837,
+            "peer_port": 62840,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 0.597876299998461,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 8.670446199999787,
+                "outcome": "complete",
+                "headers_sent": 0.5979463999992731,
+                "first_body_sent": 0.6681520999991335,
+                "last_body_sent": 8.670441899999787
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 3,
+            "opened": 1.9218449999989389,
+            "closed": 1.9782863000000361,
+            "peer_port": 62841,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 4,
+            "opened": 1.9787228999994113,
+            "closed": 2.028825699999288,
+            "peer_port": 62842,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 5,
+            "opened": 2.6903878999983135,
+            "closed": 2.728466099999423,
+            "peer_port": 62843,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 6,
+            "opened": 2.7300786999985576,
+            "closed": 2.7659813999998732,
+            "peer_port": 62844,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 7,
+            "opened": 2.9912117999992915,
+            "closed": 11.057722399998966,
+            "peer_port": 62845,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 3.0191228999992745,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 11.025624399999288,
+                "outcome": "complete",
+                "headers_sent": 3.0192554999994172,
+                "first_body_sent": 3.082386199999746,
+                "last_body_sent": 11.025621899998441
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 8,
+            "opened": 7.77161949999936,
+            "closed": 7.993951099999322,
+            "peer_port": 62848,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 9,
+            "opened": 7.993711899998743,
+            "closed": 8.265245699998559,
+            "peer_port": 62849,
+            "rejected": false,
+            "bytes": 0,
+            "requests": [],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          },
+          {
+            "id": 10,
+            "opened": 8.716350199998487,
+            "closed": 16.819958999998562,
+            "peer_port": 62851,
+            "rejected": false,
+            "bytes": 2097152,
+            "requests": [
+              {
+                "at": 8.788494499998706,
+                "method": "GET",
+                "path": "http://udm-account-fixture.invalid/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 2097151,
+                "sent": 2097152,
+                "finished": 16.79705179999837,
+                "outcome": "complete",
+                "headers_sent": 8.788579499998377,
+                "first_body_sent": 8.8514043999985,
+                "last_body_sent": 16.797044999999343
+              }
+            ],
+            "drops": 0,
+            "rate": 262144,
+            "drop_after": 0
+          }
+        ]
+      },
+      "authentication_mode": "Automatic",
+      "fixture_sha256": "e5ae8842b602c39eef1aa6923fb563e9a637f030e35e089bcb22fd6cc5225662",
+      "temporary_payloads_removed": true
+    },
+    "priorSixJobControl": {
+      "version": "7.18",
+      "receipt": "docs/validation/http-admission-7.18-build.json"
+    },
+    "fixtureHashes": {
+      "proxyAccounts": "C1199A489D5E686013F0F9E6FC1E84C00F5572D53AD70AFF62BB4B9773237722",
+      "hostConcurrency": "80DD6E398683E8ECCBA13846189E02E98BC0979683AADF06853F9164A039A4B1"
+    },
+    "temporaryPayloadsRemoved": true,
+    "installedVersion": "7.11",
+    "installedBrowser": "0.70.75",
+    "installerCreated": false,
+    "systemProxySettingsChanged": false,
+    "timingClaim": "No new paired IDM timing or performance claim.",
+    "limitations": [
+      "Live negotiation qualification uses a controlled Basic proxy with Automatic selection, not an enterprise authentication deployment.",
+      "Digest continuation classification is checked as transport state; deployed Digest/NTLM/Negotiate remain unqualified.",
+      "Receive timeout versus refusal, cancellation/resume during admission and method-specific replay require further recovery qualification.",
+      "VPN/per-interface, WPAD and full-suite release acceptance remain outstanding."
+    ],
+    "temporaryFixtureBytesRemoved": 33140510.0
+  }
+}

@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 let checks=0;
 async function harness(settings={},fail=false,desktopOverrides={},preferencesWait=null,tabWait=null,variant='chromium',extraModules=[],extraGlobals={}){
-  const events={}, calls=[], preferences=[], store={settings},session={};
+  const events={}, calls=[], preferences=[], store={settings},session={},downloadState={state:'in_progress',paused:false};
   const playback=id=>'https://rr1.googlevideo.com/videoplayback?itag='+id+'&expire=4102444800';
   const player={snapshot:{videoId:'Q3TI27IN7X0',formats:[{id:'137',height:1080,fps:30,mime:'video/mp4; codecs="avc1.640028"',url:playback(137)},{id:'136',height:720,fps:30,mime:'video/mp4; codecs="avc1.4d401f"',url:''},{id:'140',mime:'audio/mp4; codecs="mp4a.40.2"',url:playback(140)}],levels:[]}};
   const event=name=>({addListener:fn=>{events[name]=fn;}});
@@ -14,13 +14,13 @@ async function harness(settings={},fail=false,desktopOverrides={},preferencesWai
     storage:{local:{get:async()=>store,set:async values=>Object.assign(store,values)},session:{get:async()=>session,set:async values=>Object.assign(session,values),remove:async key=>{delete session[key];}}},
     permissions:{contains:async()=>false},cookies:{getAll:async()=>{throw Error('Cookie access should not occur');}},
     action:{setBadgeText:async()=>{}},
-    downloads:{onCreated:event('download'),search:async()=>[{state:'in_progress',paused:true}],pause:async id=>calls.push(['pause',id]),cancel:async id=>calls.push(['cancel',id]),resume:async id=>calls.push(['resume',id])},
+    downloads:{onCreated:event('download'),search:async()=>[{...downloadState}],pause:async id=>{calls.push(['pause',id]);downloadState.paused=true;},cancel:async id=>{calls.push(['cancel',id]);downloadState.state='interrupted';},resume:async id=>{calls.push(['resume',id]);downloadState.paused=false;}},
     contextMenus:{onClicked:event('context'),removeAll:async()=>{},create:()=>{}},
     scripting:{executeScript:async()=>[{frameId:0,documentId:'fixture-document',result:player.snapshot}]},
     webRequest:{onHeadersReceived:event('headers')},tabs:{onRemoved:event('tabremoved'),onUpdated:event('tabupdated'),get:async()=>{if(tabWait)await tabWait();return {url:'https://www.youtube.com/watch?v=Q3TI27IN7X0',title:'Test video',incognito:false};}}
   };
   const source=name=>readFileSync(path.join(__dirname,'../browser',variant,name),'utf8');
-  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+extraModules.map(source).join('\n')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,console,setTimeout:fn=>setImmediate(fn),clearTimeout:clearImmediate,...extraGlobals});
+  vm.runInNewContext(source('file-recognition.js')+'\n'+source('media.js')+'\n'+source('formats.js')+'\n'+extraModules.map(source).join('\n')+'\n'+source('background.js'),{chrome:api,navigator:{userAgent:'test'},URL,URLSearchParams,AbortController,console,setTimeout,clearTimeout,...extraGlobals});
   return {api,events,calls,preferences,store,session,player};
 }
 const check=(name)=>{checks++;console.log('PASS '+name);};
@@ -89,10 +89,10 @@ if(require.main===module)(async()=>{
   const gesture=(test,intent,url=item.url,sender=intentSender)=>new Promise(resolve=>test.events.message({action:'capture-intent',intent,url},sender,resolve));
   h=await harness({capture:true});assert.equal((await gesture(h,'bypass')).ok,true);await h.events.download(item);assert.equal(h.calls.length,0);assert.equal(h.preferences.length,0);check('bypass keeps download in browser without contacting or starting UDM');
   h=await harness({capture:true});await gesture(h,'force','https://example.test/file.bin');await h.events.download({...item,url:'https://example.test/file.bin',filename:'file.bin'});assert.deepEqual(h.calls.map(c=>c[0]),['pause','native','cancel']);check('force captures a URL-bound file outside the normal extension filter');
-  h=await harness({capture:false});await gesture(h,'force');await h.events.download(item);assert.equal(h.calls.length,0);h.store.settings.capture=true;await h.events.download({...item,filename:'file.bin'});assert.equal(h.calls.length,0);check('force cannot enable browser capture and is consumed by the first download');
+  h=await harness({capture:false});await gesture(h,'force');await h.events.download(item);assert.equal(h.calls.length,0);h.store.settings.capture=true;await h.events.download({...item,filename:'file.bin'});assert.deepEqual(h.calls.filter(c=>c[0]!=='native'||c[1].action!=='preferences-if-running'),[]);check('force cannot enable browser capture and is consumed by the first download');
   h=await harness({capture:true,excluded:['example.test']});await gesture(h,'force');await h.events.download(item);assert.equal(h.calls.length,0);check('force cannot override local exclusions');
-  h=await harness({capture:true},false,{excludedUrls:['https://example.test/*']});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('force cannot override desktop address exceptions; browser resumes');
-  h=await harness({capture:true},false,{captureAllowed:false});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('force cannot override the desktop capture switch; browser resumes');
+  h=await harness({capture:true},false,{excludedUrls:['https://example.test/*']});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls,[]);check('force cannot override desktop address exceptions; browser stays untouched');
+  h=await harness({capture:true},false,{captureAllowed:false});await gesture(h,'force');await h.events.download(item);assert.deepEqual(h.calls,[]);check('force cannot override the desktop capture switch; browser stays untouched');
   h=await harness({capture:true});await gesture(h,'bypass','https://example.test/different.zip');await h.events.download(item);assert.equal(h.calls.at(-1)[0],'cancel');check('shortcut intent cannot affect an unrelated download URL');
   h=await harness({capture:true});assert.equal((await gesture(h,'force',item.url,{...intentSender,url:'https://www.youtube.com/watch?v=aaaaaaaaaaa'})).ok,false);assert.equal((await gesture(h,'force',item.url,{...intentSender,tab:{id:7,incognito:true}})).ok,false);check('stale or private source pages cannot record a capture gesture');
   h=await harness({capture:true});assert.equal((await gesture(h,'force','https://name:secret@example.test/file.zip')).ok,false);assert.equal((await gesture(h,'force','https://example.test/'+ 'x'.repeat(16000))).ok,false);check('capture gestures reject embedded credentials and oversized addresses');
@@ -100,10 +100,10 @@ if(require.main===module)(async()=>{
 
   let releasePreferences;const preferenceGate=new Promise(resolve=>releasePreferences=resolve);
   h=await harness({capture:true},false,{},()=>preferenceGate);const pendingCapture=h.events.download(item);
-  await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls.map(c=>c[0]),['pause']);assert.equal(h.preferences.length,1);
-  releasePreferences();await pendingCapture;assert.deepEqual(h.calls.map(c=>c[0]),['pause','native','cancel']);check('eligible download is paused while desktop preferences are delayed');
-  h=await harness({capture:true},false,{},async()=>{throw Error('Native host unavailable');});await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('unavailable desktop preferences release the browser transfer');
-  h=await harness({capture:true},false,{extensions:['mp4']});await h.events.download(item);assert.deepEqual(h.calls.map(c=>c[0]),['pause','resume']);check('desktop file-type rejection releases the browser transfer');
+  await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls,[]);assert.equal(h.preferences.length,1);
+  releasePreferences();await pendingCapture;assert.deepEqual(h.calls.map(c=>c[0]),['pause','native','cancel']);check('eligible download stays active until desktop preferences finish');
+  h=await harness({capture:true},false,{},async()=>{throw Error('Native host unavailable');});await h.events.download(item);assert.deepEqual(h.calls,[]);check('unavailable desktop preferences leave the browser transfer untouched');
+  h=await harness({capture:true},false,{extensions:['mp4']});await h.events.download(item);assert.deepEqual(h.calls,[]);check('desktop file-type rejection leaves the browser transfer untouched');
   h=await harness({capture:true,excludedUrls:['https://example.test/*']});await h.events.download(item);assert.equal(h.calls.length,0);assert.equal(h.preferences.length,0);check('local address exclusions do not pause or contact UDM');
   h=await harness({capture:true});await h.events.download({...item,state:'complete'});assert.equal(h.calls.length,0);check('already-completed browser downloads are left intact');
 
@@ -118,13 +118,13 @@ if(require.main===module)(async()=>{
   }
   let releaseInvalid;const invalidGate=new Promise(resolve=>releaseInvalid=resolve);h=await harness({capture:true},false,{},null,()=>invalidGate);
   const invalidGesture=gesture(h,'force','https://example.test/file.bin',{...intentSender,url:'https://www.youtube.com/watch?v=aaaaaaaaaaa'});
-  const invalidDownload=h.events.download({...item,url:'https://example.test/file.bin',filename:'file.bin'});releaseInvalid();assert.equal((await invalidGesture).ok,false);await invalidDownload;assert.equal(h.calls.length,0);check('pending validation failure cannot force a download');
+  const invalidDownload=h.events.download({...item,url:'https://example.test/file.bin',filename:'file.bin'});releaseInvalid();assert.equal((await invalidGesture).ok,false);await invalidDownload;assert.deepEqual(h.calls.filter(c=>c[0]!=='native'||c[1].action!=='preferences-if-running'),[]);check('pending validation failure cannot force a download');
 
 
   for(const [name,rows] of [['canceled',[{state:'interrupted',paused:false}]],['resumed',[{state:'in_progress',paused:false}]],['removed',[]]]){
     let continueRules;const rulesGate=new Promise(resolve=>continueRules=resolve);h=await harness({capture:true},false,{},()=>rulesGate);
-    const inFlight=h.events.download(item);await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls.map(c=>c[0]),['pause']);
-    h.api.downloads.search=async()=>rows;continueRules();await inFlight;assert.deepEqual(h.calls.map(c=>c[0]),['pause']);check('user-'+name+' browser transfer is not handed off after desktop rules return');
+    const inFlight=h.events.download(item);await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(h.calls,[]);
+    h.api.downloads.search=async()=>rows;continueRules();await inFlight;assert.deepEqual(h.calls.map(c=>c[0]),name==='resumed'?['pause']:[]);check('user-'+name+' browser transfer is not handed off after desktop rules return');
   }
 
   h=await harness();let releaseRead;

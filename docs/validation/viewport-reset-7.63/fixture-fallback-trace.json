@@ -1,0 +1,65 @@
+[
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      0,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "changed-order-sort",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "equal-key-sort",
+    "top": 0
+  },
+  {
+    "catalogOrderMatches": true,
+    "effectiveView": [
+      "all",
+      false,
+      {
+        "Address": false,
+        "Description": false,
+        "FileName": true,
+        "MatchCase": false,
+        "Text": "",
+        "WholeString": false
+      },
+      8,
+      true
+    ],
+    "filter": "all",
+    "rows": 79,
+    "stage": "matching-category",
+    "top": 25
+  }
+]

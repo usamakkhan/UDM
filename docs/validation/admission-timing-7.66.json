@@ -1,0 +1,264 @@
+{
+    "version":  "7.66",
+    "browserVersion":  "0.71.30",
+    "diagnosticOnly":  true,
+    "allQualifiedRunsPassed":  true,
+    "build":  "admission-timing-7.66-build.json",
+    "cases":  [
+                  {
+                      "case":  "cold-trace-a",
+                      "selectionToExternalActionableMs":  1728,
+                      "phases":  [
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  639.4245
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  4.2911
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  555.5758
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  38.4731
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0298
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0355
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  52.9691
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  25.6798
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "warm-trace-a",
+                      "selectionToExternalActionableMs":  788,
+                      "phases":  [
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  351.3176
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  5.8148
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  626.5664
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  13.5674
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.4186
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0343
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  45.2078
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  17.0585
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "cold-trace-b",
+                      "selectionToExternalActionableMs":  1005,
+                      "phases":  [
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  313.6799
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  15.465
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  401.6997
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  14.4142
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0304
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0311
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  60.1754
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  16.1937
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "deferredSavesObserved":  2
+                  },
+                  {
+                      "case":  "warm-trace-b",
+                      "selectionToExternalActionableMs":  291,
+                      "phases":  [
+                                     {
+                                         "start":  "manager-ready",
+                                         "end":  "frame-created",
+                                         "wallMs":  356.9432
+                                     },
+                                     {
+                                         "start":  "admission-enter",
+                                         "end":  "before-commit",
+                                         "wallMs":  4.9655
+                                     },
+                                     {
+                                         "start":  "before-commit",
+                                         "end":  "temporary-flushed",
+                                         "wallMs":  20.7345
+                                     },
+                                     {
+                                         "start":  "temporary-flushed",
+                                         "end":  "committed",
+                                         "wallMs":  14.4395
+                                     },
+                                     {
+                                         "start":  "committed",
+                                         "end":  "admission-return",
+                                         "wallMs":  0.0183
+                                     },
+                                     {
+                                         "start":  "pipe-receive-return",
+                                         "end":  "capture-posted",
+                                         "wallMs":  0.0632
+                                     },
+                                     {
+                                         "start":  "file-info-controls-start",
+                                         "end":  "file-info-controls-ready",
+                                         "wallMs":  52.4709
+                                     },
+                                     {
+                                         "start":  "owned-show-returned",
+                                         "end":  "owned-paint-returned",
+                                         "wallMs":  17.0062
+                                     }
+                                 ],
+                      "runnerChecks":  8,
+                      "prefetchFinishedBeforeStart":  true,
+                      "oneCompleteJob":  true,
+                      "mainListHidden":  true,
+                      "exactSizeBeforeAndAfter":  6560076,
+                      "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "deferredSavesObserved":  2
+                  }
+              ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/admission-timing-7.66/cold-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/admission-timing-7.66/warm-trace-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/admission-timing-7.66/cold-trace-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     },
+                     {
+                         "path":  "candidates/admission-timing-7.66/warm-trace-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "D495DF3EBDD32CE9386DE66CCE22A39752AFE5EA06DFF084AEDE24162F6BBA30"
+                     }
+                 ],
+    "inputHashes":  {
+                        "sharedHelpers":  [
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffmpeg.exe",
+                                                  "sha256":  "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+                                              },
+                                              {
+                                                  "path":  "C:/Program Files/UDM/tools/ffprobe.exe",
+                                                  "sha256":  "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+                                              }
+                                          ]
+                    },
+    "limits":  [
+                   "Four small unmatched-load trials, not a stable distribution or a comparison against IDM.",
+                   "before-commit to temporary-flushed includes save snapshot, serialization, write-mutex wait, directory/file creation, write and FlushFileBuffers; it does not isolate the flush syscall.",
+                   "temporary-flushed to committed includes file replacement and cached checkpoint publication.",
+                   "Only the existing normal admission checkpoints are observed; no extra writes or sleeps are injected.",
+                   "The checkpoint callback is diagnostic and may affect timing; production Bridge projection and original production binaries are unchanged.",
+                   "Isolated Edge/native selected HLS MP4 with Spanish audio; personal browser and installed application are not these runs."
+               ],
+    "cleanup":  "Exact payloads, closed profiles/staged extensions, assets and native binary hardlink entries removed individually; shared tool junctions unlinked nonrecursively. Shared helpers and current production/fixture binaries remain unchanged. See admission-timing-7.66-cleanup.json. Logical sizes include hardlinks; physical savings are not measured."
+}

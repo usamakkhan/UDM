@@ -1,0 +1,1058 @@
+{
+    "version":  "7.65",
+    "browserVersion":  "0.71.29",
+    "kind":  "Locale-aware in-memory File Info category collision resolution",
+    "scope":  "Four fresh isolated Edge/native processes with first File Info per initialized owned component. UI-only overall tracing enabled/disabled in ABBA order; no catalog observer or message-pressure fixture.",
+    "allPassed":  true,
+    "cases":  [
+                  {
+                      "case":  "on-a",
+                      "traceEnabled":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableMs":  391,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phaseIntervals":  [
+                                             {
+                                                 "start":  "dialog-owner-ready",
+                                                 "end":  "form-init-entry",
+                                                 "wallMs":  22.448399990797043,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "form-init-entry",
+                                                 "end":  "form-base-ready",
+                                                 "wallMs":  0.011200010776519775,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-base-ready",
+                                                 "end":  "form-font-ready",
+                                                 "wallMs":  0.13829998672008514,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-font-ready",
+                                                 "end":  "form-frame-ready",
+                                                 "wallMs":  11.636600002646446,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-controls-start",
+                                                 "end":  "file-info-category-create",
+                                                 "wallMs":  9.413399994373322,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-category-create",
+                                                 "end":  "file-info-category-created",
+                                                 "wallMs":  42.313299998641014,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-category-created",
+                                                 "end":  "file-info-category-populated",
+                                                 "wallMs":  39.79899999499321,
+                                                 "threadCpuMs":  46.875
+                                             },
+                                             {
+                                                 "start":  "file-info-category-populated",
+                                                 "end":  "file-info-destination-start",
+                                                 "wallMs":  22.263700008392334,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-destination-start",
+                                                 "end":  "file-info-destination-ready",
+                                                 "wallMs":  54.296999990940094,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-destination-ready",
+                                                 "end":  "file-info-fields-ready",
+                                                 "wallMs":  36.621300011873245,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-fields-ready",
+                                                 "end":  "file-info-actions-start",
+                                                 "wallMs":  0.022699996829032898,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "file-info-actions-start",
+                                                 "end":  "file-info-controls-ready",
+                                                 "wallMs":  39.09170000255108,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "file-info-controls-ready",
+                                                 "end":  "form-theme-ready",
+                                                 "wallMs":  7.606099992990494,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-theme-ready",
+                                                 "end":  "owned-paint-returned",
+                                                 "wallMs":  65.75360000133514,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "owned-paint-returned",
+                                                 "end":  "first-prefetch-pulse",
+                                                 "wallMs":  3.8553999960422516,
+                                                 "threadCpuMs":  0.0
+                                             }
+                                         ],
+                      "trace":  [
+                                    {
+                                        "epochMs":  1794442606081,
+                                        "msAfterAdmission":  0.6488000005483627,
+                                        "stage":  "ui-dispatch",
+                                        "threadCpuMs":  312.5,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606081,
+                                        "msAfterAdmission":  0.6788000017404556,
+                                        "stage":  "pending-offer-ready",
+                                        "threadCpuMs":  312.5,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606081,
+                                        "msAfterAdmission":  0.6942999958992004,
+                                        "stage":  "offer-restored",
+                                        "threadCpuMs":  312.5,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606093,
+                                        "msAfterAdmission":  12.424400001764297,
+                                        "stage":  "dialog-owner-ready",
+                                        "threadCpuMs":  328.125,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606093,
+                                        "msAfterAdmission":  12.515299990773201,
+                                        "stage":  "file-info-entry",
+                                        "threadCpuMs":  328.125,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606115,
+                                        "msAfterAdmission":  34.87279999256134,
+                                        "stage":  "form-init-entry",
+                                        "threadCpuMs":  343.75,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606115,
+                                        "msAfterAdmission":  34.88400000333786,
+                                        "stage":  "form-base-ready",
+                                        "threadCpuMs":  343.75,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606116,
+                                        "msAfterAdmission":  35.022299990057945,
+                                        "stage":  "form-font-ready",
+                                        "threadCpuMs":  343.75,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606127,
+                                        "msAfterAdmission":  46.65889999270439,
+                                        "stage":  "form-frame-ready",
+                                        "threadCpuMs":  359.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606127,
+                                        "msAfterAdmission":  46.66570000350475,
+                                        "stage":  "file-info-controls-start",
+                                        "threadCpuMs":  359.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606137,
+                                        "msAfterAdmission":  56.079099997878075,
+                                        "stage":  "file-info-category-create",
+                                        "threadCpuMs":  375.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606179,
+                                        "msAfterAdmission":  98.39239999651909,
+                                        "stage":  "file-info-category-created",
+                                        "threadCpuMs":  390.625,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606219,
+                                        "msAfterAdmission":  138.1913999915123,
+                                        "stage":  "file-info-category-populated",
+                                        "threadCpuMs":  437.5,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606241,
+                                        "msAfterAdmission":  160.45509999990463,
+                                        "stage":  "file-info-destination-start",
+                                        "threadCpuMs":  453.125,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606295,
+                                        "msAfterAdmission":  214.75209999084473,
+                                        "stage":  "file-info-destination-ready",
+                                        "threadCpuMs":  468.75,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606332,
+                                        "msAfterAdmission":  251.37340000271797,
+                                        "stage":  "file-info-fields-ready",
+                                        "threadCpuMs":  484.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606332,
+                                        "msAfterAdmission":  251.396099999547,
+                                        "stage":  "file-info-actions-start",
+                                        "threadCpuMs":  484.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606371,
+                                        "msAfterAdmission":  290.4878000020981,
+                                        "stage":  "file-info-controls-ready",
+                                        "threadCpuMs":  484.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606379,
+                                        "msAfterAdmission":  298.0938999950886,
+                                        "stage":  "form-theme-ready",
+                                        "threadCpuMs":  484.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606379,
+                                        "msAfterAdmission":  298.1005000025034,
+                                        "stage":  "owned-theme-ready",
+                                        "threadCpuMs":  484.375,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606420,
+                                        "msAfterAdmission":  339.078699991107,
+                                        "stage":  "owned-show-returned",
+                                        "threadCpuMs":  500.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606444,
+                                        "msAfterAdmission":  363.8474999964237,
+                                        "stage":  "owned-paint-returned",
+                                        "threadCpuMs":  500.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606444,
+                                        "msAfterAdmission":  363.86030000448227,
+                                        "stage":  "owned-foreground-returned",
+                                        "threadCpuMs":  500.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606448,
+                                        "msAfterAdmission":  367.702899992466,
+                                        "stage":  "first-prefetch-pulse",
+                                        "threadCpuMs":  500.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606449,
+                                        "msAfterAdmission":  368.1354999989271,
+                                        "stage":  "first-prefetch-returned",
+                                        "threadCpuMs":  500.0,
+                                        "threadId":  7048
+                                    },
+                                    {
+                                        "epochMs":  1794442606482,
+                                        "msAfterAdmission":  401.2270999997854,
+                                        "stage":  "actionable-observed",
+                                        "threadCpuMs":  531.25,
+                                        "threadId":  7048
+                                    }
+                                ],
+                      "controlRecords":  [
+                                             {
+                                                 "id":  1000,
+                                                 "ms":  1.828900009393692,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1001,
+                                                 "ms":  4.4749999940395355,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1002,
+                                                 "ms":  2.6901000142097473,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  16.647700011730194,
+                                                 "stage":  "font"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  42.28999999165535,
+                                                 "stage":  "typed-control-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  42.30220000445843,
+                                                 "stage":  "create-and-font"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  0.001100003719329834,
+                                                 "stage":  "populate-and-select"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  0.0005000084638595581,
+                                                 "stage":  "restore-redraw"
+                                             },
+                                             {
+                                                 "id":  1004,
+                                                 "ms":  3.166800007224083,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1005,
+                                                 "ms":  2.5621000081300735,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1006,
+                                                 "ms":  2.865799993276596,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1007,
+                                                 "ms":  2.9395999908447266,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1008,
+                                                 "ms":  1.8186000138521194,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1009,
+                                                 "ms":  2.5729999989271164,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1010,
+                                                 "ms":  2.5203000009059906,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1011,
+                                                 "ms":  3.6281000077724457,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  17.114500001072884,
+                                                 "stage":  "font"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  47.27699999511242,
+                                                 "stage":  "typed-control-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  47.283500000834465,
+                                                 "stage":  "create-and-font"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  6.99549999833107,
+                                                 "stage":  "populate-and-select"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  0.0010000020265579224,
+                                                 "stage":  "restore-redraw"
+                                             },
+                                             {
+                                                 "id":  1013,
+                                                 "ms":  8.17909999191761,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1014,
+                                                 "ms":  7.460400000214577,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1015,
+                                                 "ms":  5.12109999358654,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1016,
+                                                 "ms":  5.984500005841255,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1017,
+                                                 "ms":  3.2497000098228455,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1018,
+                                                 "ms":  3.690200001001358,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1019,
+                                                 "ms":  8.50220000743866,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1020,
+                                                 "ms":  9.490700006484985,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1021,
+                                                 "ms":  6.730700001120567,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1022,
+                                                 "ms":  2.465800002217293,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1023,
+                                                 "ms":  11.741799995303154,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             }
+                                         ]
+                  },
+                  {
+                      "case":  "off-a",
+                      "traceEnabled":  false,
+                      "runnerChecks":  8,
+                      "admissionToActionableMs":  359,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phaseIntervals":  [
+
+                                         ],
+                      "trace":  [
+
+                                ],
+                      "controlRecords":  [
+
+                                         ]
+                  },
+                  {
+                      "case":  "off-b",
+                      "traceEnabled":  false,
+                      "runnerChecks":  8,
+                      "admissionToActionableMs":  328,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phaseIntervals":  [
+
+                                         ],
+                      "trace":  [
+
+                                ],
+                      "controlRecords":  [
+
+                                         ]
+                  },
+                  {
+                      "case":  "on-b",
+                      "traceEnabled":  true,
+                      "runnerChecks":  8,
+                      "admissionToActionableMs":  969,
+                      "sizeBeforeStart":  6560076,
+                      "sha256BeforeStart":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30",
+                      "phaseIntervals":  [
+                                             {
+                                                 "start":  "dialog-owner-ready",
+                                                 "end":  "form-init-entry",
+                                                 "wallMs":  42.91670000553131,
+                                                 "threadCpuMs":  46.875
+                                             },
+                                             {
+                                                 "start":  "form-init-entry",
+                                                 "end":  "form-base-ready",
+                                                 "wallMs":  0.01199999451637268,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-base-ready",
+                                                 "end":  "form-font-ready",
+                                                 "wallMs":  0.14869999885559082,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-font-ready",
+                                                 "end":  "form-frame-ready",
+                                                 "wallMs":  53.972100004553795,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "file-info-controls-start",
+                                                 "end":  "file-info-category-create",
+                                                 "wallMs":  22.734099999070168,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "file-info-category-create",
+                                                 "end":  "file-info-category-created",
+                                                 "wallMs":  116.34270000457764,
+                                                 "threadCpuMs":  62.5
+                                             },
+                                             {
+                                                 "start":  "file-info-category-created",
+                                                 "end":  "file-info-category-populated",
+                                                 "wallMs":  209.83380000293255,
+                                                 "threadCpuMs":  31.25
+                                             },
+                                             {
+                                                 "start":  "file-info-category-populated",
+                                                 "end":  "file-info-destination-start",
+                                                 "wallMs":  78.72229999303818,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-destination-start",
+                                                 "end":  "file-info-destination-ready",
+                                                 "wallMs":  159.691600009799,
+                                                 "threadCpuMs":  31.25
+                                             },
+                                             {
+                                                 "start":  "file-info-destination-ready",
+                                                 "end":  "file-info-fields-ready",
+                                                 "wallMs":  42.42899999022484,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-fields-ready",
+                                                 "end":  "file-info-actions-start",
+                                                 "wallMs":  0.02369999885559082,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "file-info-actions-start",
+                                                 "end":  "file-info-controls-ready",
+                                                 "wallMs":  45.282400012016296,
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "start":  "file-info-controls-ready",
+                                                 "end":  "form-theme-ready",
+                                                 "wallMs":  11.028999999165535,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "form-theme-ready",
+                                                 "end":  "owned-paint-returned",
+                                                 "wallMs":  95.1777999997139,
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "start":  "owned-paint-returned",
+                                                 "end":  "first-prefetch-pulse",
+                                                 "wallMs":  16.75399999320507,
+                                                 "threadCpuMs":  0.0
+                                             }
+                                         ],
+                      "trace":  [
+                                    {
+                                        "epochMs":  1794442650004,
+                                        "msAfterAdmission":  0.14069999754428864,
+                                        "stage":  "ui-dispatch",
+                                        "threadCpuMs":  687.5,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650004,
+                                        "msAfterAdmission":  0.17110000550746918,
+                                        "stage":  "pending-offer-ready",
+                                        "threadCpuMs":  687.5,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650004,
+                                        "msAfterAdmission":  0.1882999986410141,
+                                        "stage":  "offer-restored",
+                                        "threadCpuMs":  687.5,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650047,
+                                        "msAfterAdmission":  42.51729999482632,
+                                        "stage":  "dialog-owner-ready",
+                                        "threadCpuMs":  703.125,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650047,
+                                        "msAfterAdmission":  42.54510000348091,
+                                        "stage":  "file-info-entry",
+                                        "threadCpuMs":  703.125,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650090,
+                                        "msAfterAdmission":  85.43400000035763,
+                                        "stage":  "form-init-entry",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650090,
+                                        "msAfterAdmission":  85.445999994874,
+                                        "stage":  "form-base-ready",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650090,
+                                        "msAfterAdmission":  85.59469999372959,
+                                        "stage":  "form-font-ready",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650144,
+                                        "msAfterAdmission":  139.5667999982834,
+                                        "stage":  "form-frame-ready",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650144,
+                                        "msAfterAdmission":  139.57629999518394,
+                                        "stage":  "file-info-controls-start",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650166,
+                                        "msAfterAdmission":  162.3103999942541,
+                                        "stage":  "file-info-category-create",
+                                        "threadCpuMs":  750.0,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650283,
+                                        "msAfterAdmission":  278.65309999883175,
+                                        "stage":  "file-info-category-created",
+                                        "threadCpuMs":  812.5,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650493,
+                                        "msAfterAdmission":  488.4869000017643,
+                                        "stage":  "file-info-category-populated",
+                                        "threadCpuMs":  843.75,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650571,
+                                        "msAfterAdmission":  567.2091999948025,
+                                        "stage":  "file-info-destination-start",
+                                        "threadCpuMs":  859.375,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650731,
+                                        "msAfterAdmission":  726.9008000046015,
+                                        "stage":  "file-info-destination-ready",
+                                        "threadCpuMs":  890.625,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650773,
+                                        "msAfterAdmission":  769.3297999948263,
+                                        "stage":  "file-info-fields-ready",
+                                        "threadCpuMs":  906.25,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650773,
+                                        "msAfterAdmission":  769.3534999936819,
+                                        "stage":  "file-info-actions-start",
+                                        "threadCpuMs":  906.25,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650819,
+                                        "msAfterAdmission":  814.6359000056982,
+                                        "stage":  "file-info-controls-ready",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650830,
+                                        "msAfterAdmission":  825.6649000048637,
+                                        "stage":  "form-theme-ready",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650830,
+                                        "msAfterAdmission":  825.6710000038147,
+                                        "stage":  "owned-theme-ready",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650850,
+                                        "msAfterAdmission":  846.4117999970913,
+                                        "stage":  "owned-show-returned",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650925,
+                                        "msAfterAdmission":  920.8427000045776,
+                                        "stage":  "owned-paint-returned",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650925,
+                                        "msAfterAdmission":  920.8535999953747,
+                                        "stage":  "owned-foreground-returned",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650942,
+                                        "msAfterAdmission":  937.5966999977827,
+                                        "stage":  "first-prefetch-pulse",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650942,
+                                        "msAfterAdmission":  937.8289999961853,
+                                        "stage":  "first-prefetch-returned",
+                                        "threadCpuMs":  921.875,
+                                        "threadId":  16040
+                                    },
+                                    {
+                                        "epochMs":  1794442650984,
+                                        "msAfterAdmission":  980.2274000048637,
+                                        "stage":  "actionable-observed",
+                                        "threadCpuMs":  953.125,
+                                        "threadId":  16040
+                                    }
+                                ],
+                      "controlRecords":  [
+                                             {
+                                                 "id":  1000,
+                                                 "ms":  7.751800000667572,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1001,
+                                                 "ms":  3.4858999997377396,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1002,
+                                                 "ms":  10.973399996757507,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  38.87939999997616,
+                                                 "stage":  "font"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  116.31409999728203,
+                                                 "stage":  "typed-control-total",
+                                                 "threadCpuMs":  62.5
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  116.32889999449253,
+                                                 "stage":  "create-and-font"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  0.0014000087976455688,
+                                                 "stage":  "populate-and-select"
+                                             },
+                                             {
+                                                 "id":  1003,
+                                                 "ms":  0.0005000084638595581,
+                                                 "stage":  "restore-redraw"
+                                             },
+                                             {
+                                                 "id":  1004,
+                                                 "ms":  14.146699994802475,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1005,
+                                                 "ms":  2.621399998664856,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1006,
+                                                 "ms":  22.08849999308586,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1007,
+                                                 "ms":  2.810599997639656,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1008,
+                                                 "ms":  21.41330000758171,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1009,
+                                                 "ms":  2.7611999958753586,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1010,
+                                                 "ms":  9.925400003790855,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1011,
+                                                 "ms":  2.4171999990940094,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  54.92110000550747,
+                                                 "stage":  "font"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  150.80689999461174,
+                                                 "stage":  "typed-control-total",
+                                                 "threadCpuMs":  31.25
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  150.8141999989748,
+                                                 "stage":  "create-and-font"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  8.847800001502037,
+                                                 "stage":  "populate-and-select"
+                                             },
+                                             {
+                                                 "id":  1012,
+                                                 "ms":  0.0010000020265579224,
+                                                 "stage":  "restore-redraw"
+                                             },
+                                             {
+                                                 "id":  1013,
+                                                 "ms":  3.74889999628067,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1014,
+                                                 "ms":  3.4297000020742416,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1015,
+                                                 "ms":  16.10699999332428,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1016,
+                                                 "ms":  3.210299998521805,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1017,
+                                                 "ms":  2.6444000005722046,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1018,
+                                                 "ms":  8.855000004172325,
+                                                 "stage":  "window-control-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1019,
+                                                 "ms":  7.889699995517731,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1020,
+                                                 "ms":  4.854300007224083,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1021,
+                                                 "ms":  6.862299993634224,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  15.625
+                                             },
+                                             {
+                                                 "id":  1022,
+                                                 "ms":  10.944100007414818,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             },
+                                             {
+                                                 "id":  1023,
+                                                 "ms":  14.487400010228157,
+                                                 "stage":  "button-total",
+                                                 "threadCpuMs":  0.0
+                                             }
+                                         ]
+                  }
+              ],
+    "suites":  [
+                   {
+                       "name":  "presentation",
+                       "checks":  316,
+                       "passed":  true
+                   },
+                   {
+                       "name":  "first-paint",
+                       "checks":  25,
+                       "passed":  true
+                   }
+               ],
+    "payloads":  [
+                     {
+                         "path":  "candidates/category-labels-7.65/on-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/category-labels-7.65/off-a/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/category-labels-7.65/off-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     },
+                     {
+                         "path":  "candidates/category-labels-7.65/on-b/downloads/UDM alternate audio fixture.mp4",
+                         "bytes":  6560076,
+                         "sha256":  "d495df3ebdd32ce9386de66cce22a39752afe5ea06dff084aede24162f6bba30"
+                     }
+                 ],
+    "limitations":  [
+                        "Not installed-app or personal-browser acceptance; no fresh paired IDM timing. Installed UDM remains 7.11.",
+                        "Trace-off omits overall callbacks but component per-control timers still run in both modes; neither mode is fully uninstrumented production.",
+                        "Two samples per mode describe observations, not a reliable latency distribution or an optimization proof.",
+                        "GetThreadTimes CPU accounting is coarse. Zero deltas do not prove a wait; only same-thread deltas are reported. Nested control timings must not be added to totals.",
+                        "The 15 ms observer may see actionable state after actual paint. First File Info follows component/bridge initialization and is not a full production cold start.",
+                        "Exact output comes from completed prefetch, not metadata prediction."
+                    ],
+    "observerCorrection":  "See file-info-trace-interpretation-7.63.json: historical catalog hooks observed ordinary saves and did not inject writes.",
+    "change":  "Resolve collisions against previously inserted labels in memory using the actual selector locale, equal UTF-16 lengths and Windows case-insensitive comparison. Empty queries do not match; comparison errors fall back to native search. Native insertion and key selection remain unchanged.",
+    "cleanup":  "Generated payloads, closed profiles/staged extensions and fixture object removed individually after hashing. See category-labels-7.65-cleanup.json.",
+    "priorObserved":  [
+                          {
+                              "case":  "on-a",
+                              "admissionToActionableMs":  828,
+                              "categoryPopulationMs":  91.78180000185966
+                          },
+                          {
+                              "case":  "off-a",
+                              "admissionToActionableMs":  812,
+                              "categoryPopulationMs":  null
+                          },
+                          {
+                              "case":  "off-b",
+                              "admissionToActionableMs":  422,
+                              "categoryPopulationMs":  null
+                          },
+                          {
+                              "case":  "on-b",
+                              "admissionToActionableMs":  391,
+                              "categoryPopulationMs":  36.076899990439415
+                          }
+                      ],
+    "interpretation":  "Historical and new samples are unpaired and small. Report category phase and whole-dialog observations separately; no installed or IDM speed equivalence is inferred.",
+    "build":  "All five production targets and three owned UI fixtures; see category-labels-7.65-build.json.",
+    "comparisonReferences":  [
+                                 "https://learn.microsoft.com/en-us/windows/win32/controls/cb-findstringexact",
+                                 "https://learn.microsoft.com/en-us/windows/win32/controls/cb-setlocale",
+                                 "https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-comparestringw"
+                             ],
+    "nativeOracle":  "The standalone owned Win32 probe checks 34 queries across six locale entries (five distinct on this machine). The component fixture separately compares all generated collision labels with native combo searches and counts native searches during the product helper."
+}

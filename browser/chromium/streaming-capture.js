@@ -2,6 +2,7 @@
 const UdmStreamingCapture=(()=>{
  'use strict';
  let api,lifecycle,notifyReady;const pending=new Map(),queues=new Map(),counts=new Map(),epochs=new Map(),TTL=300000,MAX_BODY=131072;
+ const orderEpoch=globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2);let requestOrder=0;
  const note=(tab,key)=>{const row=counts.get(tab)||{};row[key]=(row[key]||0)+1;counts.set(tab,row);};
  function endpoint(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname.endsWith('.googlevideo.com')&&u.pathname==='/videoplayback'&&!(u.searchParams.getAll('advideo').some(value=>value!=='')||u.searchParams.getAll('el').includes('adunit'))&&(u.searchParams.has('sabr')||u.searchParams.get('ump')==='1');}catch{return false;}}
  function body(request){
@@ -22,7 +23,7 @@ const UdmStreamingCapture=(()=>{
   note(event.tabId,'requests');const bytes=body(event.requestBody);if(!bytes){note(event.tabId,'unsupportedBody');return;}
   for(const [key,value] of pending)if(Date.now()-value.time>30000)pending.delete(key);
   if(pending.size>=64)pending.delete(pending.keys().next().value);
-  const entry={stamp:lifecycle?.token(event.tabId,event.frameId??0),tabId:event.tabId,frameId:event.frameId,documentId:event.documentId||'',url:event.url,time:Date.now(),epoch:epochs.get(event.tabId)||0};
+  const entry={stamp:lifecycle?.token(event.tabId,event.frameId??0),tabId:event.tabId,frameId:event.frameId,documentId:event.documentId||'',url:event.url,time:Date.now(),order:++requestOrder,epoch:epochs.get(event.tabId)||0};
   // Resolve page identity at request time, independently of page fetch wrappers.
   entry.proof=(async()=>{try{
    await lifecycle?.ready;
@@ -44,10 +45,10 @@ const UdmStreamingCapture=(()=>{
   const key='sabr:'+entry.tabId,task=(queues.get(entry.tabId)||Promise.resolve()).catch(()=>{}).then(async()=>{
    if(entry.epoch!==(epochs.get(entry.tabId)||0)||lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
    const prior=(await api.storage.session.get(key))[key]||[];
-   const item={...proof,url:entry.url,frameId:entry.frameId,capturedAt:entry.time,captureSource:'browser-request'};
+   const item={...proof,url:entry.url,frameId:entry.frameId,capturedAt:entry.time,captureSource:'browser-request',captureOrder:entry.order,captureOrderEpoch:orderEpoch};
    if(lifecycle&&!lifecycle.valid(entry,entry.stamp))return;
    const samePlayer=p=>p.videoId===item.videoId&&p.frameId===item.frameId&&p.documentId===item.documentId;
-   if(prior.some(p=>samePlayer(p)&&p.capturedAt>item.capturedAt))return;
+   if(prior.some(p=>samePlayer(p)&&(p.captureOrderEpoch===orderEpoch&&Number.isSafeInteger(p.captureOrder)?p.captureOrder>entry.order:p.capturedAt>item.capturedAt&&p.capturedAt<=Date.now())))return;
    await api.storage.session.set({[key]:[...prior.filter(p=>Date.now()-p.capturedAt<TTL&&!samePlayer(p)),item].slice(-8)});
    note(entry.tabId,'accepted');
    if(entry.epoch===(epochs.get(entry.tabId)||0)&&(!lifecycle||lifecycle.valid(entry,entry.stamp)))
@@ -57,9 +58,10 @@ const UdmStreamingCapture=(()=>{
  async function session(context,waitPending=true){
   if(waitPending)await (queues.get(context.tabId)||Promise.resolve()).catch(()=>{});
   const values=(await api.storage.session.get('sabr:'+context.tabId))['sabr:'+context.tabId]||[];
-  return values.filter(x=>endpoint(x.url)&&x.videoId===context.id&&x.frameId===context.frameId&&x.visit===context.snapshot?.visit&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
+  const result=values.filter(x=>endpoint(x.url)&&x.videoId===context.id&&x.frameId===context.frameId&&x.visit===context.snapshot?.visit&&Date.now()-x.capturedAt<TTL&&x.capturedAt<=Date.now()&&
    (context.documentId?x.documentId===context.documentId:!x.documentId&&Number.isFinite(context.snapshot?.timeOrigin)&&x.timeOrigin===context.snapshot.timeOrigin))
-   .sort((a,b)=>b.capturedAt-a.capturedAt)[0]||null;
+   .sort((a,b)=>b.capturedAt-a.capturedAt)[0];
+  if(!result)return null;const {captureOrder,captureOrderEpoch,...visible}=result;return visible;
  }
  async function clear(tab){epochs.set(tab,(epochs.get(tab)||0)+1);for(const [id,p] of pending)if(p.tabId===tab)pending.delete(id);counts.delete(tab);const task=(queues.get(tab)||Promise.resolve()).catch(()=>{}).then(()=>api.storage.session.remove('sabr:'+tab));queues.set(tab,task);try{await task;}finally{if(queues.get(tab)===task)queues.delete(tab);}}
  function navigate(event){
