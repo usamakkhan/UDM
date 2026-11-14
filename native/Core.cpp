@@ -4,7 +4,9 @@
 #include "QueueWake.hpp"
 #include "Scanner.hpp"
 #include "Core.hpp"
+#include "PublicationOwnership.hpp"
 #include "CatalogCommitCoordinator.hpp"
+#include "PublicationCatalogProof.hpp"
 #include "CatalogAdmissionRegistry.hpp"
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
 #include "ProductionUiTiming.hpp"
@@ -343,12 +345,12 @@ void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)
  // outside this function's lock. Periodic callers use an owned worker. Explicit
  // callers remain synchronous and may hold an outer lock. Older writes are skipped.
  std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
- CatalogAdmissionRegistry::Publication publication;
+ CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;
  {Lock l(mutex);if(changedOnly&&stopping)return;if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
   // Recheck automatic checkpoint necessity in the same lock as its snapshot.
   // An explicit commit can supersede a worker's earlier dirty observation.
   // Forced saves and retries after a storage failure still perform durable IO.
-  try{if(changedOnly&&storageError.empty()&&!checkpointChanged())return;current=snapshot();publication=admissionRegistry->overlay(current);}catch(const std::exception& e){storageError=e.what();throw;}
+  try{if(changedOnly&&storageError.empty()&&!checkpointChanged())return;current=snapshot();publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);}catch(const std::exception& e){storageError=e.what();throw;}
   sequence=++catalogSequence;checkpoint=observation?*observation:catalogCheckpoint;}
 
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
@@ -385,6 +387,8 @@ void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)
  });
  if(!result.published())return;
  publication.published(sequence);
+ if(publicationProof&&checkpoint)checkpoint("publication-catalog-written");
+ publicationProof.published(sequence);
 Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSequence=sequence;storageError.clear();}}
  catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
 }
@@ -435,18 +439,19 @@ bool Manager::completionSaved(JobPtr job)const{
  return false;
 }
 std::vector<std::string> Manager::categories()const{Lock l(mutex);return optionCategories(state["Settings"]);}
-static std::string downloadPathKey(const fs::path& path){
- return lower(utf8(path.lexically_normal().generic_wstring()));
+static std::wstring downloadPathKey(const fs::path& path){
+ return windowsPath::key(path);
 }
 bool Manager::downloadDestinationReserved(const fs::path& path,const JobPtr& owner)const{
  Lock lock(mutex);
+ if(PublicationOwnership::reserved(*this,path,owner))return true;
  const auto key=downloadPathKey(path);
  const auto original=owner?str(owner->data,"ReplacementOf"):std::string{};
  for(const auto& other:jobs){
   if(other==owner)continue;
-  if(downloadPathKey(other->target())==key&&(original.empty()||other->id()!=original))return true;
+  if(windowsPath::equal(downloadPathKey(other->target()),key)&&(original.empty()||other->id()!=original))return true;
   const auto previous=str(other->data,"PreviousPath");
-  if(!previous.empty()&&downloadPathKey(fs::path(wide(previous)))==key)return true;
+  if(!previous.empty()&&windowsPath::equal(downloadPathKey(fs::path(wide(previous))),key))return true;
  }
  return admissionRegistry->reserves(path,owner?owner->id():std::string{});
 }
@@ -457,16 +462,16 @@ static std::string availableDownloadName(const Manager& manager,const fs::path& 
  const auto original=fs::path(wide(filename));
  const auto first=folder/original;
  const auto firstKey=downloadPathKey(first);
- const auto reservedOnDisk=[&](const fs::path& path){return fs::exists(path)||manager.relocationReserves(path)||manager.pendingMediaDestination(path);};
+ const auto publications=PublicationOwnership::destinations(manager);
+ const auto reservedOnDisk=[&](const fs::path& path){return publications.count(PublicationOwnership::pathKey(path))||fs::exists(path)||manager.relocationReserves(path)||manager.pendingMediaDestination(path);};
  if(!reservedOnDisk(first)&&std::none_of(manager.jobs.begin(),manager.jobs.end(),[&](const auto& job){
      const auto previous=str(job->data,"PreviousPath");
-     return downloadPathKey(job->target())==firstKey||
-            (!previous.empty()&&downloadPathKey(fs::path(wide(previous)))==firstKey);
+     return windowsPath::equal(downloadPathKey(job->target()),firstKey)||
+            (!previous.empty()&&windowsPath::equal(downloadPathKey(fs::path(wide(previous))),firstKey));
     }))return filename;
 
  // Check catalog reservations once for the entire numbered-name search.
- std::unordered_set<std::string> reserved;
- reserved.reserve(manager.jobs.size());
+ windowsPath::Keys reserved;
  for(const auto& job:manager.jobs){
   reserved.insert(downloadPathKey(job->target()));
   const auto backup=str(job->data,"PreviousPath");
@@ -480,7 +485,7 @@ static std::string availableDownloadName(const Manager& manager,const fs::path& 
  }
 }
 JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);const auto destinationFolder=fs::absolute(fs::path(wide(folder)));folder=utf8(destinationFolder.wstring());if(relocationReserves(destinationFolder))throw std::runtime_error("That folder is reserved by a file move.");bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");filename=availableDownloadName(*this,destinationFolder,filename);auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
-bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
+bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||PublicationOwnership::treeOwned(*this,j)||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
 void Manager::resume(JobPtr j){
  Lock lock(mutex);
  if(isActive(j)){
@@ -533,6 +538,7 @@ void Manager::queueIndividualResume(JobPtr j){
 }
 void Manager::pause(JobPtr j){
  Lock l(mutex);
+ if(PublicationOwnership::treeCommitting(*this,j)||(PublicationOwnership::treeOwned(*this,j)&&!active.count(j->id())))throw std::runtime_error("Wait for the file publication to finish before pausing this download.");
  const auto response=j->data.find("OriginalResponse");
  const auto responseState=response==j->data.end()?std::string{}:str(*response,"State");
  if(responseState=="Receiving"||responseState=="Reserved"){
@@ -755,6 +761,7 @@ void requestLiveHlsFinish(Manager& manager,JobPtr job){
  if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job))manager.resume(job);
 }
 void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+  std::function<void(const char*)> completedCheckpoint;
   {
    Lock lock(mutex);
    const bool resumeRequested=j->prefetchDeferring&&yes(j->data,"IndividualStart");
@@ -764,12 +771,24 @@ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))retur
     j->data["Status"]=queued?"Queued":"Paused";
     if(capturedMedia(j->data))j->data["MediaPhase"]=queued?"Queued":"Paused";
    }
-   active.erase(j->id());
+   if(!complete)active.erase(j->id());
    if(!resumeRequested)j->data.erase("IndividualStart");
    schedulePaused.erase(j->id());
    j->data.erase("ConnectionStatus");
    j->speed=0;
-   try{save();}catch(...) {}
+   if(complete)completedCheckpoint=catalogCheckpoint;
+   else try{save();}catch(...) {}
+  }
+  if(complete){
+   // Keep this worker's active ownership until its checkpoint attempt settles,
+   // but do not retain the model mutex across serialization or durable IO.
+   try{
+    if(completedCheckpoint){
+     std::function<void(const char*)> observe=[checkpoint=std::move(completedCheckpoint)](const char* point){if(std::string_view(point)=="snapshot-prepared")checkpoint("completed-transfer-checkpoint");checkpoint(point);};
+     saveCatalog(false,&observe);
+    }else save();
+   }catch(...){} // Publication is already committed; retain storageError.
+   {Lock lock(mutex);auto owner=active.find(j->id());if(owner!=active.end()&&owner->second==c)active.erase(owner);}
   }
   if(prefetch)prefetchConfirmed.notify_all();
   if((complete||showFailedPreparedSave)&&event)event(j,complete);
@@ -793,7 +812,7 @@ void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResp
  j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);
  j->samplePrefetchRate(now);
 }if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
-void Manager::stop(){{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}periodicCheckpoint.stop();{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();try{save();}catch(...){Lock l(mutex);stopping=false;throw;}}
+void Manager::stop(){{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}periodicCheckpoint.stop();{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();PublicationOwnership::waitUntilIdle(*this);try{save();}catch(...){Lock l(mutex);stopping=false;throw;}}
 int retryAfterDelay(const std::string& header,i64 now){
  auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
  auto value=header.substr(first,last-first+1);

@@ -1,4 +1,5 @@
 [
+  {"source": "AsyncDialLookupTests", "timeoutSeconds": 45},
   {"source": "FileInfoDecisionTests", "timeoutSeconds": 60},
   {"source": "UiTaskSignalTests", "timeoutSeconds": 30},
   {"source": "PendingFileInfoRetryTests", "timeoutSeconds": 120},
@@ -7,6 +8,11 @@
   {"source": "CatalogAdmissionReservationTests", "timeoutSeconds": 180},
   {"source": "CatalogCommitCoordinatorTests", "timeoutSeconds": 60},
   {"source": "CatalogCheckpointTests", "timeoutSeconds": 60},
+  {"source": "CompletedCheckpointTests", "timeoutSeconds": 120},
+  {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+  {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+  {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+  {"source": "PublicationOwnershipTests", "timeoutSeconds": 120},
   {"source": "HttpGzipDecoderTests", "timeoutSeconds": 30},
   {"source": "ContentSniffNamingTests", "timeoutSeconds": 30},
   {"source": "ContentSniffNoticeTests", "timeoutSeconds": 30},

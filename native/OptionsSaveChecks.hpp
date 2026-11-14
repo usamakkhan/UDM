@@ -2,12 +2,12 @@
 struct CatalogCheckpointTestAccess {static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}};
 struct OptionsSaveTestAccess {
  static void services(Options& o,std::function<bool()> read,std::function<void(bool)> write,std::function<void()> restart){o.readStartup=std::move(read);o.writeStartup=std::move(write);o.restartHosts=std::move(restart);}
- static void connection(Options& o,const DialEntry& e){o.dialCredentials->load(e);}
+ static void connection(Options& o,const DialEntry& e){o.dialCredentials->load(e);DialReadTestAccess::wait(o.GetSafeHwnd());}
 };
 struct OptionsFixtureStore:DialCredentialStore {
- std::map<std::string,DialCredentialInfo> values{{"C:/UDM-Fixture/first.pbk",{"old-first",false,false}},{"C:/UDM-Fixture/second.pbk",{"old-second",false,false}}};std::vector<std::string> writes;bool failSecond=true;DWORD worker=0;
- DialCredentialInfo read(const DialEntry& e)override{return values.at(e.phonebook);}
- void write(const DialEntry& e,const DialCredentialChange& c)override{worker=GetCurrentThreadId();if(e.phonebook=="C:/UDM-Fixture/second.pbk"&&failSecond){failSecond=false;throw std::runtime_error("Forced second credential failure");}writes.push_back(e.phonebook);values[e.phonebook]={c.userName,false,false};}
+ std::mutex mutex;std::map<std::string,DialCredentialInfo> values{{"C:/UDM-Fixture/first.pbk",{"old-first",false,false}},{"C:/UDM-Fixture/second.pbk",{"old-second",false,false}}};std::vector<std::string> writes;bool failSecond=true;DWORD worker=0;
+ DialCredentialInfo read(const DialEntry& e)override{std::lock_guard<std::mutex> lock(mutex);return values.at(e.phonebook);}
+ void write(const DialEntry& e,const DialCredentialChange& c)override{std::lock_guard<std::mutex> lock(mutex);worker=GetCurrentThreadId();if(e.phonebook=="C:/UDM-Fixture/second.pbk"&&failSecond){failSecond=false;throw std::runtime_error("Forced second credential failure");}writes.push_back(e.phonebook);values[e.phonebook]={c.userName,false,false};}
 };
 struct OptionsSaveGate {
  Manager& m;bool fail;std::atomic_int saves=0;std::promise<void> entered,released;std::shared_future<void> ready=entered.get_future().share(),wait=released.get_future().share();std::atomic_bool unlocked=false;DWORD worker=0;
@@ -28,7 +28,7 @@ struct OptionsSaveProbe {
    if(notice){++errors;expect(m.fileInfoDecisionPending,"Save error keeps other modal decisions deferred until acknowledgement");auto expected=mode=="credentials"?L"1 connection credential update(s) were saved. The remaining change failed: Forced second credential failure":mode=="startup"?L"Forced Options startup failure":L"Forced Options catalog failure";child(notice,expected);expect(restarts==0,"Failed Options save never restarts browser hosts");{Lock lock(m.mutex);expect(m.state["Settings"]==holder->current,"Failure restores the complete current settings snapshot");}SendMessageW(child(notice,L"OK"),BM_CLICK,0,0);return;}
    if(GetTickCount64()>end)throw std::runtime_error("Options save interaction deadline");if(!main||!IsWindow(main))return;
    if(!failure.empty()){if(holder)holder->release();gate.unlock();if(!m.fileInfoDecisionPending)PostMessageW(main,WM_CLOSE,0,0);return;}
-   if(phase==0){
+   if(phase==0){if(!DialReadTestAccess::ready(dialog))return;
     if(mode=="cancel"){phase=99;SendMessageW(main,WM_COMMAND,IDCANCEL,0);return;}
     if(mode=="credentials"){
      optionsTab(main,7);SetWindowTextW(GetWindow(child(main,L"User name:"),GW_HWNDNEXT),L"new-first");OptionsSaveTestAccess::connection(dialog,DialEntry{"Demo","C:/UDM-Fixture/second.pbk"});SetWindowTextW(GetWindow(child(main,L"User name:"),GW_HWNDNEXT),L"new-second");optionsTab(main,0);

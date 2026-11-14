@@ -1,0 +1,158 @@
+{
+  "checks": [
+    {
+      "name": "Verified legacy publication recovers without another transfer or changing finish time",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Legacy repair rolls back in-memory status when its save fails",
+      "passed": true
+    },
+    {
+      "name": "Verified legacy publication recovers without another transfer or changing finish time",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or changed legacy evidence cannot claim completion",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "A file open for writing cannot be reconciled from an unstable hash",
+      "passed": true
+    },
+    {
+      "name": "Verified legacy publication recovers without another transfer or changing finish time",
+      "passed": true
+    },
+    {
+      "name": "Legacy recovery decision survives another catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Backup state is held by another reader",
+      "passed": true
+    },
+    {
+      "name": "Save failure retains exact published file and durable intent",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles published bytes to completed history",
+      "passed": true
+    },
+    {
+      "name": "Recovered completion survives closing and opening another manager",
+      "passed": true
+    },
+    {
+      "name": "Backup state is held by another reader",
+      "passed": true
+    },
+    {
+      "name": "Save failure retains exact published file and durable intent",
+      "passed": true
+    },
+    {
+      "name": "Resume reconciles locally without scheduling another request",
+      "passed": true
+    },
+    {
+      "name": "Resume reconciliation is durable",
+      "passed": true
+    },
+    {
+      "name": "Backup state is held by another reader",
+      "passed": true
+    },
+    {
+      "name": "Save failure retains exact published file and durable intent",
+      "passed": true
+    },
+    {
+      "name": "Changed destination is preserved and never falsely marked complete",
+      "passed": true
+    },
+    {
+      "name": "Failed rename preserves staging and publication intent",
+      "passed": true
+    },
+    {
+      "name": "Unpublished intent recovers paused without publishing or deleting bytes",
+      "passed": true
+    },
+    {
+      "name": "Backup state is held by another reader",
+      "passed": true
+    },
+    {
+      "name": "Save failure retains exact published file and durable intent",
+      "passed": true
+    },
+    {
+      "name": "Removing a recovered record preserves its file and leaves no orphan journal",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

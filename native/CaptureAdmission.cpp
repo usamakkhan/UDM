@@ -4,6 +4,7 @@
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 #include "MediaAdmission.hpp"
 #include "CatalogAdmissionRegistry.hpp"
+#include "PublicationOwnership.hpp"
 #include "BrowserAdmissionContext.hpp"
 #include "FileInfoInitialView.hpp"
 #include "MediaStorage.hpp"
@@ -87,6 +88,7 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
   rows[token]=std::move(receipt);
   if(directAudio)state["BrowserCaptures"]=std::move(rows);
   else{state["BrowserCaptures"].swap(rows);swappedReceipts=true;}
+  if(PublicationOwnership::reserved(*this,admitted->target()))throw std::runtime_error("A file publication owns this browser download destination. Try again after it finishes.");
   admission.prepare(std::make_shared<const CatalogAdmissionReservation>(token,admitted->snapshot(),state.at("BrowserCaptures").at(token)));
   const bool newOnly=detachedBrowserAdmissionAllowed&&!directAudio&&!refreshed&&before.empty()&&jobs.size()==previousJobs.size()+1&&jobs.back()==admitted&&
    std::equal(previousJobs.begin(),previousJobs.end(),jobs.begin())&&pendingOffers==previousOffers&&existingOffers==previousExisting&&

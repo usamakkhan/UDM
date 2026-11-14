@@ -1,0 +1,751 @@
+{
+  "case": "unicode-catalog-move",
+  "checks": [
+    {
+      "name": "A runtime bundle owns both jobs without prematurely entering commit",
+      "passed": true
+    },
+    {
+      "name": "Destination ownership uses Windows ordinal case folding and covers the previous-version path",
+      "passed": true
+    },
+    {
+      "name": "The owning operation can query its own reserved destination without self-conflict",
+      "passed": true
+    },
+    {
+      "name": "A second job owner cannot replace an existing publication lease",
+      "passed": true
+    },
+    {
+      "name": "A case-alias destination collision rejects the entire proposed ownership bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed acquisition leaves no partial job/path rows and does not release the first owner",
+      "passed": true
+    },
+    {
+      "name": "Entering commit changes the phase of the complete owning bundle",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership and phase never enter the saved catalog or job data",
+      "passed": true
+    },
+    {
+      "name": "Runtime ownership is isolated by Manager identity",
+      "passed": true
+    },
+    {
+      "name": "Lease destruction releases only its own jobs, paths and commit phase",
+      "passed": true
+    },
+    {
+      "name": "Relative destinations cannot acquire publication ownership",
+      "passed": true
+    },
+    {
+      "name": "Embedded-null destinations cannot acquire publication ownership",
+      "passed": true
+    },
+    {
+      "name": "Invalid input leaves the runtime registry empty",
+      "passed": true
+    },
+    {
+      "name": "An idle parent observes nested ownership without being mistaken for the child's direct publisher",
+      "passed": true
+    },
+    {
+      "name": "Publication retains and excludes the captured descendant graph",
+      "passed": true
+    },
+    {
+      "name": "A parent cannot acquire publication across an independently owned child",
+      "passed": true
+    },
+    {
+      "name": "Rejected parent acquisition makes no partial reservation and leaves the child owner intact",
+      "passed": true
+    },
+    {
+      "name": "Video and audio siblings can hold independent publication leases",
+      "passed": true
+    },
+    {
+      "name": "Commit phase propagates to parents and owned descendants without changing a sibling's phase",
+      "passed": true
+    },
+    {
+      "name": "Ending one child operation releases only its graph while the sibling keeps the parent active",
+      "passed": true
+    },
+    {
+      "name": "A parent becomes inactive only after every independently owned child retires",
+      "passed": true
+    },
+    {
+      "name": "A parent publication protects every captured child from independent work",
+      "passed": true
+    },
+    {
+      "name": "Nested publication cannot enter while its parent owns the graph",
+      "passed": true
+    },
+    {
+      "name": "Whole-family release removes all descendant ownership rows",
+      "passed": true
+    },
+    {
+      "name": "Graph capture handles shared or cyclic child references without recursion",
+      "passed": true
+    },
+    {
+      "name": "Cyclic capture exits without leaking runtime reservations",
+      "passed": true
+    },
+    {
+      "name": "A real transport owner can retain normal durable Pause cancellation during publication preparation",
+      "passed": true
+    },
+    {
+      "name": "Preparing and committing phase exits leave no runtime ownership behind",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot mutate or cancel an operation after its irreversible commit phase begins",
+      "passed": true
+    },
+    {
+      "name": "Rejected commit-phase Pause preserves both transport cancellation and catalog data",
+      "passed": true
+    },
+    {
+      "name": "Preparing and committing phase exits leave no runtime ownership behind",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "A real held internal publisher keeps its otherwise idle catalog parent active",
+      "passed": true
+    },
+    {
+      "name": "Parent Resume cannot restart a media session over a publishing child",
+      "passed": true
+    },
+    {
+      "name": "Parent Properties cannot edit a media session during child publication",
+      "passed": true
+    },
+    {
+      "name": "Workerless parent Pause cannot pretend to cancel the child's publication",
+      "passed": true
+    },
+    {
+      "name": "Parent removal cannot discard a publishing track",
+      "passed": true
+    },
+    {
+      "name": "Rejected parent commands preserve exact parent/child bindings",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Download admission avoids a case-alias destination reserved by an internal child absent from the catalog",
+      "passed": true
+    },
+    {
+      "name": "Move/Rename respects an internal child's ordinal case-alias destination before creating an intent",
+      "passed": true
+    },
+    {
+      "name": "Move/Rename cannot turn a publication's required future directory into a file",
+      "passed": true
+    },
+    {
+      "name": "Directory reservation requires a path-component boundary",
+      "passed": true
+    },
+    {
+      "name": "Scoped move recovery rejects a publication-owned destination even when the journal job is different",
+      "passed": true
+    },
+    {
+      "name": "Unscoped move recovery defers overlapping publication without consuming its intent or changing bytes",
+      "passed": true
+    },
+    {
+      "name": "An independent Move/Rename completes while the unrelated child publication stays reserved",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Successful child retirement restores the parent availability without losing its track",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Replacement preparation atomically owns its original record and previous-version location",
+      "passed": true
+    },
+    {
+      "name": "Replacement original cannot be removed during verification",
+      "passed": true
+    },
+    {
+      "name": "Replacement original cannot pretend to cancel another publisher's prepared operation",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Replacement completion preserves the prior file and releases original/backup ownership",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Scoped recovery cannot consume a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Unscoped recovery defers a live owner's journal without interpreting or altering its files",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    },
+    {
+      "name": "Once ownership ends, scoped recovery resumes and preserves unpublished staged data",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry can acquire a fresh owner after pending-journal reconciliation",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    },
+    {
+      "name": "Cancellation preserves original error and complete staged bytes after releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    },
+    {
+      "name": "Standalone publication reaches its owned preparation gate before shutdown",
+      "passed": true
+    },
+    {
+      "name": "Shutdown closes admission before waiting for standalone publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown cannot finish while a standalone publication still owns its file transaction",
+      "passed": true
+    },
+    {
+      "name": "Shutdown's publication drain leaves the model accessible and the owning job tree active",
+      "passed": true
+    },
+    {
+      "name": "A late publisher is rejected without moving bytes or acquiring ownership after shutdown starts",
+      "passed": true
+    },
+    {
+      "name": "An unrelated Manager can stop while this Manager drains publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown wakes and completes when its last publication lease retires",
+      "passed": true
+    },
+    {
+      "name": "Successful and canceled shutdown release all job-tree and destination reservations",
+      "passed": true
+    },
+    {
+      "name": "Shutdown lets an already admitted standalone publication preserve its complete verified output",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown save durably includes the standalone or nested publication outcome",
+      "passed": true
+    },
+    {
+      "name": "A completed stop remains closed to new publication",
+      "passed": true
+    },
+    {
+      "name": "Standalone publication reaches its owned preparation gate before shutdown",
+      "passed": true
+    },
+    {
+      "name": "Shutdown closes admission before waiting for standalone publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown cannot finish while a standalone publication still owns its file transaction",
+      "passed": true
+    },
+    {
+      "name": "Shutdown's publication drain leaves the model accessible and the owning job tree active",
+      "passed": true
+    },
+    {
+      "name": "A late publisher is rejected without moving bytes or acquiring ownership after shutdown starts",
+      "passed": true
+    },
+    {
+      "name": "An unrelated Manager can stop while this Manager drains publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown wakes and completes when its last publication lease retires",
+      "passed": true
+    },
+    {
+      "name": "Successful and canceled shutdown release all job-tree and destination reservations",
+      "passed": true
+    },
+    {
+      "name": "Shutdown lets an already admitted standalone publication preserve its complete verified output",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown save durably includes the standalone or nested publication outcome",
+      "passed": true
+    },
+    {
+      "name": "A completed stop remains closed to new publication",
+      "passed": true
+    },
+    {
+      "name": "Standalone publication reaches its owned preparation gate before shutdown",
+      "passed": true
+    },
+    {
+      "name": "Shutdown closes admission before waiting for standalone publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown cannot finish while a standalone publication still owns its file transaction",
+      "passed": true
+    },
+    {
+      "name": "Shutdown's publication drain leaves the model accessible and the owning job tree active",
+      "passed": true
+    },
+    {
+      "name": "A late publisher is rejected without moving bytes or acquiring ownership after shutdown starts",
+      "passed": true
+    },
+    {
+      "name": "An unrelated Manager can stop while this Manager drains publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown wakes and completes when its last publication lease retires",
+      "passed": true
+    },
+    {
+      "name": "Successful and canceled shutdown release all job-tree and destination reservations",
+      "passed": true
+    },
+    {
+      "name": "Shutdown lets an already admitted standalone publication preserve its complete verified output",
+      "passed": true
+    },
+    {
+      "name": "Replacement drain preserves the original version and accepted new output",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown save durably includes the standalone or nested publication outcome",
+      "passed": true
+    },
+    {
+      "name": "A completed stop remains closed to new publication",
+      "passed": true
+    },
+    {
+      "name": "Standalone publication reaches its owned preparation gate before shutdown",
+      "passed": true
+    },
+    {
+      "name": "Shutdown closes admission before waiting for standalone publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown cannot finish while a standalone publication still owns its file transaction",
+      "passed": true
+    },
+    {
+      "name": "Shutdown's publication drain leaves the model accessible and the owning job tree active",
+      "passed": true
+    },
+    {
+      "name": "A late publisher is rejected without moving bytes or acquiring ownership after shutdown starts",
+      "passed": true
+    },
+    {
+      "name": "An unrelated Manager can stop while this Manager drains publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown wakes and completes when its last publication lease retires",
+      "passed": true
+    },
+    {
+      "name": "Successful and canceled shutdown release all job-tree and destination reservations",
+      "passed": true
+    },
+    {
+      "name": "Canceled standalone publication preserves exact staged bytes and its original failure while shutdown completes",
+      "passed": true
+    },
+    {
+      "name": "Final shutdown save durably includes the standalone or nested publication outcome",
+      "passed": true
+    },
+    {
+      "name": "A completed stop remains closed to new publication",
+      "passed": true
+    },
+    {
+      "name": "Shutdown retry fixture holds catalog replacement to force a final-save error",
+      "passed": true
+    },
+    {
+      "name": "A final shutdown save failure is still reported to its caller",
+      "passed": true
+    },
+    {
+      "name": "Failed final save reopens publication admission without leaving a permanent drain flag",
+      "passed": true
+    },
+    {
+      "name": "Explicit publication can succeed after a failed stop is corrected",
+      "passed": true
+    },
+    {
+      "name": "A corrected final-save retry stops normally",
+      "passed": true
+    },
+    {
+      "name": "A real move holds its destination reservation during detached filesystem preparation",
+      "passed": true
+    },
+    {
+      "name": "A later standalone publisher cannot take a real move's case-alias destination",
+      "passed": true
+    },
+    {
+      "name": "Rejected publication does not steal move ownership or create partial publication rows",
+      "passed": true
+    },
+    {
+      "name": "The earlier move completes with its original bytes and chosen destination",
+      "passed": true
+    },
+    {
+      "name": "Publication can explicitly retry at an independent destination after the move retires",
+      "passed": true
+    },
+    {
+      "name": "Shared Windows path keys normalize separators and dot components with ordinal Unicode case equality",
+      "passed": true
+    },
+    {
+      "name": "Shared directory comparison requires a complete path component",
+      "passed": true
+    },
+    {
+      "name": "Absent paused catalog files still reserve Unicode case-alias names",
+      "passed": true
+    },
+    {
+      "name": "Destination queries share catalog Unicode equality while preserving the owning-job exception",
+      "passed": true
+    },
+    {
+      "name": "Previous-version destinations use the same Unicode policy in naming and reservation queries",
+      "passed": true
+    },
+    {
+      "name": "Numbered-name search checks Unicode collisions for every candidate rather than only the first name",
+      "passed": true
+    },
+    {
+      "name": "Catalog duplicate protection covers non-Latin ordinal case pairs",
+      "passed": true
+    },
+    {
+      "name": "Case-only Unicode rename remains discoverable",
+      "passed": true
+    },
+    {
+      "name": "Unicode case-only rename updates the actual stored leaf and history without changing file bytes",
+      "passed": true
+    },
+    {
+      "name": "Move/Rename cannot take an absent paused catalog job's Unicode alias",
+      "passed": true
+    },
+    {
+      "name": "Catalog folder-prefix protection uses ordinal Unicode equality before creating a destination",
+      "passed": true
+    },
+    {
+      "name": "A Unicode directory lookalike with a different component remains an independent move destination",
+      "passed": true
+    },
+    {
+      "name": "Unicode case-only journal recovery selects the verified before or after leaf without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Path-only Unicode recovery retains independently edited current metadata",
+      "passed": true
+    },
+    {
+      "name": "Recovery fixture performs the physical Unicode case-only rename before model acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Unicode case-only journal recovery selects the verified before or after leaf without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Path-only Unicode recovery retains independently edited current metadata",
+      "passed": true
+    },
+    {
+      "name": "Unicode naming, moves and recovery survive catalog reopening",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

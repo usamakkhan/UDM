@@ -80,6 +80,7 @@ public:
   std::lock_guard<std::mutex> lock(state->mutex);auto found=state->entries.find(token);if(found==state->entries.end())return {};
   const auto& entry=*found->second;const auto durable=entry.durable.load(std::memory_order_acquire);return {durable?Phase::Committed:entry.resolving?Phase::Resolving:entry.prepared?Phase::Prepared:Phase::Preparing,durable};
  }
+ bool reservesDirectory(const fs::path& path)const{std::lock_guard<std::mutex> lock(state->mutex);for(const auto& item:state->entries){const auto& entry=*item.second;if(entry.prepared&&!entry.installed&&entry.prepared->exclusiveDestination()&&entry.prepared->requiresDirectory(path))return true;}return false;}
  bool reserves(const fs::path& path,const std::string& ignoreJob={})const{
   std::lock_guard<std::mutex> lock(state->mutex);for(const auto& item:state->entries){const auto& entry=*item.second;
    if(entry.prepared&&!entry.installed&&entry.prepared->jobId()!=ignoreJob&&entry.prepared->exclusiveDestination()&&entry.prepared->ownsDestination(path))return true;

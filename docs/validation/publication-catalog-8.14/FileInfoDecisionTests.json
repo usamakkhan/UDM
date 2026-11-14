@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "name": "An empty prepared action cannot claim or leak the Manager guard",
+      "passed": true
+    },
+    {
+      "name": "The owned decision worker reaches completion",
+      "passed": true
+    },
+    {
+      "name": "A completed worker retains the presentation guard until UI acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Another task cannot claim or clear an outstanding presentation guard",
+      "passed": true
+    },
+    {
+      "name": "An ordinary Download Later produces no spurious queue warning",
+      "passed": true
+    },
+    {
+      "name": "The worker applies one owned draft and leaves Download Later paused",
+      "passed": true
+    },
+    {
+      "name": "UI acknowledgement joins the worker and clears its guard",
+      "passed": true
+    },
+    {
+      "name": "Validation failure completes its future without blocking the caller",
+      "passed": true
+    },
+    {
+      "name": "The original backend validation error is delivered while the UI guard remains held",
+      "passed": true
+    },
+    {
+      "name": "A rejected command preserves both downloads without applying a mixed draft",
+      "passed": true
+    },
+    {
+      "name": "Failure acknowledgement also joins and releases the task",
+      "passed": true
+    },
+    {
+      "name": "Direct command execution reuses the same decision semantics without claiming a UI task",
+      "passed": true
+    },
+    {
+      "name": "Destroying an unconsumed task joins its owned worker before releasing the Manager guard",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

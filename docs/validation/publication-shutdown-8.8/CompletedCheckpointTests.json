@@ -1,0 +1,255 @@
+{
+  "case": "stop",
+  "checks": [
+    {
+      "name": "Completed checkpoint fixture accepts only its owned loopback HTTP origin",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held checkpoint belongs to the actual published HTTP worker",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion retires active ownership and sends exactly one final event",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint settlement or failure cannot invalidate already published file bytes",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding checkpoint retains durable proof of the current completed record",
+      "passed": true
+    },
+    {
+      "name": "Completed output and catalog survive reopening after worker retirement",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held checkpoint belongs to the actual published HTTP worker",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion retires active ownership and sends exactly one final event",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint settlement or failure cannot invalidate already published file bytes",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding checkpoint retains durable proof of the current completed record",
+      "passed": true
+    },
+    {
+      "name": "Completed output and catalog survive reopening after worker retirement",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held checkpoint belongs to the actual published HTTP worker",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion retires active ownership and sends exactly one final event",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint settlement or failure cannot invalidate already published file bytes",
+      "passed": true
+    },
+    {
+      "name": "Failed final checkpoint keeps its original storage error and cannot prove a durable current completion snapshot",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry durably checkpoints the completed record and clears the original storage failure",
+      "passed": true
+    },
+    {
+      "name": "Completed output and catalog survive reopening after worker retirement",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held checkpoint belongs to the actual published HTTP worker",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "A newer forced commit can publish while an older completed snapshot is held before its writer lease",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion retires active ownership and sends exactly one final event",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint settlement or failure cannot invalidate already published file bytes",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding checkpoint retains durable proof of the current completed record",
+      "passed": true
+    },
+    {
+      "name": "An older completed snapshot cannot overwrite the newer committed settings",
+      "passed": true
+    },
+    {
+      "name": "Completed output and catalog survive reopening after worker retirement",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held checkpoint belongs to the actual published HTTP worker",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for the owned completed checkpoint instead of abandoning its worker",
+      "passed": true
+    },
+    {
+      "name": "Shutdown join does not retain the model mutex while the completed checkpoint is held",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion retires active ownership and sends exactly one final event",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint settlement or failure cannot invalidate already published file bytes",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding checkpoint retains durable proof of the current completed record",
+      "passed": true
+    },
+    {
+      "name": "Shutdown finishes after the owned checkpoint is released",
+      "passed": true
+    },
+    {
+      "name": "Completed output and catalog survive reopening after worker retirement",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

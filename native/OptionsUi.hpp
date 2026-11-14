@@ -1,20 +1,31 @@
+#include "OptionsSoundFiles.hpp"
+#include "OptionsCommitRollback.hpp"
 // Included inside udm after the Options model and supporting dialogs.
 class Options:public Form {
  friend struct OptionsSaveTestAccess;
+ friend struct OptionsSoundTestAccess;
+ friend struct OptionsInitialTestAccess;
  friend struct DialConnectTestAccess;
+ friend struct DialReadTestAccess;
  Manager& manager;Json prefs,original;ThemeTabs* tabs=nullptr;std::vector<std::vector<CWnd*>> pages;std::vector<std::function<void()>> bindings,refreshBindings;
  std::shared_ptr<DialCredentialStore> dialStore;std::function<std::vector<DialEntry>()> dialEntriesProvider;std::shared_ptr<DialCredentialFields> dialCredentials;
+ AsyncDialLookup startupLookup;std::function<bool()> startupInitialRead;CWnd *loadingStatus=nullptr,*startupControl=nullptr,*startupStatus=nullptr,*startupRetry=nullptr,*optionsOk=nullptr,*optionsHelp=nullptr;bool settingsReady=false,startupEdited=false;std::string startupReadError;
+ AsyncDialLookup dialListRead;std::function<void()> pollDialList,updateDialActions;bool dialChild=false,dialListReady=false,optionsClosing=false,deferDialSelection=false;
  ThemeList *browsers=nullptr,*servers=nullptr,*logins=nullptr,*sounds=nullptr;std::vector<std::string> browserKeys;std::vector<HICON> icons;
  CWnd *serverEdit=nullptr,*serverDelete=nullptr,*loginEdit=nullptr,*loginRemove=nullptr;
  std::function<void()> reloadCategory;static constexpr int ox=7,oy=27;
  FileInfoDecisionTask saveTask;bool handlingSave=false,closeAfterSave=false,restartAfterSave=false;
  struct SavedOptions {Json settings;std::shared_ptr<DialCredentialFields::Batch> credentials;};
+ struct AcceptedOptions {Json baseline,draft;std::optional<bool> startupChoice;std::shared_ptr<SavedOptions> result;std::function<bool()> startupRead;std::function<void(bool)> startupWrite;bool close=false,restart=false;};
+ AsyncDialLookup soundLookup{"Sound file","Cannot validate sound files."};std::shared_ptr<AcceptedOptions> soundDraft;bool soundPending=false;CWnd* soundStatus=nullptr;
  std::shared_ptr<SavedOptions> savedOptions;std::vector<std::pair<HWND,BOOL>> saveEnablement;
  // UI-only continuation: never included in the worker-owned result/batch.
  std::function<void()> credentialSuccess;std::function<void(const DialEntry&)> connectionDialog;
  std::function<void()> restartHosts=restartBrowserHosts;
+ std::function<void(const std::vector<std::string>&)> validateSoundFiles=validateOptionsSoundFiles;
  std::function<bool()> readStartup=startupEnabled;std::function<void(bool)> writeStartup=setStartup;
  void restoreSaveControls(){for(const auto& item:saveEnablement)if(IsWindow(item.first))::EnableWindow(item.first,item.second);saveEnablement.clear();}
+ void exitOptions(int result=IDOK){optionsClosing=true;soundLookup.stop();soundPending=false;soundDraft.reset();startupLookup.stop();dialListRead.stop();if(dialCredentials)dialCredentials->stopRead();close(result);}
  void rememberSaveControls(){saveEnablement.clear();EnumChildWindows(GetSafeHwnd(),[](HWND child,LPARAM data)->BOOL{reinterpret_cast<std::vector<std::pair<HWND,BOOL>>*>(data)->push_back({child,::IsWindowEnabled(child)});return TRUE;},reinterpret_cast<LPARAM>(&saveEnablement));}
  void showConnectionDialog(const DialEntry& entry){
   if(connectionDialog){connectionDialog(entry);return;}
@@ -52,26 +63,39 @@ class Options:public Form {
   refreshBindings.push_back([this,control,key,number,secret,previous]{auto value=number?std::to_string(num(prefs,key)):secret?reveal(str(prefs,key)):str(prefs,key);if(auto combo=dynamic_cast<CComboBox*>(control)){int index=combo->FindStringExact(-1,cs(value));if(index>=0)combo->SetCurSel(index);else combo->SetWindowText(cs(value));}else control->SetWindowText(cs(value));*previous=text(control);});
  }
  void reload(){for(auto& action:refreshBindings)action();if(reloadCategory)reloadCategory();}
- void collect(){for(auto& apply:bindings)apply();}
- void applyOptions(bool closeWhenSaved=false,bool restartWhenSaved=false){
-  if(saveTask.valid()||handlingSave)return;
-  collect();auto result=std::make_shared<SavedOptions>();if(dialCredentials)result->credentials=dialCredentials->prepareBatch();
-  auto baseline=original,draft=prefs;auto* source=&manager;auto startupRead=readStartup;auto startupWrite=writeStartup;
-  rememberSaveControls();
-  saveTask.startAction(manager,[source,baseline=std::move(baseline),draft=std::move(draft),result,startupRead=std::move(startupRead),startupWrite=std::move(startupWrite)]{
+ void collect(bool editingConnection=false){const bool previous=deferDialSelection;deferDialSelection=editingConnection;try{for(auto& apply:bindings)apply();}catch(...){deferDialSelection=previous;throw;}deferDialSelection=previous;}
+ void showOptionsWork(const char* message){if(startupStatus)startupStatus->ShowWindow(SW_HIDE);if(startupRetry)startupRetry->ShowWindow(SW_HIDE);if(soundStatus){soundStatus->SetWindowText(cs(message));soundStatus->ShowWindow(SW_SHOW);}}
+ void hideOptionsWork(){if(soundStatus)soundStatus->ShowWindow(SW_HIDE);if(settingsReady)page();}
+ void beginOptionsCommit(const std::shared_ptr<AcceptedOptions>& accepted){
+  auto result=accepted->result;auto baseline=std::move(accepted->baseline),draft=std::move(accepted->draft);auto startupChoice=accepted->startupChoice;auto startupRead=std::move(accepted->startupRead);auto startupWrite=std::move(accepted->startupWrite);auto* source=&manager;
+  saveTask.startAction(manager,[source,baseline=std::move(baseline),draft=std::move(draft),startupChoice,result,startupRead=std::move(startupRead),startupWrite=std::move(startupWrite)]{
    struct Apartment {Apartment(){if(FAILED(CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED)))throw std::runtime_error("Cannot initialize Windows settings services.");}~Apartment(){CoUninitialize();}} apartment;
-   Lock lock(source->mutex);auto old=source->state["Settings"],next=mergeOptionsDraft(baseline,draft,old);bool started=startupRead();
-   if(yes(baseline,"RunAtLogin")==yes(draft,"RunAtLogin"))next["RunAtLogin"]=started;
-   source->setSettings(next);
-   try{if(started!=yes(next,"RunAtLogin"))startupWrite(yes(next,"RunAtLogin"));if(result->credentials)result->credentials->apply();}
+   // Let an existing catalog owner finish before observing current Windows
+   // state, but never retain its lock across shell/credential calls.
+   {Lock barrier(source->mutex);}
+   const bool started=startupRead(),desired=startupChoice.value_or(started);Json old,applied;
+   {Lock lock(source->mutex);old=source->state["Settings"];auto next=mergeOptionsDraft(baseline,draft,old);next["RunAtLogin"]=desired;source->setSettings(next);applied=source->state["Settings"];}
+   bool startupAttempted=false;
+   try{if(started!=desired){startupAttempted=true;startupWrite(desired);}if(result->credentials)result->credentials->apply();}
    catch(...){auto failure=std::current_exception();std::string rollback;
-    try{source->setSettings(old);}catch(const std::exception& e){rollback=" Settings rollback failed: "+std::string(e.what());}
-    try{if(startupRead()!=started)startupWrite(started);}catch(const std::exception& e){rollback+=" Startup rollback failed: "+std::string(e.what());}
+    try{Lock lock(source->mutex);auto restored=rollbackOptionsCommit(old,applied,source->state["Settings"]);if(restored!=source->state["Settings"])source->setSettings(restored);}catch(const std::exception& e){rollback=" Settings rollback failed: "+std::string(e.what());}
+    try{if(startupAttempted&&startupRead()==desired)startupWrite(started);}catch(const std::exception& e){rollback+=" Startup rollback failed: "+std::string(e.what());}
     if(!rollback.empty()){try{std::rethrow_exception(failure);}catch(const std::exception& e){throw std::runtime_error(std::string(e.what())+rollback);}}std::rethrow_exception(failure);
    }
-   result->settings=source->state["Settings"];return FileInfoDecisionResult{};
+   {Lock lock(source->mutex);result->settings=source->state["Settings"];}return FileInfoDecisionResult{};
   },taskNotifier());
-  savedOptions=std::move(result);closeAfterSave=closeWhenSaved;restartAfterSave=restartWhenSaved;for(const auto& item:saveEnablement)::EnableWindow(item.first,FALSE);
+  savedOptions=std::move(result);closeAfterSave=accepted->close;restartAfterSave=accepted->restart;for(const auto& item:saveEnablement)::EnableWindow(item.first,FALSE);showOptionsWork("Saving configuration...");
+ }
+ void applyOptions(bool closeWhenSaved=false,bool restartWhenSaved=false){
+  if(!settingsReady||soundPending||saveTask.valid()||handlingSave)return;if(manager.fileInfoDecisionPending.load())throw std::runtime_error("Another download decision is being saved. Try again shortly.");collect();auto accepted=std::make_shared<AcceptedOptions>();accepted->baseline=original;accepted->draft=prefs;accepted->result=std::make_shared<SavedOptions>();if(dialCredentials)accepted->result->credentials=dialCredentials->prepareBatch();if(startupEdited||yes(original,"RunAtLogin")!=yes(prefs,"RunAtLogin"))accepted->startupChoice=yes(prefs,"RunAtLogin");accepted->startupRead=readStartup;accepted->startupWrite=writeStartup;accepted->close=closeWhenSaved;accepted->restart=restartWhenSaved;
+  auto files=optionsSoundFiles(accepted->draft);rememberSaveControls();
+  try{if(files.empty()){beginOptionsCommit(accepted);return;}auto validate=validateSoundFiles;soundLookup.request([files=std::move(files),validate=std::move(validate)]{validate(files);return AsyncDialLookup::Value(true);},taskNotifier());soundDraft=std::move(accepted);soundPending=true;for(const auto& item:saveEnablement)::EnableWindow(item.first,FALSE);showOptionsWork("Checking sound files...");}
+  catch(...){restoreSaveControls();throw;}
+ }
+ void finishSoundValidation(){
+  if(!soundPending||saveTask.valid()||handlingSave)return;auto result=soundLookup.take();if(!result)return;handlingSave=true;soundPending=false;hideOptionsWork();auto accepted=std::move(soundDraft);std::exception_ptr failure;
+  try{if(!result->value)throw std::runtime_error(result->error);if(!std::get<bool>(*result->value))throw std::runtime_error("Cannot validate sound files.");beginOptionsCommit(accepted);}catch(...){failure=std::current_exception();}
+  if(failure){try{std::rethrow_exception(failure);}catch(const std::exception& e){error(this,e);}catch(...){error(this,std::runtime_error("Cannot validate sound files."));}restoreSaveControls();}handlingSave=false;
  }
  void finishOptionsSave(){
   if(handlingSave||!saveTask.valid()||!saveTask.ready())return;handlingSave=true;std::exception_ptr failure;
@@ -79,14 +103,14 @@ class Options:public Form {
   // Keep competing modal work deferred until the save error is acknowledged.
   if(failure){try{std::rethrow_exception(failure);}catch(const std::exception& e){error(this,e);}catch(...){error(this,std::runtime_error("The configuration could not be saved. Your entries are still available."));}}
   saveTask.release();
-  restoreSaveControls();
+  restoreSaveControls();hideOptionsWork();
   if(savedOptions->credentials)dialCredentials->acknowledgeBatch(*savedOptions->credentials);
-  if(!failure&&savedOptions->settings.is_object()){original=savedOptions->settings;prefs=original;reload();}
+  if(!failure&&savedOptions->settings.is_object()){startupLookup.invalidate();startupEdited=false;startupReadError.clear();if(startupControl)startupControl->EnableWindow(TRUE);if(startupStatus)startupStatus->SetWindowText(L"");if(startupRetry)startupRetry->ShowWindow(SW_HIDE);original=savedOptions->settings;prefs=original;reload();}
   savedOptions.reset();auto continuation=std::move(credentialSuccess);credentialSuccess={};const bool closeOnSuccess=closeAfterSave,restartOnSuccess=restartAfterSave;closeAfterSave=restartAfterSave=false;
   if(failure){handlingSave=false;return;}
-  try{if(restartOnSuccess)restartHosts();if(continuation)continuation();}catch(const std::exception& e){error(this,e);}handlingSave=false;if(closeOnSuccess)close();
+  try{if(restartOnSuccess)restartHosts();if(continuation)continuation();}catch(const std::exception& e){error(this,e);}handlingSave=false;if(closeOnSuccess)exitOptions();
  }
- void page(){const int current=tabs->GetCurSel();for(size_t i=0;i<pages.size();++i)for(auto item:pages[i])item->ShowWindow((int)i==current?SW_SHOW:SW_HIDE);}
+ void page(){const int current=tabs->GetCurSel();for(size_t i=0;i<pages.size();++i)for(auto item:pages[i])item->ShowWindow((int)i==current?SW_SHOW:SW_HIDE);if(startupRetry)startupRetry->ShowWindow(current==0&&!startupReadError.empty()?SW_SHOW:SW_HIDE);}
  void addressExceptionsDialog(){AddressExceptionsDialog dialog(this,prefs);dialog.DoModal();}
  void refreshBrowsers(){
   auto rows=prefs.value("BrowserCaptureTargets",Json::object());for(auto entry:std::vector<std::pair<std::string,std::string>>{{"chrome.exe","Google Chrome"},{"msedge.exe","Microsoft Edge"},{"firefox.exe","Mozilla Firefox"},{"opera.exe","Opera"},{"brave.exe","Brave"},{"vivaldi.exe","Vivaldi"},{"chromium.exe","Chromium"}})if(!rows.contains(entry.first))rows[entry.first]={{"Name",entry.second},{"Enabled",true}};prefs["BrowserCaptureTargets"]=rows;
@@ -94,10 +118,27 @@ class Options:public Form {
  }
  void saveBrowsers(){auto rows=prefs.value("BrowserCaptureTargets",Json::object());for(int i=0;i<(int)browserKeys.size();++i)rows[browserKeys[i]]["Enabled"]=browsers->GetCheck(i)!=FALSE;prefs["BrowserCaptureTargets"]=rows;}
  void browserEditor(int page){collect();if(page==0)browserKeysDialog(this,prefs);else if(page==1)browserMenusDialog(this,prefs);else browserPanelsDialog(this,prefs);reload();}
+ void beginStartupRead(){
+  startupReadError.clear();startupStatus->SetWindowText(L"Checking Windows startup...");startupRetry->ShowWindow(SW_HIDE);startupControl->EnableWindow(FALSE);
+  auto read=startupInitialRead?startupInitialRead:readStartup;
+  try{startupLookup.request([read=std::move(read)]{struct Apartment{Apartment(){if(FAILED(CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED)))throw std::runtime_error("Cannot initialize Windows settings services.");}~Apartment(){CoUninitialize();}} apartment;try{return AsyncDialLookup::Value(read());}catch(const std::exception&){throw;}catch(...){throw std::runtime_error("Cannot read Windows startup settings.");}},taskNotifier());}
+  catch(const std::exception& e){startupReadError=e.what();startupStatus->SetWindowText(cs(startupReadError));startupRetry->ShowWindow(SW_SHOW);startupControl->EnableWindow(TRUE);}
+ }
+ void finishStartupRead(){if(auto result=startupLookup.take()){
+  startupControl->EnableWindow(TRUE);if(!result->value){startupReadError=result->error;startupStatus->SetWindowText(cs(startupReadError));startupRetry->ShowWindow(tabs->GetCurSel()==0?SW_SHOW:SW_HIDE);return;}
+  const bool actual=std::get<bool>(*result->value);original["RunAtLogin"]=actual;if(!startupEdited){prefs["RunAtLogin"]=actual;startupControl->SendMessage(BM_SETCHECK,actual?BST_CHECKED:BST_UNCHECKED);}startupReadError.clear();startupStatus->SetWindowText(L"");startupRetry->ShowWindow(SW_HIDE);
+ }}
+ void initializeSettings(bool late=false){
+  if(settingsReady)return;{std::unique_lock<std::recursive_mutex> lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return;prefs=manager.state["Settings"];}original=prefs;
+  tabs=make<ThemeTabs>(WS_TABSTOP|TCS_MULTILINE,5,4,315,283);const wchar_t* names[]={L"General",L"File types",L"Save to",L"Downloads",L"Connection",L"Proxy / Socks",L"Sites Logins",L"Dial Up / VPN",L"Sounds"};
+  for(int pageId=0;pageId<9;++pageId){tabs->InsertItem(pageId,names[pageId]);const auto before=controls.size();switch(pageId){case 0:generalPage();break;case 1:typesPage();break;case 2:savePage();break;case 3:downloadsPage();break;case 4:connectionPage();break;case 5:proxyPage();break;case 6:loginsPage();break;case 7:dialPage();break;case 8:soundsPage();break;}std::vector<CWnd*> items;for(size_t i=before;i<controls.size();++i)items.push_back(controls[i].get());pages.push_back(std::move(items));}
+  settingsReady=true;loadingStatus->ShowWindow(SW_HIDE);optionsOk->EnableWindow(TRUE);optionsOk->SetWindowPos(&CWnd::wndBottom,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);optionsHelp->SetWindowPos(&CWnd::wndBottom,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);page();if(late)refreshTheme(false);beginStartupRead();
+ }
  void generalPage(){
   heading("Browser/System Integration",OptionsPageIcon::General,51,40,261);
   L("Extension and native host integration",11,28,216);B("Restart",233,25,57,[this]{applyOptions(false,true);});
-  auto startup=C("Launch UDM on startup",yes(prefs,"RunAtLogin"),15,46,274);bindFlag(startup,"RunAtLogin");
+  startupControl=C("Launch UDM on startup",yes(prefs,"RunAtLogin"),15,46,274);bind(startupControl,[this]{startupEdited=true;});bindings.push_back([this]{prefs["RunAtLogin"]=checked(startupControl);});refreshBindings.push_back([this]{startupControl->SendMessage(BM_SETCHECK,yes(prefs,"RunAtLogin")?BST_CHECKED:BST_UNCHECKED);});
+  startupStatus=L("",0,264,130,12);startupRetry=B("Retry",136,264,50,[this]{beginStartupRead();});startupRetry->ShowWindow(SW_HIDE);
   auto clipboard=C("Automatically download URLs placed on clipboard",yes(prefs,"ClipboardMonitor"),15,58,274);bindFlag(clipboard,"ClipboardMonitor");
   auto capture=C("Enable browser download capture",yes(prefs,"BrowserCaptureEnabled",true),15,70,274);bindFlag(capture,"BrowserCaptureEnabled");
   G("Capture downloads from the following browsers:",5,85,297,131);browsers=table(15,96,274,75,{{"Browser",256}},true);refreshBrowsers();bindings.push_back([this]{saveBrowsers();});
@@ -158,9 +199,9 @@ class Options:public Form {
  void soundsPage();
  void dialPage();
  void advancedOptions();
- BOOL OnCommand(WPARAM w,LPARAM l)override{if(saveTask.valid()||handlingSave)return TRUE;return Form::OnCommand(w,l);}
+ BOOL OnCommand(WPARAM w,LPARAM l)override{if(saveTask.valid()||handlingSave||(soundPending&&LOWORD(w)!=IDCANCEL))return TRUE;return Form::OnCommand(w,l);}
  BOOL OnNotify(WPARAM w,LPARAM l,LRESULT* result)override{
-  if(saveTask.valid()||handlingSave){*result=0;return TRUE;}
+  if(saveTask.valid()||handlingSave||soundPending){*result=0;return TRUE;}
   auto event=(NMHDR*)l;if(tabs&&event->hwndFrom==tabs->m_hWnd&&event->code==TCN_SELCHANGE){page();*result=0;return TRUE;}
   if(servers&&event->hwndFrom==servers->m_hWnd&&event->code==LVN_ITEMCHANGED)updateServerActions();
   if(logins&&event->hwndFrom==logins->m_hWnd&&event->code==LVN_ITEMCHANGED)updateLoginActions();
@@ -168,14 +209,18 @@ class Options:public Form {
   return Form::OnNotify(w,l,result);
  }
 public:
- ~Options(){saveTask.release();for(auto icon:icons)DestroyIcon(icon);}
+ ~Options(){soundLookup.stop();startupLookup.stop();dialListRead.stop();saveTask.release();for(auto icon:icons)DestroyIcon(icon);}
  std::function<void(CWnd*)> networkIntegration;std::function<void()> help;
  Options(Manager& m,CWnd* parent,std::shared_ptr<DialCredentialStore> credentials={},std::function<std::vector<DialEntry>()> connections={}):Form("UDM Configuration",326,309,parent),manager(m),dialStore(credentials?std::move(credentials):dialCredentialStore()),dialEntriesProvider(connections?std::move(connections):dialEntries){
-  dialogUnits=true;{Lock lock(m.mutex);prefs=m.state["Settings"];}prefs["RunAtLogin"]=startupEnabled();original=prefs;
+  dialogUnits=true;
   init=[this]{
-   tabs=make<ThemeTabs>(WS_TABSTOP|TCS_MULTILINE,5,4,315,283);const wchar_t* names[]={L"General",L"File types",L"Save to",L"Downloads",L"Connection",L"Proxy / Socks",L"Sites Logins",L"Dial Up / VPN",L"Sounds"};
-   for(int pageId=0;pageId<9;++pageId){tabs->InsertItem(pageId,names[pageId]);const auto before=controls.size();switch(pageId){case 0:generalPage();break;case 1:typesPage();break;case 2:savePage();break;case 3:downloadsPage();break;case 4:connectionPage();break;case 5:proxyPage();break;case 6:loginsPage();break;case 7:dialPage();break;case 8:soundsPage();break;}std::vector<CWnd*> items;for(size_t i=before;i<controls.size();++i)items.push_back(controls[i].get());pages.push_back(std::move(items));}
-   accept=[this]{applyOptions(true);};cancel=[this]{if(!saveTask.valid()&&!handlingSave)close(IDCANCEL);};pulse=[this]{finishOptionsSave();};defaultButton(button("OK",202,291,57,accept));button("Help",263,291,57,[this]{if(help)help();else MessageBox(L"Choose a tab, change the settings, then click OK to apply them. Closing the window discards unapplied changes.",L"Configuration help",MB_OK|MB_ICONINFORMATION);});page();
+   soundStatus=label("",7,291,185,12);soundStatus->ShowWindow(SW_HIDE);
+   loadingStatus=label("Loading configuration... Close this window to cancel.",15,38,296,30);
+   accept=[this]{applyOptions(true);};cancel=[this]{if(!saveTask.valid()&&!handlingSave)exitOptions(IDCANCEL);};
+   optionsOk=button("OK",202,291,57,accept);defaultButton(optionsOk);optionsOk->EnableWindow(FALSE);
+   optionsHelp=button("Help",263,291,57,[this]{if(help)help();else MessageBox(L"Choose a tab, change the settings, then click OK to apply them. Closing the window discards unapplied changes.",L"Configuration help",MB_OK|MB_ICONINFORMATION);});
+   pulse=[this]{if(optionsClosing)return;if(!settingsReady){initializeSettings(true);if(!settingsReady)return;}finishSoundValidation();finishOptionsSave();if(!optionsClosing&&!saveTask.valid()&&!soundPending&&!handlingSave&&!dialChild){finishStartupRead();if(pollDialList)pollDialList();if(dialCredentials)dialCredentials->updateRead();if(updateDialActions)updateDialActions();}};
+   initializeSettings();
   };
  }
 };

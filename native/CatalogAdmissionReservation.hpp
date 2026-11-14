@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "WindowsPath.hpp"
 namespace udm {
 // Immutable, in-process reservation for a validated protocol-3 media admission.
 // This is not a token registry or an asynchronous acceptance decision. Callers
@@ -12,9 +13,9 @@ class CatalogAdmissionReservation {
   const auto folder=str(record,"Folder"),name=str(record,"FileName");
   if(folder.empty()||name.empty()||!fs::path(wide(folder)).is_absolute()||safeName(name)!=name)
    throw std::runtime_error("Invalid reserved media destination.");
-  return (fs::path(wide(folder))/wide(name)).lexically_normal().make_preferred().wstring();
+  return windowsPath::key(fs::path(wide(folder))/wide(name));
  }
- static bool sameDestination(const std::wstring& a,const std::wstring& b)noexcept{return CompareStringOrdinal(a.c_str(),-1,b.c_str(),-1,TRUE)==CSTR_EQUAL;}
+ static bool sameDestination(const std::wstring& a,const std::wstring& b)noexcept{return windowsPath::equal(a,b);}
 public:
  CatalogAdmissionReservation(std::string operation,Json download,Json accepted):token(std::move(operation)),id(str(download,"Id")),job(std::move(download)),receipt(std::move(accepted)){
   if(token.empty()||id.empty()||!job.is_object()||!receipt.is_object()||num(receipt,"protocol")!=3||str(receipt,"status")!="accepted"||str(receipt,"id")!=id||str(receipt,"fingerprint").empty())
@@ -26,7 +27,8 @@ public:
  const std::string& binding()const{return receipt.at("fingerprint").get_ref<const std::string&>();}
  bool exclusiveDestination()const{return str(job,"DuplicateOf").empty();}
  bool sharesDestination(const CatalogAdmissionReservation& other)const noexcept{return sameDestination(destination,other.destination);}
- bool ownsDestination(const fs::path& path)const{return sameDestination(destination,path.lexically_normal().make_preferred().wstring());}
+ bool ownsDestination(const fs::path& path)const{return sameDestination(destination,windowsPath::key(path));}
+ bool requiresDirectory(const fs::path& path)const{return windowsPath::descendant(destination,windowsPath::key(path));}
  void overlay(Json& catalog)const{
   if(!catalog.is_object()||!catalog.contains("Downloads")||!catalog["Downloads"].is_array())throw std::runtime_error("Invalid admission catalog snapshot.");
   if(catalog.contains("BrowserCaptures")&&!catalog["BrowserCaptures"].is_object())throw std::runtime_error("Invalid admission receipt store.");

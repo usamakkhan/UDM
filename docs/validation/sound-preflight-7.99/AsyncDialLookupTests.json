@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "name": "Two blocked workers prevent any third action from starting",
+      "passed": true
+    },
+    {
+      "name": "Queue capacity is bounded and rejected work is not left pending",
+      "passed": true
+    },
+    {
+      "name": "Per-receiver feature text reports bounded sound lookup admission without connection-specific wording",
+      "passed": true
+    },
+    {
+      "name": "Destroying a receiver does not join a held call and its worker retains owned inputs",
+      "passed": true
+    },
+    {
+      "name": "Published metadata stays pending until the owner consumes its delivery",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "Repeated queued requests coalesce to exactly the newest action",
+      "passed": true
+    },
+    {
+      "name": "Consuming metadata clears pending state and cannot redeliver the same result",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "A new receiver remains independent of a destroyed receiver",
+      "passed": true
+    },
+    {
+      "name": "Abandoned and canceled jobs publish no result/notification and release owned input after return",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "Closing another receiver does not discard this receiver's result",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "An older active generation cannot overwrite or notify over a newer selection",
+      "passed": true
+    },
+    {
+      "name": "Read failures preserve their original message and clear pending state",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "A failed receiver can explicitly retry without replacement",
+      "passed": true
+    },
+    {
+      "name": "Unknown provider exceptions become a bounded feature error",
+      "passed": true
+    },
+    {
+      "name": "Unknown read errors retain the owning receiver's feature-specific fallback",
+      "passed": true
+    },
+    {
+      "name": "Completed lookup transfers one owned typed result",
+      "passed": true
+    },
+    {
+      "name": "Invalidating a queued request and reusing its slot cannot duplicate or run obsolete work",
+      "passed": true
+    },
+    {
+      "name": "Entry-list results keep their type and no duplicate queued action remains",
+      "passed": true
+    },
+    {
+      "name": "Published startup metadata remains pending until UI delivery",
+      "passed": true
+    },
+    {
+      "name": "Startup metadata has its own boolean result type",
+      "passed": true
+    },
+    {
+      "name": "Stopped receivers reject reuse and retain no delivery",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

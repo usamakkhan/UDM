@@ -1,0 +1,435 @@
+{
+  "case": "missing",
+  "checks": [
+    {
+      "name": "A runtime bundle owns both jobs without prematurely entering commit",
+      "passed": true
+    },
+    {
+      "name": "Destination ownership uses Windows ordinal case folding and covers the previous-version path",
+      "passed": true
+    },
+    {
+      "name": "The owning operation can query its own reserved destination without self-conflict",
+      "passed": true
+    },
+    {
+      "name": "A second job owner cannot replace an existing publication lease",
+      "passed": true
+    },
+    {
+      "name": "A case-alias destination collision rejects the entire proposed ownership bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed acquisition leaves no partial job/path rows and does not release the first owner",
+      "passed": true
+    },
+    {
+      "name": "Entering commit changes the phase of the complete owning bundle",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership and phase never enter the saved catalog or job data",
+      "passed": true
+    },
+    {
+      "name": "Runtime ownership is isolated by Manager identity",
+      "passed": true
+    },
+    {
+      "name": "Lease destruction releases only its own jobs, paths and commit phase",
+      "passed": true
+    },
+    {
+      "name": "Relative destinations cannot acquire publication ownership",
+      "passed": true
+    },
+    {
+      "name": "Embedded-null destinations cannot acquire publication ownership",
+      "passed": true
+    },
+    {
+      "name": "Invalid input leaves the runtime registry empty",
+      "passed": true
+    },
+    {
+      "name": "An idle parent observes nested ownership without being mistaken for the child's direct publisher",
+      "passed": true
+    },
+    {
+      "name": "Publication retains and excludes the captured descendant graph",
+      "passed": true
+    },
+    {
+      "name": "A parent cannot acquire publication across an independently owned child",
+      "passed": true
+    },
+    {
+      "name": "Rejected parent acquisition makes no partial reservation and leaves the child owner intact",
+      "passed": true
+    },
+    {
+      "name": "Video and audio siblings can hold independent publication leases",
+      "passed": true
+    },
+    {
+      "name": "Commit phase propagates to parents and owned descendants without changing a sibling's phase",
+      "passed": true
+    },
+    {
+      "name": "Ending one child operation releases only its graph while the sibling keeps the parent active",
+      "passed": true
+    },
+    {
+      "name": "A parent becomes inactive only after every independently owned child retires",
+      "passed": true
+    },
+    {
+      "name": "A parent publication protects every captured child from independent work",
+      "passed": true
+    },
+    {
+      "name": "Nested publication cannot enter while its parent owns the graph",
+      "passed": true
+    },
+    {
+      "name": "Whole-family release removes all descendant ownership rows",
+      "passed": true
+    },
+    {
+      "name": "Graph capture handles shared or cyclic child references without recursion",
+      "passed": true
+    },
+    {
+      "name": "Cyclic capture exits without leaking runtime reservations",
+      "passed": true
+    },
+    {
+      "name": "A real transport owner can retain normal durable Pause cancellation during publication preparation",
+      "passed": true
+    },
+    {
+      "name": "Preparing and committing phase exits leave no runtime ownership behind",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot mutate or cancel an operation after its irreversible commit phase begins",
+      "passed": true
+    },
+    {
+      "name": "Rejected commit-phase Pause preserves both transport cancellation and catalog data",
+      "passed": true
+    },
+    {
+      "name": "Preparing and committing phase exits leave no runtime ownership behind",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "A real held internal publisher keeps its otherwise idle catalog parent active",
+      "passed": true
+    },
+    {
+      "name": "Parent Resume cannot restart a media session over a publishing child",
+      "passed": true
+    },
+    {
+      "name": "Parent Properties cannot edit a media session during child publication",
+      "passed": true
+    },
+    {
+      "name": "Workerless parent Pause cannot pretend to cancel the child's publication",
+      "passed": true
+    },
+    {
+      "name": "Parent removal cannot discard a publishing track",
+      "passed": true
+    },
+    {
+      "name": "Rejected parent commands preserve exact parent/child bindings",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Download admission avoids a case-alias destination reserved by an internal child absent from the catalog",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Successful child retirement restores the parent availability without losing its track",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Replacement preparation atomically owns its original record and previous-version location",
+      "passed": true
+    },
+    {
+      "name": "Replacement original cannot be removed during verification",
+      "passed": true
+    },
+    {
+      "name": "Replacement original cannot pretend to cancel another publisher's prepared operation",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Owned ordinary, child and replacement publication retain the complete verified file",
+      "passed": true
+    },
+    {
+      "name": "Independent settings accepted during owned preparation survive publication",
+      "passed": true
+    },
+    {
+      "name": "Replacement completion preserves the prior file and releases original/backup ownership",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Scoped recovery cannot consume a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Unscoped recovery defers a live owner's journal without interpreting or altering its files",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    },
+    {
+      "name": "Once ownership ends, scoped recovery resumes and preserves unpublished staged data",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry can acquire a fresh owner after pending-journal reconciliation",
+      "passed": true
+    },
+    {
+      "name": "Actual publisher holds its runtime lease across detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Publication ownership does not retain the model lock while preparation is held",
+      "passed": true
+    },
+    {
+      "name": "A standalone or child publisher has an active preparation guard without a transport worker",
+      "passed": true
+    },
+    {
+      "name": "Resume cannot queue a duplicate download while standalone publication owns its job",
+      "passed": true
+    },
+    {
+      "name": "Workerless publication Pause reports an explicit wait instead of pretending the file write was canceled",
+      "passed": true
+    },
+    {
+      "name": "Properties cannot change a publication-owned download",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot retire a standalone publication-owned record",
+      "passed": true
+    },
+    {
+      "name": "A competing publisher cannot enter the same download during detached preparation",
+      "passed": true
+    },
+    {
+      "name": "Rejected competing commands preserve the first owner and exact download data",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    },
+    {
+      "name": "Cancellation preserves original error and complete staged bytes after releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Every successful, canceled, invalid or recovery-blocked publication releases its runtime bundle",
+      "passed": true
+    },
+    {
+      "name": "Failed preparation or pending recovery cannot leave a false completed or permanently busy record",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

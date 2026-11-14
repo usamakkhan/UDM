@@ -1,0 +1,1283 @@
+{
+  "checks": [
+    {
+      "name": "Dial page loads the selected Windows identity",
+      "passed": true
+    },
+    {
+      "name": "User-name field uses the reference dialog-unit position and size",
+      "passed": true
+    },
+    {
+      "name": "Password field uses the reference dialog-unit position and size",
+      "passed": true
+    },
+    {
+      "name": "Saved password uses a masked display placeholder",
+      "passed": true
+    },
+    {
+      "name": "Save password reflects Windows storage state",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connection Apply starts disabled for an unchanged identity",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Editing a credential enables connection Apply",
+      "passed": true
+    },
+    {
+      "name": "Cancel discards credential drafts and preserves configuration",
+      "passed": true
+    },
+    {
+      "name": "Same-name Windows connections are both listed",
+      "passed": true
+    },
+    {
+      "name": "Duplicate connection names display their phone-book identity",
+      "passed": true
+    },
+    {
+      "name": "Switching connections never carries another connection's credentials",
+      "passed": true
+    },
+    {
+      "name": "Switching back restores the unapplied connection draft",
+      "passed": true
+    },
+    {
+      "name": "Connection selection does not save credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Configuration OK commits each changed connection to its own phone book",
+      "passed": true
+    },
+    {
+      "name": "Unchanged password placeholders are never submitted as passwords",
+      "passed": true
+    },
+    {
+      "name": "Reopened dialog shows the committed identity",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Successful OK leaves no selected credential draft",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Empty Windows connection list disables credential editing",
+      "passed": true
+    },
+    {
+      "name": "Failed credential persistence leaves the draft unapplied",
+      "passed": true
+    },
+    {
+      "name": "Credential draft can be retried after a Windows write failure",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Unchanged selected credentials keep Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Unchanged Apply starts no worker and performs no credential write",
+      "passed": true
+    },
+    {
+      "name": "Credential-only Apply and parent Cancel leave the full catalog and its bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Credential entry remains masked before asynchronous Apply",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Selected connection write runs on a worker while Apply has returned to the modal loop",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Editing and final Options acceptance defer while the selected credential write is pending",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Held credential save repaints and rejects duplicate Apply, OK and Close",
+      "passed": true
+    },
+    {
+      "name": "Selected Apply commits once or retries once only after explicit failure acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Successful selected Apply restores the disabled clean Apply button and masked password placeholder",
+      "passed": true
+    },
+    {
+      "name": "Worker receives the selected connection's Windows-protected session password and save preference",
+      "passed": true
+    },
+    {
+      "name": "Selected Apply neither validates nor discards a different connection's unfinished draft",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Returning to the saved connection reloads its committed identity without a dirty draft",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "A clean Apply cannot resubmit the accepted credential change",
+      "passed": true
+    },
+    {
+      "name": "Credential-only completion retains unrelated unaccepted Options controls",
+      "passed": true
+    },
+    {
+      "name": "Credential-only Apply and parent Cancel leave the full catalog and its bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Explicit selected Apply survives parent Cancel without applying the other connection",
+      "passed": true
+    },
+    {
+      "name": "Parent Cancel does not repeat or undo explicit credentials and no password enters catalog/history",
+      "passed": true
+    },
+    {
+      "name": "Requested native button is enabled",
+      "passed": true
+    },
+    {
+      "name": "Credential entry remains masked before asynchronous Apply",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Selected connection write runs on a worker while Apply has returned to the modal loop",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Editing and final Options acceptance defer while the selected credential write is pending",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Held credential save repaints and rejects duplicate Apply, OK and Close",
+      "passed": true
+    },
+    {
+      "name": "Credential error preserves the original message and shared guard before acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Failed selected save restores editable controls and the same protected credential draft for retry",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Selected Apply commits once or retries once only after explicit failure acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Successful selected Apply restores the disabled clean Apply button and masked password placeholder",
+      "passed": true
+    },
+    {
+      "name": "Worker receives the selected connection's Windows-protected session password and save preference",
+      "passed": true
+    },
+    {
+      "name": "Selected Apply neither validates nor discards a different connection's unfinished draft",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Returning to the saved connection reloads its committed identity without a dirty draft",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "A clean Apply cannot resubmit the accepted credential change",
+      "passed": true
+    },
+    {
+      "name": "Credential-only completion retains unrelated unaccepted Options controls",
+      "passed": true
+    },
+    {
+      "name": "Credential-only Apply and parent Cancel leave the full catalog and its bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Explicit selected Apply survives parent Cancel without applying the other connection",
+      "passed": true
+    },
+    {
+      "name": "Parent Cancel does not repeat or undo explicit credentials and no password enters catalog/history",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Clean Connect has no credential save or implicit retry",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Clean Connect defers its dialog while an unrelated real decision task owns the guard",
+      "passed": true
+    },
+    {
+      "name": "A busy clean Connect does not queue a delayed connection dialog",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Clean Connect has no credential save or implicit retry",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Connect returns to its modal loop while the worker holds the pre-connect store write",
+      "passed": true
+    },
+    {
+      "name": "Connect and final OK freeze until the credential decision finishes",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Pending Connect repaints and rejects duplicate Connect, Apply and Close",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Connect reports only its explicitly injected failure",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Connect returns to its modal loop while the worker holds the pre-connect store write",
+      "passed": true
+    },
+    {
+      "name": "Connect and final OK freeze until the credential decision finishes",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Pending Connect repaints and rejects duplicate Connect, Apply and Close",
+      "passed": true
+    },
+    {
+      "name": "Failed pre-connect credential save opens no connection dialog and retains its guard through acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Failed Connect save retains the same entries without running or retaining its connection continuation",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Connect reports only its explicitly injected failure",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Connect returns to its modal loop while the worker holds the pre-connect store write",
+      "passed": true
+    },
+    {
+      "name": "Connect and final OK freeze until the credential decision finishes",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Pending Connect repaints and rejects duplicate Connect, Apply and Close",
+      "passed": true
+    },
+    {
+      "name": "Failed pre-connect credential save opens no connection dialog and retains its guard through acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Failed Connect save retains the same entries without running or retaining its connection continuation",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Apply after a failed Connect saves credentials without executing the discarded Connect request",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Connect reports only its explicitly injected failure",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Connect returns to its modal loop while the worker holds the pre-connect store write",
+      "passed": true
+    },
+    {
+      "name": "Connect and final OK freeze until the credential decision finishes",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Pending Connect repaints and rejects duplicate Connect, Apply and Close",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog failure reports its original error without rolling back saved credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "A failed connection dialog leaves credentials accepted and requires another explicit Connect",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog continuation runs on the UI thread after the decision guard is released",
+      "passed": true
+    },
+    {
+      "name": "Connect continuation retains the clicked connection and exact phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog cannot open before the selected credentials are committed",
+      "passed": true
+    },
+    {
+      "name": "Connection dialog invocation defers reentrant Connect and final OK",
+      "passed": true
+    },
+    {
+      "name": "Connect reports only its explicitly injected failure",
+      "passed": true
+    },
+    {
+      "name": "One connection dialog is opened per explicitly accepted Connect request",
+      "passed": true
+    },
+    {
+      "name": "Clean and repeated Connect requests never rewrite already accepted credentials",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Connect leaves the selected committed identity clean and Apply disabled",
+      "passed": true
+    },
+    {
+      "name": "Connect preserves an unfinished invalid draft for another connection",
+      "passed": true
+    },
+    {
+      "name": "Connect completion retains an unrelated unaccepted Options checkbox",
+      "passed": true
+    },
+    {
+      "name": "Connect credential preparation and parent Cancel preserve catalog state and bytes",
+      "passed": true
+    },
+    {
+      "name": "Only explicitly accepted selected credentials survive Connect and parent Cancel",
+      "passed": true
+    },
+    {
+      "name": "Options opens with editable General controls while enumeration is held off the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Only unavailable connection fields remain disabled during enumeration",
+      "passed": true
+    },
+    {
+      "name": "Closing Options returns before the blocked enumeration is released",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "Options opens with editable General controls while enumeration is held off the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Closing Options returns before the blocked enumeration is released",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Saving General settings while enumeration is held preserves the enabled stored connection identity",
+      "passed": true
+    },
+    {
+      "name": "Settings accepted during a pending advisory read survive reopening",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "Enumeration errors remain inline without blocking the parent dialog or inventing connection metadata",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "A held credential read leaves selection and parent dialog responsive without claiming the save guard",
+      "passed": true
+    },
+    {
+      "name": "Closing Options returns before its blocked credential read is released",
+      "passed": true
+    },
+    {
+      "name": "A reopened Options dialog reads its own fresh connection metadata while the old receiver is held",
+      "passed": true
+    },
+    {
+      "name": "A late result from the destroyed dialog cannot overwrite its reopened replacement",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "A held credential read leaves selection and parent dialog responsive without claiming the save guard",
+      "passed": true
+    },
+    {
+      "name": "A newer selection finishes while its older read is still held",
+      "passed": true
+    },
+    {
+      "name": "Late metadata from an older selection cannot replace the selected connection",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "Cached credentials stay editable while their refresh is held",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Late refresh cannot overwrite an unsaved edit or a newer accepted credential snapshot",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "Cached credentials stay editable while their refresh is held",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "A selected Apply commits newer credentials while an older metadata result is held",
+      "passed": true
+    },
+    {
+      "name": "Dial page has a single connection Apply control; the frame applies with OK",
+      "passed": true
+    },
+    {
+      "name": "Late refresh cannot overwrite an unsaved edit or a newer accepted credential snapshot",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "A held credential read leaves selection and parent dialog responsive without claiming the save guard",
+      "passed": true
+    },
+    {
+      "name": "An original read error is shown inline while Windows Connect remains available for recovery",
+      "passed": true
+    },
+    {
+      "name": "Reselecting retries a failed credential read and restores its editor",
+      "passed": true
+    },
+    {
+      "name": "Closed read receivers release their owned stores after outstanding calls return",
+      "passed": true
+    },
+    {
+      "name": "Lookup, reselect, edit and parent Cancel leave UDM catalog state and bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "Advisory reads never write credentials; only explicit Apply commits one change",
+      "passed": true
+    },
+    {
+      "name": "An exact default-phonebook match wins over ambiguous legacy name fallback",
+      "passed": true
+    },
+    {
+      "name": "The editor opens with editable variables and Cancel while enumeration is held",
+      "passed": true
+    },
+    {
+      "name": "Unavailable selected-entry actions stay disabled while loading",
+      "passed": true
+    },
+    {
+      "name": "Editor acceptance or cancellation returns without joining held enumeration",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Cancel and unchanged OK preserve the complete caller object",
+      "passed": true
+    },
+    {
+      "name": "The editor opens with editable variables and Cancel while enumeration is held",
+      "passed": true
+    },
+    {
+      "name": "Unavailable selected-entry actions stay disabled while loading",
+      "passed": true
+    },
+    {
+      "name": "Editor acceptance or cancellation returns without joining held enumeration",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "OK during pending enumeration retains a valid enabled stored connection",
+      "passed": true
+    },
+    {
+      "name": "Enumeration error is inline and leaves creation and explicit retry available",
+      "passed": true
+    },
+    {
+      "name": "Enumeration retry via posted completion preserves edited variables without polling",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Accepted refresh/retry retains edited variables and the selected identity",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Refresh preserves the user's newer selection across reordered matching-name entries",
+      "passed": true
+    },
+    {
+      "name": "Late older refresh cannot replace latest ordering or edited variables",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Accepted refresh/retry retains edited variables and the selected identity",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Invalid or ambiguous editor OK leaves every caller setting untouched",
+      "passed": true
+    },
+    {
+      "name": "Rejected numeric input remains in the same editor for correction",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Cancel and unchanged OK preserve the complete caller object",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Invalid or ambiguous editor OK leaves every caller setting untouched",
+      "passed": true
+    },
+    {
+      "name": "Rejected numeric input remains in the same editor for correction",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Corrected maximum numeric bounds and local enabled change commit together",
+      "passed": true
+    },
+    {
+      "name": "Empty enumeration retains recovery actions without fabricating a selected connection",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Disabled empty-list settings accept the minimum numeric bounds",
+      "passed": true
+    },
+    {
+      "name": "Matching names in different books require an explicit choice when no default-book match exists",
+      "passed": true
+    },
+    {
+      "name": "Invalid or ambiguous editor OK leaves every caller setting untouched",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Explicit ambiguity resolution commits the chosen book rather than a matching name alone",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "Only New and Properties trigger one post-dialog enumeration; Connect performs no unnecessary refresh",
+      "passed": true
+    },
+    {
+      "name": "Native editor refreshes preserve the redial draft",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field publication preserves independent caller changes, including an untouched dial variable",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "A native editor error does not publish redial draft changes or undo independent caller changes",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "Native connection editors remain on their owning UI thread",
+      "passed": true
+    },
+    {
+      "name": "Native New has no selected identity; Properties and Connect retain the exact selected phonebook",
+      "passed": true
+    },
+    {
+      "name": "Native editor invocation defers reentrant commands, refresh and parent acceptance/cancellation",
+      "passed": true
+    },
+    {
+      "name": "Only New and Properties trigger one post-dialog enumeration; Connect performs no unnecessary refresh",
+      "passed": true
+    },
+    {
+      "name": "Native editor refreshes preserve the redial draft",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Dirty-field publication preserves independent caller changes, including an untouched dial variable",
+      "passed": true
+    },
+    {
+      "name": "Initial editor selection matches the full stored phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Only accepted editor drafts report success",
+      "passed": true
+    },
+    {
+      "name": "Cancel and unchanged OK preserve the complete caller object",
+      "passed": true
+    },
+    {
+      "name": "The parent reloads only accepted More variables and Cancel cannot leak its local checkbox edit",
+      "passed": true
+    },
+    {
+      "name": "Returning from More preserves unrelated parent edits",
+      "passed": true
+    },
+    {
+      "name": "Nested More drafts and final parent Cancel write no catalog or credentials",
+      "passed": true
+    },
+    {
+      "name": "The parent reloads only accepted More variables and Cancel cannot leak its local checkbox edit",
+      "passed": true
+    },
+    {
+      "name": "Returning from More preserves unrelated parent edits",
+      "passed": true
+    },
+    {
+      "name": "Nested More drafts and final parent Cancel write no catalog or credentials",
+      "passed": true
+    },
+    {
+      "name": "The main picker also rejects an unresolved matching-name ambiguity",
+      "passed": true
+    },
+    {
+      "name": "More opens to resolve missing selection even when automatic dial-up is enabled",
+      "passed": true
+    },
+    {
+      "name": "The parent reloads only accepted More variables and Cancel cannot leak its local checkbox edit",
+      "passed": true
+    },
+    {
+      "name": "More acceptance resolves the exact parent phonebook identity",
+      "passed": true
+    },
+    {
+      "name": "Returning from More preserves unrelated parent edits",
+      "passed": true
+    },
+    {
+      "name": "Nested More drafts and final parent Cancel write no catalog or credentials",
+      "passed": true
+    }
+  ],
+  "darkMode": true,
+  "error": "",
+  "passed": true
+}

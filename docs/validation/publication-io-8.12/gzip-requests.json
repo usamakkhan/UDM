@@ -1,0 +1,98 @@
+{
+  "payloadBytes": 524288,
+  "payloadSha256": "5c8b524f391bdd4fb3cee8d430fb920fefd51d2f321ebbb4f18484f2aaf36997",
+  "gzipBytes": 1943,
+  "requests": [
+    {
+      "route": "known",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "unknown",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "concatenated",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 2105
+    },
+    {
+      "route": "empty",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 19
+    },
+    {
+      "route": "crc",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "truncated",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1941
+    },
+    {
+      "route": "trailing",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1943
+    },
+    {
+      "route": "unsupported",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "prefetch",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "relocated",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "deferred",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 1942
+    },
+    {
+      "route": "paused",
+      "range": "",
+      "ifRange": "",
+      "start": 0,
+      "end": 524380
+    },
+    {
+      "route": "paused",
+      "range": "bytes=262080-524380",
+      "ifRange": "\"gzip-fixture-v1\"",
+      "start": 262080,
+      "end": 524380
+    }
+  ]
+}

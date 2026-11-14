@@ -1,4 +1,6 @@
 #include "Core.hpp"
+#include "PublicationOwnership.hpp"
+#include "CatalogAdmissionRegistry.hpp"
 #include "FileIdentity.hpp"
 #include "MediaPublication.hpp"
 #include "MediaStorage.hpp"
@@ -20,7 +22,7 @@
 #include <algorithm>
 #include <limits>
 namespace udm {
-static std::string pathKey(const fs::path& path){return lower(utf8(fs::absolute(path).lexically_normal().wstring()));}
+static std::wstring pathKey(const fs::path& path){return windowsPath::key(fs::absolute(path));}
 struct RelocationReporter {
  const Cancel* cancellation;const RelocationObserver& observer;std::atomic_bool copyCancelled{false};const Cancel* managedCancellation=nullptr;bool restoring=false;
  bool cancelled()const{return (cancellation&&cancellation->cancelled())||(managedCancellation&&managedCancellation->cancelled());}
@@ -38,9 +40,7 @@ struct RelocationReporter {
 struct RelocationRelease {std::function<void()> release;~RelocationRelease(){release();}};
 bool Manager::relocationReserves(const fs::path& path)const{
  Lock lock(mutex);if(relocationId.empty())return false;
- const auto candidate=lower(utf8(fs::absolute(path).lexically_normal().generic_wstring()));
- const auto reserved=lower(utf8(fs::absolute(relocationDestination).lexically_normal().generic_wstring()));
- return candidate==reserved||candidate.rfind(reserved+"/",0)==0;
+ const auto candidate=pathKey(path),reserved=pathKey(relocationDestination);return windowsPath::equal(candidate,reserved)||windowsPath::descendant(candidate,reserved);
 }
 static bool matchesMoveFileIdentity(const fs::path& path,const Json& expected){
  Handle file(CreateFileW(path.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
@@ -238,7 +238,7 @@ void Manager::discardCancelledPrefetch(const JobPtr& removed) noexcept{
    const auto saved=str(job->data,"PartsFolder");
    return saved.empty()?root/L"parts"/wide(job->id()):fs::path(wide(saved));
   };
-  std::set<std::string> occupied,occupiedMedia,protectedFiles{pathKey(removed->target())};
+  windowsPath::Keys occupied,occupiedMedia,protectedFiles{pathKey(removed->target())};
   auto pending=jobs;
   std::set<const Job*> seen;
   while(!pending.empty()){
@@ -353,12 +353,13 @@ void Manager::recoverFileOperation(JobPtr scope){
  JobPtr job;for(auto j:jobs)if(j->id()==str(operation,"Id"))job=j;
  if(!job)throw std::runtime_error("A pending file move refers to missing history. Keep file-operation.json for recovery.");
  auto source=fs::path(wide(str(operation,"Source"))),dest=fs::path(wide(str(operation,"Destination")));
+ if(isActive(job)||PublicationOwnership::reserved(*this,source)||PublicationOwnership::reserved(*this,dest)||PublicationOwnership::requiresDirectory(*this,source)||PublicationOwnership::requiresDirectory(*this,dest)||pendingMediaDestination(source)||pendingMediaDestination(dest)||admissionRegistry->reservesDirectory(source)||admissionRegistry->reservesDirectory(dest)){if(scope)throw std::runtime_error("Wait for the download, publication or browser acceptance to finish before recovering this file move.");return;}
  const auto expectedHash=str(operation,"Hash",str(operation.at("Before"),"Sha256"));
  const auto identity=operation.value("FileIdentity",Json());
  auto verified=[&](const fs::path& path){return identity.is_object()?matchesMoveFileIdentity(path,identity):!expectedHash.empty()&&fs::is_regular_file(path)&&fileHash(path)==expectedHash;};
  Json recovered;
  if(yes(operation,"CaseOnly")){
-  if(pathKey(source)!=pathKey(dest))throw std::runtime_error("Invalid case-only rename journal. Preserve it for recovery.");
+  if(!windowsPath::equal(pathKey(source),pathKey(dest)))throw std::runtime_error("Invalid case-only rename journal. Preserve it for recovery.");
   const auto oldName=wide(str(operation,"SourceFileName"));
   const auto atSource=storedFileName(source),atDestination=storedFileName(dest);
   // Existence is insufficient on a case-insensitive volume: both spellings
@@ -388,7 +389,7 @@ void Manager::relocate(JobPtr job,const fs::path& requested,const Cancel* cancel
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement before moving or renaming it.");
  if(!requested.is_absolute()||safeName(utf8(requested.filename().wstring()))!=utf8(requested.filename().wstring()))throw std::runtime_error("Choose an absolute destination with a valid file name.");
  auto source=job->target(),dest=requested.lexically_normal();
- const bool caseOnly=pathKey(source)==pathKey(dest)&&fs::exists(dest.parent_path())&&fs::equivalent(source.parent_path(),dest.parent_path());
+ const bool caseOnly=windowsPath::equal(pathKey(source),pathKey(dest))&&fs::exists(dest.parent_path())&&fs::equivalent(source.parent_path(),dest.parent_path());
  if(caseOnly&&source.filename()==dest.filename()){reporter.check();reporter.report(RelocationPhase::Complete);return;}
  if(!fs::is_regular_file(source))throw std::runtime_error("The downloaded file is missing from its saved location.");
  std::optional<std::wstring> sourceName;
@@ -398,11 +399,11 @@ void Manager::relocate(JobPtr job,const fs::path& requested,const Cancel* cancel
   dest=source.parent_path()/dest.filename();source=source.parent_path()/ *sourceName;
  }
  if(fs::exists(dest)&&(!caseOnly||storedFileName(dest)!=sourceName||!fs::equivalent(source,dest)))throw std::runtime_error("Destination already exists. Choose another name; no files were overwritten.");
- for(auto other:jobs)if(other!=job&&(pathKey(other->target())==pathKey(dest)||(!str(other->data,"PreviousPath").empty()&&pathKey(fs::path(wide(str(other->data,"PreviousPath"))))==pathKey(dest))))throw std::runtime_error("That destination belongs to another download.");
- const auto destinationPrefix=lower(utf8(fs::absolute(dest).lexically_normal().generic_wstring()))+"/";
+ for(auto other:jobs)if(other!=job&&(windowsPath::equal(pathKey(other->target()),pathKey(dest))||(!str(other->data,"PreviousPath").empty()&&windowsPath::equal(pathKey(fs::path(wide(str(other->data,"PreviousPath")))),pathKey(dest)))))throw std::runtime_error("That destination belongs to another download.");
+ if(PublicationOwnership::reserved(*this,dest)||PublicationOwnership::requiresDirectory(*this,dest)||pendingMediaDestination(dest)||admissionRegistry->reservesDirectory(dest))throw std::runtime_error("That destination is reserved for a publication or pending browser download.");
+ const auto destinationKey=pathKey(dest);
  for(auto other:jobs)if(other!=job){
-  if(lower(utf8(fs::absolute(other->target()).lexically_normal().generic_wstring())).rfind(destinationPrefix,0)==0||
-     (!str(other->data,"PreviousPath").empty()&&lower(utf8(fs::absolute(fs::path(wide(str(other->data,"PreviousPath")))).lexically_normal().generic_wstring())).rfind(destinationPrefix,0)==0))throw std::runtime_error("That destination is needed as a folder by another download.");
+  if(windowsPath::descendant(pathKey(other->target()),destinationKey)||(!str(other->data,"PreviousPath").empty()&&windowsPath::descendant(pathKey(fs::path(wide(str(other->data,"PreviousPath")))),destinationKey)))throw std::runtime_error("That destination is needed as a folder by another download.");
  }
  auto before=job->data,after=before;after["Folder"]=utf8(dest.parent_path().wstring());after["FileName"]=utf8(dest.filename().wstring());
  fs::create_directories(dest.parent_path());auto journal=root/L"file-operation.json";

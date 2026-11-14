@@ -1,0 +1,91 @@
+{
+  "build-progress.json": {
+    "outputs": [
+      {
+        "name": "Udm.ReplacementCommitTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.ReplacementCommitTests.exe",
+        "sha256": "315A2EED8A6C409213ECA95B2E9105893C8AD9507BC837B77ABD3275BCC92278",
+        "product": false
+      },
+      {
+        "name": "Udm.PublicationCommitTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.PublicationCommitTests.exe",
+        "sha256": "4EB164C4CD08293C1D75BA01849EA3830582C5C23875DB09BCBFCA4974A54CEB",
+        "product": false
+      },
+      {
+        "name": "Udm.PublicationOwnershipTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.PublicationOwnershipTests.exe",
+        "sha256": "B239D63AF84232F248F5849BF0D2C714375C909E37895AC767B49243E8EA9B51",
+        "product": false
+      },
+      {
+        "name": "Udm.PublicationPreparationTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.PublicationPreparationTests.exe",
+        "sha256": "B8029E70D3BFD9E7BF713DD89AA35CE57C5583B2C7693D7988CDFD2A6AF7E31B",
+        "product": false
+      },
+      {
+        "name": "Udm.SyncReplacementRecoveryTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.SyncReplacementRecoveryTests.exe",
+        "sha256": "ACC5FB3397E0213B6AAE278C6DDEF5D2A9716B2345B7A62E6EBEA78927D5F761",
+        "product": false
+      },
+      {
+        "name": "Udm.CompletedCheckpointTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.CompletedCheckpointTests.exe",
+        "sha256": "0C2DC666DFA9837BCC0C7978338573A3D5EBB7A74EDD5F653A6A875E016AD8D3",
+        "product": false
+      },
+      {
+        "name": "Udm.CatalogCheckpointTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.CatalogCheckpointTests.exe",
+        "sha256": "460A74A7B020667BF9E390ECEEB959360BC9969ACE0E2DC573B01954A0627B5D",
+        "product": false
+      },
+      {
+        "name": "Udm.CatalogCommitCoordinatorTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.CatalogCommitCoordinatorTests.exe",
+        "sha256": "9ECD53B6C254D74E383D95FC1D306C183D81C939579AF2D664F0127994594BD4",
+        "product": false
+      },
+      {
+        "name": "Udm.CatalogAdmissionRegistryTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.CatalogAdmissionRegistryTests.exe",
+        "sha256": "E1F2474EC8954D4993F0EFDBF81DB1C698A164BFB3FC5814F45E691C9D7032A7",
+        "product": false
+      },
+      {
+        "name": "Udm.CatalogAdmissionReservationTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.CatalogAdmissionReservationTests.exe",
+        "sha256": "4EB6CB3B5903B002214622AF9A5A7072F2E551B1B6C035BC7121402E1840E495",
+        "product": false
+      },
+      {
+        "name": "Udm.DetachedMediaAdmissionTests.exe",
+        "path": "LOCALAPPDATA/UDM-Development/replacement-io-8.16/release-native/Udm.DetachedMediaAdmissionTests.exe",
+        "sha256": "5BA7A0FBF702C4780F2C0CDD036289921DE9A35885C8BDACB44E439470118B7B",
+        "product": false
+      }
+    ]
+  },
+  "reason": "Original build and suite handles are missing; authoritative process inventory found no compiler, Python runner or owned test live. No terminal build/suite records exist. Rebuilding current inputs and using fresh test roots.",
+  "sources": [
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "366AE53BA4A889C0792484525ECA8151730F0C8D0BBF782B4025D146D2B3AD27"
+    },
+    {
+      "path": "native/ReplacementCommit.hpp",
+      "sha256": "5A97863827CDE1E566EC36F62EB815EA9C661E93E558FF5D9B2B9D1710C80666"
+    },
+    {
+      "path": "native/ReplacementCommitTests.cpp",
+      "sha256": "CCB980C477C45370223613A57C10CA1A4B0EBD1EBB8EAB418AC31100166FCDC8"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "FFD9746054CEBA28D6D7C9D0C51DF7EF648F4E76A9954E5B69ED826041311CFC"
+    }
+  ]
+}

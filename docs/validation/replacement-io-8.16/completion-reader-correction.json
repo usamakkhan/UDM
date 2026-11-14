@@ -1,0 +1,6 @@
+{
+  "nativeResultPassed": true,
+  "nativeChecks": 261,
+  "runnerError": "The resumed runner read completion-ui/results.json instead of completion-ui-resumed/results.json after child exit.",
+  "resolution": "Run only the completion child into a fresh owned folder, persist its actual exit code, then parse the same folder."
+}

@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "name": "First successful commit reports the durable sequence",
+      "passed": true
+    },
+    {
+      "name": "Newer commit publishes its actual checkpoint bytes",
+      "passed": true
+    },
+    {
+      "name": "Repeating a durable sequence does not write again",
+      "passed": true
+    },
+    {
+      "name": "Older commit resolves as superseded without invoking its writer",
+      "passed": true
+    },
+    {
+      "name": "Failed write preserves the durable sequence and previous checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A failed sequence can retry and retain the previous checkpoint backup",
+      "passed": true
+    },
+    {
+      "name": "Concurrent writers serialize and advance in the observed order",
+      "passed": true
+    },
+    {
+      "name": "Concurrent commit publication retains the newest file and immediate predecessor backup",
+      "passed": true
+    },
+    {
+      "name": "A newer successful commit prevents an obsolete writer from reporting a later false failure",
+      "passed": true
+    },
+    {
+      "name": "Invalid zero sequence cannot publish or change durable state",
+      "passed": true
+    },
+    {
+      "name": "Successful completion observation runs after the writer lock is released",
+      "passed": true
+    },
+    {
+      "name": "Failure releases the writer lock without publishing a durable sequence",
+      "passed": true
+    },
+    {
+      "name": "Already-published observation releases its lock and reports no new publication",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

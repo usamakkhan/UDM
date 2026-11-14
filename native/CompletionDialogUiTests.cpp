@@ -94,6 +94,7 @@ static LRESULT CALLBACK expandNonClientFrame(HWND w,UINT message,WPARAM param,LP
  return result;
 }
 class ToolbarComponentTest {
+ static void deliverTransferWakeup(MainWindow& frame){MSG message{};expect(PeekMessageW(&message,frame.GetSafeHwnd(),TRANSFER_EVENTS,TRANSFER_EVENTS,PM_REMOVE)!=FALSE,"Transfer callbacks enqueue a private wake-up without a timer");DispatchMessageW(&message);}
 public:static void run(MainWindow& frame){
  auto& manager=frame.manager;
  {
@@ -433,31 +434,31 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
   const auto originalSuppression=suppression;
   suppression=false;
   const auto before=frame.completions.size();
-  manager.filePublished(job);frame.presentTransferEvents();
+  manager.filePublished(job);deliverTransferWakeup(frame);
   expect(frame.completions.size()==before+1&&IsWindowVisible(frame.completions.back()->GetSafeHwnd()),
    "The publication event shows completion before the transfer finishes its cleanup");
   auto publishedWindow=frame.completions.back()->GetSafeHwnd();
   SendMessageW(named(publishedWindow,L"Close"),BM_CLICK,0,0);
-  manager.event(job,true);frame.presentTransferEvents();
+  manager.event(job,true);deliverTransferWakeup(frame);
   expect(frame.completions.size()==before+1&&!IsWindow(publishedWindow),
    "Finishing cleanup does not reopen a dismissed publication dialog");
   job->data["ScanResult"]={{"Status","Pending"}};
-  manager.filePublished(job);frame.presentTransferEvents();
+  manager.filePublished(job);deliverTransferWakeup(frame);
   expect(frame.completions.size()==before+1,"A pending scan prevents early completion presentation");
   job->data.erase("ScanResult");
   job->data["SuppressCompletionDialog"]=true;
-  manager.filePublished(job);frame.presentTransferEvents();
+  manager.filePublished(job);deliverTransferWakeup(frame);
   expect(frame.completions.size()==before+1,"Early publication respects completion suppression");
   job->data.erase("SuppressCompletionDialog");
   suppression=originalSuppression;
  }
  {
   const auto progressCount=frame.progress.size();
-  manager.event(job,false);frame.presentTransferEvents();
+  manager.event(job,false);deliverTransferWakeup(frame);
   expect(frame.progress.size()==progressCount,"A finished transfer with automatic close skips a stale Start event");
   job->data["CloseProgressOnCompletion"]=false;
   job->data["PrefetchedBytesAtStart"]=4;job->data["PrefetchPeakRate"]=1024;
-  manager.event(job,false);manager.event(job,true);frame.presentTransferEvents();
+  manager.event(job,false);manager.event(job,true);deliverTransferWakeup(frame);
   expect(frame.progress.size()==progressCount+1&&frame.progress.back()->GetSafeHwnd(),"A completed prefetch honors the keep-open progress preference");
   bool peakVisible=false;
   for(auto child=GetWindow(frame.progress.back()->GetSafeHwnd(),GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT))

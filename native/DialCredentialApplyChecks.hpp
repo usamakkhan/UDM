@@ -19,7 +19,7 @@ struct DialApplyProbe {
    if(notice){++errors;child(notice,L"Forced selected credential failure");expect(manager.fileInfoDecisionPending&&store->writes.empty(),"Credential error preserves the original message and shared guard before acknowledgement");SendMessageW(child(notice,L"OK"),BM_CLICK,0,0);return;}
    if(GetTickCount64()>end)throw std::runtime_error("Dial Apply interaction deadline");if(!main||!IsWindow(main))return;
    if(!failure.empty()){store->unlock();if(!manager.fileInfoDecisionPending)PostMessageW(main,WM_CLOSE,0,0);return;}
-   if(phase==0){
+   if(phase==0){DialReadTestAccess::wait(main);
     dialTab(main);auto choice=GetWindow(child(main,L"Connection:"),GW_HWNDNEXT);
     if(mode=="noop"){expect(!IsWindowEnabled(applyButton(main,false)),"Unchanged selected credentials keep Apply disabled");SendMessageW(applyButton(main,false),BM_CLICK,0,0);expect(store->attempts==0&&!manager.fileInfoDecisionPending,"Unchanged Apply starts no worker and performs no credential write");phase=99;SendMessageW(main,WM_COMMAND,IDCANCEL,0);return;}
     selectCombo(main,choice,1);SetWindowTextW(editAfter(main,L"User name:"),L"OTHER\\invalid\\identity");selectCombo(main,choice,0);

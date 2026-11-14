@@ -1,0 +1,11 @@
+{
+  "version": "7.99",
+  "suite": "dial-dark",
+  "passed": false,
+  "wrapper": "120-second observation expired",
+  "processConfirmedLive": true,
+  "phaseEvidence": "Latest owned catalog: reads/read-close; no final results.json",
+  "fixtureDefect": "Failure handling follows deadline check, so every later timer callback throws before cleanup",
+  "action": "Stopped only the exact owned isolated fixture after identity and creation-time checks",
+  "binarySha256": "8C937C5AC3D4755B10FD178D2FDC999F46612D7D58D6540B180551AFA1771D1A"
+}

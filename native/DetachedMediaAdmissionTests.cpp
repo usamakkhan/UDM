@@ -4,6 +4,7 @@
 #include "BrowserAdmissionContext.hpp"
 #include "FileInfoInitialView.hpp"
 #include "PendingFileInfoInbox.hpp"
+#include "PublicationOwnership.hpp"
 #include <future>
 #include <iostream>
 using namespace udm;
@@ -37,6 +38,10 @@ int wmain(int argc,wchar_t** argv){
    const auto name=adaptiveCaptureName("receipt fixture",request.at("plan"));const auto reserved=folder/L"files"/wide(name);
    auto destination=std::async(std::launch::async,[&]{return manager.pendingMediaDestination(reserved);});
    const bool destinationReady=destination.wait_for(std::chrono::milliseconds(500))==std::future_status::ready;bool held=destinationReady?destination.get():false;
+   auto child=std::make_shared<Job>(Json{{"Id",guid()},{"Folder",utf8(reserved.parent_path().wstring())},{"FileName",utf8(reserved.filename().wstring())},{"Status","Paused"}});
+   auto staged=folder/L"blocked.part";atomicText(staged,"reserved bytes",false);const auto beforeChild=child->data;
+   bool publisherBlocked=false;{Lock lock(manager.mutex);try{manager.publishFile(child,staged,fileHash(staged));}catch(const std::exception& e){publisherBlocked=std::string(e.what()).find("pending browser acceptance")!=std::string::npos;}}
+   const bool publicationUntouched=child->data==beforeChild&&readText(staged)=="reserved bytes"&&!fs::exists(reserved)&&!PublicationOwnership::owned(manager,child);
    // The ordinary writer queues a newer containing snapshot while the first
    // writer is gated. It must not allocate the hidden reservation's filename.
    std::promise<void> adding;auto addingReady=adding.get_future();
@@ -49,6 +54,8 @@ int wmain(int argc,wchar_t** argv){
    release.set_value();auto accepted=admission.get();auto ordinary=other.get();
    if(!viewReady)during=view.get();if(!statusReady)pendingStatus=status.get();if(!destinationReady)held=destination.get();
    check(atGate,"Admission reaches a real flushed-temporary-file gate");
+   check(publisherBlocked,"Standalone child publication cannot take a detached browser destination while its write is in flight");
+   check(publicationUntouched,"Rejected publication preserves staged bytes and child metadata without acquiring an owner or publishing a target");
    check(viewReady&&during["Downloads"].empty(),"History remains readable and excludes the tentative media job during disk IO");
    check(statusReady&&str(pendingStatus,"status")=="uncertain","Recovery can inspect an in-flight token without releasing or accepting it prematurely");
    check(destinationReady&&held,"The hidden media destination remains reserved while its write is pending");
@@ -60,6 +67,24 @@ int wmain(int argc,wchar_t** argv){
    check(!manager.pendingMediaDestination(reserved),"The installed job releases its transient destination ownership");
    check(rejections==0,"A successful containing publication never sends a false prepared-dialog rejection");
    auto saved=Json::parse(readText(manager.root/L"state.json"));check(saved["Downloads"].size()==2&&str(saved["BrowserCaptures"][token],"id")==accepted->id(),"Published history contains both jobs and the matching media receipt");
+  }
+  {
+   const auto folder=root/L"publisher-first";Manager manager(folder/L"state");mediaSettings(manager,folder);auto request=mediaRequest(mediaToken());auto name=adaptiveCaptureName("receipt fixture",request.at("plan"));
+   auto child=std::make_shared<Job>(Json{{"Id",guid()},{"Folder",utf8((folder/L"files").wstring())},{"FileName",name},{"Status","Paused"}});auto staged=folder/L"reserved.part";fs::create_directories(folder/L"files");atomicText(staged,"publication first",false);
+   const auto before=child->data;std::unique_ptr<PublicationOwnership> owner;{Lock lock(manager.mutex);owner=std::make_unique<PublicationOwnership>(manager,std::vector<JobPtr>{child},std::vector<fs::path>{child->target()});}
+   BrowserAdmissionContext detached(true);auto accepted=manager.receiveBrowserMedia(request);
+   check(accepted->target()!=child->target(),"Browser admission arriving after an internal publisher selects an independent destination");
+   check(child->data==before&&readText(staged)=="publication first"&&PublicationOwnership::owned(manager,child),"Browser admission preserves the earlier publication owner and staged bytes");
+   check(manager.jobs.size()==1&&str(mediaAdmissionStatus(manager,str(request,"mediaToken")),"id")==accepted->id(),"Publisher-first browser receipt durably identifies only its independently named job");
+   owner.reset();manager.publishFile(child,staged,fileHash(staged));
+   check(readText(child->target())=="publication first"&&str(child->data,"Status")=="Complete"&&accepted->target()!=child->target(),"Both destinations remain independent when the earlier publisher completes");
+  }
+  {
+   const auto folder=root/L"move-during-admission";Manager manager(folder/L"state");mediaSettings(manager,folder);fs::create_directories(folder/L"move-source");auto mover=manager.add("https://example.invalid/move",utf8((folder/L"move-source").wstring()),"source.bin","Main queue",true);atomicText(mover->target(),"move bytes",false);mover->data["Status"]="Complete";mover->data["Size"]=10;mover->data["Received"]=10;mover->data["Sha256"]=fileHash(mover->target());manager.save();auto before=mover->snapshot();auto source=mover->target();auto request=mediaRequest(mediaToken());auto reserved=folder/L"files"/wide(adaptiveCaptureName("receipt fixture",request.at("plan")));
+   std::promise<void> entered,release;auto ready=entered.get_future();auto released=release.get_future().share();std::future<JobPtr> work;struct Release {std::promise<void>& p;bool done=false;~Release(){if(!done)p.set_value();}} releaseGuard{release};work=std::async(std::launch::async,[&]{BrowserAdmissionContext context(true);return manager.receiveBrowserMedia(request,[&](const char* point){if(std::string_view(point)=="temporary-flushed"){entered.set_value();if(released.wait_for(std::chrono::seconds(8))!=std::future_status::ready)throw std::runtime_error("Move/admission fixture deadline");}});});check(ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Browser acceptance reaches its detached flushed-write gate while a completed source remains movable");
+   bool blocked=false;try{manager.relocate(mover,reserved);}catch(const std::exception& e){blocked=std::string(e.what()).find("reserved for a publication or pending browser")!=std::string::npos;}check(blocked,"Move/Rename cannot occupy a pending browser acceptance's exact destination");
+   blocked=false;try{manager.relocate(mover,reserved.parent_path());}catch(const std::exception& e){blocked=std::string(e.what()).find("reserved for a publication or pending browser")!=std::string::npos;}check(blocked&&!fs::exists(reserved.parent_path()),"Move/Rename cannot replace a pending browser acceptance's required future directory with a file");check(mover->snapshot()==before&&readText(source)=="move bytes"&&!fs::exists(manager.root/L"file-operation.json"),"Rejected moves leave the source, catalog and recovery intent unchanged during pending acceptance");
+   release.set_value();releaseGuard.done=true;auto admitted=work.get();check(admitted->target()==reserved&&manager.jobs.size()==2&&str(mediaAdmissionStatus(manager,str(request,"mediaToken")),"id")==admitted->id(),"The browser operation durably accepts its original destination after move conflicts reject");manager.relocate(mover,folder/L"independent.bin");check(readText(mover->target())=="move bytes"&&!fs::exists(source)&&admitted->target()==reserved,"An independent move succeeds after browser acceptance without changing its destination");
   }
   {
    const auto folder=root/L"failed-alone";Manager manager(folder/L"state");mediaSettings(manager,folder);auto request=mediaRequest(mediaToken());auto before=manager.snapshot();

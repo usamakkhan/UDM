@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "Overlay adds the exact reserved job and receipt together",
+      "passed": true
+    },
+    {
+      "name": "Repeating the same reservation is idempotent",
+      "passed": true
+    },
+    {
+      "name": "Preparing a persistence overlay leaves the source catalog unchanged",
+      "passed": true
+    },
+    {
+      "name": "Changed job content cannot reuse a reserved identity",
+      "passed": true
+    },
+    {
+      "name": "Job conflict leaves the detached snapshot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Changed receipt fingerprint cannot reuse a reserved token",
+      "passed": true
+    },
+    {
+      "name": "Receipt conflict leaves the detached snapshot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Duplicate reserved IDs in a snapshot are rejected",
+      "passed": true
+    },
+    {
+      "name": "An unrelated job cannot take a missing reservation's destination",
+      "passed": true
+    },
+    {
+      "name": "Destination conflict publishes neither receipt nor reserved job",
+      "passed": true
+    },
+    {
+      "name": "Independent overlays preserve other reservations and unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Reservation owns immutable copies of its supplied job and receipt",
+      "passed": true
+    },
+    {
+      "name": "Malformed receipt stores are rejected",
+      "passed": true
+    },
+    {
+      "name": "An invalid reservation identity is rejected before overlay",
+      "passed": true
+    }
+  ],
+  "error": "Run setup-media.ps1 to install the local media helpers.",
+  "passed": false
+}

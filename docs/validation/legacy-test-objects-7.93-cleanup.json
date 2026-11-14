@@ -1,0 +1,39 @@
+{
+  "version": "7.93",
+  "purpose": "Remove ignored obsolete 4.38/5.48 generated test objects from D; preserve all source, current core cache, shared tools and executables",
+  "removedFiles": 6,
+  "removedBytes": 182964900,
+  "files": [
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/GrabberWizardUiTests.obj",
+      "bytes": 73038022,
+      "sha256": "1AB84C8BB99B7FA90045003C6AA056F4DAA224C6B302F4B4BCE6BD71CAEE6756"
+    },
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/PublicationRecoveryTests.obj",
+      "bytes": 4901102,
+      "sha256": "47BFF966E139562522F004D48384A56DA79F95C12F00AE93FE48BAC741A8CC44"
+    },
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/QueueCompletionCycleTests.obj",
+      "bytes": 5885520,
+      "sha256": "E7955C5A936024757492ACD7B42B65F191C7D43B82300B42FFF0714B01E323A4"
+    },
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/RenderedOfflineTests.obj",
+      "bytes": 13849044,
+      "sha256": "AE928A9A525765E6D08E6DBB6F72562EA87AA53C53A2327F6DDA25E477D6DA23"
+    },
+    {
+      "path": "candidates/native-production-work-4.38-clean/out/out/RestoreTests.obj",
+      "bytes": 14231223,
+      "sha256": "946E87D82F00C408113282B78894DC63E2DB9F13D8B6AE85D6FC8891679507C0"
+    },
+    {
+      "path": "candidates/file-info-and-range-5.48-live/out/FilenamePreviewUiTests.obj",
+      "bytes": 71059989,
+      "sha256": "EC35EF944365B23C0662D8F3249EF1F5B03F82308215F0E05531EB789D90BDB4"
+    }
+  ],
+  "recursiveDeletionUsed": false
+}

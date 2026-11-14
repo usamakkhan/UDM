@@ -1,0 +1,999 @@
+{
+  "case": "crash-replacement-journal-removed",
+  "checks": [
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted pair has one common identity before acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted pair has one common identity before acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "A newer writer captures both tentative replacement records",
+      "passed": true
+    },
+    {
+      "name": "Queued containing pair writer does not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "A newer writer captures both tentative replacement records",
+      "passed": true
+    },
+    {
+      "name": "A newer containing pair can commit before the original writer gate",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Conditional paired rollback preserves independently changed completion fields",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted pair has one common identity before acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Uncertain catalog outcome preserves both complete versions instead of reversing acknowledged bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Owned journal reader forces real paired unlink denial",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Acknowledged paired journal survives denied unlink",
+      "passed": true
+    },
+    {
+      "name": "A mismatched original completion identity rejects recovery without consuming either version",
+      "passed": true
+    },
+    {
+      "name": "Malformed paired correlation preserves both files and its journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery cannot overwrite a newer completion on the original record",
+      "passed": true
+    },
+    {
+      "name": "Accepted-pair recovery preserves later queue enrollment and scan results for both records",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Owned journal reader forces real paired unlink denial",
+      "passed": true
+    },
+    {
+      "name": "Only a proven containing pair reports replacement success",
+      "passed": true
+    },
+    {
+      "name": "Acknowledged paired journal survives denied unlink",
+      "passed": true
+    },
+    {
+      "name": "A mismatched original completion identity rejects recovery without consuming either version",
+      "passed": true
+    },
+    {
+      "name": "Malformed paired correlation preserves both files and its journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery cannot overwrite a newer completion on the original record",
+      "passed": true
+    },
+    {
+      "name": "Accepted-pair recovery preserves later queue enrollment and scan results for both records",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Actual paired replacement reaches its detached intent/move/catalog/cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Both-record replacement disk work leaves the model mutex accessible",
+      "passed": true
+    },
+    {
+      "name": "Replacement owns both records and the previous-version path through commit",
+      "passed": true
+    },
+    {
+      "name": "Original history cannot be removed while a paired commit owns both files",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot pretend to cancel an irreversible paired commit",
+      "passed": true
+    },
+    {
+      "name": "Unacknowledged paired completion reports failure and retains its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Paired rollback preserves current metadata and independent settings",
+      "passed": true
+    },
+    {
+      "name": "Interrupted intent recovers paused while preserving old target and downloaded staging",
+      "passed": true
+    },
+    {
+      "name": "Explicit pair recovery resolves the exact local file outcome without another request",
+      "passed": true
+    },
+    {
+      "name": "Replacement retains exact new target and exact previous-version bytes with reconciled history",
+      "passed": true
+    },
+    {
+      "name": "Both current record descriptions survive detached apply and recovery",
+      "passed": true
+    },
+    {
+      "name": "Paired commit retires both runtime owners and any private receipt",
+      "passed": true
+    },
+    {
+      "name": "Reopened history retains both exact versions and no phantom internal row",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess stops at the real replacement intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Restart at intent boundary retains old target and resumable new staging",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery reconciles complete new and previous versions",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery retires only the reconciled paired journal",
+      "passed": true
+    },
+    {
+      "name": "Paired crash outcome survives a second reopen",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess stops at the real replacement intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery reconciles complete new and previous versions",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery retires only the reconciled paired journal",
+      "passed": true
+    },
+    {
+      "name": "Paired crash outcome survives a second reopen",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess stops at the real replacement intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery reconciles complete new and previous versions",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery retires only the reconciled paired journal",
+      "passed": true
+    },
+    {
+      "name": "Paired crash outcome survives a second reopen",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess stops at the real replacement intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery reconciles complete new and previous versions",
+      "passed": true
+    },
+    {
+      "name": "Crash recovery retires only the reconciled paired journal",
+      "passed": true
+    },
+    {
+      "name": "Paired crash outcome survives a second reopen",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

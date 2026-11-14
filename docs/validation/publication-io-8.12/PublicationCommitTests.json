@@ -1,0 +1,779 @@
+{
+  "case": "invalid-id",
+  "checks": [
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Completion is durably correlated before detached journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Detached decoded publication preserves wire evidence and forces measured final output counters",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "A changed named staging object is rejected before rename while both versions remain intact",
+      "passed": true
+    },
+    {
+      "name": "Reconciliation cannot accept changed staging bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "An unrelated new staging object cannot undo or be consumed by accepted completion recovery",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A newer completion or malformed correlation cannot be overwritten by an old journal",
+      "passed": true
+    },
+    {
+      "name": "Rejected correlation preserves the current row, journal and published bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A newer completion or malformed correlation cannot be overwritten by an old journal",
+      "passed": true
+    },
+    {
+      "name": "Rejected correlation preserves the current row, journal and published bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

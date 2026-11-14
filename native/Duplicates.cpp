@@ -2,6 +2,12 @@
 #include "QueueMembership.hpp"
 #include "CapturePresentation.hpp"
 #include "GrabberDestinations.hpp"
+#include "PublicationPreparation.hpp"
+#include "PublicationOwnership.hpp"
+#include "PublicationCommit.hpp"
+#include "PublicationCatalogProof.hpp"
+#include "ReplacementCommit.hpp"
+#include "PublicationRecovery.hpp"
 #include "MediaPublication.hpp"
 #include "FileIdentity.hpp"
 #include "Scanner.hpp"
@@ -173,11 +179,29 @@ OfferPresentation Manager::presentOffer(JobPtr job){
  existingOffers.erase(job->id());
  return isActive(job)||str(job->data,"Status")=="Queued"?OfferPresentation::Progress:OfferPresentation::Information;
 }
-static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){auto next=data;next.erase("RetainedMediaOutput");next["Sha256"]=hash;if(str(data,"HttpContentEncoding")=="gzip"||(yes(data,"PostResponseComplete")&&yes(data,"StripContentPrefix")&&num(data,"ContentPrefixBytes")>0)){next["HttpWireSize"]=num(data,"Size",-1);next["HttpWireReceived"]=num(data,"Received");const auto length=(i64)fs::file_size(staging);next["Segments"]=Json::array();if(length>0)next["Segments"].push_back({{"Index",0},{"Start",0},{"End",length-1},{"Done",length}});next.erase("CompletedPrefetch");next["HttpDecodedSize"]=length;next["HttpDecodedReceived"]=length;}next["Size"]=fs::file_size(staging);next["Received"]=next["Size"];if(yes(data,"PostResponseComplete")){next.erase("CompletedPrefetch");next.erase("PostResponseComplete");next.erase("PostResponseRequestSha256");next.erase("PostResponseRetentionWarning");}next["Status"]="Complete";next["MediaPhase"]="Complete";next["MediaTracksReady"]=false;next["SabrRetainedBytes"]=0;next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;if(yes(next,"SynchronizationRestoration")){next["SyncStatus"]="Restored missing file";next["LastSync"]=next["Finished"];next["SyncRetryFailed"]=false;next.erase("SynchronizationRestoration");}return next;}
+static Json completeData(const Json& data,i64 measuredSize,const std::string& hash){auto next=data;next.erase("RetainedMediaOutput");next["Sha256"]=hash;if(str(data,"HttpContentEncoding")=="gzip"||(yes(data,"PostResponseComplete")&&yes(data,"StripContentPrefix")&&num(data,"ContentPrefixBytes")>0)){next["HttpWireSize"]=num(data,"Size",-1);next["HttpWireReceived"]=num(data,"Received");const auto length=measuredSize;next["Segments"]=Json::array();if(length>0)next["Segments"].push_back({{"Index",0},{"Start",0},{"End",length-1},{"Done",length}});next.erase("CompletedPrefetch");next["HttpDecodedSize"]=length;next["HttpDecodedReceived"]=length;}next["Size"]=measuredSize;next["Received"]=next["Size"];if(yes(data,"PostResponseComplete")){next.erase("CompletedPrefetch");next.erase("PostResponseComplete");next.erase("PostResponseRequestSha256");next.erase("PostResponseRetentionWarning");}next["Status"]="Complete";next["MediaPhase"]="Complete";next["MediaTracksReady"]=false;next["SabrRetainedBytes"]=0;next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;if(yes(next,"SynchronizationRestoration")){next["SyncStatus"]="Restored missing file";next["LastSync"]=next["Finished"];next["SyncRetryFailed"]=false;next.erase("SynchronizationRestoration");}return next;}
+static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){return completeData(data,static_cast<i64>(fs::file_size(staging)),hash);}
 void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& knownHash,const Cancel* cancel,const LivePublicationDetails* live){
- fs::path target;std::string originalId,replacementHash,previousPath;bool registered=false;
- {Lock lock(mutex);if(!job)throw std::runtime_error("The download was removed before publication.");registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();target=job->target();originalId=str(job->data,"ReplacementOf");replacementHash=str(job->data,"ReplacementHash");previousPath=str(job->data,"PreviousPath");}
+ fs::path target;std::string originalId,replacementHash,previousPath;bool registered=false,catalogBound=false;Json destinationInputs;std::function<void(const char*)> publicationObservation;std::unique_ptr<PublicationOwnership> publicationOwner;JobPtr leasedOriginal;
+ {Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before publishing this file.");if(!job)throw std::runtime_error("The download was removed before publication.");registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();target=job->target();originalId=str(job->data,"ReplacementOf");replacementHash=str(job->data,"ReplacementHash");previousPath=str(job->data,"PreviousPath");destinationInputs=publicationDestinationInputs(job->data);publicationObservation=catalogCheckpoint;
+  {auto pending=jobs;std::unordered_set<const Job*> seen;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;if(item==job){catalogBound=true;break;}if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}}
+  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target};
+  if(!originalId.empty()){
+   for(const auto& item:jobs)if(item->id()==originalId)leasedOriginal=item;
+   if(!leasedOriginal||leasedOriginal==job||isActive(leasedOriginal))throw std::runtime_error("The original download changed. Its file was not replaced.");
+   if(cancel)cancel->check();requirePublicationRecovered(*this,job);
+   // Reconcile both roles of an older transaction before moving its file again.
+   // A failed/locked predecessor must leave the new staging and intent untouched.
+   recoverReplacements(leasedOriginal);
+   if(str(leasedOriginal->data,"Status")!="Complete"||leasedOriginal->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("Recovery changed the original download. Review the destination before replacing it.");
+   owned.push_back(leasedOriginal);destinations.push_back(leasedOriginal->target());destinations.emplace_back(wide(previousPath));
+  }
+  publicationOwner=std::make_unique<PublicationOwnership>(*this,std::move(owned),destinations);
+ }
  auto checkpoint=[&]{if(cancel)cancel->check();};checkpoint();
+ if(publicationObservation)publicationObservation("publication-preflight-begin");
+ PublicationPreparation prepared(staging,destinationInputs);
+ if(publicationObservation)publicationObservation("publication-preflight-ready");checkpoint();
  auto hash=knownHash;
  Json stagedIdentity;
  Handle stagedFile;
@@ -190,7 +214,7 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
    if(stagedIdentity.is_null())hash=fileHash(stagedFile.h,checkpoint);
   }else hash=fileHash(staging,checkpoint);
  }
- std::unique_ptr<Handle> protectOriginal;
+ std::unique_ptr<Handle> protectOriginal;i64 originalSize=0;
  auto matchesOriginal=[&]{
   if(!protectOriginal||!(*protectOriginal))return false;
   Handle current(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));BY_HANDLE_FILE_INFORMATION a{},b{};
@@ -199,13 +223,16 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  if(!originalId.empty()){
   protectOriginal=std::make_unique<Handle>(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
   if(!(*protectOriginal)||!fs::is_regular_file(target)||fileHash(protectOriginal->h,checkpoint)!=replacementHash||!matchesOriginal())throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
+  LARGE_INTEGER length{};if(!GetFileSizeEx(protectOriginal->h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the original file size.");originalSize=length.QuadPart;
  }
- checkpoint();
- Lock lock(mutex);checkpoint();
+ checkpoint();prepared.validateSourceName(staging);
+ std::unique_lock<std::recursive_mutex> lock(mutex);checkpoint();
  // Internal audio/video track jobs are deliberately absent from the catalog.
  // Preserve that membership state, rather than rejecting all child publication.
- if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath)throw std::runtime_error("The download changed before publication. Its file was not replaced.");
- validateGrabberFolder(job->data);auto before=job->data,after=completeData(before,staging,hash);after["QueueMember"]=retainCompletedMembership(*this,before);
+ if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed before publication. Its file was not replaced.");
+ prepared.validateDirectories();
+ publicationOwner->beginCommit();
+ auto before=job->data,after=completeData(before,prepared.size,hash);after["QueueMember"]=retainCompletedMembership(*this,before);
  if(registered)prepareCompletionScan(after,state["Settings"]);
  if(live){
   after["LiveSaveReady"]=false;
@@ -217,43 +244,65 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
   }else after.erase("SubtitleCueCount");
  }
  if(originalId.empty()){
+  const auto commitId=guid();after["PublicationCommitId"]=commitId;
   auto journal=root/L"publications"/(wide(job->id())+L".json");
+  Json intent={{"Id",job->id()},{"Target",utf8(target.wstring())},{"Staging",utf8(staging.wstring())},{"Hash",hash},{"Before",before},{"After",after},{"CommitId",commitId},{"Ephemeral",!catalogBound}};
+  if(!stagedIdentity.is_null())intent["StagedIdentity"]=stagedIdentity;
+  lock.unlock();
   if(fs::exists(journal))throw std::runtime_error("A previous publication needs recovery. Resume the download or restart UDM.");
   if(fs::exists(target))throw std::runtime_error("Cannot publish the download. The destination already exists; choose another file name.");
-  Json intent={{"Id",job->id()},{"Target",utf8(target.wstring())},{"Staging",utf8(staging.wstring())},{"Hash",hash},{"Before",before},{"After",after}};
-  if(!stagedIdentity.is_null())intent["StagedIdentity"]=stagedIdentity;
-  atomicText(journal,intent.dump(),false);
+  const auto observeIntent=[&](const char* stage){if(publicationObservation){const auto name=std::string("publication-intent-")+stage;publicationObservation(name.c_str());}};
+  atomicText(journal,intent.dump(),false,observeIntent);
+  if(publicationObservation)publicationObservation("publication-intent-written");
+  prepared.validateSourceName(staging);prepared.validateDirectories();
   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
-  job->data=after;try{save();}catch(...){job->data=before;throw;}
-  std::error_code ec;fs::remove(journal,ec);return;
+  if(publicationObservation)publicationObservation("publication-file-moved");
+  lock.lock();
+  if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during publication. Keep its file and recovery record.");
+  if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before recording this published file. Its recovery journal was preserved.");
+  auto current=job->data;PublicationCommit::validateCurrent(intent,current);auto completed=PublicationCommit::apply(before,after,current);completed["QueueMember"]=retainCompletedMembership(*this,current);if(registered)prepareCompletionScan(completed,state["Settings"]);
+  PublicationCatalogProof::Lease catalogProof;Json receipt;bool insertedReceipt=false;job->data=completed;try{if(!catalogBound){receipt=PublicationCatalogProof::binding(completed);insertedReceipt=PublicationCatalogProof::installReceipt(*this,receipt);}catalogProof=PublicationCatalogProof::prepare(*this,completed,!catalogBound);}catch(...){job->data=std::move(current);if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
+  lock.unlock();std::exception_ptr failure;try{if(publicationObservation)publicationObservation("publication-catalog-prepared");save();}catch(...){failure=std::current_exception();}const bool accepted=catalogProof.resolve();lock.lock();
+  if(!accepted){if(str(job->data,"PublicationCommitId")==commitId)job->data=PublicationCommit::rollback(current,completed,job->data);catalogProof.release();if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);if(failure)std::rethrow_exception(failure);throw std::runtime_error("The completed file has not been durably recorded. Its recovery journal was preserved.");}
+  if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||!PublicationCommit::accepted(intent,job->data,hash))throw std::runtime_error("The completed download changed after catalog publication. Its recovery journal was preserved.");
+  lock.unlock();if(publicationObservation)publicationObservation("publication-cleanup");
+  std::error_code ec;const bool removed=fs::remove(journal,ec);if(removed&&publicationObservation)publicationObservation("publication-journal-removed");if(!catalogBound&&removed){lock.lock();catalogProof.release();PublicationCatalogProof::eraseReceipt(*this,receipt);lock.unlock();}return;
  }
- auto journal=root/L"replacements"/(wide(job->id())+L".json");if(fs::exists(journal))throw std::runtime_error("A previous replacement needs recovery. Restart UDM before retrying.");
- JobPtr original;for(auto item:jobs)if(item->id()==originalId)original=item;
+ auto journal=root/L"replacements"/(wide(job->id())+L".json");JobPtr original;for(auto item:jobs)if(item->id()==originalId)original=item;
  auto previous=fs::path(wide(str(before,"PreviousPath")));
- if(!original||isActive(original)||str(original->data,"Status")!="Complete"||original->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("The original download changed. Its file was not replaced.");
- if(!matchesOriginal())throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
- if(fs::exists(previous))throw std::runtime_error("The previous-version location is occupied. No file was replaced.");
+ if(!original||original!=leasedOriginal||!publicationOwner->owns(original)||active.count(original->id())||str(original->data,"Status")!="Complete"||original->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("The original download changed. Its file was not replaced.");
  if(relocationReserves(previous))throw std::runtime_error("The previous-version location is reserved by a file move.");
  if(downloadDestinationReserved(previous,job))throw std::runtime_error("The previous-version location belongs to another download.");
- auto oldBefore=original->data,oldAfter=oldBefore;oldAfter["Folder"]=utf8(previous.parent_path().wstring());oldAfter["FileName"]=utf8(previous.filename().wstring());oldAfter["PreviousVersionOf"]=job->id();oldAfter["QueueMember"]=false;oldAfter["SyncPending"]=false;oldAfter["Sha256"]=str(before,"ReplacementHash");oldAfter["Size"]=fs::file_size(target);oldAfter["Received"]=oldAfter["Size"];if(str(oldBefore,"Sha256")!=str(before,"ReplacementHash"))oldAfter.erase("ScanResult");
+ auto oldBefore=original->data,oldAfter=oldBefore;const auto originalInputs=publicationDestinationInputs(oldBefore);oldAfter["Folder"]=utf8(previous.parent_path().wstring());oldAfter["FileName"]=utf8(previous.filename().wstring());oldAfter["PreviousVersionOf"]=job->id();oldAfter["QueueMember"]=false;oldAfter["SyncPending"]=false;oldAfter["Sha256"]=replacementHash;oldAfter["Size"]=originalSize;oldAfter["Received"]=originalSize;oldAfter["Finished"]=str(oldBefore,"Finished");if(str(oldBefore,"Sha256")!=replacementHash)oldAfter.erase("ScanResult");
  if(yes(before,"SynchronizationReplacement")){after["SyncStatus"]="Updated; previous version retained";after["LastSync"]=after["Finished"];after.erase("SynchronizationReplacement");oldAfter["SyncStatus"]="Previous version";oldAfter["LastSync"]=after["Finished"];}
- after["ReplacedDownload"]=originalId;for(const char* key:{"ReplacementOf","ReplacementHash","PreviousPath"})after.erase(key);
- auto operation=Json{{"Id",job->id()},{"OriginalId",originalId},{"Target",utf8(target.wstring())},{"Previous",utf8(previous.wstring())},{"Staging",utf8(staging.wstring())},{"OldHash",str(before,"ReplacementHash")},{"NewHash",hash},{"Before",before},{"After",after},{"OriginalBefore",oldBefore},{"OriginalAfter",oldAfter}};
- atomicText(journal,operation.dump(),false);
+ const auto commitId=guid();after["PublicationCommitId"]=commitId;oldAfter["PublicationCommitId"]=commitId;after["ReplacedDownload"]=originalId;for(const char* key:{"ReplacementOf","ReplacementHash","PreviousPath"})after.erase(key);
+ auto operation=Json{{"Id",job->id()},{"OriginalId",originalId},{"Target",utf8(target.wstring())},{"Previous",utf8(previous.wstring())},{"Staging",utf8(fs::absolute(staging).wstring())},{"OldHash",replacementHash},{"NewHash",hash},{"Before",before},{"After",after},{"OriginalBefore",oldBefore},{"OriginalAfter",oldAfter},{"CommitId",commitId},{"Ephemeral",!catalogBound}};ReplacementCommit::identity(operation);
+ lock.unlock();
+ if(fs::exists(journal))throw std::runtime_error("A previous replacement needs recovery. Restart UDM before retrying.");
+ if(!matchesOriginal())throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
+ if(fs::exists(previous))throw std::runtime_error("The previous-version location is occupied. No file was replaced.");
+ const auto observeIntent=[&](const char* stage){if(publicationObservation){const auto name=std::string("replacement-intent-")+stage;publicationObservation(name.c_str());}};
+ atomicText(journal,operation.dump(),false,observeIntent);if(publicationObservation)publicationObservation("replacement-intent-written");
+ prepared.validateSourceName(staging);prepared.validateDirectories();if(!matchesOriginal())throw std::runtime_error("The original file changed before replacement. Keep the files and recovery journal.");
+ prepared.releaseSource(); // ReplaceFile opens its replacement with write access.
  if(!ReplaceFileW(target.c_str(),staging.c_str(),previous.c_str(),0,nullptr,nullptr)){
-  auto failure=GetLastError();
-  if(matchesOriginal()&&!fs::exists(previous)){std::error_code ec;fs::remove(journal,ec);}
-  throw std::runtime_error("Windows could not replace the file (error "+std::to_string(failure)+"). The original and recovery information were preserved.");
+  auto failure=GetLastError();if(matchesOriginal()&&!fs::exists(previous)){std::error_code ec;fs::remove(journal,ec);}throw std::runtime_error("Windows could not replace the file (error "+std::to_string(failure)+"). The original and recovery information were preserved.");
  }
- protectOriginal.reset();
- job->data=after;original->data=oldAfter;
- try{save();}catch(...){
-  job->data=before;original->data=oldBefore;
-  if(ReplaceFileW(target.c_str(),previous.c_str(),staging.c_str(),0,nullptr,nullptr)){std::error_code ec;fs::remove(journal,ec);}
-  else throw std::runtime_error("Saving replacement history failed. Restart UDM to recover using the preserved journal and files.");
-  throw;
- }
- std::error_code ec;fs::remove(journal,ec);
+ protectOriginal.reset();lock.lock();
+ // The swap is irreversible here. Keep the live original bound to its old bytes
+ // even when a later batch check or catalog write cannot complete the pair.
+ if(std::find(jobs.begin(),jobs.end(),original)==jobs.end()||original->target()!=target||publicationDestinationInputs(original->data)!=originalInputs)throw std::runtime_error("The original history changed during replacement. Keep both versions and the recovery journal.");
+ ReplacementCommit::validateCurrent(operation,job->data,original->data);original->data=ReplacementCommit::applyOriginal(oldBefore,oldAfter,original->data);lock.unlock();
+ if(publicationObservation)publicationObservation("replacement-file-moved");lock.lock();
+ if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||std::find(jobs.begin(),jobs.end(),original)==jobs.end()||job->target()!=target||original->target()!=previous||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs||publicationDestinationInputs(original->data)!=publicationDestinationInputs(oldAfter))throw std::runtime_error("A replacement record changed during publication. Keep both files and the recovery journal.");
+ if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before recording this replacement. Both files and its journal were preserved.");
+ auto current=job->data,currentOriginal=original->data;ReplacementCommit::validateCurrent(operation,current,currentOriginal);auto completed=PublicationCommit::apply(before,after,current),completedOriginal=currentOriginal;completed["QueueMember"]=retainCompletedMembership(*this,current);if(registered)prepareCompletionScan(completed,state["Settings"]);
+ PublicationCatalogProof::Lease proof;Json receipt;bool inserted=false;job->data=completed;original->data=completedOriginal;try{if(!catalogBound){receipt=PublicationCatalogProof::binding(completed);inserted=PublicationCatalogProof::installReceipt(*this,receipt);}proof=PublicationCatalogProof::prepare(*this,completed,!catalogBound,&completedOriginal);}catch(...){job->data=std::move(current);original->data=std::move(currentOriginal);if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
+ lock.unlock();std::exception_ptr failure;try{if(publicationObservation)publicationObservation("replacement-catalog-prepared");save();}catch(...){failure=std::current_exception();}const bool accepted=proof.resolve();lock.lock();
+ if(!accepted){if(str(job->data,"PublicationCommitId")==commitId)job->data=PublicationCommit::rollback(current,completed,job->data);/* The old bytes already moved: keep their live history bound to the actual previous-version location. */proof.release();if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);if(failure){try{std::rethrow_exception(failure);}catch(const std::exception& e){throw std::runtime_error(std::string("Saving replacement history failed: ")+e.what()+" Both file versions and the journal were preserved. Use Resume or restart UDM to reconcile history.");}}throw std::runtime_error("The replacement has not been durably recorded. Both file versions and its recovery journal were preserved.");}
+ if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||std::find(jobs.begin(),jobs.end(),original)==jobs.end()||!ReplacementCommit::accepted(operation,job->data,original->data))throw std::runtime_error("A replacement record changed after catalog publication. Keep both files and its recovery journal.");
+ lock.unlock();if(publicationObservation)publicationObservation("replacement-cleanup");std::error_code ec;const bool removed=fs::remove(journal,ec);if(removed&&publicationObservation)publicationObservation("replacement-journal-removed");if(!catalogBound&&removed){lock.lock();proof.release();PublicationCatalogProof::eraseReceipt(*this,receipt);lock.unlock();}
+
 }
 static bool recoverableStagingPath(const Json& operation,const Job& job,const fs::path& staging,const fs::path& target){
  const auto& before=operation.at("Before");
@@ -326,7 +375,7 @@ void Manager::recoverReplacements(JobPtr scope){
  bool publicationIndexReady=false;
  auto findPublicationJob=[&](const std::string& id)->JobPtr{
   if(!publicationIndexReady){
-   auto pending=jobs;std::unordered_set<const Job*> seen;
+   auto pending=jobs;if(scope)pending.push_back(scope);std::unordered_set<const Job*> seen;
    while(!pending.empty()){
     auto job=pending.back();pending.pop_back();if(!job||!seen.insert(job.get()).second)continue;
     auto inserted=publicationJobs.emplace(job->id(),job);
@@ -342,17 +391,24 @@ void Manager::recoverReplacements(JobPtr scope){
   if(entry.path().extension()!=L".json")continue;
   if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring())))continue;
   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its publication journal has been preserved.");
-  auto op=Json::parse(readText(entry.path()));auto job=findPublicationJob(str(op,"Id"));
+  auto op=Json::parse(readText(entry.path()));auto job=findPublicationJob(str(op,"Id"));const bool ephemeral=op.value("Ephemeral",false);
+  bool acceptedReceipt=false;if(ephemeral){const auto id=PublicationCommit::identity(op);if(id.empty())throw std::runtime_error("Missing private publication identity. Keep its recovery record.");auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto receipt=rows->find(id);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private publication receipt changed. Keep its file and recovery record.");acceptedReceipt=true;}}}
+  if(!job&&ephemeral)job=std::make_shared<Job>(op.at(acceptedReceipt?"After":"Before"));
   if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
+  if(!scope&&PublicationOwnership::treeOwned(*this,job))continue;
   auto target=fs::path(wide(str(op,"Target"))),staging=fs::path(wide(str(op,"Staging")));
   const auto hash=str(op,"Hash");
   const bool validIdentity=hash.empty()&&op.contains("StagedIdentity")&&op["StagedIdentity"].is_object();
   if(target.lexically_normal()!=job->target().lexically_normal()||target.lexically_normal()==staging.lexically_normal()||
      (!validIdentity&&!std::regex_match(hash,std::regex("[a-f0-9]{64}")))||str(op["After"],"Sha256")!=hash||
      str(op["After"],"Status")!="Complete")throw std::runtime_error("Publication recovery paths or file identity changed. Keep the files and recovery record.");
+  const auto commitId=PublicationCommit::identity(op);PublicationCommit::validateCurrent(op,job->data);
   auto before=job->data;
   std::optional<std::string> published;
-  if(fs::exists(staging)){
+  if(!commitId.empty()&&str(before,"PublicationCommitId")==commitId){
+   published=recoverPublicationBytes(op,target);if(!published)throw std::runtime_error("An acknowledged publication needs manual recovery. Keep its file and completion record.");
+  }
+  else if(fs::exists(staging)){
    if(recoverableStagingPath(op,*job,staging,target)){
     validateGrabberFolder(op["Before"]);
     published=recoverPublicationBytes(op,staging,&target);
@@ -362,22 +418,26 @@ void Manager::recoverReplacements(JobPtr scope){
    published=recoverPublicationBytes(op,target);
    if(!published)throw std::runtime_error("A published download needs manual recovery. Keep the saved file and publication record.");
   }
-  job->data=published?op["After"]:op["Before"];
+  const bool accepted=published&&!commitId.empty()&&PublicationCommit::accepted(op,before,*published);
+  if(!commitId.empty())job->data=accepted?before:PublicationCommit::apply(op["Before"],published?op["After"]:op["Before"],before);
+  else job->data=published?op["After"]:op["Before"];
   if(published){
    job->data["Sha256"]=*published;
-   if(findJob(job->id())==job)prepareRecoveredScan(job->data,before);
+   if(!commitId.empty()&&!accepted){job->data["QueueMember"]=retainCompletedMembership(*this,before);if(findJob(job->id())==job)prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;}
+   else if(findJob(job->id())==job)prepareRecoveredScan(job->data,before);
   }
   else job->data["Status"]="Paused";
-  try{save();}catch(...){job->data=before;throw;}
+  Json receipt;bool insertedReceipt=false;if(ephemeral&&published){receipt=PublicationCatalogProof::binding(op["After"]);insertedReceipt=PublicationCatalogProof::installReceipt(*this,receipt);}
+  try{save();}catch(...){job->data=before;if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
   if(published){
    if(retainedMediaOutputPath(op["Before"]).empty())markZone(target);
    else finishRetainedMediaRecovery(op["Before"],target);
   }
-  fs::remove(entry.path());
+  fs::remove(entry.path());if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
  }
  // Older builds could publish and hash the final file before a catalog save
  // failed, without a publication journal. Reconcile only that exact failure.
- for(auto job:jobs){if(scope&&!scopeIds.count(job->id()))continue;const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
+ for(auto job:jobs){if(scope&&!scopeIds.count(job->id()))continue;if(PublicationOwnership::treeOwned(*this,job))continue;const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
   if(str(data,"Status")!="Failed"||str(data,"Error").find("Could not replace the saved state (Windows error 1175).")!=0||str(data,"Finished").empty()||data.contains("OriginalResponse")||!str(data,"ReplacementOf").empty()||num(data,"Size",-1)<0||num(data,"Received")!=num(data,"Size")||!std::regex_match(hash,std::regex("[a-f0-9]{64}")))continue;
   auto expected=lower(str(data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)continue;
   std::error_code ec;auto target=job->target();Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
@@ -387,28 +447,43 @@ void Manager::recoverReplacements(JobPtr scope){
   prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;
   try{save();}catch(...){job->data=before;throw;}
  }
+ // A completed anonymous internal file never becomes a visible download row.
+ // Its private receipt may outlive unlink until the next checkpoint or restart.
+ if(!scope&&!catalogTransaction){auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto retained=*rows;bool changed=false;for(auto it=rows->begin();it!=rows->end();++it){const auto descriptor=PublicationCatalogProof::binding(it.value());if(it.key()!=str(descriptor,"PublicationCommitId"))throw std::runtime_error("Private publication receipt identity changed.");auto target=fs::path(wide(str(descriptor,"Folder")))/wide(str(descriptor,"FileName"));if(!fs::exists(publications/(wide(str(descriptor,"Id"))+L".json"))&&!fs::exists(root/L"replacements"/(wide(str(descriptor,"Id"))+L".json"))&&!PublicationOwnership::reserved(*this,target)){retained.erase(it.key());changed=true;}}if(changed){auto previous=*rows;if(retained.empty())state.erase(rows);else rows->swap(retained);try{save();}catch(...){state["PublicationReceipts"]=std::move(previous);throw;}}}}
  auto folder=root/L"replacements";if(!fs::exists(folder))return;
  for(auto& entry:fs::directory_iterator(folder)){
-  if(entry.path().extension()!=L".json")continue;if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring())))continue;
+  if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))&&!scopeIds.count(str(op,"OriginalId")))continue;
   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its replacement journal has been preserved.");
-  auto op=Json::parse(readText(entry.path()));auto job=findJob(str(op,"Id")),original=findJob(str(op,"OriginalId"));
+  const auto commitId=ReplacementCommit::identity(op);const bool ephemeral=!commitId.empty()&&op.value("Ephemeral",false);auto job=ephemeral?findPublicationJob(str(op,"Id")):findJob(str(op,"Id"));auto original=findJob(str(op,"OriginalId"));
+  if(ephemeral){auto rows=state.find("PublicationReceipts");bool acknowledged=false;if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private replacement receipt store.");auto receipt=rows->find(commitId);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private replacement receipt changed. Keep both files and its journal.");acknowledged=true;}}if(!job)job=std::make_shared<Job>(op.at(acknowledged?"After":"Before"));}
   if(!job||!original)throw std::runtime_error("Replacement recovery requires the preserved history records.");
   if(entry.path().stem()!=wide(job->id()))throw std::runtime_error("Replacement recovery identifier does not match its record. Keep the saved files and journal.");
+  if(!scope&&(PublicationOwnership::treeOwned(*this,job)||PublicationOwnership::treeOwned(*this,original)))continue;
   if(scope&&(isActive(job)||isActive(original)))throw std::runtime_error("Wait for the replacement and its original download to stop before recovery.");
+  ReplacementCommit::validateCurrent(op,job->data,original->data);
   auto target=fs::path(wide(str(op,"Target"))),previous=fs::path(wide(str(op,"Previous")));
   auto matches=[](const fs::path& path,const std::string& digest){return fs::is_regular_file(path)&&fileHash(path)==digest;};
   Json recovered,recoveredOriginal;
   const bool published=matches(target,str(op,"NewHash"))&&matches(previous,str(op,"OldHash"));
-  if(published){recovered=op.at("After");recoveredOriginal=op.at("OriginalAfter");prepareRecoveredScan(recovered,job->data);}
-  else if(matches(target,str(op,"OldHash"))&&!fs::exists(previous)){recovered=op.at("Before");recoveredOriginal=op.at("OriginalBefore");recovered["Status"]="Paused";}
-  else if(!fs::exists(target)&&matches(previous,str(op,"OldHash"))){recovered=op.at("Before");recoveredOriginal=op.at("OriginalBefore");recovered["Status"]="Paused";if(!MoveFileExW(previous.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Windows could not restore the original file.");}
+  if(published){
+   if(commitId.empty()){recovered=op.at("After");recoveredOriginal=op.at("OriginalAfter");prepareRecoveredScan(recovered,job->data);}
+   else if(ReplacementCommit::accepted(op,job->data,original->data)){recovered=job->data;recoveredOriginal=original->data;}
+   else{const bool currentFile=ReplacementCommit::rowAccepted(op.at("After"),job->data),currentOriginal=ReplacementCommit::rowAccepted(op.at("OriginalAfter"),original->data);recovered=currentFile?job->data:PublicationCommit::apply(op.at("Before"),op.at("After"),job->data);recoveredOriginal=currentOriginal?original->data:ReplacementCommit::applyOriginal(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);if(!currentFile){recovered["QueueMember"]=retainCompletedMembership(*this,job->data);if(findJob(job->id())==job)prepareRecoveredScan(recovered,job->data);recovered["CompletionActionArmed"]=false;}}
+  }
+  else if(matches(target,str(op,"OldHash"))&&!fs::exists(previous)){
+   recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";
+  }
+  else if(!fs::exists(target)&&matches(previous,str(op,"OldHash"))){
+   recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";if(!MoveFileExW(previous.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Windows could not restore the original file.");
+  }
   else throw std::runtime_error("A replacement needs manual recovery. Keep the journal, original and downloaded files.");
-  // Prepare both records before changing live state; swap retains rollback data
-  // without allocating when a catalog write fails. Keep the journal for retry.
+  Json receipt;bool inserted=false;if(ephemeral&&published){receipt=PublicationCatalogProof::binding(op.at("After"));inserted=PublicationCatalogProof::installReceipt(*this,receipt);}
+  // Prepare both records before changing live state. Preserve independent current
+  // metadata on new-format recovery; legacy journals retain their old behavior.
   job->data.swap(recovered);original->data.swap(recoveredOriginal);
-  try{save();}catch(...){original->data.swap(recoveredOriginal);job->data.swap(recovered);throw;}
+  try{save();}catch(...){original->data.swap(recoveredOriginal);job->data.swap(recovered);if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
   if(published)finishRetainedMediaRecovery(op.at("Before"),target);
-  fs::remove(entry.path());
+  fs::remove(entry.path());if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
  }
 }
 }

@@ -175,31 +175,39 @@ inline void Options::proxyPage(){
 inline void Options::soundsPage(){
  heading("Sound settings",OptionsPageIcon::Sounds,55,39,263);G("Select sounds for UDM events",11,30,290,188);sounds=table(17,40,278,154,{{"Event",120},{"Sound file",140}},true);
  const std::vector<std::string> keys={"Sound","FailureSoundEnabled","QueueStartSoundEnabled","QueueStopSoundEnabled","PauseSoundEnabled"},paths={"CompletionSoundFile","FailureSoundFile","QueueStartSoundFile","QueueStopSoundFile","PauseSoundFile"},titles={"Download complete","Download failed","Queue started","Queue stopped/finished","Download paused"};
- for(int i=0;i<(int)keys.size();++i){sounds->InsertItem(i,cs(titles[i]));sounds->SetItemText(i,1,cs(str(prefs,paths[i].c_str()).empty()?"Windows default":str(prefs,paths[i].c_str())));sounds->SetCheck(i,yes(prefs,keys[i].c_str(),i==0));}
+ for(int i=0;i<(int)keys.size();++i)sounds->InsertItem(i,cs(titles[i]));
+ auto previous=std::make_shared<std::vector<bool>>(keys.size());
+ auto reloadSounds=[this,keys,paths,previous]{for(int i=0;i<(int)keys.size();++i){auto path=str(prefs,paths[i].c_str());sounds->SetItemText(i,1,cs(path.empty()?"Windows default":path));bool value=yes(prefs,keys[i].c_str(),i==0);sounds->SetCheck(i,value);(*previous)[i]=value;}};reloadSounds();refreshBindings.push_back(reloadSounds);
  auto selected=[this]{int row=sounds->GetNextItem(-1,LVNI_SELECTED);if(row<0)throw std::runtime_error("Select a sound event.");return row;};
  B("Browse...",72,199,57,[this,paths,selected]{int row=selected();CFileDialog picker(TRUE,L"wav",nullptr,OFN_FILEMUSTEXIST,L"Wave sound|*.wav||",this);if(picker.DoModal()==IDOK){auto path=utf8((LPCWSTR)picker.GetPathName());prefs[paths[row]]=path;sounds->SetItemText(row,1,cs(path));sounds->SetCheck(row,TRUE);}});
  B("Play",174,199,57,[this,paths,selected]{auto value=str(prefs,paths[selected()].c_str());if(value.empty())MessageBeep(MB_OK);else if(!PlaySoundW(wide(value).c_str(),nullptr,SND_FILENAME|SND_ASYNC|SND_NODEFAULT))throw std::runtime_error("Windows could not play this WAV file.");});
- bindings.push_back([this,keys,paths]{for(int i=0;i<(int)keys.size();++i){auto value=str(prefs,paths[i].c_str());if(!value.empty()&&!fs::is_regular_file(fs::path(wide(value))))throw std::runtime_error("Choose an existing sound file.");prefs[keys[i]]=sounds->GetCheck(i)!=FALSE;}});
+ bindings.push_back([this,keys,previous]{for(int i=0;i<(int)keys.size();++i){bool value=sounds->GetCheck(i)!=FALSE;if(value!=(*previous)[i]){prefs[keys[i]]=value;(*previous)[i]=value;}}});
  sounds->SetItemState(0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
 }
 inline void Options::dialPage(){
  heading("Dial up / VPN settings",OptionsPageIcon::DialUp,53,40,256);
  auto enabled=C("Use Windows Dial Up / VPN Networking",yes(prefs,"DialEnabled"),9,30,281);bindFlag(enabled,"DialEnabled");
  G("Connection options",8,44,289,110);L("Connection:",20,62,65,10);auto choice=Q({},"",91,59,178);auto entries=std::make_shared<std::vector<DialEntry>>();auto status=L("",15,214,275,26);
- dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore,[this]{applyConnectionCredentials();});
+ dialCredentials=std::make_shared<DialCredentialFields>(*this,ox,oy,status,dialStore,[this]{applyConnectionCredentials();},true);
  auto selected=[entries,choice]{auto row=choice->GetCurSel();if(row<0||row>=(int)entries->size())throw std::runtime_error("Select a Windows connection.");return entries->at(row);};
- auto load=[this,selected,status]{try{dialCredentials->load(selected());}catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
- auto refresh=[this,entries,choice,status,load]{try{
-  *entries=dialEntriesProvider();choice->ResetContent();int selected=-1;
-  for(int i=0;i<(int)entries->size();++i){auto entry=entries->at(i);int count=0;for(const auto& other:*entries)if(other.name==entry.name)++count;auto label=entry.name;if(count>1)label+=" ("+entry.phonebook+")";choice->AddString(cs(label));if(entry.name==str(prefs,"DialEntry")&&(str(prefs,"DialPhonebook").empty()||entry.phonebook==str(prefs,"DialPhonebook")))selected=i;}
-  choice->SetCurSel(selected<0&&entries->size()==1?0:selected);
+ auto load=[this,selected,status]{try{dialCredentials->load(selected());}catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}if(updateDialActions)updateDialActions();};
+ auto refresh=[this,entries,choice,status]{
+  dialListReady=false;dialCredentials->clear();entries->clear();choice->ResetContent();choice->EnableWindow(FALSE);if(updateDialActions)updateDialActions();status->SetWindowText(L"Reading Windows connections...");
+  try{dialListRead.request([provider=dialEntriesProvider]{return AsyncDialLookup::Value(provider());},taskNotifier());}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}
+ };
+ pollDialList=[this,entries,choice,status,load]{if(auto result=dialListRead.take()){
+  if(!result->value){status->SetWindowText(cs(result->error));return;}
+  dialListReady=true;*entries=std::get<std::vector<DialEntry>>(*result->value);choice->ResetContent();int selected=dialEditorSelection(*entries,{str(prefs,"DialEntry"),str(prefs,"DialPhonebook")});
+  for(int i=0;i<(int)entries->size();++i){const auto& entry=entries->at(i);auto title=entry.name;int count=0;for(const auto& other:*entries)if(other.name==entry.name)++count;if(count>1)title+=" ("+entry.phonebook+")";choice->AddString(cs(title));}
+  choice->SetCurSel(selected);choice->EnableWindow(!entries->empty());
   if(entries->empty()){dialCredentials->clear();status->SetWindowText(L"No Windows connections found. Use More to create one.");}else load();
- }catch(const std::exception& e){dialCredentials->clear();status->SetWindowText(cs(e.what()));}};
+ }};
  bindChange(choice,load);
- B("Connect...",91,243,80,[this,selected]{auto entry=selected();applyConnectionCredentials([this,entry]{showConnectionDialog(entry);});});
- B("More...",233,243,57,[this,refresh]{collect();Form d("Windows connection options",602,410,this);std::vector<std::function<void()>> apply;d.init=[&]{dialUpOptions(d,prefs,apply);d.accept=[&]{for(auto& action:apply)action();d.close();};d.button("OK",407,376,83,d.accept);d.button("Cancel",502,376,83,[&]{d.close(IDCANCEL);});};d.DoModal();refresh();reload();});
+ auto connectButton=B("Connect...",91,243,80,[this,selected]{auto entry=selected();applyConnectionCredentials([this,entry]{showConnectionDialog(entry);});});
+ updateDialActions=[this,choice,connectButton]{connectButton->EnableWindow(dialListReady&&choice->GetCurSel()>=0&&(dialCredentials->currentReady()||!dialCredentials->readPending()));};updateDialActions();
+ B("More...",233,243,57,[this,refresh]{collect(true);dialChild=true;try{dialUpOptions(this,prefs,dialEntriesProvider);refresh();reload();}catch(...){dialChild=false;throw;}dialChild=false;});
  G("Redial options",8,158,289,54);L("Redial attempts (zero if endlessly):",15,172,150,10);auto attempts=E(std::to_string(num(prefs,"DialAttempts",3)),172,169,32);L("times",209,172,77,10);L("Time between redial attempts:",16,192,149,10);auto delay=E(std::to_string(num(prefs,"DialRetrySeconds",10)),172,189,32);L("seconds",209,192,79,10);bindText(attempts,"DialAttempts",true);bindText(delay,"DialRetrySeconds",true);
- bindings.push_back([this,selected]{try{auto entry=selected();prefs["DialEntry"]=entry.name;prefs["DialPhonebook"]=entry.phonebook;}catch(...){if(yes(prefs,"DialEnabled"))throw;}});refresh();
+ bindings.push_back([this,selected]{if(!dialListReady)return;try{auto entry=selected();prefs["DialEntry"]=entry.name;prefs["DialPhonebook"]=entry.phonebook;}catch(...){if(yes(prefs,"DialEnabled")&&!deferDialSelection)throw;}});refresh();
 }
 inline void Options::advancedOptions(){
  collect();Form d("Additional UDM settings",520,429,this);Json next=prefs;
