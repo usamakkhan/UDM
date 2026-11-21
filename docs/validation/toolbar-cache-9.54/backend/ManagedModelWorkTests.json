@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "name": "A worker cannot start before its lifetime owner is bound",
+      "passed": true
+    },
+    {
+      "name": "A retained worker cannot change lifetime owners",
+      "passed": true
+    },
+    {
+      "name": "Dedicated work records its owner and rejects self join",
+      "passed": true
+    },
+    {
+      "name": "One retained owner cannot launch a second thread",
+      "passed": true
+    },
+    {
+      "name": "A running worker cannot be rebound",
+      "passed": true
+    },
+    {
+      "name": "Cancellation wakes a deferred decision wait",
+      "passed": true
+    },
+    {
+      "name": "Joining acknowledges all thread work",
+      "passed": true
+    },
+    {
+      "name": "Repeated joins are safe",
+      "passed": true
+    },
+    {
+      "name": "Retiring before launch prevents a worker escaping shutdown",
+      "passed": true
+    },
+    {
+      "name": "An unexpected action failure still completes its thread owner",
+      "passed": true
+    },
+    {
+      "name": "Worker identity never leaks into the calling thread",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

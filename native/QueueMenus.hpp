@@ -5,8 +5,8 @@
  static bool isQueueMenuCommand(UINT id){return id>=32000&&id<35000;}
  static std::wstring menuLabel(const std::string& name){auto label=wide(name);size_t at=0;while((at=label.find(L'&',at))!=std::wstring::npos){label.insert(at,1,L'&');at+=2;}return label;}
  // IDM lists the destination queues directly under "Move to queue"; ids 34000+ pick one for the current selection.
- void fillMoveQueueCommands(CMenu& popup,const std::vector<JobPtr>& selection){
-  const auto labels=queueDisplayLabels(manager);moveQueueNames=membershipQueues(selection);while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
+ void fillMoveQueueCommands(CMenu& popup,const std::vector<std::string>& names,const QueueLabels& labels){
+  moveQueueNames=names;while(popup.GetMenuItemCount()>0)popup.DeleteMenu(0,MF_BYPOSITION);
   for(size_t i=0;i<moveQueueNames.size()&&i<1000;++i)popup.AppendMenuW(MF_STRING,34000+(UINT)i,menuLabel(queueDisplayLabel(labels,moveQueueNames[i])).c_str());
   if(moveQueueNames.size()>1000)popup.AppendMenuW(MF_STRING,CMD_MOVEQUEUE,L"Choose queue...");
  }

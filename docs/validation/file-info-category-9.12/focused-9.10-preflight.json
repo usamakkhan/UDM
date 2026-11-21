@@ -1,0 +1,98 @@
+{
+  "qualified": false,
+  "excludedFromPrimaryCounts": true,
+  "result": {
+    "checks": [
+      {
+        "name": "The worker derives IDM-style built-in folder mapping and remembered-path preference",
+        "passed": true
+      },
+      {
+        "name": "Category selection preparation never writes the catalog or download state",
+        "passed": true
+      },
+      {
+        "name": "The fallback category retains the configured root with IDM defaults",
+        "passed": true
+      },
+      {
+        "name": "An explicit category folder takes precedence over generated defaults",
+        "passed": true
+      },
+      {
+        "name": "A removed category returns no usable destination",
+        "passed": true
+      },
+      {
+        "name": "An invalid request identity cannot publish a ready category result",
+        "passed": true
+      },
+      {
+        "name": "A relative configured folder is rejected before a draft can be replaced",
+        "passed": true
+      },
+      {
+        "name": "A real writer owns Manager before a prepared pending-dialog read",
+        "passed": true
+      },
+      {
+        "name": "Unbound File Info can prepare its category from owned preferences while Manager is held",
+        "passed": true
+      },
+      {
+        "name": "The prepared result uses its owned category snapshot without reading the held model",
+        "passed": true
+      },
+      {
+        "name": "A real writer owns Manager before the bound category read",
+        "passed": true
+      },
+      {
+        "name": "The requesting thread stays free while the category worker waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "A busy reader refuses another worker or an unbounded internal request queue",
+        "passed": true
+      },
+      {
+        "name": "Advisory cancellation settles before the held model becomes readable",
+        "passed": true
+      },
+      {
+        "name": "Repeated category choices reuse the same persistent worker",
+        "passed": true
+      },
+      {
+        "name": "Ready state is published before a throwing notification and remains usable",
+        "passed": true
+      },
+      {
+        "name": "A late category reply uses the current filename while applying its selected default folder",
+        "passed": true
+      },
+      {
+        "name": "A later manual destination folder wins and its remembered path follows that folder",
+        "passed": true
+      },
+      {
+        "name": "A later remember-path or rule-folder edit is retained exactly",
+        "passed": true
+      },
+      {
+        "name": "An obsolete revision or category cannot update the current destination draft",
+        "passed": true
+      },
+      {
+        "name": "Cancelled or failed reads cannot merge a partial destination result",
+        "passed": true
+      },
+      {
+        "name": "The joined reader can restart after an exceptional parent cancellation leaves File Info open",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  }
+}

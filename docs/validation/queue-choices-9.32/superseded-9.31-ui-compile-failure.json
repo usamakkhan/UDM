@@ -1,0 +1,9 @@
+{
+  "passed": false,
+  "stage": "QueueChoiceUiTests compilation",
+  "error": "C1189: MFC requires use of Winsock2.h",
+  "uiRunStarted": false,
+  "nativeBuildAnd602BackendAssertionsPassed": true,
+  "correction": "Include Core.hpp before Ui.hpp, matching the application header order",
+  "supersededBy": "9.32"
+}

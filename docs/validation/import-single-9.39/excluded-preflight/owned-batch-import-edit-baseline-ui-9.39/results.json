@@ -1,0 +1,44 @@
+{
+  "checks": [
+    {
+      "name": "Create the owned import editor timer",
+      "passed": true
+    },
+    {
+      "name": "The real import starts from exactly two authenticated metadata requests",
+      "passed": true
+    },
+    {
+      "name": "The selected imported row opens its actual File Properties editor",
+      "passed": true
+    },
+    {
+      "name": "The import test locates the actual editable property fields",
+      "passed": true
+    },
+    {
+      "name": "A changed import request is visibly pending before save",
+      "passed": true
+    },
+    {
+      "name": "Editing an imported request keeps the other row's metadata available",
+      "passed": false
+    },
+    {
+      "name": "The actual import edit closes with its reader joined and no accepted download",
+      "passed": false
+    }
+  ],
+  "error": "The actual import edit closes with its reader joined and no accepted download",
+  "importDiagnostics": {
+    "address-first": {
+      "acceptedMetadata": 4,
+      "error": "Editing an imported request keeps the other row's metadata available",
+      "phase": 5,
+      "reads": 2,
+      "requests": 4,
+      "writerExpired": false
+    }
+  },
+  "passed": false
+}

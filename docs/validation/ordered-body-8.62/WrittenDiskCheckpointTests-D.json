@@ -1,0 +1,312 @@
+{
+  "checks": [
+    {
+      "name": "The fixture owns an ordinary disk file with delete sharing denied",
+      "passed": true
+    },
+    {
+      "name": "Zero-sized representations are refused",
+      "passed": true
+    },
+    {
+      "name": "The bounded body size is enforced",
+      "passed": true
+    },
+    {
+      "name": "Fractional representation sizes are refused",
+      "passed": true
+    },
+    {
+      "name": "Unsigned size overflow is refused before narrowing",
+      "passed": true
+    },
+    {
+      "name": "A generation must have an owning cancellation identity",
+      "passed": true
+    },
+    {
+      "name": "A generation must have a held file lifetime",
+      "passed": true
+    },
+    {
+      "name": "A pending reset or unvalidated representation cannot admit a writer generation",
+      "passed": true
+    },
+    {
+      "name": "A pending reset or unvalidated representation cannot admit a writer generation",
+      "passed": true
+    },
+    {
+      "name": "RAM-only received bytes have no persisted disk credit",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint projection preserves actual network/quota accounting",
+      "passed": true
+    },
+    {
+      "name": "Disk-credit projection never changes the UI/live row",
+      "passed": true
+    },
+    {
+      "name": "A detached checkpoint pins its generation before serialization",
+      "passed": true
+    },
+    {
+      "name": "Written data beyond a segment gap is not summed into Done",
+      "passed": true
+    },
+    {
+      "name": "Each segment receives only its acknowledged contiguous disk prefix",
+      "passed": true
+    },
+    {
+      "name": "A failed or partially failed operation adds no credit even if bytes physically exist",
+      "passed": true
+    },
+    {
+      "name": "An older captured checkpoint remains a conservative immutable lower bound as writes advance",
+      "passed": true
+    },
+    {
+      "name": "Disk coverage cannot increase a live segment's claimed receive progress",
+      "passed": true
+    },
+    {
+      "name": "Changed job, destination or representation identity refuses the old binding",
+      "passed": true
+    },
+    {
+      "name": "Changed job, destination or representation identity refuses the old binding",
+      "passed": true
+    },
+    {
+      "name": "Changed job, destination or representation identity refuses the old binding",
+      "passed": true
+    },
+    {
+      "name": "Changed job, destination or representation identity refuses the old binding",
+      "passed": true
+    },
+    {
+      "name": "Changed job, destination or representation identity refuses the old binding",
+      "passed": true
+    },
+    {
+      "name": "Added representation/layout/reset metadata cannot silently reuse a generation",
+      "passed": true
+    },
+    {
+      "name": "Added representation/layout/reset metadata cannot silently reuse a generation",
+      "passed": true
+    },
+    {
+      "name": "Added representation/layout/reset metadata cannot silently reuse a generation",
+      "passed": true
+    },
+    {
+      "name": "Added representation/layout/reset metadata cannot silently reuse a generation",
+      "passed": true
+    },
+    {
+      "name": "Added representation/layout/reset metadata cannot silently reuse a generation",
+      "passed": true
+    },
+    {
+      "name": "A newer cancellation object cannot capture the previous generation",
+      "passed": true
+    },
+    {
+      "name": "A stale writer is refused before starting disk work",
+      "passed": true
+    },
+    {
+      "name": "An equal raw handle-owner address with a different ownership block is refused",
+      "passed": true
+    },
+    {
+      "name": "Write bounds and addition overflow are refused before IO",
+      "passed": true
+    },
+    {
+      "name": "Write bounds and addition overflow are refused before IO",
+      "passed": true
+    },
+    {
+      "name": "Write bounds and addition overflow are refused before IO",
+      "passed": true
+    },
+    {
+      "name": "Write bounds and addition overflow are refused before IO",
+      "passed": true
+    },
+    {
+      "name": "Negative saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Negative saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Negative saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Fractional saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Fractional saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Fractional saved-segment bounds are refused",
+      "passed": true
+    },
+    {
+      "name": "Overlapping segments cannot double-count saved Received",
+      "passed": true
+    },
+    {
+      "name": "Done cannot exceed its segment length",
+      "passed": true
+    },
+    {
+      "name": "Segments cannot exceed the representation length",
+      "passed": true
+    },
+    {
+      "name": "Unbounded segment metadata is refused",
+      "passed": true
+    },
+    {
+      "name": "A live Complete label cannot publish buffered-only bytes as complete",
+      "passed": true
+    },
+    {
+      "name": "Unrelated metadata and quota changes survive disk-credit projection",
+      "passed": true
+    },
+    {
+      "name": "Duplicate saved segment identifiers cannot create ambiguous resume credit",
+      "passed": true
+    },
+    {
+      "name": "Missing saved segment identifiers are refused",
+      "passed": true
+    },
+    {
+      "name": "The actual Job and Manager UI snapshot APIs remain unchanged by a separate persisted projection",
+      "passed": true
+    },
+    {
+      "name": "The separate UI-view fixture releases its checkpoint pin",
+      "passed": true
+    },
+    {
+      "name": "An in-flight write pins the generation even before acknowledgment",
+      "passed": true
+    },
+    {
+      "name": "Cancellation blocks new IO admission",
+      "passed": true
+    },
+    {
+      "name": "An already accepted buffered byte can be preserved after cancellation without admitting new network work",
+      "passed": true
+    },
+    {
+      "name": "Preservation cannot bypass exact generation ownership",
+      "passed": true
+    },
+    {
+      "name": "Already issued successful writes can be acknowledged and checkpointed after cancellation",
+      "passed": true
+    },
+    {
+      "name": "The real body retains an explicit caller-owned durability barrier",
+      "passed": true
+    },
+    {
+      "name": "Actual disk bytes match the independently generated complete body hash",
+      "passed": true
+    },
+    {
+      "name": "A newer real catalog commit supersedes an older captured write",
+      "passed": true
+    },
+    {
+      "name": "The newer actual on-disk catalog remains authoritative",
+      "passed": true
+    },
+    {
+      "name": "Superseded snapshots still pin file reset until their callers release them",
+      "passed": true
+    },
+    {
+      "name": "A detached save held after its temporary-file flush prevents file reset through actual catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Failed durable commit preserves the original catalog and sequence",
+      "passed": true
+    },
+    {
+      "name": "Failed catalog publication does not erase previously acknowledged disk credit",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog IO also keeps reset blocked until its snapshot is released",
+      "passed": true
+    },
+    {
+      "name": "The successful actual catalog contains exact complete written credit",
+      "passed": true
+    },
+    {
+      "name": "Eight concurrent disk-write acknowledgers preserve monotonic conservative checkpoint credit",
+      "passed": true
+    },
+    {
+      "name": "Concurrent producers release every write and snapshot pin",
+      "passed": true
+    },
+    {
+      "name": "Concurrent real writes retain exact complete bytes and the explicit final flush",
+      "passed": true
+    },
+    {
+      "name": "The snapshot-lifetime fixture owns a separate held file",
+      "passed": true
+    },
+    {
+      "name": "Destroying the controller cannot free a file still held by a detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Releasing the final checkpoint destroys its remaining file-lifetime owner",
+      "passed": true
+    },
+    {
+      "name": "Retirement succeeds after all write and checkpoint leases have settled",
+      "passed": true
+    },
+    {
+      "name": "A retired generation cannot start another checkpoint or write",
+      "passed": true
+    },
+    {
+      "name": "A successor generation begins with zero credit despite the same physical file length",
+      "passed": true
+    },
+    {
+      "name": "An unused successor can retire without waiting",
+      "passed": true
+    }
+  ],
+  "durabilityOwnedByCaller": true,
+  "error": "",
+  "passed": true,
+  "productionIntegrated": true
+}

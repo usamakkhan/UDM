@@ -1,0 +1,43 @@
+{
+  "productionVersion": "9.64",
+  "sourceExtensionVersion": "0.73.28",
+  "productionCodeChanged": false,
+  "productionInputsVerified": 680,
+  "normalProductsRetained": 5,
+  "coreObjectsRetained": 42,
+  "protectedFilesUnchanged": 11,
+  "exportedRecordsVerified": 172,
+  "all36TransferOutputsVerified": true,
+  "downloadPayloadsRemovedMiB": 1584,
+  "controlledProcessCrashRecoveryPassed": 16,
+  "noPowerLossClaim": true,
+  "noNewIdmComparison": true,
+  "prototypeAdmitted": false,
+  "installedFilesChanged": false,
+  "temporaryArtifactCleanup": {
+    "completed": false,
+    "reason": "Automatic approval review rejected the validated recursive deletion command: blocked by policy. No files were removed by that command.",
+    "remainingLogicalBytes": 176429970,
+    "roots": [
+      {
+        "root": "<repo>\\.media-cache\\owned-intent-write-through-probe-9.64",
+        "files": 20,
+        "logicalBytes": 4459192,
+        "uniqueFileIdentityBytes": 4459192
+      },
+      {
+        "root": "<repo>\\.media-cache\\owned-intent-write-through-app-9.64",
+        "files": 337,
+        "logicalBytes": 171872974,
+        "uniqueFileIdentityBytes": 171872974
+      },
+      {
+        "root": "<development>\\owned-write-through-recovery-9.64",
+        "files": 59,
+        "logicalBytes": 97804,
+        "uniqueFileIdentityBytes": 97804
+      }
+    ]
+  },
+  "nextStep": "Qualify an explicit metadata persistence interface and failure semantics before any production adoption; no-regression gate remains failed."
+}

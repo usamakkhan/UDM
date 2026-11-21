@@ -1,0 +1,32 @@
+{
+  "label": "UDM 9.58 versus IDM; actual application exit and symmetric output durability",
+  "trial": 2,
+  "case": "split-64m",
+  "client": "idm",
+  "bytes": 67108864,
+  "configuredConnections": 8,
+  "firstAvailabilityTailSeconds": 0.25483210000129475,
+  "processExitTailSeconds": 0.7519238500008214,
+  "processExitWallSeconds": 4.785103850001178,
+  "firstAvailabilityWallSeconds": 4.288012100001652,
+  "exitAfterFirstAvailabilitySeconds": 0.49709174999952666,
+  "clockMappingErrorBoundSeconds": 9.65000072028488e-06,
+  "clockDriftSeconds": 5.7499988308507e-06,
+  "trackedProcesses": 1,
+  "requests": 17,
+  "originConnections": 17,
+  "peakConcurrent": 9,
+  "originBytes": 71500086,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 1.4843008999996528,
+  "durableWallSeconds": 5.51748090000001,
+  "postExitToDurableSeconds": 0.7323770499988314,
+  "postExitOperations": {
+    "openSeconds": 8.84000000951346e-05,
+    "flushSeconds": 0.696104300001025,
+    "closeSeconds": 0.00033069999881263357
+  }
+}

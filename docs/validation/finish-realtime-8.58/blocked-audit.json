@@ -1,0 +1,22 @@
+{
+  "objective": "Start working and make it identical both inside out",
+  "objectiveAchieved": false,
+  "blockingCondition": "Existing Windows administrator/credential request has not completed; kernel probe has not launched.",
+  "consecutiveGoalTurnsWithSameCondition": 3,
+  "lastObservationUtc": "2026-11-18T00:40:38.3935282Z",
+  "waitingLauncherPid": 17124,
+  "consentPid": 36440,
+  "session": 2,
+  "probeStarted": false,
+  "liveKernelReportAvailable": false,
+  "collectorPrepared": true,
+  "independentValidatorSyntheticChecks": 42,
+  "accountIndependentReplacementStaged": true,
+  "replacementAccessChecks": 4,
+  "replacementElevationRequested": false,
+  "reasonForBlocking": "Required live capture and the remaining finishing comparison cannot proceed without Windows approval. Capture preparation and independent acceptance gates are complete; changing the remaining finishing protocol without this evidence would not resolve the requested cause.",
+  "resumeAction": "Poll the same launch/session first. Inspect any actual helper PID and report. Do not restart merely because a poll times out. If the original attempt actually fails, inspect that outcome and use the staged account-independent helper as appropriate.",
+  "nativeVersion": "8.58",
+  "installedVersion": "8.32",
+  "nativeAppChangedDuringThisInvestigation": false
+}

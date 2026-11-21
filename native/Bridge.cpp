@@ -449,7 +449,7 @@ else if(action=="post-body-begin")reply=beginStagedPostBody(manager,message);els
  }else{
   PendingFileInfoInbox::Ticket preparedOperation;
   std::shared_ptr<const PendingFileInfoInbox::RetryHandler> retry;
-  const PreparedFileInfoSink preparedSink=[&](std::shared_ptr<const FileInfoInitialView> view){if(!retry)retry=std::make_shared<const PendingFileInfoInbox::RetryHandler>([source=&manager,request=message](const PreparedFileInfoSink& prepared,const RejectedFileInfoSink& rejected){BrowserAdmissionContext context(true,&prepared,&rejected);auto job=source->receive(request);Lock lock(source->mutex);return captureFileInfoInitialView(*source,*job);});preparedOperation=preparedInbox->publish(std::move(view),preparedNotify,str(message,"mediaToken"),retry);
+  const PreparedFileInfoSink preparedSink=[&](std::shared_ptr<const FileInfoInitialView> view){if(!retry)retry=std::make_shared<const PendingFileInfoInbox::RetryHandler>([source=&manager,request=message](const PreparedFileInfoSink& prepared,const RejectedFileInfoSink& rejected){BrowserAdmissionContext context(true,&prepared,&rejected,true);auto job=source->receive(request);Lock lock(source->mutex);return captureFileInfoInitialView(*source,*job);});preparedOperation=preparedInbox->publish(std::move(view),preparedNotify,str(message,"mediaToken"),retry);
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
    nativeUiTraceRecord("prepared-view-posted");
 #endif

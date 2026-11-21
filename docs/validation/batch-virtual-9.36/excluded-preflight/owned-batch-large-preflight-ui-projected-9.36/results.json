@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    },
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    },
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "measurements": [
+    {
+      "firstPaintMs": 32.765699999406934,
+      "firstPaintUiCpuMs": 31.25,
+      "readyAfterReleaseMs": 592.7357000000775,
+      "readyUiCpuMs": 515.625,
+      "rows": 100
+    },
+    {
+      "firstPaintMs": 23.75730000063777,
+      "firstPaintUiCpuMs": 15.625,
+      "readyAfterReleaseMs": 5614.313100000843,
+      "readyUiCpuMs": 4562.5,
+      "rows": 2000
+    },
+    {
+      "firstPaintMs": 25.069199999794364,
+      "firstPaintUiCpuMs": 15.625,
+      "readyAfterReleaseMs": 26960.66089999862,
+      "readyUiCpuMs": 21953.125,
+      "rows": 10000
+    }
+  ],
+  "passed": true
+}

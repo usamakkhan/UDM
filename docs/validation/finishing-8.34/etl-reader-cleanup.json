@@ -1,0 +1,49 @@
+{
+  "files": 7,
+  "logicalBytesRemoved": 4414461,
+  "allRemovedAbsent": true,
+  "root": "LOCALAPPDATA/UDM-Development/finish-etl-reader",
+  "outputs": [
+    {
+      "relative": "finish_etl_reader.obj",
+      "bytes": 3734577,
+      "sha256": "9800E96E5190A51F660913ED01687CCB0BE532CBED7A2ACFBFC335AFCA509FF2"
+    },
+    {
+      "relative": "finish_etl_fixture.obj",
+      "bytes": 394632,
+      "sha256": "45CA8A8A9A31B3D2B9ABD6747EC8A734D6DC1DA76E96C7223083A9D96ACF91F8"
+    },
+    {
+      "relative": "finish_etl_fixture.exe",
+      "bytes": 270848,
+      "sha256": "CC714EADF49986162A16B559F1A449CF6CEBCA19AB7C003085949A0C21911BFB"
+    },
+    {
+      "relative": "smoke.etl",
+      "bytes": 8192,
+      "sha256": "EF77230D292AF281397E8D4DD8AA052CF3D476238BD7068B1A0AC136027796B7"
+    },
+    {
+      "relative": "smoke-reference.csv",
+      "bytes": 5084,
+      "sha256": "23812E0C0E8136A5938EF673A07DBB8121146265F1A8FC98E913EB297A575489"
+    },
+    {
+      "relative": "malformed.etl",
+      "bytes": 1100,
+      "sha256": "329CB2BD2E0D74C14D02575897BBAAB87F692C38236C9D44D7D7FFE32ED01F63"
+    },
+    {
+      "relative": "existing-output-sentinel.json",
+      "bytes": 28,
+      "sha256": "67B6FEB591B48635C8B701D1996ED4EBCDB89932CF72A93A08F4776F93268116"
+    }
+  ],
+  "preserved": [
+    "ready compact reader executable",
+    "source",
+    "build/test results",
+    "compact decoded fixture reports"
+  ]
+}

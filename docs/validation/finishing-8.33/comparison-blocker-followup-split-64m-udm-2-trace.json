@@ -1,0 +1,501 @@
+{
+  "capacity": 2048,
+  "dropped": 0,
+  "events": [
+    {
+      "stage": "app-init-entry",
+      "thread": 5484,
+      "qpcSeconds": 20757.8408312
+    },
+    {
+      "stage": "manager-ready",
+      "thread": 5484,
+      "qpcSeconds": 20757.885062
+    },
+    {
+      "stage": "frame-created",
+      "thread": 5484,
+      "qpcSeconds": 20758.3752359
+    },
+    {
+      "stage": "pipe-ready",
+      "thread": 5484,
+      "qpcSeconds": 20758.3754726
+    },
+    {
+      "stage": "automation-start",
+      "thread": 5484,
+      "qpcSeconds": 20758.3754729
+    },
+    {
+      "stage": "automation-finished",
+      "thread": 5484,
+      "qpcSeconds": 20758.3759599
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 5484,
+      "qpcSeconds": 20758.3765773
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 5484,
+      "qpcSeconds": 20758.3766312
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 5484,
+      "qpcSeconds": 20758.3766314
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 5484,
+      "qpcSeconds": 20758.3766345
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 5484,
+      "qpcSeconds": 20758.3766356
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 5484,
+      "qpcSeconds": 20758.3841618
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 5484,
+      "qpcSeconds": 20758.3841624
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 5484,
+      "qpcSeconds": 20758.3849426
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 5484,
+      "qpcSeconds": 20758.3849431
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 5484,
+      "qpcSeconds": 20758.3853648
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 5484,
+      "qpcSeconds": 20758.3853651
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 5484,
+      "qpcSeconds": 20758.3865322
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 5484,
+      "qpcSeconds": 20758.3865354
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 5484,
+      "qpcSeconds": 20758.4214119
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 5484,
+      "qpcSeconds": 20758.4214132
+    },
+    {
+      "stage": "app-init-returning",
+      "thread": 5484,
+      "qpcSeconds": 20758.4872873
+    },
+    {
+      "stage": "initial-refresh-entry",
+      "thread": 5484,
+      "qpcSeconds": 20758.488119
+    },
+    {
+      "stage": "initial-refresh-returned",
+      "thread": 5484,
+      "qpcSeconds": 20758.4949285
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 13408,
+      "qpcSeconds": 20760.0159151
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 13408,
+      "qpcSeconds": 20760.0160802
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 13408,
+      "qpcSeconds": 20760.0160809
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 13408,
+      "qpcSeconds": 20760.0160815
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 13408,
+      "qpcSeconds": 20760.0160921
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 13408,
+      "qpcSeconds": 20760.0179555
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 13408,
+      "qpcSeconds": 20760.0179573
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 13408,
+      "qpcSeconds": 20760.0184861
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 13408,
+      "qpcSeconds": 20760.0184868
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 13408,
+      "qpcSeconds": 20760.0186919
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 13408,
+      "qpcSeconds": 20760.0186921
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 13408,
+      "qpcSeconds": 20760.0432727
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 13408,
+      "qpcSeconds": 20760.0432751
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 13408,
+      "qpcSeconds": 20760.0810327
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 13408,
+      "qpcSeconds": 20760.0810337
+    },
+    {
+      "stage": "output-flush-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.5019934
+    },
+    {
+      "stage": "output-flush-end",
+      "thread": 22004,
+      "qpcSeconds": 20760.7298778
+    },
+    {
+      "stage": "worker-commit-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.8312725
+    },
+    {
+      "stage": "intent-write-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.8387932
+    },
+    {
+      "stage": "save-atomic-entry",
+      "thread": 22004,
+      "qpcSeconds": 20760.8389543
+    },
+    {
+      "stage": "save-dirs-ready",
+      "thread": 22004,
+      "qpcSeconds": 20760.8407497
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.8407509
+    },
+    {
+      "stage": "save-file-opened",
+      "thread": 22004,
+      "qpcSeconds": 20760.8410628
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 22004,
+      "qpcSeconds": 20760.8410637
+    },
+    {
+      "stage": "save-bytes-written",
+      "thread": 22004,
+      "qpcSeconds": 20760.8411928
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.8411934
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 22004,
+      "qpcSeconds": 20760.9065762
+    },
+    {
+      "stage": "save-buffer-flushed",
+      "thread": 22004,
+      "qpcSeconds": 20760.9065793
+    },
+    {
+      "stage": "intent-write-end",
+      "thread": 22004,
+      "qpcSeconds": 20760.9092369
+    },
+    {
+      "stage": "catalog-write-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.9112364
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 22004,
+      "qpcSeconds": 20760.9113182
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 22004,
+      "qpcSeconds": 20760.9114114
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 22004,
+      "qpcSeconds": 20760.9114116
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 22004,
+      "qpcSeconds": 20760.911412
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 22004,
+      "qpcSeconds": 20760.9114137
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 22004,
+      "qpcSeconds": 20760.9214948
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.9214953
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 22004,
+      "qpcSeconds": 20760.9243203
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 22004,
+      "qpcSeconds": 20760.9243207
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 22004,
+      "qpcSeconds": 20760.9246407
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 22004,
+      "qpcSeconds": 20760.9246418
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.0483343
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 22004,
+      "qpcSeconds": 20761.0483381
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 22004,
+      "qpcSeconds": 20761.0887691
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 22004,
+      "qpcSeconds": 20761.0887701
+    },
+    {
+      "stage": "catalog-write-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.088843
+    },
+    {
+      "stage": "catalog-resolve-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.0888434
+    },
+    {
+      "stage": "publication-cleanup-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.0892617
+    },
+    {
+      "stage": "worker-commit-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.0926333
+    },
+    {
+      "stage": "worker-final-proof-done",
+      "thread": 22004,
+      "qpcSeconds": 20761.0944982
+    },
+    {
+      "stage": "worker-notify-begin",
+      "thread": 22004,
+      "qpcSeconds": 20761.0945054
+    },
+    {
+      "stage": "worker-notify-end",
+      "thread": 22004,
+      "qpcSeconds": 20761.0945413
+    },
+    {
+      "stage": "close-entry",
+      "thread": 5484,
+      "qpcSeconds": 20761.0947486
+    },
+    {
+      "stage": "integration-stop-begin",
+      "thread": 5484,
+      "qpcSeconds": 20761.0957321
+    },
+    {
+      "stage": "integration-stop-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.096903
+    },
+    {
+      "stage": "file-info-stop-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.0972934
+    },
+    {
+      "stage": "manager-stop-begin",
+      "thread": 5484,
+      "qpcSeconds": 20761.1099583
+    },
+    {
+      "stage": "stop-entry",
+      "thread": 5484,
+      "qpcSeconds": 20761.1099588
+    },
+    {
+      "stage": "stop-periodic-begin",
+      "thread": 5484,
+      "qpcSeconds": 20761.1099726
+    },
+    {
+      "stage": "stop-periodic-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.1101529
+    },
+    {
+      "stage": "stop-joins-done",
+      "thread": 5484,
+      "qpcSeconds": 20761.1101692
+    },
+    {
+      "stage": "stop-publications-done",
+      "thread": 5484,
+      "qpcSeconds": 20761.1101704
+    },
+    {
+      "stage": "stop-proof-done",
+      "thread": 5484,
+      "qpcSeconds": 20761.1157585
+    },
+    {
+      "stage": "stop-return",
+      "thread": 5484,
+      "qpcSeconds": 20761.1157603
+    },
+    {
+      "stage": "manager-stop-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.1157618
+    },
+    {
+      "stage": "icons-stop-begin",
+      "thread": 5484,
+      "qpcSeconds": 20761.1157621
+    },
+    {
+      "stage": "icons-stop-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.1337842
+    },
+    {
+      "stage": "command-files-stop-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.1337857
+    },
+    {
+      "stage": "windows-cleanup-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.1376697
+    },
+    {
+      "stage": "close-return",
+      "thread": 5484,
+      "qpcSeconds": 20761.3005435
+    },
+    {
+      "stage": "exit-instance-begin",
+      "thread": 5484,
+      "qpcSeconds": 20761.3005925
+    },
+    {
+      "stage": "automation-reset-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.300593
+    },
+    {
+      "stage": "manager-reset-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.3027733
+    },
+    {
+      "stage": "ole-term-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.320127
+    },
+    {
+      "stage": "exit-instance-end",
+      "thread": 5484,
+      "qpcSeconds": 20761.3201307
+    }
+  ]
+}

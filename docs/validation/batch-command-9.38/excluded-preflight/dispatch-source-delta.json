@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "baselineVersion": "9.37",
+  "currentVersion": "9.38",
+  "baselineUiSha256": "7D984FFCF32B6376F45781DDECDBF7C83B338891DC4799BECC6468D108AC25D3",
+  "currentUiSha256": "B1CE9BE64DD6F12C5EFA3BAF99E3A803EDD9BEBE2B3C210BDB88C322606A635C",
+  "onlyInsertedGuard": "auto control=GetDlgItem(LOWORD(w));if(!control||!IsWindowEnabled()||!control->IsWindowEnabled()||(l&&reinterpret_cast<HWND>(l)!=control->GetSafeHwnd()))return TRUE;",
+  "sameTestBytesBeforeAndAfter": true
+}

@@ -1,0 +1,301 @@
+{
+  "pairs": [
+    {
+      "case": "single-4m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": true,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": false,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": false,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": false,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": false,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": true,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    }
+  ],
+  "summary": [
+    {
+      "case": "single-4m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 128.63040000047476,
+          "baseline": 135.9450999989349,
+          "idm": 33.51169999950798
+        },
+        "processExitTailSeconds": {
+          "udm": 178.85664999994333,
+          "baseline": 185.5884500000684,
+          "idm": 388.2347500002652
+        },
+        "processExitWallSeconds": {
+          "udm": 1135.9831999998278,
+          "baseline": 1066.2248500011628,
+          "idm": 2097.151150001082
+        },
+        "durableTailSeconds": {
+          "udm": 197.56609999967623,
+          "baseline": 211.16599999913888,
+          "idm": 483.4387999999308
+        },
+        "durableWallSeconds": {
+          "udm": 1159.6021999994264,
+          "baseline": 1091.8024000002333,
+          "idm": 2192.3552000007476
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 140.63270000042394,
+          "baseline": 183.0749000000651,
+          "idm": 71.74240000131249
+        },
+        "processExitTailSeconds": {
+          "udm": 192.54795000051672,
+          "baseline": 227.89919999922859,
+          "idm": 548.5393999988446
+        },
+        "processExitWallSeconds": {
+          "udm": 8928.961949999575,
+          "baseline": 8945.835550000993,
+          "idm": 10084.079199999906
+        },
+        "durableTailSeconds": {
+          "udm": 207.15200000086043,
+          "baseline": 247.16699999953562,
+          "idm": 1191.3812000002508
+        },
+        "durableWallSeconds": {
+          "udm": 8945.624300000418,
+          "baseline": 8967.443300000014,
+          "idm": 10726.921000001312
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 234.92789999909292,
+          "baseline": 287.80039999946894,
+          "idm": 154.6422999999777
+        },
+        "processExitTailSeconds": {
+          "udm": 282.25039999961155,
+          "baseline": 339.583050001238,
+          "idm": 409.347799999523
+        },
+        "processExitWallSeconds": {
+          "udm": 2417.7409500007343,
+          "baseline": 2420.2006500017887,
+          "idm": 3803.898050000498
+        },
+        "durableTailSeconds": {
+          "udm": 308.25719999847934,
+          "baseline": 355.91980000026524,
+          "idm": 1083.4916000003432
+        },
+        "durableWallSeconds": {
+          "udm": 2439.0566000001854,
+          "baseline": 2436.537400000816,
+          "idm": 4486.186599999201
+        }
+      }
+    }
+  ],
+  "winsOfNine": {
+    "baseline": {
+      "firstAvailabilityTailSeconds": 7,
+      "processExitTailSeconds": 7,
+      "processExitWallSeconds": 6,
+      "durableTailSeconds": 7,
+      "durableWallSeconds": 6
+    },
+    "idm": {
+      "firstAvailabilityTailSeconds": 0,
+      "processExitTailSeconds": 9,
+      "processExitWallSeconds": 9,
+      "durableTailSeconds": 9,
+      "durableWallSeconds": 9
+    }
+  },
+  "allSamplesRetained": true,
+  "availabilityGatePassed": false,
+  "wholeProcessVersusIdmGatePassed": true,
+  "allPairsVersusBaselineNoRegressionGatePassed": false,
+  "wholeProjectParityProven": false,
+  "idmExitCodes": [
+    1
+  ],
+  "idmExitStatusMeaningVerified": false
+}

@@ -1,0 +1,188 @@
+{
+  "schema": 1,
+  "nativeVersion": "8.53",
+  "installedVersion": "8.32",
+  "applicationCodeChanged": false,
+  "attempt": 1,
+  "profile": "with Loader keyword",
+  "captureComplete": false,
+  "recorderLifecycle": {
+    "recordingStopped": true,
+    "recordingObservedSeconds": 36.33686310000485,
+    "budgetSeconds": 45,
+    "bounded": true,
+    "exportComplete": false,
+    "stopReason": "controller-complete",
+    "errors": [
+      "Recording did not confirm stop within cleanup budget"
+    ]
+  },
+  "collectorConfirmedOffAfterAttempt": true,
+  "decoder": {
+    "processedEvents": 1,
+    "targetHeaderEvents": 0,
+    "structuralCoveragePassed": false,
+    "rootCauseVerified": false,
+    "processTraceStatus": 0,
+    "targetSchemaErrors": 0
+  },
+  "workloadIntegrityPassed": true,
+  "workloadResults": [
+    {
+      "label": "8.53-kernel-d-split-attribution",
+      "trial": 1,
+      "case": "split-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.3674782999951276,
+      "processExitTailSeconds": 0.8577011999950628,
+      "processExitWallSeconds": 5.464542699999583,
+      "firstAvailabilityWallSeconds": 4.974319799999648,
+      "exitAfterFirstAvailabilitySeconds": 0.4902228999999352,
+      "clockMappingErrorBoundSeconds": 0.0008238000009441748,
+      "clockDriftSeconds": 0.0008030500053965994,
+      "trackedProcesses": 1,
+      "requests": 13,
+      "originConnections": 13,
+      "peakConcurrent": 9,
+      "originBytes": 68202722,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 1.5467033999957494,
+      "durableWallSeconds": 6.15354490000027,
+      "postExitToDurableSeconds": 0.6890022000006866,
+      "postExitOperations": {
+        "openSeconds": 0.00011359999916749075,
+        "flushSeconds": 0.6377398999975412,
+        "closeSeconds": 8.10999990790151e-05
+      }
+    },
+    {
+      "label": "8.53-kernel-d-split-attribution",
+      "trial": 1,
+      "case": "split-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.5820768999983557,
+      "processExitTailSeconds": 0.6364403500047047,
+      "processExitWallSeconds": 3.507147550008085,
+      "firstAvailabilityWallSeconds": 3.452784100001736,
+      "exitAfterFirstAvailabilitySeconds": 0.05436345000634901,
+      "clockMappingErrorBoundSeconds": 4.645000080927275e-05,
+      "clockDriftSeconds": 4.13999927846298e-05,
+      "trackedProcesses": 1,
+      "requests": 9,
+      "originConnections": 9,
+      "peakConcurrent": 8,
+      "originBytes": 71123112,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "DD635CDC4C8240F0B0701A9C41F65576E2543E59B7E54F3C6784BC7DEBD4DAFD",
+      "durableTailSeconds": 0.6651597000018228,
+      "durableWallSeconds": 3.535866900005203,
+      "postExitToDurableSeconds": 0.028719349997118115,
+      "postExitOperations": {
+        "openSeconds": 0.00011249999806750566,
+        "flushSeconds": 0.019035600002098363,
+        "closeSeconds": 0.00013210000179242343
+      },
+      "finishPhases": {
+        "AdvisoryHashInput": "write-buffer",
+        "AdvisoryHashOverlap": true,
+        "AdvisoryHashSeconds": 0.2639,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.4e-06,
+        "Content": 0.0006,
+        "DirectSize": 3.91e-05,
+        "FlushPublished": 0.4340939,
+        "Hash": 8.18e-05,
+        "HashMode": "deferred",
+        "LateHash": 0.0001185,
+        "PrePublicationMetadata": 0.0126221,
+        "PrefetchReceipt": 2.1e-06,
+        "PreparedTransferFinalizeSeconds": 0.4496512,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 0.0034887,
+        "PublishedFileFlush": 0.430364,
+        "PublishedFileOpen": 0.0001986,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0020391,
+        "SettleDestination": 0.0011796,
+        "SettleLengthQuery": 0.0006039,
+        "SettleLockWait": 2e-07,
+        "SettleRecoveryCheck": 0.0002118,
+        "SettleSnapshot": 2.45e-05,
+        "SettleValidateFolder": 1.4e-06,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0055816,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0004493,
+          "directories-ready": 0.0015325,
+          "publish": 0.0014773,
+          "temporary-flushed": 0.0363967,
+          "temporary-opened": 0.0003817
+        },
+        "PrepareIntent": 0.000698,
+        "PrepareSource": 0.0003946,
+        "Rename": 0.0013593,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 3.6e-06,
+        "WriteIntent": 0.0402461
+      },
+      "networkTailSeconds": 0.016,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 0.3507945
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    }
+  ],
+  "settingsRestored": true,
+  "attributionVerified": false,
+  "rejection": "The owned collector remained present until the stop deadline. Owned stop child was terminated and the owned collector canceled; partial ETL contained one decoded record and cannot attribute the finishing delay.",
+  "cleanup": {
+    "files": 3,
+    "logicalBytesRemoved": 152044544,
+    "outputs": [
+      {
+        "kind": "download-payload",
+        "bytes": 67108864,
+        "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+      },
+      {
+        "kind": "download-payload",
+        "bytes": 67108864,
+        "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+      },
+      {
+        "kind": "incomplete-etl",
+        "bytes": 17826816,
+        "sha256": "33F6877BAFF0992B9FFB76F5855A3FED983075649575A55C288A1A3A8E37D5E3"
+      }
+    ]
+  },
+  "inputHashes": {
+    "profile": "5EFF4C2EBE43E8ADD4DD0119C8A1A09593284D6CBBB306233D9A18477A7846F1",
+    "measurementOriginal": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB",
+    "measurementStaged": "3E8081BE748F197D4C3BDC044E33DF97FAA55EAE1FA624189D8B06A388216819"
+  }
+}

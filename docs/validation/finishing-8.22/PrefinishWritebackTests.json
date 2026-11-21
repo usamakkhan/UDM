@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "Data writeback is not requested before its in-flight threshold",
+      "passed": true
+    },
+    {
+      "name": "A completed body prefix schedules actual background writeback",
+      "passed": true
+    },
+    {
+      "name": "Credited transfer progress does not wait for a held disk flush",
+      "passed": true
+    },
+    {
+      "name": "Shutdown joins an already running writeback before its file handle can close",
+      "passed": true
+    },
+    {
+      "name": "Threshold requests are bounded/coalesced and successful flush statistics remain accurate",
+      "passed": true
+    },
+    {
+      "name": "Finished writeback cannot schedule another operation",
+      "passed": true
+    },
+    {
+      "name": "The optional background failure is exercised by the worker",
+      "passed": true
+    },
+    {
+      "name": "An optional early-flush exception is recorded without replacing the required final flush",
+      "passed": true
+    },
+    {
+      "name": "Owned real-file fixture opens the data writeback handle",
+      "passed": true
+    },
+    {
+      "name": "Background operation performs real FlushFileBuffers on the owned data file",
+      "passed": true
+    },
+    {
+      "name": "Successful prefinish writeback preserves exact bytes and joins before releasing the handle",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,29 @@
+# Owned File Info prefetch admission: 8.81 / browser 0.72.45
+
+## Dialog and command behavior
+
+File Info requests prefetch admission on an owned worker after the form paints. Catalog persistence, staging preparation and transfer startup no longer run in the first display pulse. A still-owned attempt cannot be submitted again, even when its future is already ready. Capacity/other-decision results remain distinct from unsupported prefetch. Capacity retries follow timer cadence; completion wakes do not resubmit them. Failures are reported without implicit mutation replay.
+
+Start and Download Later clicked before admission settles retain one pending intent and freeze the draft. Once the attempt is acknowledged and joined, the existing authoritative decision path applies the current dialog values. No confirmation races an unconsumed admission result. Preview, address refresh and scheduling cannot start conflicting work while admission is outstanding. Size/progress snapshots can continue updating while the attempt runs.
+
+Cancel uses an owned decision command. It joins admission before stopping the actual current prefetch and pausing/removing the unconfirmed offer. The decision guard prevents a not-yet-admitted attempt from starting after that cancellation has been accepted. An already-admitted transfer is stopped even if its admission acknowledgement failed. Normal result acknowledgement and exceptional teardown join command/admission/display owners before their Manager can end. A failed cancellation restores the retained draft and control states for explicit recovery.
+
+This work retains durable admission before any transfer starts, the confirmation gate, the actual exact-size receipt and final publication checks. It does not fabricate downloaded bytes or speed. Initial File Info view capture, pending-job binding, some fallback metadata initialization and explicit edit/read paths still have synchronous dependencies. Browser-to-dialog latency and universal inside/out IDM parity remain unproven.
+
+## Qualification status
+
+Version 8.81 / source manifests 0.72.45 was built, but broader qualification failed and this development candidate was superseded by 8.82. Its investigation outcomes and completed cleanup remain recorded below. Installed UDM remains 8.68 / extension files 0.72.32. No personal desktop control, live browser test, new IDM comparison, installation, installer, release, commit or push is included.
+
+## Qualification interruption and investigation
+
+The first new backend and UI fixtures incorrectly required `PrefetchedFinalSize` for an ordinary HTTP body. The corrected tests require its durable `CompletedPrefetch` receipt to match URL, protected-header identity, complete size and received bytes. Preserve both initial failed results and freeze both fixture source hashes before their targeted recompilation. Production inputs remain unchanged by that correction. [Fixture correction](validation/file-info-prefetch-8.81/fixture-correction.json), [initial backend failure](validation/file-info-prefetch-8.81/initial-backend-fixture-failure.json), [initial UI failure](validation/file-info-prefetch-8.81/initial-ui-fixture-failure.json).
+
+The corrected new prefetch suite passes **42 C: assertions**, including actual HTTP prefetch/confirmation/publication, cancellation before and after admission, capacity, save failure and uncertain acknowledgement. The full qualification then fails an existing Resume/content-retry path, and an unchanged-binary repeat fails a later selected retry. A diagnostic records a complete received body left Queued, inactive and unpublished before shutdown. The corrected UI rerun also fails an existing real login download before reaching its new admission cases. These failures are not counted as passing qualification, and their cause is not yet established. Subsequent Core controls and tracing below identify the cause. [New C: prefetch assertions](validation/file-info-prefetch-8.81/prefetch-C-passed.json), [first Resume failure](validation/file-info-prefetch-8.81/resume-first-failure.json), [repeat failure](validation/file-info-prefetch-8.81/resume-repeat-failure.json), [current UI failure](validation/file-info-prefetch-8.81/current-ui-failure.json), [overall status](validation/file-info-prefetch-8.81/qualification-status.json).
+
+8.81 remains an **unqualified development build**. No installation, release or full-suite success is claimed. Its 18 owned fixture/investigation roots, 67 temporary build files and four source copies were removed after 8.82 qualification, preserving the failed/control evidence. [Cleanup](validation/file-info-prefetch-8.81/cleanup.json).
+
+## Root cause found; superseded by 8.82 work
+
+An alternating unchanged-entry Core-relink control includes failures with both the original and freshly compiled Core. The first fresh-Core pass therefore does not establish a cache repair. The private worker trace instead shows `prepared=true`, `IndividualStart=false`, `Status=Verifying` before commit, followed by cancellation and `Status=Pausing` inside publication. The scheduler sees the retired persistent individual-start flag and applies stopped-queue policy to that still-active manual finisher. Its cancellation can leave a complete body Queued and unpublished. 8.82 is being built with exact generation-bound runtime finishing ownership that outlives retirement of the persistent flag; explicit user Pause remains authoritative. [Core control](validation/file-info-prefetch-8.81/resume-core-control.json), [worker trace](validation/file-info-prefetch-8.81/prepared-publication-race-trace.json).
+
+8.82 now passes its full backend and owned UI qualification, including deterministic finishing ownership, the retained Resume/login paths and real early File Info decisions. [Qualified successor](independent-finishing-8.82.md).

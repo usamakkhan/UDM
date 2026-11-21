@@ -1,0 +1,58 @@
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -206,7 +206,7 @@
+  }
+  {Lock lock(mutex);
+   if(stopping||catalogTransaction||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed while preparing publication. Its files were preserved.");
+-  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target};
++  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target,root/L"publications"/(wide(job->id())+L".json"),root/L"replacements"/(wide(job->id())+L".json")};
+   if(!originalId.empty()){
+    if(std::find(jobs.begin(),jobs.end(),leasedOriginal)==jobs.end()||isActive(leasedOriginal)||str(leasedOriginal->data,"Status")!="Complete"||leasedOriginal->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("Recovery changed the original download. Review the destination before replacing it.");
+    owned.push_back(leasedOriginal);destinations.push_back(leasedOriginal->target());destinations.emplace_back(wide(previousPath));
+@@ -585,7 +585,7 @@
+   if(!scope&&isActive(job)){discardDiscovery(discovered);continue;}
+   if(!scope&&PublicationOwnership::reserved(*this,target,job)){discardDiscovery(discovered);continue;}
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+-  PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging,retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
++  PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging,journalPath,retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
+   const auto prepared=captureIo({job});auto journal=claimDiscovery(journalPath,discovered,prepared,owner);const auto input=job->data;
+   std::optional<RecoveredPublicationBytes> published;RecoveryByteExit releaseBytes{[&]{releaseRecoveryBytes(published);}};
+   detachedIo(prepared,owner,[&](const auto& checkpoint){
+@@ -705,7 +705,7 @@
+   if(!samePath(job->target(),target)||(!samePath(original->target(),target)&&!samePath(original->target(),previous))||(!str(job->data,"PreviousPath").empty()&&!samePath(fs::path(wide(str(job->data,"PreviousPath"))),previous))||(!str(job->data,"ReplacementOf").empty()&&str(job->data,"ReplacementOf")!=original->id())||(!str(job->data,"ReplacementHash").empty()&&str(job->data,"ReplacementHash")!=str(op,"OldHash")))throw std::runtime_error("Replacement recovery destinations changed. Keep both files and the recovery journal.");
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+   if(modelJob(original->id())!=original)throw std::runtime_error("The recovered original history changed.");
+-  PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,fs::path(wide(str(op,"Staging"))),retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
++  PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,journalPath,fs::path(wide(str(op,"Staging"))),retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
+   const auto prepared=captureIo({job,original});auto journal=claimDiscovery(journalPath,discovered,prepared,owner);
+   std::optional<RecoveredPublicationBytes> newBytes,previousBytes,originalBytes;RecoveryByteExit releaseBytes{[&]{releaseRecoveryBytes(newBytes,previousBytes,originalBytes);}};enum class FileOutcome {Complete,Original};FileOutcome outcome=FileOutcome::Original;
+   detachedIo(prepared,owner,[&](const auto& checkpoint){
+--- a/native/RecoveryPruningTests.cpp
++++ b/native/RecoveryPruningTests.cpp
+@@ -22,8 +22,8 @@
+  const auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
+  try{
+   const std::vector<std::pair<std::string,std::string>> scenarios={
+-   {"receipt-prune-inventory","none"},{"receipt-prune-inventory","multiple"},{"receipt-prune-inventory","inventory-failure"},{"receipt-prune-inventory","known-description"},{"receipt-prune-inventory","known-destination"},{"receipt-prune-inventory","new-receipt"},{"receipt-prune-inventory","successor"},{"receipt-prune-inventory","removed"},{"receipt-prune-inventory","journal"},{"receipt-prune-inventory","batch"},{"receipt-prune-inventory","shutdown"},
+-   {"receipt-prune-catalog-prepared","none"},{"receipt-prune-catalog-prepared","new-receipt"},{"receipt-prune-catalog-prepared","successor"},{"receipt-prune-catalog-prepared","deferred"},
++   {"receipt-prune-inventory","none"},{"receipt-prune-inventory","journal-owner"},{"receipt-prune-inventory","unrelated-publisher"},{"receipt-prune-inventory","multiple"},{"receipt-prune-inventory","inventory-failure"},{"receipt-prune-inventory","known-description"},{"receipt-prune-inventory","known-destination"},{"receipt-prune-inventory","new-receipt"},{"receipt-prune-inventory","successor"},{"receipt-prune-inventory","removed"},{"receipt-prune-inventory","journal"},{"receipt-prune-inventory","batch"},{"receipt-prune-inventory","shutdown"},
++   {"receipt-prune-catalog-prepared","none"},{"receipt-prune-catalog-prepared","shutdown"},{"receipt-prune-catalog-prepared","new-receipt"},{"receipt-prune-catalog-prepared","successor"},{"receipt-prune-catalog-prepared","deferred"},
+    {"temporary-flushed","none"},{"temporary-flushed","multiple"},{"temporary-flushed","new-receipt"},{"temporary-flushed","failure"},{"temporary-flushed","failure-successor"},{"temporary-flushed","shutdown"},
+    {"snapshot-prepared","later-containing"},{"publication-catalog-written","lost-ack"}
+   };
+@@ -47,6 +47,15 @@
+     if(fault=="removed")m.state.erase("PublicationReceipts");
+     if(fault=="known-description")known->data["Description"]="independent current metadata";
+     if(fault=="known-destination")known->data["FileName"]="changed.bin";
++   }
++   if(fault=="unrelated-publisher"){
++    const auto otherFolder=folder/L"unrelated";fs::create_directories(otherFolder);auto data=privateReceipt(otherFolder);auto other=std::make_shared<Job>(data);const auto stage=otherFolder/L"stage.part";atomicText(stage,"verified bytes",false);
++    m.publishFile(other,stage,originalHash);check(fileHash(other->target())==originalHash&&!fs::exists(stage),"An unrelated real publication can complete while private receipt inventory is held");completed.push_back({other->target(),originalHash});
++   }
++   if(fault=="journal-owner"){
++    const auto otherFolder=folder/L"other";fs::create_directories(otherFolder);auto data=receipt;data["Folder"]=utf8(otherFolder.wstring());auto competing=std::make_shared<Job>(data);const auto stage=otherFolder/L"stage.part";atomicText(stage,"verified bytes",false);
++    bool rejected=false;try{m.publishFile(competing,stage,originalHash);}catch(...){rejected=true;}
++    check(rejected&&fs::exists(stage)&&!fs::exists(competing->target())&&!fs::exists(m.root/L"publications"/(wide(str(receipt,"Id"))+L".json")),"The real publisher cannot reuse a reserved journal ID through another destination");
+    }
+    if(fault=="journal"){journal=m.root/L"publications"/(wide(str(receipt,"Id"))+L".json");atomicText(journal,"{}",false);}
+    if(fault=="batch"||fault=="deferred")CatalogCheckpointTestAccess::batch(m,true);

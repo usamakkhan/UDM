@@ -26,6 +26,8 @@
 #include "SpeedMeter.hpp"
 #include "PeriodicCheckpoint.hpp"
 namespace udm {
+class PropertiesHeaderPatch;
+class ManagedModelWork;
 using Json=nlohmann::json;
 namespace fs=std::filesystem;
 using i64=long long;
@@ -202,9 +204,11 @@ class Manager {
  // The lease mutex is never held while taking the catalog lock or doing IO.
  struct CallbackState {
   std::mutex mutex;std::condition_variable finished;Manager* owner;size_t active=0;
+  bool modelWorkClosing=false;std::vector<std::shared_ptr<ManagedModelWork>> modelWork;
   explicit CallbackState(Manager* value):owner(value){}
  };
  std::shared_ptr<CallbackState> callbackState=std::make_shared<CallbackState>(this);
+ void drainModelWork();
  friend struct CapturedResponseTestAccess;
  friend struct RenderedGrabberTestAccess;
  friend struct CatalogCheckpointTestAccess;
@@ -256,6 +260,9 @@ class Manager {
  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
  unsigned long long checkpointSequence=0;
  Json checkpointState;
+ // Exact serialization retained only with its accepted durable snapshot and
+ // sequence. Runtime-only; never a substitute for reading the pinned file.
+ std::string checkpointText;
  // Detached snapshots are serialized outside mutex; file writes use this mutex
  // in sequence order, so an earlier snapshot cannot overwrite a later one.
  std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
@@ -278,6 +285,9 @@ class Manager {
  void start(JobPtr);
  void recoverBeforeConfigure(JobPtr,bool beforeStart=false);
  void queueIndividualResume(JobPtr);
+ void resumeAfterRecovery(JobPtr);
+ void removeAfterRecovery(JobPtr,std::optional<bool>,bool);
+ void recoverReplacementsWithContinuation(JobPtr,bool,const std::function<bool()>&,const std::function<void()>&);
  Json configuredDownload(JobPtr,const Json&,bool prefetchedTransfer);
  bool finishPrefetchDecision(JobPtr,const Json&,const FileInfoFolderChoice*,bool startNow,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice=nullptr);
  std::optional<Json> queuesWithDownloadDraft(const std::string& queue,const DownloadQueueChoice* queueChoice);
@@ -290,6 +300,9 @@ class Manager {
  JobPtr restartDuplicate(JobPtr,JobPtr);
 public:
  mutable std::recursive_mutex mutex;
+ void retainModelWork(const std::shared_ptr<ManagedModelWork>&);
+ void releaseModelWork(const std::shared_ptr<ManagedModelWork>&);
+ size_t pendingModelWork()const;
  fs::path root;
  Json state;
  std::vector<JobPtr> jobs;
@@ -338,8 +351,13 @@ public:
  void publishOriginalResponse(JobPtr,const std::function<void(const char*)>& checkpoint={});
  Json commitBrowserCapture(const std::string&,const std::function<void(const char*)>& checkpoint={});
  JobPtr receiveBrowserMedia(const Json&,const std::function<void(const char*)>& checkpoint={});
+ void cancelBrowserMediaPresentation(const std::string& token,const std::string& fingerprint,const std::function<void(const char*)>& checkpoint={});
  Json browserCaptureContext(const Json&)const;
  void scanAgain(JobPtr);
+ // The predicate runs under the model lease before and after recovery; it must not perform IO.
+ bool resumeIf(JobPtr,const std::function<bool()>&);
+ enum class OfferCancellation {AwaitingOnly,FileInfo};
+ bool cancelUnconfirmedOffer(JobPtr,OfferCancellation,const std::function<bool()>& allowed={});
  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr,std::optional<bool> expectedComplete={},bool cleanupPrefetch=false);bool isActive(JobPtr)const;
  std::optional<bool> queueRunning(const std::string&)const;
  bool changeQueueRunState(const std::string&,bool start);
@@ -361,6 +379,8 @@ public:
  void reviseDownloadSchedule(JobPtr,const Json& originalQueue,const Json& originalDownload,
                              const ScheduledDownloadWindow&,const Json& edit,const FileInfoFolderChoice&);
  void configure(JobPtr,const Json&);
+ void configureProperties(JobPtr,const Json&,const PropertiesHeaderPatch&);
+ void configureCompletedProperties(JobPtr,const Json&,const PropertiesHeaderPatch&);
  bool confirmPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice* folderChoice=nullptr,const Json& rememberedLogin=Json());
  bool deferPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice&,const Json& rememberedLogin=Json(),const DownloadQueueChoice* queueChoice=nullptr);
  void waitForPrefetchConfirmation(const JobPtr&,const Cancel&,std::optional<i64> verifiedSize={},const Json& preparedMedia={});
@@ -380,7 +400,7 @@ public:
  void setCompletionAction(JobPtr,const std::string&,int delay=30,bool wait=true);
  void setCompletionPlan(JobPtr,const std::vector<std::string>&,bool force=false,int delay=30,bool wait=true);
  Json takeDownloadCompletion(JobPtr);
- PrefetchAdmission beginPrefetch(JobPtr);void endPrefetch(JobPtr,bool keepPreparedOutput=false);
+ PrefetchAdmission beginPrefetch(JobPtr);void endPrefetch(JobPtr,bool keepPreparedOutput=false,const Json* expectedSelection=nullptr);
  void recoverFileOperation(JobPtr scope={});
  void recoverLinkConversions();
  bool convertProjectLinks(const std::string&,bool force=false);
@@ -396,7 +416,9 @@ public:
  void applyCaptureExclusions(const Json&,bool site,bool address,bool suppress);
  // Call without an outer manager lock: replacement verification performs disk I/O.
  void publishFile(JobPtr,const fs::path& staging,const std::string& hash,const Cancel* cancel=nullptr,const LivePublicationDetails* live=nullptr);
- void recoverReplacements(JobPtr scope={});
+ // Call without an outer model lease for detached recovery checkpoints.
+ // Verification/discovery IO and legacy outer UI scopes are migrated separately.
+ void recoverReplacements(JobPtr scope={},bool requireCatalogMember=false);
  std::vector<JobPtr> pendingOffers;
  std::vector<std::vector<BrowserBatchRow>> pendingBrowserBatches;
  Json pendingBrowserPresentations(const JobPtr& only={})const;
@@ -428,7 +450,7 @@ public:
  Json quotaStatus(JobPtr job={})const;
  std::set<JobPtr> quotaWaitingJobs()const;
  Json takeQuotaWarning();
- void progress(JobPtr,size_t,size_t segment,Worker*);
+ void progress(JobPtr,size_t,size_t segment,Worker*,bool accountNetwork=true);
 private:
  // Caller holds the manager lock. A supplied lookup can contain an empty match.
  JobPtr offerDownload(const std::string& address,const std::string& folder,const std::string& name,
@@ -519,7 +541,7 @@ public:
 void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
 void mediaTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateAdaptive(const Json&);
-void requestLiveHlsFinish(Manager&,JobPtr);
+void requestLiveHlsFinish(Manager&,JobPtr,const std::function<bool()>& allowed={});
 JobPtr receiveAdaptive(Manager&,const Json&);
 void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
 void validateSource(const std::string&);void validateStream(const std::string&);

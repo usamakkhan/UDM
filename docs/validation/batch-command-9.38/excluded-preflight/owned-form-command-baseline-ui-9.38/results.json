@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "An enabled owned button dispatches its current action",
+      "passed": true
+    },
+    {
+      "name": "A queued command cannot execute a disabled button action",
+      "passed": false
+    },
+    {
+      "name": "An originless command cannot bypass a disabled owned button",
+      "passed": false
+    },
+    {
+      "name": "Reenabling the button restores its ordinary action",
+      "passed": true
+    },
+    {
+      "name": "A command from a different child cannot borrow an action ID",
+      "passed": false
+    },
+    {
+      "name": "An enabled owned action retains originless command routing",
+      "passed": true
+    },
+    {
+      "name": "A disabled dialog cannot dispatch one of its button actions",
+      "passed": false
+    },
+    {
+      "name": "A queued checkbox notification cannot execute its disabled binding",
+      "passed": false
+    },
+    {
+      "name": "An enabled checkbox still toggles and invokes its binding",
+      "passed": true
+    },
+    {
+      "name": "An enabled static hyperlink retains click routing",
+      "passed": true
+    },
+    {
+      "name": "A disabled static hyperlink cannot execute its old click",
+      "passed": false
+    },
+    {
+      "name": "A destroyed child cannot execute its remaining action binding",
+      "passed": false
+    },
+    {
+      "name": "An originless command cannot resurrect a destroyed control",
+      "passed": false
+    },
+    {
+      "name": "The owned dispatch dialog closes normally",
+      "passed": true
+    }
+  ],
+  "error": "A queued command cannot execute a disabled button action",
+  "passed": false
+}

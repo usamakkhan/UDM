@@ -1,0 +1,1721 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "qualification": false,
+  "controlledHoldMs": 750,
+  "eventDrivenMessageWait": true,
+  "sameObserverSource": true,
+  "order": "three rotating rounds: 9.45 baseline,9.46 control,9.47 current",
+  "runs": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-1-baseline",
+      "processWallMs": 1527.941300002567,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35017748.2433,
+            "stage": "writer-sleep-begin",
+            "thread": 36368
+          },
+          {
+            "ms": 35017748.3116,
+            "stage": "close-entry",
+            "thread": 35144
+          },
+          {
+            "ms": 35017748.3164,
+            "stage": "layout-begin",
+            "thread": 35144
+          },
+          {
+            "ms": 35018509.8701,
+            "stage": "writer-release-begin",
+            "thread": 36368
+          },
+          {
+            "ms": 35018509.9152,
+            "stage": "writer-released",
+            "thread": 36368
+          },
+          {
+            "ms": 35018509.9422,
+            "stage": "layout-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018509.9728,
+            "stage": "integration-stop-begin",
+            "thread": 35144
+          },
+          {
+            "ms": 35018509.9758,
+            "stage": "integration-stop-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018509.9791,
+            "stage": "file-info-stop-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018520.4885,
+            "stage": "manager-stop-begin",
+            "thread": 35144
+          },
+          {
+            "ms": 35018553.7848,
+            "stage": "manager-stop-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018553.7902,
+            "stage": "icons-stop-begin",
+            "thread": 35144
+          },
+          {
+            "ms": 35018553.795,
+            "stage": "icons-stop-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018553.7972,
+            "stage": "command-files-stop-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018554.8502,
+            "stage": "windows-cleanup-end",
+            "thread": 35144
+          },
+          {
+            "ms": 35018587.8047,
+            "stage": "close-return",
+            "thread": 35144
+          }
+        ],
+        "exitCommandMs": 839.5604000017047,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 839.9261000007391,
+        "passed": true,
+        "postWindowCleanupMs": 0.3652999997138977,
+        "qualification": false,
+        "windowCloseMs": 839.5608000010252,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 1,
+      "variant": "control",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-1-control",
+      "processWallMs": 1460.3478999997606,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35019190.0057,
+            "stage": "writer-sleep-begin",
+            "thread": 32516
+          },
+          {
+            "ms": 35019190.0905,
+            "stage": "close-entry",
+            "thread": 36904
+          },
+          {
+            "ms": 35019190.5751,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019208.9227,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019223.8039,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019239.4842,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019259.4933,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019275.1396,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019291.1297,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019307.5104,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019322.8681,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019338.5435,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019354.0679,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019369.5937,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019385.3699,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019401.2732,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019417.2875,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019432.8343,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019448.6847,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019464.7455,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019479.9537,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019495.9504,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019511.0099,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019527.2498,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019542.7486,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019558.5823,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019574.6957,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019591.0093,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019606.5297,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019622.216,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019638.5832,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019654.201,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019669.6986,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019685.5903,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019701.3614,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019717.2,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019733.051,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019750.195,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019765.7601,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019781.6504,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019797.6666,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019814.1386,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019829.2519,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019845.1808,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019861.7159,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019876.6648,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019892.4812,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019908.223,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019924.0608,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019939.4251,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019955.1891,
+            "stage": "waiting-model",
+            "thread": 35108
+          },
+          {
+            "ms": 35019955.2383,
+            "stage": "writer-release-begin",
+            "thread": 32516
+          },
+          {
+            "ms": 35019955.243,
+            "stage": "writer-released",
+            "thread": 32516
+          },
+          {
+            "ms": 35019971.5877,
+            "stage": "before-merge",
+            "thread": 35108
+          },
+          {
+            "ms": 35019971.6099,
+            "stage": "merged",
+            "thread": 35108
+          },
+          {
+            "ms": 35019972.2106,
+            "stage": "close-entry",
+            "thread": 36904
+          },
+          {
+            "ms": 35019972.2498,
+            "stage": "integration-stop-begin",
+            "thread": 36904
+          },
+          {
+            "ms": 35019972.2522,
+            "stage": "integration-stop-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35019972.2561,
+            "stage": "file-info-stop-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35019972.8607,
+            "stage": "manager-stop-begin",
+            "thread": 36904
+          },
+          {
+            "ms": 35020011.7638,
+            "stage": "manager-stop-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35020011.7695,
+            "stage": "icons-stop-begin",
+            "thread": 36904
+          },
+          {
+            "ms": 35020011.7743,
+            "stage": "icons-stop-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35020011.7772,
+            "stage": "command-files-stop-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35020012.8726,
+            "stage": "windows-cleanup-end",
+            "thread": 36904
+          },
+          {
+            "ms": 35020053.9193,
+            "stage": "close-return",
+            "thread": 36904
+          }
+        ],
+        "exitCommandMs": 8.69029999524355,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 864.3778999969363,
+        "passed": true,
+        "postWindowCleanupMs": 0.3840999975800514,
+        "qualification": false,
+        "windowCloseMs": 863.9937999993563,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 1,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-1-current",
+      "processWallMs": 1661.9451999940793,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35020899.7869,
+            "stage": "writer-sleep-begin",
+            "thread": 21320
+          },
+          {
+            "ms": 35020899.8567,
+            "stage": "close-entry",
+            "thread": 3860
+          },
+          {
+            "ms": 35020900.2491,
+            "stage": "waiting-model",
+            "thread": 35140
+          },
+          {
+            "ms": 35021659.6223,
+            "stage": "writer-release-begin",
+            "thread": 21320
+          },
+          {
+            "ms": 35021659.6521,
+            "stage": "before-merge",
+            "thread": 35140
+          },
+          {
+            "ms": 35021659.6691,
+            "stage": "writer-released",
+            "thread": 21320
+          },
+          {
+            "ms": 35021659.6791,
+            "stage": "merged",
+            "thread": 35140
+          },
+          {
+            "ms": 35021660.3019,
+            "stage": "close-entry",
+            "thread": 3860
+          },
+          {
+            "ms": 35021660.3385,
+            "stage": "integration-stop-begin",
+            "thread": 3860
+          },
+          {
+            "ms": 35021660.3407,
+            "stage": "integration-stop-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021660.3552,
+            "stage": "file-info-stop-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021661.645,
+            "stage": "manager-stop-begin",
+            "thread": 3860
+          },
+          {
+            "ms": 35021691.3459,
+            "stage": "manager-stop-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021691.3516,
+            "stage": "icons-stop-begin",
+            "thread": 3860
+          },
+          {
+            "ms": 35021691.3578,
+            "stage": "icons-stop-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021691.36,
+            "stage": "command-files-stop-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021693.0605,
+            "stage": "windows-cleanup-end",
+            "thread": 3860
+          },
+          {
+            "ms": 35021728.5327,
+            "stage": "close-return",
+            "thread": 3860
+          }
+        ],
+        "exitCommandMs": 12.601499997079372,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 829.2625999972224,
+        "passed": true,
+        "postWindowCleanupMs": 0.4303999990224838,
+        "qualification": false,
+        "windowCloseMs": 828.8321999981999,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 2,
+      "variant": "control",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-2-control",
+      "processWallMs": 1597.562700000708,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35022306.5862,
+            "stage": "writer-sleep-begin",
+            "thread": 35376
+          },
+          {
+            "ms": 35022307.3888,
+            "stage": "close-entry",
+            "thread": 1804
+          },
+          {
+            "ms": 35022309.0304,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022330.7858,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022344.2986,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022359.509,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022376.0472,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022391.5202,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022407.1931,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022422.8073,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022438.4508,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022454.4444,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022470.4665,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022485.7341,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022501.7823,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022517.0388,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022532.798,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022552.3784,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022567.8202,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022583.287,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022599.4946,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022615.9254,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022631.7281,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022647.1446,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022663.3418,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022679.9435,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022695.6151,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022711.3652,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022727.1569,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022742.7797,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022758.7436,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022774.2283,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022790.5618,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022806.8711,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022822.5207,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022838.342,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022854.5285,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022870.9117,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022886.4061,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022902.2254,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022918.5992,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022934.438,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022950.1625,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022966.4628,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022982.3588,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35022998.391,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35023014.2546,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35023029.2246,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35023049.7427,
+            "stage": "waiting-model",
+            "thread": 29332
+          },
+          {
+            "ms": 35023070.2919,
+            "stage": "writer-release-begin",
+            "thread": 35376
+          },
+          {
+            "ms": 35023070.4041,
+            "stage": "writer-released",
+            "thread": 35376
+          },
+          {
+            "ms": 35023070.5513,
+            "stage": "before-merge",
+            "thread": 29332
+          },
+          {
+            "ms": 35023070.5653,
+            "stage": "merged",
+            "thread": 29332
+          },
+          {
+            "ms": 35023071.1382,
+            "stage": "close-entry",
+            "thread": 1804
+          },
+          {
+            "ms": 35023071.1716,
+            "stage": "integration-stop-begin",
+            "thread": 1804
+          },
+          {
+            "ms": 35023071.1765,
+            "stage": "integration-stop-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023071.1814,
+            "stage": "file-info-stop-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023071.7258,
+            "stage": "manager-stop-begin",
+            "thread": 1804
+          },
+          {
+            "ms": 35023280.3514,
+            "stage": "manager-stop-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023280.3599,
+            "stage": "icons-stop-begin",
+            "thread": 1804
+          },
+          {
+            "ms": 35023280.3651,
+            "stage": "icons-stop-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023280.3675,
+            "stage": "command-files-stop-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023281.4882,
+            "stage": "windows-cleanup-end",
+            "thread": 1804
+          },
+          {
+            "ms": 35023329.3144,
+            "stage": "close-return",
+            "thread": 1804
+          }
+        ],
+        "exitCommandMs": 10.923200003802776,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 1023.2322999984026,
+        "passed": true,
+        "postWindowCleanupMs": 0.42639999836683273,
+        "qualification": false,
+        "windowCloseMs": 1022.8059000000358,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 2,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-2-current",
+      "processWallMs": 1461.2456999966525,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35023956.5501,
+            "stage": "writer-sleep-begin",
+            "thread": 33600
+          },
+          {
+            "ms": 35023956.6046,
+            "stage": "close-entry",
+            "thread": 37680
+          },
+          {
+            "ms": 35023956.9669,
+            "stage": "waiting-model",
+            "thread": 28100
+          },
+          {
+            "ms": 35024721.2443,
+            "stage": "writer-release-begin",
+            "thread": 33600
+          },
+          {
+            "ms": 35024721.2744,
+            "stage": "before-merge",
+            "thread": 28100
+          },
+          {
+            "ms": 35024721.2911,
+            "stage": "merged",
+            "thread": 28100
+          },
+          {
+            "ms": 35024721.3056,
+            "stage": "writer-released",
+            "thread": 33600
+          },
+          {
+            "ms": 35024722.0937,
+            "stage": "close-entry",
+            "thread": 37680
+          },
+          {
+            "ms": 35024722.1236,
+            "stage": "integration-stop-begin",
+            "thread": 37680
+          },
+          {
+            "ms": 35024722.1256,
+            "stage": "integration-stop-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024722.1303,
+            "stage": "file-info-stop-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024722.703,
+            "stage": "manager-stop-begin",
+            "thread": 37680
+          },
+          {
+            "ms": 35024763.3308,
+            "stage": "manager-stop-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024763.3365,
+            "stage": "icons-stop-begin",
+            "thread": 37680
+          },
+          {
+            "ms": 35024763.3426,
+            "stage": "icons-stop-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024763.3446,
+            "stage": "command-files-stop-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024764.3839,
+            "stage": "windows-cleanup-end",
+            "thread": 37680
+          },
+          {
+            "ms": 35024800.6994,
+            "stage": "close-return",
+            "thread": 37680
+          }
+        ],
+        "exitCommandMs": 13.434499993920326,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 844.7124999985099,
+        "passed": true,
+        "postWindowCleanupMs": 0.4156000018119812,
+        "qualification": false,
+        "windowCloseMs": 844.2968999966979,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 2,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-2-baseline",
+      "processWallMs": 1429.9497000029078,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35025390.8985,
+            "stage": "writer-sleep-begin",
+            "thread": 27284
+          },
+          {
+            "ms": 35025390.9618,
+            "stage": "close-entry",
+            "thread": 35356
+          },
+          {
+            "ms": 35025390.9664,
+            "stage": "layout-begin",
+            "thread": 35356
+          },
+          {
+            "ms": 35026146.7581,
+            "stage": "writer-release-begin",
+            "thread": 27284
+          },
+          {
+            "ms": 35026146.8032,
+            "stage": "layout-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026146.9204,
+            "stage": "integration-stop-begin",
+            "thread": 35356
+          },
+          {
+            "ms": 35026146.9241,
+            "stage": "integration-stop-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026146.9281,
+            "stage": "file-info-stop-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026147.0709,
+            "stage": "writer-released",
+            "thread": 27284
+          },
+          {
+            "ms": 35026158.2743,
+            "stage": "manager-stop-begin",
+            "thread": 35356
+          },
+          {
+            "ms": 35026197.1594,
+            "stage": "manager-stop-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026197.1647,
+            "stage": "icons-stop-begin",
+            "thread": 35356
+          },
+          {
+            "ms": 35026197.1694,
+            "stage": "icons-stop-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026197.1714,
+            "stage": "command-files-stop-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026198.223,
+            "stage": "windows-cleanup-end",
+            "thread": 35356
+          },
+          {
+            "ms": 35026233.3433,
+            "stage": "close-return",
+            "thread": 35356
+          }
+        ],
+        "exitCommandMs": 842.4481000006199,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 842.83710000664,
+        "passed": true,
+        "postWindowCleanupMs": 0.3886000066995621,
+        "qualification": false,
+        "windowCloseMs": 842.4484999999404,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 3,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-3-current",
+      "processWallMs": 1384.4030000036582,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35026795.487,
+            "stage": "writer-sleep-begin",
+            "thread": 33848
+          },
+          {
+            "ms": 35026795.5467,
+            "stage": "close-entry",
+            "thread": 36592
+          },
+          {
+            "ms": 35026795.9026,
+            "stage": "waiting-model",
+            "thread": 35540
+          },
+          {
+            "ms": 35027561.3253,
+            "stage": "writer-release-begin",
+            "thread": 33848
+          },
+          {
+            "ms": 35027561.3973,
+            "stage": "writer-released",
+            "thread": 33848
+          },
+          {
+            "ms": 35027561.4036,
+            "stage": "before-merge",
+            "thread": 35540
+          },
+          {
+            "ms": 35027561.4165,
+            "stage": "merged",
+            "thread": 35540
+          },
+          {
+            "ms": 35027562.3828,
+            "stage": "close-entry",
+            "thread": 36592
+          },
+          {
+            "ms": 35027562.4243,
+            "stage": "integration-stop-begin",
+            "thread": 36592
+          },
+          {
+            "ms": 35027562.4263,
+            "stage": "integration-stop-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027562.4312,
+            "stage": "file-info-stop-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027562.9214,
+            "stage": "manager-stop-begin",
+            "thread": 36592
+          },
+          {
+            "ms": 35027597.3969,
+            "stage": "manager-stop-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027597.4026,
+            "stage": "icons-stop-begin",
+            "thread": 36592
+          },
+          {
+            "ms": 35027597.4096,
+            "stage": "icons-stop-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027597.4124,
+            "stage": "command-files-stop-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027598.4579,
+            "stage": "windows-cleanup-end",
+            "thread": 36592
+          },
+          {
+            "ms": 35027638.0343,
+            "stage": "close-return",
+            "thread": 36592
+          }
+        ],
+        "exitCommandMs": 8.07490000128746,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 843.145100004971,
+        "passed": true,
+        "postWindowCleanupMs": 0.4593000039458275,
+        "qualification": false,
+        "windowCloseMs": 842.6858000010252,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 3,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-3-baseline",
+      "processWallMs": 1432.150400003593,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35028238.5316,
+            "stage": "writer-sleep-begin",
+            "thread": 31180
+          },
+          {
+            "ms": 35028238.6255,
+            "stage": "close-entry",
+            "thread": 36064
+          },
+          {
+            "ms": 35028238.6306,
+            "stage": "layout-begin",
+            "thread": 36064
+          },
+          {
+            "ms": 35028991.6428,
+            "stage": "writer-release-begin",
+            "thread": 31180
+          },
+          {
+            "ms": 35028991.7229,
+            "stage": "layout-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35028991.7828,
+            "stage": "integration-stop-begin",
+            "thread": 36064
+          },
+          {
+            "ms": 35028991.7859,
+            "stage": "integration-stop-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35028991.7904,
+            "stage": "file-info-stop-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35028992.1175,
+            "stage": "writer-released",
+            "thread": 31180
+          },
+          {
+            "ms": 35029002.519,
+            "stage": "manager-stop-begin",
+            "thread": 36064
+          },
+          {
+            "ms": 35029038.6628,
+            "stage": "manager-stop-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35029038.669,
+            "stage": "icons-stop-begin",
+            "thread": 36064
+          },
+          {
+            "ms": 35029038.6739,
+            "stage": "icons-stop-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35029038.6759,
+            "stage": "command-files-stop-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35029040.1054,
+            "stage": "windows-cleanup-end",
+            "thread": 36064
+          },
+          {
+            "ms": 35029070.5361,
+            "stage": "close-return",
+            "thread": 36064
+          }
+        ],
+        "exitCommandMs": 832.0054000020027,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 832.4504000023007,
+        "passed": true,
+        "postWindowCleanupMs": 0.4446000009775162,
+        "qualification": false,
+        "windowCloseMs": 832.0058000013232,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 3,
+      "variant": "control",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-managed-exit-observer-9.47\\owned-round-3-control",
+      "processWallMs": 1410.6979999996838,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 35029629.6346,
+            "stage": "writer-sleep-begin",
+            "thread": 24296
+          },
+          {
+            "ms": 35029630.2006,
+            "stage": "close-entry",
+            "thread": 33800
+          },
+          {
+            "ms": 35029633.9335,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029654.6245,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029669.4654,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029685.5854,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029701.3534,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029717.3266,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029733.4014,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029749.4125,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029765.2287,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029780.9927,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029797.3488,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029813.2684,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029829.6719,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029845.1894,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029861.3383,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029877.2477,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029892.8906,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029908.9652,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029924.9727,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029940.6182,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029956.4824,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029972.291,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35029988.1761,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030004.2859,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030019.5166,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030035.8187,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030052.3365,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030067.6347,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030083.7919,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030099.461,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030115.3197,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030131.378,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030147.2689,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030163.3427,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030179.2622,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030195.31,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030211.3203,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030227.6242,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030242.4849,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030257.074,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030272.9279,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030288.4275,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030304.3814,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030320.7477,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030335.7668,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030351.5707,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030367.2688,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030383.3923,
+            "stage": "waiting-model",
+            "thread": 31752
+          },
+          {
+            "ms": 35030383.4245,
+            "stage": "writer-release-begin",
+            "thread": 24296
+          },
+          {
+            "ms": 35030383.4293,
+            "stage": "writer-released",
+            "thread": 24296
+          },
+          {
+            "ms": 35030399.2417,
+            "stage": "before-merge",
+            "thread": 31752
+          },
+          {
+            "ms": 35030399.3612,
+            "stage": "merged",
+            "thread": 31752
+          },
+          {
+            "ms": 35030400.2216,
+            "stage": "close-entry",
+            "thread": 33800
+          },
+          {
+            "ms": 35030400.2546,
+            "stage": "integration-stop-begin",
+            "thread": 33800
+          },
+          {
+            "ms": 35030400.2571,
+            "stage": "integration-stop-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030400.263,
+            "stage": "file-info-stop-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030400.7803,
+            "stage": "manager-stop-begin",
+            "thread": 33800
+          },
+          {
+            "ms": 35030440.0693,
+            "stage": "manager-stop-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030440.0754,
+            "stage": "icons-stop-begin",
+            "thread": 33800
+          },
+          {
+            "ms": 35030440.08,
+            "stage": "icons-stop-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030440.0822,
+            "stage": "command-files-stop-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030441.2424,
+            "stage": "windows-cleanup-end",
+            "thread": 33800
+          },
+          {
+            "ms": 35030481.3055,
+            "stage": "close-return",
+            "thread": 33800
+          }
+        ],
+        "exitCommandMs": 14.464800000190735,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 852.2195999994874,
+        "passed": true,
+        "postWindowCleanupMs": 0.4543999955058098,
+        "qualification": false,
+        "windowCloseMs": 851.7652000039816,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    }
+  ]
+}

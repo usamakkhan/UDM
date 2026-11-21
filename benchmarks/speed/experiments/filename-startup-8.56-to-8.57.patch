@@ -1,0 +1,98 @@
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -369,5 +369,9 @@
+   {
+     "source": "CatalogLoadTests",
+     "timeoutSeconds": 120
++  },
++  {
++    "source": "FilenameValidationTests",
++    "timeoutSeconds": 120
+   }
+ ]
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -65,7 +65,7 @@
+ double real(const Json& j,const char* k,double d){return j.contains(k)&&j[k].is_number()?j[k].get<double>():d;}
+ bool yes(const Json& j,const char* k,bool d){return j.contains(k)&&j[k].is_boolean()?j[k].get<bool>():d;}
+ std::string guid(){GUID g{};if(FAILED(CoCreateGuid(&g)))throw std::runtime_error("Cannot create a download identifier.");wchar_t b[40];StringFromGUID2(g,b,40);std::string s=lower(utf8(b));s.erase(std::remove_if(s.begin(),s.end(),[](char c){return c=='{'||c=='}'||c=='-';}),s.end());return s;}
+-std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";if(std::regex_search(lower(utf8(w)),std::regex("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)")))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();w=w.substr(0,140)+ext.substr(0,19);if(!w.empty()&&w.back()>=0xD800&&w.back()<=0xDBFF)w.pop_back();}return utf8(w);}
++std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";static const std::regex reservedName("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)");if(std::regex_search(lower(utf8(w)),reservedName))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();w=w.substr(0,140)+ext.substr(0,19);if(!w.empty()&&w.back()>=0xD800&&w.back()<=0xDBFF)w.pop_back();}return utf8(w);}
+ std::vector<std::string> words(const std::string& v){std::vector<std::string> out;std::regex re("[^\\s,;]+");for(auto i=std::sregex_iterator(v.begin(),v.end(),re);i!=std::sregex_iterator();++i){auto s=lower(i->str());if(std::find(out.begin(),out.end(),s)==out.end())out.push_back(s);}return out;}
+ std::string category(const std::string& f){auto ext=lower(utf8(fs::path(wide(f)).extension().wstring()));const std::pair<const char*,const char*> rules[]={{"Archives",".zip .7z .rar .gz .tar .iso"},{"Video",".mp4 .mkv .webm .mov .avi .ts"},{"Music",".mp3 .flac .wav .ogg .m4a .aac"},{"Programs",".exe .msi .msix .apk"},{"Images",".jpg .jpeg .png .svg .webp .gif"},{"Documents",".pdf .doc .docx .xlsx .txt .epub .pptx .csv"}};for(auto r:rules)for(auto x:words(r.second))if(x==ext)return r.first;return "Other";}
+ std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"Bytes","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?2:0)<<n<<' '<<u[i];return s.str();}
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,56,0,0
+-#define UDM_VERSION_STRING "8.56"
+-#define UDM_VERSION_WSTRING L"8.56"
++#define UDM_VERSION_TUPLE 8,57,0,0
++#define UDM_VERSION_STRING "8.57"
++#define UDM_VERSION_WSTRING L"8.57"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.20",
++  "version": "0.72.21",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.20",
++  "version": "0.72.21",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/FilenameValidationTests.cpp
++++ b/native/FilenameValidationTests.cpp
+@@ -0,0 +1,21 @@
++#include "Core.hpp"
++#include <iostream>
++using namespace udm;
++static Json checks=Json::array();
++static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
++int wmain(int argc,wchar_t**argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);std::string error;
++ try{
++  // Each process reaches its first safeName calls together, before any Manager.
++  constexpr int workers=12;std::mutex gate;std::condition_variable ready;int waiting=0;bool release=false;std::vector<int> outcomes(workers);std::vector<std::thread> threads;
++  for(int i=0;i<workers;++i)threads.emplace_back([&,i]{std::unique_lock<std::mutex> lock(gate);++waiting;ready.notify_all();ready.wait(lock,[&]{return release;});lock.unlock();try{bool ok=true;for(int n=0;n<64;++n)ok&=safeName(n%2?"../CON.txt":"folder\\lpt9.mp4")== (n%2?"_CON.txt":"_lpt9.mp4");outcomes[i]=ok?1:-1;}catch(...){outcomes[i]=-1;}});
++  {std::unique_lock<std::mutex> lock(gate);ready.wait(lock,[&]{return waiting==workers;});release=true;}ready.notify_all();for(auto& thread:threads)thread.join();for(auto result:outcomes)check(result==1,"Simultaneous first-use filename normalization returns exact results");
++  std::vector<std::pair<std::string,std::string>> cases={{"","download.bin"},{".","download.bin"},{"..","download.bin"},{" ","download.bin"},{"../normal.bin","normal.bin"},{"C:\\folder\\file.bin","file.bin"},{"folder/","download.bin"},{"  file name.bin. ","file name.bin"},{"a:b?*.mp4","a_b__.mp4"},{"a<b>c|d\"e.bin","a_b_c_d_e.bin"},{"CON","_CON"},{"con.txt","_con.txt"},{"cOn.a.b","_cOn.a.b"},{"COM0","COM0"},{"COM10.txt","COM10.txt"},{"LPT0","LPT0"},{"LPT10.mp4","LPT10.mp4"},{"console.txt","console.txt"},{"auxiliary.bin","auxiliary.bin"},{"normal.CON","normal.CON"},{"xcon","xcon"},{"con_.txt","con_.txt"},{"con..txt","_con..txt"},{" con ","_con"},{"日本語🙂.mp4","日本語🙂.mp4"},{"résumé—video.mkv","résumé—video.mkv"},{std::string("a\0b",3),"a_b"},{std::string(160,'a'),std::string(160,'a')},{std::string(161,'a'),std::string(140,'a')},{std::string(200,'a')+".mp4",std::string(140,'a')+".mp4"},{std::string(200,'b')+"."+std::string(40,'z'),std::string(140,'b')+"."+std::string(18,'z')},{std::string(139,'a')+"🙂"+std::string(30,'b'),std::string(139,'a')}};
++  for(const auto* device:{"con","prn","aux","nul"})for(const std::string suffix:{"",".bin"})cases.emplace_back(std::string(device)+suffix,"_"+std::string(device)+suffix);
++  for(int i=1;i<=9;++i)for(const std::string prefix:{"COM","lpt"}){const auto name=prefix+std::to_string(i)+".bin";cases.emplace_back(name,"_"+name);}
++  for(int c=1;c<32;++c)cases.emplace_back("a"+std::string(1,(char)c)+"b","a_b");
++  for(const auto& item:cases){const auto normalized=safeName(item.first);check(normalized==item.second,"Filename normalization preserves explicit device, path, Unicode, control and truncation rules");check(safeName(normalized)==normalized,"Normalized filename is stable on a second admission");}
++  for(const std::string invalid:{std::string(1,(char)0xff),std::string("\xc0\xaf",2),std::string("\xed\xa0\x80",3),std::string("\xf0\x9f\x99",3)}){bool refused=false;try{safeName(invalid);}catch(const std::exception&){refused=true;}check(refused,"Malformed UTF-8 filenames remain refused");}
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}
+--- a/benchmarks/speed/filename_startup_control.cpp
++++ b/benchmarks/speed/filename_startup_control.cpp
+@@ -0,0 +1,16 @@
++#include "Core.hpp"
++#include "Version.hpp"
++#include <iostream>
++using namespace udm;
++static unsigned long long cycles(){ULONG64 value=0;if(!QueryThreadCycleTime(GetCurrentThread(),&value))throw std::runtime_error("Cannot query current-thread cycles");return value;}
++int wmain(int argc,wchar_t** argv){
++ if(argc!=3)return 2;const auto data=fs::absolute(argv[1]),report=fs::absolute(argv[2]);if(!fs::is_regular_file(data/L"state.json")||fs::exists(report))return 2;CoInitializeEx(nullptr,COINIT_MULTITHREADED);
++ try{
++  const auto began=std::chrono::steady_clock::now();const auto before=cycles();Manager manager(data,Manager::StartupRecovery::Desktop);const auto after=cycles();const auto ready=std::chrono::steady_clock::now();const auto count=manager.jobs.size();
++  for(size_t i=0;i<count;++i){const auto& record=manager.jobs[i]->data;if(str(record,"FileName")!="history-"+std::to_string(i)+".bin"||str(record,"Description")!=std::string(2048,'x')||str(record,"Status")!="Complete")throw std::runtime_error("History differs after startup");}
++  std::vector<std::string> input;input.reserve(7500);for(int i=0;i<7500;++i)input.push_back(i%101?"history-"+std::to_string(i)+".bin":"folder\\CON.txt");std::vector<std::string> normalized;normalized.reserve(input.size());
++  const auto nameBegan=std::chrono::steady_clock::now();const auto nameBefore=cycles();for(const auto& name:input)normalized.push_back(safeName(name));const auto nameAfter=cycles();const auto nameReady=std::chrono::steady_clock::now();
++  Json result={{"passed",true},{"compiledVersion",UDM_VERSION_STRING},{"historyRows",count},{"constructorMs",std::chrono::duration<double,std::milli>(ready-began).count()},{"constructorThreadCycles",after-before},{"filenameCalls",input.size()},{"filenameMs",std::chrono::duration<double,std::milli>(nameReady-nameBegan).count()},{"filenameThreadCycles",nameAfter-nameBefore},{"normalized",normalized},{"historyPreserved",true}};
++  manager.stop();const auto saved=Json::parse(readText(data/L"state.json"));if(saved["Downloads"].size()!=count)throw std::runtime_error("Normal shutdown lost history");result["historyPersisted"]=true;atomicText(report,result.dump(2),false);std::cout<<count<<" history rows; "<<UDM_VERSION_STRING<<"; constructor "<<result["constructorMs"]<<" ms; filenames "<<result["filenameMs"]<<" ms\n";CoUninitialize();return 0;
++ }catch(const std::exception& e){atomicText(report,Json{{"passed",false},{"error",e.what()}}.dump(2),false);std::cerr<<e.what()<<"\n";CoUninitialize();return 1;}
++}

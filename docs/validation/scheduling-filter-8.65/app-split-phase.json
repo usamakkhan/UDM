@@ -1,0 +1,1619 @@
+{
+  "passed": true,
+  "kernelJoined": true,
+  "fullSchemaQualificationPassed": false,
+  "kernelCauseVerified": false,
+  "performanceComparison": false,
+  "payloadIntegrityReverified": false,
+  "fileAttributionFromKernelVerified": false,
+  "nativePhaseValidated": true,
+  "bodyBytes": 67108864,
+  "bodyWrites": 270,
+  "finalNativeFlushMs": 927.2062,
+  "lastBodyWriteToMfcReturnMs": 1567.7097,
+  "diskCorrelationsValidated": true,
+  "pendingTargetDiskOperations": 0,
+  "unmatchedOwnedDiskCompletions": 0,
+  "linkedDiskFlushIntervalUnionMs": 21.2255,
+  "linkedDiskRequestIntervalUnionMs": 539.5862,
+  "linkedDiskRequestKinds": {
+    "read": {
+      "requests": 0,
+      "transferBytes": 0,
+      "intervalUnionMs": 0.0
+    },
+    "write": {
+      "requests": 55,
+      "transferBytes": 51544064,
+      "intervalUnionMs": 518.3607
+    },
+    "flushbuffers": {
+      "requests": 2,
+      "transferBytes": 0,
+      "intervalUnionMs": 21.2255
+    }
+  },
+  "linkedDiskRequests": [
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.1696,
+      "durationMs": 0.3462,
+      "transferBytes": 73728,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.5654,
+      "durationMs": 0.2098,
+      "transferBytes": 4096,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.8006,
+      "durationMs": 3.0078,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 3.9788,
+      "durationMs": 13.633,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 17.801,
+      "durationMs": 8.9082,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 26.9282,
+      "durationMs": 8.9149,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 36.0643,
+      "durationMs": 8.8978,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 45.1599,
+      "durationMs": 9.0351,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 54.4318,
+      "durationMs": 9.1968,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 66.9544,
+      "durationMs": 6.1022,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 73.2322,
+      "durationMs": 7.0846,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 80.5311,
+      "durationMs": 8.918,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 89.6425,
+      "durationMs": 8.9425,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 99.6641,
+      "durationMs": 8.0397,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 107.892,
+      "durationMs": 5.8654,
+      "transferBytes": 643072,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 114.0928,
+      "durationMs": 3.4814,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 120.1952,
+      "durationMs": 18.4665,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 138.9261,
+      "durationMs": 8.8621,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 147.9668,
+      "durationMs": 8.948,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 157.1327,
+      "durationMs": 6.7277,
+      "transferBytes": 761856,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 164.2522,
+      "durationMs": 3.4802,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 168.0228,
+      "durationMs": 22.7004,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 194.9731,
+      "durationMs": 11.2295,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 217.7103,
+      "durationMs": 27.6011,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 245.5526,
+      "durationMs": 14.2153,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 259.9744,
+      "durationMs": 8.9612,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 269.1237,
+      "durationMs": 20.316,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 289.5596,
+      "durationMs": 14.6069,
+      "transferBytes": 204800,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 360.0444,
+      "durationMs": 73.5525,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 440.2077,
+      "durationMs": 8.2028,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 557.8527,
+      "durationMs": 3.2204,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 561.3809,
+      "durationMs": 12.3477,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 574.65,
+      "durationMs": 8.2442,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 602.325,
+      "durationMs": 3.0716,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 606.2755,
+      "durationMs": 11.5061,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 642.3413,
+      "durationMs": 2.9538,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 646.2068,
+      "durationMs": 6.4946,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 654.9167,
+      "durationMs": 6.9181,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 662.1778,
+      "durationMs": 8.7907,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 671.2596,
+      "durationMs": 8.955,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 740.0272,
+      "durationMs": 2.5238,
+      "transferBytes": 364544,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 742.7213,
+      "durationMs": 11.2751,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 754.634,
+      "durationMs": 9.3909,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 773.369,
+      "durationMs": 3.0797,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 786.0787,
+      "durationMs": 5.1399,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 792.8855,
+      "durationMs": 2.9819,
+      "transferBytes": 909312,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 827.1598,
+      "durationMs": 2.9669,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 830.3106,
+      "durationMs": 7.5405,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 838.2211,
+      "durationMs": 8.7548,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 849.4459,
+      "durationMs": 6.7029,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 856.382,
+      "durationMs": 8.8518,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 865.4476,
+      "durationMs": 8.9252,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 875.5197,
+      "durationMs": 7.9902,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 904.3369,
+      "durationMs": 1.089,
+      "transferBytes": 344064,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 905.6736,
+      "durationMs": 0.1923,
+      "transferBytes": 4096,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "flushbuffers",
+      "beginAfterNativeStartMs": 905.9328,
+      "durationMs": 21.0386,
+      "transferBytes": 0,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "flushbuffers",
+      "beginAfterNativeStartMs": 926.9795,
+      "durationMs": 0.1869,
+      "transferBytes": 0,
+      "diskNumber": 1
+    }
+  ],
+  "linkedDiskFlushes": [
+    {
+      "beginAfterNativeStartMs": 905.9328,
+      "durationMs": 21.0386,
+      "diskNumber": 1
+    },
+    {
+      "beginAfterNativeStartMs": 926.9795,
+      "durationMs": 0.1869,
+      "diskNumber": 1
+    }
+  ],
+  "failures": [],
+  "observedOffCpuMs": 911.5138,
+  "notClassifiedOffCpuMs": 15.6924,
+  "offCpuIntervals": [
+    {
+      "beginAfterNativeStartMs": 0.2061,
+      "offCpuMs": 0.328,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 0.5803,
+      "offCpuMs": 0.2039,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 0.8627,
+      "offCpuMs": 2.9609,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 4.0277,
+      "offCpuMs": 13.6,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 17.8721,
+      "offCpuMs": 8.8489,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 27.0469,
+      "offCpuMs": 8.8125,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 36.1558,
+      "offCpuMs": 8.8253,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 45.2202,
+      "offCpuMs": 8.9853,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 54.5276,
+      "offCpuMs": 11.4875,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 66.1792,
+      "offCpuMs": 0.7429,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 67.0396,
+      "offCpuMs": 6.0317,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 73.3023,
+      "offCpuMs": 7.0265,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 80.5972,
+      "offCpuMs": 0.0131,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 80.6425,
+      "offCpuMs": 0.0188,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 80.6681,
+      "offCpuMs": 8.8002,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 89.7094,
+      "offCpuMs": 9.7905,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 99.7367,
+      "offCpuMs": 7.9791,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 107.9753,
+      "offCpuMs": 5.7957,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 113.8765,
+      "offCpuMs": 0.0333,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 113.9253,
+      "offCpuMs": 0.0211,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 113.9657,
+      "offCpuMs": 0.0028,
+      "oldStateByte": 3,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 114.0514,
+      "offCpuMs": 0.0351,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 114.1316,
+      "offCpuMs": 0.0121,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 114.1753,
+      "offCpuMs": 0.0638,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 114.2669,
+      "offCpuMs": 3.3208,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 117.7721,
+      "offCpuMs": 2.3887,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 120.2727,
+      "offCpuMs": 18.4016,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 139.0172,
+      "offCpuMs": 8.7858,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 148.0342,
+      "offCpuMs": 8.8966,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 157.0043,
+      "offCpuMs": 0.0054,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 157.0327,
+      "offCpuMs": 0.0127,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 157.1998,
+      "offCpuMs": 6.8649,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 164.1508,
+      "offCpuMs": 0.012,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 164.3177,
+      "offCpuMs": 3.4388,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 167.8097,
+      "offCpuMs": 0.1018,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 168.0063,
+      "offCpuMs": 0.0044,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 168.0731,
+      "offCpuMs": 0.0328,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 168.1095,
+      "offCpuMs": 23.1283,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 191.3415,
+      "offCpuMs": 3.5688,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 194.9959,
+      "offCpuMs": 0.6352,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 195.6538,
+      "offCpuMs": 0.2931,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 195.9531,
+      "offCpuMs": 0.1007,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 196.0651,
+      "offCpuMs": 0.0426,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 196.1249,
+      "offCpuMs": 6.3657,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 202.501,
+      "offCpuMs": 0.2128,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 202.7799,
+      "offCpuMs": 0.0381,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 202.8521,
+      "offCpuMs": 0.6799,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 203.5442,
+      "offCpuMs": 2.0745,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 205.6298,
+      "offCpuMs": 0.0335,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 205.6841,
+      "offCpuMs": 11.8595,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 217.7191,
+      "offCpuMs": 23.995,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 241.7217,
+      "offCpuMs": 0.5249,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 242.2727,
+      "offCpuMs": 0.2247,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 242.5604,
+      "offCpuMs": 2.8378,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 245.5974,
+      "offCpuMs": 14.1846,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 260.0484,
+      "offCpuMs": 8.9079,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 269.1786,
+      "offCpuMs": 20.2823,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 289.5936,
+      "offCpuMs": 19.8405,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 309.4674,
+      "offCpuMs": 0.9121,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 310.4185,
+      "offCpuMs": 0.3958,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 310.8266,
+      "offCpuMs": 0.003,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 310.8497,
+      "offCpuMs": 0.7897,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 311.6548,
+      "offCpuMs": 42.8813,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 354.5599,
+      "offCpuMs": 0.0985,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 354.6992,
+      "offCpuMs": 5.1192,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 359.8303,
+      "offCpuMs": 0.186,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 360.026,
+      "offCpuMs": 0.0047,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 360.0668,
+      "offCpuMs": 70.8938,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 431.0219,
+      "offCpuMs": 8.778,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 439.8986,
+      "offCpuMs": 0.0033,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 439.9444,
+      "offCpuMs": 0.0046,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 439.9887,
+      "offCpuMs": 0.025,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.0582,
+      "offCpuMs": 0.007,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.0899,
+      "offCpuMs": 0.0258,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.1213,
+      "offCpuMs": 0.0046,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.132,
+      "offCpuMs": 0.0695,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.2331,
+      "offCpuMs": 0.4747,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 440.7964,
+      "offCpuMs": 7.6277,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 448.4819,
+      "offCpuMs": 0.0168,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 448.5928,
+      "offCpuMs": 109.1778,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.7848,
+      "offCpuMs": 0.0063,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.7958,
+      "offCpuMs": 0.0046,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.8061,
+      "offCpuMs": 0.0041,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.8206,
+      "offCpuMs": 0.004,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.8463,
+      "offCpuMs": 0.0047,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 557.8902,
+      "offCpuMs": 0.5086,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 558.4803,
+      "offCpuMs": 2.6065,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 561.1742,
+      "offCpuMs": 0.0071,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 561.2067,
+      "offCpuMs": 0.0029,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 561.2448,
+      "offCpuMs": 0.0472,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 561.4313,
+      "offCpuMs": 0.0134,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 561.4965,
+      "offCpuMs": 12.3187,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 573.9276,
+      "offCpuMs": 0.2077,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 574.1661,
+      "offCpuMs": 0.3242,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 574.7497,
+      "offCpuMs": 21.7091,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 596.5278,
+      "offCpuMs": 5.3123,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 602.0689,
+      "offCpuMs": 0.0579,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 602.1332,
+      "offCpuMs": 0.1246,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 602.5526,
+      "offCpuMs": 3.5318,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 606.3985,
+      "offCpuMs": 35.7675,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 642.4206,
+      "offCpuMs": 3.5849,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 646.2898,
+      "offCpuMs": 8.0394,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 654.4718,
+      "offCpuMs": 0.0517,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 654.5654,
+      "offCpuMs": 0.0739,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 655.0729,
+      "offCpuMs": 6.7764,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 661.918,
+      "offCpuMs": 0.0062,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 661.9289,
+      "offCpuMs": 0.0032,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 661.9392,
+      "offCpuMs": 0.0033,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 661.9493,
+      "offCpuMs": 0.0034,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 661.968,
+      "offCpuMs": 0.0049,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.0087,
+      "offCpuMs": 0.0082,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.0223,
+      "offCpuMs": 0.0056,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.0604,
+      "offCpuMs": 0.0232,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.1037,
+      "offCpuMs": 0.0213,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.132,
+      "offCpuMs": 0.0061,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.1439,
+      "offCpuMs": 0.0209,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.1708,
+      "offCpuMs": 0.0035,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.2138,
+      "offCpuMs": 0.0058,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.2268,
+      "offCpuMs": 0.0058,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.2706,
+      "offCpuMs": 0.0278,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.3182,
+      "offCpuMs": 0.013,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.3485,
+      "offCpuMs": 0.0675,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 662.4228,
+      "offCpuMs": 8.5658,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 671.4416,
+      "offCpuMs": 58.6773,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 730.1249,
+      "offCpuMs": 0.0316,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 730.2049,
+      "offCpuMs": 0.0276,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 730.2773,
+      "offCpuMs": 0.0852,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 730.4171,
+      "offCpuMs": 8.9312,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 739.3707,
+      "offCpuMs": 0.0892,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 739.466,
+      "offCpuMs": 0.0494,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 739.5281,
+      "offCpuMs": 0.0157,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 739.5522,
+      "offCpuMs": 0.473,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 740.0348,
+      "offCpuMs": 0.0572,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 740.1231,
+      "offCpuMs": 0.079,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 740.2076,
+      "offCpuMs": 0.121,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 740.364,
+      "offCpuMs": 0.0309,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 740.3992,
+      "offCpuMs": 2.1657,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 742.811,
+      "offCpuMs": 0.0013,
+      "oldStateByte": 3,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 742.8168,
+      "offCpuMs": 11.5883,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 754.4633,
+      "offCpuMs": 0.0302,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 754.5918,
+      "offCpuMs": 0.0277,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 754.675,
+      "offCpuMs": 0.1173,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 754.8098,
+      "offCpuMs": 17.8998,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 772.7651,
+      "offCpuMs": 0.2562,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 773.0396,
+      "offCpuMs": 0.0091,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 773.074,
+      "offCpuMs": 0.1645,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 773.2428,
+      "offCpuMs": 0.0091,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 773.2798,
+      "offCpuMs": 0.0282,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 773.4105,
+      "offCpuMs": 11.864,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 785.329,
+      "offCpuMs": 0.3049,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 785.6757,
+      "offCpuMs": 0.0468,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 785.751,
+      "offCpuMs": 0.0198,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 785.7914,
+      "offCpuMs": 0.026,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 785.8206,
+      "offCpuMs": 0.1143,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 785.9631,
+      "offCpuMs": 0.0083,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.0228,
+      "offCpuMs": 0.0348,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.0978,
+      "offCpuMs": 0.3426,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.4593,
+      "offCpuMs": 0.2492,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.7324,
+      "offCpuMs": 0.0035,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.7542,
+      "offCpuMs": 0.0347,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.7988,
+      "offCpuMs": 0.0082,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.8275,
+      "offCpuMs": 0.032,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.895,
+      "offCpuMs": 0.045,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 786.9651,
+      "offCpuMs": 5.6813,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 792.6737,
+      "offCpuMs": 0.0156,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 792.6944,
+      "offCpuMs": 0.0112,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 792.7401,
+      "offCpuMs": 0.0199,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 792.946,
+      "offCpuMs": 2.9381,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 796.0175,
+      "offCpuMs": 31.1181,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 827.2205,
+      "offCpuMs": 2.9237,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 830.369,
+      "offCpuMs": 7.4985,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 838.2777,
+      "offCpuMs": 8.713,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 847.0645,
+      "offCpuMs": 1.8889,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 848.958,
+      "offCpuMs": 0.1153,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 849.0828,
+      "offCpuMs": 0.0825,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 849.1739,
+      "offCpuMs": 0.1445,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 849.4614,
+      "offCpuMs": 0.1302,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 849.6321,
+      "offCpuMs": 0.04,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 849.6939,
+      "offCpuMs": 6.4667,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 856.4731,
+      "offCpuMs": 8.7774,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 865.5119,
+      "offCpuMs": 9.4021,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 874.946,
+      "offCpuMs": 0.0693,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 875.1323,
+      "offCpuMs": 0.3556,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 875.5705,
+      "offCpuMs": 0.0885,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 875.6927,
+      "offCpuMs": 7.8324,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 883.644,
+      "offCpuMs": 20.6775,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 904.3881,
+      "offCpuMs": 1.0798,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 905.4746,
+      "offCpuMs": 0.0087,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 905.5222,
+      "offCpuMs": 0.0319,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 27
+    },
+    {
+      "beginAfterNativeStartMs": 905.5571,
+      "offCpuMs": 0.0613,
+      "oldStateByte": 1,
+      "oldWaitReasonByte": 31
+    },
+    {
+      "beginAfterNativeStartMs": 905.6925,
+      "offCpuMs": 0.1844,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 905.9462,
+      "offCpuMs": 20.9999,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 926.9969,
+      "offCpuMs": 0.1581,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    }
+  ],
+  "limitations": "Instrumented selected-prefix model. Disk intervals can overlap and are unioned, not summed. They identify linked request intervals, not exclusive hardware/filter time or a kernel file mapping. Unobserved/system-worker IO and the full version-5 schema remain outside this model.",
+  "inputSha256": {
+    "kernel": "7EB2CA28D7BC8AD70C57150ACBCAC066002C66D02F3960CF297B06E1EA7513E6",
+    "native": "9C3E40C60F799F9F7BB2467BFDFCB3204EB4831995F2CA5923C24A8AF449568E",
+    "app": "A1A1DA6BEDEFA3D2FD6B342B3102E9CB73F24C282ABFD959CF86EC00B4AE06EB",
+    "identity": "6864F98227BC748FF22AAF48AEAAF01CB006142F5B2BBA4F3C2F0A2FDC0853E3"
+  }
+}

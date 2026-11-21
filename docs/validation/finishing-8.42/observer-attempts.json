@@ -1,0 +1,61 @@
+{
+  "version": "8.42",
+  "attempts": [
+    {
+      "case": "single-64m",
+      "version": "8.42",
+      "bytes": 67108864,
+      "sha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12",
+      "hashMatches": true,
+      "ioCoveragePassed": false,
+      "reason": "Process exited without delivering terminal observer snapshot",
+      "payloadRemoved": true,
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 6.1e-06,
+        "Content": 0.0002555,
+        "DirectSize": 3.13e-05,
+        "FlushPublished": 0.0771514,
+        "Hash": 3.78e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0045918,
+        "PrefetchReceipt": 1.1e-06,
+        "PreparedTransferFinalizeSeconds": 0.0829656,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 0.0001083,
+        "PublishedFileFlush": 0.0768167,
+        "PublishedFileOpen": 0.0001806,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0008329,
+        "SettleDestination": 0.0005948,
+        "SettleLengthQuery": 8.29e-05,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.0001196,
+        "SettleSnapshot": 1.09e-05,
+        "SettleValidateFolder": 6e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004441,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      }
+    },
+    {
+      "hashMatches": true,
+      "streamedEvents": 607,
+      "terminalSnapshotReceived": false,
+      "completeOperationCoverageVerified": false,
+      "finalPayloadRemoved": true
+    }
+  ],
+  "freshIdmComparisonCompleted": false,
+  "reason": "Existing IDM instance must close normally; desktop input failed twice with GetCursorPos Access denied. User asked to close it.",
+  "newProductChange": false
+}

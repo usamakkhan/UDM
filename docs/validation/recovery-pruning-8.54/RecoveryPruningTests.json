@@ -1,0 +1,1233 @@
+{
+  "case": "absence-proof-contract",
+  "cases": [
+    {
+      "error": "",
+      "fault": "none",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "journal-owner",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "unrelated-publisher",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "multiple",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "Owned pruning save failure",
+      "fault": "inventory-failure",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "known-description",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "known-destination",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "new-receipt",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "A private publication receipt changed during cleanup.",
+      "fault": "successor",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "The private receipt store changed during cleanup.",
+      "fault": "removed",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "journal",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "modelAvailable": true,
+      "phase": "receipt-prune-inventory"
+    },
+    {
+      "error": "",
+      "fault": "none",
+      "modelAvailable": true,
+      "phase": "receipt-prune-catalog-prepared"
+    },
+    {
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "modelAvailable": true,
+      "phase": "receipt-prune-catalog-prepared"
+    },
+    {
+      "error": "",
+      "fault": "new-receipt",
+      "modelAvailable": true,
+      "phase": "receipt-prune-catalog-prepared"
+    },
+    {
+      "error": "A catalog snapshot cannot omit or change its pending publication.",
+      "fault": "successor",
+      "modelAvailable": true,
+      "phase": "receipt-prune-catalog-prepared"
+    },
+    {
+      "error": "Receipt cleanup has not been durably recorded. Its receipts were preserved.",
+      "fault": "deferred",
+      "modelAvailable": true,
+      "phase": "receipt-prune-catalog-prepared"
+    },
+    {
+      "error": "",
+      "fault": "none",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "",
+      "fault": "multiple",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "",
+      "fault": "new-receipt",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "Owned pruning save failure",
+      "fault": "failure",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "Owned pruning save failure",
+      "fault": "failure-successor",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "modelAvailable": true,
+      "phase": "temporary-flushed"
+    },
+    {
+      "error": "",
+      "fault": "later-containing",
+      "modelAvailable": true,
+      "phase": "snapshot-prepared"
+    },
+    {
+      "error": "Owned pruning save failure",
+      "fault": "lost-ack",
+      "modelAvailable": true,
+      "phase": "publication-catalog-written"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "The real publisher cannot reuse a reserved journal ID through another destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "An unrelated real publication can complete while private receipt inventory is held",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "All sixteen journal-free private receipts are durably retired together",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning preserves independent visible-job metadata",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Pruning preserves a concurrently added unrelated receipt",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Neither rollback nor acceptance overwrites a later receipt",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "A concurrently removed receipt is not resurrected before mutation",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "An observed new journal prevents receipt retirement",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for owned pruning IO and acceptance",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for owned pruning IO and acceptance",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Pruning preserves a concurrently added unrelated receipt",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Neither rollback nor acceptance overwrites a later receipt",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "All sixteen journal-free private receipts are durably retired together",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Pruning preserves a concurrently added unrelated receipt",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Neither rollback nor acceptance overwrites a later receipt",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for owned pruning IO and acceptance",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "Actual persisted acceptance contains the exact receipt absence",
+      "passed": true
+    },
+    {
+      "name": "A newer exact snapshot can prove retirement after the older save fails",
+      "passed": true
+    },
+    {
+      "name": "Pruning reaches its actual inventory or persistence boundary",
+      "passed": true
+    },
+    {
+      "name": "Receipt inventory and catalog IO leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The private target stays reserved without a visible job",
+      "passed": true
+    },
+    {
+      "name": "A second publisher cannot take the retained private destination",
+      "passed": true
+    },
+    {
+      "name": "Failed, stale, deferred and accepted pruning outcomes are distinguished",
+      "passed": true
+    },
+    {
+      "name": "The owned IO hold was released explicitly",
+      "passed": true
+    },
+    {
+      "name": "Pruning releases every reserved destination on success and refusal",
+      "passed": true
+    },
+    {
+      "name": "Pruning never changes completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "Only an accepted journal-free receipt is retired",
+      "passed": true
+    },
+    {
+      "name": "An already reserved target keeps its receipt without blocking unrelated recovery",
+      "passed": true
+    },
+    {
+      "name": "Released private ownership allows a later explicit retirement",
+      "passed": true
+    },
+    {
+      "name": "A snapshot containing any retired receipt cannot acknowledge absence",
+      "passed": true
+    },
+    {
+      "name": "Receipt retirement excludes completion proof for every affected job",
+      "passed": true
+    },
+    {
+      "name": "An exact persisted absence proves all selected retirements",
+      "passed": true
+    },
+    {
+      "name": "An existing completion proof excludes overlapping receipt retirement",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

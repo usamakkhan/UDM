@@ -1,0 +1,47 @@
+# Responsive batch opening and stable late selections — UDM 9.34
+
+UDM 9.34 / source extension manifests 0.72.98 closes the settings-read and row-intent gaps left in 9.33. Batch initialization previously read preview settings, queue names/labels and categories on the window thread before its controls were ready. A full metadata refresh also locked Manager after a request/authorization edit. Late metadata could still auto-adjust untouched default checkbox states after an OK submission had failed or its queue selector had been cancelled.
+
+## Initial view ownership
+
+BatchInitialTask captures settings, category identities and a coherent queue names/labels cohort on an owned reader. It acquires Manager cooperatively and defers another accepted command. The result contains values, never controls, and publishes before its weak window notification. Cancellation wakes acquisition; take and teardown join the worker. Reading changes no catalog, download or accepted-command guard. Preview-only reads skip unused category and queue data.
+
+The real batch frame initially contains a loading status, Retry and Cancel. Enter cannot accept this incomplete view. Cancel and pulse/paint remain usable while another thread holds Manager. Errors stay in that frame and permit a fresh read. After success, a deferred UI transition replaces the loading controls with the full view built only from the captured cohort. Control IDs remain monotonic; list notification pointers and callbacks are cleared before replacing a failed view. Browser-owned presentation applies to the loading frame, without a second activation when its controls are rebuilt.
+
+Initial preview policy comes from that same cohort. Constructing categories, stored queue identities/display labels, destinations and metadata requests no longer rereads Manager. Canonical accepted batch preparation/save from 9.33 still owns final validation and persistence.
+
+## Preview refresh and checkbox intent
+
+An authorization or ordinary row-request edit starts a preview-only settings read. The GUI immediately cancels the obsolete metadata owner and invalidates its row evidence, displaying Unknown instead of retaining a size associated with the old request. During that read controls are frozen, Cancel remains available, and another OK cannot submit using incomplete refresh state. On success the new preview owner receives current settings and current row requests. Failure restores the draft, keeps old evidence invalid, and exposes inline Retry. Preview refresh does not overwrite destination/category editors or checkbox intent.
+
+After collecting a valid batch draft, OK marks the entire current checkbox cohort as explicit user intent. Selected and unselected row identities retain those decisions if queue selection is cancelled or the canonical save fails. Late file types, sizes and server-name suggestions still update their matching rows, but automatic HTML deselection no longer changes those confirmed checkbox decisions. Before any submission or explicit checkbox edit, the original automatic policy remains: a newly identified HTML row is deselected. Browser batches retain their existing initially unchecked, explicit selection behavior.
+
+## Current-build validation
+
+Five native products build with file/product version 9.34; both source extension manifests are 0.72.98. The build freezes 618 repository inputs, generated COM dependencies and core hashes before compilation. Bridge is recompiled for its changed version input; all native targets compile/link serially against the declared core inventory.
+
+714 targeted backend assertions pass across 28 C:/D: runs. The new initial-reader suite contributes 16 assertions per drive: coherent settings/categories/queues, immutable earlier results, preview-only skipped work, non-mutation, acquisition/cancellation under a real writer, duplicate-owner prevention, accepted-guard isolation, failure/retry, throwing notification and idempotent cleanup. Existing batch transaction/browser-context/rollback checks remain included.
+
+90 actual Win32 opening and late-metadata assertions pass through nine workflows: import opening, browser opening, initial cancellation, initial read failure/retry, preview-policy cancellation, preview-policy failure/retry, delayed untouched HTML metadata, delayed metadata after queue-selector cancellation, and delayed metadata after an injected save failure followed by a real retry. A real writer holds Manager before the frame opens; a second writer acquires it after capture and before publication. The complete controls construct, pulse and paint while the second writer remains held, proving they do not reread settings/categories/queue labels. Preview-policy tests edit the actual destination and authorization dialog, invalidate an old known size before acquisition, exercise Cancel/Retry under real holds, and retain the destination plus explicit unchecked row through refreshed results.
+
+The late-metadata cases use real delayed HTTP responses rather than fabricated result objects. The untouched HTML control is automatically deselected, while the confirmed HTML selections survive queue cancellation and save failure. Each case issues only its two original metadata requests. The retried save durably admits both confirmed rows; other opening/cancellation cases add no downloads.
+
+The actual batch-admission suite also passes 108 assertions. All ten selected authenticated sample files download completely with exactly one transfer request each. Main/Options passes 831 assertions; total current UI qualification is 1029. All fixture desktops close without being switched to or receiving physical user input. No personal desktop/browser is controlled. These targeted checks do not establish full backend-suite coverage, absolute IDM timings, installed browser behavior, large-batch responsiveness or complete IDM parity.
+
+[Build](validation/batch-opening-9.34/build.json), [input inventory](validation/batch-opening-9.34/dependency-inventory.json), [source changes](validation/batch-opening-9.34/source-change-audit.json), [versions](validation/batch-opening-9.34/product-versions.json), [backend](validation/batch-opening-9.34/backend-checks.json), [opening and real delayed responses](validation/batch-opening-9.34/batch-opening-checks.json), [batch admission and complete files](validation/batch-opening-9.34/batch-admission-checks.json) and [Main/Options](validation/batch-opening-9.34/modal-checks.json).
+
+## Evidence metadata correction
+
+The older 9.33 source-change audit already contains the correct 9.32-to-9.33 hash rows, but its generator left the baseline label at 9.30. Verify every row against the frozen 9.32/9.33 inventories, preserve the original labeled record and correct only that label to 9.32. Product hashes, source rows and qualification totals are unchanged. [Correction record](validation/batch-admission-9.33/source-change-audit-correction.json). The current 9.34 audit correctly names 9.33 as its baseline.
+
+## Preliminary evidence
+
+Preliminary runs use current sources with qualified 9.33 cores, so they are excluded from the current-build totals. The reader preliminarily passes 16 assertions. The first new UI run stops at 57 assertions: its policy fixture uses an HTML default row and explicitly unchecks the other row while later requiring enabled OK. That combines correct automatic deselection with a zero-selected-row condition. Change only that fixture to an ordinary selected file, retaining separate deliberate delayed-HTML cases. The corrected preliminary opening suite passes 90 assertions and the preliminary admission suite passes 108. The correction audit proves that only BatchOpeningUiTests.cpp changes between that failed inventory and the final frozen inputs; production code is unchanged.
+
+[Failed preliminary UI](validation/batch-opening-9.34/excluded-opening-attempt1.json), [correction](validation/batch-opening-9.34/preflight-correction.json), [preliminary reader](validation/batch-opening-9.34/excluded-backend.json), [corrected preliminary opening](validation/batch-opening-9.34/excluded-batch-opening-preflight.json) and [preliminary admission](validation/batch-opening-9.34/excluded-batch-admission-compatibility.json).
+
+## Cleanup and next work
+
+Remove 35 owned fixture/compiler roots and 37 temporary build files (388.7 MiB logical bytes), retaining evidence first. Current products/required cores, qualified 9.33 products, installed 8.68 / extension files 0.72.32, personal catalogs and shared media tools remain intact; no media helper is copied. [Cleanup](validation/batch-opening-9.34/cleanup.json) and [preservation](validation/batch-opening-9.34/final-preservation.json).
+
+No installer, installation, commit, push or release is included. URL/row projection before the frame, large-list materialization, request/header and credential editing work still run on the UI thread. The new fixtures use two-row batches; they do not qualify large-batch first paint or focus/tab order and resize/DPI changes across the asynchronous loading-to-full-view transition. Cover those minor presentation states next, then move remaining expensive row/request preparation into bounded owned work while preserving row edits and browser request identity. Continue exceptional teardown, other Main/modal/shutdown paths, installed browser/complete-file checks and live IDM timing comparisons before claiming parity. Full parity remains unproven.

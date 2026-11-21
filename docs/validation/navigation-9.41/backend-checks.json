@@ -1,0 +1,315 @@
+{
+  "passed": true,
+  "checks": 68,
+  "drive": "D",
+  "suites": [
+    {
+      "suite": "HistoryNavigationTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 13,
+      "binarySha256": "EEC0D9796A58B7A108FC53EC20EFD68AADD399476229676FB29EF095F2B68145",
+      "assertions": [
+        {
+          "name": "Initial All Downloads contains both owned records",
+          "passed": true
+        },
+        {
+          "name": "A newly created queue remains the requested filter during structural change",
+          "passed": true
+        },
+        {
+          "name": "The first new-queue snapshot excludes a completed nonmember",
+          "passed": true
+        },
+        {
+          "name": "A valid first-view filter works without an older navigation snapshot",
+          "passed": true
+        },
+        {
+          "name": "A newly added project can be requested in its first structural refresh",
+          "passed": true
+        },
+        {
+          "name": "An explicit valid request takes priority over an older caret ancestry",
+          "passed": true
+        },
+        {
+          "name": "A newly added category keeps its unfinished subview",
+          "passed": true
+        },
+        {
+          "name": "An unrelated structural change preserves the Finished view",
+          "passed": true
+        },
+        {
+          "name": "A removed queue still falls back to the surviving queues root",
+          "passed": true
+        },
+        {
+          "name": "A removed category still falls back to Unfinished",
+          "passed": true
+        },
+        {
+          "name": "A removed project still falls back to Grabber",
+          "passed": true
+        },
+        {
+          "name": "An invalid request in unchanged navigation remains All Downloads",
+          "passed": true
+        },
+        {
+          "name": "The following snapshot keeps the same filtered cohort",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "HistoryReadSnapshotTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 32,
+      "binarySha256": "65B9E31B058E7498F4C3694FD49525CB8E5FEBE59311D0BD0503C860FDF81529",
+      "assertions": [
+        {
+          "name": "One successful snapshot captures catalog order for All Downloads",
+          "passed": true
+        },
+        {
+          "name": "Selection and focus identities belong to the same model read",
+          "passed": true
+        },
+        {
+          "name": "Settings and storage warnings are captured with rows",
+          "passed": true
+        },
+        {
+          "name": "Hidden and visible status observers receive immutable values",
+          "passed": true
+        },
+        {
+          "name": "History snapshots exclude transfer journals and private media plans",
+          "passed": true
+        },
+        {
+          "name": "An inactive search does not copy address-search metadata",
+          "passed": true
+        },
+        {
+          "name": "Unchanged compact row records retain shared ownership across ticks",
+          "passed": true
+        },
+        {
+          "name": "Later mutations cannot change an earlier captured row",
+          "passed": true
+        },
+        {
+          "name": "Queue descriptions and rows are replaced by a coherent later read",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "A removed category resolves to its surviving ancestor before rows are filtered",
+          "passed": true
+        },
+        {
+          "name": "A removed project resolves to the Grabber parent",
+          "passed": true
+        },
+        {
+          "name": "A removed queue resolves to the existing queues-root All Downloads view",
+          "passed": true
+        },
+        {
+          "name": "An invalid programmatic filter resolves before history capture",
+          "passed": true
+        },
+        {
+          "name": "Uncached address matching receives owned selected search fields",
+          "passed": true
+        },
+        {
+          "name": "Both positive and negative search decisions reuse unchanged encrypted sources",
+          "passed": true
+        },
+        {
+          "name": "Hidden-window observation avoids building navigation and row snapshots",
+          "passed": true
+        },
+        {
+          "name": "Hidden-window observation does not invalidate the visible search cohort",
+          "passed": true
+        },
+        {
+          "name": "A separate writer owns the catalog before the busy read",
+          "passed": true
+        },
+        {
+          "name": "A full history read returns busy before the writer releases the model",
+          "passed": true
+        },
+        {
+          "name": "A busy history read changes neither retained rows nor the search query/cache",
+          "passed": true
+        },
+        {
+          "name": "Browser-offer observation also returns busy without waiting",
+          "passed": true
+        },
+        {
+          "name": "The next successful history read catches up with the writer",
+          "passed": true
+        },
+        {
+          "name": "An available empty offer snapshot is distinct from a busy model",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadListTooltipTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 9,
+      "binarySha256": "02DC58C1F15051DE7DCD5BD5EF3C96D0D81CA2450D918B095C86E65245748E3A",
+      "assertions": [
+        {
+          "name": "Tooltip retains the reference filename and friendly queue description",
+          "passed": true
+        },
+        {
+          "name": "Later mutable job and queue edits cannot alter the existing UI snapshot",
+          "passed": true
+        },
+        {
+          "name": "Queue descriptions refresh even when the tree structure is unchanged",
+          "passed": true
+        },
+        {
+          "name": "A new snapshot supplies the current filename and queue status",
+          "passed": true
+        },
+        {
+          "name": "Explicit nonmembers retain the existing tooltip wording",
+          "passed": true
+        },
+        {
+          "name": "A missing queue retains its existing explanation",
+          "passed": true
+        },
+        {
+          "name": "Legacy completed rows remain outside a queue by default",
+          "passed": true
+        },
+        {
+          "name": "Legacy unfinished rows retain default queue membership",
+          "passed": true
+        },
+        {
+          "name": "Missing row snapshots produce no stale tooltip",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "MainClosePolicyTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "239B1BE20BA4BF5B58B26973DED15E9BB124E5ED723692F1648528613697A740",
+      "assertions": [
+        {
+          "name": "Close policy captures the current tray setting",
+          "passed": true
+        },
+        {
+          "name": "A new close reads current policy without changing its older snapshot",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the close reader",
+          "passed": true
+        },
+        {
+          "name": "Close policy acquisition returns to its caller under a held writer",
+          "passed": true
+        },
+        {
+          "name": "One close owner coalesces duplicate starts",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the close reader settles before its catalog writer releases",
+          "passed": true
+        },
+        {
+          "name": "An accepted download decision defers close policy capture",
+          "passed": true
+        },
+        {
+          "name": "Closing a reader never clears another command's ownership",
+          "passed": true
+        },
+        {
+          "name": "A close read failure is consumed as an owned result",
+          "passed": true
+        },
+        {
+          "name": "The close owner can retry after policy failure",
+          "passed": true
+        },
+        {
+          "name": "Close result publication occurs after releasing Manager",
+          "passed": true
+        },
+        {
+          "name": "Notification failure cannot undo the captured close result",
+          "passed": true
+        },
+        {
+          "name": "Repeated close reader cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Policy acquisition never changes settings jobs layout or catalog files",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

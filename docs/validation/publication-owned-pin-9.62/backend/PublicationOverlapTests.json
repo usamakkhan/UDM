@@ -1,0 +1,427 @@
+{
+  "case": "adopted-pin",
+  "checks": [
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unchanged output is durably published and cleaned",
+      "passed": true
+    },
+    {
+      "name": "Parts are removed only after successful catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "An owned writeback pin excludes mutations throughout the early intent interval",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unchanged output is durably published and cleaned",
+      "passed": true
+    },
+    {
+      "name": "Parts are removed only after successful catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "Snapshot allows a controlled source-name replacement",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "A second write handle stays excluded until durable acceptance",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unchanged output is durably published and cleaned",
+      "passed": true
+    },
+    {
+      "name": "Parts are removed only after successful catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "Interrupted owned transaction preserves its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery forces body writeback and accepts only the complete digest-bound output",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "Interrupted owned transaction preserves its recovery intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery forces body writeback and accepts only the complete digest-bound output",
+      "passed": true
+    },
+    {
+      "name": "A durable recovery intent can precede completed body writeback",
+      "passed": true
+    },
+    {
+      "name": "A pending body cannot rename output or report completion",
+      "passed": true
+    },
+    {
+      "name": "Every normal and exceptional owner retains unfinished body work",
+      "passed": true
+    },
+    {
+      "name": "Early recovery record requires body writeback and an exact digest",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "Fallback and unwind retain owned body work before returning",
+      "passed": true
+    },
+    {
+      "name": "Unknown digest never writes an early intent",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "Confirmed unchanged output is durably published and cleaned",
+      "passed": true
+    },
+    {
+      "name": "Parts are removed only after successful catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Fallback and unwind retain owned body work before returning",
+      "passed": true
+    },
+    {
+      "name": "Unknown digest never writes an early intent",
+      "passed": true
+    },
+    {
+      "name": "All body IO has retired before the owner returns",
+      "passed": true
+    },
+    {
+      "name": "A failed or changed publication never reports completion",
+      "passed": true
+    },
+    {
+      "name": "Failed overlap preserves downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "No final name appears before body and identity proof",
+      "passed": true
+    },
+    {
+      "name": "A write-only adopted object cannot supply an unknown digest",
+      "passed": true
+    },
+    {
+      "name": "Adopted write protection permits the owner rename",
+      "passed": true
+    },
+    {
+      "name": "Adopted source still excludes writers while the published read name shares owned write access",
+      "passed": true
+    },
+    {
+      "name": "Published read pin prevents name deletion until acceptance",
+      "passed": true
+    },
+    {
+      "name": "Exact accepted release admits exclusive readers without a retained write pin",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

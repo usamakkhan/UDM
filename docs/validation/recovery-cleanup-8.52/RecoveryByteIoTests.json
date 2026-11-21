@@ -1,0 +1,5391 @@
+{
+  "case": "replacement-restore-shutdown",
+  "cases": [
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary-staged",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "occupied",
+      "hashes": 1,
+      "kind": "ordinary-staged",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "ordinary-published",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary-published",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary-early",
+      "modelAvailable": true
+    },
+    {
+      "failure": "The early publication body cannot be verified or published safely. Keep its files and recovery journal; do not reuse unflushed completion accounting.",
+      "fault": "occupied",
+      "hashes": 1,
+      "kind": "ordinary-early",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary-legacy-journal",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "private-published",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "private-published",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "child-published",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "child-published",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "legacy",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "legacy",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 2,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 4
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "replacement-complete",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "replacement-complete",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "replacement-original",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "replacement-original",
+      "modelAvailable": true
+    },
+    {
+      "failure": "",
+      "fault": "none",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "",
+      "fault": "metadata-save",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "newer-commit",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "hashes": 1,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 2
+    },
+    {
+      "failure": "Owned byte read checkpoint failure",
+      "fault": "read-failure",
+      "hashes": 0,
+      "kind": "replacement-restore",
+      "modelAvailable": true,
+      "readCheckpoints": 1
+    },
+    {
+      "failure": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "replacement-restore",
+      "modelAvailable": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "An occupied ordinary target is never overwritten and unpublished bytes remain paused",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Early-intent recovery still performs its required body flush",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Accepted byte recovery records the exact complete file",
+      "passed": true
+    },
+    {
+      "name": "Paired completion preserves the verified previous version",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "An intact old replacement target is measured once after detachment instead of twice in the control",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "An independent durable model save completes while the recovery read loop is held",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Recovery application preserves independently saved metadata for both roles",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Original retention and restoration preserve both old and unpublished bytes",
+      "passed": true
+    },
+    {
+      "name": "Accepted verification and catalog proof retire the journal before releasing ownership",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted publication supplies the byte recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches its actual held open-file SHA-256 read loop",
+      "passed": true
+    },
+    {
+      "name": "The read-loop control is blocked in 8.48 and model availability is required after detachment",
+      "passed": true
+    },
+    {
+      "name": "Byte verification retains the affected job and destination reservation",
+      "passed": true
+    },
+    {
+      "name": "A UI-facing snapshot is available while verification is held",
+      "passed": true
+    },
+    {
+      "name": "The actual open verification source refuses a concurrent writer",
+      "passed": true
+    },
+    {
+      "name": "The held immutable journal refuses writes during detached hashing",
+      "passed": true
+    },
+    {
+      "name": "Shutdown marks closing but waits for the owned byte IO transaction",
+      "passed": true
+    },
+    {
+      "name": "Each actual read-loop hold is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result",
+      "passed": true
+    },
+    {
+      "name": "Rejected byte IO preserves the original journal for retry",
+      "passed": true
+    },
+    {
+      "name": "Failed byte verification releases runtime job/path ownership",
+      "passed": true
+    },
+    {
+      "name": "Reopening after shutdown recovers the retained intent without another transfer",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "instrumented848Control": false,
+  "passed": true,
+  "workflowError": "UDM is closing."
+}

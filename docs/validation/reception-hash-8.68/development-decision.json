@@ -1,0 +1,58 @@
+{
+  "readyForInstallation": true,
+  "medianSeconds": {
+    "udm": {
+      "processExitTailSeconds": 0.38248180000027787,
+      "durableTailSeconds": 0.41825819999939995,
+      "processExitWallSeconds": 2.7000458499996967,
+      "durableWallSeconds": 2.7389612499991927
+    },
+    "baseline": {
+      "processExitTailSeconds": 0.43941302499933954,
+      "durableTailSeconds": 0.4763946999992186,
+      "processExitWallSeconds": 2.809653499999513,
+      "durableWallSeconds": 2.842169450000256
+    },
+    "older": {
+      "processExitTailSeconds": 0.4074372500008394,
+      "durableTailSeconds": 0.4334392500004469,
+      "processExitWallSeconds": 2.9315442500001154,
+      "durableWallSeconds": 2.95442654999988
+    },
+    "idm": {
+      "processExitTailSeconds": 0.44584847500118485,
+      "durableTailSeconds": 1.1222709500007113,
+      "processExitWallSeconds": 3.8787615750006808,
+      "durableWallSeconds": 4.602994100000615
+    }
+  },
+  "medianFinishingGainVs867Ms": 56.93122499906167,
+  "medianTotalGainVs867Ms": 109.6076499998162,
+  "receptionHash": [
+    {
+      "Bytes": 23742756,
+      "JoinSeconds": 0.0025477,
+      "Source": "written-cache-prefix",
+      "Valid": true
+    },
+    {
+      "Bytes": 18943600,
+      "JoinSeconds": 0.0012507,
+      "Source": "written-cache-prefix",
+      "Valid": true
+    },
+    {
+      "Bytes": 45546676,
+      "JoinSeconds": 0.0016758,
+      "Source": "written-cache-prefix",
+      "Valid": true
+    },
+    {
+      "Bytes": 29341884,
+      "JoinSeconds": 0.0008113,
+      "Source": "written-cache-prefix",
+      "Valid": true
+    }
+  ],
+  "universalNoSlowerClaim": false
+}

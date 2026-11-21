@@ -1,0 +1,8 @@
+{
+  "passed": false,
+  "terminatedOwnedFixture": true,
+  "reason": "Test save gate matched Download Later, whose real pause transition already clears presentation markers. The earlier decision rolled back and awaited its error dialog. Replace that incorrect gate with a test-only acknowledgement-worker boundary; retain real save/failure coverage in backend fixtures.",
+  "personalDesktopControlled": false,
+  "processExited": true,
+  "qualifyingAssertions": 0
+}

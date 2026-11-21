@@ -1,0 +1,13 @@
+# UDM 8.42: retain both replacement versions during recovery
+
+Replacement recovery previously hashed the target and previous-version files with temporary pathname-based reads, then closed the handles before saving the recovered pair. A real replacement interrupted after its file swap reproduced the gap against qualified 8.41 core objects: a concurrent writer could open the verified new file at the held catalog temporary-flush boundary.
+
+Recovery now hashes through pinned read handles, rejects directories and reparse points, and retains both verified versions through successful catalog persistence. When restoring the original from its previous-version name, the initial handle allows the required rename, then the resulting target is pinned with write/delete exclusion and checked against the measured volume/file index. No second full-file hash is added after that rename. The ordinary publication-recovery path shares this identity check.
+
+The new paired and restore tests create real replacement journals through publication interruption callbacks. While the actual recovery catalog save is held, writes and renames must fail for every recovered file. They must succeed again after catalog acceptance. The original history, exact bytes, final status and journal retirement are also checked. The first paired concurrent-writer assertion failed against 8.41; both cases pass on 8.42 (73 checks in the recovery suite).
+
+Native products advance to 8.42 and both extension source manifests to 0.72.6. Browser JavaScript is unchanged. Installation, installer creation and publishing remain deferred; the installed app remains 8.32. The shared-model recovery lock and measured sequential/split finishing delays remain unresolved. This change supplies ownership needed by the [recovery transaction plan](publication-recovery-transaction-design.md), rather than establishing a speed improvement.
+
+All 1,249 focused checks passed: preparation 87, ownership 186, publication commit 347, recovery 73, completed checkpoint 145, replacement commit 395, and synchronization replacement recovery 16. Twelve executables (five native products and seven fixtures) have verified 8.42 resources. [Qualification, source/core/product hashes and failed baseline](validation/replacement-recovery-pinning-8.42.json).
+
+Cleanup individually removed 658 generated files and redundant target objects (103,344,860 logical bytes), preserving two multi-link paths. Both rebuilt core objects, native binaries, compact results and failed-baseline evidence remain. Both personal catalogs and the installed executable matched their pre-test hashes. No installation, installer, commit, push or release was performed.

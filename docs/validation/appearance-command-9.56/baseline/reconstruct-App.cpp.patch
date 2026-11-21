@@ -1,0 +1,118 @@
+--- native/App.cpp@9.56
++++ native/App.cpp@9.55
+@@ -12,7 +12,6 @@
+ #include "Core.hpp"
+ #include "ColumnSettingsTask.hpp"
+ #include "GlobalLimitSettingsTask.hpp"
+-#include "AppearanceSettingsTask.hpp"
+ #include "UiDesktopAttestation.hpp"
+ #include "MainClosePolicyTask.hpp"
+ #include "MainExitLayoutTask.hpp"
+@@ -137,12 +136,11 @@
+  int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
+  static void tickDesktopModel(Manager& owner){Lock lock(owner.mutex);if(!owner.fileInfoDecisionPending)owner.tick();}
+  static void dispatchDesktopModel(Manager& owner){Lock lock(owner.mutex);if(!owner.fileInfoDecisionPending)owner.dispatchQueueWork();}
+- AppearanceSettingsTask appearanceCommandTask;bool appearanceClosePending=false,appearanceToolbarEnabled=true;std::vector<BOOL> appearanceToolbarState;
+  GlobalLimitSettingsTask globalLimitCommandTask;bool globalLimitClosePending=false;std::vector<BOOL> globalLimitToolbarState;
+  MainClosePolicyTask closePolicyTask;
+  MainExitLayoutTask exitLayoutTask;bool exitLayoutPrepared=false,exitLayoutOwnerEnabled=true;
+ #ifdef UDM_TOOLBAR_COMPONENT_TEST
+- std::function<void(const char*)> exitLayoutObserver;std::function<void(const char*)> appearanceCommandObserver;
++ std::function<void(const char*)> exitLayoutObserver;
+  std::function<void(const char*)> columnSettingsObserver;std::function<void(const char*)> globalLimitSettingsObserver;std::function<void(const char*)> globalLimitCommandObserver;
+ #endif
+  DownloadMenuTask downloadMenuTask;
+@@ -400,8 +398,7 @@
+  }
+  static bool globalLimitIndependentCommand(UINT id){return id==CMD_EXIT||id==CMD_SELECTALL||arrangeColumn(id)>=0;}
+  bool commandEnabled(UINT id,bool freshFiles=false){
+-  if((appearanceCommandTask.valid()||globalLimitCommandTask.valid())&&!globalLimitIndependentCommand(id))return false;
+-  if(appearanceMutation(id)&&(manager.fileInfoDecisionPending||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot))return false;
++  if(globalLimitCommandTask.valid()&&!globalLimitIndependentCommand(id))return false;
+   if((id==CMD_LIMIT_ON||id==CMD_LIMIT_OFF||id==CMD_LIMIT)&&(globalLimitCommandTask.valid()||manager.fileInfoDecisionPending))return false;
+   if((optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)&&(commandUsesManager(id)||commandUsesSelection(id)||(id==CMD_OPTIONS&&optionsUiActive)))return false;
+   if(!commandUsesManager(id))return !commandUsesSelection(id)||selected(freshFiles).size()==1;
+@@ -423,8 +420,7 @@
+  // A busy model must not leave advice belonging to a different selection.
+  // Use the displayed row cohort for supported commands; invocation stays live.
+  std::optional<bool> advisoryCommandEnabled(UINT id){
+-  if((appearanceCommandTask.valid()||globalLimitCommandTask.valid())&&!globalLimitIndependentCommand(id))return false;
+-  if(appearanceMutation(id)&&(manager.fileInfoDecisionPending||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot))return false;
++  if(globalLimitCommandTask.valid()&&!globalLimitIndependentCommand(id))return false;
+   if((id==CMD_LIMIT_ON||id==CMD_LIMIT_OFF||id==CMD_LIMIT)&&(globalLimitCommandTask.valid()||manager.fileInfoDecisionPending))return false;
+   if(downloadMenuAdvice->current){const auto found=downloadMenuAdvice->current->find(id);if(found!=downloadMenuAdvice->current->end())return found->second;}
+   if((optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)&&(commandUsesManager(id)||commandUsesSelection(id)||(id==CMD_OPTIONS&&optionsUiActive)))return false;
+@@ -434,7 +430,7 @@
+  afx_msg LRESULT OnCommandFileRefresh(WPARAM,LPARAM){commandFileRefreshPending=false;if(optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)return 0;if(!quitting)try{bool busy=false;commandStates({CMD_ZIP,CMD_RECYCLE},nullptr,nullptr,false,&busy);}catch(const std::exception& e){showStatus(e.what());}return 0;}
+  void scheduleCommandFileRefresh(){if(!commandFileRefreshPending&&!quitting&&GetSafeHwnd()){commandFileRefreshPending=PostMessage(COMMAND_FILE_REFRESH)!=FALSE;}}
+  void updateToolbarCommands(){
+-  if(appearanceCommandTask.valid()||globalLimitCommandTask.valid()){for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),FALSE);return;}
++  if(globalLimitCommandTask.valid()){for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),FALSE);return;}
+   std::vector<UINT> commands;commands.reserve(ToolbarCommandCount+2);for(int i=0;i<ToolbarCommandCount;++i)commands.push_back(i==3?CMD_STOP_CLOSE_ALL:toolbarCommand(i));commands.push_back(CMD_ZIP);commands.push_back(CMD_RECYCLE);
+   bool busy=false;const auto enabled=optionsAppearanceCommands?*optionsAppearanceCommands:commandStates(commands,nullptr,nullptr,false,&busy);if(busy){for(int i=0;i<ToolbarCommandCount;++i)if(const auto advice=displayedSelectionCommandEnabled(commands[i]))toolbar.EnableButton(toolbarCommand(i),*advice);return;}for(int i=0;i<ToolbarCommandCount;++i)toolbar.EnableButton(toolbarCommand(i),enabled.at(commands[i]));
+  }
+@@ -1272,7 +1268,7 @@
+    dialog.defaultButton(dialog.button("Close",518,383,90,[&]{dialog.close();}));dialog.accept=[&]{dialog.close();};
+   };dialog.DoModal();
+  }
+- void command(UINT id){try{if((appearanceClosePending&&quitting)||(appearanceCommandTask.valid()&&!globalLimitIndependentCommand(id)))return;if(appearanceClosePending)appearanceClosePending=false;if(exitLayoutTask.valid()||(globalLimitClosePending&&quitting)||(globalLimitCommandTask.valid()&&!globalLimitIndependentCommand(id)))return;if(globalLimitClosePending)globalLimitClosePending=false;cancelDownloadMenu();cancelClosePolicy();
++ void command(UINT id){try{if(exitLayoutTask.valid()||(globalLimitClosePending&&quitting)||(globalLimitCommandTask.valid()&&!globalLimitIndependentCommand(id)))return;if(globalLimitClosePending)globalLimitClosePending=false;cancelDownloadMenu();cancelClosePolicy();
+  if(id==CMD_EDIT_DOWNLOAD_SCHEDULE||id==CMD_SCHEDULE_EXISTING_DOWNLOAD){
+   if(quitting||resumePresenting||authenticationDialogShowing()||fileInfoDialogShowing()||!IsWindowEnabled()||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot||manager.fileInfoDecisionPending)return;
+   const auto chosen=selected(false);if(chosen.size()!=1)return;
+@@ -1313,14 +1309,14 @@
+  case CMD_LIMIT_ON:case CMD_LIMIT_OFF:startGlobalLimitCommand(id==CMD_LIMIT_ON);break;
+  case CMD_LIMIT:globalLimitSettingsDialog();break;
+  case CMD_SELECTALL:table.SetItemState(-1,LVIS_SELECTED,LVIS_SELECTED);break;
+- case CMD_DARK:startAppearanceCommand({AppearanceChange::ToggleDark});break;
++ case CMD_DARK:preference("DarkMode",!yes(preferences(),"DarkMode"));applyAppearance();break;
+  case CMD_HOME:openProductLink(m_hWnd,productHome);break;case CMD_SUPPORT:openProductLink(m_hWnd,productSupport);break;case CMD_SHARE:showShareDialog(this);break;case CMD_CHECK_UPDATES:startUpdateCheck(true);break;case CMD_TIP_DAY:showTipOfDay();break;case CMD_HELP_CONTENTS:case CMD_HELP_TUTORIALS:case CMD_HELP_SCHEDULER:case CMD_HELP_GRABBER:showHelpTopic(id-CMD_HELP_CONTENTS);break;case CMD_LANGUAGE_ENGLISH:break;case CMD_FONT:chooseFont();break;
+- case CMD_FONT_RESET:startAppearanceCommand({AppearanceChange::ResetFont});break;
+- case CMD_TRAY_COLOR:startAppearanceCommand({AppearanceChange::Tray,{},11,400,"Color"});break;
+- case CMD_TRAY_SYSTEM:startAppearanceCommand({AppearanceChange::Tray,{},11,400,"Classic"});break;
+- case CMD_TRAY_HIDE:startAppearanceCommand({AppearanceChange::Tray,{},11,400,"Hidden"});break;
++ case CMD_FONT_RESET:{auto p=preferences();auto defaults=defaultSettings();for(auto key:{"FontName","FontHeight","FontWeight"})p[key]=defaults[key];manager.setSettings(p);applyAppearance();break;}
++ case CMD_TRAY_COLOR:preference("TrayIcon","Color");updateTray();break;
++ case CMD_TRAY_SYSTEM:preference("TrayIcon","Classic");updateTray();break;
++ case CMD_TRAY_HIDE:preference("TrayIcon","Hidden");updateTray();break;
+  case CMD_FINDNEXT:findNext();break;
+- case CMD_HIDE_CATEGORIES:startAppearanceCommand({AppearanceChange::ToggleCategories});break;
++ case CMD_HIDE_CATEGORIES:preference("HideCategories",!yes(preferences(),"HideCategories"));applyAppearance();if(yes(preferences(),"HideCategories"))table.SetFocus();break;
+  case CMD_REMOVEQUEUE:setQueueMembershipBatch(manager,chosen,false);break;
+  case CMD_ADD:addAddress(this,manager,clipboardAddress());break;
+  case CMD_ADD_SCHEDULED_DOWNLOAD:addScheduledDownload(this,manager,clipboardAddress());break;
+@@ -1374,12 +1370,12 @@
+   else historyRefreshDeferred=true;
+  }
+   void pollNetworkCapture(bool request=true){if(!networkCapture)return;networkCapture->pollReady();const auto& view=networkCapture->view();if(view.revision!=networkErrorRevision){networkErrorRevision=view.revision;if(!view.error.empty())showStatus(view.error);}if(request&&!quitting)networkCapture->requestPoll();}
+-  afx_msg void OnTimer(UINT_PTR id){if(pollAppearanceCommand())return;if(pollGlobalLimitCommand())return;if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
++  afx_msg void OnTimer(UINT_PTR id){if(pollGlobalLimitCommand())return;if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
+   void consumeModelMaintenance(){const auto result=modelMaintenance.takeResult();if(!result.dispatchError.empty())showStatus(result.dispatchError);if(!result.tickError.empty())showStatus(result.tickError);}
+   void requestModelMaintenance(){consumeModelMaintenance();modelMaintenance.requestTick();}
+   afx_msg LRESULT OnModelMaintenanceReady(WPARAM identity,LPARAM){
+    if(!maintenanceSignal->matches(identity))return 0;
+-   if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;
++   if(pollGlobalLimitCommand())return 0;
+    if(exitLayoutTask.valid()){pollExitLayout();return 0;}if(quitting)return 0;
+    if(closePolicyTask.valid()){pollClosePolicy();return 0;}
+    try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}
+@@ -1529,8 +1525,8 @@
+    return 0;
+   }
+  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
+- afx_msg void OnClose(){cancelDownloadMenu();if(appearanceCommandTask.valid()){appearanceClosePending=true;showStatus("Saving appearance settings before closing...");return;}appearanceClosePending=false;if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
+- afx_msg LRESULT OnShow(WPARAM,LPARAM){if(exitLayoutTask.valid()||(appearanceClosePending&&quitting)||(globalLimitClosePending&&quitting))return 0;appearanceClosePending=false;globalLimitClosePending=false;cancelClosePolicy();ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
++ afx_msg void OnClose(){cancelDownloadMenu();if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
++ afx_msg LRESULT OnShow(WPARAM,LPARAM){if(exitLayoutTask.valid()||(globalLimitClosePending&&quitting))return 0;globalLimitClosePending=false;cancelClosePolicy();ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
+  // Link arrays sent through automation wait, encrypted, until reviewed here.
+  void reviewAutomationBatches(){
+   automationReviewDeferred=true;
+@@ -1639,7 +1635,7 @@
+   if(updateThread.joinable())updateThread.join();
+   updateThread=std::thread([this,settings,cancel=updateCancel]{auto outcome=std::make_unique<UpdateOutcome>();try{outcome->manifest=fetchUpdateManifest(settings,*cancel);}catch(const Cancelled&){outcome->error="The update check was canceled or timed out.";}catch(const std::exception& e){outcome->error=e.what();}PostMessage(UPDATE_RESULT,0,(LPARAM)outcome.release());});
+  }
+- JobPtr quitAfterDownload;std::function<void()> stopIntegration,restartIntegration; ~MainWindow()override{maintenanceSignal->disarm();appearanceCommandTask.finish();globalLimitCommandTask.finish();exitLayoutTask.finish();downloadMenuTask.finish();closePolicyTask.finish();modelMaintenance.stop();presentationAcks.stop();try{authenticationTask->finish();}catch(...) {}}
++ JobPtr quitAfterDownload;std::function<void()> stopIntegration,restartIntegration; ~MainWindow()override{maintenanceSignal->disarm();globalLimitCommandTask.finish();exitLayoutTask.finish();downloadMenuTask.finish();closePolicyTask.finish();modelMaintenance.stop();presentationAcks.stop();try{authenticationTask->finish();}catch(...) {}}
+  explicit MainWindow(Manager& m):manager(m),modelMaintenance([owner=&m]{tickDesktopModel(*owner);},[owner=&m]{dispatchDesktopModel(*owner);},maintenanceSignal->notifier()){findQuery=normalizedFindQuery(preferences().value("FindQuery",Json::object()));auto cls=AfxRegisterWndClass(CS_DBLCLKS,LoadCursor(nullptr,IDC_ARROW),(HBRUSH)(COLOR_BTNFACE+1),AfxGetApp()->LoadIcon(1));constexpr int initialWidth=759,initialHeight=449;if(!Create(cls,mainWindowTitle,WS_OVERLAPPEDWINDOW,CRect(160,150,160+initialWidth,150+initialHeight)))throw std::runtime_error("Cannot create UDM window.");SetWindowPos(nullptr,0,0,MulDiv(initialWidth,windowDpi(),96),MulDiv(initialHeight,windowDpi(),96),SWP_NOMOVE|SWP_NOZORDER);CenterWindow();}
+ };
+ BEGIN_MESSAGE_MAP(MainWindow,CFrameWnd)

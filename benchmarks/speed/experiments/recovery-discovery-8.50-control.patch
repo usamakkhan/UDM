@@ -1,0 +1,62 @@
+--- a/native/RecoveryJournal.hpp
++++ b/BaselineRecoveryJournal.hpp
+@@ -3,10 +3,11 @@
+ namespace udm {
+ // Immutable input and retirement ownership belong to the same opened file.
+ // There is no delete-on-close flag: abandoning or failing recovery preserves it.
+-class RecoveryJournal {
++inline thread_local std::function<void(const char*)> recoveryJournalControlObserver;
++class RecoveryJournalControl {
+  Handle file;std::string contents;
+ public:
+- explicit RecoveryJournal(const fs::path& path,size_t limit=32*1024*1024):file(CreateFileW(path.c_str(),GENERIC_READ|DELETE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr)){
++ explicit RecoveryJournalControl(const fs::path& path,size_t limit=32*1024*1024):file(CreateFileW(path.c_str(),GENERIC_READ|DELETE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr)){
+   if(!file)throw std::runtime_error("Cannot own the recovery journal. Close programs holding it and retry; its files were preserved.");
+   BY_HANDLE_FILE_INFORMATION information{};LARGE_INTEGER size{};
+   if(!path.is_absolute()||GetFileType(file.h)!=FILE_TYPE_DISK||!GetFileInformationByHandle(file.h,&information)||
+@@ -14,7 +15,7 @@
+      !GetFileSizeEx(file.h,&size)||size.QuadPart<0||static_cast<unsigned long long>(size.QuadPart)>limit)
+    throw std::runtime_error("The recovery journal is not a supported regular file. Keep its files and recovery record.");
+   contents.resize(static_cast<size_t>(size.QuadPart));
+-  for(size_t offset=0;offset<contents.size();){
++  for(size_t offset=0;offset<contents.size();){if(recoveryJournalControlObserver)recoveryJournalControlObserver("recovery-journal-snapshot-read");
+    const auto amount=static_cast<DWORD>(std::min<size_t>(contents.size()-offset,1048576));DWORD count=0;
+    if(!ReadFile(file.h,contents.data()+offset,amount,&count,nullptr)||!count||count>amount)
+     throw std::runtime_error("Cannot read the owned recovery journal. Its files were preserved.");
+--- a/native/Duplicates.cpp
++++ b/baseline-Duplicates.cpp
+@@ -16,7 +16,7 @@
+ #include "PublicationCatalogProof.hpp"
+ #include "ReplacementCommit.hpp"
+ #include "PublicationRecovery.hpp"
+-#include "RecoveryJournal.hpp"
++#include "C:/Users/Usama/AppData/Local/UDM-Development/finishing-8.51/BaselineRecoveryJournal.hpp"
+ #include "MediaPublication.hpp"
+ #include "FileIdentity.hpp"
+ #include "Scanner.hpp"
+@@ -400,6 +400,7 @@
+ void Manager::recoverReplacements(JobPtr scope,bool requireCatalogMember){recoverReplacementsWithContinuation(scope,requireCatalogMember,{},{});}
+ void Manager::recoverReplacementsWithContinuation(JobPtr scope,bool requireCatalogMember,const std::function<bool()>& before,const std::function<void()>& after){
+  std::unique_lock<std::recursive_mutex> recoveryLock(mutex);
++ struct RestoreObserver {std::function<void(const char*)> previous;~RestoreObserver(){recoveryJournalControlObserver=std::move(previous);}} restoreObserver{std::move(recoveryJournalControlObserver)};recoveryJournalControlObserver=catalogCheckpoint;
+  if(stopping)throw std::runtime_error("UDM is closing.");
+  if(before&&!before())return;
+  if(requireCatalogMember&&(!scope||std::find(jobs.begin(),jobs.end(),scope)==jobs.end()))throw std::runtime_error("This download is no longer in the list.");
+@@ -496,7 +497,7 @@
+   if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring())))continue;
+   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its publication journal has been preserved.");
+   if(!scope){auto known=findPublicationJob(utf8(entry.path().stem().wstring()));if(known&&PublicationOwnership::treeOwned(*this,known))continue;}
+-  RecoveryJournal journal(entry.path());auto op=Json::parse(journal.text());auto job=findPublicationJob(str(op,"Id"));const bool ephemeral=op.value("Ephemeral",false);
++  RecoveryJournalControl journal(entry.path());auto op=Json::parse(journal.text());auto job=findPublicationJob(str(op,"Id"));const bool ephemeral=op.value("Ephemeral",false);
+   bool acceptedReceipt=false;if(ephemeral){const auto id=PublicationCommit::identity(op);if(id.empty())throw std::runtime_error("Missing private publication identity. Keep its recovery record.");auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto receipt=rows->find(id);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private publication receipt changed. Keep its file and recovery record.");acceptedReceipt=true;}}}
+   if(!job&&ephemeral)job=std::make_shared<Job>(op.at(acceptedReceipt?"After":"Before"));
+   if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
+@@ -570,7 +571,7 @@
+   // Discovery does not claim unrelated scoped journals. Parse again from the
+   // pinned file before using any operation; a changed discovery is not proof.
+   if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))){auto discovered=Json::parse(readText(entry.path()));if(!scopeIds.count(str(discovered,"OriginalId")))continue;}
+-  RecoveryJournal journal(entry.path());auto op=Json::parse(journal.text());if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))&&!scopeIds.count(str(op,"OriginalId")))continue;
++  RecoveryJournalControl journal(entry.path());auto op=Json::parse(journal.text());if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))&&!scopeIds.count(str(op,"OriginalId")))continue;
+   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its replacement journal has been preserved.");
+   const auto commitId=ReplacementCommit::identity(op);const bool ephemeral=!commitId.empty()&&op.value("Ephemeral",false);auto job=ephemeral?findPublicationJob(str(op,"Id")):findJob(str(op,"Id"));auto original=findJob(str(op,"OriginalId"));
+   if(ephemeral){auto rows=state.find("PublicationReceipts");bool acknowledged=false;if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private replacement receipt store.");auto receipt=rows->find(commitId);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private replacement receipt changed. Keep both files and its journal.");acknowledged=true;}}if(!job)job=std::make_shared<Job>(op.at(acknowledged?"After":"Before"));}

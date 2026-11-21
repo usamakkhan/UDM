@@ -1,0 +1,94 @@
+{
+  "coreDependenciesUnchanged": true,
+  "entries": [
+    {
+      "source": "PropertiesRequestDraftTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "RecoveryCommandTests",
+      "changedDependencies": [
+        "native/PropertiesUi.hpp"
+      ],
+      "rebuilt": true
+    },
+    {
+      "source": "RecoveryCatalogTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "FileInfoDecisionTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "CatalogCheckpointTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "CatalogCommitCoordinatorTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "PublicationCommitTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "PublicationOwnershipTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "App",
+      "changedDependencies": [
+        "native/PropertiesUi.hpp"
+      ],
+      "rebuilt": true
+    },
+    {
+      "source": "HostMain",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "MonitorMain",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "SetupMain",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "AutomationMain",
+      "changedDependencies": [],
+      "rebuilt": false
+    },
+    {
+      "source": "PropertiesSaveUiTests",
+      "changedDependencies": [
+        "native/PropertiesSaveUiTests.cpp",
+        "native/PropertiesUi.hpp"
+      ],
+      "rebuilt": true
+    },
+    {
+      "source": "PropertiesDialogUiTests",
+      "changedDependencies": [
+        "native/PropertiesUi.hpp"
+      ],
+      "rebuilt": true
+    },
+    {
+      "source": "PropertiesDecisionTests",
+      "changedDependencies": [],
+      "rebuilt": false
+    }
+  ]
+}

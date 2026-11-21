@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "tests": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "realWprStarted": false,
+  "elevationRequested": false,
+  "method": "Injected recorder lifecycle faults plus real owned child process handle/creation-time checks. Not a privileged live ETW capture.",
+  "profileBufferKiB": 64,
+  "profileBuffers": 1024,
+  "configuredMemoryMiB": 64,
+  "live64MiBCaptureStarted": false,
+  "readOnlyDPlanPassed": true,
+  "readOnlyPlanCreatedDirectories": false,
+  "unsafeWorkloadPathsRefused": [
+    {
+      "case": "outside-owned-cache",
+      "refused": true
+    },
+    {
+      "case": "request-root-overlap",
+      "refused": true
+    },
+    {
+      "case": "existing-workload-root",
+      "refused": true
+    }
+  ],
+  "approvalWaitSeconds": 300,
+  "approvalWaitIsNotRecordingTime": true,
+  "recordingBudgetSeconds": 45,
+  "stopUsesRemainingBudget": true,
+  "sourceHashes": [
+    {
+      "path": "benchmarks/speed/finish_io_trace.py",
+      "sha256": "DCE78289075E69A5AA6016F6DEF254946216CEE404ACF0F13EFF725193BB93A7"
+    },
+    {
+      "path": "benchmarks/speed/test_finish_io_trace.py",
+      "sha256": "4FE5AB4297A71EB176539F13EB2E2BD7A931F422B7E5D8AC5A52569CB6402216"
+    },
+    {
+      "path": "benchmarks/speed/finish-io.wprp",
+      "sha256": "5EFF4C2EBE43E8ADD4DD0119C8A1A09593284D6CBBB306233D9A18477A7846F1"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "profile": "benchmarks/speed/finish-io.wprp",
+  "sha256": "D5CDA35C8A2F054E8587CF19FA7FD27F846A9C062A5F06AB7536ABCFAA751B34",
+  "acceptedByLocalWpr": true,
+  "recordingStartedByThisWork": false,
+  "etlCreated": false,
+  "configuredSystemBufferBytes": 16777216,
+  "limitations": "Profile parsing/details validation only. Privileged live recording, dropped-event checks and IO-stack attribution remain unverified. ETL save size can exceed configured circular buffers due to rundown/metadata.",
+  "checks": [
+    {
+      "command": [
+        "wpr.exe",
+        "-profiles",
+        "D:\\UDM\\benchmarks\\speed\\finish-io.wprp"
+      ],
+      "exitCode": 0,
+      "output": "\nMicrosoft Windows Performance Recorder Version 10.0.26100 (CoreSystem)\nCopyright (c) 2024 Microsoft Corporation. All rights reserved.\n\n\tUDMFinish                   Owned download finish IO attribution, memory buffers\n"
+    },
+    {
+      "command": [
+        "wpr.exe",
+        "-profiledetails",
+        "D:\\UDM\\benchmarks\\speed\\finish-io.wprp!UDMFinish.Verbose"
+      ],
+      "exitCode": 0,
+      "output": "\nMicrosoft Windows Performance Recorder Version 10.0.26100 (CoreSystem)\nCopyright (c) 2024 Microsoft Corporation. All rights reserved.\n\nProfile\t\t\t: UDMFinish.Verbose.Memory\n\n\nCollector Name\t\t: WPR_initiated_WprApp_WPR System Collector\nBuffer Size (KB)\t: 64\nNumber of Buffers\t: 256\nProviders\nSystem Keywords\n\tCSwitch\n\tDiskIO\n\tDiskIOInit\n\tFileIO\n\tFileIOInit\n\tLoader\n\tProcessThread\n\tReadyThread\nSystem Stacks\n\tDiskReadInit\n\tDiskWriteInit\n\tDiskFlushInit\n\tFileFlush\n\tFileOpEnd\n"
+    },
+    {
+      "command": [
+        "wpr.exe",
+        "-status",
+        "profiles",
+        "collectors",
+        "-details"
+      ],
+      "exitCode": 0,
+      "output": "\nMicrosoft Windows Performance Recorder Version 10.0.26100 (CoreSystem)\nCopyright (c) 2024 Microsoft Corporation. All rights reserved.\n\nWPR is not recording\n"
+    }
+  ]
+}

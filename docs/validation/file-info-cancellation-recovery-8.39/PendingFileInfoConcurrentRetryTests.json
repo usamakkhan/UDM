@@ -1,0 +1,641 @@
+{
+  "checks": [
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The joined retry resolves when the complete session outcome becomes terminal",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The same presentation can attach after the join without another admission",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "Cancel remains actionable through the original generation while joining",
+      "passed": true
+    },
+    {
+      "name": "Original-generation Cancel completes against the joined accepted identity",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The joined retry resolves when the complete session outcome becomes terminal",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The same presentation can attach after the join without another admission",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "Cancel remains actionable through the original generation while joining",
+      "passed": true
+    },
+    {
+      "name": "Original-generation Cancel completes against the joined accepted identity",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The second browser producer publishes its own prepared view before its flush gate",
+      "passed": true
+    },
+    {
+      "name": "A second producer joins the original private presentation without another window notification",
+      "passed": true
+    },
+    {
+      "name": "Retry activity belongs to the shared session across producer generations",
+      "passed": true
+    },
+    {
+      "name": "The joined retry resolves when the complete session outcome becomes terminal",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The same presentation can attach after the join without another admission",
+      "passed": true
+    },
+    {
+      "name": "The second producer retains responsibility for finishing its ticket without another notification",
+      "passed": true
+    },
+    {
+      "name": "A matching accepted successor is reused rather than replaced by another retry generation",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The second browser producer publishes its own prepared view before its flush gate",
+      "passed": true
+    },
+    {
+      "name": "A second producer joins the original private presentation without another window notification",
+      "passed": true
+    },
+    {
+      "name": "Retry activity belongs to the shared session across producer generations",
+      "passed": true
+    },
+    {
+      "name": "Cancel remains actionable through the original generation while joining",
+      "passed": true
+    },
+    {
+      "name": "Original-generation Cancel completes against the joined accepted identity",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The second producer retains responsibility for finishing its ticket without another notification",
+      "passed": true
+    },
+    {
+      "name": "A matching accepted successor is reused rather than replaced by another retry generation",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The second browser producer publishes its own prepared view before its flush gate",
+      "passed": true
+    },
+    {
+      "name": "A second producer joins the original private presentation without another window notification",
+      "passed": true
+    },
+    {
+      "name": "Retry activity belongs to the shared session across producer generations",
+      "passed": true
+    },
+    {
+      "name": "The joined retry resolves when the complete session outcome becomes terminal",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The same presentation can attach after the join without another admission",
+      "passed": true
+    },
+    {
+      "name": "The second producer retains responsibility for finishing its ticket without another notification",
+      "passed": true
+    },
+    {
+      "name": "A matching accepted successor is reused rather than replaced by another retry generation",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser resubmission keeps its non-waiting busy behavior",
+      "passed": true
+    },
+    {
+      "name": "A changed fingerprint cannot join a pending token",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The worker owns one Retry while waiting for the competing admission",
+      "passed": true
+    },
+    {
+      "name": "Joining does not expose a tentative job or replace the presentation early",
+      "passed": true
+    },
+    {
+      "name": "The second browser producer publishes its own prepared view before its flush gate",
+      "passed": true
+    },
+    {
+      "name": "A second producer joins the original private presentation without another window notification",
+      "passed": true
+    },
+    {
+      "name": "Retry activity belongs to the shared session across producer generations",
+      "passed": true
+    },
+    {
+      "name": "Cancel remains actionable through the original generation while joining",
+      "passed": true
+    },
+    {
+      "name": "Original-generation Cancel completes against the joined accepted identity",
+      "passed": true
+    },
+    {
+      "name": "The retry follows a durable accepted identity instead of remaining uncertain",
+      "passed": true
+    },
+    {
+      "name": "The race leaves exactly one committed download, or none after explicit Cancel",
+      "passed": true
+    },
+    {
+      "name": "Successful browser admission and dialog Retry share exactly the same job identity",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains one accepted receipt with the correct live-history presence",
+      "passed": true
+    },
+    {
+      "name": "The second producer retains responsibility for finishing its ticket without another notification",
+      "passed": true
+    },
+    {
+      "name": "A matching accepted successor is reused rather than replaced by another retry generation",
+      "passed": true
+    },
+    {
+      "name": "An undispatched original message claims its successor instead of leaving a suppressed dialog orphaned",
+      "passed": true
+    },
+    {
+      "name": "Coalescing does not take over another producer's ticket completion",
+      "passed": true
+    },
+    {
+      "name": "Only the second producer's ticket finishes its successor",
+      "passed": true
+    },
+    {
+      "name": "A settled accepted receipt cannot be replaced by another prepared identity",
+      "passed": true
+    },
+    {
+      "name": "An attached presentation cannot be replaced by a new prepared producer",
+      "passed": true
+    },
+    {
+      "name": "Untagged File Info deliveries retain independent notifications",
+      "passed": true
+    },
+    {
+      "name": "A retained rejected presentation can record Cancel before successor publication",
+      "passed": true
+    },
+    {
+      "name": "A successor inherits an already recorded Cancel without another notification",
+      "passed": true
+    },
+    {
+      "name": "A same-token replacement succeeds at the 64-presentation bound without adding a slot",
+      "passed": true
+    },
+    {
+      "name": "A genuinely new presentation still respects the active bound after replacement",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": true,
+      "cancelled": false,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": false,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": true,
+      "cancelled": true,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": false,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": false,
+      "cancelled": false,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": false,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": false,
+      "cancelled": true,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": false,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": true,
+      "cancelled": false,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": true,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": true,
+      "cancelled": true,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": true,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": false,
+      "cancelled": false,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": true,
+      "windowNotifications": 1
+    },
+    {
+      "backendRecoveryVerified": true,
+      "browserAccepted": false,
+      "cancelled": true,
+      "dialogStillUncertain": false,
+      "secondProducerNotified": true,
+      "windowNotifications": 1
+    }
+  ],
+  "passed": true,
+  "renderedDialogVerified": false
+}

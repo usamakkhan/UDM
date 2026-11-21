@@ -1,0 +1,6 @@
+{
+  "priorScope": "Earlier Python STARTUPINFO lpDesktop assignments were not native desktop assignment evidence. Historical separateDesktop flags express intent only; isolation was unverified.",
+  "currentScope": "CreateProcessW sets native lpDesktop. Each child self-attests its own thread desktop before UI; requested and observed names match. No SwitchDesktop or physical input.",
+  "baselineFailures": "Earlier hangs included synchronous failure cleanup during dialog initialization; queued WM_CLOSE completes the expected failing baseline. They are not evidence of a new product deadlock.",
+  "historicalAssertions": "Historical assertions remain reported as observed; isolation and hardware parity claims need separate revalidation."
+}

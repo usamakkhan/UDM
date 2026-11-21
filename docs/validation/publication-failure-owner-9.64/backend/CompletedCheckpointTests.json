@@ -1,0 +1,587 @@
+{
+  "case": "finalization-pending-admission",
+  "checks": [
+    {
+      "name": "Completed checkpoint fixture accepts only its owned loopback HTTP origin",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker prepares publication storage before the first body byte without publishing a premature intent",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held first completion checkpoint belongs to its actual worker and emits no early published notification",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker joins owned write-only body flush and close before its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An already correct actual output length skips the finish-path writer reopen",
+      "passed": true
+    },
+    {
+      "name": "A sequential response does not create a sparse output requiring post-publication normalization",
+      "passed": true
+    },
+    {
+      "name": "The actual completed worker classifies its credited write prefix without a finish-path file reread",
+      "passed": true
+    },
+    {
+      "name": "The published sequential file is a normal allocated file, not a skipped sparse conversion",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary HTTP worker uses the prepared final completion checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Downloaded parts remain until the first completion checkpoint is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The first completion snapshot already contains the final SHA and truthful bounded publication timing scope",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion or failure retires ownership without a false successful event",
+      "passed": true
+    },
+    {
+      "name": "First-checkpoint failure retains exact published bytes while reporting failed metadata publication",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding first checkpoint proves durable completion and publishes once",
+      "passed": true
+    },
+    {
+      "name": "Actual worker issues at most one complete-catalog durable write and does not rewrite accepted completion",
+      "passed": true
+    },
+    {
+      "name": "Successful or interrupted prepared publication recovers exact output and completion on reopen",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker prepares publication storage before the first body byte without publishing a premature intent",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held first completion checkpoint belongs to its actual worker and emits no early published notification",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker joins owned write-only body flush and close before its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An already correct actual output length skips the finish-path writer reopen",
+      "passed": true
+    },
+    {
+      "name": "A sequential response does not create a sparse output requiring post-publication normalization",
+      "passed": true
+    },
+    {
+      "name": "The actual completed worker classifies its credited write prefix without a finish-path file reread",
+      "passed": true
+    },
+    {
+      "name": "The published sequential file is a normal allocated file, not a skipped sparse conversion",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary HTTP worker uses the prepared final completion checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Downloaded parts remain until the first completion checkpoint is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The first completion snapshot already contains the final SHA and truthful bounded publication timing scope",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion or failure retires ownership without a false successful event",
+      "passed": true
+    },
+    {
+      "name": "First-checkpoint failure retains exact published bytes while reporting failed metadata publication",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding first checkpoint proves durable completion and publishes once",
+      "passed": true
+    },
+    {
+      "name": "Actual worker issues at most one complete-catalog durable write and does not rewrite accepted completion",
+      "passed": true
+    },
+    {
+      "name": "Successful or interrupted prepared publication recovers exact output and completion on reopen",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker prepares publication storage before the first body byte without publishing a premature intent",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held first completion checkpoint belongs to its actual worker and emits no early published notification",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker joins owned write-only body flush and close before its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An already correct actual output length skips the finish-path writer reopen",
+      "passed": true
+    },
+    {
+      "name": "A sequential response does not create a sparse output requiring post-publication normalization",
+      "passed": true
+    },
+    {
+      "name": "The actual completed worker classifies its credited write prefix without a finish-path file reread",
+      "passed": true
+    },
+    {
+      "name": "The published sequential file is a normal allocated file, not a skipped sparse conversion",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary HTTP worker uses the prepared final completion checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Downloaded parts remain until the first completion checkpoint is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The first completion snapshot already contains the final SHA and truthful bounded publication timing scope",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion or failure retires ownership without a false successful event",
+      "passed": true
+    },
+    {
+      "name": "First-checkpoint failure retains exact published bytes while reporting failed metadata publication",
+      "passed": true
+    },
+    {
+      "name": "Failed first completion checkpoint retains its original error and sends no published success",
+      "passed": true
+    },
+    {
+      "name": "Failed first completion checkpoint keeps the recovery intent and downloaded parts",
+      "passed": true
+    },
+    {
+      "name": "Actual worker issues at most one complete-catalog durable write and does not rewrite accepted completion",
+      "passed": true
+    },
+    {
+      "name": "Successful or interrupted prepared publication recovers exact output and completion on reopen",
+      "passed": true
+    },
+    {
+      "name": "Startup recovery acknowledges the interrupted completion and removes its journal",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker prepares publication storage before the first body byte without publishing a premature intent",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held first completion checkpoint belongs to its actual worker and emits no early published notification",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker joins owned write-only body flush and close before its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An already correct actual output length skips the finish-path writer reopen",
+      "passed": true
+    },
+    {
+      "name": "A sequential response does not create a sparse output requiring post-publication normalization",
+      "passed": true
+    },
+    {
+      "name": "The actual completed worker classifies its credited write prefix without a finish-path file reread",
+      "passed": true
+    },
+    {
+      "name": "The published sequential file is a normal allocated file, not a skipped sparse conversion",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary HTTP worker uses the prepared final completion checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Downloaded parts remain until the first completion checkpoint is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The first completion snapshot already contains the final SHA and truthful bounded publication timing scope",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "A newer forced commit can publish while an older completed snapshot is held before its writer lease",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion or failure retires ownership without a false successful event",
+      "passed": true
+    },
+    {
+      "name": "First-checkpoint failure retains exact published bytes while reporting failed metadata publication",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding first checkpoint proves durable completion and publishes once",
+      "passed": true
+    },
+    {
+      "name": "Actual worker issues at most one complete-catalog durable write and does not rewrite accepted completion",
+      "passed": true
+    },
+    {
+      "name": "An older completed snapshot cannot overwrite the newer committed settings",
+      "passed": true
+    },
+    {
+      "name": "Successful or interrupted prepared publication recovers exact output and completion on reopen",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker prepares publication storage before the first body byte without publishing a premature intent",
+      "passed": true
+    },
+    {
+      "name": "Actual Manager HTTP worker reaches the held completed-checkpoint phase",
+      "passed": true
+    },
+    {
+      "name": "Completed checkpoint serialization boundary and durable flush do not retain the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Published completion retains active ownership until checkpoint settles and emits no early Finished event",
+      "passed": true
+    },
+    {
+      "name": "Held first completion checkpoint belongs to its actual worker and emits no early published notification",
+      "passed": true
+    },
+    {
+      "name": "Resume during a completed checkpoint cannot start a duplicate worker or replace ownership",
+      "passed": true
+    },
+    {
+      "name": "Removing a published download still waits for completed-checkpoint ownership to retire",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP worker joins owned write-only body flush and close before its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An already correct actual output length skips the finish-path writer reopen",
+      "passed": true
+    },
+    {
+      "name": "A sequential response does not create a sparse output requiring post-publication normalization",
+      "passed": true
+    },
+    {
+      "name": "The actual completed worker classifies its credited write prefix without a finish-path file reread",
+      "passed": true
+    },
+    {
+      "name": "The published sequential file is a normal allocated file, not a skipped sparse conversion",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary HTTP worker uses the prepared final completion checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Downloaded parts remain until the first completion checkpoint is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The first completion snapshot already contains the final SHA and truthful bounded publication timing scope",
+      "passed": true
+    },
+    {
+      "name": "The complete published HTTP file matches the independent byte count and SHA-256 before checkpoint retirement",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for the owned completed checkpoint instead of abandoning its worker",
+      "passed": true
+    },
+    {
+      "name": "Shutdown join does not retain the model mutex while the completed checkpoint is held",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint completion or failure retires ownership without a false successful event",
+      "passed": true
+    },
+    {
+      "name": "First-checkpoint failure retains exact published bytes while reporting failed metadata publication",
+      "passed": true
+    },
+    {
+      "name": "Successful or superseding first checkpoint proves durable completion and publishes once",
+      "passed": true
+    },
+    {
+      "name": "Actual worker issues at most one complete-catalog durable write and does not rewrite accepted completion",
+      "passed": true
+    },
+    {
+      "name": "Shutdown finishes after the owned checkpoint is released",
+      "passed": true
+    },
+    {
+      "name": "Successful or interrupted prepared publication recovers exact output and completion on reopen",
+      "passed": true
+    },
+    {
+      "name": "Actual prepared transfer honors cancellation before its durable intent",
+      "passed": true
+    },
+    {
+      "name": "Canceled prepared transfer sends no success and publishes neither output nor intent",
+      "passed": true
+    },
+    {
+      "name": "Canceled prepared handoff releases its staging name after the worker joins",
+      "passed": true
+    },
+    {
+      "name": "Canceled prepared transfer preserves downloaded data for resume",
+      "passed": true
+    },
+    {
+      "name": "An unmarked active transfer never suppresses automatic checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The exact full-body finishing owner permits automatic IO coalescing",
+      "passed": true
+    },
+    {
+      "name": "A finishing-only automatic checkpoint performs no temporary-file write or flush",
+      "passed": true
+    },
+    {
+      "name": "Explicit saves remain durable while finalization is marked",
+      "passed": true
+    },
+    {
+      "name": "Storage-error retries bypass finalization coalescing",
+      "passed": true
+    },
+    {
+      "name": "Another active transfer prevents finishing-only suppression",
+      "passed": true
+    },
+    {
+      "name": "Unrelated active work retains its automatic durable checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Leaving finalization immediately releases automatic checkpoint admission",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint IO resumes after finalization ends",
+      "passed": true
+    },
+    {
+      "name": "Cancellation cannot retain a suppressing finalization owner",
+      "passed": true
+    },
+    {
+      "name": "Prefetch scopes cannot defer automatic checkpoints",
+      "passed": true
+    },
+    {
+      "name": "Pending admission acknowledgement retains actual automatic durable IO during finalization",
+      "passed": true
+    },
+    {
+      "name": "Settlement reaches its held filesystem validator",
+      "passed": true
+    },
+    {
+      "name": "A blocked destination validation does not retain the shared Manager mutex",
+      "passed": true
+    },
+    {
+      "name": "Settlement model transition and elapsed time commit before detached validation",
+      "passed": true
+    },
+    {
+      "name": "Filesystem validation owns a stable snapshot without overwriting newer model state",
+      "passed": true
+    },
+    {
+      "name": "Separate settlement counters attribute an actually held validator without mislabelling it lock wait",
+      "passed": true
+    },
+    {
+      "name": "Actual write-only publication flush preserves complete output bytes",
+      "passed": true
+    },
+    {
+      "name": "Missing output reports open failure without attempting flush or close",
+      "passed": true
+    },
+    {
+      "name": "A held writeback operation is attributed to its own open or flush counter",
+      "passed": true
+    },
+    {
+      "name": "Publication writeback requests no unnecessary read access",
+      "passed": true
+    },
+    {
+      "name": "Writeback runs each valid operation once and closes its handle before confirmation",
+      "passed": true
+    },
+    {
+      "name": "A held writeback operation is attributed to its own open or flush counter",
+      "passed": true
+    },
+    {
+      "name": "Publication writeback requests no unnecessary read access",
+      "passed": true
+    },
+    {
+      "name": "Writeback runs each valid operation once and closes its handle before confirmation",
+      "passed": true
+    },
+    {
+      "name": "A real flush failure cannot confirm writeback and still closes its handle",
+      "passed": true
+    },
+    {
+      "name": "An invalid handle is never flushed or closed",
+      "passed": true
+    },
+    {
+      "name": "Failed sparse normalization preserves a failed confirmation while still flushing and closing valid data",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

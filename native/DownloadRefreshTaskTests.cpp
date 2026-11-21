@@ -1,0 +1,66 @@
+﻿#include "DownloadRefreshTask.hpp"
+#include <iostream>
+namespace udm {struct CatalogCheckpointTestAccess {static void observe(Manager& m,std::function<void(const char*)> value){Lock lock(m.mutex);m.catalogCheckpoint=std::move(value);}};}
+using namespace udm;
+template<class F>static bool until(F f){const auto end=GetTickCount64()+6000;while(!f()&&GetTickCount64()<end)Sleep(1);return f();}
+static std::string captureToken(){auto value=guid();for(int at:{20,16,12,8})value.insert(at,"-");return std::to_string(epoch())+"-"+value;}
+static Json mediaMessage(int version){return {{"action","adaptive"},{"mediaToken",captureToken()},{"url","http://127.0.0.1:1/owned-media"},{"filename","media.mp4"},{"plan",{{"type","hls"},{"height",360},{"audioExpected",false},{"container","mp4"},{"tracks",Json::array({{{"kind","video"},{"segments",Json::array({{{"url","http://127.0.0.1:1/segment-"+std::to_string(version)+".ts"}}})}}})}}}};}
+int wmain(int argc,wchar_t** argv){
+ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
+ const auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
+ try{
+  Manager manager(root/L"catalog");manager.state["Settings"]["PrefetchFileInfo"]=false;manager.state["Settings"]["DownloadFolder"]=utf8((root/L"files").native());manager.state["Settings"]["CategoryFolders"]=false;manager.state["Settings"]["SkipBrowserFileInfo"]=false;
+  const auto make=[&](const std::string& name){return manager.add("http://127.0.0.1:1/"+name,utf8((root/L"files").native()),name,"Main queue",true);};
+  const auto run=[&](DownloadRefreshTask& task,DownloadRefreshCommand command){if(!task.start(std::move(command))||!until([&]{return task.ready();}))throw std::runtime_error("Owned recovery command did not settle");return task.take();};
+  const auto command=[](DownloadRefreshAction action,DownloadRefreshViewPtr shown={}){DownloadRefreshCommand value;value.action=action;value.shown=std::move(shown);return value;};
+  {
+   auto job=make("ordinary.bin");job->data["Status"]="Failed";job->data["Received"]=17;job->data["DownloadPage"]="https://example.invalid/page";DownloadRefreshTask task(manager,job,true);
+   auto begun=run(task,command(DownloadRefreshAction::Begin));check(begun.error.empty()&&begun.view&&!begun.view->media&&!begun.view->ftp&&begun.view->page=="https://example.invalid/page"&&num(begun.view->record,"Received")==17,"Begin durably prepares the ordinary recovery view and its saved progress/page");check(str(job->data,"Status")=="Paused","Begin keeps the established paused recovery state");
+   auto read=run(task,command(DownloadRefreshAction::Read));check(read.view&&read.view->candidate==begun.view->candidate&&read.view->offerRevision==begun.view->offerRevision,"Unchanged polls reuse the immutable decoded offer instead of reparsing it");
+   auto apply=command(DownloadRefreshAction::Apply,read.view);apply.address="http://127.0.0.1:1/ordinary.bin?fresh=1";apply.page="https://example.invalid/updated";auto saved=run(task,apply);check(saved.applied&&saved.error.empty()&&str(job->data,"Url")==apply.address&&yes(job->data,"RefreshPendingValidation")&&num(job->data,"Received")==17,"Save applies the new address durably while retaining saved bytes for validation");
+   check(saved.appliedSelection==fileInfoSelection(*job),"Successful recovery returns the exact private saved selection for its owned parent continuation");
+   const auto before=manager.snapshot();auto replay=run(task,apply);check(!replay.applied&&!replay.error.empty()&&manager.snapshot()==before,"An already accepted address save cannot replay within the session");check(run(task,command(DownloadRefreshAction::Close,read.view)).closed,"Close settles the owned recovery session");
+  }
+  {
+   auto job=make("stale.bin");DownloadRefreshTask task(manager,job,true);run(task,command(DownloadRefreshAction::Begin));manager.captureAddressRefresh("http://127.0.0.1:1/stale.bin?fresh=1",{},"stale.bin","");auto first=run(task,command(DownloadRefreshAction::Read));check(first.view&&str(first.view->offer(),"url").find("fresh=1")!=std::string::npos,"Read returns a real staged browser replacement");
+   manager.captureAddressRefresh("http://127.0.0.1:1/stale.bin?fresh=2",{},"stale.bin","");auto apply=command(DownloadRefreshAction::Apply,first.view);apply.address=str(first.view->offer(),"url");auto stale=run(task,apply);check(stale.stale&&!stale.applied&&stale.view&&str(stale.view->offer(),"url").find("fresh=2")!=std::string::npos&&str(job->data,"Url").find('?')==std::string::npos,"Save rejects a newer undisplayed capture and returns it for explicit review");
+   apply.shown=stale.view;apply.address=str(stale.view->offer(),"url");auto saved=run(task,apply);check(saved.applied&&saved.error.empty()&&str(job->data,"Url")==apply.address,"A second explicit Save accepts the actually reviewed replacement");run(task,command(DownloadRefreshAction::Close,stale.view));
+  }
+  {
+   auto job=make("receipt.bin");DownloadRefreshTask task(manager,job,true);run(task,command(DownloadRefreshAction::Begin));
+   manager.captureAddressRefresh("http://127.0.0.1:1/receipt.bin?fresh=1",{},"receipt.bin","");
+   const auto receipt=[&](const std::string& token){manager.state["BrowserCaptures"][token]={{"status","accepted"},{"created",epoch()},{"id",job->id()},{"presentation",{{"id",job->id()},{"kind","refresh"}}}};};
+   receipt("owned-visible");manager.save();auto visible=run(task,command(DownloadRefreshAction::Read));check(visible.view&&visible.view->presentations.size()==1,"Recovery captures the cohort actually available for display");receipt("owned-later");manager.save();
+   CatalogCheckpointTestAccess::observe(manager,[](const char* stage){if(std::string(stage)=="temporary-flushed")throw std::runtime_error("Owned recovery acknowledgement failure");});
+   struct Clear{Manager& m;~Clear(){CatalogCheckpointTestAccess::observe(m,{});}} clear{manager};auto failed=run(task,command(DownloadRefreshAction::Close,visible.view));check(!failed.closed&&!failed.error.empty()&&manager.state["BrowserCaptures"]["owned-visible"].contains("presentation"),"A real close-save failure retains the displayed receipt for explicit Retry");
+   CatalogCheckpointTestAccess::observe(manager,{});check(run(task,command(DownloadRefreshAction::Close,visible.view)).closed,"Explicit Retry finishes the same owned close");check(!manager.state["BrowserCaptures"]["owned-visible"].contains("presentation")&&manager.state["BrowserCaptures"]["owned-later"].contains("presentation"),"Close acknowledges only displayed tokens and preserves the later receipt");
+  }
+  {
+   auto job=make("storage.bin");DownloadRefreshTask task(manager,job,true);auto view=run(task,command(DownloadRefreshAction::Begin)).view;auto apply=command(DownloadRefreshAction::Apply,view);apply.address="http://127.0.0.1:1/storage.bin?fresh=1";
+   CatalogCheckpointTestAccess::observe(manager,[](const char* stage){if(std::string(stage)=="temporary-flushed")throw std::runtime_error("Owned address save failure");});struct Clear{Manager& m;~Clear(){CatalogCheckpointTestAccess::observe(m,{});}} clear{manager};auto failed=run(task,apply);check(!failed.applied&&!failed.error.empty()&&str(job->data,"Url").find('?')==std::string::npos,"A real address-save failure rolls back the request and does not report success");CatalogCheckpointTestAccess::observe(manager,{});check(run(task,apply).applied,"An explicit Save retry succeeds after storage recovery");run(task,command(DownloadRefreshAction::Close,view));
+  }
+  {
+   auto job=make("changed.bin");DownloadRefreshTask task(manager,job,true,true);auto view=run(task,command(DownloadRefreshAction::Begin)).view;auto apply=command(DownloadRefreshAction::Apply,view);apply.address="http://127.0.0.1:1/changed.bin?fresh=1";apply.resume=true;const auto before=manager.snapshot();auto forbidden=run(task,apply);check(!forbidden.applied&&!forbidden.error.empty()&&manager.snapshot()==before,"File Info mode cannot save-and-resume through an unauthorized command");apply.resume=false;job->data["ProtectedBrowserProxy"]="changed";auto stale=run(task,apply);check(!stale.applied&&!stale.error.empty()&&str(job->data,"Url").find('?')==std::string::npos,"A changed request route invalidates the recovery session before Save");run(task,command(DownloadRefreshAction::Close,view));job->data["ProtectedBrowserProxy"]="";
+  }
+  {
+   auto job=manager.add("ftp://example.invalid/archive.bin",utf8((root/L"files").native()),"ftp.bin","Main queue",true);DownloadRefreshTask task(manager,job,true);auto view=run(task,command(DownloadRefreshAction::Begin)).view;check(view&&view->ftp&&!view->media,"FTP recovery uses its ordinary immutable view without browser waiting");auto apply=command(DownloadRefreshAction::Apply,view);apply.address="ftp://example.invalid/new/archive.bin";auto saved=run(task,apply);check(saved.applied&&!manager.isActive(job)&&str(job->data,"Url")==apply.address,"FTP Save updates only the address without opening a transfer");run(task,command(DownloadRefreshAction::Close,view));
+  }
+  {
+   auto job=make("cold.bin");std::promise<void> release;auto gate=release.get_future().share();std::atomic_bool held=false,waiting=false;std::thread writer([&]{Lock lock(manager.mutex);held=true;gate.wait();held=false;});
+   struct Join{std::promise<void>& release;std::thread& thread;~Join(){try{release.set_value();}catch(...){}if(thread.joinable())thread.join();}} cleanup{release,writer};check(until([&]{return held.load();}),"A real writer owns Manager before recovery Begin");DownloadRefreshTask task(manager,job,true);task.start(command(DownloadRefreshAction::Begin),{},[&](const char* stage){if(std::string(stage)=="waiting-model")waiting=true;});check(until([&]{return waiting.load();})&&held,"Begin waits on the owned worker instead of the requesting thread");task.cancelRead();check(until([&]{return task.ready();})&&task.take().cancelled&&held,"Initial cancellation settles before Manager must become readable");check(run(task,command(DownloadRefreshAction::Close)).closed&&held,"A session never begun closes without acquiring or mutating the held model");release.set_value();writer.join();
+  }
+  {
+   auto job=make("persistent.bin");DownloadRefreshTask task(manager,job,true);run(task,command(DownloadRefreshAction::Begin));std::vector<std::thread::id> threads;const auto owner=std::this_thread::get_id();
+   for(int i=0;i<3;++i){task.start(command(DownloadRefreshAction::Read),{},[&](const char* stage){if(std::string(stage)=="before-read")threads.push_back(std::this_thread::get_id());});check(until([&]{return task.ready();})&&task.take().view!=nullptr,"Repeated advisory reads settle on the same owned session");}
+   check(threads.size()==3&&threads[0]!=owner&&threads[0]==threads[1]&&threads[1]==threads[2],"Advisory polls reuse one persistent worker rather than spawning a thread each time");run(task,command(DownloadRefreshAction::Close));task.finish();check(!task.start(command(DownloadRefreshAction::Read)),"A joined session refuses further work");
+  }
+  {
+   auto job=manager.add("https://example.invalid/watch",utf8((root/L"files").native()),"sabr.mp4","Main queue",true);job->data["SourceUrl"]="https://example.invalid/watch";job->data["ProtectedSabr"]=protect(Json{{"video",{{"id","137"}}},{"audio",{{"id","140"}}}}.dump());DownloadRefreshTask task(manager,job,true);auto view=run(task,command(DownloadRefreshAction::Begin)).view;check(view&&view->media&&view->sabr,"Streaming recovery prepares the saved media selection without browser access");auto page=run(task,command(DownloadRefreshAction::Page));check(page.error.empty()&&page.page.find("#udm-stream-refresh=")!=std::string::npos&&(page.page.size()>=5&&page.page.compare(page.page.size()-5,5,".v137")==0),"Media page preparation preserves the live session marker and saved quality");run(task,command(DownloadRefreshAction::Close,view));
+  }
+  {
+   auto job=manager.receive(mediaMessage(0));for(const auto& offer:manager.pendingBrowserPresentations(job))manager.finishBrowserPresentation(offer);DownloadRefreshTask task(manager,job,true);run(task,command(DownloadRefreshAction::Begin));check(manager.receive(mediaMessage(1))==job,"A real matching adaptive capture stages onto the original session");auto view=run(task,command(DownloadRefreshAction::Read)).view;check(view&&view->media&&str(view->offer(),"kind")=="adaptive","Streaming recovery reads the actual staged adaptive selection");auto apply=command(DownloadRefreshAction::Apply,view);auto saved=run(task,apply);check(saved.applied&&saved.error.empty()&&reveal(str(job->data,"ProtectedAdaptive")).find("segment-1.ts")!=std::string::npos&&yes(job->data,"AdaptiveRefreshPendingValidation"),"Save applies the reviewed adaptive session while preserving deferred validation");run(task,command(DownloadRefreshAction::Close,view));
+  }
+  manager.stop();
+ }catch(const std::exception& e){error=e.what();}
+ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+}

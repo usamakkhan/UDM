@@ -1,0 +1,93 @@
+{
+  "result": {
+    "checks": [
+      {
+        "name": "A complete prefetched receipt settles on the owned reader",
+        "passed": true
+      },
+      {
+        "name": "The exact existing file is returned and terminal polling is stable",
+        "passed": true
+      },
+      {
+        "name": "ZIP readiness inspection never changes the model or starts another request",
+        "passed": true
+      },
+      {
+        "name": "An unfinished prefetch remains pending rather than starting a replacement request",
+        "passed": true
+      },
+      {
+        "name": "The same reader observes a later complete receipt",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A changed request, ownership, receipt or file is rejected after disk inspection",
+        "passed": true
+      },
+      {
+        "name": "A real writer owns Manager before ZIP readiness begins",
+        "passed": true
+      },
+      {
+        "name": "Starting and polling ZIP readiness return while its reader waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "Cancellation joins the lock-waiting reader without needing the writer to release",
+        "passed": true
+      },
+      {
+        "name": "Cancelled readiness cannot publish a file after Manager becomes available",
+        "passed": true
+      },
+      {
+        "name": "Receipt-wait cancellation begins from an observed pending state",
+        "passed": true
+      },
+      {
+        "name": "Stopping receipt polling joins the reader and settles without a file",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "excludedFromPrimaryCounts": true
+}

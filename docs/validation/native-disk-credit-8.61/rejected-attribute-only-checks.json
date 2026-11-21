@@ -1,0 +1,54 @@
+{
+  "checks": [
+    {
+      "name": "The Manager fixture owns the expected root parts file",
+      "passed": true
+    },
+    {
+      "name": "A direct caller without the owning worker scope keeps the legacy synchronous path",
+      "passed": true
+    },
+    {
+      "name": "The active root worker attaches its actual expected parts file",
+      "passed": true
+    },
+    {
+      "name": "Duplicate binding admission is refused without replacing the owner",
+      "passed": true
+    },
+    {
+      "name": "The actual Manager save persists written prefixes rather than live RAM-only progress",
+      "passed": true
+    },
+    {
+      "name": "Actual Job/UI progress and network accounting remain separate from persisted resume credit",
+      "passed": true
+    },
+    {
+      "name": "The real periodic dirty check skips a RAM-only progress change when its persisted view is identical",
+      "passed": true
+    },
+    {
+      "name": "Advancing acknowledged disk credit triggers the real automatic checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A changed live representation cannot publish the previous generation's credit",
+      "passed": true
+    },
+    {
+      "name": "The Manager private active map rejects the old cancellation generation",
+      "passed": true
+    },
+    {
+      "name": "A captured generation cannot disappear from catalog membership",
+      "passed": true
+    },
+    {
+      "name": "The binding physically denies deletion of the expected parts file",
+      "passed": false
+    }
+  ],
+  "error": "The binding physically denies deletion of the expected parts file",
+  "passed": false
+}

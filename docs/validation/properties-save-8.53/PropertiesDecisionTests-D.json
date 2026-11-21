@@ -1,0 +1,304 @@
+{
+  "case": "completed-batch",
+  "cases": [
+    {
+      "completed": false,
+      "error": "",
+      "fault": "none"
+    },
+    {
+      "completed": false,
+      "error": "This download is no longer in the list.",
+      "fault": "removed"
+    },
+    {
+      "completed": false,
+      "error": "Stop the download before changing its properties.",
+      "fault": "active"
+    },
+    {
+      "completed": false,
+      "error": "Stop the download before changing its properties.",
+      "fault": "status"
+    },
+    {
+      "completed": false,
+      "error": "UDM is closing.",
+      "fault": "closing"
+    },
+    {
+      "completed": false,
+      "error": "The download address changed to another site. Reopen Properties before saving request headers. Your edits are still in this dialog.",
+      "fault": "origin"
+    },
+    {
+      "completed": false,
+      "error": "Owned Properties catalog failure",
+      "fault": "save"
+    },
+    {
+      "completed": true,
+      "error": "",
+      "fault": "none"
+    },
+    {
+      "completed": true,
+      "error": "This download is no longer in the list.",
+      "fault": "removed"
+    },
+    {
+      "completed": true,
+      "error": "Select a completed download.",
+      "fault": "active"
+    },
+    {
+      "completed": true,
+      "error": "Select a completed download.",
+      "fault": "status"
+    },
+    {
+      "completed": true,
+      "error": "UDM is closing.",
+      "fault": "closing"
+    },
+    {
+      "completed": true,
+      "error": "The download address changed to another site. Reopen Properties before saving request headers. Your edits are still in this dialog.",
+      "fault": "origin"
+    },
+    {
+      "completed": true,
+      "error": "Owned Properties catalog failure",
+      "fault": "save"
+    },
+    {
+      "completed": true,
+      "error": "Finish the catalog batch before saving download properties.",
+      "fault": "batch"
+    }
+  ],
+  "checks": [
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "The worker applies only the staged logical header delta to the current session",
+      "passed": true
+    },
+    {
+      "name": "The worker completes the actual durable metadata save",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "The worker applies only the staged logical header delta to the current session",
+      "passed": true
+    },
+    {
+      "name": "The worker completes the actual durable metadata save",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    },
+    {
+      "name": "The owned Properties command rejects stale, closed, active, cross-origin and failed-save inputs",
+      "passed": true
+    },
+    {
+      "name": "Worker acknowledgement releases the decision owner after success or error",
+      "passed": true
+    },
+    {
+      "name": "Rejected Properties saves preserve the complete current job and request session",
+      "passed": true
+    },
+    {
+      "name": "Properties metadata decisions preserve exact completed file bytes",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

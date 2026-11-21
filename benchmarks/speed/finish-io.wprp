@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WindowsPerformanceRecorder Version="1.0">
+  <Profiles>
+    <SystemCollector Id="UDMFinishSystem" Name="UDM finish IO attribution">
+      <BufferSize Value="64" />
+      <Buffers Value="1024" />
+    </SystemCollector>
+    <SystemProvider Id="UDMFinishKernel">
+      <Keywords>
+        <Keyword Value="ProcessThread" />
+        <Keyword Value="Loader" />
+        <Keyword Value="CSwitch" />
+        <Keyword Value="ReadyThread" />
+        <Keyword Value="DiskIO" />
+        <Keyword Value="DiskIOInit" />
+        <Keyword Value="FileIO" />
+        <Keyword Value="FileIOInit" />
+      </Keywords>
+      <Stacks>
+        <Stack Value="DiskReadInit" />
+        <Stack Value="DiskWriteInit" />
+        <Stack Value="DiskFlushInit" />
+        <Stack Value="FileFlush" />
+        <Stack Value="FileOpEnd" />
+      </Stacks>
+    </SystemProvider>
+    <Profile Id="UDMFinish.Verbose.File" Name="UDMFinish" DetailLevel="Verbose"
+             LoggingMode="File" Description="Owned download finish IO attribution">
+      <Collectors>
+        <SystemCollectorId Value="UDMFinishSystem">
+          <SystemProviderId Value="UDMFinishKernel" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+    <Profile Id="UDMFinish.Verbose.Memory" Base="UDMFinish.Verbose.File"
+             Name="UDMFinish" DetailLevel="Verbose" LoggingMode="Memory"
+             Description="Owned download finish IO attribution, memory buffers" />
+  </Profiles>
+</WindowsPerformanceRecorder>

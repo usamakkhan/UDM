@@ -1,0 +1,67 @@
+{
+  "checks": [
+    {
+      "name": "First completed run can start its countdown",
+      "passed": true
+    },
+    {
+      "name": "Rapid completed restart never revives previous countdown",
+      "passed": true
+    },
+    {
+      "name": "Each queue run has a distinct identity",
+      "passed": true
+    },
+    {
+      "name": "Stale event cannot dispatch an action",
+      "passed": true
+    },
+    {
+      "name": "Unrelated Apply preserves event and ignores caller-supplied identity",
+      "passed": true
+    },
+    {
+      "name": "Failed-start fixture rejects state save",
+      "passed": true
+    },
+    {
+      "name": "Failed queue start restores identity and global epoch exactly",
+      "passed": true
+    },
+    {
+      "name": "Completion without run identity fails closed",
+      "passed": true
+    },
+    {
+      "name": "Completion without work epoch fails closed",
+      "passed": true
+    },
+    {
+      "name": "Changing finish policy invalidates pending event",
+      "passed": true
+    },
+    {
+      "name": "Another completed download invalidates old countdown even when idle again",
+      "passed": true
+    },
+    {
+      "name": "Individual Resume invalidates countdown without starting a queue",
+      "passed": true
+    },
+    {
+      "name": "Stop cancels current completion event",
+      "passed": true
+    },
+    {
+      "name": "Stop and restart do not resurrect canceled event",
+      "passed": true
+    },
+    {
+      "name": "Automatic one-time disarming retains valid event",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "systemActionsExecuted": false
+}

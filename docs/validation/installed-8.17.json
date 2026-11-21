@@ -1,0 +1,83 @@
+{
+  "version": "8.17",
+  "browserVersionFiles": "0.71.81",
+  "method": "Verified direct payload update with individual atomic replacements, rollback copies and registered DisplayVersion; no installer package built.",
+  "complete": true,
+  "files": [
+    {
+      "relative": "UDM.exe",
+      "sha256": "90FB35FC6E1485A8623575004D45B303BF05B27C8A1FF3EDFF404C62A2AA2D9C"
+    },
+    {
+      "relative": "Udm.NativeHost.exe",
+      "sha256": "380EE48E682FEB68A1CC67E4D7510088E518E40141C736CF4AC9DE50C2A7BA99"
+    },
+    {
+      "relative": "Udm.Monitor.exe",
+      "sha256": "419CED21A97B258E1438FAE1A14CA26CD23436F3416B47FA99D82B39153C2B84"
+    },
+    {
+      "relative": "Udm.SetupHelper.exe",
+      "sha256": "F2648562288F9A3483F713A5B9293C68CA2A82D178D7A2E1BBB1EF025B458911"
+    },
+    {
+      "relative": "Udm.Automation.exe",
+      "sha256": "F7C37BB6D7CE4F7D19CD30AD6C5F7871311E6F265C6F6D74915B4EA7115C7EE2"
+    },
+    {
+      "relative": "browser/chromium/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "relative": "browser/chromium/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "relative": "browser/chromium/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "relative": "browser/chromium/manifest.json",
+      "sha256": "B41F27793C13AC980E245957D4E629B76A397A2DBEB73869FCCC5E7548542AF9"
+    },
+    {
+      "relative": "browser/chromium/native-bridge.js",
+      "sha256": "3329F7D756652B533D4D05E95DB83091CB133C21E7E56D83FDF389DDCC926D25"
+    },
+    {
+      "relative": "browser/chromium/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    },
+    {
+      "relative": "browser/firefox/background.js",
+      "sha256": "A65A52363786B9F77BE75D60EB6668623E5B827EC8D32791DF85219B73E95869"
+    },
+    {
+      "relative": "browser/firefox/capture.js",
+      "sha256": "05379AB05656FF6B1E7FD7D754281D17E1A929654DCAA7F4571ABC2BDD48CD6E"
+    },
+    {
+      "relative": "browser/firefox/content.js",
+      "sha256": "AFD5C8BF9E0DB00012E27D4BD9D78C1CFC2E0CB6EE1EA63A7A340092C1E4D9E9"
+    },
+    {
+      "relative": "browser/firefox/manifest.json",
+      "sha256": "7B756B3C1C77507152818122C42AF440957718535A394153E97DBAD894744C7D"
+    },
+    {
+      "relative": "browser/firefox/native-bridge.js",
+      "sha256": "3329F7D756652B533D4D05E95DB83091CB133C21E7E56D83FDF389DDCC926D25"
+    },
+    {
+      "relative": "browser/firefox/streaming-capture.js",
+      "sha256": "2AB027B7C09AFAD0E3B2C56B92CEF5B9D0EA3E1E137C2756F50C900D3A3D0EF6"
+    }
+  ],
+  "catalogsUnchanged": true,
+  "catalogSnapshots": 2,
+  "mediaHelpersCopied": 0,
+  "rollbackAvailable": true,
+  "registryVersionUpdated": true,
+  "extensionActivation": "Updated installed files; Chrome was closed. Active browser extension behavior not observed after restart.",
+  "desktopControl": "Sky and CUA initialization failed: failed to write kernel assets (path not found). No GUI/focus/dialog-timing comparison claimed."
+}

@@ -1,0 +1,21 @@
+--- a/native/App.cpp
++++ b/native/App.cpp
+@@ -1222,7 +1222,7 @@
+   }
+ 
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+-  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){nativeUiTraceRecord("initial-refresh-entry");refresh();reviewAutomationBatches();nativeUiTraceRecord("initial-refresh-returned");return 0;}
++  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){nativeUiTraceRecord("initial-refresh-entry");refresh();reviewAutomationBatches();nativeUiTraceRecord("initial-refresh-returned");if(nativeUiTraceSink.view)PostMessage(WM_CLOSE);return 0;}
+ #else
+   afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){refresh();reviewAutomationBatches();return 0;}
+ #endif
+@@ -1468,7 +1468,9 @@
+     [frame]{frame->PostMessage(PRESENT_CAPTURE);},requestQueueWork,frame->fileInfoInbox(),[window=frame->GetSafeHwnd()](uint64_t key){return ::PostMessageW(window,PREPARED_FILE_INFO,static_cast<WPARAM>(key),0)!=FALSE;});
+ #endif
+   };
++  nativeUiTraceRecord("startup-queues-entry");
+   manager->startQueuesOnStartup();
++  nativeUiTraceRecord("startup-queues-returned");
+   frame->restartIntegration();
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+   nativeUiTraceRecord("pipe-ready");

@@ -1,0 +1,1395 @@
+{
+  "case": "ephemeral-crash-publication-journal-removed",
+  "checks": [
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Completion is durably correlated before detached journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Detached decoded publication preserves wire evidence and forces measured final output counters",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "Correlated recovery completes interrupted intent/move/save without losing current metadata or downloading again",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "Intent preparation cannot prematurely claim completion or move bytes",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Interrupted commit keeps its journal without a false completed row",
+      "passed": true
+    },
+    {
+      "name": "Failed publication preserves independently accepted current metadata",
+      "passed": true
+    },
+    {
+      "name": "A changed named staging object is rejected before rename while both versions remain intact",
+      "passed": true
+    },
+    {
+      "name": "Reconciliation cannot accept changed staging bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "An unrelated new staging object cannot undo or be consumed by accepted completion recovery",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "Already accepted recovery preserves later synchronization membership, metadata and scanner state",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires only its own verified completion intent",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A newer completion or malformed correlation cannot be overwritten by an old journal",
+      "passed": true
+    },
+    {
+      "name": "Rejected correlation preserves the current row, journal and published bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Real ordinary publication reaches its detached intent, move or cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "The model remains accessible during actual publication intent/rename/cleanup work",
+      "passed": true
+    },
+    {
+      "name": "Publication and its parent remain protected through detached irreversible work",
+      "passed": true
+    },
+    {
+      "name": "Pause cannot claim to cancel an already committing file transaction",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot discard a transaction while detached publication owns its bytes",
+      "passed": true
+    },
+    {
+      "name": "The physical move precedes model completion and remains guarded",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds the exact final-save or cleanup object to inject a real sharing failure",
+      "passed": true
+    },
+    {
+      "name": "Every publication outcome retires its owned job tree and paths",
+      "passed": true
+    },
+    {
+      "name": "Ordinary, child, opaque and decoded publication retains exact output with a unique completion identity",
+      "passed": true
+    },
+    {
+      "name": "Completion merges its owned fields without replacing current metadata or settings",
+      "passed": true
+    },
+    {
+      "name": "A real denied journal unlink leaves recoverable intent after the accepted save",
+      "passed": true
+    },
+    {
+      "name": "The surviving journal binds the exact accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A newer completion or malformed correlation cannot be overwritten by an old journal",
+      "passed": true
+    },
+    {
+      "name": "Rejected correlation preserves the current row, journal and published bytes",
+      "passed": true
+    },
+    {
+      "name": "Committed, interrupted and child outcomes retain current metadata after reopening",
+      "passed": true
+    },
+    {
+      "name": "Publication rejects a caller-owned catalog batch before bytes, state or ownership change",
+      "passed": true
+    },
+    {
+      "name": "Publication can explicitly retry after its caller's catalog batch finishes",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "The lost-ack boundary follows actual publication of the correlated catalog bytes",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Unproved or deferred catalog completion preserves its file and journal without a false success",
+      "passed": true
+    },
+    {
+      "name": "Owned rollback preserves independent current metadata and settings",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery resolves catalog failure/uncertainty locally with exact bytes and current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "The lost-ack boundary follows actual publication of the correlated catalog bytes",
+      "passed": true
+    },
+    {
+      "name": "Unproved or deferred catalog completion preserves its file and journal without a false success",
+      "passed": true
+    },
+    {
+      "name": "Owned rollback preserves independent current metadata and settings",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery resolves catalog failure/uncertainty locally with exact bytes and current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "A newer writer captures the exact tentative completed row while the original writer is held",
+      "passed": true
+    },
+    {
+      "name": "A containing writer can queue without retaining the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "A newer containing success wins over original failure or supersession without losing independent state",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "A newer writer captures the exact tentative completed row while the original writer is held",
+      "passed": true
+    },
+    {
+      "name": "A newer containing snapshot can publish before an older writer enters its write gate",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "A newer containing success wins over original failure or supersession without losing independent state",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Unproved or deferred catalog completion preserves its file and journal without a false success",
+      "passed": true
+    },
+    {
+      "name": "Owned rollback preserves independent current metadata and settings",
+      "passed": true
+    },
+    {
+      "name": "Rollback does not overwrite an independently changed completion field",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery resolves catalog failure/uncertainty locally with exact bytes and current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "An unrelated superseding catalog cannot commit a different completion identity",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Unproved or deferred catalog completion preserves its file and journal without a false success",
+      "passed": true
+    },
+    {
+      "name": "Owned rollback preserves independent current metadata and settings",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery resolves catalog failure/uncertainty locally with exact bytes and current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Unproved or deferred catalog completion preserves its file and journal without a false success",
+      "passed": true
+    },
+    {
+      "name": "Owned rollback preserves independent current metadata and settings",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery resolves catalog failure/uncertainty locally with exact bytes and current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches its actual detached catalog snapshot/write/ack boundary",
+      "passed": true
+    },
+    {
+      "name": "Catalog serialization, writer wait and durable I/O do not retain the publication's model lock",
+      "passed": true
+    },
+    {
+      "name": "Tentative completed rows remain owned until their durable catalog outcome resolves",
+      "passed": true
+    },
+    {
+      "name": "Shutdown closes admission and waits for the detached catalog outcome",
+      "passed": true
+    },
+    {
+      "name": "Shutdown's publication wait leaves the catalog model accessible",
+      "passed": true
+    },
+    {
+      "name": "Shutdown completes after correlated catalog publication retires",
+      "passed": true
+    },
+    {
+      "name": "Only a successful exact containing snapshot permits publication success and journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful detached catalog publication preserves concurrent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Catalog proof resolution retires publication and parent ownership",
+      "passed": true
+    },
+    {
+      "name": "Resolved catalog outcomes survive reopening with complete bytes and independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Standalone internal publication reaches detached catalog receipt I/O",
+      "passed": true
+    },
+    {
+      "name": "An anonymous internal publication leaves the model accessible without inventing a visible download",
+      "passed": true
+    },
+    {
+      "name": "The internal completion remains owned and represented by one exact private receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone ordinary and unknown-hash publication preserve their existing completion behavior",
+      "passed": true
+    },
+    {
+      "name": "Receipt retirement removes only internal metadata and preserves exact output/current runtime metadata",
+      "passed": true
+    },
+    {
+      "name": "Standalone completion survives reopening without a phantom download or retained receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone internal publication reaches detached catalog receipt I/O",
+      "passed": true
+    },
+    {
+      "name": "An anonymous internal publication leaves the model accessible without inventing a visible download",
+      "passed": true
+    },
+    {
+      "name": "The internal completion remains owned and represented by one exact private receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone ordinary and unknown-hash publication preserve their existing completion behavior",
+      "passed": true
+    },
+    {
+      "name": "Receipt retirement removes only internal metadata and preserves exact output/current runtime metadata",
+      "passed": true
+    },
+    {
+      "name": "Standalone completion survives reopening without a phantom download or retained receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone internal publication reaches detached catalog receipt I/O",
+      "passed": true
+    },
+    {
+      "name": "An anonymous internal publication leaves the model accessible without inventing a visible download",
+      "passed": true
+    },
+    {
+      "name": "The internal completion remains owned and represented by one exact private receipt",
+      "passed": true
+    },
+    {
+      "name": "Failed private receipt persistence rolls back only its own receipt and keeps the file intent",
+      "passed": true
+    },
+    {
+      "name": "A live standalone caller can explicitly recover its unpublished receipt outcome",
+      "passed": true
+    },
+    {
+      "name": "Receipt retirement removes only internal metadata and preserves exact output/current runtime metadata",
+      "passed": true
+    },
+    {
+      "name": "Standalone completion survives reopening without a phantom download or retained receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone internal publication reaches detached catalog receipt I/O",
+      "passed": true
+    },
+    {
+      "name": "An anonymous internal publication leaves the model accessible without inventing a visible download",
+      "passed": true
+    },
+    {
+      "name": "The internal completion remains owned and represented by one exact private receipt",
+      "passed": true
+    },
+    {
+      "name": "Standalone cleanup fixture denies unlink while its receipt is already written",
+      "passed": true
+    },
+    {
+      "name": "Standalone ordinary and unknown-hash publication preserve their existing completion behavior",
+      "passed": true
+    },
+    {
+      "name": "A denied standalone unlink keeps its acknowledged receipt for recovery",
+      "passed": true
+    },
+    {
+      "name": "Receipt retirement removes only internal metadata and preserves exact output/current runtime metadata",
+      "passed": true
+    },
+    {
+      "name": "Standalone completion survives reopening without a phantom download or retained receipt",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess terminates at the actual private intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Restart recovers standalone file bytes without creating a visible download",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles or prunes private receipt metadata only after its journal outcome is known",
+      "passed": true
+    },
+    {
+      "name": "A second reopen retains exact output and no orphan private receipt",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess terminates at the actual private intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Restart recovers standalone file bytes without creating a visible download",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles or prunes private receipt metadata only after its journal outcome is known",
+      "passed": true
+    },
+    {
+      "name": "A second reopen retains exact output and no orphan private receipt",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess terminates at the actual private intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Restart recovers standalone file bytes without creating a visible download",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles or prunes private receipt metadata only after its journal outcome is known",
+      "passed": true
+    },
+    {
+      "name": "A second reopen retains exact output and no orphan private receipt",
+      "passed": true
+    },
+    {
+      "name": "Owned subprocess terminates at the actual private intent/move/catalog/unlink crash boundary",
+      "passed": true
+    },
+    {
+      "name": "Restart recovers standalone file bytes without creating a visible download",
+      "passed": true
+    },
+    {
+      "name": "Restart reconciles or prunes private receipt metadata only after its journal outcome is known",
+      "passed": true
+    },
+    {
+      "name": "A second reopen retains exact output and no orphan private receipt",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

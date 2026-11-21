@@ -1,0 +1,211 @@
+{
+  "passed": true,
+  "baseline": "9.45",
+  "files": [
+    {
+      "path": "native/AboutUiTests.cpp",
+      "baseline": "614D52E3E5B269C20CAFB8F644A237A1DA9F33C44265C29FFFE87B7AD2D3F015",
+      "current": "147C4986F744F372104E27F67DA14081C74CCBFBFEE8455C537CE7FDBE009F7B",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/CapturePresentationUiTests.cpp",
+      "baseline": "F459AD077C420CC646AF9049D489DDE4F808D4B7ABEE156D55FC275D1D12A7CA",
+      "current": "6EF5CC69773C2B3EAD7AEE3EDF449A8442FBD9F6C6596497273A394EC02673BC",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);",
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);",
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/ColumnControlsUiTests.cpp",
+      "baseline": "6056959661A2AA05BBA5ED71ADC04F6CA5B2DABF168CD4ABDBF930E79553C838",
+      "current": "559B7E7C5A8B189E06E560F6C4B055A9A35F55C03E5613E1F1A1A6E5EF40D04C",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/CompletionDialogUiTests.cpp",
+      "baseline": "5E11A60A81B42DDC9AFD741D8DF2DD069D804842160AD31303835B91B509D05E",
+      "current": "562EDA00C28A4D8EFBF5FE299AD5C57FF0EC8819307ED29EC36DF9850D668EDB",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/DarkGroupsUiTests.cpp",
+      "baseline": "54A2603368DCC25DEFF2167C0B15AF472C386427C314E8739360CF2FFC0CC6CA",
+      "current": "2AEB28FEF7C59BBA09DB6BE68A1850A871022D61467244C589A487C75209072A",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->OnClose();",
+        "frame->quitting=true;frame->OnClose();",
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);",
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/DownloadMenuFocusUiTests.cpp",
+      "baseline": "2DF691B53D2F94F63EC97B56A4CA311BA74B815B1DCC45CADE066C1F55827FB5",
+      "current": "9996B6B30EA70D0EC8A175BA55EB47DB95A15264B66C8EF7611E7487DA4D314E",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "LF",
+      "originalBom": false
+    },
+    {
+      "path": "native/DownloadMenuUiTests.cpp",
+      "baseline": "2537B0EC867F3AFDC36CD416CE5BBD3A7A0A3B42605944F198D9FEE233BD8EC1",
+      "current": "5B0934F6B3EFAB1C410BCC8FFA411D3290EA3D4C93D061FF830599CFAE68B2E3",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "LF",
+      "originalBom": false
+    },
+    {
+      "path": "native/FindDialogUiTests.cpp",
+      "baseline": "848D9B45D9EAF560661417287F6EE64BF3625BE8A1FEB44F08578BDED335BAE5",
+      "current": "F419431FF62DF24BD4E0A920E7B9D9E69ECE5E3A46BCB37702299E3901A09081",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/HistoryNavigationUiTests.cpp",
+      "baseline": "C0BF8A5D90333B6250C44F260F5360D3009B5486986C11F83C17796E3318F9DB",
+      "current": "F619AAC3B5519FE790CCA0AC9089D1838D9F5A7AC1936304CCE88EE3C0E17A84",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/MainClosePolicyUiTests.cpp",
+      "baseline": "22DAC360C0F63A15B92165E299B3886D92652D5BA1CD5D877BC94360363F92A0",
+      "current": "3E3E577E2378BDE12D9E872BF45A6B4774853A37957E96CF3F1476193123C1F2",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "LF",
+      "originalBom": false
+    },
+    {
+      "path": "native/MainTrayUiTests.cpp",
+      "baseline": "7985A12870D20EA84D3ACB9D57384B56284FE193E0324C9AF4CBB83BABC05EBC",
+      "current": "0E94224E818B06D6D1BC89D80C7D2B4EB30FE8F7A32160D70BCCCF92A0D24DF0",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/MenuStateTests.cpp",
+      "baseline": "AFD80CDE4F0B68CD970DAE711111583341A1A6638A0157EC2117AEEA1B632C4E",
+      "current": "52530DCFF192BE6CC7C5D5EB36E32B1EA0490655A5B2E4C554CF5682378479C1",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "LF",
+      "originalBom": false
+    },
+    {
+      "path": "native/ModalSizeUiTests.cpp",
+      "baseline": "5E613496B0AC1856DE8F6E9995B50BA7880B4962DADA196F40E796DFDE016FF0",
+      "current": "AB280486F9D0705D22830C41BBDE81075FD114CE6E7AE63D6E72759B893B2A5B",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/PropertiesDialogUiTests.cpp",
+      "baseline": "120EEE9D77024EB53C8AE291F8F1304C334A7A56B6C4E4C6E417ACF3F60D9E7D",
+      "current": "234832A678ECDCB35CB0FE68F4BF6915B37717DBA6CC746B9A08BDFBC7972C82",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/QueueExportUiTests.cpp",
+      "baseline": "AB732B2C1A2D64AD1075D4414F6E477D21B36D20D97854682067916108D9B453",
+      "current": "BDECFA0F4EB958217895C000ED3363216EB3CB62D27BF81183ED1BC75D206410",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);",
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/SelectionCommandsUiTests.cpp",
+      "baseline": "B0576486CD3987EB3FD888DF207DD80E9409CF2686AFAA439F822BA7493280EE",
+      "current": "F02E9A63ADCAF8E9FF8D2C3CB4A4A2CF4F0A0F3D27D0CC40A750B8B569AB48DF",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "LF",
+      "originalBom": false
+    },
+    {
+      "path": "native/StartupFontUiTests.cpp",
+      "baseline": "6E0594D0E3034C1E1DE824056A7B0A6F69D9B84C1C3B5741F1A0100B4DD3B79A",
+      "current": "C028865153FDC645987C4732F533354070A89933A878D0311AF63E79BC91AB88",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);",
+        "frame->quitting=true;frame->SendMessage(WM_CLOSE);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    },
+    {
+      "path": "native/ToolbarUiTests.cpp",
+      "baseline": "66B21ABF9F8986FAB72B55F930C353607C240FF3091452E6394E382B90D53F4A",
+      "current": "ECC2FFE54ACC3D3C0EE9964A7A35FECB1B49E5118A911AADD72D549EF580A58B",
+      "cleanupOnlyReverseHashMatched": true,
+      "originalCalls": [
+        "frame->SendMessage(WM_COMMAND,CMD_EXIT);"
+      ],
+      "originalNewline": "CRLF",
+      "originalBom": false
+    }
+  ]
+}

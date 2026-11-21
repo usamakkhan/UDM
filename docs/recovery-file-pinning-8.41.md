@@ -1,0 +1,13 @@
+# UDM 8.41: preserve verified recovery bytes through catalog acceptance
+
+Recovery previously closed its verified read handle before saving the recovered catalog. Another process could then change the file that UDM was about to acknowledge as complete. An isolated regression against the qualified 8.40 core reproduced this: a writer opened the recovered destination while the actual catalog temporary-file flush was held.
+
+Recovery now retains a read handle that denies writes and deletion until catalog persistence succeeds. For a staged publication, it first permits the required rename, opens the resulting destination with write/delete exclusion, and compares its volume and file index with the measured staging handle. A changed or inaccessible destination preserves the recovery journal by rejecting acceptance. The handle releases before retained-media cleanup and zone metadata work. Failure paths release ownership during unwinding while keeping the journal.
+
+Two regression cases use real publication interruption points: after intent persistence with a staging file, and after the final rename. At the held catalog-save boundary, both reject a concurrent writer and rename. After successful persistence, both allow those operations again. These tests exercise filesystem access from another thread rather than attempting to acquire the already-held model lock.
+
+All 817 focused checks passed across preparation (87), ownership (186), commit (347), recovery (52) and completed-checkpoint (145). Five native products and five fixtures have verified 8.41 version resources. Qualification is recorded in [the validation receipt](validation/recovery-file-pinning-8.41.json). Native version is 8.41; both extension source manifests are 0.72.5. Browser JavaScript is unchanged. The build uses private rebuilt Duplicates and Bridge objects plus forty retained canonical objects. No installer or installation is included; the installed desktop remains 8.32.
+
+This fixes recovery identity ownership, a prerequisite for the [reserved recovery transaction](publication-recovery-transaction-design.md). Recovery still holds the model mutex across IO. The six-case blocked-lock baseline remains applicable; neither improved finishing timings nor IDM performance parity is established by this change.
+
+Generated fixture payloads and redundant target compiler objects were individually removed: 447 files, 99,099,085 logical bytes. Two multi-link paths were preserved. Private rebuilt core objects, qualified binaries, compact results and the failed-baseline evidence remain. Both personal catalogs and the installed executable matched their pre-test hashes.

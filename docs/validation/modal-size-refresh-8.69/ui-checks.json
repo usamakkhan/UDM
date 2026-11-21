@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "checks": 10,
+  "exitCode": 0,
+  "separateDesktop": true,
+  "desktopSwitched": false,
+  "userInputInjected": false,
+  "sourceSha256": "3A5C92C90FC73AB7EC5C38C977D82487AA240F7AA05C76A919AC9C6490C2E3D6",
+  "appSourceSha256": "F6F0A8EC278E201ED446473F7D4F2DB26A996E7EA2D27E41C9975ABD459B119A",
+  "binarySha256": "CAF972EDC8F3E72A1566ADA21CAF9B8676D2B64C4D49B43AA61F191035328FD1",
+  "result": {
+    "checks": [
+      {
+        "name": "Owned main window contains the test download",
+        "passed": true
+      },
+      {
+        "name": "The actual modal-size path has a visible viewport",
+        "passed": true
+      },
+      {
+        "name": "Initial control and displayed model size agree",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer holds the model before the nested refresh",
+        "passed": true
+      },
+      {
+        "name": "The production nested-refresh path returns while the writer remains held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves the real control and its text cache",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves unrelated cells and selection",
+        "passed": true
+      },
+      {
+        "name": "The next production refresh updates both the real size cell and cache",
+        "passed": true
+      },
+      {
+        "name": "Successful refresh retains unrelated presentation and selection",
+        "passed": true
+      },
+      {
+        "name": "Subsequent refresh converges without reverting the new value",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "ownedDesktopClosed": true
+}

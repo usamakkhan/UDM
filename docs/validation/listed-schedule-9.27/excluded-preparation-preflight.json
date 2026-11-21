@@ -1,0 +1,138 @@
+{
+  "checks": [
+    {
+      "name": "The reader returns the current category cohort",
+      "passed": true
+    },
+    {
+      "name": "Queue-name advice comes from the same owned catalog read",
+      "passed": true
+    },
+    {
+      "name": "File Info's connection and speed defaults are prepared off the window thread",
+      "passed": true
+    },
+    {
+      "name": "Only wizard preferences cross the preparation boundary, without credentials",
+      "passed": true
+    },
+    {
+      "name": "History is bounded, absolute and deduplicated before controls are built",
+      "passed": true
+    },
+    {
+      "name": "Preparation changes no job, catalog or accepted-decision guard",
+      "passed": true
+    },
+    {
+      "name": "A new-download wizard keeps its supplied optional per-file defaults",
+      "passed": true
+    },
+    {
+      "name": "Post-capture processing and notification do not retain Manager",
+      "passed": true
+    },
+    {
+      "name": "A real model writer precedes wizard preparation",
+      "passed": true
+    },
+    {
+      "name": "The caller remains free while the advisory reader waits for Manager",
+      "passed": true
+    },
+    {
+      "name": "One wizard cannot create duplicate outstanding preparation workers",
+      "passed": true
+    },
+    {
+      "name": "Cancel settles model acquisition before the external writer must release",
+      "passed": true
+    },
+    {
+      "name": "An unrelated accepted write defers advisory schedule preparation",
+      "passed": true
+    },
+    {
+      "name": "Cancelling advisory work preserves another command's accepted guard",
+      "passed": true
+    },
+    {
+      "name": "Preparation failure is returned without leaving an outstanding reader",
+      "passed": true
+    },
+    {
+      "name": "The same owner can Retry after a consumed preparation failure",
+      "passed": true
+    },
+    {
+      "name": "A throwing wake callback cannot undo an already-published result",
+      "passed": true
+    },
+    {
+      "name": "Owned snapshots retain their values while a later request sees current defaults",
+      "passed": true
+    },
+    {
+      "name": "An absent history member cannot supply per-file defaults",
+      "passed": true
+    },
+    {
+      "name": "A preparation snapshot predates a competing queue creation",
+      "passed": true
+    },
+    {
+      "name": "Authoritative commit rejects a queue created after advisory validation without adding a download",
+      "passed": true
+    },
+    {
+      "name": "Listed scheduling prepares its target and previous queue on the owned reader",
+      "passed": true
+    },
+    {
+      "name": "Original download comparisons and editable defaults come from one catalog snapshot",
+      "passed": true
+    },
+    {
+      "name": "A new listed schedule does not invent an existing revision queue",
+      "passed": true
+    },
+    {
+      "name": "An accepted listed save still rejects download edits made after its original-state snapshot",
+      "passed": true
+    },
+    {
+      "name": "A download made ineligible before the reader acquires Manager cannot become an editable listed wizard",
+      "passed": true
+    },
+    {
+      "name": "An ordinary queue is not accepted as an editable one-time schedule",
+      "passed": true
+    },
+    {
+      "name": "A listed preparation request must retain an actual download",
+      "passed": true
+    },
+    {
+      "name": "Revision preparation retains the actual editable queue and original UTC window",
+      "passed": true
+    },
+    {
+      "name": "Revision fields are coherent and do not suggest moving the download from another queue",
+      "passed": true
+    },
+    {
+      "name": "An already scheduled download cannot silently receive another independent listed schedule",
+      "passed": true
+    },
+    {
+      "name": "An accepted revision still rejects a queue changed after preparation",
+      "passed": true
+    },
+    {
+      "name": "A fresh request obtains the changed revision queue rather than reusing an earlier result",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

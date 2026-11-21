@@ -1,0 +1,1818 @@
+{
+  "passed": true,
+  "exitCode": 0,
+  "result": {
+    "checks": [
+      {
+        "name": "Owned main window contains the test download",
+        "passed": true
+      },
+      {
+        "name": "The actual modal-size path has a visible viewport",
+        "passed": true
+      },
+      {
+        "name": "Initial control and displayed model size agree",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer holds the model before the nested refresh",
+        "passed": true
+      },
+      {
+        "name": "The production nested-refresh path returns while the writer remains held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves the real control and its text cache",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves unrelated cells and selection",
+        "passed": true
+      },
+      {
+        "name": "The next production refresh updates both the real size cell and cache",
+        "passed": true
+      },
+      {
+        "name": "Successful refresh retains unrelated presentation and selection",
+        "passed": true
+      },
+      {
+        "name": "Subsequent refresh converges without reverting the new value",
+        "passed": true
+      },
+      {
+        "name": "Main-list tooltip comes from the displayed row snapshot",
+        "passed": true
+      },
+      {
+        "name": "A model writer holds changed live data during advisory UI reads",
+        "passed": true
+      },
+      {
+        "name": "The actual tooltip notification returns cached text while live data is locked",
+        "passed": true
+      },
+      {
+        "name": "Advisory command-state reads report busy instead of waiting",
+        "passed": true
+      },
+      {
+        "name": "Create an owned native menu for advisory routing",
+        "passed": true
+      },
+      {
+        "name": "Actual menu checkbox routing returns without reading held settings or clearing its displayed check",
+        "passed": true
+      },
+      {
+        "name": "Actual menu selection routing uses its displayed cohort while the model is held",
+        "passed": true
+      },
+      {
+        "name": "Busy toolbar refresh preserves the real existing button state",
+        "passed": true
+      },
+      {
+        "name": "Selection file-status refresh also returns during a catalog hold",
+        "passed": true
+      },
+      {
+        "name": "Fresh rows and unchanged-structure navigation refresh update the tooltip",
+        "passed": true
+      },
+      {
+        "name": "Advisory command reads become available after release",
+        "passed": true
+      },
+      {
+        "name": "Ordinary command validation uses current model state rather than retained toolbar state",
+        "passed": true
+      },
+      {
+        "name": "Out-of-range tooltip notifications cannot access a live job",
+        "passed": true
+      },
+      {
+        "name": "A programmatic project filter captures the matching cohort",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer changes both navigation and a row during a full refresh",
+        "passed": true
+      },
+      {
+        "name": "Full production refresh returns busy and restores its reentrancy flag",
+        "passed": true
+      },
+      {
+        "name": "A busy full refresh retains coherent tree, rows, cache and selection",
+        "passed": true
+      },
+      {
+        "name": "Advisory selection skips deferred-history validation while the model is held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh retries do not enqueue an immediate history message loop",
+        "passed": true
+      },
+      {
+        "name": "After release a removed project resolves to its surviving Grabber parent",
+        "passed": true
+      },
+      {
+        "name": "The next full refresh updates the matching row and retains its selection",
+        "passed": true
+      },
+      {
+        "name": "An existing category filter applies its captured empty cohort",
+        "passed": true
+      },
+      {
+        "name": "Hidden refresh observes status without rebuilding retained history controls",
+        "passed": true
+      },
+      {
+        "name": "A visible refresh catches up after hidden-history deferral",
+        "passed": true
+      },
+      {
+        "name": "A custom category filter applies the captured unfinished cohort",
+        "passed": true
+      },
+      {
+        "name": "Removing a selected category applies its surviving ancestor and matching rows together",
+        "passed": true
+      },
+      {
+        "name": "A new queue filter applies its matching captured row",
+        "passed": true
+      },
+      {
+        "name": "Removing a selected queue falls back to All Downloads coherently",
+        "passed": true
+      },
+      {
+        "name": "Authoritative selection still rejects a deleted job retained in deferred hidden controls",
+        "passed": true
+      },
+      {
+        "name": "Returning to a visible window removes the deleted retained history row",
+        "passed": true
+      },
+      {
+        "name": "Timer maintenance fixture starts with its owned paused download",
+        "passed": true
+      },
+      {
+        "name": "An independent catalog writer holds the model before the real window timer",
+        "passed": true
+      },
+      {
+        "name": "The production timer returns without waiting for the held model",
+        "passed": true
+      },
+      {
+        "name": "A busy timer retains the old history presentation",
+        "passed": true
+      },
+      {
+        "name": "The real queue-dispatch window handler schedules work without waiting for Manager",
+        "passed": true
+      },
+      {
+        "name": "The Options model pulse also schedules maintenance without waiting",
+        "passed": true
+      },
+      {
+        "name": "The owned background callback is blocked on Manager while UI handlers have returned",
+        "passed": true
+      },
+      {
+        "name": "Both real Manager tick and dispatch complete after the catalog is released",
+        "passed": true
+      },
+      {
+        "name": "Busy timer layout persistence leaves the existing model value untouched",
+        "passed": true
+      },
+      {
+        "name": "The next available layout refresh catches up with thread-owned controls",
+        "passed": true
+      },
+      {
+        "name": "Maintenance completions post only the live window's owned integer identity",
+        "passed": true
+      },
+      {
+        "name": "A stale maintenance identity cannot refresh the window",
+        "passed": true
+      },
+      {
+        "name": "A valid maintenance wake updates history without waiting for another timer interval",
+        "passed": true
+      },
+      {
+        "name": "The actual window's maintenance owner can restart after a joined stop",
+        "passed": true
+      },
+      {
+        "name": "Already-queued maintenance honors the File Info decision acknowledgement guard",
+        "passed": true
+      },
+      {
+        "name": "After File Info acknowledgement a later maintenance tick advances the real Manager",
+        "passed": true
+      },
+      {
+        "name": "The final guarded worker remains restartable for normal window shutdown",
+        "passed": true
+      },
+      {
+        "name": "A failed confirmation presenter retains its owned window reservation",
+        "passed": true
+      },
+      {
+        "name": "Failed presentation rolls back the seen marker without returning ownership to an untracked local list",
+        "passed": true
+      },
+      {
+        "name": "The automatic-discovery fixture holds the catalog with new pending work",
+        "passed": true
+      },
+      {
+        "name": "Busy production prompt discovery retains the reservation and unhandled marker",
+        "passed": true
+      },
+      {
+        "name": "Busy discovery does not consume the review-recovery request",
+        "passed": true
+      },
+      {
+        "name": "The actual browser-batch discovery method returns while the model is held",
+        "passed": true
+      },
+      {
+        "name": "After release duplicate reserved/new legacy offers present once and are acknowledged",
+        "passed": true
+      },
+      {
+        "name": "An acknowledged automatic confirmation does not open again",
+        "passed": true
+      },
+      {
+        "name": "Failure of a new explicit legacy request preserves an older successful seen marker",
+        "passed": true
+      },
+      {
+        "name": "A failed explicit legacy request is retried despite its existing seen marker",
+        "passed": true
+      },
+      {
+        "name": "The actual prompt path discards a removed stale reservation without presenting it",
+        "passed": true
+      },
+      {
+        "name": "The review presenter receives the captured ready token",
+        "passed": true
+      },
+      {
+        "name": "Failed review presentation rolls back its marker after recovery reset",
+        "passed": true
+      },
+      {
+        "name": "The review presenter receives the captured ready token",
+        "passed": true
+      },
+      {
+        "name": "A ready review retries after failure and is not repeated after success",
+        "passed": true
+      },
+      {
+        "name": "Failed browser-batch presentation retains its complete owned cohort",
+        "passed": true
+      },
+      {
+        "name": "A batch retry finishes its existing reservation before consuming a later browser batch",
+        "passed": true
+      },
+      {
+        "name": "The next browser batch is presented in FIFO order after the retry",
+        "passed": true
+      },
+      {
+        "name": "Authentication presentation follows the successful durable pending-flag claim",
+        "passed": true
+      },
+      {
+        "name": "The asynchronous discovery path presents an eligible authentication request once",
+        "passed": true
+      },
+      {
+        "name": "Queue-origin authentication remains pending for its progress workflow",
+        "passed": true
+      },
+      {
+        "name": "Current authentication suppression does not consume the pending challenge",
+        "passed": true
+      },
+      {
+        "name": "Asynchronous authentication save failure preserves its challenge and does not lose an independent confirmation",
+        "passed": true
+      },
+      {
+        "name": "Authentication presentation follows the successful durable pending-flag claim",
+        "passed": true
+      },
+      {
+        "name": "After storage recovery authentication and the retained confirmation both finish normally",
+        "passed": true
+      },
+      {
+        "name": "The production discovery method returns while authentication saving is held on its worker",
+        "passed": true
+      },
+      {
+        "name": "The real window timer dispatches while the owned authentication command holds Manager",
+        "passed": true
+      },
+      {
+        "name": "Authentication presentation follows the successful durable pending-flag claim",
+        "passed": true
+      },
+      {
+        "name": "A completion pulse presents the login after its owned save finishes",
+        "passed": true
+      },
+      {
+        "name": "The busy-validation fixture has a completely prepared authentication view",
+        "passed": true
+      },
+      {
+        "name": "The model is held independently before ready-view validation",
+        "passed": true
+      },
+      {
+        "name": "Ready-view validation returns busy and retains ownership without displaying stale data",
+        "passed": true
+      },
+      {
+        "name": "Authentication presentation follows the successful durable pending-flag claim",
+        "passed": true
+      },
+      {
+        "name": "A later ready-view validation presents and acknowledges the retained request",
+        "passed": true
+      },
+      {
+        "name": "Failed login creation retains the claimed view until asynchronous restoration finishes",
+        "passed": true
+      },
+      {
+        "name": "The failed login request is durably rearmed rather than silently acknowledged",
+        "passed": true
+      },
+      {
+        "name": "A later login presentation can handle the restored request normally",
+        "passed": true
+      },
+      {
+        "name": "The actual window's shutdown task restores an unpresented claimed request",
+        "passed": true
+      },
+      {
+        "name": "The real login dialog receives its worker-prepared credential view",
+        "passed": true
+      },
+      {
+        "name": "An independent writer owns Manager before actual login control construction",
+        "passed": true
+      },
+      {
+        "name": "Actual login controls display prepared credentials while Manager remains held",
+        "passed": true
+      },
+      {
+        "name": "The real prepared login dialog cancels normally without waiting for the held model",
+        "passed": true
+      },
+      {
+        "name": "A close request cannot destroy the owner during an authentication presentation",
+        "passed": true
+      },
+      {
+        "name": "Actual main-list Resume returns while queue login credential preparation is held on its worker",
+        "passed": true
+      },
+      {
+        "name": "Repeated main-list Resume coalesces the same owned queue login request",
+        "passed": true
+      },
+      {
+        "name": "A queue challenge changed during preparation is discarded without presenting or clearing its pending request",
+        "passed": true
+      },
+      {
+        "name": "A valid main-list queue request reaches a ready view without constructing controls on its worker",
+        "passed": true
+      },
+      {
+        "name": "Main-list presentation receives the queue view's pending expectation and prepared credentials",
+        "passed": true
+      },
+      {
+        "name": "An independent writer holds Manager before actual queue login construction",
+        "passed": true
+      },
+      {
+        "name": "The real queue login dialog constructs from its prepared view while Manager remains held",
+        "passed": true
+      },
+      {
+        "name": "Main-window Close cannot destroy a requested login presentation before Sign in",
+        "passed": true
+      },
+      {
+        "name": "Cancel from the actual main-list queue login closes normally and preserves the original pending challenge",
+        "passed": true
+      },
+      {
+        "name": "Create the actual failed-queue progress window",
+        "passed": true
+      },
+      {
+        "name": "An independent writer holds Manager before actual progress Start",
+        "passed": true
+      },
+      {
+        "name": "Progress Start returns with an owned worker rather than reading or decrypting login state on the window thread",
+        "passed": true
+      },
+      {
+        "name": "The progress command publishes its complete prepared login view",
+        "passed": true
+      },
+      {
+        "name": "Progress retains its requested view after acknowledging the joined command result",
+        "passed": true
+      },
+      {
+        "name": "A new unrelated decision defers progress login presentation without dropping its view",
+        "passed": true
+      },
+      {
+        "name": "Cancel from the actual progress login leaves the queue request pending and releases presentation ownership",
+        "passed": true
+      },
+      {
+        "name": "The real main-list offer creates a pending duplicate candidate",
+        "passed": true
+      },
+      {
+        "name": "The main-list duplicate command fixture explicitly restores a visible history owner",
+        "passed": true
+      },
+      {
+        "name": "The actual main list exposes the duplicate candidate for Resume",
+        "passed": true
+      },
+      {
+        "name": "The actual duplicate prompt renders from Resume's prepared view while an independent writer owns Manager",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate Cancel returns while its owned save waits and disables repeat actions",
+        "passed": true
+      },
+      {
+        "name": "Dialog and main-window Close cannot abandon an in-flight duplicate decision",
+        "passed": true
+      },
+      {
+        "name": "Actual main Resume Cancel joins the durable decision, removes only its candidate and preserves the existing bytes",
+        "passed": true
+      },
+      {
+        "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+        "passed": true
+      },
+      {
+        "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+        "passed": true
+      },
+      {
+        "name": "The real Numbered choice retains a distinct destination",
+        "passed": true
+      },
+      {
+        "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+        "passed": true
+      },
+      {
+        "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+        "passed": true
+      },
+      {
+        "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+        "passed": true
+      },
+      {
+        "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+        "passed": true
+      },
+      {
+        "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+        "passed": true
+      },
+      {
+        "name": "The real Replace choice completes verification on its worker before returning",
+        "passed": true
+      },
+      {
+        "name": "Seed the owned network view without opening the real monitor",
+        "passed": true
+      },
+      {
+        "name": "The actual network dialog retains its cached rows while polling owns Manager on a worker",
+        "passed": true
+      },
+      {
+        "name": "Main and Options timers dispatch and main Close defers while a real network view owns a held operation",
+        "passed": true
+      },
+      {
+        "name": "Closing the real shared network window leaves its accepted poll owned by the main session",
+        "passed": true
+      },
+      {
+        "name": "A closed view's weak notification cannot prevent normal main-session acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Actual Start and Capture controls run their operations on a worker and disable overlapping mutations",
+        "passed": true
+      },
+      {
+        "name": "A forged repeat Capture cannot replay a held mutation",
+        "passed": true
+      },
+      {
+        "name": "The actual main timer dispatches while Capture holds the catalog",
+        "passed": true
+      },
+      {
+        "name": "Local network Close waits asynchronously for its accepted operation",
+        "passed": true
+      },
+      {
+        "name": "Local network Close keeps its window alive until the final durable Stop settles",
+        "passed": true
+      },
+      {
+        "name": "Real network controls and local Close acknowledge each accepted mutation once and finish the actual owned stop save",
+        "passed": true
+      },
+      {
+        "name": "The actual main list contains the owned paused Resume selection",
+        "passed": true
+      },
+      {
+        "name": "An independent writer owns Manager before the actual main Resume command",
+        "passed": true
+      },
+      {
+        "name": "Actual main Resume bypasses synchronous availability and deferred-selection reads while Manager is held",
+        "passed": true
+      },
+      {
+        "name": "Repeated actual main Resume coalesces an already-owned selected download",
+        "passed": true
+      },
+      {
+        "name": "Transfer-event dispatch and direct presentation retain notifications without entering Manager during accepted Resume work",
+        "passed": true
+      },
+      {
+        "name": "The main timer and Close dispatch while the Resume worker waits for the held catalog",
+        "passed": true
+      },
+      {
+        "name": "Actual main Resume joins its command and publishes the complete exact owned file",
+        "passed": true
+      },
+      {
+        "name": "The owned content-warning request is selectable in the actual main list",
+        "passed": true
+      },
+      {
+        "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+        "passed": true
+      },
+      {
+        "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+        "passed": true
+      },
+      {
+        "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+        "passed": true
+      },
+      {
+        "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+        "passed": true
+      },
+      {
+        "name": "Cancel at the second real content warning leaves both choices and the complete job unchanged",
+        "passed": true
+      },
+      {
+        "name": "Real No/Yes content choices are saved on the worker and Resume publishes the complete exact file",
+        "passed": true
+      },
+      {
+        "name": "The real login command dialog starts from an owned HTTP authentication challenge",
+        "passed": true
+      },
+      {
+        "name": "The owned HTTP challenge has a durable prepared login view",
+        "passed": true
+      },
+      {
+        "name": "The real login dialog disables repeat submit and Cancel while the decision worker holds Manager",
+        "passed": true
+      },
+      {
+        "name": "Timer and main-window close dispatch without abandoning the held login decision",
+        "passed": true
+      },
+      {
+        "name": "Close and repeated Enter-style submit cannot dismiss or duplicate in-flight login work",
+        "passed": true
+      },
+      {
+        "name": "The actual Sign in dialog settles its owned command and closes normally",
+        "passed": true
+      },
+      {
+        "name": "Clicking Sign in and retry in the real dialog downloads the complete exact owned HTTP file",
+        "passed": true
+      },
+      {
+        "name": "The owned Digest origin produces a real queue-retry login challenge",
+        "passed": true
+      },
+      {
+        "name": "Create progress for the real authenticated queue retry",
+        "passed": true
+      },
+      {
+        "name": "The real progress retry prepares its Digest login view on the command worker",
+        "passed": true
+      },
+      {
+        "name": "Sign in from the real queue progress dialog accepts the prepared pending and queue-ownership contract",
+        "passed": true
+      },
+      {
+        "name": "The real progress Sign in path downloads and publishes the complete exact Digest file",
+        "passed": true
+      },
+      {
+        "name": "Actual File Info renders its initial worker snapshot",
+        "passed": true
+      },
+      {
+        "name": "A real catalog writer holds changed File Info metadata",
+        "passed": true
+      },
+      {
+        "name": "The production File Info timer returns while the catalog writer remains held",
+        "passed": true
+      },
+      {
+        "name": "Busy File Info retains all real static labels and the last coherent size",
+        "passed": true
+      },
+      {
+        "name": "The retained controls include the original server filename",
+        "passed": true
+      },
+      {
+        "name": "An actual File Info presentation owns its shutdown guard",
+        "passed": true
+      },
+      {
+        "name": "Main Close is refused before acquiring the model while File Info owns reads",
+        "passed": true
+      },
+      {
+        "name": "The actual dialog paints during an outstanding worker read",
+        "passed": true
+      },
+      {
+        "name": "After release File Info applies matching fresh size and filename together",
+        "passed": true
+      },
+      {
+        "name": "The real filename control converges to the worker result",
+        "passed": true
+      },
+      {
+        "name": "Worker completion wakes do not schedule further reads after cadence is stopped",
+        "passed": true
+      },
+      {
+        "name": "Cancel closes the actual File Info dialog and joins its reader without a leaked owner",
+        "passed": true
+      },
+      {
+        "name": "Advisory display and Cancel do not rewrite the current metadata",
+        "passed": true
+      },
+      {
+        "name": "File Info is visible while its actual admission acknowledgement is held",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info timer and paint return without replaying held admission",
+        "passed": true
+      },
+      {
+        "name": "The complete selected response downloads in the background before the real Start/Later click",
+        "passed": true
+      },
+      {
+        "name": "The actual requested decision remains available during admission",
+        "passed": true
+      },
+      {
+        "name": "The real Start/Later/Cancel click returns while admission remains held",
+        "passed": true
+      },
+      {
+        "name": "The decision-pending dialog continues pumping and painting",
+        "passed": true
+      },
+      {
+        "name": "An early Start/Later click does not race the pending admission receipt",
+        "passed": true
+      },
+      {
+        "name": "The actual queued decision settles once and joins its owners before File Info exits",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info return value distinguishes cancellation from accepted Start/Later",
+        "passed": true
+      },
+      {
+        "name": "The real queued Start publishes the complete exact prefetched file",
+        "passed": true
+      },
+      {
+        "name": "Queued Start reuses the entire background response without an extra request",
+        "passed": true
+      },
+      {
+        "name": "File Info is visible while its actual admission acknowledgement is held",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info timer and paint return without replaying held admission",
+        "passed": true
+      },
+      {
+        "name": "The complete selected response downloads in the background before the real Start/Later click",
+        "passed": true
+      },
+      {
+        "name": "The actual requested decision remains available during admission",
+        "passed": true
+      },
+      {
+        "name": "The real Start/Later/Cancel click returns while admission remains held",
+        "passed": true
+      },
+      {
+        "name": "The decision-pending dialog continues pumping and painting",
+        "passed": true
+      },
+      {
+        "name": "An early Start/Later click does not race the pending admission receipt",
+        "passed": true
+      },
+      {
+        "name": "The actual queued decision settles once and joins its owners before File Info exits",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info return value distinguishes cancellation from accepted Start/Later",
+        "passed": true
+      },
+      {
+        "name": "The actual Later/Cancel leaves a paused unpublished download without active background work",
+        "passed": true
+      },
+      {
+        "name": "File Info is visible while its actual admission acknowledgement is held",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info timer and paint return without replaying held admission",
+        "passed": true
+      },
+      {
+        "name": "The actual requested decision remains available during admission",
+        "passed": true
+      },
+      {
+        "name": "The real Start/Later/Cancel click returns while admission remains held",
+        "passed": true
+      },
+      {
+        "name": "The decision-pending dialog continues pumping and painting",
+        "passed": true
+      },
+      {
+        "name": "Actual Cancel owns a joined command instead of closing ahead of admission",
+        "passed": true
+      },
+      {
+        "name": "The actual queued decision settles once and joins its owners before File Info exits",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info return value distinguishes cancellation from accepted Start/Later",
+        "passed": true
+      },
+      {
+        "name": "The actual Later/Cancel leaves a paused unpublished download without active background work",
+        "passed": true
+      },
+      {
+        "name": "Cancel queued before admission prevents any late HTTP request",
+        "passed": true
+      },
+      {
+        "name": "A model writer holds Manager before the real already-accepted prepared notification",
+        "passed": true
+      },
+      {
+        "name": "An already-accepted prepared media dialog opens before its model reader can acquire Manager",
+        "passed": true
+      },
+      {
+        "name": "The actual pending File Info timer and paint return during the accepted binding hold",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available while accepted-job binding is pending",
+        "passed": true
+      },
+      {
+        "name": "Actual Cancel returns before the held model writer is released",
+        "passed": true
+      },
+      {
+        "name": "The actual Main prepared-notification handler closes and joins a model-waiting reader without stalling on Manager",
+        "passed": true
+      },
+      {
+        "name": "The existing cancellation worker removes the exact unconfirmed accepted offer after the model hold ends",
+        "passed": true
+      },
+      {
+        "name": "An owned UI timer drives the real prepared File Info decision",
+        "passed": true
+      },
+      {
+        "name": "The actual prepared-notification handler returns while its acknowledgement worker holds Manager before finishing",
+        "passed": true
+      },
+      {
+        "name": "The Main-owned queue retains the displayed receipt while its acknowledgement worker is held",
+        "passed": true
+      },
+      {
+        "name": "Browser refresh returns during the held acknowledgement without reopening File Info or showing Main",
+        "passed": true
+      },
+      {
+        "name": "The actual Main acknowledgement queue releases its token after durable completion",
+        "passed": true
+      },
+      {
+        "name": "Download Later remains accepted and paused after its browser presentation is acknowledged",
+        "passed": true
+      },
+      {
+        "name": "A background acknowledgement failure is available before the recovery window opens",
+        "passed": true
+      },
+      {
+        "name": "An owned UI timer drives acknowledgement recovery controls",
+        "passed": true
+      },
+      {
+        "name": "The actual acknowledgement recovery dialog operates without showing Main",
+        "passed": true
+      },
+      {
+        "name": "Actual Retry saves asynchronously while Close retains the pending receipt for the next launch",
+        "passed": true
+      },
+      {
+        "name": "A background acknowledgement failure is available before the recovery window opens",
+        "passed": true
+      },
+      {
+        "name": "An owned UI timer drives acknowledgement recovery controls",
+        "passed": true
+      },
+      {
+        "name": "The actual acknowledgement recovery dialog operates without showing Main",
+        "passed": true
+      },
+      {
+        "name": "Actual Retry saves asynchronously while Close retains the pending receipt for the next launch",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before ordinary or form File Info is entered",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for the cold File Info workflow",
+        "passed": true
+      },
+      {
+        "name": "The actual cold File Info window paints before the model becomes readable",
+        "passed": true
+      },
+      {
+        "name": "The cold window exposes Cancel but cannot submit an unprepared draft",
+        "passed": true
+      },
+      {
+        "name": "The cold File Info timer and paint return while initial preparation waits on Manager",
+        "passed": true
+      },
+      {
+        "name": "Cold preparation owns the existing shutdown guard before reading the model",
+        "passed": true
+      },
+      {
+        "name": "A second real writer holds Manager after the coherent initial snapshot is captured",
+        "passed": true
+      },
+      {
+        "name": "Initial preparation fills the same File Info window while a later writer holds Manager",
+        "passed": true
+      },
+      {
+        "name": "The prepared ordinary and form controls show the known exact byte count before Start",
+        "passed": true
+      },
+      {
+        "name": "A stale command for the disabled preparation controls cannot start a download after initialization",
+        "passed": true
+      },
+      {
+        "name": "Expanded controls use owned queue labels without reacquiring the catalog",
+        "passed": true
+      },
+      {
+        "name": "Cancel returns during a later model hold without losing the prepared dialog",
+        "passed": true
+      },
+      {
+        "name": "Cold File Info cancellation joins its owners without replacing the window or leaking the decision guard",
+        "passed": true
+      },
+      {
+        "name": "Cold fresh-offer cancellation removes its offer while ordinary and form cancellation preserve paused history",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before ordinary or form File Info is entered",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for the cold File Info workflow",
+        "passed": true
+      },
+      {
+        "name": "The actual cold File Info window paints before the model becomes readable",
+        "passed": true
+      },
+      {
+        "name": "The cold window exposes Cancel but cannot submit an unprepared draft",
+        "passed": true
+      },
+      {
+        "name": "The cold File Info timer and paint return while initial preparation waits on Manager",
+        "passed": true
+      },
+      {
+        "name": "Cold preparation owns the existing shutdown guard before reading the model",
+        "passed": true
+      },
+      {
+        "name": "A second real writer holds Manager after the coherent initial snapshot is captured",
+        "passed": true
+      },
+      {
+        "name": "Initial preparation fills the same File Info window while a later writer holds Manager",
+        "passed": true
+      },
+      {
+        "name": "The prepared ordinary and form controls show the known exact byte count before Start",
+        "passed": true
+      },
+      {
+        "name": "A stale command for the disabled preparation controls cannot start a download after initialization",
+        "passed": true
+      },
+      {
+        "name": "Expanded controls use owned queue labels without reacquiring the catalog",
+        "passed": true
+      },
+      {
+        "name": "Cancel returns during a later model hold without losing the prepared dialog",
+        "passed": true
+      },
+      {
+        "name": "Cold File Info cancellation joins its owners without replacing the window or leaking the decision guard",
+        "passed": true
+      },
+      {
+        "name": "Cold fresh-offer cancellation removes its offer while ordinary and form cancellation preserve paused history",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before ordinary or form File Info is entered",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for the cold File Info workflow",
+        "passed": true
+      },
+      {
+        "name": "The actual cold File Info window paints before the model becomes readable",
+        "passed": true
+      },
+      {
+        "name": "The cold window exposes Cancel but cannot submit an unprepared draft",
+        "passed": true
+      },
+      {
+        "name": "The cold File Info timer and paint return while initial preparation waits on Manager",
+        "passed": true
+      },
+      {
+        "name": "Cold preparation owns the existing shutdown guard before reading the model",
+        "passed": true
+      },
+      {
+        "name": "Cold Cancel queues the established cancellation command while the UI remains alive",
+        "passed": true
+      },
+      {
+        "name": "Cold File Info cancellation joins its owners without replacing the window or leaking the decision guard",
+        "passed": true
+      },
+      {
+        "name": "Cold fresh-offer cancellation removes its offer while ordinary and form cancellation preserve paused history",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for HTTP metadata and credential invalidation",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info lookup starts one owned HEAD while response headers are held",
+        "passed": true
+      },
+      {
+        "name": "Actual HTTP completion updates the exact metadata length after the dialog polling timer is stopped",
+        "passed": true
+      },
+      {
+        "name": "A real catalog writer holds Manager before clicking Refresh details",
+        "passed": true
+      },
+      {
+        "name": "The real Refresh details handler returns while its preparation reader waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "The actual metadata timer and paint stay responsive without issuing another request during the model hold",
+        "passed": true
+      },
+      {
+        "name": "The real login editor remains available while metadata preparation is pending",
+        "passed": true
+      },
+      {
+        "name": "Editing credentials invalidates the waiting lookup without publishing its old context",
+        "passed": true
+      },
+      {
+        "name": "Cancel queues the original decision while the obsolete lookup is cancelled",
+        "passed": true
+      },
+      {
+        "name": "Joined cancellation prevents a late HEAD or stale metadata publication after the model is released",
+        "passed": true
+      },
+      {
+        "name": "Metadata credential edits never change the paused download or its saved authorization",
+        "passed": true
+      },
+      {
+        "name": "A real writer owns Manager before the pending ZIP preview opens",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for pending ZIP cancellation",
+        "passed": true
+      },
+      {
+        "name": "The real ZIP preview paints while its readiness reader waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "The pending ZIP preview uses the production Form",
+        "passed": true
+      },
+      {
+        "name": "ZIP preview pulse and paint return without taking the held model lock",
+        "passed": true
+      },
+      {
+        "name": "Cancel closes ZIP preview and joins its sole readiness owner before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for the actual ZIP button workflow",
+        "passed": true
+      },
+      {
+        "name": "The actual File Info ZIP Preview control becomes ready before the model is held",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager immediately before clicking the production ZIP button",
+        "passed": true
+      },
+      {
+        "name": "Clicking the actual ZIP button opens its child window before Manager becomes readable",
+        "passed": true
+      },
+      {
+        "name": "Cold ZIP preparation leaves the child's pulse and paint responsive",
+        "passed": true
+      },
+      {
+        "name": "The cold ZIP Cancel handler returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "Closing cold ZIP preview returns to File Info while the model remains held",
+        "passed": true
+      },
+      {
+        "name": "The parent retains its queued cancellation ownership after ZIP preparation is cancelled",
+        "passed": true
+      },
+      {
+        "name": "The actual cold ZIP workflow joins preparation and parent cancellation without a timeout",
+        "passed": true
+      },
+      {
+        "name": "Cancelling cold ZIP preparation preserves paused history without publishing a file",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for ZIP stop acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "The real ZIP window remains visible while its owned post-stop operation is held",
+        "passed": true
+      },
+      {
+        "name": "Cancel shows a pending close instead of destroying an in-flight stop owner",
+        "passed": true
+      },
+      {
+        "name": "The closing ZIP preview still processes pulse and paint while preparation settles",
+        "passed": true
+      },
+      {
+        "name": "The closing ZIP dialog returns the completed stop's restoration intent after joining preparation",
+        "passed": true
+      },
+      {
+        "name": "The real durable stop preserves its exact request selection for guarded restoration",
+        "passed": true
+      },
+      {
+        "name": "Create an owned inspection timer for ZIP completion without result polling",
+        "passed": true
+      },
+      {
+        "name": "The actual ZIP window paints before held HTTP headers arrive",
+        "passed": true
+      },
+      {
+        "name": "The ZIP directory remains pending when its polling timer is removed",
+        "passed": true
+      },
+      {
+        "name": "Actual HTTP ZIP completion updates the window through its owned message with polling disabled",
+        "passed": true
+      },
+      {
+        "name": "The event-driven ZIP window displays the complete real archive listing",
+        "passed": true
+      },
+      {
+        "name": "The no-poll ZIP workflow closes normally after its complete listing is delivered",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before entering download recovery",
+        "passed": true
+      },
+      {
+        "name": "Create an owned inspection timer for initial recovery cancellation",
+        "passed": true
+      },
+      {
+        "name": "The recovery bootstrap paints and owns shutdown protection before the model becomes readable",
+        "passed": true
+      },
+      {
+        "name": "Unprepared recovery cannot submit an incomplete address draft",
+        "passed": true
+      },
+      {
+        "name": "Recovery bootstrap pulse and paint return during the real model hold",
+        "passed": true
+      },
+      {
+        "name": "Main Close cannot destroy a cold recovery owner",
+        "passed": true
+      },
+      {
+        "name": "Initial recovery cancellation joins its reader and closes before Manager must be released",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for stale review and asynchronous recovery Save",
+        "passed": true
+      },
+      {
+        "name": "The same recovery window receives its worker-prepared browser address",
+        "passed": true
+      },
+      {
+        "name": "A stale Save reviews the new browser link without applying it",
+        "passed": true
+      },
+      {
+        "name": "The real durable recovery Save is held on its worker, not the window thread",
+        "passed": true
+      },
+      {
+        "name": "Recovery Save leaves the actual pulse and paint responsive",
+        "passed": true
+      },
+      {
+        "name": "Cancel keeps the accepted recovery Save owned until its result and cleanup settle",
+        "passed": true
+      },
+      {
+        "name": "The accepted Save finishes and closes after Cancel without dropping its durable outcome",
+        "passed": true
+      },
+      {
+        "name": "The reviewed address is saved without starting a File Info transfer",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for media recovery polling and close",
+        "passed": true
+      },
+      {
+        "name": "Media File Info recovery keeps Save unavailable until a matching session arrives and exposes no Resume command",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager after the media recovery view is built",
+        "passed": true
+      },
+      {
+        "name": "Media recovery polling and paint remain responsive while their reader waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "Media Cancel retains the session while owned cleanup waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "Media Cancel joins advisory and cleanup work without starting or losing the original download",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for parent post-recovery preparation",
+        "passed": true
+      },
+      {
+        "name": "Owned recovery page launching is intercepted without opening a personal browser",
+        "passed": true
+      },
+      {
+        "name": "The actual parent File Info stays visible while post-recovery preparation waits on a real writer",
+        "passed": true
+      },
+      {
+        "name": "The parent pulse and paint remain responsive after the child saves and closes",
+        "passed": true
+      },
+      {
+        "name": "The destination draft is retained and frozen during refreshed preparation",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available throughout the parent continuation",
+        "passed": true
+      },
+      {
+        "name": "The parent consumes worker-prepared refreshed credentials without another model read",
+        "passed": true
+      },
+      {
+        "name": "The original File Info displays the saved URL and fresh private login controls",
+        "passed": true
+      },
+      {
+        "name": "Applying prepared refreshed details preserves the user's uncommitted destination",
+        "passed": true
+      },
+      {
+        "name": "The parent continuation and cancellation finish with all lifetime guards released",
+        "passed": true
+      },
+      {
+        "name": "Cancelling parent File Info preserves the accepted refreshed address without publishing a file",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for parent post-recovery preparation",
+        "passed": true
+      },
+      {
+        "name": "Owned recovery page launching is intercepted without opening a personal browser",
+        "passed": true
+      },
+      {
+        "name": "The actual parent File Info stays visible while post-recovery preparation waits on a real writer",
+        "passed": true
+      },
+      {
+        "name": "The parent pulse and paint remain responsive after the child saves and closes",
+        "passed": true
+      },
+      {
+        "name": "The destination draft is retained and frozen during refreshed preparation",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available throughout the parent continuation",
+        "passed": true
+      },
+      {
+        "name": "Parent Cancel owns joined continuation cleanup without closing ahead of the held model",
+        "passed": true
+      },
+      {
+        "name": "The parent continuation and cancellation finish with all lifetime guards released",
+        "passed": true
+      },
+      {
+        "name": "Cancelling parent File Info preserves the accepted refreshed address without publishing a file",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "Only the latest category result applies and retains the current filename or explicit folder",
+        "passed": true
+      },
+      {
+        "name": "The actual remember-path controls retain a later rule edit or follow the chosen destination",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Category changes, Later and Cancel create no extra HTTP request",
+        "passed": true
+      },
+      {
+        "name": "Later persists the prepared target while Cancel preserves the original saved target",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "Only the latest category result applies and retains the current filename or explicit folder",
+        "passed": true
+      },
+      {
+        "name": "The actual remember-path controls retain a later rule edit or follow the chosen destination",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Category changes, Later and Cancel create no extra HTTP request",
+        "passed": true
+      },
+      {
+        "name": "Later persists the prepared target while Cancel preserves the original saved target",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The actual remember-path click enables its editable folder before a late user edit",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "Only the latest category result applies and retains the current filename or explicit folder",
+        "passed": true
+      },
+      {
+        "name": "The actual remember-path controls retain a later rule edit or follow the chosen destination",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Category changes, Later and Cancel create no extra HTTP request",
+        "passed": true
+      },
+      {
+        "name": "Later persists the prepared target while Cancel preserves the original saved target",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "The requested category-pending Start, Later or Cancel action remains available",
+        "passed": true
+      },
+      {
+        "name": "The actual requested action returns while category preparation is held",
+        "passed": true
+      },
+      {
+        "name": "Cancel retains joined cleanup ownership while the settings writer is held",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Category changes, Later and Cancel create no extra HTTP request",
+        "passed": true
+      },
+      {
+        "name": "Later persists the prepared target while Cancel preserves the original saved target",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "The requested category-pending Start, Later or Cancel action remains available",
+        "passed": true
+      },
+      {
+        "name": "The actual requested action returns while category preparation is held",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Category changes, Later and Cancel create no extra HTTP request",
+        "passed": true
+      },
+      {
+        "name": "Later persists the prepared target while Cancel preserves the original saved target",
+        "passed": true
+      },
+      {
+        "name": "Create an owned timer for asynchronous category selection and pending decisions",
+        "passed": true
+      },
+      {
+        "name": "A real settings writer holds Manager before changing the actual category selector",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "The owned category selector contains the requested visible category",
+        "passed": true
+      },
+      {
+        "name": "Rapid category changes return while Manager is held and leave filename editing available",
+        "passed": true
+      },
+      {
+        "name": "The category-waiting File Info pulse and paint return without applying an unread default",
+        "passed": true
+      },
+      {
+        "name": "Cancel remains available during the held category read",
+        "passed": true
+      },
+      {
+        "name": "Scheduling cannot commit a destination while its category default is pending",
+        "passed": true
+      },
+      {
+        "name": "The requested category-pending Start, Later or Cancel action remains available",
+        "passed": true
+      },
+      {
+        "name": "The actual requested action returns while category preparation is held",
+        "passed": true
+      },
+      {
+        "name": "The category dialog action settles and releases every joined owner",
+        "passed": true
+      },
+      {
+        "name": "Only the latest coalesced category is applied; Cancel discards the pending read",
+        "passed": true
+      },
+      {
+        "name": "Queued Start publishes the complete authenticated payload at the prepared category destination",
+        "passed": true
+      },
+      {
+        "name": "Changing categories and queued Start issue exactly one authenticated transfer request",
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "coldZipOutcome": {
+        "accepted": false,
+        "error": "",
+        "expired": false,
+        "stage": 3
+      },
+      "coldZipPaint": {
+        "expired": false,
+        "held": true,
+        "visible": true
+      },
+      "coldZipPreview": {
+        "enabled": true,
+        "found": true,
+        "visible": true
+      },
+      "duplicateSetup": {
+        "historyDeferredBefore": false,
+        "iconicBefore": false,
+        "visibleBefore": true
+      },
+      "zipCompletion": {
+        "readyFromMessage": true,
+        "requests": 3,
+        "stage": 2,
+        "timerRemoved": true
+      }
+    },
+    "error": "",
+    "passed": true
+  },
+  "checks": 442,
+  "qualification": false,
+  "privateSourceSha256": "52FBF4046865C739AC133EA774B3545742EF0597DCF41D53106BCB224F64CE55",
+  "nativeSourceSha256": "22213D6286D820FC4B228F113EFE9DD9D736BEF0D354FC2AD43311A16B608C51",
+  "binarySha256": "CA7894DEE7610E6D7F5159E1966086E32084907F8EFA22EBF1A6CF0EE23535DD",
+  "binaryPath": "$UDM_DEVELOPMENT\\finishing-8.83\\release-native\\Udm.MenuIndexProbe-9.11.exe",
+  "ownedOutput": "$UDM_DEVELOPMENT\\finishing-9.11-preflight\\owned-menu-index-probe",
+  "ownedDesktopClosed": true,
+  "sourcePatch": "Initialize CCmdUI index bounds and catch MFC pointer exceptions in the diagnostic probe",
+  "optimization": "Od",
+  "coreBaseline": "9.10"
+}

@@ -1,0 +1,73 @@
+{
+  "result": {
+    "checks": [
+      {
+        "name": "A local ZIP completion wakes its owner without polling the result",
+        "passed": true
+      },
+      {
+        "name": "The local ZIP listing is fully published before its completion wake-up",
+        "passed": true
+      },
+      {
+        "name": "A throwing or successful local notification cannot replay completion",
+        "passed": true
+      },
+      {
+        "name": "A local ZIP completion wakes its owner without polling the result",
+        "passed": true
+      },
+      {
+        "name": "The local ZIP listing is fully published before its completion wake-up",
+        "passed": true
+      },
+      {
+        "name": "A throwing or successful local notification cannot replay completion",
+        "passed": true
+      },
+      {
+        "name": "A failed local ZIP read also wakes its owner",
+        "passed": true
+      },
+      {
+        "name": "A local failure publishes its diagnostic before notification",
+        "passed": true
+      },
+      {
+        "name": "Actual authenticated HTTP ZIP completion wakes its owner without result polling",
+        "passed": true
+      },
+      {
+        "name": "The complete HTTP ZIP listing is published before its wake-up",
+        "passed": true
+      },
+      {
+        "name": "A throwing or successful HTTP notification cannot replay completion",
+        "passed": true
+      },
+      {
+        "name": "Actual authenticated HTTP ZIP completion wakes its owner without result polling",
+        "passed": true
+      },
+      {
+        "name": "The complete HTTP ZIP listing is published before its wake-up",
+        "passed": true
+      },
+      {
+        "name": "A throwing or successful HTTP notification cannot replay completion",
+        "passed": true
+      },
+      {
+        "name": "An actual HTTP authentication rejection wakes the ZIP owner",
+        "passed": true
+      },
+      {
+        "name": "A rejected HTTP ZIP exposes its error through the same published result",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "excludedFromPrimaryCounts": true
+}

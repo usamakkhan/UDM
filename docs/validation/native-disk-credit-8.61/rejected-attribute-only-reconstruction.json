@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "source": "native/CatalogDiskCredit.hpp",
+  "reconstructedSha256": "B934D963E1CAC93CDCB1B0B1C24E25CD6BA761A50C75BA63A03562D4DA21E23A",
+  "reason": "Attribute-only handle did not deny a DELETE-access open; the final version requests GENERIC_READ and rechecks active membership after opening."
+}

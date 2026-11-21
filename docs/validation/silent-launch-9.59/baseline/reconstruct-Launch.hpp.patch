@@ -1,0 +1,10 @@
+--- native/Launch.hpp@9.59
++++ native/Launch.hpp@9.58
+@@ -46,7 +46,6 @@
+   else if(arg.rfind(L"udm://",0)==0){auto text=utf8(arg);auto pos=text.find("url=");if(pos!=std::string::npos)options.address=unescape(text.substr(pos+4));}
+   else throw std::runtime_error("Unknown UDM option: "+utf8(arg));
+  }
+- if(!options.tag.empty()&&(options.tag.size()>32||options.tag.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-")!=std::string::npos))throw std::runtime_error("Invalid instance tag. Use up to 32 letters, digits, underscores or hyphens.");
+  if(options.recovery&&!options.address.empty())throw std::runtime_error("Recovery cannot add a download.");
+  if(options.startQueue&&(options.recovery||options.paused||!options.address.empty()))throw std::runtime_error("Start queue must be used separately from adding a download or recovery.");
+  return options;

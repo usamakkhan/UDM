@@ -1,0 +1,66 @@
+--- native/Core.cpp
++++ diagnostic/Core.cpp
+@@ -810,7 +810,7 @@
+    // Keep this worker's active ownership until its checkpoint attempt settles,
+    // but do not retain the model mutex across serialization or durable IO.
+    try{
+-    bool alreadySaved=false;
++    UDM_FINISH_POINT("worker-final-proof-begin");bool alreadySaved=false;
+     if(finalCommit.committed())try{
+      Lock lock(mutex);
+      if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+@@ -820,11 +820,12 @@
+       }
+      }
+     }catch(...){/* Missing proof retains the final forced checkpoint. */}
+-    UDM_FINISH_POINT("worker-final-proof-done");if(alreadySaved){}else if(completedCheckpoint){
++    UDM_FINISH_POINT("worker-final-proof-done");UDM_FINISH_POINT("worker-final-save-begin");if(alreadySaved){}else if(completedCheckpoint){
+      std::function<void(const char*)> observe=[checkpoint=std::move(completedCheckpoint)](const char* point){if(std::string_view(point)=="snapshot-prepared")checkpoint("completed-transfer-checkpoint");checkpoint(point);};
+      saveCatalog(false,&observe);
+     }else save();
+-   }catch(...){} // Publication is already committed; retain storageError.
++    UDM_FINISH_POINT("worker-final-save-end");
++   }catch(...){UDM_FINISH_POINT("worker-final-save-error");} // Publication is already committed; retain storageError.
+    {Lock lock(mutex);auto owner=active.find(j->id());if(owner!=active.end()&&owner->second==c)active.erase(owner);}
+   }
+   if(prefetch)prefetchConfirmed.notify_all();
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -1066,7 +1066,7 @@
+   Handle prefinishFile;std::unique_ptr<PrefinishWriteback> prefinish;
+   if(size>=1048576&&(connections==1||(connections<=8&&size>=32*1048576LL&&size<=64*1048576LL))&&fixedVolume(dataFile))try{
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+-   if(prefinishFile)prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
++   if(prefinishFile)prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{UDM_FINISH_POINT("early-flush-call-begin");const bool result=FlushFileBuffers(prefinishFile.h)!=FALSE;UDM_FINISH_POINT("early-flush-call-end");return result;},true,true);
+   }catch(...){prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}
+   std::vector<std::chrono::steady_clock::time_point> assigned(connections);
+   std::vector<i64> receivedAtAssignment(connections,0);
+@@ -1711,14 +1711,14 @@
+   try{for(int w=0;w<connections;++w)workers.emplace_back(workerBody,w);}catch(...){
+    group->stop=true;rangeWorkChanged.notify_all();for(auto& worker:workers)worker.join();throw;
+   }
+-  for(auto& worker:workers)worker.join();
++  UDM_FINISH_POINT("network-workers-join-begin");for(auto& worker:workers)worker.join();UDM_FINISH_POINT("network-workers-join-end");
+   const auto workersJoined=GetTickCount64();
+-  PrefinishWriteback::Stats writeback;if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
++  PrefinishWriteback::Stats writeback;UDM_FINISH_POINT("early-flush-join-begin");if(prefinish)writeback=prefinish->finish();UDM_FINISH_POINT("early-flush-join-end");UDM_FINISH_POINT("early-flush-close-begin");if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}UDM_FINISH_POINT("early-flush-close-end");
+   {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes}};}
+   joinHasher.stop();
+   cancel->check();
+   i64 bufferedChecks=0,diskChecks=0;
+-  if(ranges&&!error)try{
++  UDM_FINISH_POINT("boundary-verify-begin");if(ranges&&!error)try{
+    Json segments;{Lock lock(m.mutex);segments=job->data["Segments"];}
+    Handle input;
+    for(const auto& segment:segments){
+@@ -1744,8 +1744,8 @@
+      throw HttpOverlapMismatch("Adjacent HTTP ranges do not match. The mixed file was not published.");
+    }
+   }catch(const HttpOverlapMismatch&){recordError(true,true);}
+-  const auto boundariesVerified=GetTickCount64();
+-  joinHasher.join();
++  UDM_FINISH_POINT("boundary-verify-end");const auto boundariesVerified=GetTickCount64();
++  UDM_FINISH_POINT("prefix-hash-join-begin");joinHasher.join();UDM_FINISH_POINT("prefix-hash-join-end");
+   const auto prefixHashStopped=GetTickCount64();
+   {
+    Lock lock(m.mutex);

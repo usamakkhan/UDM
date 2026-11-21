@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "Manager retains work before launch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate retention cannot create two lifetime owners",
+      "passed": true
+    },
+    {
+      "name": "The work registry is accessible independently of a held model lock",
+      "passed": true
+    },
+    {
+      "name": "Releasing caller references cannot detach or discard a blocked worker",
+      "passed": true
+    },
+    {
+      "name": "Stop joins cancelled acquisition before proving its final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "The final catalog retains the writer and excludes cancelled work",
+      "passed": true
+    },
+    {
+      "name": "A stopped manager rejects new retained acquisitions",
+      "passed": true
+    },
+    {
+      "name": "Stop before thread launch retires the registered owner atomically",
+      "passed": true
+    },
+    {
+      "name": "The retained callback is running before Stop",
+      "passed": true
+    },
+    {
+      "name": "Stop never holds its registry mutex while joining callbacks",
+      "passed": true
+    },
+    {
+      "name": "A worker cannot deadlock by stopping its own manager",
+      "passed": true
+    },
+    {
+      "name": "Rejected self shutdown leaves retention available",
+      "passed": true
+    },
+    {
+      "name": "Manager destruction waits for its retained worker instead of freeing its model",
+      "passed": true
+    },
+    {
+      "name": "Destructor cancellation finishes before the final durable state",
+      "passed": true
+    },
+    {
+      "name": "A real final-checkpoint failure interrupts Stop",
+      "passed": true
+    },
+    {
+      "name": "Failed shutdown reopens model-work retention for retry",
+      "passed": true
+    },
+    {
+      "name": "Retry persists the latest state after retained work drains",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

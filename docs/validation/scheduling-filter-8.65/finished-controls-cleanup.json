@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "finishedNativeControlsRemoved": [
+    {
+      "artifact": "trace_schema_inventory_control.exe",
+      "bytesRemoved": 463360,
+      "sha256": "A013185B01AAAA40BAC9CCC2107F8EB5DFB209AE35E70ACE422ABB74BF2734DA"
+    },
+    {
+      "artifact": "trace_schema_inventory_control.obj",
+      "bytesRemoved": 6691761,
+      "sha256": "DBBFE1762ECC55636C65ECF41B872E0A39BA50D93B544D3F4F8526F24FD2C38B"
+    },
+    {
+      "artifact": "trace_disk_io_control.exe",
+      "bytesRemoved": 356352,
+      "sha256": "D3187FB67CA35722DBC2842ABBB59A3061B0B1A181EFDD35EE81167CCD1E0564"
+    },
+    {
+      "artifact": "trace_disk_io_control.obj",
+      "bytesRemoved": 4299682,
+      "sha256": "0A7509D495BB8AA524C133EF373A230EC3766CBEC52EB2A691A899353B6A423C"
+    }
+  ],
+  "nativeControlBytesRemoved": 11811155,
+  "mockRootsRemoved": 3,
+  "mockMetadataFilesRemoved": 30,
+  "mockMetadataBytesRemoved": 3862,
+  "activeCollectorPreserved": true,
+  "failedRealLaunchRecordsPreserved": true,
+  "newDownloadPayloadBytes": 0,
+  "productBuildDirectoriesTouched": false
+}

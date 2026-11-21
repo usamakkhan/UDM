@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "name": "Initial column preparation returns an owned read",
+      "passed": true
+    },
+    {
+      "name": "Initial preparation never writes settings or catalog data",
+      "passed": true
+    },
+    {
+      "name": "A held catalog does not block the read caller",
+      "passed": true
+    },
+    {
+      "name": "A pending column owner rejects duplicate work",
+      "passed": true
+    },
+    {
+      "name": "Read cleanup cancels and joins before its model writer releases",
+      "passed": true
+    },
+    {
+      "name": "Read preparation waits for another accepted decision",
+      "passed": true
+    },
+    {
+      "name": "Read cancellation cannot release another decision guard",
+      "passed": true
+    },
+    {
+      "name": "Save rejection preserves another command's guard",
+      "passed": true
+    },
+    {
+      "name": "A failed initial read is consumed for inline retry",
+      "passed": true
+    },
+    {
+      "name": "A cancelled or failed initial read can retry",
+      "passed": true
+    },
+    {
+      "name": "Accepted Save owns its guard while the caller remains responsive",
+      "passed": true
+    },
+    {
+      "name": "Cancellation cannot abandon an accepted settings save",
+      "passed": true
+    },
+    {
+      "name": "A throwing notification keeps acceptance until UI acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Save acknowledges its exact immutable result and releases its guard",
+      "passed": true
+    },
+    {
+      "name": "Column merge preserves concurrent unrelated settings",
+      "passed": true
+    },
+    {
+      "name": "Accepted columns are durably persisted together",
+      "passed": true
+    },
+    {
+      "name": "An invalid permutation is rejected before accepting or changing settings",
+      "passed": true
+    },
+    {
+      "name": "Visible widths must match the accepted remembered width",
+      "passed": true
+    },
+    {
+      "name": "Invalid widths add no catalog writes",
+      "passed": true
+    },
+    {
+      "name": "A real durable-save failure returns an unaccepted result",
+      "passed": true
+    },
+    {
+      "name": "Save failure rolls back both column fields and preserves the prior catalog",
+      "passed": true
+    },
+    {
+      "name": "Save failure retains an explicit retry path",
+      "passed": true
+    },
+    {
+      "name": "Forced owner cleanup joins accepted Save and returns its result for UI application",
+      "passed": true
+    },
+    {
+      "name": "Owned result publication follows model unlock and survives diagnostic failure",
+      "passed": true
+    },
+    {
+      "name": "Repeated cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

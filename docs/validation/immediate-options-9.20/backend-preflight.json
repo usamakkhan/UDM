@@ -1,0 +1,107 @@
+{
+  "qualified": false,
+  "excludedFromPrimaryCounts": true,
+  "result": {
+    "checks": [
+      {
+        "name": "Category Browse returns its actual accepted path",
+        "passed": true
+      },
+      {
+        "name": "Category Browse preserves the other categories and remember choices",
+        "passed": true
+      },
+      {
+        "name": "Only the affected category preferences enter the owned acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Remember-path changes only the accepted category",
+        "passed": true
+      },
+      {
+        "name": "Server-date saves only its owned boolean setting",
+        "passed": true
+      },
+      {
+        "name": "Temporary Browse returns its accepted absolute folder",
+        "passed": true
+      },
+      {
+        "name": "Use default clears the override without inventing a destination",
+        "passed": true
+      },
+      {
+        "name": "Immediate acknowledgement preserves unrelated draft choices and their original baseline",
+        "passed": true
+      },
+      {
+        "name": "Acknowledged category fields become the new partial baseline",
+        "passed": true
+      },
+      {
+        "name": "A later full Options save preserves newer category changes while applying its unrelated unfinished draft",
+        "passed": true
+      },
+      {
+        "name": "A relative category folder cannot mutate memory or the saved catalog",
+        "passed": true
+      },
+      {
+        "name": "A missing category destination cannot be accepted",
+        "passed": true
+      },
+      {
+        "name": "A relative temporary folder cannot mutate memory or disk",
+        "passed": true
+      },
+      {
+        "name": "A removed category cannot be silently recreated by a stale remember checkbox",
+        "passed": true
+      },
+      {
+        "name": "An unknown immediate command cannot mutate settings",
+        "passed": true
+      },
+      {
+        "name": "A real catalog writer precedes accepted immediate work",
+        "passed": true
+      },
+      {
+        "name": "The initiating thread returns while its owned save waits on the actual Manager mutex",
+        "passed": true
+      },
+      {
+        "name": "A duplicate write cannot replace the accepted command or release its global owner",
+        "passed": true
+      },
+      {
+        "name": "The immediate worker completes after the existing writer releases the model",
+        "passed": true
+      },
+      {
+        "name": "The worker preserves the latest unrelated settings and keeps its guard through UI acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Acknowledging the accepted result releases ownership without another model read",
+        "passed": true
+      },
+      {
+        "name": "A failed durable immediate save settles on its worker",
+        "passed": true
+      },
+      {
+        "name": "A checkpoint failure restores all settings and saved bytes while the error retains its owner",
+        "passed": true
+      },
+      {
+        "name": "Explicit retry succeeds after a failed write without a leaked decision guard",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "binarySha256": "A93969CA57B13E8EEF9C84B4BA187BDD3C5208CC69F75C2135DE2A1AA2FB5C6D"
+}

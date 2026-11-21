@@ -1,0 +1,27 @@
+{
+  "cases": [
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "direct",
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "resume",
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true
+    }
+  ],
+  "diagnosticValid": true,
+  "error": "",
+  "recoveryResponsivenessFixed": false,
+  "baselineVersion": "8.40",
+  "appFunctionalChange": false,
+  "sourceSha256": "ef87a8b5c8cc0b11ba99674efa66b72f0dd4d107132198fa5469a201089f336d",
+  "limitation": "A held callback at the actual temporary-flushed persistence boundary simulates a long completion wait; it does not attribute a kernel/disk cause.",
+  "cleanup": {
+    "files": 8,
+    "logicalBytesRemoved": 5158749
+  }
+}

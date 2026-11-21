@@ -1,0 +1,322 @@
+{
+  "checks": [
+    {
+      "name": "An empty body does not reserve the shared cache",
+      "passed": true
+    },
+    {
+      "name": "A body above the global byte cap is refused before allocation",
+      "passed": true
+    },
+    {
+      "name": "Unknown or negative body length cannot create a cache",
+      "passed": true
+    },
+    {
+      "name": "A bounded body can acquire the shared cache",
+      "passed": true
+    },
+    {
+      "name": "A claimed complete count cannot expose bytes that were never credited",
+      "passed": true
+    },
+    {
+      "name": "An out-of-order tail does not prove a complete body",
+      "passed": true
+    },
+    {
+      "name": "A leading prefix and tail still retain an uncovered middle gap",
+      "passed": true
+    },
+    {
+      "name": "Adjacent credited ranges merge into an exact complete body",
+      "passed": true
+    },
+    {
+      "name": "An overlapping credited rewrite replaces the actual cached bytes",
+      "passed": true
+    },
+    {
+      "name": "An incomplete transfer count cannot admit the cached body",
+      "passed": true
+    },
+    {
+      "name": "A changed final size cannot reuse an older body allocation",
+      "passed": true
+    },
+    {
+      "name": "A zero-length notification neither reads memory nor invalidates credited bytes",
+      "passed": true
+    },
+    {
+      "name": "Reset clears old coverage rather than adopting unwritten zeros",
+      "passed": true
+    },
+    {
+      "name": "An out-of-bounds write disables the optional cache",
+      "passed": true
+    },
+    {
+      "name": "A negative write offset falls back without exposing a partial body",
+      "passed": true
+    },
+    {
+      "name": "A missing positive-length source disables optional caching",
+      "passed": true
+    },
+    {
+      "name": "Binary zero and high-bit values are preserved exactly",
+      "passed": true
+    },
+    {
+      "name": "Releasing the cache clears its valid state",
+      "passed": true
+    },
+    {
+      "name": "Concurrent transfers cannot each reserve the global body budget",
+      "passed": true
+    },
+    {
+      "name": "Another owner can acquire the slot after release",
+      "passed": true
+    },
+    {
+      "name": "The maximum budget never admits uncovered bytes, including on allocation refusal",
+      "passed": true
+    },
+    {
+      "name": "A reset beyond the byte cap also releases an older lease",
+      "passed": true
+    },
+    {
+      "name": "Excessively fragmented coverage is bounded and falls back to disk",
+      "passed": true
+    },
+    {
+      "name": "A fresh attempt can recover after optional-cache invalidation",
+      "passed": true
+    },
+    {
+      "name": "The transfer thread acquires a cache before worker-side invalidation",
+      "passed": true
+    },
+    {
+      "name": "A serialized worker-side cache failure discards unverified bytes",
+      "passed": true
+    },
+    {
+      "name": "Worker-side invalidation releases the process budget without unlocking another thread's mutex",
+      "passed": true
+    },
+    {
+      "name": "A cache lease is acquired before destruction on another thread",
+      "passed": true
+    },
+    {
+      "name": "Serialized cross-thread destruction releases the lease for its successor",
+      "passed": true
+    },
+    {
+      "name": "A denied cache owns no process-budget lease",
+      "passed": true
+    },
+    {
+      "name": "Destroying a denied cache cannot release the real owner's budget",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    },
+    {
+      "name": "Eight simultaneous cache attempts retain exactly one budget owner until release",
+      "passed": true
+    },
+    {
+      "name": "A fresh cache acquires the budget after every contender has finished",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,596 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "qualification": false,
+  "controlledHoldMs": 750,
+  "eventDrivenMessageWait": true,
+  "sameObserverSource": true,
+  "order": "baseline,current repeated three times",
+  "runs": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-1-baseline",
+      "processWallMs": 1730.5828999997175,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30727924.6286,
+            "stage": "close-entry",
+            "thread": 31128
+          },
+          {
+            "ms": 30727924.6344,
+            "stage": "layout-begin",
+            "thread": 31128
+          },
+          {
+            "ms": 30728677.9702,
+            "stage": "layout-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728678.073,
+            "stage": "integration-stop-begin",
+            "thread": 31128
+          },
+          {
+            "ms": 30728678.0786,
+            "stage": "integration-stop-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728678.0836,
+            "stage": "file-info-stop-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728691.0865,
+            "stage": "manager-stop-begin",
+            "thread": 31128
+          },
+          {
+            "ms": 30728721.8687,
+            "stage": "manager-stop-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728721.8735,
+            "stage": "icons-stop-begin",
+            "thread": 31128
+          },
+          {
+            "ms": 30728721.8783,
+            "stage": "icons-stop-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728721.8812,
+            "stage": "command-files-stop-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728723.4808,
+            "stage": "windows-cleanup-end",
+            "thread": 31128
+          },
+          {
+            "ms": 30728759.0564,
+            "stage": "close-return",
+            "thread": 31128
+          }
+        ],
+        "exitCommandMs": 834.5497000031173,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 835.2375000007451,
+        "passed": true,
+        "postWindowCleanupMs": 0.6873000003397465,
+        "qualification": false,
+        "windowCloseMs": 834.5502000004053,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 1,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-1-current",
+      "processWallMs": 1682.8065000008792,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30729657.9734,
+            "stage": "close-entry",
+            "thread": 24860
+          },
+          {
+            "ms": 30729657.9862,
+            "stage": "layout-capture-begin",
+            "thread": 24860
+          },
+          {
+            "ms": 30729658.2524,
+            "stage": "layout-capture-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730439.4082,
+            "stage": "before-merge",
+            "thread": 27584
+          },
+          {
+            "ms": 30730439.4455,
+            "stage": "merged",
+            "thread": 27584
+          },
+          {
+            "ms": 30730440.0656,
+            "stage": "close-entry",
+            "thread": 24860
+          },
+          {
+            "ms": 30730440.1096,
+            "stage": "integration-stop-begin",
+            "thread": 24860
+          },
+          {
+            "ms": 30730440.1129,
+            "stage": "integration-stop-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730440.1179,
+            "stage": "file-info-stop-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730440.6793,
+            "stage": "manager-stop-begin",
+            "thread": 24860
+          },
+          {
+            "ms": 30730479.1085,
+            "stage": "manager-stop-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730479.114,
+            "stage": "icons-stop-begin",
+            "thread": 24860
+          },
+          {
+            "ms": 30730479.119,
+            "stage": "icons-stop-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730479.1215,
+            "stage": "command-files-stop-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730480.8087,
+            "stage": "windows-cleanup-end",
+            "thread": 24860
+          },
+          {
+            "ms": 30730521.6207,
+            "stage": "close-return",
+            "thread": 24860
+          }
+        ],
+        "exitCommandMs": 10.196100000292063,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 864.2734000012279,
+        "passed": true,
+        "postWindowCleanupMs": 0.4473000019788742,
+        "qualification": false,
+        "windowCloseMs": 863.826099999249,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 2,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-2-baseline",
+      "processWallMs": 1402.2156999999424,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30731075.2003,
+            "stage": "close-entry",
+            "thread": 20236
+          },
+          {
+            "ms": 30731075.2067,
+            "stage": "layout-begin",
+            "thread": 20236
+          },
+          {
+            "ms": 30731833.3268,
+            "stage": "layout-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731833.3907,
+            "stage": "integration-stop-begin",
+            "thread": 20236
+          },
+          {
+            "ms": 30731833.396,
+            "stage": "integration-stop-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731833.4004,
+            "stage": "file-info-stop-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731843.6015,
+            "stage": "manager-stop-begin",
+            "thread": 20236
+          },
+          {
+            "ms": 30731885.2551,
+            "stage": "manager-stop-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731885.2612,
+            "stage": "icons-stop-begin",
+            "thread": 20236
+          },
+          {
+            "ms": 30731885.2657,
+            "stage": "icons-stop-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731885.2694,
+            "stage": "command-files-stop-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731886.2266,
+            "stage": "windows-cleanup-end",
+            "thread": 20236
+          },
+          {
+            "ms": 30731917.5043,
+            "stage": "close-return",
+            "thread": 20236
+          }
+        ],
+        "exitCommandMs": 842.8363999985158,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 843.2140999995172,
+        "passed": true,
+        "postWindowCleanupMs": 0.377300001680851,
+        "qualification": false,
+        "windowCloseMs": 842.8367999978364,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 2,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-2-current",
+      "processWallMs": 1469.1997000008996,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30732529.0076,
+            "stage": "close-entry",
+            "thread": 7908
+          },
+          {
+            "ms": 30732529.0167,
+            "stage": "layout-capture-begin",
+            "thread": 7908
+          },
+          {
+            "ms": 30732529.3219,
+            "stage": "layout-capture-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733310.435,
+            "stage": "before-merge",
+            "thread": 24672
+          },
+          {
+            "ms": 30733310.459,
+            "stage": "merged",
+            "thread": 24672
+          },
+          {
+            "ms": 30733311.2434,
+            "stage": "close-entry",
+            "thread": 7908
+          },
+          {
+            "ms": 30733311.2777,
+            "stage": "integration-stop-begin",
+            "thread": 7908
+          },
+          {
+            "ms": 30733311.2812,
+            "stage": "integration-stop-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733311.2859,
+            "stage": "file-info-stop-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733311.8749,
+            "stage": "manager-stop-begin",
+            "thread": 7908
+          },
+          {
+            "ms": 30733353.0939,
+            "stage": "manager-stop-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733353.0993,
+            "stage": "icons-stop-begin",
+            "thread": 7908
+          },
+          {
+            "ms": 30733353.1038,
+            "stage": "icons-stop-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733353.1059,
+            "stage": "command-files-stop-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733354.101,
+            "stage": "windows-cleanup-end",
+            "thread": 7908
+          },
+          {
+            "ms": 30733394.6829,
+            "stage": "close-return",
+            "thread": 7908
+          }
+        ],
+        "exitCommandMs": 15.328000001609325,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 866.2426000013947,
+        "passed": true,
+        "postWindowCleanupMs": 0.4625000022351742,
+        "qualification": false,
+        "windowCloseMs": 865.7800999991596,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 3,
+      "variant": "baseline",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-3-baseline",
+      "processWallMs": 1418.8068000003113,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30733978.0454,
+            "stage": "close-entry",
+            "thread": 36140
+          },
+          {
+            "ms": 30733978.0516,
+            "stage": "layout-begin",
+            "thread": 36140
+          },
+          {
+            "ms": 30734736.3453,
+            "stage": "layout-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734736.3781,
+            "stage": "integration-stop-begin",
+            "thread": 36140
+          },
+          {
+            "ms": 30734736.3813,
+            "stage": "integration-stop-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734736.3859,
+            "stage": "file-info-stop-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734747.1525,
+            "stage": "manager-stop-begin",
+            "thread": 36140
+          },
+          {
+            "ms": 30734788.2571,
+            "stage": "manager-stop-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734788.2628,
+            "stage": "icons-stop-begin",
+            "thread": 36140
+          },
+          {
+            "ms": 30734788.267,
+            "stage": "icons-stop-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734788.2698,
+            "stage": "command-files-stop-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734789.217,
+            "stage": "windows-cleanup-end",
+            "thread": 36140
+          },
+          {
+            "ms": 30734821.4304,
+            "stage": "close-return",
+            "thread": 36140
+          }
+        ],
+        "exitCommandMs": 843.4640999995172,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 843.8830000013113,
+        "passed": true,
+        "postWindowCleanupMs": 0.41850000247359276,
+        "qualification": false,
+        "windowCloseMs": 843.4644999988377,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": false
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    },
+    {
+      "round": 3,
+      "variant": "current",
+      "ownedOutput": "$REPOSITORY\\.media-cache\\owned-exit-comparison-9.46\\owned-round-3-current",
+      "processWallMs": 1458.2155000025523,
+      "result": {
+        "controlledCatalogHoldMs": 750,
+        "diagnosticOnly": true,
+        "events": [
+          {
+            "ms": 30735458.5865,
+            "stage": "close-entry",
+            "thread": 14104
+          },
+          {
+            "ms": 30735458.5985,
+            "stage": "layout-capture-begin",
+            "thread": 14104
+          },
+          {
+            "ms": 30735458.8735,
+            "stage": "layout-capture-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736232.5217,
+            "stage": "before-merge",
+            "thread": 28100
+          },
+          {
+            "ms": 30736232.5495,
+            "stage": "merged",
+            "thread": 28100
+          },
+          {
+            "ms": 30736233.3836,
+            "stage": "close-entry",
+            "thread": 14104
+          },
+          {
+            "ms": 30736233.4132,
+            "stage": "integration-stop-begin",
+            "thread": 14104
+          },
+          {
+            "ms": 30736233.4167,
+            "stage": "integration-stop-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736233.4213,
+            "stage": "file-info-stop-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736234.038,
+            "stage": "manager-stop-begin",
+            "thread": 14104
+          },
+          {
+            "ms": 30736272.6083,
+            "stage": "manager-stop-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736272.6135,
+            "stage": "icons-stop-begin",
+            "thread": 14104
+          },
+          {
+            "ms": 30736272.6186,
+            "stage": "icons-stop-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736272.6209,
+            "stage": "command-files-stop-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736273.7095,
+            "stage": "windows-cleanup-end",
+            "thread": 14104
+          },
+          {
+            "ms": 30736304.344,
+            "stage": "close-return",
+            "thread": 14104
+          }
+        ],
+        "exitCommandMs": 14.215599998831749,
+        "installedIdmComparison": false,
+        "ownerAndBackgroundCleanupMs": 846.3227999992669,
+        "passed": true,
+        "postWindowCleanupMs": 0.4243000000715256,
+        "qualification": false,
+        "windowCloseMs": 845.8984999991953,
+        "writerHeldAfterExit": false,
+        "writerHeldAtReturn": true
+      },
+      "exitCode": 0,
+      "desktopSwitched": false,
+      "userInputInjected": false,
+      "ownedDesktopClosed": true
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "experiment": "8.45 early Internet-zone metadata",
+  "performanceGateAccepted": false,
+  "files": [
+    {
+      "path": "native/Transfer.cpp",
+      "beforeSha256": "50B4CACFD3A7FB29ED61749539C8F3925218BC580D7EE4175FC292ACCEE74147",
+      "afterSha256": "AAE74013276DF39FB35AE61D7164267A5FE20E9D170D3C933D6443FCB4A6DE7D",
+      "beforeMatchesQualified844": true
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeSha256": "418B80803F1975DD22BF99FBBE71F18D501896473E138FAAE681E828F1CDED10",
+      "afterSha256": "6B787C91C3200FAAF191E798765462279A7883F0A457940B9767393BBDDFEDEF",
+      "beforeMatchesQualified844": true
+    },
+    {
+      "path": "native/backend-tests.json",
+      "beforeSha256": "A687A5D54E2F0116302C8BF2077AA3D001E946C474E8913664C6F73CB738EE30",
+      "afterSha256": "1E09821CE4515F75BFFB59458BD1FB998554ECAD50CCE062A754BC139B91D033",
+      "beforeMatchesQualified844": true
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeSha256": "EAD4CC8710D743A0758803CE1FA09CA0499B9361CB3C3E6073D03F998585E4D0",
+      "afterSha256": "F0ACFC018A8EA864BEEDAEF6876881B198863F59BD0621736FC7C57FEBABFF3D",
+      "beforeMatchesQualified844": true
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeSha256": "96E100B6D1F6E150FDAA25566D014EBA77BD75741A77299165380597392E9EFC",
+      "afterSha256": "28097B0028898A006D60DD204AFCE9A82D164A46C53355D892AA474D2BAC1436",
+      "beforeMatchesQualified844": true
+    },
+    {
+      "path": "native/InternetZone.hpp",
+      "beforeSha256": null,
+      "afterSha256": "958C057CF643CBC7E36FD9D67EBF92EC98A54056F56EEB549B832BC94FD521C6",
+      "beforeMatchesQualified844": false
+    },
+    {
+      "path": "native/InternetZoneTests.cpp",
+      "beforeSha256": null,
+      "afterSha256": "6B1E5E5148025F30CEC854C96C7E2B55E64942D74D08C26F6FA7E94230787BBB",
+      "beforeMatchesQualified844": false
+    }
+  ]
+}

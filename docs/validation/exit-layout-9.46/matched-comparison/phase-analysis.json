@@ -1,0 +1,70 @@
+{
+  "diagnosticOnly": true,
+  "qualification": false,
+  "phases": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "layoutReadyFromEntryMs": 753.341599997133,
+      "readyToContinueMs": 0,
+      "managerStopMs": 30.782200001180172,
+      "windowDestroyMs": 35.57560000196099,
+      "afterLayoutReadyMs": 81.08620000258088,
+      "ownerCleanupMs": 835.2375000007451
+    },
+    {
+      "round": 1,
+      "variant": "current",
+      "layoutReadyFromEntryMs": 781.4721000008285,
+      "readyToContinueMs": 0.6200999990105629,
+      "managerStopMs": 38.42920000106096,
+      "windowDestroyMs": 40.81200000271201,
+      "afterLayoutReadyMs": 82.17520000040531,
+      "ownerCleanupMs": 864.2734000012279
+    },
+    {
+      "round": 2,
+      "variant": "baseline",
+      "layoutReadyFromEntryMs": 758.1264999993145,
+      "readyToContinueMs": 0,
+      "managerStopMs": 41.65359999984503,
+      "windowDestroyMs": 31.277699999511242,
+      "afterLayoutReadyMs": 84.17749999836087,
+      "ownerCleanupMs": 843.2140999995172
+    },
+    {
+      "round": 2,
+      "variant": "current",
+      "layoutReadyFromEntryMs": 781.451400000602,
+      "readyToContinueMs": 0.784400001168251,
+      "managerStopMs": 41.21900000050664,
+      "windowDestroyMs": 40.581900000572205,
+      "afterLayoutReadyMs": 84.22390000149608,
+      "ownerCleanupMs": 866.2426000013947
+    },
+    {
+      "round": 3,
+      "variant": "baseline",
+      "layoutReadyFromEntryMs": 758.2998999990523,
+      "readyToContinueMs": 0,
+      "managerStopMs": 41.10460000112653,
+      "windowDestroyMs": 32.21339999884367,
+      "afterLayoutReadyMs": 85.08509999886155,
+      "ownerCleanupMs": 843.8830000013113
+    },
+    {
+      "round": 3,
+      "variant": "current",
+      "layoutReadyFromEntryMs": 773.9629999995232,
+      "readyToContinueMs": 0.8341000005602837,
+      "managerStopMs": 38.57030000165105,
+      "windowDestroyMs": 30.63450000062585,
+      "afterLayoutReadyMs": 71.79450000077486,
+      "ownerCleanupMs": 846.3227999992669
+    }
+  ],
+  "matchedTotalMedianRegressionMs": 21.059300001710653,
+  "totalTimeGatePassed": false,
+  "scope": "Three controlled pairs with a 750 ms writer hold; not installed IDM or natural download performance",
+  "next": "Record actual writer release and reader acquisition/wake boundaries; eliminate redundant acquisition delay without timer tuning"
+}

@@ -1,0 +1,32 @@
+--- native/Duplicates.cpp@9.62
++++ native/Duplicates.cpp@9.60
+@@ -220,10 +220,7 @@
+  struct RecordPublicationTiming {std::function<void()> record;~RecordPublicationTiming(){record();}} recordTiming{[&]()noexcept{try{timing("ReleasePins");Lock guard(mutex);const auto owner=active.find(job->id());if(cancel&&owner!=active.end()&&owner->second.get()==cancel)if(finalCommit)finalCommit->publicationTimings=publicationTimings;else job->data["PublicationPhases"]=publicationTimings;}catch(...){}}};
+  auto checkpoint=[&]{if(cancel)cancel->check();};checkpoint();
+  if(publicationObservation)publicationObservation("publication-preflight-begin");
+- const bool overlap=finalCommit&&finalCommit->pendingWriteback()&&finalCommit->hasWritebackPin()&&originalId.empty()&&!knownHash.empty();
+- Handle bodyPin;if(overlap)bodyPin.h=finalCommit->takeWritebackPin();
+- else if(finalCommit){finalCommit->finishWriteback();finalCommit->releaseWritebackPin();}
+- PublicationPreparation prepared(staging,destinationInputs,std::move(bodyPin));
++ PublicationPreparation prepared(staging,destinationInputs);
+  if(publicationObservation)publicationObservation("publication-preflight-ready");timing("PrepareSource");checkpoint();
+  auto hash=knownHash;
+  Json stagedIdentity;
+@@ -270,7 +267,6 @@
+   auto journal=root/L"publications"/(wide(job->id())+L".json");
+   Json intent={{"Id",job->id()},{"Target",utf8(target.wstring())},{"Staging",utf8(staging.wstring())},{"Hash",hash},{"Before",before},{"After",after},{"CommitId",commitId},{"Ephemeral",!catalogBound}};
+   if(!stagedIdentity.is_null())intent["StagedIdentity"]=stagedIdentity;
+-  if(overlap)intent["FlushBeforePublish"]=true; // Recovery must never accept an unflushed early intent.
+   lock.unlock();
+   if(fs::exists(journal))throw std::runtime_error("A previous publication needs recovery. Resume the download or restart UDM.");
+   if(fs::exists(target))throw std::runtime_error("Cannot publish the download. The destination already exists; choose another file name.");
+@@ -278,9 +274,7 @@
+   const auto observeIntent=[&](const char* stage){const auto now=std::chrono::steady_clock::now();try{intentOperations[stage]=std::chrono::duration<double>(now-intentMark).count();}catch(...){}intentMark=now;if(publicationObservation){const auto name=std::string("publication-intent-")+stage;publicationObservation(name.c_str());}};
+   timing("PrepareIntent");UDM_FINISH_POINT("intent-write-begin");intentMark=std::chrono::steady_clock::now();atomicText(journal,intent.dump(),false,observeIntent);try{intentOperations["publish"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-intentMark).count();publicationTimings["IntentOperations"]=std::move(intentOperations);}catch(...){}timing("WriteIntent");UDM_FINISH_POINT("intent-write-end");
+   if(publicationObservation)publicationObservation("publication-intent-written");
+-  if(overlap){finalCommit->finishWriteback();checkpoint();timing("JoinWriteback");if(publicationObservation)publicationObservation("publication-writeback-protected");}
+   prepared.validateSourceName(staging);prepared.validateDirectories();
+-  if(overlap){Lock guard(mutex);checkpoint();if(stopping||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during body writeback. Keep its file and recovery record.");}
+   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+   prepared.pinPublishedName(target);
+   timing("Rename");if(publicationObservation)publicationObservation("publication-file-moved");

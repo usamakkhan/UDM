@@ -1,13 +1,26 @@
+#include <optional>
+#include "PreparedTransferCommit.hpp"
 #include "ServerConnections.hpp"
 #include "BrowserProxy.hpp"
 #include "BrowserSession.hpp"
 #include "QueueWake.hpp"
 #include "Scanner.hpp"
 #include "Core.hpp"
+#include "ManagedModelWork.hpp"
+#include "PinnedCatalogRead.hpp"
+#include "PropertiesRequestDraft.hpp"
+#ifdef UDM_FINISH_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#define UDM_FINISH_POINT(stage) nativeUiTraceRecord(stage)
+#else
+#define UDM_FINISH_POINT(stage) ((void)0)
+#endif
+
 #include "PublicationOwnership.hpp"
 #include "CatalogCommitCoordinator.hpp"
 #include "PublicationCatalogProof.hpp"
 #include "CatalogAdmissionRegistry.hpp"
+#include "CatalogDiskCredit.hpp"
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
 #include "ProductionUiTiming.hpp"
 #endif
@@ -56,7 +69,7 @@ i64 num(const Json& j,const char* k,i64 d){return j.contains(k)&&j[k].is_number_
 double real(const Json& j,const char* k,double d){return j.contains(k)&&j[k].is_number()?j[k].get<double>():d;}
 bool yes(const Json& j,const char* k,bool d){return j.contains(k)&&j[k].is_boolean()?j[k].get<bool>():d;}
 std::string guid(){GUID g{};if(FAILED(CoCreateGuid(&g)))throw std::runtime_error("Cannot create a download identifier.");wchar_t b[40];StringFromGUID2(g,b,40);std::string s=lower(utf8(b));s.erase(std::remove_if(s.begin(),s.end(),[](char c){return c=='{'||c=='}'||c=='-';}),s.end());return s;}
-std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";if(std::regex_search(lower(utf8(w)),std::regex("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)")))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();w=w.substr(0,140)+ext.substr(0,19);if(!w.empty()&&w.back()>=0xD800&&w.back()<=0xDBFF)w.pop_back();}return utf8(w);}
+std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";static const std::regex reservedName("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)");if(std::regex_search(lower(utf8(w)),reservedName))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();const auto prefix=[](const std::wstring& value,size_t limit){auto clipped=value.substr(0,limit);if(!clipped.empty()&&clipped.back()>=0xD800&&clipped.back()<=0xDBFF)clipped.pop_back();return clipped;};w=prefix(w,140)+prefix(ext,19);}return utf8(w);}
 std::vector<std::string> words(const std::string& v){std::vector<std::string> out;std::regex re("[^\\s,;]+");for(auto i=std::sregex_iterator(v.begin(),v.end(),re);i!=std::sregex_iterator();++i){auto s=lower(i->str());if(std::find(out.begin(),out.end(),s)==out.end())out.push_back(s);}return out;}
 std::string category(const std::string& f){auto ext=lower(utf8(fs::path(wide(f)).extension().wstring()));const std::pair<const char*,const char*> rules[]={{"Archives",".zip .7z .rar .gz .tar .iso"},{"Video",".mp4 .mkv .webm .mov .avi .ts"},{"Music",".mp3 .flac .wav .ogg .m4a .aac"},{"Programs",".exe .msi .msix .apk"},{"Images",".jpg .jpeg .png .svg .webp .gif"},{"Documents",".pdf .doc .docx .xlsx .txt .epub .pptx .csv"}};for(auto r:rules)for(auto x:words(r.second))if(x==ext)return r.first;return "Other";}
 std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"Bytes","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?2:0)<<n<<' '<<u[i];return s.str();}
@@ -110,26 +123,29 @@ void atomicText(const fs::path& p,const std::string& s,bool backup,const std::fu
  if(checkpoint)nativeUiTraceRecord("save-atomic-entry");
  nativeUiTraceSaveRecord("save-atomic-entry");
 #endif
-fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";
+fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";if(checkpoint)checkpoint("directories-ready");
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
  if(checkpoint)nativeUiTraceRecord("save-dirs-ready");
  nativeUiTraceSaveRecord("save-dirs-ready");
 #endif
-{Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
+{UDM_FINISH_POINT("atomic-open-begin");Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
  if(checkpoint)nativeUiTraceRecord("save-file-opened");
  nativeUiTraceSaveRecord("save-file-opened");
 #endif
-if(!f)throw std::runtime_error("Cannot write state temporary file.");DWORD n=0;
+UDM_FINISH_POINT("atomic-open-end");if(!f)throw std::runtime_error("Cannot write state temporary file.");if(checkpoint)checkpoint("temporary-opened");DWORD n=0;
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
 if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size())throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)checkpoint("bytes-written");
 if(checkpoint)nativeUiTraceRecord("save-bytes-written");
  nativeUiTraceSaveRecord("save-bytes-written");
-if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
-if(checkpoint)nativeUiTraceRecord("save-buffer-flushed");
+UDM_FINISH_POINT("atomic-flush-begin");if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
+UDM_FINISH_POINT("atomic-flush-end");if(checkpoint)nativeUiTraceRecord("save-buffer-flushed");
  nativeUiTraceSaveRecord("save-buffer-flushed");
 #else
-if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size()||!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
+if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size())throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)checkpoint("bytes-written");
+UDM_FINISH_POINT("atomic-flush-begin");if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");UDM_FINISH_POINT("atomic-flush-end");
 #endif
 }if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
  if(ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr))break;
@@ -303,18 +319,53 @@ void Job::samplePrefetchRate(std::chrono::steady_clock::time_point now,bool fini
  if(finished)prefetchSampleTime.reset();
 }
 fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
-Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(const auto& j:state["Downloads"]){auto job=std::make_shared<Job>(j);recoverScanner(job->data);auto status=str(job->data,"Status");
+Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(auto& j:state["Downloads"]){auto job=std::make_shared<Job>(std::move(j));recoverScanner(job->data);auto status=str(job->data,"Status");
   if(status=="Pausing"){
    const auto response=job->data.find("OriginalResponse");
    if(response!=job->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing"))job->data["ResponseSaveDeferred"]=true;
   }
   if((status=="Downloading"||status=="Verifying")&&(yes(job->data,"SynchronizationReplacement")||yes(job->data,"SynchronizationRestoration")))interruptedSyncTransfers.push_back(job);if(status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"||status=="Resolving"||status=="Awaiting confirmation")job->data["Status"]="Paused";job->data["ConfirmationPending"]=false;if(!str(job->data,"ProtectedAdaptive").empty()||!str(job->data,"SourceUrl").empty()){auto recovered=str(job->data,"Status");if(recovered=="Complete")job->data["MediaPhase"]="Complete";else{job->data.erase("PrefetchedFinalSize");if(recovered=="Paused"||recovered=="Failed"||recovered=="Queued")job->data["MediaPhase"]=recovered;}}if(!job->data.contains("QueueMember"))job->data["QueueMember"]=status!="Complete";jobs.push_back(job);}
- // Jobs own the loaded records. Snapshots serialize those jobs back into Downloads.
+ // Parsed records are adopted by jobs, avoiding a second deep history copy.
+ // Snapshots serialize those jobs back into Downloads.
  state["Downloads"].clear();
  recoverFileOperation();recoverReplacements();recoverRestarts();recoverSynchronizationWork(interruptedSyncTransfers);recoverLinkConversions();startupResponseRecoveryPending=recovery==StartupRecovery::Desktop;if(!startupResponseRecoveryPending)recoverOriginalResponses();pruneStagedPostBodies(*this);}
+void Manager::retainModelWork(const std::shared_ptr<ManagedModelWork>& work){
+ if(!work)throw std::invalid_argument("Missing model work owner.");std::lock_guard<std::mutex> lock(callbackState->mutex);
+ if(callbackState->owner!=this||callbackState->modelWorkClosing)throw std::runtime_error("The download manager is closing.");
+ if(std::find(callbackState->modelWork.begin(),callbackState->modelWork.end(),work)!=callbackState->modelWork.end())throw std::logic_error("The model worker is already retained.");
+ work->bindOwner(this);callbackState->modelWork.push_back(work);
+}
+void Manager::releaseModelWork(const std::shared_ptr<ManagedModelWork>& work){
+ if(!work||!work->joined())throw std::logic_error("Join model work before releasing its owner.");
+ std::lock_guard<std::mutex> lock(callbackState->mutex);auto& owned=callbackState->modelWork;owned.erase(std::remove(owned.begin(),owned.end(),work),owned.end());
+}
+size_t Manager::pendingModelWork()const{std::lock_guard<std::mutex> lock(callbackState->mutex);return callbackState->modelWork.size();}
+void Manager::drainModelWork(){
+ if(ManagedModelWork::executingFor(this))throw std::logic_error("A model worker cannot stop its own manager.");
+ std::vector<std::shared_ptr<ManagedModelWork>> owned;
+ {std::lock_guard<std::mutex> lock(callbackState->mutex);callbackState->modelWorkClosing=true;owned.swap(callbackState->modelWork);}
+ for(const auto& work:owned)work->cancel();
+ try{for(const auto& work:owned)work->join();}catch(...){std::lock_guard<std::mutex> lock(callbackState->mutex);owned.swap(callbackState->modelWork);if(callbackState->owner)callbackState->modelWorkClosing=false;throw;}
+}
 Manager::~Manager(){
- {std::unique_lock<std::mutex> lock(callbackState->mutex);callbackState->owner=nullptr;callbackState->finished.wait(lock,[&]{return callbackState->active==0;});}
- try{stop();}catch(...) {}
+ {std::unique_lock<std::mutex> lock(callbackState->mutex);callbackState->owner=nullptr;callbackState->modelWorkClosing=true;callbackState->finished.wait(lock,[&]{return callbackState->active==0;});}
+ try{drainModelWork();}catch(...){std::terminate();}
+ // OnClose already verified or wrote a final save. Avoid a duplicate write only
+ // after all work stopped and the actual, pinned catalog still matches that
+ // exact durable checkpoint. Pending overlays/outcomes must get a fresh save.
+ bool alreadySaved=false;
+ try{
+  Lock lock(mutex);
+  if(stopping&&threads.empty()&&active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+   auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+   }
+  }
+ }catch(...){/* A failed recheck keeps the original forced-save path. */}
+ if(!alreadySaved)try{stop();}catch(...) {}
+ CatalogDiskCredit::forget(*this);
 }
 std::function<void(const Json&)> Manager::browserSessionPersistence(JobPtr job,Json expected,std::shared_ptr<const Cancel> cancel){
  if(expected.empty())return {};
@@ -345,12 +396,13 @@ void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)
  // outside this function's lock. Periodic callers use an owned worker. Explicit
  // callers remain synchronous and may hold an outer lock. Older writes are skipped.
  std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
- CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;
+ CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;CatalogDiskCredit::Publication diskCredit;
  {Lock l(mutex);if(changedOnly&&stopping)return;if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
   // Recheck automatic checkpoint necessity in the same lock as its snapshot.
   // An explicit commit can supersede a worker's earlier dirty observation.
   // Forced saves and retries after a storage failure still perform durable IO.
-  try{if(changedOnly&&storageError.empty()&&!checkpointChanged())return;current=snapshot();publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);}catch(const std::exception& e){storageError=e.what();throw;}
+  try{if(changedOnly&&storageError.empty()&&!CatalogDiskCredit::active(*this)&&!checkpointChanged())return;current=snapshot();diskCredit=CatalogDiskCredit::capture(*this,current,[&](const std::string& id,const Cancel* c){auto it=active.find(id);return it!=active.end()&&it->second.get()==c;});publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);if(changedOnly&&storageError.empty()&&diskCredit&&!publication&&!publicationProof&&current==checkpointState)return;}catch(const std::exception& e){storageError=e.what();throw;}
+  if(changedOnly&&storageError.empty()&&!publication&&!publicationProof&&PreparedTransferCommit::defersAutomatic(*this,active)){UDM_FINISH_POINT("auto-deferred-finalization");return;}
   sequence=++catalogSequence;checkpoint=observation?*observation:catalogCheckpoint;}
 
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
@@ -389,7 +441,7 @@ void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)
  publication.published(sequence);
  if(publicationProof&&checkpoint)checkpoint("publication-catalog-written");
  publicationProof.published(sequence);
-Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSequence=sequence;storageError.clear();}}
+Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointText=std::move(serialized);checkpointSequence=sequence;storageError.clear();}}
  catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
 }
 bool Manager::jobMatchesCheckpoint(const Job& job,const Json& saved){
@@ -486,15 +538,21 @@ static std::string availableDownloadName(const Manager& manager,const fs::path& 
 }
 JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);const auto destinationFolder=fs::absolute(fs::path(wide(folder)));folder=utf8(destinationFolder.wstring());if(relocationReserves(destinationFolder))throw std::runtime_error("That folder is reserved by a file move.");bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");filename=availableDownloadName(*this,destinationFolder,filename);auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
 bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||PublicationOwnership::treeOwned(*this,j)||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
-void Manager::resume(JobPtr j){
- Lock lock(mutex);
- if(isActive(j)){
-  // Download Later can leave a worker finishing its receipt. Queue the user's
-  // request without taking over its parts or starting a second worker.
-  if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);
-  return;
- }
- recoverReplacements(j);
+void Manager::resume(JobPtr j){resumeIf(j,{});}
+bool Manager::resumeIf(JobPtr j,const std::function<bool()>& allowed){
+ {Lock lock(mutex);if(!j)throw std::runtime_error("This download is no longer in the list.");
+  if(allowed&&!allowed())return false;
+  if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
+  if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");}
+ recoverReplacements(j,true);
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");
+ if(allowed&&!allowed())return false;
+ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
+ resumeAfterRecovery(j);return true;
+}
+// Caller owns the model lease and has already reconciled this publication tree.
+void Manager::resumeAfterRecovery(JobPtr j){
  const auto response=j->data.find("OriginalResponse");
  if(response!=j->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing")){
   startOriginalResponseSave(j);return;
@@ -567,13 +625,20 @@ void Manager::pause(JobPtr j){
  if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
 }
 void Manager::remove(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
+ {Lock lock(mutex);
+  if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
+  recoverFileOperation(j);
+ }
+ // Keep the selected record until publication recovery has accepted its files.
+ recoverReplacements(j,true);
+ removeAfterRecovery(j,expectedComplete,cleanupPrefetch);
+}
+// Caller has reconciled publication; repeated mutation validation remains atomic.
+void Manager::removeAfterRecovery(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
  Lock l(mutex);
- if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
- recoverFileOperation(j);
- // Preserve the selected record until its own publication tree is reconciled.
- // Child-track and replacement journals need that record for later recovery.
- recoverReplacements(j);
  if(expectedComplete&&(std::find(jobs.begin(),jobs.end(),j)==jobs.end()||(str(j->data,"Status")=="Complete")!=*expectedComplete))throw std::runtime_error("The selected download changed during recovery. Review the selection before removing it.");
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
@@ -581,6 +646,26 @@ void Manager::remove(JobPtr j,std::optional<bool> expectedComplete,bool cleanupP
  discardRetainedMediaOutput(j->data);
  if(cleanupPrefetch)discardCancelledPrefetch(j);
  pruneStagedPostBodies(*this);
+}
+bool Manager::cancelUnconfirmedOffer(JobPtr job,OfferCancellation policy,const std::function<bool()>& allowed){
+ bool removed=false;
+ const auto member=[&]{return job&&std::find(jobs.begin(),jobs.end(),job)!=jobs.end();};
+ const auto eligible=[&](bool recovered){
+  if(!member()||yes(job->data,"IndividualStart")||isActive(job))return false;
+  const auto status=str(job->data,"Status");
+  return policy==OfferCancellation::AwaitingOnly?(status=="Awaiting confirmation"||(recovered&&status=="Paused")):!job->data.contains("OriginalResponse")&&(status=="Awaiting confirmation"||status=="Paused"||status=="Failed");
+ };
+ // Before/after execute under recovery's own lease. No other UI command can
+ // accept the recovered Paused row between owner release and guarded removal.
+ recoverReplacementsWithContinuation(job,true,[&]{
+  if(allowed&&!allowed())return false;
+  if(!eligible(false)){
+   if(policy==OfferCancellation::FileInfo&&member()&&!yes(job->data,"IndividualStart"))pause(job);
+   return false;
+  }
+  recoverFileOperation(job);return true;
+ },[&]{if((!allowed||allowed())&&eligible(true)){removeAfterRecovery(job,false,true);removed=true;}});
+ return removed;
 }
 int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
 static i64 quotaPeriodStart(const Json& state){
@@ -753,14 +838,14 @@ std::string quotaWaitText(const Json& value){
  return "Download limit reached. Resuming automatically in "+std::to_string(seconds/3600)+" hr "+std::to_string((seconds/60)%60)+" min "+std::to_string(seconds%60)+" sec.";
 }
 
-void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
+void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker,bool accountNetwork){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;if(accountNetwork)j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
 void Manager::ensureConnection(JobPtr j,const Cancel& c){Json prefs;{Lock l(mutex);prefs=state["Settings"];}ensureDialConnection(prefs,c,[this,j](const std::string& message){Lock l(mutex);if(message.empty())j->data.erase("ConnectionStatus");else j->data["ConnectionStatus"]=message;});}
-void requestLiveHlsFinish(Manager& manager,JobPtr job){
- Lock lock(manager.mutex);if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
+void requestLiveHlsFinish(Manager& manager,JobPtr job,const std::function<bool()>& allowed){
+ std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(allowed&&!allowed())return;if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
  auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
- if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job))manager.resume(job);
+ if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resumeIf(job,[&]{return std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end()&&yes(job->data,"LiveRecording")&&yes(job->data,"LiveStopRequested")&&str(job->data,"Status")!="Complete"&&str(job->data,"Status")!="Awaiting confirmation";});}
 }
-void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{CatalogDiskCredit::WorkerScope diskGeneration(*this,j,c);std::optional<PreparedTransferCommit> finalCommitOwner(std::in_place,*this,j,c,!prefetch);auto& finalCommit=*finalCommitOwner;bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);finalCommit.protectIndependentFinish();j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){finalCommitOwner.reset();complete=false;Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
   std::function<void(const char*)> completedCheckpoint;
   {
    Lock lock(mutex);
@@ -783,7 +868,17 @@ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))retur
    // Keep this worker's active ownership until its checkpoint attempt settles,
    // but do not retain the model mutex across serialization or durable IO.
    try{
-    if(completedCheckpoint){
+    bool alreadySaved=false;
+    if(finalCommit.committed())try{
+     Lock lock(mutex);
+     if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+      auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+      if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+       if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+      }
+     }
+    }catch(...){/* Missing proof retains the final forced checkpoint. */}
+    UDM_FINISH_POINT("worker-final-proof-done");if(alreadySaved){}else if(completedCheckpoint){
      std::function<void(const char*)> observe=[checkpoint=std::move(completedCheckpoint)](const char* point){if(std::string_view(point)=="snapshot-prepared")checkpoint("completed-transfer-checkpoint");checkpoint(point);};
      saveCatalog(false,&observe);
     }else save();
@@ -791,7 +886,7 @@ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))retur
    {Lock lock(mutex);auto owner=active.find(j->id());if(owner!=active.end()&&owner->second==c)active.erase(owner);}
   }
   if(prefetch)prefetchConfirmed.notify_all();
-  if((complete||showFailedPreparedSave)&&event)event(j,complete);
+  UDM_FINISH_POINT("worker-notify-begin");if((complete||showFailedPreparedSave)&&event)event(j,complete);UDM_FINISH_POINT("worker-notify-end");
  });
 }
 void Manager::checkpointPeriodic(){
@@ -812,7 +907,22 @@ void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResp
  j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);
  j->samplePrefetchRate(now);
 }if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
-void Manager::stop(){{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}periodicCheckpoint.stop();{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();PublicationOwnership::waitUntilIdle(*this);try{save();}catch(...){Lock l(mutex);stopping=false;throw;}}
+void Manager::stop(){if(ManagedModelWork::executingFor(this))throw std::logic_error("A model worker cannot stop its own manager.");try{drainModelWork();UDM_FINISH_POINT("stop-entry");{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}UDM_FINISH_POINT("stop-periodic-begin");periodicCheckpoint.stop();UDM_FINISH_POINT("stop-periodic-end");{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();UDM_FINISH_POINT("stop-joins-done");PublicationOwnership::waitUntilIdle(*this);UDM_FINISH_POINT("stop-publications-done");
+ // All workers and publication owners have settled. Reuse only an exact,
+ // acknowledged checkpoint whose real catalog is pinned against replacement
+ // and writes during validation. Explicit save() remains a forced barrier.
+ bool alreadySaved=false;
+ try{
+  Lock lock(mutex);
+  if(active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+   auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+   }
+  }
+ }catch(...){/* Any missing proof retains a real durable shutdown write. */}
+ UDM_FINISH_POINT("stop-proof-done");if(!alreadySaved)try{UDM_FINISH_POINT("stop-save-begin");save();UDM_FINISH_POINT("stop-save-end");}catch(...){Lock l(mutex);stopping=false;throw;}UDM_FINISH_POINT("stop-return");}catch(...){std::lock_guard<std::mutex> lock(callbackState->mutex);if(callbackState->owner)callbackState->modelWorkClosing=false;throw;}}
 int retryAfterDelay(const std::string& header,i64 now){
  auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
  auto value=header.substr(first,last-first+1);
@@ -1008,19 +1118,32 @@ void Manager::refreshAddress(JobPtr job,const std::string& address,std::optional
  eraseCapturePresentations(state,job->id());try{save();}catch(...){job->data=before;restoreCaptureRows(state,captures);throw;}cancelAddressRefresh(job);
 }
 void Manager::recoverBeforeConfigure(JobPtr j,bool beforeStart){
- if(!isActive(j)&&str(j->data,"Status")!="Complete"&&(beforeStart||publicationNeedsRecovery(*this,j))){
-  // The journal must resolve against the destination it originally recorded.
-  recoverReplacements(j);
-  if(str(j->data,"Status")=="Complete")
-   throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
- }
+ {Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");if(isActive(j)||str(j->data,"Status")=="Complete")return;if(!beforeStart&&!publicationNeedsRecovery(*this,j))return;}
+ recoverReplacements(j,true);
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(str(j->data,"Status")=="Complete")throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
 }
 void Manager::configure(JobPtr j,const Json& edit){
- Lock lock(mutex);
  recoverBeforeConfigure(j);
+ Lock lock(mutex);if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
  auto next=configuredDownload(j,edit,false);
  j->data.swap(next);
  try{save();}catch(...){j->data.swap(next);throw;}
+}
+void Manager::configureProperties(JobPtr job,const Json& edit,const PropertiesHeaderPatch& headers){
+ recoverBeforeConfigure(job);
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ auto changes=edit;headers.apply(changes,job->data);auto next=configuredDownload(job,changes,false);
+ job->data.swap(next);try{save();}catch(...){job->data.swap(next);throw;}
+}
+// Completed Properties uses the same owned logical patch as unfinished saves.
+// Membership, closing and the current session are checked on the worker, not
+// trusted from the dialog's earlier capture or a completed relocation.
+void Manager::configureCompletedProperties(JobPtr job,const Json& edit,const PropertiesHeaderPatch& headers){
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before saving download properties.");
+ auto changes=edit;headers.apply(changes,job->data);updateCompleted(job,changes);
 }
 // The caller holds the manager lock until the edited record is saved.
 Json Manager::configuredDownload(JobPtr j,const Json& edit,bool prefetchedTransfer){
@@ -1118,17 +1241,28 @@ void Manager::saveProject(const Json& incoming){
  try{save();}catch(...){state["Projects"].swap(old);throw;}
 }
 int Manager::addProject(const Json& project,const std::string& queue,bool paused,bool immediate,bool resumeExisting){
- Lock l(mutex);if(catalogTransaction)throw std::runtime_error("A project is already being added.");
+ std::unique_lock<std::recursive_mutex> l(mutex);if(catalogTransaction)throw std::runtime_error("A project is already being added.");
  auto p=project;validateGrabberProject(p,state["Settings"]);validateGrabberActions(p);GrabberFilters filters(p);
  std::map<std::string,JobPtr> existingLinks;for(auto j:jobs)if(str(j->data,"ProjectId")==str(p,"Id"))existingLinks[str(j->data,"Url")]=j;
  // Recovery must commit before the batch defers saves. Otherwise resume could
  // remove a recovery journal while its recovered catalog state is still staged.
- if(immediate&&resumeExisting&&str(p,"Template")!="Offline website (ZIP)")for(const auto& link:p["Links"])if(yes(link,"Selected",true)){
-  auto found=existingLinks.find(str(link,"Url"));if(found!=existingLinks.end()&&!isActive(found->second)&&str(found->second->data,"Status")!="Complete")recoverReplacements(found->second);
+ if(immediate&&resumeExisting&&str(p,"Template")!="Offline website (ZIP)"){
+  std::vector<JobPtr> recover;std::map<std::string,JobPtr> selected;std::set<const Job*> seen;
+  for(const auto& link:p["Links"])if(yes(link,"Selected",true)){auto url=str(link,"Url");auto found=existingLinks.find(url);auto job=found==existingLinks.end()?JobPtr{}:found->second;selected[url]=job;if(job&&!isActive(job)&&str(job->data,"Status")!="Complete"&&seen.insert(job.get()).second)recover.push_back(job);}
+  if(!recover.empty()){
+   Json savedProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))savedProject=saved;
+   l.unlock();for(const auto& job:recover)recoverReplacements(job,true);l.lock();
+   Json currentProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))currentProject=saved;
+   if(currentProject!=savedProject)throw std::runtime_error("The saved project changed during recovery. Reopen it before adding downloads.");
+   if(stopping||catalogTransaction)throw std::runtime_error("The project changed while preparing recovery. Retry the project command.");
+   auto checked=p;validateGrabberProject(checked,state["Settings"]);validateGrabberActions(checked);if(checked!=p)throw std::runtime_error("Project settings changed during recovery. Review the project before adding it.");
+   existingLinks.clear();for(auto job:jobs)if(str(job->data,"ProjectId")==str(p,"Id"))existingLinks[str(job->data,"Url")]=job;
+   for(const auto& item:selected){auto found=existingLinks.find(item.first);auto current=found==existingLinks.end()?JobPtr{}:found->second;if(current!=item.second)throw std::runtime_error("The selected project downloads changed during recovery. Review the project before retrying.");}
+  }
  }
  auto oldJobs=jobs;auto oldProjects=state["Projects"],oldScheduled=Json(schedulePaused);int count=0;
  std::vector<Json> oldData;std::vector<std::optional<i64>> oldLimits;for(auto j:jobs){oldData.push_back(j->data);oldLimits.push_back(j->sessionLimit);}
- auto startMatched=[&](JobPtr job){if(!immediate||isActive(job)||str(job->data,"Status")=="Complete")return;resume(job);job->data["GrabberImmediate"]=true;job->data["GrabberParallel"]=num(p,"DownloadParallel",2);job->data["SuppressProgressDialog"]=true;job->data["SuppressCompletionDialog"]=true;};
+ auto startMatched=[&](JobPtr job){if(!immediate||isActive(job)||str(job->data,"Status")=="Complete")return;resumeAfterRecovery(job);job->data["GrabberImmediate"]=true;job->data["GrabberParallel"]=num(p,"DownloadParallel",2);job->data["SuppressProgressDialog"]=true;job->data["SuppressCompletionDialog"]=true;};
  // No worker can observe the staged jobs while this lock is held. The only
  // persistent write contains both the complete selection and its saved project.
  catalogTransaction=true;

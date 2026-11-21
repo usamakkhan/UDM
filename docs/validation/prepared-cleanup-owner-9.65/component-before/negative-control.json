@@ -1,0 +1,67 @@
+{
+  "expectedFailure": true,
+  "exitCode": 1,
+  "binarySha256": "F9964A6B91440128EDF5515A031BEE547F7AB7EA564246924E67E1602314BE4B",
+  "result": {
+    "checks": [
+      {
+        "name": "Uncommitted unchanged owned stage is removed after its writeback joins",
+        "passed": true
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Equal-byte replacement at the old name is preserved",
+        "passed": false
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Missing staging name is not recreated",
+        "passed": true
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Foreign directory at the staging name is preserved",
+        "passed": false
+      },
+      {
+        "name": "Uncommitted unchanged owned stage is removed after its writeback joins",
+        "passed": true
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Equal-byte replacement at the old name is preserved",
+        "passed": false
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Missing staging name is not recreated",
+        "passed": true
+      },
+      {
+        "name": "Renamed owned source remains available for review",
+        "passed": true
+      },
+      {
+        "name": "Foreign directory at the staging name is preserved",
+        "passed": false
+      }
+    ],
+    "error": "",
+    "passed": false
+  }
+}

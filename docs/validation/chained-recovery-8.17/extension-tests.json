@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "suites": [
+    {
+      "suite": "browser",
+      "exitCode": 0,
+      "log": "browser-extension-test.log",
+      "lastLine": "ALL 56 BROWSER CHECKS PASSED",
+      "logSha256": "7662588A0DA0EC58BEEA9A5F55786C53E56D9C7F05F84B530A2522B1E80A5105"
+    },
+    {
+      "suite": "capture",
+      "exitCode": 0,
+      "log": "capture-extension-test.log",
+      "lastLine": "ALL 7 CAPTURE CHECKS PASSED",
+      "logSha256": "D4498164AEF2DF8F3CAE21DE13251FD5B8FEAABB0917404AA121C40F9F049653"
+    },
+    {
+      "suite": "capture-transaction",
+      "exitCode": 0,
+      "log": "capture-transaction-extension-test.log",
+      "lastLine": "ALL 159 TRANSACTION CHECKS PASSED",
+      "logSha256": "0D52FC184985C3ADAF58C5F21A6F3F57BE3B3269D0D053A98C8ABEF78D245E8E"
+    },
+    {
+      "suite": "capture-recovery",
+      "exitCode": 0,
+      "log": "capture-recovery-extension-test.log",
+      "lastLine": "ALL 27 CAPTURE RECOVERY CHECKS PASSED",
+      "logSha256": "71B37DDD6E464B797B3A80DE0E4AC59B27727D823FCC06D2B9E8A9334E27AEE5"
+    },
+    {
+      "suite": "browser-preflight-state",
+      "exitCode": 0,
+      "log": "browser-preflight-state-extension-test.log",
+      "lastLine": "14 checks; 0 failed",
+      "logSha256": "B1544C50DCD9FA50B231C2293D16A62362159A3C92C81CBAB243C6F32E0B5FBF"
+    },
+    {
+      "suite": "media-receipt-errors",
+      "exitCode": 0,
+      "log": "media-receipt-errors-extension-test.log",
+      "lastLine": "PASS firefox preserves rejection details with uncertain receipt",
+      "logSha256": "2840CE39EEB79AE264BE8F9D8997BD114072390A094C75CCF4DD90861B43222E"
+    },
+    {
+      "suite": "native-handshake",
+      "exitCode": 0,
+      "log": "native-handshake-extension-test.log",
+      "lastLine": "ALL 9 NATIVE DEADLINE CHECKS PASSED (chromium)",
+      "logSha256": "25F93B76B00562229734F502F7F220EB265D339C391A3A3951D9CD5C0EAE5EBD"
+    },
+    {
+      "suite": "streaming-capture",
+      "exitCode": 0,
+      "log": "streaming-capture-extension-test.log",
+      "lastLine": "ALL 25 VIDEO CAPTURE REGRESSIONS PASSED",
+      "logSha256": "39E688AC56DE8B28F3F6A51471370E7BB97C71E97A8554161907B228CC78407B"
+    }
+  ],
+  "scope": "Isolated JavaScript runtime fixtures, not installed-browser capture qualification."
+}

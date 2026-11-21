@@ -1,0 +1,59 @@
+{
+  "expectedFailure": true,
+  "exitCode": 1,
+  "binarySha256": "ECD9FFD2A83B6DA333354535A7BEB70D8735223D33D88D6C72CC74FEF93A3080",
+  "result": {
+    "checks": [
+      {
+        "name": "Real HTTP publication failure retires after its owned cleanup",
+        "passed": true
+      },
+      {
+        "name": "Original received bytes remain and no final file is published",
+        "passed": true
+      },
+      {
+        "name": "Real Manager failure preserves the foreign staging name",
+        "passed": false
+      },
+      {
+        "name": "Real HTTP publication failure retires after its owned cleanup",
+        "passed": true
+      },
+      {
+        "name": "Original received bytes remain and no final file is published",
+        "passed": true
+      },
+      {
+        "name": "Real Manager failure preserves the foreign staging name",
+        "passed": false
+      },
+      {
+        "name": "Real HTTP publication failure retires after its owned cleanup",
+        "passed": true
+      },
+      {
+        "name": "Original received bytes remain and no final file is published",
+        "passed": true
+      },
+      {
+        "name": "Real Manager failure preserves the foreign staging name",
+        "passed": false
+      },
+      {
+        "name": "Real HTTP publication failure retires after its owned cleanup",
+        "passed": true
+      },
+      {
+        "name": "Original received bytes remain and no final file is published",
+        "passed": true
+      },
+      {
+        "name": "Real Manager failure preserves the foreign staging name",
+        "passed": false
+      }
+    ],
+    "error": "",
+    "passed": false
+  }
+}

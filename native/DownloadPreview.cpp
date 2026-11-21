@@ -122,7 +122,7 @@ struct DownloadPreview::State {
  Json result={{"Status","Checking"}};
 };
 
-DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Manager* sessionManager,JobPtr sessionJob)
+DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Manager* sessionManager,JobPtr sessionJob,std::function<void()> onReady)
  :state(std::make_shared<State>()){
  if(!canPreviewDownload(download)){
   state->result={{"Status","Unavailable"}};
@@ -141,7 +141,7 @@ DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Ma
    std::move(sessionJob),readBrowserSession(download),std::shared_ptr<const Cancel>(state,&state->cancel));
  }
  try{
-  std::thread([work=state,slot,download=std::move(download),preferences=std::move(preferences),saveSession=std::move(saveSession)]()mutable{
+  std::thread([work=state,slot,download=std::move(download),preferences=std::move(preferences),saveSession=std::move(saveSession),onReady=std::move(onReady)]()mutable{
    Json outcome;
    try{
     outcome=probeDownload(download,preferences,work->cancel,std::move(saveSession));
@@ -160,8 +160,9 @@ DownloadPreview::DownloadPreview(Json download,Json preferences,int timeoutMs,Ma
    }catch(...){
     outcome={{"Status","Error"},{"Message","File details unavailable. Check the connection or login, then refresh details."}};
    }
-   std::lock_guard<std::mutex> lock(work->mutex);
-   work->result=work->cancel.cancelled()?stoppedDetails(work->cancel):std::move(outcome);
+   {std::lock_guard<std::mutex> lock(work->mutex);
+    work->result=work->cancel.cancelled()?stoppedDetails(work->cancel):std::move(outcome);}
+   if(onReady)try{onReady();}catch(...) {}
   }).detach();
  }catch(const std::system_error&){
   state->result={{"Status","Error"},{"Message","Could not start a file details lookup. Try Refresh details again."}};

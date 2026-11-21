@@ -1,0 +1,559 @@
+{
+  "case": "crash-before-body-flush",
+  "checks": [
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Successful overlap publishes only the complete verified file and accepted catalog",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Successful overlap publishes only the complete verified file and accepted catalog",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Failed or stale barrier retains its recovery intent without false completion",
+      "passed": true
+    },
+    {
+      "name": "Failure keeps the exact verified source bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery verifies and flushes early-intent bytes before recording completion",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Failed or stale barrier retains its recovery intent without false completion",
+      "passed": true
+    },
+    {
+      "name": "Failure keeps the exact verified source bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery verifies and flushes early-intent bytes before recording completion",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Failed or stale barrier retains its recovery intent without false completion",
+      "passed": true
+    },
+    {
+      "name": "Failure keeps the exact verified source bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery verifies and flushes early-intent bytes before recording completion",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Failed or stale barrier retains its recovery intent without false completion",
+      "passed": true
+    },
+    {
+      "name": "Failure keeps the exact verified source bytes",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery verifies and flushes early-intent bytes before recording completion",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Owned source rename exercises the final staged-name validation",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Failed or stale barrier retains its recovery intent without false completion",
+      "passed": true
+    },
+    {
+      "name": "Failure keeps the exact verified source bytes",
+      "passed": true
+    },
+    {
+      "name": "Restore only the fixture-owned source name before explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Explicit recovery verifies and flushes early-intent bytes before recording completion",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "The independent intent or body barrier completes while the other remains held",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Neither rename nor Complete status bypasses either held barrier",
+      "passed": true
+    },
+    {
+      "name": "Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Successful overlap publishes only the complete verified file and accepted catalog",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Publication reaches the actual selected durability boundary",
+      "passed": true
+    },
+    {
+      "name": "Held publication barriers leave the shared model available",
+      "passed": true
+    },
+    {
+      "name": "Early durable intent explicitly requires recovery body writeback",
+      "passed": true
+    },
+    {
+      "name": "Both barriers finish before applying completion at the catalog gate",
+      "passed": true
+    },
+    {
+      "name": "A competing catalog writer waits for the held writer without holding the model mutex",
+      "passed": true
+    },
+    {
+      "name": "Pinned body rejects a competing writer during either barrier or catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Combined body and destination handles reject rename during catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Every held boundary is explicitly released without using its timeout as success",
+      "passed": true
+    },
+    {
+      "name": "Successful overlap publishes only the complete verified file and accepted catalog",
+      "passed": true
+    },
+    {
+      "name": "Independent metadata survives and publication ownership retires",
+      "passed": true
+    },
+    {
+      "name": "All body and namespace pins release after completion or explicit recovery",
+      "passed": true
+    },
+    {
+      "name": "Early-intent completion survives reopening the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Recovery body failure preserves staged or renamed intent and rejects completion",
+      "passed": true
+    },
+    {
+      "name": "A read-only shared fixture handle deliberately excludes a recovery flush writer",
+      "passed": true
+    },
+    {
+      "name": "A denied recovery write barrier cannot consume its early intent",
+      "passed": true
+    },
+    {
+      "name": "Corrupt early-intent bytes preserve the exact journal instead of authorizing reuse of unflushed parts",
+      "passed": true
+    },
+    {
+      "name": "A truncated early-intent body preserves its journal and cannot fall back to completed byte accounting",
+      "passed": true
+    },
+    {
+      "name": "An unrecognized early-intent source preserves its journal and foreign bytes without reusing completion accounting",
+      "passed": true
+    },
+    {
+      "name": "Staged and already-renamed recovery execute the required body flush before catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery body failure preserves staged or renamed intent and rejects completion",
+      "passed": true
+    },
+    {
+      "name": "A read-only shared fixture handle deliberately excludes a recovery flush writer",
+      "passed": true
+    },
+    {
+      "name": "A denied recovery write barrier cannot consume its early intent",
+      "passed": true
+    },
+    {
+      "name": "Corrupt early-intent bytes preserve the exact journal instead of authorizing reuse of unflushed parts",
+      "passed": true
+    },
+    {
+      "name": "A truncated early-intent body preserves its journal and cannot fall back to completed byte accounting",
+      "passed": true
+    },
+    {
+      "name": "An unrecognized early-intent source preserves its journal and foreign bytes without reusing completion accounting",
+      "passed": true
+    },
+    {
+      "name": "Staged and already-renamed recovery execute the required body flush before catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Owned process terminates after durable intent with the body flush still held before its syscall",
+      "passed": true
+    },
+    {
+      "name": "Actual process interruption preserves an explicit early intent and its staged bytes without publishing",
+      "passed": true
+    },
+    {
+      "name": "Startup verifies and forces the early-intent body before accepting its recovered completion",
+      "passed": true
+    },
+    {
+      "name": "Recovered early-intent completion survives a second catalog reopen",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

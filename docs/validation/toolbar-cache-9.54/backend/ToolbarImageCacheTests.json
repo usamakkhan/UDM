@@ -1,0 +1,138 @@
+{
+  "checks": [
+    {
+      "name": "A hot decoded source is owned and does not invoke its loader again",
+      "passed": true
+    },
+    {
+      "name": "Each of twelve source slots loads once",
+      "passed": true
+    },
+    {
+      "name": "An invalid icon index cannot invoke its loader",
+      "passed": true
+    },
+    {
+      "name": "An invalid icon index cannot invoke its loader",
+      "passed": true
+    },
+    {
+      "name": "Invalidation clears retained sources and advances their generation",
+      "passed": true
+    },
+    {
+      "name": "An immutable borrower remains valid after cache invalidation",
+      "passed": true
+    },
+    {
+      "name": "Reload publishes new pixels without changing an older borrower",
+      "passed": true
+    },
+    {
+      "name": "A second window starts with an independent cache",
+      "passed": true
+    },
+    {
+      "name": "A source-loader failure cannot poison a cache slot",
+      "passed": true
+    },
+    {
+      "name": "Malformed decoded dimensions or pixels are rejected before retention",
+      "passed": true
+    },
+    {
+      "name": "Malformed decoded dimensions or pixels are rejected before retention",
+      "passed": true
+    },
+    {
+      "name": "Malformed decoded dimensions or pixels are rejected before retention",
+      "passed": true
+    },
+    {
+      "name": "Malformed decoded dimensions or pixels are rejected before retention",
+      "passed": true
+    },
+    {
+      "name": "A failed source slot can retry successfully",
+      "passed": true
+    },
+    {
+      "name": "Decoded source retention is bounded to three MiB",
+      "passed": true
+    },
+    {
+      "name": "Raster identity includes dimensions look and source generation",
+      "passed": true
+    },
+    {
+      "name": "Raster entries retain their complete normal hot and disabled pixels",
+      "passed": true
+    },
+    {
+      "name": "A hot raster lookup skips pixel generation and touches recency",
+      "passed": true
+    },
+    {
+      "name": "Capacity eviction preserves the recently used raster",
+      "passed": true
+    },
+    {
+      "name": "An evicted raster rebuilds without invalidating an older borrower",
+      "passed": true
+    },
+    {
+      "name": "Pixel generation failure preserves the preceding cache entries",
+      "passed": true
+    },
+    {
+      "name": "An incomplete raster is rejected before cache mutation",
+      "passed": true
+    },
+    {
+      "name": "A failed raster entry can retry all twelve icons and three states",
+      "passed": true
+    },
+    {
+      "name": "Clearing rasters releases retention and preserves immutable borrowers",
+      "passed": true
+    },
+    {
+      "name": "Byte-budget eviction bounds retained memory independently of entry count",
+      "passed": true
+    },
+    {
+      "name": "Unsupported raster sizes are rejected without invoking their builder",
+      "passed": true
+    },
+    {
+      "name": "Unsupported raster sizes are rejected without invoking their builder",
+      "passed": true
+    },
+    {
+      "name": "Unsupported raster sizes are rejected without invoking their builder",
+      "passed": true
+    },
+    {
+      "name": "Unsupported raster sizes are rejected without invoking their builder",
+      "passed": true
+    },
+    {
+      "name": "Cache limits cannot exceed the fixed retention bounds",
+      "passed": true
+    },
+    {
+      "name": "Cache limits cannot exceed the fixed retention bounds",
+      "passed": true
+    },
+    {
+      "name": "Cache limits cannot exceed the fixed retention bounds",
+      "passed": true
+    },
+    {
+      "name": "Repeated generations retain only the four newest raster entries",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "label": "9.61 owned body-writeback/intent overlap versus frozen 9.60 and IDM",
+  "transfers": 27,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 187.79,
+        "baseline": 167.134,
+        "idm": 392.961
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          391.71,
+          178.793,
+          187.79
+        ],
+        "baseline": [
+          176.591,
+          167.134,
+          160.091
+        ],
+        "idm": [
+          379.013,
+          544.642,
+          392.961
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 397.516,
+        "baseline": 188.5,
+        "idm": 564.418
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          375.486,
+          416.516,
+          397.516
+        ],
+        "baseline": [
+          172.164,
+          194.516,
+          188.5
+        ],
+        "idm": [
+          1014.395,
+          559.612,
+          564.418
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 470.189,
+        "baseline": 275.971,
+        "idm": 454.967
+      },
+      "udmNotSlowerMedian": false,
+      "processExitTailMs": {
+        "udm": [
+          470.189,
+          485.152,
+          465.71
+        ],
+        "baseline": [
+          275.971,
+          277.086,
+          265.444
+        ],
+        "idm": [
+          525.276,
+          454.967,
+          418.731
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

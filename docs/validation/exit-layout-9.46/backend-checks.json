@@ -1,0 +1,229 @@
+{
+  "passed": true,
+  "checks": 49,
+  "suites": [
+    {
+      "suite": "MainExitLayoutTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 19,
+      "binarySha256": "1E572273333AB9734293AE959220C41A9424699D69622DD1199A89B55223A1CA",
+      "assertions": [
+        {
+          "name": "The owned worker merges its captured layout",
+          "passed": true
+        },
+        {
+          "name": "Layout preparation leaves the canonical disk checkpoint unchanged",
+          "passed": true
+        },
+        {
+          "name": "A separate writer owns Manager before Exit preparation",
+          "passed": true
+        },
+        {
+          "name": "Exit preparation returns while its model acquisition is pending",
+          "passed": true
+        },
+        {
+          "name": "One Exit owner rejects duplicate task starts",
+          "passed": true
+        },
+        {
+          "name": "A waiting Exit merge can be cancelled before acquiring Manager",
+          "passed": true
+        },
+        {
+          "name": "Cancellation distinguishes an unaccepted layout from an applied merge",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins a waiting layout reader without taking the writer's lock",
+          "passed": true
+        },
+        {
+          "name": "Cancelled attempts do not replace the previous layout",
+          "passed": true
+        },
+        {
+          "name": "The merge preserves another writer's settings and older captured values",
+          "passed": true
+        },
+        {
+          "name": "Accepted File Info work defers Exit layout acquisition",
+          "passed": true
+        },
+        {
+          "name": "Exit layout cleanup never releases another command's decision ownership",
+          "passed": true
+        },
+        {
+          "name": "A failed merge retains the prior layout for retry",
+          "passed": true
+        },
+        {
+          "name": "Retry publishes after releasing Manager and survives a notification failure",
+          "passed": true
+        },
+        {
+          "name": "Cancellation after acceptance never reports an applied layout as discarded",
+          "passed": true
+        },
+        {
+          "name": "Invalid input cannot replace the last accepted layout",
+          "passed": true
+        },
+        {
+          "name": "Preparation cancellation and retry add no intermediate catalog writes",
+          "passed": true
+        },
+        {
+          "name": "The existing canonical save persists the merged layout and concurrent preferences",
+          "passed": true
+        },
+        {
+          "name": "Repeated layout cleanup is safe",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "MainClosePolicyTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "C19C6D5F1E26547D9330142E974DAE98AD8F6ECF26BFA7429E03584BCDF316E5",
+      "assertions": [
+        {
+          "name": "Close policy captures the current tray setting",
+          "passed": true
+        },
+        {
+          "name": "A new close reads current policy without changing its older snapshot",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the close reader",
+          "passed": true
+        },
+        {
+          "name": "Close policy acquisition returns to its caller under a held writer",
+          "passed": true
+        },
+        {
+          "name": "One close owner coalesces duplicate starts",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the close reader settles before its catalog writer releases",
+          "passed": true
+        },
+        {
+          "name": "An accepted download decision defers close policy capture",
+          "passed": true
+        },
+        {
+          "name": "Closing a reader never clears another command's ownership",
+          "passed": true
+        },
+        {
+          "name": "A close read failure is consumed as an owned result",
+          "passed": true
+        },
+        {
+          "name": "The close owner can retry after policy failure",
+          "passed": true
+        },
+        {
+          "name": "Close result publication occurs after releasing Manager",
+          "passed": true
+        },
+        {
+          "name": "Notification failure cannot undo the captured close result",
+          "passed": true
+        },
+        {
+          "name": "Repeated close reader cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Policy acquisition never changes settings jobs layout or catalog files",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadMenuTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 16,
+      "binarySha256": "CB808313673E90767E04F6BD82B9D31A739ADB5ACDB1F83E3CB594607C86608C",
+      "assertions": [
+        {
+          "name": "The owned menu reader publishes its model cohort",
+          "passed": true
+        },
+        {
+          "name": "Menu preparation reads on its owned worker rather than the caller",
+          "passed": true
+        },
+        {
+          "name": "The same owner can prepare another menu",
+          "passed": true
+        },
+        {
+          "name": "New settings do not mutate a previously captured menu cohort",
+          "passed": true
+        },
+        {
+          "name": "A separate catalog writer owns the model before menu preparation",
+          "passed": true
+        },
+        {
+          "name": "Menu start returns while its catalog acquisition is pending",
+          "passed": true
+        },
+        {
+          "name": "A pending menu owner rejects a duplicate start",
+          "passed": true
+        },
+        {
+          "name": "Menu cancellation settles without releasing another thread's catalog lock",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins a waiting menu reader without acquiring Manager",
+          "passed": true
+        },
+        {
+          "name": "Accepted File Info work defers menu capture",
+          "passed": true
+        },
+        {
+          "name": "Menu cleanup never clears another command's decision ownership",
+          "passed": true
+        },
+        {
+          "name": "Menu read failure is an owned consumable result",
+          "passed": true
+        },
+        {
+          "name": "The menu owner can retry after a capture failure",
+          "passed": true
+        },
+        {
+          "name": "Notification runs after releasing Manager and cannot undo its result",
+          "passed": true
+        },
+        {
+          "name": "Repeated menu cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Menu reads do not change settings jobs queues or catalog files",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

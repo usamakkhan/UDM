@@ -1,0 +1,19 @@
+{
+  "baselineVersion": "9.43",
+  "currentVersion": "9.44",
+  "baseline": {
+    "phase": "held-writer",
+    "returnMs": 2016,
+    "writerExpired": true,
+    "writerHeld": false
+  },
+  "current": {
+    "phase": "held-writer",
+    "returnMs": 0,
+    "writerExpired": false,
+    "writerHeld": true
+  },
+  "measurement": "UI request return only; popup still waits for a coherent model read",
+  "nativePopupLoopInterceptedInOwnedTests": true,
+  "notInstalledIdmTiming": true
+}

@@ -1,0 +1,134 @@
+{
+  "checks": [
+    {
+      "name": "Initial limiter preparation returns an owned settings snapshot",
+      "passed": true
+    },
+    {
+      "name": "Initial preparation adds no catalog writes",
+      "passed": true
+    },
+    {
+      "name": "Held model does not block the read caller",
+      "passed": true
+    },
+    {
+      "name": "Pending limiter work rejects a duplicate start",
+      "passed": true
+    },
+    {
+      "name": "Cancelling a read joins while the model remains held",
+      "passed": true
+    },
+    {
+      "name": "Preparation defers another accepted decision",
+      "passed": true
+    },
+    {
+      "name": "Read cancellation preserves another decision guard",
+      "passed": true
+    },
+    {
+      "name": "Rejected Save cannot clear another decision guard",
+      "passed": true
+    },
+    {
+      "name": "Read failure is consumed for an explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Read failure permits a fresh preparation",
+      "passed": true
+    },
+    {
+      "name": "Accepted save reserves its guard before model acquisition",
+      "passed": true
+    },
+    {
+      "name": "Cancellation cannot abandon an accepted limiter save",
+      "passed": true
+    },
+    {
+      "name": "Notification failure cannot lose a committed result or its guard",
+      "passed": true
+    },
+    {
+      "name": "UI acknowledgement joins and releases acceptance",
+      "passed": true
+    },
+    {
+      "name": "Editing a disabled limiter remembers the rate without enabling it",
+      "passed": true
+    },
+    {
+      "name": "Limiter merge preserves unrelated current settings",
+      "passed": true
+    },
+    {
+      "name": "All accepted limiter fields persist together",
+      "passed": true
+    },
+    {
+      "name": "Editing an enabled limiter applies the new rate and startup choice",
+      "passed": true
+    },
+    {
+      "name": "Save preserves the latest limiter mode",
+      "passed": true
+    },
+    {
+      "name": "Save uses the live enabled state rather than the initial snapshot",
+      "passed": true
+    },
+    {
+      "name": "Invalid rate is rejected before accepting work",
+      "passed": true
+    },
+    {
+      "name": "Invalid rate is rejected before accepting work",
+      "passed": true
+    },
+    {
+      "name": "Invalid rate is rejected before accepting work",
+      "passed": true
+    },
+    {
+      "name": "Invalid rates add no writes",
+      "passed": true
+    },
+    {
+      "name": "A boundary limiter rate is accepted exactly",
+      "passed": true
+    },
+    {
+      "name": "A boundary limiter rate is accepted exactly",
+      "passed": true
+    },
+    {
+      "name": "Durable save failure returns an unaccepted result",
+      "passed": true
+    },
+    {
+      "name": "Durable failure rolls back all edited settings and preserves the catalog",
+      "passed": true
+    },
+    {
+      "name": "A failed save can retry its exact draft",
+      "passed": true
+    },
+    {
+      "name": "Forced owner cleanup joins accepted save and returns its committed result",
+      "passed": true
+    },
+    {
+      "name": "Result publication follows model unlock and survives diagnostic failure",
+      "passed": true
+    },
+    {
+      "name": "Repeated task cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

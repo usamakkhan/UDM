@@ -1,0 +1,15 @@
+# Temporary diagnostic elevation session
+
+`benchmarks/speed/diagnostic-session-worker.ps1` provides one Windows approval for a batch of the current finishing investigation's trace runs. It is a temporary PowerShell process, not a system-wide administrator credential or persistent service.
+
+The launcher supplies a fixed collector path and SHA-256, a developer capture area, an owned data parent and the normal controller account SID. The worker accepts only the `trace` operation, verifies the collector hash again before each launch, validates the fresh capture/data ownership markers and exact directory/prefix patterns, and checks the controller account through Windows. Requests are serialized and capped at 20. Invalid requests produce a rejection record. The active worker cannot adopt a changed collector binary: changing the trusted tool requires another approval.
+
+The session accepts requests for eight hours by default. The launcher can shorten this with `-SessionMinutes` (1–480); the deadline is measured from worker startup and is not extended by activity. The 20-request cap still applies. Placing `stop.flag` in its private queue requests shutdown after the active collector finishes; it never forcibly terminates a trace merely because a polling call times out. Each collector has its own recording deadline, stops its own logger and records the post-stop absence query. Blocking Windows stop/export calls are not guaranteed to obey a hard wall-clock deadline.
+
+The eight-hour window is a configuration change, not evidence of a currently running elevated session. Check a fresh `ready.json` and the matching live process before submitting work. Older launch receipts may still describe the former 30-minute window; launchers must record the actual `SessionMinutes` they supply or its eight-hour default.
+
+The queue's `ready.json`, `response-<id>.json`, `exit-<id>.json` and `stopped.json` are the authoritative lifecycle records. The private queue path and launch receipt are recorded in the developer area's `worker-config.json`. Do not launch a replacement because a client wait times out: inspect the existing request and process first.
+
+No password is recorded, no UAC setting changes, and no service or scheduled task is created. Installation, arbitrary shell commands, source edits and personal-download cleanup are not operations of this worker. The current live validation rejected an unknown operation and launched the hash-pinned collector without a second Windows approval. Its trace fixture failed the independent schema gate; that failure is preserved separately from successful elevation transport.
+
+`launch-diagnostic-session.ps1` provides the corrected RunAs launch path: terminating Start-Process errors, positive-PID validation and a separate `elevation.json` outcome. `process-created` does not mean `ready.json` was observed. A missing PID is indeterminate unless Windows explicitly reports cancellation; inspect the original launch before retrying. Four mock-only controls cover the false-success cases found in the earlier inline launcher. [Outcome and staged filtered collector](scheduling-thread-filter-8.65.md).

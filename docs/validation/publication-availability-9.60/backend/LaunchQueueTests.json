@@ -1,0 +1,182 @@
+{
+  "checks": [
+    {
+      "name": "Queue-only flag works before or after URL and with silent mode",
+      "passed": true
+    },
+    {
+      "name": "Forwarded requests retain queue-only intent",
+      "passed": true
+    },
+    {
+      "name": "Quit-after-download switch is accepted with a download",
+      "passed": true
+    },
+    {
+      "name": "First-instance quit intent is never forwarded to a running app",
+      "passed": true
+    },
+    {
+      "name": "Quit option without a download does not create a request",
+      "passed": true
+    },
+    {
+      "name": "Queue-only request creates a paused Main queue member",
+      "passed": true
+    },
+    {
+      "name": "Queue-only request preserves destination and filename",
+      "passed": true
+    },
+    {
+      "name": "Scheduler ticks do not start queue-only download",
+      "passed": true
+    },
+    {
+      "name": "Repeated queue-only request honors reuse policy and preserves existing record",
+      "passed": true
+    },
+    {
+      "name": "Queue-only membership persists across restart",
+      "passed": true
+    },
+    {
+      "name": "Ordinary CLI download retains confirmation behavior",
+      "passed": true
+    },
+    {
+      "name": "Scheduler switch produces a queue-start request without a URL",
+      "passed": true
+    },
+    {
+      "name": "Long queue-start alias preserves background forwarding",
+      "passed": true
+    },
+    {
+      "name": "Silent admission commits its final queued record in one catalog replacement",
+      "passed": true
+    },
+    {
+      "name": "Failed silent admission rolls back the new job and does not arm hang-up",
+      "passed": true
+    },
+    {
+      "name": "Failed existing admission rolls back the pending presentation",
+      "passed": true
+    },
+    {
+      "name": "A retry after catalog recovery can admit the job and arm hang-up once",
+      "passed": true
+    },
+    {
+      "name": "Conflicting queue-start operations are rejected before changing state",
+      "passed": true
+    },
+    {
+      "name": "Conflicting queue-start operations are rejected before changing state",
+      "passed": true
+    },
+    {
+      "name": "Conflicting queue-start operations are rejected before changing state",
+      "passed": true
+    },
+    {
+      "name": "Hang-up intent is forwarded while quit remains first-instance only",
+      "passed": true
+    },
+    {
+      "name": "Long hang-up alias is accepted",
+      "passed": true
+    },
+    {
+      "name": "Paused CLI hang-up request is armed without executing",
+      "passed": true
+    },
+    {
+      "name": "Repeated request for the same download does not duplicate hang-up actions",
+      "passed": true
+    },
+    {
+      "name": "Unfinished or failed download cannot trigger hang-up",
+      "passed": true
+    },
+    {
+      "name": "Unfinished or failed download cannot trigger hang-up",
+      "passed": true
+    },
+    {
+      "name": "Unfinished or failed download cannot trigger hang-up",
+      "passed": true
+    },
+    {
+      "name": "Unfinished or failed download cannot trigger hang-up",
+      "passed": true
+    },
+    {
+      "name": "Unfinished or failed download cannot trigger hang-up",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or unsuccessful scanner blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or unsuccessful scanner blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or unsuccessful scanner blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or unsuccessful scanner blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Incomplete or unsuccessful scanner blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Nonzero scanner exit blocks CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "An unsaved in-memory completion cannot deliver a CLI action",
+      "passed": true
+    },
+    {
+      "name": "Successful scanned download delivers exactly one hang-up action",
+      "passed": true
+    },
+    {
+      "name": "Previously complete record does not arm a new hang-up",
+      "passed": true
+    },
+    {
+      "name": "CLI hang-up intent is not restored from a saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Removing a download cancels its pending hang-up",
+      "passed": true
+    },
+    {
+      "name": "Ordinary browser add cannot schedule CLI hang-up",
+      "passed": true
+    },
+    {
+      "name": "Catalog replacement failure leaves completion uncommitted",
+      "passed": true
+    },
+    {
+      "name": "Failed completion save retains /q and /h intent without executing it",
+      "passed": true
+    },
+    {
+      "name": "Both CLI actions become eligible after completion is saved",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

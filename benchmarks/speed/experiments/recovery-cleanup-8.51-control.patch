@@ -1,0 +1,20 @@
+--- a/native/Duplicates.cpp
++++ b/baseline-Duplicates.cpp
+@@ -591,7 +591,7 @@
+    if(retainedMediaOutputPath(op["Before"]).empty())markZone(target);
+    else finishRetainedMediaRecovery(op["Before"],target);
+   }
+-  journal->retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
++  if(catalogCheckpoint)catalogCheckpoint("recovery-journal-retire");journal->retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+  }
+  // Older builds could publish and hash the final file before a catalog save
+  // failed, without a publication journal. Reconcile only that exact failure.
+@@ -672,7 +672,7 @@
+   checkpointRecovery({capturedRow(job,recovered,inCatalog,registered),capturedRow(original,recoveredOriginal,true,true)},receipt,inserted);
+   newBytes.reset();previousBytes.reset();originalBytes.reset(); // Catalog acceptance precedes releasing either verified version.
+   if(published)finishRetainedMediaRecovery(op.at("Before"),target);
+-  journal->retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
++  if(catalogCheckpoint)catalogCheckpoint("recovery-journal-retire");journal->retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+  }
+  };
+  reconcile();if(after)after();

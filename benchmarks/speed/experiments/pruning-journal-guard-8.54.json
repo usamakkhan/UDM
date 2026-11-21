@@ -1,0 +1,22 @@
+{
+  "scope": "Intermediate uninstalled 8.54 candidate before journal-name guard to final 8.54. Not two released versions.",
+  "files": [
+    {
+      "path": "native/Duplicates.cpp",
+      "beforeSha256": "8530DD73B6C43A775C8F422762FCDDB687C872507B5B5D3E77A8C9CA06B934F6",
+      "afterSha256": "2AC6728B7C2275512141E0017FFE9067E587534CB8DF4EC00231ED52782B29B9",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/RecoveryPruningTests.cpp",
+      "beforeSha256": "F7B8BB25BD63DC1D46DA102849949390A009BD748711681D3028B483AB765823",
+      "afterSha256": "1D1B2B0A34879A53F792331C640B61057AB42EE6CF664098A2E53A7A051FA184",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/pruning-journal-guard-8.54.patch",
+  "patchSha256": "4D30BA4C520E7E99198879D16B728106789200526515222DC3A253D7D264076E",
+  "beforeSourcesMatchFirstFullBuild": true
+}

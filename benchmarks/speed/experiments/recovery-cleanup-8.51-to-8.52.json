@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeExists": true,
+      "beforeSha256": "AF0157B0B1EB69DF36DCD96B3C14AAF640F1028BF9B49526A1CBC59CED2236DF",
+      "afterSha256": "519BEEB6A1F55F4263430DC3ED93135C77D7CB5F1228D778649A59F55E35467E",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "beforeExists": true,
+      "beforeSha256": "ED03072B9FFA4D365BFEF82EAEB82A04146C3FBFA852F81D7BBC0DF2E5977455",
+      "afterSha256": "6CD1CA5C948EB2C4065E280ED1C26DE4D7C33452B43EF113DE7A702557A94C07",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/RecoveryJournal.hpp",
+      "beforeExists": true,
+      "beforeSha256": "611B5D550D81741188698DB8FDE5910CD66635BC3B6CBBEF80C90D6E8B95DF67",
+      "afterSha256": "5C5F46A9A168C49A682DC02F01AFD18785B4EE9E3B8C3F106E0436A06BCC45DA",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeExists": true,
+      "beforeSha256": "751B4AEEAB64647352A4D9852B9DF2E119869950113E0C51F3402F6776FF78EA",
+      "afterSha256": "233ABF166DFAE6C1FE9C3B0729720F3EE5D19AA13C1A636F7E82734B5237BB00",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "A1C8BE97E0ED681A789788790292A217104A60A6BF06567414D6EBA4262701E8",
+      "afterSha256": "BE0FFA3E728F515E6EE87B93342FF1573435D370DD05D11E28347585FE79882C",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "9F7D8C97F539C30A5F483B48AC702C1FDA610A92191EC8F8F880B7DA33F02949",
+      "afterSha256": "3E34457B67AC33C34B366144BD49E1ECC37C1885EF8F9E38E39329DC2BB65F61",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/RecoveryCleanupTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "E5E05ED8AF02D049705524EC7E093327ED163C5B2B868AD16D59FE93CFC1DED9",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/recovery-cleanup-8.51-to-8.52.patch",
+  "patchSha256": "6AC2C33DC624DC1FD5D56A1E38ECDC6DC7B9C08A560F5D5417E09EA614E4C99E",
+  "verifiedBothDirections": true,
+  "scope": "Seven exact source inputs from qualified 8.51; normalized patch and per-side line endings reconstruct raw bytes."
+}

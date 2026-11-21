@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "baseline": "9.38",
+  "baselineSourceAndCoreHashesMatchQualifiedBuild": true,
+  "extraTestComponents": [
+    "native/BatchImportEditUiTests.cpp",
+    "native/BatchSingleRefreshTests.cpp"
+  ],
+  "sameTestBytesBeforeAndAfter": true,
+  "baselineWasIsolatedSourceReproduction": true,
+  "initialMetadataRequests": 2,
+  "afterSingleEditRequests": 4,
+  "installedIdmComparison": false
+}

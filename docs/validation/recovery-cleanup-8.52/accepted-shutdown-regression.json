@@ -1,0 +1,2632 @@
+{
+  "case": "shutdown-checkpoint",
+  "cases": [
+    {
+      "entry": "direct",
+      "exactBytes": true,
+      "journalBacked": false,
+      "modelAvailable": true
+    },
+    {
+      "entry": "direct",
+      "exactBytes": true,
+      "journalBacked": true,
+      "modelAvailable": true
+    },
+    {
+      "entry": "resume",
+      "exactBytes": true,
+      "journalBacked": false,
+      "modelAvailable": true
+    },
+    {
+      "entry": "resume",
+      "exactBytes": true,
+      "journalBacked": true,
+      "modelAvailable": true
+    },
+    {
+      "entry": "file-info",
+      "exactBytes": true,
+      "journalBacked": false,
+      "modelAvailable": true
+    },
+    {
+      "entry": "file-info",
+      "exactBytes": true,
+      "journalBacked": true,
+      "modelAvailable": true
+    },
+    {
+      "entry": "schedule",
+      "exactBytes": true,
+      "journalBacked": true,
+      "modelAvailable": true
+    },
+    {
+      "entry": "project",
+      "exactBytes": true,
+      "journalBacked": false,
+      "modelAvailable": true
+    },
+    {
+      "entry": "project",
+      "exactBytes": true,
+      "journalBacked": true,
+      "modelAvailable": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Complete",
+      "outcome": "ordinary-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Paused",
+      "outcome": "ordinary-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "removed-field",
+      "finalStatus": "Complete",
+      "outcome": "replacement-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Paused",
+      "outcome": "replacement-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Complete",
+      "outcome": "legacy-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "receipt-removed",
+      "finalStatus": "Complete",
+      "outcome": "private-complete",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "none",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "catalog-failure",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "noncontaining",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": true
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-containing",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": false,
+      "fault": "later-retry",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "lost-ack",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    },
+    {
+      "expectedFailure": true,
+      "fault": "deferred",
+      "finalStatus": "Paused",
+      "outcome": "private-paused",
+      "rejectedNoncontainingWriter": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The public recovery entry reaches its actual held catalog flush",
+      "passed": true
+    },
+    {
+      "name": "Direct, Resume and File Info recovery leave the model available during catalog IO",
+      "passed": true
+    },
+    {
+      "name": "Recovery owns its job tree and destination until catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot remains available during the held recovery write",
+      "passed": true
+    },
+    {
+      "name": "Removal cannot take over a recovering job",
+      "passed": true
+    },
+    {
+      "name": "Configuration cannot redirect a recovering file",
+      "passed": true
+    },
+    {
+      "name": "Public recovery preserves its Complete versus recovered-File-Info outcome",
+      "passed": true
+    },
+    {
+      "name": "Explicit release accepts exact bytes, preserves independent metadata and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery preserves the original file in the correct location",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Both replacement roles are acknowledged in the same actual persisted snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "A private completed outcome has its exact durable receipt before cleanup checkpoints",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "A later noncontaining row, removed-field regression or missing private receipt is rejected before writing",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Recovery exposes the actual snapshot or flush boundary for a later writer",
+      "passed": true
+    },
+    {
+      "name": "The later writer captures an actual containing snapshot",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Acceptance and conditional rollback preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "The checkpoint scenario begins with a real preserved publication intent",
+      "passed": true
+    },
+    {
+      "name": "Only a snapshot-bound durable outcome acknowledges recovery",
+      "passed": true
+    },
+    {
+      "name": "Unproved recovery preserves its original journal",
+      "passed": true
+    },
+    {
+      "name": "Every failed checkpoint releases its runtime job/path reservation",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery or explicit retry reaches the correct complete or paused state",
+      "passed": true
+    },
+    {
+      "name": "Every outcome preserves the exact downloaded bytes",
+      "passed": true
+    },
+    {
+      "name": "Private recovery never inserts a visible catalog row",
+      "passed": true
+    },
+    {
+      "name": "Before another save, the accepted catalog contains the exact recovery core or private-row absence",
+      "passed": true
+    },
+    {
+      "name": "Shutdown scenario reaches the held recovery checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for the reserved recovery transaction to settle",
+      "passed": true
+    },
+    {
+      "name": "Shutdown retains the acknowledged completion and exact bytes without leaving its old journal",
+      "passed": false
+    }
+  ],
+  "error": "Shutdown retains the acknowledged completion and exact bytes without leaving its old journal",
+  "passed": false
+}

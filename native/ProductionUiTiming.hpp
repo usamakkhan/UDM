@@ -6,7 +6,12 @@ struct NativeUiTraceHeader {
  volatile LONG next,dropped;DWORD eventSize;LONGLONG anchorQpc,anchorFileTime;char reserved[8];
 };
 struct NativeUiTraceEvent {volatile LONG ready;DWORD threadId;LONGLONG counter,finished;char stage[40];};
-struct NativeUiTraceView {NativeUiTraceHeader header;NativeUiTraceEvent events[128];};
+#ifdef UDM_FINISH_TIMING_TEST
+inline constexpr LONG nativeUiTraceCapacity=2048;
+#else
+inline constexpr LONG nativeUiTraceCapacity=128;
+#endif
+struct NativeUiTraceView {NativeUiTraceHeader header;NativeUiTraceEvent events[nativeUiTraceCapacity];};
 static_assert(sizeof(NativeUiTraceHeader)==64&&sizeof(NativeUiTraceEvent)==64);
 struct NativeUiTraceSink {
  Handle file,mapping;NativeUiTraceView* view=nullptr;
@@ -40,7 +45,7 @@ inline bool nativeUiTraceInitialize(){
   sink.view=static_cast<NativeUiTraceView*>(MapViewOfFile(sink.mapping.h,FILE_MAP_READ|FILE_MAP_WRITE,0,0,sizeof(NativeUiTraceView)));
   if(!sink.view)return false;
   ZeroMemory(sink.view,sizeof(NativeUiTraceView));auto& header=sink.view->header;
-  memcpy(header.magic,"UDMUIT1",8);header.version=1;header.capacity=128;header.processId=GetCurrentProcessId();header.eventSize=sizeof(NativeUiTraceEvent);
+  memcpy(header.magic,"UDMUIT1",8);header.version=1;header.capacity=nativeUiTraceCapacity;header.processId=GetCurrentProcessId();header.eventSize=sizeof(NativeUiTraceEvent);
   LARGE_INTEGER frequency{},anchor{};FILETIME wall{};if(!QueryPerformanceFrequency(&frequency)||!QueryPerformanceCounter(&anchor))return false;
   GetSystemTimeAsFileTime(&wall);header.frequency=frequency.QuadPart;header.anchorQpc=anchor.QuadPart;
   header.anchorFileTime=static_cast<LONGLONG>((static_cast<ULONGLONG>(wall.dwHighDateTime)<<32)|wall.dwLowDateTime);
@@ -50,7 +55,7 @@ inline bool nativeUiTraceInitialize(){
 inline void nativeUiTraceRecord(const char* stage){
  auto view=nativeUiTraceSink.view;if(!view)return;
  const auto index=InterlockedIncrement(&view->header.next)-1;
- if(index>=128){InterlockedIncrement(&view->header.dropped);return;}
+ if(index>=nativeUiTraceCapacity){InterlockedIncrement(&view->header.dropped);return;}
  auto& event=view->events[index];LARGE_INTEGER counter{};QueryPerformanceCounter(&counter);event.counter=counter.QuadPart;
  event.threadId=GetCurrentThreadId();const auto length=std::min<size_t>(strlen(stage),39);memcpy(event.stage,stage,length);event.stage[length]=0;
  QueryPerformanceCounter(&counter);event.finished=counter.QuadPart;InterlockedExchange(&event.ready,1);

@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "name": "Initial version is complete and verified",
+      "passed": true
+    },
+    {
+      "name": "Truncated replacement leaves old saved file usable",
+      "passed": true
+    },
+    {
+      "name": "Pending replacement retains its original-file link",
+      "passed": true
+    },
+    {
+      "name": "Failed in-progress replacement emits no completion",
+      "passed": true
+    }
+  ],
+  "error": "Replacement retry failed to recover",
+  "passed": false
+}

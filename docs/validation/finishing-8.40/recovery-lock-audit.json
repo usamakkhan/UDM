@@ -1,0 +1,99 @@
+{
+  "baselineVersion": "8.40",
+  "finding": "Recovery performs filesystem inspection, hashing, rename/reconciliation and saves while holding the Manager recursive mutex; several public entry points already hold an outer lease.",
+  "callSites": [
+    {
+      "file": "native/Core.cpp",
+      "line": 325,
+      "sourceSha256": "636c2a33f5d787a596b9f6afe27b396e5607d1d2f137a560b8ff41af58599a8c"
+    },
+    {
+      "file": "native/Core.cpp",
+      "line": 524,
+      "sourceSha256": "636c2a33f5d787a596b9f6afe27b396e5607d1d2f137a560b8ff41af58599a8c"
+    },
+    {
+      "file": "native/Core.cpp",
+      "line": 603,
+      "sourceSha256": "636c2a33f5d787a596b9f6afe27b396e5607d1d2f137a560b8ff41af58599a8c"
+    },
+    {
+      "file": "native/Core.cpp",
+      "line": 1066,
+      "sourceSha256": "636c2a33f5d787a596b9f6afe27b396e5607d1d2f137a560b8ff41af58599a8c"
+    },
+    {
+      "file": "native/Core.cpp",
+      "line": 1180,
+      "sourceSha256": "636c2a33f5d787a596b9f6afe27b396e5607d1d2f137a560b8ff41af58599a8c"
+    },
+    {
+      "file": "native/Duplicates.cpp",
+      "line": 204,
+      "sourceSha256": "a2080133b457233ff4a2c85c365c5c3f3ffc359622a7ca081d3a87172c2e94e4"
+    },
+    {
+      "file": "native/Duplicates.cpp",
+      "line": 358,
+      "sourceSha256": "a2080133b457233ff4a2c85c365c5c3f3ffc359622a7ca081d3a87172c2e94e4"
+    },
+    {
+      "file": "native/PublicationRecoveryTests.cpp",
+      "line": 12,
+      "sourceSha256": "a0f0f31cafa8846ed569dff8dec7b7a5eb12c164bccff59ab9372e4401815b4e"
+    },
+    {
+      "file": "native/PublicationRecoveryTests.cpp",
+      "line": 13,
+      "sourceSha256": "a0f0f31cafa8846ed569dff8dec7b7a5eb12c164bccff59ab9372e4401815b4e"
+    },
+    {
+      "file": "native/PublicationOwnershipTests.cpp",
+      "line": 92,
+      "sourceSha256": "fb9f96c42cd8ec3a6027d41169070b475b5476d1add56c95f573676410c4c09f"
+    },
+    {
+      "file": "native/PublicationOwnershipTests.cpp",
+      "line": 101,
+      "sourceSha256": "fb9f96c42cd8ec3a6027d41169070b475b5476d1add56c95f573676410c4c09f"
+    }
+  ],
+  "implementationComplete": false,
+  "requiredNextChecks": [
+    "Trace outer mutex ownership through resume, remove, refresh, addProject and replacement publication callers.",
+    "Reserve job tree and all target/staging/previous paths before detached IO.",
+    "Capture immutable journal identity, commit ID and destination inputs; validate them again before applying state.",
+    "Keep recovered catalog acceptance proof and ordered journal removal.",
+    "Cover changed destination, removed job, new owner, cancellation, storage failure and shutdown while recovery IO is held."
+  ],
+  "limitations": [
+    "This is a source/contract audit, not a measured recovery freeze or an implemented speed fix.",
+    "Simply unlocking the recovery method leaves recursive outer ownership held and is not a sufficient implementation."
+  ],
+  "indirectEntryPoints": [
+    {
+      "file": "native/FileWorkflows.cpp",
+      "method": "Manager::finishStoppedFileInfo",
+      "via": "recoverBeforeConfigure(job,!defer)",
+      "outerModelLock": true
+    },
+    {
+      "file": "native/Queue.cpp",
+      "method": "Manager::scheduleExistingDownload",
+      "via": "recoverBeforeConfigure(job)",
+      "outerModelLock": true
+    },
+    {
+      "file": "native/Queue.cpp",
+      "method": "Manager::reviseDownloadSchedule",
+      "via": "recoverBeforeConfigure(job)",
+      "outerModelLock": true
+    },
+    {
+      "file": "native/Core.cpp",
+      "method": "Manager::configure",
+      "via": "recoverBeforeConfigure(j)",
+      "outerModelLock": true
+    }
+  ]
+}

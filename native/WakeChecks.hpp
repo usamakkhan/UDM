@@ -92,7 +92,7 @@ static void wakeChecks(const fs::path& root){
   timer.update(Json::array({q}),{},now+3);check(str(timer.snapshot(),"Status")=="Waiting"&&!timer.signaled(),"Removing all queue work cancels the Windows wake timer");
   q["WakeComputer"]=false;timer.update(Json::array({q}),jobs,now+4);check(str(timer.snapshot(),"Status")=="Off","Clearing wake opt-in cancels the timer immediately");q["WakeComputer"]=true;
  }
- {Manager m(root/L"wake-manager");auto bad=q;bad["WakeComputer"]="true";auto before=m.state["Queues"];rejects([&]{m.setQueue(bad);},"Queue validation rejects a non-boolean wake setting");check(m.state["Queues"]==before,"Invalid wake setting preserves saved queues");
+ {Manager m(root/L"wake-manager");q["Synchronize"]=false;auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"wake-files").wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);auto bad=q;bad["WakeComputer"]="true";auto before=m.state["Queues"];rejects([&]{m.setQueue(bad);},"Queue validation rejects a non-boolean wake setting");check(m.state["Queues"]==before,"Invalid wake setting preserves saved queues");
   auto j=m.add("https://example.invalid/file","","wake.bin","Main queue",true);q["StartOnceUtc"]=date(epoch()+120000);m.setQueue(q);
   check(str(m.queueWakeStatus(),"Status")=="Armed"||str(m.queueWakeStatus(),"Status")=="Unsupported","Applying a queue registers its wake without a UI polling delay");
   auto blocked=m.root/L"state.json.tmp";fs::create_directory(blocked);auto disabled=q;disabled["WakeComputer"]=false;rejects([&]{m.setQueue(disabled);},"Failed settings persistence does not apply a wake change");fs::remove(blocked);

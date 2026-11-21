@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "scenarios": [
+    {
+      "drive": "C",
+      "operation": "folder",
+      "nativeAssertions": 11,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": true,
+      "sha256": "2741257F89DE5A7B22C8303032ADA8590E91AB7E200EEED52B29ACC4CC7E81AA"
+    },
+    {
+      "drive": "C",
+      "operation": "refresh",
+      "nativeAssertions": 11,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": true,
+      "sha256": "2741257F89DE5A7B22C8303032ADA8590E91AB7E200EEED52B29ACC4CC7E81AA"
+    },
+    {
+      "drive": "C",
+      "operation": "remove",
+      "nativeAssertions": 9,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": false,
+      "sha256": null
+    },
+    {
+      "drive": "D",
+      "operation": "folder",
+      "nativeAssertions": 11,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": true,
+      "sha256": "2741257F89DE5A7B22C8303032ADA8590E91AB7E200EEED52B29ACC4CC7E81AA"
+    },
+    {
+      "drive": "D",
+      "operation": "refresh",
+      "nativeAssertions": 11,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": true,
+      "sha256": "2741257F89DE5A7B22C8303032ADA8590E91AB7E200EEED52B29ACC4CC7E81AA"
+    },
+    {
+      "drive": "D",
+      "operation": "remove",
+      "nativeAssertions": 9,
+      "savedPrefixBytesIndependentlyVerified": 557056,
+      "resumedToComplete": false,
+      "sha256": null
+    }
+  ],
+  "processRuns": 10,
+  "nativeAssertions": 62,
+  "orchestratorSha256": "A543E5F376563D49E7B816EBF7B543F5F13BE4567EFF23873EAF46BA6AC10EDD",
+  "performanceComparison": false
+}

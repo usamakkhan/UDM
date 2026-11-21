@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "label": "UDM 9.58 versus IDM; actual application exit and symmetric output durability",
+  "transfers": 18,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 237.417,
+        "idm": 827.129
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          317.952,
+          222.928,
+          237.417
+        ],
+        "idm": [
+          827.129,
+          1051.533,
+          660.115
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 289.529,
+        "idm": 849.01
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          323.686,
+          289.529,
+          273.399
+        ],
+        "idm": [
+          1582.916,
+          849.01,
+          645.604
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 378.869,
+        "idm": 751.924
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          378.869,
+          465.955,
+          282.566
+        ],
+        "idm": [
+          794.438,
+          751.924,
+          502.254
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

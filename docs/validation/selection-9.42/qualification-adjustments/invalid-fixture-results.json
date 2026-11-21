@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "Activity-only changes replace immutable rows without changing rendered metadata",
+      "passed": true
+    },
+    {
+      "name": "An unchanged activity snapshot retains shared row ownership",
+      "passed": true
+    },
+    {
+      "name": "Prefetch-deferral-only changes cannot reuse a stale activity snapshot",
+      "passed": true
+    },
+    {
+      "name": "An active paused worker offers Stop without offering ordinary Resume",
+      "passed": true
+    },
+    {
+      "name": "A deferring paused prefetch retains its authoritative Resume exception",
+      "passed": true
+    },
+    {
+      "name": "An idle paused record offers Resume rather than Stop",
+      "passed": true
+    },
+    {
+      "name": "A queued record remains stoppable before a worker becomes active",
+      "passed": true
+    },
+    {
+      "name": "An idle completed record permits Remove without Stop or Resume",
+      "passed": true
+    },
+    {
+      "name": "A mixed active and completed selection can Stop but cannot Remove the batch",
+      "passed": true
+    },
+    {
+      "name": "An inactive mixed selection can Resume its unfinished member and Remove the batch",
+      "passed": true
+    },
+    {
+      "name": "Move or rename remains restricted to an entirely completed inactive selection",
+      "passed": true
+    },
+    {
+      "name": "Queue membership and single-record reordering keep their existing constraints",
+      "passed": true
+    },
+    {
+      "name": "Active records and completed nonmembers cannot leave a queue through stale advice",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    },
+    {
+      "name": "Empty or missing row snapshots never inherit another selection's action",
+      "passed": true
+    }
+  ],
+  "error": "Invalid saved download identifier.",
+  "passed": false
+}

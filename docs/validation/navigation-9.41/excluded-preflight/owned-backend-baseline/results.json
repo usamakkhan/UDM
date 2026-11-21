@@ -1,0 +1,21 @@
+{
+  "checks": [
+    {
+      "name": "Initial All Downloads contains both owned records",
+      "passed": true
+    },
+    {
+      "name": "A newly created queue remains the requested filter during structural change",
+      "passed": false
+    }
+  ],
+  "diagnostics": {
+    "newQueue": {
+      "actual": "all",
+      "requested": "queue:Navigation audit",
+      "rows": 2
+    }
+  },
+  "error": "A newly created queue remains the requested filter during structural change",
+  "passed": false
+}

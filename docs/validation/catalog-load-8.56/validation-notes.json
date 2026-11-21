@@ -1,0 +1,14 @@
+{
+  "finalRuns": 10,
+  "finalChecks": 1863,
+  "catalogLoadChecksPerDrive": 112,
+  "firstFocusedProbe": {
+    "passed": true,
+    "checks": 112,
+    "includedInFinalCount": false
+  },
+  "constructionFailureCoverage": "Actual late invalid IDs, duplicate segments, invalid nested audio IDs and unsupported schema; original catalog and preexisting/first-load backups remain exact, without partial-write files.",
+  "diagnosticControls": "Both engines use the exact same App entry source with one guarded normal self-close after initial refresh; no marker added to Manager or altered production App.cpp. Existing stage timestamps include file IO, JSON parsing and recovery, not just adoption.",
+  "installedAcceptanceVerified": false,
+  "idmParityVerified": false
+}

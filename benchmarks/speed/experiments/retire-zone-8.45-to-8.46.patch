@@ -1,0 +1,365 @@
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -1,4 +1,3 @@
+-#include "InternetZone.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "PublishedWriteback.hpp"
+ #include "FinishSettlement.hpp"
+@@ -596,7 +595,7 @@
+ }
+ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
+  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
+- JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false,bool* zonePreparationAttempted=nullptr){
++ JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false){
+  const auto httpStartTick=GetTickCount64();
+  // HTTP/3 multiplexes every range of this download over one QUIC connection, which on a shared
+  // link gets one connection's share: Alpine over a 4 MB/s link took 143 to 156 s against 64 s on
+@@ -963,12 +962,6 @@
+    const bool reserveRegular=allowSparse&&size>=0&&size<=64*1048576LL&&fixedVolume(dataPath(parts,job->id()));
+    bool sparseDataFile=false;const auto migrated=prepareDataFile(parts,job->id(),size,plan,*cancel,allowSparse&&!reserveRegular,reserveRegular,sparseDataFile);
+    cancel->check();
+-   // The response is already open; prepare the Internet-zone stream before
+-   // body writers begin. The usual final mark still verifies it and repairs
+-   // missing/changed metadata, including copy, prefix and retry fallbacks.
+-   if(zonePreparationAttempted&&bodyCache&&!retainInlineBody&&fresh&&encoding.empty()&&size>0&&size<=64*1048576LL&&!sparseDataFile&&fixedVolume(dataFile)){
+-    markZone(dataFile);*zonePreparationAttempted=true;
+-   }
+    {
+     Lock lock(m.mutex);auto& data=job->data;data["Segments"]=plan;data["SparseDataFile"]=sparseDataFile;
+     i64 received=0;for(const auto& segment:plan)received+=num(segment,"Done");
+@@ -2281,7 +2274,7 @@
+  }
+  const Url address(url);
+  const bool ftp=address.scheme=="ftp";
+- WrittenBodyCache mediumStage;bool zonePreparationAttempted=false;
++ WrittenBodyCache mediumStage;
+  bool post;{Lock lock(m.mutex);post=!ftp&&!str(job->data,"ProtectedRequest").empty();}
+  if(post){
+   if(!completedPrefetch(m,job,parts,*cancel,false,false,nullptr,verifiedPrefetch)){
+@@ -2302,7 +2295,7 @@
+     const auto sourceDrive=parts.root_name().wstring(),destinationDrive=folder.root_name().wstring();
+     const bool crossDrive=ownsConnection&&sourceDrive.size()==2&&destinationDrive.size()==2&&
+      sourceDrive.back()==L':'&&destinationDrive.back()==L':'&&_wcsicmp(sourceDrive.c_str(),destinationDrive.c_str())!=0;
+-    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,ownsConnection?&mediumStage:nullptr,crossDrive,&zonePreparationAttempted);
++    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,ownsConnection?&mediumStage:nullptr,crossDrive);
+    }
+    rememberPrefetch=true;
+   }
+@@ -2530,7 +2523,7 @@
+  if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+  else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+  {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+- const auto metadataTarget=prepareFinal?staging:job->target();if(zonePreparationAttempted)ensureInternetZone(metadataTarget);else markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
++ const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+  // The file and its catalog entry are published. Let the UI present completion
+  // before NTFS normalization and advisory hashing. The worker remains active,
+  // so opening the file, scans and completion actions keep their existing gates.
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,45,0,0
+-#define UDM_VERSION_STRING "8.45"
+-#define UDM_VERSION_WSTRING L"8.45"
++#define UDM_VERSION_TUPLE 8,46,0,0
++#define UDM_VERSION_STRING "8.46"
++#define UDM_VERSION_WSTRING L"8.46"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -14,9 +14,9 @@
+   {"source": "WrittenBodyCacheTests", "timeoutSeconds": 30},
+   {"source": "WrittenPrefixTests", "timeoutSeconds": 30},
+   {"source": "PrefinishWritebackTests", "timeoutSeconds": 30},
+-  {"source": "InternetZoneTests", "timeoutSeconds": 30},
+   {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+   {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
++  {"source": "RecoveryJournalTests", "timeoutSeconds": 120},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+   {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+   {"source": "PublicationOwnershipTests", "timeoutSeconds": 120},
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.9",
++  "version": "0.72.10",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.9",
++  "version": "0.72.10",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/InternetZone.hpp
++++ /dev/null
+@@ -1,24 +0,0 @@
+-#pragma once
+-#include "Core.hpp"
+-#include <cstring>
+-namespace udm {
+-enum class InternetZoneResult {Preserved,Written,Unavailable};
+-inline constexpr char internetZoneMarker[]="[ZoneTransfer]\r\nZoneId=3\r\n";
+-// Only our exact complete marker can skip a write. Do not infer a safe zone
+-// from a prefix, partial read, different encoding or an inaccessible stream.
+-inline InternetZoneResult ensureInternetZone(const fs::path& file){
+- const auto stream=file.wstring()+L":Zone.Identifier";
+- {
+-  Handle existing(CreateFileW(stream.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
+-  LARGE_INTEGER size{};char bytes[sizeof(internetZoneMarker)-1]{};DWORD read=0;
+-  if(existing&&GetFileSizeEx(existing.h,&size)&&size.QuadPart==static_cast<LONGLONG>(sizeof(bytes))&&
+-     ReadFile(existing.h,bytes,sizeof(bytes),&read,nullptr)&&read==sizeof(bytes)&&
+-     std::memcmp(bytes,internetZoneMarker,sizeof(bytes))==0)return InternetZoneResult::Preserved;
+- }
+- Handle output(CreateFileW(stream.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));
+- DWORD written=0;
+- if(output&&WriteFile(output.h,internetZoneMarker,sizeof(internetZoneMarker)-1,&written,nullptr)&&written==sizeof(internetZoneMarker)-1)
+-  return InternetZoneResult::Written;
+- return InternetZoneResult::Unavailable;
+-}
+-}
+--- a/native/InternetZoneTests.cpp
++++ /dev/null
+@@ -1,51 +0,0 @@
+-#include "InternetZone.hpp"
+-#include <iostream>
+-using namespace udm;
+-static void zoneBytes(const fs::path& file,const std::string& bytes){
+- const auto stream=file.wstring()+L":Zone.Identifier";
+- Handle output(CreateFileW(stream.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));
+- DWORD written=0;if(!output||!WriteFile(output.h,bytes.data(),static_cast<DWORD>(bytes.size()),&written,nullptr)||written!=static_cast<DWORD>(bytes.size()))throw std::runtime_error("Fixture cannot seed zone stream.");
+-}
+-static std::string zoneText(const fs::path& file){return readText(fs::path(file.wstring()+L":Zone.Identifier"),32768);}
+-int wmain(int argc,wchar_t** argv){
+- if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
+- Json checks=Json::array();bool passed=false;std::string error;
+- auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
+- try{
+-  const auto source=root/L"body.part";atomicText(source,"owned complete body",false);const auto hash=fileHash(source);
+-  check(ensureInternetZone(source)==InternetZoneResult::Written,"A fresh file receives the full Internet-zone marker");
+-  check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"Zone creation preserves the body and writes exactly ZoneId 3");
+-  {
+-   Handle reader(CreateFileW((source.wstring()+L":Zone.Identifier").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+-   check(static_cast<bool>(reader),"Fixture holds an existing correct stream with writes excluded");
+-   check(ensureInternetZone(source)==InternetZoneResult::Preserved,"Correct metadata is accepted without requesting a rewrite");
+-   markZone(source);check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"The legacy best-effort markZone entry leaves a read-held correct marker and body intact");
+-  }
+-  const std::vector<std::string> invalid={"","[ZoneTransfer]\r\nZoneId=1\r\n","[ZoneTransfer]\r\nZoneId=3","[ZoneTransfer]\r\nZoneId=3\r\nextra",std::string(16000,'x'),std::string("\xff\xfe[\0Z\0",6)};
+-  for(const auto& bytes:invalid){
+-   zoneBytes(source,bytes);
+-   check(ensureInternetZone(source)==InternetZoneResult::Written,"Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write");
+-   check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"Repair truncates invalid metadata to the complete marker without changing bytes");
+-  }
+-  zoneBytes(source,"changed after preparation");
+-  {
+-   Handle reader(CreateFileW((source.wstring()+L":Zone.Identifier").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
+-   check(static_cast<bool>(reader),"Fixture holds invalid metadata against writes");
+-   check(ensureInternetZone(source)==InternetZoneResult::Unavailable,"A refused marker repair is not reported as preserved or written");
+-   check(zoneText(source)=="changed after preparation"&&fileHash(source)==hash,"A best-effort metadata failure preserves the existing body and stream");
+-  }
+-  check(ensureInternetZone(source)==InternetZoneResult::Written,"Final verification repairs a changed marker after the refusal is released");
+-  check(DeleteFileW((source.wstring()+L":Zone.Identifier").c_str())!=FALSE,"Fixture removes the early marker before final verification");
+-  check(ensureInternetZone(source)==InternetZoneResult::Written&&zoneText(source)==internetZoneMarker,"Final verification restores a missing early marker");
+-  const auto stage=root/L"stage.assembling",final=root/L"final.bin";
+-  check(CreateHardLinkW(stage.c_str(),source.c_str(),nullptr)!=FALSE,"Fixture creates the normal same-volume staging hard link");
+-  check(ensureInternetZone(stage)==InternetZoneResult::Preserved&&zoneText(stage)==internetZoneMarker,"Prepared metadata follows the actual body through its staging alias");
+-  check(MoveFileExW(stage.c_str(),final.c_str(),0)!=FALSE,"Fixture publishes the staged hard link");
+-  check(ensureInternetZone(final)==InternetZoneResult::Preserved&&fileHash(final)==hash,"Publication retains the correct marker without a second metadata write");
+-  const auto copied=root/L"copied.bin";atomicText(copied,"owned complete body",false);
+-  check(ensureInternetZone(copied)==InternetZoneResult::Written&&zoneText(copied)==internetZoneMarker&&fileHash(copied)==hash,"A body-only copy still gets its own final Internet-zone marker");
+-  passed=true;
+- }catch(const std::exception& e){error=e.what();}
+- atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);
+- std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
+-}
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -16,6 +16,7 @@
+ #include "PublicationCatalogProof.hpp"
+ #include "ReplacementCommit.hpp"
+ #include "PublicationRecovery.hpp"
++#include "RecoveryJournal.hpp"
+ #include "MediaPublication.hpp"
+ #include "FileIdentity.hpp"
+ #include "Scanner.hpp"
+@@ -434,7 +435,8 @@
+   if(entry.path().extension()!=L".json")continue;
+   if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring())))continue;
+   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its publication journal has been preserved.");
+-  auto op=Json::parse(readText(entry.path()));auto job=findPublicationJob(str(op,"Id"));const bool ephemeral=op.value("Ephemeral",false);
++  if(!scope){auto known=findPublicationJob(utf8(entry.path().stem().wstring()));if(known&&PublicationOwnership::treeOwned(*this,known))continue;}
++  RecoveryJournal journal(entry.path());auto op=Json::parse(journal.text());auto job=findPublicationJob(str(op,"Id"));const bool ephemeral=op.value("Ephemeral",false);
+   bool acceptedReceipt=false;if(ephemeral){const auto id=PublicationCommit::identity(op);if(id.empty())throw std::runtime_error("Missing private publication identity. Keep its recovery record.");auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto receipt=rows->find(id);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private publication receipt changed. Keep its file and recovery record.");acceptedReceipt=true;}}}
+   if(!job&&ephemeral)job=std::make_shared<Job>(op.at(acceptedReceipt?"After":"Before"));
+   if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
+@@ -478,7 +480,7 @@
+    if(retainedMediaOutputPath(op["Before"]).empty())markZone(target);
+    else finishRetainedMediaRecovery(op["Before"],target);
+   }
+-  fs::remove(entry.path());if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
++  journal.retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+  }
+  // Older builds could publish and hash the final file before a catalog save
+  // failed, without a publication journal. Reconcile only that exact failure.
+@@ -497,7 +499,12 @@
+  if(!scope&&!catalogTransaction){auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto retained=*rows;bool changed=false;for(auto it=rows->begin();it!=rows->end();++it){const auto descriptor=PublicationCatalogProof::binding(it.value());if(it.key()!=str(descriptor,"PublicationCommitId"))throw std::runtime_error("Private publication receipt identity changed.");auto target=fs::path(wide(str(descriptor,"Folder")))/wide(str(descriptor,"FileName"));if(!fs::exists(publications/(wide(str(descriptor,"Id"))+L".json"))&&!fs::exists(root/L"replacements"/(wide(str(descriptor,"Id"))+L".json"))&&!PublicationOwnership::reserved(*this,target)){retained.erase(it.key());changed=true;}}if(changed){auto previous=*rows;if(retained.empty())state.erase(rows);else rows->swap(retained);try{save();}catch(...){state["PublicationReceipts"]=std::move(previous);throw;}}}}
+  auto folder=root/L"replacements";if(!fs::exists(folder))return;
+  for(auto& entry:fs::directory_iterator(folder)){
+-  if(entry.path().extension()!=L".json")continue;auto op=Json::parse(readText(entry.path()));if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))&&!scopeIds.count(str(op,"OriginalId")))continue;
++  if(entry.path().extension()!=L".json")continue;
++  if(!scope){auto known=findPublicationJob(utf8(entry.path().stem().wstring()));if(known&&PublicationOwnership::treeOwned(*this,known))continue;}
++  // Discovery does not claim unrelated scoped journals. Parse again from the
++  // pinned file before using any operation; a changed discovery is not proof.
++  if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))){auto discovered=Json::parse(readText(entry.path()));if(!scopeIds.count(str(discovered,"OriginalId")))continue;}
++  RecoveryJournal journal(entry.path());auto op=Json::parse(journal.text());if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring()))&&!scopeIds.count(str(op,"OriginalId")))continue;
+   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its replacement journal has been preserved.");
+   const auto commitId=ReplacementCommit::identity(op);const bool ephemeral=!commitId.empty()&&op.value("Ephemeral",false);auto job=ephemeral?findPublicationJob(str(op,"Id")):findJob(str(op,"Id"));auto original=findJob(str(op,"OriginalId"));
+   if(ephemeral){auto rows=state.find("PublicationReceipts");bool acknowledged=false;if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private replacement receipt store.");auto receipt=rows->find(commitId);if(receipt!=rows->end()){if(*receipt!=PublicationCatalogProof::binding(op.at("After")))throw std::runtime_error("Private replacement receipt changed. Keep both files and its journal.");acknowledged=true;}}if(!job)job=std::make_shared<Job>(op.at(acknowledged?"After":"Before"));}
+@@ -532,7 +539,7 @@
+   try{save();}catch(...){original->data.swap(recoveredOriginal);job->data.swap(recovered);if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
+   newBytes.reset();previousBytes.reset();originalBytes.reset(); // Catalog acceptance precedes releasing either verified version.
+   if(published)finishRetainedMediaRecovery(op.at("Before"),target);
+-  fs::remove(entry.path());if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+- }
+-}
+-}
++  journal.retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
++ }
++}
++}
+--- /dev/null
++++ b/native/RecoveryJournal.hpp
+@@ -0,0 +1,41 @@
++#pragma once
++#include "Core.hpp"
++namespace udm {
++// Immutable input and retirement ownership belong to the same opened file.
++// There is no delete-on-close flag: abandoning or failing recovery preserves it.
++class RecoveryJournal {
++ Handle file;std::string contents;
++public:
++ explicit RecoveryJournal(const fs::path& path,size_t limit=32*1024*1024):file(CreateFileW(path.c_str(),GENERIC_READ|DELETE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr)){
++  if(!file)throw std::runtime_error("Cannot own the recovery journal. Close programs holding it and retry; its files were preserved.");
++  BY_HANDLE_FILE_INFORMATION information{};LARGE_INTEGER size{};
++  if(!path.is_absolute()||GetFileType(file.h)!=FILE_TYPE_DISK||!GetFileInformationByHandle(file.h,&information)||
++     (information.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||
++     !GetFileSizeEx(file.h,&size)||size.QuadPart<0||static_cast<unsigned long long>(size.QuadPart)>limit)
++   throw std::runtime_error("The recovery journal is not a supported regular file. Keep its files and recovery record.");
++  contents.resize(static_cast<size_t>(size.QuadPart));
++  for(size_t offset=0;offset<contents.size();){
++   const auto amount=static_cast<DWORD>(std::min<size_t>(contents.size()-offset,1048576));DWORD count=0;
++   if(!ReadFile(file.h,contents.data()+offset,amount,&count,nullptr)||!count||count>amount)
++    throw std::runtime_error("Cannot read the owned recovery journal. Its files were preserved.");
++   offset+=count;
++  }
++  if(contents.rfind("\xEF\xBB\xBF",0)==0)contents.erase(0,3);
++ }
++ const std::string& text()const noexcept{return contents;}
++ void retire(){
++  if(!file)throw std::runtime_error("The recovery journal is no longer owned.");
++  FILE_DISPOSITION_INFO_EX disposition{FILE_DISPOSITION_FLAG_DELETE|FILE_DISPOSITION_FLAG_POSIX_SEMANTICS};
++  if(!SetFileInformationByHandle(file.h,FileDispositionInfoEx,&disposition,sizeof(disposition))){
++   const auto error=GetLastError();
++   if(error!=ERROR_INVALID_PARAMETER&&error!=ERROR_INVALID_FUNCTION&&error!=ERROR_NOT_SUPPORTED)
++    throw std::runtime_error("Cannot retire the owned recovery journal (Windows error "+std::to_string(error)+"). Keep its file and recovery record.");
++   FILE_DISPOSITION_INFO fallback{TRUE};
++   if(!SetFileInformationByHandle(file.h,FileDispositionInfo,&fallback,sizeof(fallback)))
++    throw std::runtime_error("Cannot retire the owned recovery journal. Keep its file and recovery record.");
++  }
++  if(!CloseHandle(file.h))throw std::runtime_error("Cannot close the retired recovery journal handle.");
++  file.h=INVALID_HANDLE_VALUE;
++ }
++};
++}
+--- /dev/null
++++ b/native/RecoveryJournalTests.cpp
+@@ -0,0 +1,81 @@
++#include "Core.hpp"
++#ifndef UDM_RECOVERY_JOURNAL_BASELINE
++#include "RecoveryJournal.hpp"
++#endif
++#include <future>
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {static void observe(Manager& manager,std::function<void(const char*)> callback){Lock lock(manager.mutex);manager.catalogCheckpoint=std::move(callback);}};}
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
++ Json checks=Json::array(),cases=Json::array();bool passed=false;std::string error;
++ auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});};
++ try{
++  for(const bool paired:{false,true})for(const std::string attack:{"rename","write","write-alias","save-failure","read-held","unrelated-held"}){
++   const auto folder=root/wide(std::string(paired?"replacement-":"ordinary-")+attack);Manager manager(folder/L"catalog");const auto files=folder/L"files";fs::create_directories(files);
++   auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8(files.wstring());settings["CategoryFolders"]=false;manager.setSettings(settings);
++   JobPtr original;std::string oldHash;
++   if(paired){original=manager.add("https://example.invalid/original","","result.bin","Main queue",true);atomicText(original->target(),"old bytes",false);oldHash=fileHash(original->target());original->data["Status"]="Complete";original->data["Size"]=9;original->data["Received"]=9;original->data["Sha256"]=oldHash;original->data["Finished"]=date();}
++   auto job=manager.add("https://example.invalid/recovered","",paired?"next.bin":"result.bin","Main queue",true);
++   if(paired){job->data["FileName"]=str(original->data,"FileName");job->data["ReplacementOf"]=original->id();job->data["ReplacementHash"]=oldHash;job->data["PreviousPath"]=utf8((files/L"previous.bin").wstring());}
++   manager.save();const auto stage=files/(L".udm-"+wide(job->id())+L".assembling");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage);
++   const auto journal=manager.root/(paired?L"replacements":L"publications")/(wide(job->id())+L".json"),retained=folder/L"retained-journal.bin",alias=folder/L"journal-alias.bin";
++   bool interrupted=false;CatalogCheckpointTestAccess::observe(manager,[&](const char* point){if(std::string_view(point)==(paired?"replacement-file-moved":"publication-intent-written"))throw std::runtime_error("Owned publication interruption");});
++   try{manager.publishFile(job,stage,hash);}catch(...){interrupted=true;}CatalogCheckpointTestAccess::observe(manager,{});
++   check(interrupted&&fs::exists(journal),"A real interrupted ordinary or paired publication supplies the recovery journal");
++   const auto bytes=readText(journal),before=job->snapshot().dump();if(attack=="write-alias")check(CreateHardLinkW(alias.c_str(),journal.c_str(),nullptr)!=FALSE,"The fixture creates a second real name for the journal bytes");
++   Handle unrelatedReader;const auto unrelated=manager.root/L"replacements"/(wide(guid())+L".json");const auto unrelatedBytes=Json{{"Id",guid()},{"OriginalId",guid()}}.dump();if(attack=="unrelated-held"){atomicText(unrelated,unrelatedBytes,false);unrelatedReader.h=CreateFileW(unrelated.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);check(static_cast<bool>(unrelatedReader),"An unrelated scoped replacement journal refuses deletion sharing");}
++   const std::string newer="{\"IndependentNewerIntent\":true}";bool reached=false,mutated=false,readable=false,modelAvailable=false;std::string failure;
++   CatalogCheckpointTestAccess::observe(manager,[&](const char* point){
++    if(std::string_view(point)!="temporary-flushed"||reached)return;reached=true;
++    modelAvailable=std::async(std::launch::async,[&]{std::unique_lock<std::recursive_mutex> lease(manager.mutex,std::try_to_lock);return lease.owns_lock();}).get();
++    if(attack=="save-failure")throw std::runtime_error("Owned recovery catalog failure");
++    if(attack=="rename"){
++     mutated=MoveFileExW(journal.c_str(),retained.c_str(),0)!=FALSE;if(mutated)atomicText(journal,newer,false);
++    }else if(attack=="write"||attack=="write-alias"){
++     Handle writer(CreateFileW((attack=="write-alias"?alias:journal).c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
++     if(writer){DWORD count=0;mutated=WriteFile(writer.h,newer.data(),static_cast<DWORD>(newer.size()),&count,nullptr)&&count==newer.size()&&SetEndOfFile(writer.h);}
++    }
++    Handle reader(CreateFileW(journal.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
++    if(reader){std::string observed(bytes.size(),'\0');DWORD count=0;readable=ReadFile(reader.h,observed.data(),static_cast<DWORD>(observed.size()),&count,nullptr)&&count==observed.size()&&observed==bytes;}
++   });
++   {
++    Handle reader;if(attack=="read-held")reader.h=CreateFileW(journal.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
++    if(attack=="read-held")check(static_cast<bool>(reader),"An existing journal reader deliberately refuses deletion sharing");
++    try{manager.recoverReplacements(job);}catch(const std::exception& e){failure=e.what();}
++   }
++   CatalogCheckpointTestAccess::observe(manager,{});
++   cases.push_back({{"paired",paired},{"attack",attack},{"catalogBoundaryReached",reached},{"journalMutationSucceeded",mutated},{"newerJournalPathWasDeleted",mutated&&!fs::exists(journal)},{"sharedReaderSawOriginalBytes",readable},{"modelMutexAvailableDuringCatalogIo",modelAvailable},{"recoveryReportedFailure",!failure.empty()}});
++   if(attack=="save-failure"||attack=="read-held"){
++    check(!failure.empty()&&fs::exists(journal)&&readText(journal)==bytes,"Failed catalog persistence or refused journal ownership retains the exact original journal");
++    check(job->snapshot().dump()==before,"Refused recovery cannot leave a falsely accepted completion row");
++    if(fs::exists(journal)&&readText(journal)==bytes){manager.recoverReplacements(job);check(str(job->data,"Status")=="Complete"&&!fs::exists(journal),"A later explicit retry accepts preserved bytes and retires the owned journal");}
++   }else{
++    check(reached&&!mutated,"Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush");
++    check(readable,"A reader sharing deletion can inspect the exact pinned journal during recovery");
++    check(failure.empty()&&str(job->data,"Status")=="Complete"&&!fs::exists(journal),"Successful recovery retires its own journal after catalog acceptance");
++   }
++   if(attack=="unrelated-held")check(fs::exists(unrelated)&&readText(unrelated)==unrelatedBytes,"Scoped recovery leaves an unrelated locked journal untouched without claiming it");
++   check(fs::exists(job->target())&&fileHash(job->target())==hash,"Recovery retains the exact downloaded output bytes");
++   if(paired)check(fs::exists(files/L"previous.bin")&&fileHash(files/L"previous.bin")==oldHash,"Paired recovery retains the original version's exact bytes");
++   manager.stop();
++  }
++#ifndef UDM_RECOVERY_JOURNAL_BASELINE
++  {
++   const auto file=root/L"owned-journal.json",alias=root/L"owned-alias.json";atomicText(file,"\xEF\xBB\xBF{\"id\":1}",false);check(CreateHardLinkW(alias.c_str(),file.c_str(),nullptr)!=FALSE,"An owned journal has a retained second link");
++   {RecoveryJournal journal(file);check(journal.text()=="{\"id\":1}","The held snapshot retains legacy UTF-8 BOM handling");
++    Handle writer(CreateFileW(alias.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!writer,"A journal lease rejects byte writes through an alias");
++    check(!MoveFileExW(file.c_str(),(root/L"moved-journal.json").c_str(),0),"A journal lease preserves its captured pathname");journal.retire();}
++   check(!fs::exists(file)&&readText(alias)=="{\"id\":1}","Handle-based retirement removes only the owned link and preserves other links' bytes");
++   atomicText(file,"bounded journal",false);bool denied=false;try{RecoveryJournal oversized(file,4);}catch(...){denied=true;}check(denied&&readText(file)=="bounded journal","An over-limit journal is rejected before use without removing its bytes");
++   {RecoveryJournal abandoned(file);}check(readText(file)=="bounded journal","Releasing an unaccepted lease never deletes its journal");
++   bool retirementDenied=false,readonly=false;{RecoveryJournal journal(file);readonly=SetFileAttributesW(file.c_str(),FILE_ATTRIBUTE_READONLY)!=FALSE;if(readonly)try{journal.retire();}catch(...){retirementDenied=true;}}
++   check(readonly&&retirementDenied&&fs::exists(file)&&readText(file)=="bounded journal","A refused read-only retirement preserves the exact journal after its lease unwinds");
++   check(SetFileAttributesW(file.c_str(),FILE_ATTRIBUTE_NORMAL)!=FALSE,"The fixture restores only its own journal attribute");{RecoveryJournal journal(file);journal.retire();}check(!fs::exists(file),"An explicit retry can retire the same journal once its refusal is removed");
++   const auto directory=root/L"journal-directory";fs::create_directories(directory);denied=false;try{RecoveryJournal invalid(directory);}catch(...){denied=true;}check(denied&&fs::is_directory(directory),"A directory cannot be interpreted or retired as a journal");
++  }
++#endif
++  passed=std::all_of(checks.begin(),checks.end(),[](const Json& value){return value.at("passed").get<bool>();});
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks},{"cases",cases}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":"failed")<<"\n";return passed?0:1;
++}

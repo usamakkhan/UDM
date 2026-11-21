@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "instrumentationPatch": "benchmarks/speed/experiments/recovery-cleanup-8.51-control.patch",
+  "sha256": "127874399CFD0F1A79A1225E85A1DFB590926C671A7831E65F154CF9A5AB8286",
+  "beforePath": "native/Duplicates.cpp",
+  "beforeSha256": "ED03072B9FFA4D365BFEF82EAEB82A04146C3FBFA852F81D7BBC0DF2E5977455",
+  "afterPath": "baseline-Duplicates.cpp",
+  "afterSha256": "D9F0EF1C5D46BFC05AA2BA8A52BF76DDEE41CB4742D7FB1803722E14C8BD99DD",
+  "lineEndings": "CRLF",
+  "verifiedBothDirections": true,
+  "controlSource": "benchmarks/speed/recovery_cleanup_control.cpp",
+  "controlSourceSha256": "7D066E6EB69A459B000CF07971B6CE63552668A34297E3563DBF65F3C5D14B4F",
+  "scope": "A bounded hook immediately before each actual owned journal retirement; qualified 8.51 core and resources."
+}

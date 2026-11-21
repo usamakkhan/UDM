@@ -1,0 +1,87 @@
+{
+  "checks": [
+    {
+      "name": "Complete normalized lifetime and two owned data-flush pairs pass structural coverage",
+      "passed": true
+    },
+    {
+      "name": "Missing target process start rejects partial history",
+      "passed": true
+    },
+    {
+      "name": "Missing target process end rejects partial history",
+      "passed": true
+    },
+    {
+      "name": "Repeated PID lifetimes cannot be silently combined",
+      "passed": true
+    },
+    {
+      "name": "Wrong image identity rejects the target lifetime",
+      "passed": true
+    },
+    {
+      "name": "Ordinary lost events reject structural coverage",
+      "passed": true
+    },
+    {
+      "name": "Lost buffers reject structural coverage",
+      "passed": true
+    },
+    {
+      "name": "Older overwritten history may precede a fully retained target interval",
+      "passed": true
+    },
+    {
+      "name": "Circular overwrite intersecting target history rejects coverage",
+      "passed": true
+    },
+    {
+      "name": "Missing memory-history metadata is not treated as zero loss",
+      "passed": true
+    },
+    {
+      "name": "Incomplete overwrite arrays reject coverage",
+      "passed": true
+    },
+    {
+      "name": "Unfinished flush starts reject coverage",
+      "passed": true
+    },
+    {
+      "name": "Reused outstanding IRP identities reject ambiguous pairing",
+      "passed": true
+    },
+    {
+      "name": "Failed IO completion cannot be labeled a confirmed flush",
+      "passed": true
+    },
+    {
+      "name": "Missing contemporaneous file identity rejects attribution",
+      "passed": true
+    },
+    {
+      "name": "Reversed timestamps reject timing claims",
+      "passed": true
+    },
+    {
+      "name": "One data-flush pair cannot prove the controlled split scenario",
+      "passed": true
+    },
+    {
+      "name": "Unexpected extra data-flush pairs require scenario review",
+      "passed": true
+    },
+    {
+      "name": "Capacity exhaustion cannot silently truncate a passing report",
+      "passed": true
+    },
+    {
+      "name": "Target schema failures reject coverage",
+      "passed": true
+    }
+  ],
+  "method": "Synthetic normalized-event safety checks; not real ETL/TDH integration validation",
+  "passed": true,
+  "realTraceConsumed": false
+}

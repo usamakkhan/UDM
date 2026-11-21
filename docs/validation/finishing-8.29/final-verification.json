@@ -1,0 +1,62 @@
+{
+  "version": "8.29",
+  "browserVersion": "0.71.93",
+  "maintainedNativeChecks": 1848,
+  "supplementalActualSparseChecks": 4,
+  "installedFilesVerified": 7,
+  "qualifiedBinariesVerified": 25,
+  "frozenInputsVerified": 491,
+  "canonicalCoreObjectsVerified": 42,
+  "catalogsUnchanged": {
+    "workspace": true,
+    "local": true
+  },
+  "idmSettingsRestored": true,
+  "errors": [],
+  "targetObjectsVerifiedBeforeCleanup": true,
+  "temporaryPayloadsAbsent": true,
+  "processExitTailWins": 5,
+  "processExitFullWallWins": 9,
+  "durableTailWins": 8,
+  "durableFullWallWins": 9,
+  "performanceTargetMet": false,
+  "durableTargetMet": false,
+  "cleanup": {
+    "files": 270,
+    "logicalBytesRemoved": 1099818205,
+    "physicalAllocationMeasured": false,
+    "records": [
+      {
+        "record": "comparison-cleanup.json",
+        "files": 18,
+        "logicalBytesRemoved": 830472192
+      },
+      {
+        "record": "fixture-cleanup.json",
+        "files": 228,
+        "logicalBytesRemoved": 202251010
+      },
+      {
+        "record": "superseded-tests-cleanup.json",
+        "files": 20,
+        "logicalBytesRemoved": 62811648
+      },
+      {
+        "record": "sparse-probe-cleanup.json",
+        "files": 4,
+        "logicalBytesRemoved": 4283355
+      }
+    ],
+    "preserved": [
+      "25 current binaries",
+      "42 canonical core objects",
+      "source",
+      "personal catalogs",
+      "journals/reports/screenshots",
+      "rollback copies",
+      "shared media tools",
+      "required 8.0/7.97 fixtures",
+      "preview-http-7.82"
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "preflightOnly": true,
+  "qualification": false,
+  "sourceVersion": "9.39",
+  "linkedCoreVersion": "9.38",
+  "passed": true,
+  "checks": 19,
+  "binarySha256": "2B309E312370FA024BD961C447316AEF2879CA0D52FA4DAB33392F92A414F628",
+  "sourceSha256": "C44BF35DC0FDEFD4AB4DBDB17907FF8BD7385CA398EAF198A5BF159CAB7BD09F",
+  "result": {
+    "checks": [
+      {
+        "name": "An existing owner remains attached to its changed slot",
+        "passed": true
+      },
+      {
+        "name": "A reused owner retains its existing policy cohort without a new Manager read",
+        "passed": true
+      },
+      {
+        "name": "A single slot recreates its missing preview owner",
+        "passed": true
+      },
+      {
+        "name": "A missing owner acquires fresh policy instead of reviving the failed old cohort",
+        "passed": true
+      },
+      {
+        "name": "Recovery retains the nonzero changed identity and full source index space",
+        "passed": true
+      },
+      {
+        "name": "Recreated ownership retains valid scoped observed metadata",
+        "passed": true
+      },
+      {
+        "name": "The recreated owner supports a subsequent different single-slot edit",
+        "passed": true
+      },
+      {
+        "name": "Subsequent edits reuse the recreated policy without another acquisition",
+        "passed": true
+      },
+      {
+        "name": "A missing-owner policy failure publishes no preview and consumes its reader",
+        "passed": true
+      },
+      {
+        "name": "The same scoped reader can retry after missing-owner policy failure",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before missing-owner recovery",
+        "passed": true
+      },
+      {
+        "name": "Missing-owner recovery waits on its reader without blocking its caller",
+        "passed": true
+      },
+      {
+        "name": "The missing-owner policy wait is cooperatively cancellable",
+        "passed": true
+      },
+      {
+        "name": "Cancelling recovery creates no preview before the policy writer releases",
+        "passed": true
+      },
+      {
+        "name": "A recreated owner rejects an out-of-range changed slot before mapping its request",
+        "passed": true
+      },
+      {
+        "name": "A recreated owner rejects a negative changed slot",
+        "passed": true
+      },
+      {
+        "name": "A missing changed-row input cannot create an empty replacement owner",
+        "passed": true
+      },
+      {
+        "name": "Cancelling projection prevents publication of a recreated owner",
+        "passed": true
+      },
+      {
+        "name": "Selective owner recovery never changes fixture settings catalog jobs or command ownership",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  }
+}

@@ -1,0 +1,729 @@
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -1,4 +1,4 @@
+-#include "PreparedTransferCommit.hpp"
++﻿#include "PreparedTransferCommit.hpp"
+ #include "ServerConnections.hpp"
+ #include "BrowserProxy.hpp"
+ #include "BrowserSession.hpp"
+@@ -17,6 +17,7 @@
+ #include "CatalogCommitCoordinator.hpp"
+ #include "PublicationCatalogProof.hpp"
+ #include "CatalogAdmissionRegistry.hpp"
++#include "CatalogDiskCredit.hpp"
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ #include "ProductionUiTiming.hpp"
+ #endif
+@@ -335,7 +336,7 @@
+   Lock lock(mutex);
+   if(stopping&&threads.empty()&&active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-   if(!admission&&!publication&&current==checkpointState){
++   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){
+     const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+     if(disk&&GetFileInformationByHandle(disk.h,&info)&&!(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))
+      alreadySaved=Json::parse(readText(path,32*1024*1024))==checkpointState;
+@@ -343,6 +344,7 @@
+   }
+  }catch(...){/* A failed recheck keeps the original forced-save path. */}
+  if(!alreadySaved)try{stop();}catch(...) {}
++ CatalogDiskCredit::forget(*this);
+ }
+ std::function<void(const Json&)> Manager::browserSessionPersistence(JobPtr job,Json expected,std::shared_ptr<const Cancel> cancel){
+  if(expected.empty())return {};
+@@ -373,12 +375,12 @@
+  // outside this function's lock. Periodic callers use an owned worker. Explicit
+  // callers remain synchronous and may hold an outer lock. Older writes are skipped.
+  std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
+- CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;
++ CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;CatalogDiskCredit::Publication diskCredit;
+  {Lock l(mutex);if(changedOnly&&stopping)return;if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
+   // Recheck automatic checkpoint necessity in the same lock as its snapshot.
+   // An explicit commit can supersede a worker's earlier dirty observation.
+   // Forced saves and retries after a storage failure still perform durable IO.
+-  try{if(changedOnly&&storageError.empty()&&!checkpointChanged())return;current=snapshot();publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);}catch(const std::exception& e){storageError=e.what();throw;}
++  try{if(changedOnly&&storageError.empty()&&!CatalogDiskCredit::active(*this)&&!checkpointChanged())return;current=snapshot();diskCredit=CatalogDiskCredit::capture(*this,current,[&](const std::string& id,const Cancel* c){auto it=active.find(id);return it!=active.end()&&it->second.get()==c;});publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);if(changedOnly&&storageError.empty()&&diskCredit&&!publication&&!publicationProof&&current==checkpointState)return;}catch(const std::exception& e){storageError=e.what();throw;}
+   if(changedOnly&&storageError.empty()&&!publication&&!publicationProof&&PreparedTransferCommit::defersAutomatic(*this,active)){UDM_FINISH_POINT("auto-deferred-finalization");return;}
+   sequence=++catalogSequence;checkpoint=observation?*observation:catalogCheckpoint;}
+ 
+@@ -822,7 +824,7 @@
+  auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
+  if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resumeIf(job,[&]{return std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end()&&yes(job->data,"LiveRecording")&&yes(job->data,"LiveStopRequested")&&str(job->data,"Status")!="Complete"&&str(job->data,"Status")!="Awaiting confirmation";});}
+ }
+-void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{PreparedTransferCommit finalCommit(*this,j,c,!prefetch);bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
++void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{CatalogDiskCredit::WorkerScope diskGeneration(*this,j,c);PreparedTransferCommit finalCommit(*this,j,c,!prefetch);bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+   std::function<void(const char*)> completedCheckpoint;
+   {
+    Lock lock(mutex);
+@@ -850,7 +852,7 @@
+      Lock lock(mutex);
+      if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+       auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-      if(!admission&&!publication&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION info{};
++      if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+        if(disk&&GetFileInformationByHandle(disk.h,&info)&&!(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))alreadySaved=Json::parse(readText(path,32*1024*1024))==checkpointState;
+       }
+      }
+@@ -893,7 +895,7 @@
+   Lock lock(mutex);
+   if(active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-   if(!admission&&!publication&&current==checkpointState){
++   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){
+     const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+     if(disk&&GetFileInformationByHandle(disk.h,&info)&&!(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))
+      alreadySaved=Json::parse(readText(path,32*1024*1024))==checkpointState;
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -1,9 +1,10 @@
+-#include "PreparedTransferCommit.hpp"
++﻿#include "PreparedTransferCommit.hpp"
+ #include "PublishedWriteback.hpp"
+ #include "FinishSettlement.hpp"
+ #include "ContentDispositionName.hpp"
+ #include "WrittenPrefix.hpp"
+ #include "WrittenBodyCache.hpp"
++#include "CatalogDiskCredit.hpp"
+ #include "PrefinishWriteback.hpp"
+ #include "MediaStorage.hpp"
+ #include "MediaAssemblyVerification.hpp"
+@@ -1018,6 +1019,10 @@
+     memoryStage=bodyCache->valid;
+    }
+   }
++  // Exercise generation-bound disk checkpoints on the existing synchronous
++  // cache-eligible root path before ordered network writes are introduced.
++  std::unique_ptr<CatalogDiskCredit::Lease> diskCredit;
++  if(memoryStage&&size>0)diskCredit=CatalogDiskCredit::attach(m,job,cancel);
+   if(hasher&&!inlineHash&&!memoryStage){hashing=std::thread([&]{try{
+    PrefixHasher::Reader reader;
+    while(!hashCancel.cancelled()){
+@@ -1594,7 +1599,10 @@
+         if(ownedAfterWrite!=0&&(need<0||readBytes<need-have)){
+          beginBodyRead(buffers[1-current],ownedAfterWrite);
+         }
+-        if(keep)writeAt(output.h,buffer,keep,at);
++        if(keep){
++         if(diskCredit){auto written=diskCredit->beginWrite(at,static_cast<i64>(keep));writeAt(output.h,buffer,keep,at);written.acknowledge();}
++         else writeAt(output.h,buffer,keep,at);
++        }
+         if(inlineHash)hasher->wrote(buffer,keep,at);
+         {
+          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
+@@ -1750,6 +1758,7 @@
+   const auto boundariesVerified=GetTickCount64();
+   joinHasher.join();
+   const auto prefixHashStopped=GetTickCount64();
++  if(diskCredit){diskCredit->close();Lock lock(m.mutex);job->data["DiskCreditCheckpoint"]={{"Used",true},{"ReconciledBytes",num(job->data,"Received")}};}
+   {
+    Lock lock(m.mutex);
+    const auto lastByte=lastProgressTick.load();
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+-#pragma once
+-#define UDM_VERSION_TUPLE 8,60,0,0
+-#define UDM_VERSION_STRING "8.60"
+-#define UDM_VERSION_WSTRING L"8.60"
++﻿#pragma once
++#define UDM_VERSION_TUPLE 8,61,0,0
++#define UDM_VERSION_STRING "8.61"
++#define UDM_VERSION_WSTRING L"8.61"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+-{
++﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.24",
++  "version": "0.72.25",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+-{
++﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.24",
++  "version": "0.72.25",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -1,4 +1,4 @@
+-[
++﻿[
+   {
+     "source": "AsyncDialLookupTests",
+     "timeoutSeconds": 45
+@@ -44,6 +44,14 @@
+   {
+     "source": "CatalogCheckpointTests",
+     "timeoutSeconds": 60
++  },
++  {
++    "source": "CatalogDiskCreditTests",
++    "timeoutSeconds": 90
++  },
++  {
++    "source": "WrittenDiskCheckpointTests",
++    "timeoutSeconds": 90
+   },
+   {
+     "source": "CompletedCheckpointTests",
+diff --git a/native/WrittenDiskCheckpoint.hpp b/native/WrittenDiskCheckpoint.hpp
+new file mode 100644
+index 00000000..a16a6d05
+--- /dev/null
++++ b/native/WrittenDiskCheckpoint.hpp
+@@ -0,0 +1,120 @@
++#pragma once
++// Written-byte checkpoint leases. Callers keep snapshots through catalog acceptance.
++#include "Core.hpp"
++#include "BodyBufferStorage.hpp"
++#include <limits>
++namespace udm {
++class WrittenDiskCheckpoint {
++ static_assert(std::is_nothrow_move_constructible_v<Json>,"Snapshot lease construction must not throw after acquiring a pin");
++ using Ranges=std::map<i64,i64>; // half-open, acknowledged writes only
++ struct State {
++  std::mutex mutex;std::condition_variable idle;
++  const std::shared_ptr<const Cancel> cancel;
++  const std::shared_ptr<Handle> file;
++  const Json representation;
++  const i64 size;
++  Ranges written;
++  size_t captures=0,writes=0;
++  bool retired=false;
++  State(std::shared_ptr<const Cancel> c,std::shared_ptr<Handle> f,Json key,i64 total):cancel(std::move(c)),file(std::move(f)),representation(std::move(key)),size(total){}
++ };
++ std::shared_ptr<State> state;
++ static i64 integer(const Json& object,const char* name){
++  const auto it=object.find(name);
++  if(it==object.end()||!it->is_number_integer()||(it->is_number_unsigned()&&it->get<unsigned long long>()>static_cast<unsigned long long>(std::numeric_limits<i64>::max())))throw std::invalid_argument("Invalid disk-credit integer");
++  return it->get<i64>();
++ }
++ static Json identity(const Json& row){
++  if(!row.is_object()||str(row,"Id").empty()||str(row,"Url").empty())throw std::invalid_argument("Missing disk-credit representation");
++  Json key=Json::object();
++  for(auto name:{"Id","Url","Size","Folder","FileName","PartsFolder","ProtectedHeaders","ProtectedRequest","ETag","Modified","HttpContentEncoding","SparseDataFile","HttpPartsResetPending","RefreshPendingValidation"})if(row.contains(name))key[name]=row[name];
++  return key;
++ }
++ template<class T>static bool same(const std::shared_ptr<T>& a,const std::shared_ptr<T>& b)noexcept{return a.get()==b.get()&&!a.owner_before(b)&&!b.owner_before(a);}
++ static void current(const State& s,const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file){
++  if(s.retired||!same(s.cancel,cancel)||!same(s.file,file))throw std::runtime_error("Stale disk-credit generation");
++ }
++ static void include(Ranges& spans,i64 low,i64 high){
++  auto at=spans.lower_bound(low);if(at!=spans.begin()){auto before=std::prev(at);if(before->second>=low)at=before;}
++  while(at!=spans.end()&&at->first<=high){low=std::min(low,at->first);high=std::max(high,at->second);at=spans.erase(at);}spans.emplace(low,high);
++ }
++ static i64 prefix(const Ranges& spans,i64 low,i64 length)noexcept{
++  auto at=spans.upper_bound(low);if(at==spans.begin())return 0;--at;
++  return at->first<=low&&at->second>low?std::min(length,at->second-low):0;
++ }
++ Json projectLocked(const Json& live)const{
++  const auto segments=live.find("Segments");if(segments==live.end()||!segments->is_array()||segments->size()>4096)throw std::invalid_argument("Invalid disk-credit segments");
++  auto row=live;auto& projected=row["Segments"];Ranges claimed;std::set<i64> indices;i64 received=0;
++  for(auto& segment:projected){
++   const auto index=integer(segment,"Index"),start=integer(segment,"Start"),end=integer(segment,"End"),done=integer(segment,"Done");
++   if(index<0||index>100000||!indices.insert(index).second||start<0||end<start||end>=state->size||done<0||done>end-start+1)throw std::invalid_argument("Invalid disk-credit segment bounds");
++   const auto next=claimed.lower_bound(start);
++   if((next!=claimed.end()&&next->first<=end)||(next!=claimed.begin()&&std::prev(next)->second>start))throw std::invalid_argument("Overlapping disk-credit segments");
++   claimed.emplace(start,end+1);
++   const auto saved=std::min(done,prefix(state->written,start,end-start+1));segment["Done"]=saved;received+=saved;
++  }
++  row["Received"]=received;
++  if(str(row,"Status")=="Complete"&&received!=state->size)throw std::runtime_error("Unwritten bytes cannot be checkpointed complete");
++  return row;
++ }
++
++public:
++ class Write {
++  friend class WrittenDiskCheckpoint;
++  std::shared_ptr<State> state;i64 offset=0,length=0;
++  Write(std::shared_ptr<State> s,i64 at,i64 n)noexcept:state(std::move(s)),offset(at),length(n){}
++ public:
++  Write(const Write&)=delete;Write& operator=(const Write&)=delete;Write& operator=(Write&&)=delete;
++  Write(Write&&)=default;
++  ~Write(){if(state){std::lock_guard<std::mutex> lock(state->mutex);--state->writes;state->idle.notify_all();}}
++  // Call only after the exact requested write succeeds. A failed or partial
++  // write leaves no new credit. Failure to allocate metadata also adds none.
++  void acknowledge(){
++   if(!state)throw std::logic_error("Write already acknowledged");
++   auto held=state;std::lock_guard<std::mutex> lock(held->mutex);
++   auto next=held->written;include(next,offset,offset+length);
++   if(next.size()>4096)throw std::length_error("Disk-credit interval limit");
++   held->written.swap(next);--held->writes;held->idle.notify_all();state.reset();
++  }
++ };
++ class Snapshot {
++  friend class WrittenDiskCheckpoint;
++  std::shared_ptr<State> state;
++  Json row;
++  Snapshot(std::shared_ptr<State> s,Json value)noexcept:state(std::move(s)),row(std::move(value)){}
++ public:
++  Snapshot(const Snapshot&)=delete;Snapshot& operator=(const Snapshot&)=delete;Snapshot& operator=(Snapshot&&)=delete;
++  Snapshot(Snapshot&& other)noexcept:state(std::move(other.state)),row(std::move(other.row)){}
++  ~Snapshot(){if(state){std::lock_guard<std::mutex> lock(state->mutex);--state->captures;state->idle.notify_all();}}
++  const Json& value()const noexcept{return row;}
++ };
++ WrittenDiskCheckpoint(const Json& row,std::shared_ptr<const Cancel> cancel,std::shared_ptr<Handle> file){
++  const auto size=integer(row,"Size");
++  if(size<=0||static_cast<unsigned long long>(size)>BodyBufferStorage::maxBytes||!cancel||!file||!static_cast<bool>(*file)||yes(row,"HttpPartsResetPending")||yes(row,"RefreshPendingValidation"))throw std::invalid_argument("Invalid disk-credit binding");
++  BY_HANDLE_FILE_INFORMATION info{};
++  if(!GetFileInformationByHandle(file->h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))throw std::invalid_argument("Disk credit requires an ordinary held file");
++  state=std::make_shared<State>(std::move(cancel),std::move(file),identity(row),size);
++ }
++ WrittenDiskCheckpoint(const WrittenDiskCheckpoint&)=delete;WrittenDiskCheckpoint& operator=(const WrittenDiskCheckpoint&)=delete;
++ Write beginWrite(const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file,i64 offset,i64 length){
++  std::lock_guard<std::mutex> lock(state->mutex);current(*state,cancel,file);cancel->check();
++  if(offset<0||length<=0||offset>state->size||length>state->size-offset)throw std::out_of_range("Invalid disk-credit write");
++  ++state->writes;return Write(state,offset,length);
++ }
++ Snapshot capture(const Json& live,const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file)const{
++  std::lock_guard<std::mutex> lock(state->mutex);current(*state,cancel,file);
++  if(identity(live)!=state->representation)throw std::runtime_error("Disk-credit representation changed");
++  auto row=projectLocked(live);
++  ++state->captures;return Snapshot(state,std::move(row));
++ }
++ // Called under Manager::mutex after producers join. A failed attempt does
++ // not retire or change the live row. Wait for pins only outside that mutex.
++ std::optional<Json> tryRetireSnapshot(const Json& live,const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file){
++  std::lock_guard<std::mutex> lock(state->mutex);current(*state,cancel,file);
++  if(state->writes||state->captures)return {};
++  if(identity(live)!=state->representation)throw std::runtime_error("Disk-credit representation changed before retirement");
++  auto row=projectLocked(live);std::optional<Json> result(std::move(row));state->retired=true;return result;
++ }
++ void waitForPins(){std::unique_lock<std::mutex> lock(state->mutex);state->idle.wait(lock,[&]{return !state->writes&&!state->captures;});}
++};
++}
+diff --git a/native/CatalogDiskCredit.hpp b/native/CatalogDiskCredit.hpp
+new file mode 100644
+index 00000000..4b4ed048
+--- /dev/null
++++ b/native/CatalogDiskCredit.hpp
+@@ -0,0 +1,103 @@
++#pragma once
++#include "WrittenDiskCheckpoint.hpp"
++namespace udm {
++// Runtime-only bindings; no pointers, generations or RAM coverage are persisted.
++// The normal transfer worker scopes ownership. Capture is called only while the
++// Manager model lock is held; release waits outside it. No registry/credit lock
++// is held while acquiring Manager::mutex or doing IO.
++class CatalogDiskCredit {
++ struct Entry {
++  JobPtr job;std::shared_ptr<const Cancel> cancel;std::shared_ptr<Handle> file;
++  WrittenDiskCheckpoint credit;
++  Entry(JobPtr j,std::shared_ptr<const Cancel> c,std::shared_ptr<Handle> f,const Json& row):job(std::move(j)),cancel(std::move(c)),file(std::move(f)),credit(row,cancel,file){}
++ };
++ struct Entries {std::map<const Job*,std::shared_ptr<Entry>> values;};
++ struct Registry {std::mutex mutex;std::map<const Manager*,std::shared_ptr<Entries>> managers;};
++ static Registry& registry(){static auto* value=new Registry;return *value;}
++ static std::shared_ptr<Entries> find(const Manager& manager){auto& r=registry();std::lock_guard<std::mutex> lock(r.mutex);auto it=r.managers.find(&manager);return it==r.managers.end()?nullptr:it->second;}
++ static void erase(Manager& manager,const std::shared_ptr<Entry>& entry){
++  auto& r=registry();std::lock_guard<std::mutex> lock(r.mutex);auto found=r.managers.find(&manager);
++  if(found==r.managers.end())return;auto& entries=found->second->values;auto it=entries.find(entry->job.get());
++  if(it!=entries.end()&&it->second==entry)entries.erase(it);if(entries.empty())r.managers.erase(found);
++ }
++public:
++ class WorkerScope {
++  friend class CatalogDiskCredit;
++  inline static thread_local WorkerScope* current=nullptr;
++  WorkerScope* previous;const Manager* manager;JobPtr job;std::shared_ptr<const Cancel> cancel;
++ public:
++  WorkerScope(const Manager& m,JobPtr j,std::shared_ptr<const Cancel> c):previous(current),manager(&m),job(std::move(j)),cancel(std::move(c)){current=this;}
++  ~WorkerScope(){current=previous;}
++  WorkerScope(const WorkerScope&)=delete;WorkerScope& operator=(const WorkerScope&)=delete;
++ };
++ class Lease {
++  friend class CatalogDiskCredit;
++  Manager& manager;std::shared_ptr<Entry> entry;
++  Lease(Manager& m,std::shared_ptr<Entry> e):manager(m),entry(std::move(e)){}
++ public:
++  Lease(const Lease&)=delete;Lease& operator=(const Lease&)=delete;
++  ~Lease(){try{close();}catch(const std::exception& e){try{Lock lock(manager.mutex);manager.storageError=e.what();}catch(...){}}}
++  WrittenDiskCheckpoint::Write beginWrite(i64 offset,i64 length){if(!entry)throw std::logic_error("Disk-credit binding closed");return entry->credit.beginWrite(entry->cancel,entry->file,offset,length);}
++  // Producers must be joined before close. Call without an outer model lock.
++  void close(){
++   if(!entry)return;
++   for(;;){
++    std::shared_ptr<Entry> retired;
++    {Lock lock(manager.mutex);auto row=entry->credit.tryRetireSnapshot(entry->job->data,entry->cancel,entry->file);
++     if(row){entry->job->data.swap(*row);erase(manager,entry);retired=std::move(entry);}}
++    if(retired)return; // Last file-owner destruction occurs outside the model lock.
++    entry->credit.waitForPins();
++   }
++  }
++ };
++ class Publication {
++  friend class CatalogDiskCredit;
++  std::vector<WrittenDiskCheckpoint::Snapshot> snapshots;
++ public:
++  Publication()=default;Publication(Publication&&)=default;Publication& operator=(Publication&&)=default;
++  Publication(const Publication&)=delete;Publication& operator=(const Publication&)=delete;
++  explicit operator bool()const noexcept{return !snapshots.empty();}
++ };
++ // Called with Manager::mutex held. The generation predicate is supplied by
++ // Manager's private active map, not by a persisted job ID or browser request.
++ template<class Current>static Publication capture(const Manager& manager,Json& catalog,Current&& current){
++  Publication result;auto entries=find(manager);if(!entries)return result;result.snapshots.reserve(entries->values.size());
++  for(const auto& item:entries->values){const auto& entry=*item.second;
++   if(!current(entry.job->id(),entry.cancel.get())||std::find(manager.jobs.begin(),manager.jobs.end(),entry.job)==manager.jobs.end())throw std::runtime_error("Disk-credit generation no longer owns this download");
++   Json* row=nullptr;
++   for(auto& candidate:catalog["Downloads"])if(str(candidate,"Id")==entry.job->id()){if(row)throw std::runtime_error("Duplicate disk-credit catalog row");row=&candidate;}
++   if(!row)throw std::runtime_error("A catalog cannot omit its active disk-credit download");
++   auto snapshot=entry.credit.capture(*row,entry.cancel,entry.file);*row=snapshot.value();result.snapshots.push_back(std::move(snapshot));
++  }
++  return result;
++ }
++ // No active binding means callers retain their original fast dirty check.
++ static bool active(const Manager& manager){auto entries=find(manager);return entries&&!entries->values.empty();}
++ static std::unique_ptr<Lease> attach(Manager& manager,const JobPtr& job,const std::shared_ptr<Cancel>& cancel){
++  const auto scope=WorkerScope::current;
++  if(!scope||scope->manager!=&manager||scope->job!=job||scope->cancel!=cancel)return {};
++  cancel->check();Json before;fs::path path;
++  {Lock lock(manager.mutex);if(!manager.isActive(job)||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())throw std::runtime_error("Disk-credit attachment requires an active root download");
++   if(num(job->data,"Received")!=0)return {};before=job->data;
++   auto parts=manager.root/L"parts"/wide(job->id());if(!str(before,"PartsFolder").empty())parts=fs::path(wide(str(before,"PartsFolder")));path=parts/(wide(job->id())+L".data");}
++  // Pin the actual expected parts path before workers start, denying rename or
++  // deletion until all captured checkpoints and this binding are released.
++  auto file=std::make_shared<Handle>(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++  if(!*file)return {};
++  auto entry=std::make_shared<Entry>(job,cancel,std::move(file),before);
++  auto lease=std::unique_ptr<Lease>(new Lease(manager,{}));
++  {Lock lock(manager.mutex);cancel->check();
++   if(!manager.isActive(job)||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())throw std::runtime_error("Download lost its active membership during disk-credit attachment");
++   if(num(job->data,"Received")!=0||job->data.value("Segments",Json())!=before.value("Segments",Json()))throw std::runtime_error("Download progressed during disk-credit attachment");
++   {auto checked=entry->credit.capture(job->data,entry->cancel,entry->file);(void)checked;}
++   auto& r=registry();std::lock_guard<std::mutex> guard(r.mutex);auto found=r.managers.find(&manager);
++   if(found==r.managers.end()){auto value=std::make_shared<Entries>();value->values.emplace(job.get(),entry);r.managers.emplace(&manager,std::move(value));}
++   else if(!found->second->values.emplace(job.get(),entry).second)throw std::runtime_error("Another disk-credit binding owns this download");
++  }
++  lease->entry=std::move(entry);return lease;
++ }
++ // Manager destruction follows worker/checkpoint joins. Detached publications
++ // own their entry/file lifetime independently; no callback retains Manager.
++ static void forget(const Manager& manager){std::shared_ptr<Entries> released;auto& r=registry();{std::lock_guard<std::mutex> lock(r.mutex);auto it=r.managers.find(&manager);if(it!=r.managers.end()){released=std::move(it->second);r.managers.erase(it);}}}
++};
++}
+diff --git a/native/CatalogDiskCreditTests.cpp b/native/CatalogDiskCreditTests.cpp
+new file mode 100644
+index 00000000..4f726fc0
+--- /dev/null
++++ b/native/CatalogDiskCreditTests.cpp
+@@ -0,0 +1,93 @@
++#include "CatalogDiskCredit.hpp"
++#include "CatalogAdmissionRegistry.hpp"
++#include <future>
++#include <iostream>
++namespace udm {
++struct CatalogCheckpointTestAccess {
++ static void active(Manager& m,const JobPtr& j,const std::shared_ptr<Cancel>& c){Lock lock(m.mutex);if(c)m.active[j->id()]=c;else m.active.erase(j->id());}
++ static void checkpoint(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}
++ static void automatic(Manager& m){m.saveCatalog(true);}
++ static CatalogAdmissionRegistry& admission(Manager& m){return *m.admissionRegistry;}
++};
++}
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;fs::path root=argv[1];if(fs::exists(root))return 3;fs::create_directories(root);
++ Json checks=Json::array();bool passed=false;std::string error;
++ auto check=[&](bool v,const char* name){checks.push_back({{"name",name},{"passed",v}});if(!v)throw std::runtime_error(name);};
++ auto refused=[&](auto&& f){try{f();return false;}catch(const std::exception&){return true;}};
++ try{
++  for(const bool fail:{false,true}){
++   Manager m(root/(fail?L"failed":L"success"));auto c=std::make_shared<Cancel>();
++   const auto id=guid();auto parts=m.root/L"parts"/wide(id);fs::create_directories(parts);auto path=parts/(wide(id)+L".data");
++   Handle file(CreateFileW(path.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));
++   check(static_cast<bool>(file),"The Manager fixture owns the expected root parts file");
++   Json row={{"Id",id},{"Url","http://127.0.0.1/body"},{"Size",65536},{"Received",0},{"TransferredBytes",65536},{"Folder",utf8((m.root/L"files").wstring())},{"FileName","body.bin"},{"Status","Downloading"},{"Segments",Json::array({{{"Index",0},{"Start",0},{"End",65535},{"Done",0}}})}};
++   auto job=std::make_shared<Job>(row);m.jobs.push_back(job);CatalogCheckpointTestAccess::active(m,job,c);
++   check(!CatalogDiskCredit::attach(m,job,c),"A direct caller without the owning worker scope keeps the legacy synchronous path");
++   CatalogDiskCredit::WorkerScope worker(m,job,c);auto lease=CatalogDiskCredit::attach(m,job,c);
++   check(lease&&CatalogDiskCredit::active(m),"The active root worker attaches its actual expected parts file");
++   check(refused([&]{CatalogDiskCredit::attach(m,job,c);}),"Duplicate binding admission is refused without replacing the owner");
++   const auto pendingId=guid();auto& registry=CatalogCheckpointTestAccess::admission(m);auto admission=registry.acquire("disk-credit-pending","disk-credit-binding");
++   admission.prepare(std::make_shared<const CatalogAdmissionReservation>("disk-credit-pending",Json{{"Id",pendingId},{"Folder",utf8((m.root/L"pending").wstring())},{"FileName","pending.bin"},{"Status","Awaiting confirmation"},{"Segments",Json::array()},{"Video",Json()},{"Audio",Json()}},Json{{"protocol",3},{"status","accepted"},{"id",pendingId},{"fingerprint","disk-credit-binding"}}));
++   auto write=[&](i64 offset,i64 count){
++    auto pending=lease->beginWrite(offset,count);LARGE_INTEGER at{};at.QuadPart=offset;Bytes body(static_cast<size_t>(count));for(size_t i=0;i<body.size();++i)body[i]=static_cast<unsigned char>((offset+i)%251);
++    DWORD done=0;if(!SetFilePointerEx(file.h,at,nullptr,FILE_BEGIN)||!WriteFile(file.h,body.data(),static_cast<DWORD>(body.size()),&done,nullptr)||done!=body.size())throw std::runtime_error("Fixture write failed");pending.acknowledge();
++   };
++   write(0,4096);
++   {Lock lock(m.mutex);job->data["Received"]=32768;job->data["Segments"][0]["Done"]=32768;}
++   m.save();auto saved=Json::parse(readText(m.root/L"state.json"));
++   check(saved["Downloads"].size()==2&&admission.committed()&&str(saved["BrowserCaptures"]["disk-credit-pending"],"id")==pendingId,"The same actual save preserves and acknowledges the pending browser-admission overlay");
++   check(num(saved["Downloads"][0],"Received")==4096&&num(saved["Downloads"][0]["Segments"][0],"Done")==4096,"The actual Manager save persists written prefixes rather than live RAM-only progress");
++   check(num(saved["Downloads"][0],"TransferredBytes")==65536&&num(job->data,"Received")==32768&&num(m.snapshot()["Downloads"][0],"Received")==32768,"Actual Job/UI progress and network accounting remain separate from persisted resume credit");
++   unsigned writes=0;CatalogCheckpointTestAccess::checkpoint(m,[&](const char* stage){if(std::string_view(stage)=="temporary-flushed")++writes;});
++   {Lock lock(m.mutex);job->data["Received"]=65536;job->data["Segments"][0]["Done"]=65536;}
++   CatalogCheckpointTestAccess::automatic(m);
++   check(writes==1,"A pending browser admission retains its forced automatic publication even when disk credit is unchanged");
++   // Install the already committed admission in live state before testing the
++   // no-pending-overlay dirty shortcut, exactly as its normal caller must.
++   {Lock lock(m.mutex);m.jobs.push_back(std::make_shared<Job>(saved["Downloads"][1]));m.state["BrowserCaptures"]=saved["BrowserCaptures"];admission.installed();}
++   CatalogCheckpointTestAccess::automatic(m);
++   check(writes==1,"The real periodic dirty check skips a RAM-only progress change once the admission is installed");
++   write(4096,4096);CatalogCheckpointTestAccess::automatic(m);
++   check(writes==2&&num(Json::parse(readText(m.root/L"state.json"))["Downloads"][0],"Received")==8192,"Advancing acknowledged disk credit triggers the real automatic checkpoint");
++   auto stable=readText(m.root/L"state.json");
++   {
++    auto previous=job->data["Url"];job->data["Url"]="http://127.0.0.1/changed";
++    check(refused([&]{m.save();})&&readText(m.root/L"state.json")==stable,"A changed live representation cannot publish the previous generation's credit");job->data["Url"]=previous;m.save();
++   }
++   {
++    CatalogCheckpointTestAccess::active(m,job,std::make_shared<Cancel>());
++    check(refused([&]{m.save();})&&readText(m.root/L"state.json")==stable,"The Manager private active map rejects the old cancellation generation");CatalogCheckpointTestAccess::active(m,job,c);m.save();
++   }
++   {
++    auto previous=m.jobs;m.jobs.clear();check(refused([&]{m.save();})&&readText(m.root/L"state.json")==stable,"A captured generation cannot disappear from catalog membership");m.jobs=previous;m.save();
++   }
++   auto blockedDelete=[&]{Handle attempt(CreateFileW(path.c_str(),DELETE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));return !attempt;};
++   check(blockedDelete(),"The binding physically denies deletion of the expected parts file");
++   std::promise<void> held,release,closing;auto ready=held.get_future();auto resume=release.get_future();auto closeEntered=closing.get_future();
++   CatalogCheckpointTestAccess::checkpoint(m,[&](const char* stage){if(std::string_view(stage)=="temporary-flushed"){held.set_value();resume.wait();if(fail)throw std::runtime_error("injected held Manager save failure");}});
++   std::exception_ptr saveError;std::thread saving([&]{try{m.save();}catch(...){saveError=std::current_exception();}});
++   const bool reached=ready.wait_for(std::chrono::seconds(10))==std::future_status::ready;
++   // Always release/join before reporting a failed synchronization assertion.
++   auto closingWorker=std::async(std::launch::async,[&]{closing.set_value();lease->close();});
++   const bool entered=closeEntered.wait_for(std::chrono::seconds(10))==std::future_status::ready;
++   const bool waiting=closingWorker.wait_for(std::chrono::milliseconds(30))==std::future_status::timeout;
++   const bool filePinned=blockedDelete();release.set_value();saving.join();closingWorker.get();
++   check(reached&&entered&&waiting&&filePinned,"Binding retirement waits outside Manager::mutex while an actual detached catalog write is held");
++   check(bool(saveError)==fail,"The held Manager write reports the intended success or injected failure");
++   check(!CatalogDiskCredit::active(m)&&num(job->data,"Received")==8192&&num(job->data["Segments"][0],"Done")==8192&&num(job->data,"TransferredBytes")==65536,"Retirement atomically reconciles live resume counters and detaches without charging network bytes again");
++   check(!blockedDelete(),"The physical parts-file pin is released only after the held save and reconciliation settle");
++   if(fail)check(readText(m.root/L"state.json")==stable&&!m.storageError.empty(),"A failed real save preserves the previous catalog and storage error");
++   else check(num(Json::parse(readText(m.root/L"state.json"))["Downloads"][0],"Received")==8192,"Successful held catalog IO retains exact acknowledged resume credit");
++   CatalogCheckpointTestAccess::checkpoint(m,{});m.save();check(m.storageError.empty(),"A later forced checkpoint clears a resolved storage error");
++   check(FlushFileBuffers(file.h)!=FALSE,"The native binding leaves the caller-owned file durability barrier intact");
++   Bytes expected(8192);for(size_t i=0;i<expected.size();++i)expected[i]=static_cast<unsigned char>(i%251);writeBytes(m.root/L"expected.bin",expected);
++   check(fileHash(file.h)==fileHash(m.root/L"expected.bin"),"The acknowledged actual parts file matches independent complete fixture bytes and hash");
++   CatalogCheckpointTestAccess::active(m,job,{});m.stop();
++   {Manager reload(m.root);check(reload.jobs.size()==2&&reload.jobs[0]->id()==id&&num(reload.jobs[0]->data,"Received")==8192&&num(reload.jobs[0]->data["Segments"][0],"Done")==8192,"The actual Manager reload restores disk-backed progress and the independently admitted job");}
++  }
++  passed=true;
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
++}
+diff --git a/native/WrittenDiskCheckpointTests.cpp b/native/WrittenDiskCheckpointTests.cpp
+new file mode 100644
+index 00000000..47840b78
+--- /dev/null
++++ b/native/WrittenDiskCheckpointTests.cpp
+@@ -0,0 +1,211 @@
++#include "WrittenDiskCheckpoint.hpp"
++#include "CatalogCommitCoordinator.hpp"
++#include <future>
++#include <iostream>
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;fs::path root=argv[1];if(fs::exists(root))return 3;fs::create_directories(root);
++ Json checks=Json::array();bool passed=false;std::string error;
++ auto check=[&](bool v,const char* name){checks.push_back({{"name",name},{"passed",v}});if(!v)throw std::runtime_error(name);};
++ auto refused=[&](auto&& action){try{action();return false;}catch(const std::exception&){return true;}};
++ try{
++  constexpr i64 total=65536;
++  auto file=std::make_shared<Handle>(CreateFileW((root/L"body.data").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_NEW,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++  check(static_cast<bool>(*file),"The fixture owns an ordinary disk file with delete sharing denied");
++  auto cancel=std::make_shared<Cancel>();std::shared_ptr<const Cancel> generation=cancel;
++  Json live={{"Id","disk-credit-job"},{"Url","http://127.0.0.1/body"},{"Size",total},{"Folder","fixture"},{"FileName","body.bin"},{"ETag","v1"},{"Status","Downloading"},{"Received",total},{"TransferredBytes",total+4096},{"Description","live metadata"},{"Segments",Json::array({{{"Index",0},{"Start",0},{"End",32767},{"Done",32768}},{{"Index",1},{"Start",32768},{"End",65535},{"Done",32768}}})}};
++  const auto original=live;
++  check(refused([&]{auto row=live;row["Size"]=0;WrittenDiskCheckpoint bad(row,generation,file);}),"Zero-sized representations are refused");
++  check(refused([&]{auto row=live;row["Size"]=BodyBufferStorage::maxBytes+1;WrittenDiskCheckpoint bad(row,generation,file);}),"The bounded body size is enforced");
++  check(refused([&]{auto row=live;row["Size"]=1.5;WrittenDiskCheckpoint bad(row,generation,file);}),"Fractional representation sizes are refused");
++  check(refused([&]{auto row=live;row["Size"]=std::numeric_limits<unsigned long long>::max();WrittenDiskCheckpoint bad(row,generation,file);}),"Unsigned size overflow is refused before narrowing");
++  check(refused([&]{WrittenDiskCheckpoint bad(live,{},file);}),"A generation must have an owning cancellation identity");
++  check(refused([&]{WrittenDiskCheckpoint bad(live,generation,{});}),"A generation must have a held file lifetime");
++  for(const auto field:{"HttpPartsResetPending","RefreshPendingValidation"}){
++   auto row=live;row[field]=true;
++   check(refused([&]{WrittenDiskCheckpoint bad(row,generation,file);}),"A pending reset or unvalidated representation cannot admit a writer generation");
++  }
++  auto credit=std::make_unique<WrittenDiskCheckpoint>(live,generation,file);
++  auto write=[&](i64 offset,i64 length,bool success=true){
++   auto lease=credit->beginWrite(generation,file,offset,length);
++   LARGE_INTEGER at{};at.QuadPart=offset;if(!SetFilePointerEx(file->h,at,nullptr,FILE_BEGIN))throw std::runtime_error("Fixture seek failed");
++   Bytes bytes(static_cast<size_t>(length));for(size_t i=0;i<bytes.size();++i)bytes[i]=static_cast<unsigned char>((offset+i)%251);
++   DWORD done=0;if(!WriteFile(file->h,bytes.data(),static_cast<DWORD>(bytes.size()),&done,nullptr)||done!=bytes.size())throw std::runtime_error("Fixture write failed");
++   if(success)lease.acknowledge();
++  };
++  {
++   auto snapshot=credit->capture(live,generation,file);
++   check(num(snapshot.value(),"Received")==0,"RAM-only received bytes have no persisted disk credit");
++   check(num(snapshot.value(),"TransferredBytes")==total+4096,"Checkpoint projection preserves actual network/quota accounting");
++   check(live==original,"Disk-credit projection never changes the UI/live row");
++   check(!credit->tryRetireSnapshot(live,generation,file).has_value(),"A detached checkpoint pins its generation before serialization");
++  }
++  write(8192,8192);write(32768,8192);
++  {
++   auto snapshot=credit->capture(live,generation,file);
++   check(num(snapshot.value()["Segments"][0],"Done")==0,"Written data beyond a segment gap is not summed into Done");
++   check(num(snapshot.value()["Segments"][1],"Done")==8192&&num(snapshot.value(),"Received")==8192,"Each segment receives only its acknowledged contiguous disk prefix");
++  }
++  write(0,4096,false);
++  {
++   auto snapshot=credit->capture(live,generation,file);
++   check(num(snapshot.value()["Segments"][0],"Done")==0,"A failed or partially failed operation adds no credit even if bytes physically exist");
++  }
++  write(0,8192);
++  {
++   auto old=credit->capture(live,generation,file);write(16384,16384);
++   auto newer=credit->capture(live,generation,file);
++   check(num(old.value()["Segments"][0],"Done")==16384&&num(newer.value()["Segments"][0],"Done")==32768,"An older captured checkpoint remains a conservative immutable lower bound as writes advance");
++  }
++  {
++   auto row=live;row["Segments"][0]["Done"]=512;
++   auto snapshot=credit->capture(row,generation,file);
++   check(num(snapshot.value()["Segments"][0],"Done")==512,"Disk coverage cannot increase a live segment's claimed receive progress");
++  }
++  for(const auto name:{"Id","Url","Folder","FileName","ETag"}){
++   auto row=live;row[name]="different";
++   check(refused([&]{credit->capture(row,generation,file);}),"Changed job, destination or representation identity refuses the old binding");
++  }
++  for(const auto name:{"Modified","HttpContentEncoding","SparseDataFile","HttpPartsResetPending","RefreshPendingValidation"}){
++   auto row=live;row[name]=true;
++   check(refused([&]{credit->capture(row,generation,file);}),"Added representation/layout/reset metadata cannot silently reuse a generation");
++  }
++  check(refused([&]{credit->capture(live,std::make_shared<Cancel>(),file);}),"A newer cancellation object cannot capture the previous generation");
++  check(refused([&]{credit->beginWrite(std::make_shared<Cancel>(),file,0,1);}),"A stale writer is refused before starting disk work");
++  auto alias=std::shared_ptr<Handle>(file.get(),[](Handle*){});
++  check(refused([&]{credit->capture(live,generation,alias);}),"An equal raw handle-owner address with a different ownership block is refused");
++  for(auto bounds:{std::pair<i64,i64>{-1,1},{0,0},{total,1},{1,std::numeric_limits<i64>::max()}})
++   check(refused([&]{credit->beginWrite(generation,file,bounds.first,bounds.second);}),"Write bounds and addition overflow are refused before IO");
++  for(const auto field:{"Start","End","Done"}){
++   auto row=live;row["Segments"][0][field]=-1;
++   check(refused([&]{credit->capture(row,generation,file);}),"Negative saved-segment bounds are refused");
++  }
++  for(const auto field:{"Start","End","Done"}){
++   auto row=live;row["Segments"][0][field]=2.5;
++   check(refused([&]{credit->capture(row,generation,file);}),"Fractional saved-segment bounds are refused");
++  }
++  {
++   auto row=live;row["Segments"][1]["Start"]=32767;
++   check(refused([&]{credit->capture(row,generation,file);}),"Overlapping segments cannot double-count saved Received");
++   row=live;row["Segments"][1]["Done"]=32769;
++   check(refused([&]{credit->capture(row,generation,file);}),"Done cannot exceed its segment length");
++   row=live;row["Segments"][1]["End"]=total;
++   check(refused([&]{credit->capture(row,generation,file);}),"Segments cannot exceed the representation length");
++   row=live;row["Segments"]=Json::array();for(int i=0;i<4097;++i)row["Segments"].push_back({{"Index",i},{"Start",i},{"End",i},{"Done",1}});
++   check(refused([&]{credit->capture(row,generation,file);}),"Unbounded segment metadata is refused");
++   row=live;row["Status"]="Complete";
++   check(refused([&]{credit->capture(row,generation,file);}),"A live Complete label cannot publish buffered-only bytes as complete");
++   row=live;row["Description"]="new description";row["TransferredBytes"]=total*3;
++   auto snapshot=credit->capture(row,generation,file);
++   check(str(snapshot.value(),"Description")=="new description"&&num(snapshot.value(),"TransferredBytes")==total*3,"Unrelated metadata and quota changes survive disk-credit projection");
++  }
++  {
++   auto row=live;row["Segments"][1]["Index"]=0;
++   check(refused([&]{credit->capture(row,generation,file);}),"Duplicate saved segment identifiers cannot create ambiguous resume credit");
++   row=live;row["Segments"][0].erase("Index");
++   check(refused([&]{credit->capture(row,generation,file);}),"Missing saved segment identifiers are refused");
++   row=live;row["Id"]="0123456789abcdef0123456789abcdef";
++   Manager manager(root/L"manager-view");auto job=std::make_shared<Job>(row);manager.jobs.push_back(job);
++   const auto before=manager.snapshot();WrittenDiskCheckpoint separate(job->snapshot(),generation,file);
++   {auto snapshot=separate.capture(job->snapshot(),generation,file);check(num(snapshot.value(),"Received")==0&&manager.snapshot()==before&&num(job->snapshot(),"Received")==total,"The actual Job and Manager UI snapshot APIs remain unchanged by a separate persisted projection");}
++   check(separate.tryRetireSnapshot(job->snapshot(),generation,file).has_value(),"The separate UI-view fixture releases its checkpoint pin");
++  }
++  {
++   auto lease=credit->beginWrite(generation,file,40960,total-40960);
++   check(!credit->tryRetireSnapshot(live,generation,file).has_value(),"An in-flight write pins the generation even before acknowledgment");
++   LARGE_INTEGER at{};at.QuadPart=40960;
++   if(!SetFilePointerEx(file->h,at,nullptr,FILE_BEGIN))throw std::runtime_error("Fixture seek failed");
++   Bytes tail(total-40960);for(size_t i=0;i<tail.size();++i)tail[i]=static_cast<unsigned char>((40960+i)%251);
++   DWORD saved=0;if(!WriteFile(file->h,tail.data(),static_cast<DWORD>(tail.size()),&saved,nullptr)||saved!=tail.size())throw std::runtime_error("Fixture tail write failed");
++   cancel->stop=true;
++   check(refused([&]{credit->beginWrite(generation,file,0,1);}),"Cancellation blocks new IO admission");
++   lease.acknowledge();
++   auto snapshot=credit->capture(live,generation,file);
++   check(num(snapshot.value(),"Received")==total,"Already issued successful writes can be acknowledged and checkpointed after cancellation");
++   cancel->stop=false;
++  }
++  check(FlushFileBuffers(file->h)!=FALSE,"The real body retains an explicit caller-owned durability barrier");
++  Bytes expected(total);for(size_t i=0;i<expected.size();++i)expected[i]=static_cast<unsigned char>(i%251);
++  writeBytes(root/L"expected.bin",expected);
++  check(fileHash(file->h)==fileHash(root/L"expected.bin"),"Actual disk bytes match the independently generated complete body hash");
++  {
++   std::mutex gate;unsigned long long written=0;CatalogCommitCoordinator coordinator(gate,written);
++   const auto catalog=root/L"checkpoint.json";
++   auto old=credit->capture(live,generation,file);auto newerLive=live;newerLive["Description"]="newer checkpoint";
++   auto newer=credit->capture(newerLive,generation,file);
++   auto result=coordinator.commit(2,[&]{atomicText(catalog,newer.value().dump(),false);});
++   bool staleWrite=false;auto stale=coordinator.commit(1,[&]{staleWrite=true;atomicText(catalog,old.value().dump(),false);});
++   check(result.published()&&!stale.published()&&!staleWrite&&written==2,"A newer real catalog commit supersedes an older captured write");
++   check(str(Json::parse(readText(catalog)),"Description")=="newer checkpoint","The newer actual on-disk catalog remains authoritative");
++   check(!credit->tryRetireSnapshot(live,generation,file).has_value(),"Superseded snapshots still pin file reset until their callers release them");
++  }
++  {
++   std::mutex gate;unsigned long long written=0;CatalogCommitCoordinator coordinator(gate,written);
++   const auto catalog=root/L"held.json";atomicText(catalog,Json{{"original",true}}.dump(),false);
++   std::promise<void> held,release;auto ready=held.get_future();auto resume=release.get_future();
++   auto snapshot=credit->capture(live,generation,file);Json failure;
++   std::thread writer([&,snapshot=std::move(snapshot)]()mutable{
++    try{coordinator.commit(1,[&]{atomicText(catalog,snapshot.value().dump(),false,[&](const char* point){if(std::string_view(point)=="temporary-flushed"){held.set_value();resume.wait();throw std::runtime_error("injected checkpoint interruption");}});});}
++    catch(const std::exception& e){failure=e.what();}
++   });
++   const bool reached=ready.wait_for(std::chrono::seconds(10))==std::future_status::ready;
++   const bool refusedReset=reached&&!credit->tryRetireSnapshot(live,generation,file).has_value();release.set_value();writer.join();
++   check(reached&&refusedReset,"A detached save held after its temporary-file flush prevents file reset through actual catalog IO");
++   check(failure=="injected checkpoint interruption"&&written==0&&Json::parse(readText(catalog))==Json{{"original",true}},"Failed durable commit preserves the original catalog and sequence");
++  }
++  {
++   auto snapshot=credit->capture(live,generation,file);auto row=snapshot.value();
++   check(num(row,"Received")==total,"Failed catalog publication does not erase previously acknowledged disk credit");
++  }
++  {
++   std::mutex gate;unsigned long long written=0;CatalogCommitCoordinator coordinator(gate,written);
++   const auto catalog=root/L"held-success.json";
++   std::promise<void> held,release;auto ready=held.get_future();auto resume=release.get_future();
++   auto snapshot=credit->capture(live,generation,file);std::exception_ptr failure;
++   std::thread writer([&,snapshot=std::move(snapshot)]()mutable{
++    try{coordinator.commit(1,[&]{atomicText(catalog,snapshot.value().dump(),false,[&](const char* point){if(std::string_view(point)=="temporary-flushed"){held.set_value();resume.wait();}});});}
++    catch(...){failure=std::current_exception();}
++   });
++   const bool reached=ready.wait_for(std::chrono::seconds(10))==std::future_status::ready;
++   const bool refusedReset=reached&&!credit->tryRetireSnapshot(live,generation,file).has_value();release.set_value();writer.join();
++   check(reached&&refusedReset&&!failure&&written==1,"Successful detached catalog IO also keeps reset blocked until its snapshot is released");
++   check(num(Json::parse(readText(catalog)),"Received")==total,"The successful actual catalog contains exact complete written credit");
++  }
++  {
++   WrittenDiskCheckpoint parallel(live,generation,file);std::mutex fileMutex;std::atomic<unsigned> finished{0};
++   std::vector<std::future<void>> producers;
++   for(unsigned worker=0;worker<8;++worker)producers.push_back(std::async(std::launch::async,[&,worker]{
++    struct Finish{std::atomic<unsigned>& count;~Finish(){++count;}} finish{finished};
++    for(unsigned index=worker;index<16;index+=8){
++     const i64 offset=index*4096;auto lease=parallel.beginWrite(generation,file,offset,4096);
++     Bytes bytes(4096);for(size_t i=0;i<bytes.size();++i)bytes[i]=static_cast<unsigned char>((offset+i)%251);
++     {std::lock_guard<std::mutex> lock(fileMutex);LARGE_INTEGER at{};at.QuadPart=offset;DWORD done=0;
++      if(!SetFilePointerEx(file->h,at,nullptr,FILE_BEGIN)||!WriteFile(file->h,bytes.data(),4096,&done,nullptr)||done!=4096)throw std::runtime_error("Concurrent fixture IO failed");}
++     lease.acknowledge();
++    }
++   }));
++   i64 last=0;bool monotonic=true;
++   while(finished<8){auto snapshot=parallel.capture(live,generation,file);const auto received=num(snapshot.value(),"Received");monotonic=monotonic&&received>=last&&received<=total;last=received;std::this_thread::yield();}
++   for(auto& producer:producers)producer.get();
++   {auto snapshot=parallel.capture(live,generation,file);check(monotonic&&num(snapshot.value(),"Received")==total,"Eight concurrent disk-write acknowledgers preserve monotonic conservative checkpoint credit");}
++   check(parallel.tryRetireSnapshot(live,generation,file).has_value(),"Concurrent producers release every write and snapshot pin");
++   check(FlushFileBuffers(file->h)&&fileHash(file->h)==fileHash(root/L"expected.bin"),"Concurrent real writes retain exact complete bytes and the explicit final flush");
++  }
++  {
++   auto heldFile=std::make_shared<Handle>(CreateFileW((root/L"lifetime.data").c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_NEW,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++   check(static_cast<bool>(*heldFile),"The snapshot-lifetime fixture owns a separate held file");
++   std::weak_ptr<Handle> weak=heldFile;auto owner=std::make_unique<WrittenDiskCheckpoint>(live,generation,heldFile);
++   {auto snapshot=owner->capture(live,generation,heldFile);owner.reset();heldFile.reset();check(!weak.expired()&&num(snapshot.value(),"Received")==0,"Destroying the controller cannot free a file still held by a detached checkpoint");}
++   check(weak.expired(),"Releasing the final checkpoint destroys its remaining file-lifetime owner");
++  }
++  check(credit->tryRetireSnapshot(live,generation,file).has_value(),"Retirement succeeds after all write and checkpoint leases have settled");
++  check(refused([&]{credit->capture(live,generation,file);})&&refused([&]{credit->beginWrite(generation,file,0,1);}),"A retired generation cannot start another checkpoint or write");
++  auto nextCancel=std::make_shared<Cancel>();
++  WrittenDiskCheckpoint next(live,nextCancel,file);
++  {auto snapshot=next.capture(live,nextCancel,file);check(num(snapshot.value(),"Received")==0,"A successor generation begins with zero credit despite the same physical file length");}
++  check(next.tryRetireSnapshot(live,nextCancel,file).has_value(),"An unused successor can retire without waiting");
++  passed=true;
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks},{"productionIntegrated",true},{"durabilityOwnedByCaller",true}}.dump(2),false);
++ std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
++}

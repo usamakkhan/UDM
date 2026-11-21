@@ -1,0 +1,93 @@
+BatchImportEditUiTests.cpp
+$REPOSITORY\native\PendingFileInfoInbox.hpp(41): warning C4458: declaration of 'result' hides class member
+$REPOSITORY\native\PendingFileInfoInbox.hpp(19): note: see declaration of 'udm::PendingFileInfoInbox::Operation::result'
+$REPOSITORY\native\PendingFileInfoInbox.hpp(178): warning C4458: declaration of 'state' hides class member
+$REPOSITORY\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+$REPOSITORY\native\PendingFileInfoInbox.hpp(179): warning C4458: declaration of 'state' hides class member
+$REPOSITORY\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+$REPOSITORY\native\PendingFileInfoInbox.hpp(180): warning C4458: declaration of 'state' hides class member
+$REPOSITORY\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+$REPOSITORY\native\PropertiesUi.hpp(167): warning C4389: '!=': signed/unsigned mismatch
+$REPOSITORY\native\DownloadInfoUi.hpp(618): warning C4458: declaration of 'pending' hides class member
+$REPOSITORY\native\DownloadInfoUi.hpp(766): note: see declaration of 'udm::downloadInfo::<lambda_14>::()::<lambda_33>::pending'
+$REPOSITORY\native\BatchVirtualList.hpp(9): warning C4245: 'argument': conversion from 'int' to 'WPARAM', signed/unsigned mismatch
+$REPOSITORY\native\SelectionUi.hpp(158): warning C4456: declaration of 'source' hides previous local declaration
+$REPOSITORY\native\SelectionUi.hpp(154): note: see declaration of 'source'
+$REPOSITORY\native\ProgressUi.hpp(192): warning C4458: declaration of 'caption' hides class member
+$REPOSITORY\native\Ui.hpp(179): note: see declaration of 'udm::Form::caption'
+$REPOSITORY\native\ProgressUi.hpp(351): warning C4456: declaration of 'tracks' hides previous local declaration
+$REPOSITORY\native\ProgressUi.hpp(234): note: see declaration of 'tracks'
+$REPOSITORY\native\ProgressUi.hpp(637): warning C4458: declaration of 'caption' hides class member
+$REPOSITORY\native\Ui.hpp(179): note: see declaration of 'udm::Form::caption'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(6): error C2365: 'udm::diagnostics': redefinition; previous definition was 'function'
+$REPOSITORY\native\Core.hpp(561): note: see declaration of 'udm::diagnostics'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(17): error C3538: in a declarator-list 'auto' must always deduce to the same type
+$REPOSITORY\native\BatchImportEditUiTests.cpp(17): note: could be 'std::string'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(17): note: or       'CString'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(45): error C2677: binary '[': no global operator found which takes type 'const std::string' (or there is no acceptable conversion)
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): error C2440: '<function-style-cast>': cannot convert from 'initializer list' to 'udm::Json'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: 'nlohmann::json_abi_v3_12_0::basic_json<std::map,std::vector,std::string,bool,int64_t,uint64_t,double,std::allocator,nlohmann::json_abi_v3_12_0::adl_serializer,std::vector<uint8_t,std::allocator<uint8_t>>,void>::basic_json(std::initializer_list<nlohmann::json_abi_v3_12_0::detail::json_ref<nlohmann::json_abi_v3_12_0::basic_json<std::map,std::vector,std::string,bool,int64_t,uint64_t,double,std::allocator,nlohmann::json_abi_v3_12_0::adl_serializer,std::vector<uint8_t,std::allocator<uint8_t>>,void>>>,bool,nlohmann::json_abi_v3_12_0::basic_json<std::map,std::vector,std::string,bool,int64_t,uint64_t,double,std::allocator,nlohmann::json_abi_v3_12_0::adl_serializer,std::vector<uint8_t,std::allocator<uint8_t>>,void>::value_t)': cannot convert argument 1 from 'initializer list' to 'std::initializer_list<nlohmann::json_abi_v3_12_0::detail::json_ref<nlohmann::json_abi_v3_12_0::basic_json<std::map,std::vector,std::string,bool,int64_t,uint64_t,double,std::allocator,nlohmann::json_abi_v3_12_0::adl_serializer,std::vector<uint8_t,std::allocator<uint8_t>>,void>>>'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: Element '4': no conversion from 'initializer list' to 'nlohmann::json_abi_v3_12_0::detail::json_ref<nlohmann::json_abi_v3_12_0::basic_json<std::map,std::vector,std::string,bool,int64_t,uint64_t,double,std::allocator,nlohmann::json_abi_v3_12_0::adl_serializer,std::vector<uint8_t,std::allocator<uint8_t>>,void>>'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: while trying to match the argument list '(initializer list)'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): error C2664: 'void udm::atomicText(const std::filesystem::path &,const std::string &,bool,const std::function<void (const char *)> &)': cannot convert argument 2 from 'bool' to 'const std::string &'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: Reason: cannot convert from 'bool' to 'const std::string'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string': no overloaded function could convert all the argument types
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(768): note: could be 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const _Elem *const )'
+        with
+        [
+            _Elem=char
+        ]
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const _Elem *const )': cannot convert argument 1 from 'bool' to 'const _Elem *const '
+        with
+        [
+            _Elem=char
+        ]
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or parenthesized function-style cast
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(1340): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(std::initializer_list<_Elem>,const _Alloc &)'
+        with
+        [
+            _Elem=char,
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(std::initializer_list<_Elem>,const _Alloc &)': cannot convert argument 1 from 'bool' to 'std::initializer_list<_Elem>'
+        with
+        [
+            _Elem=char,
+            _Alloc=std::allocator<char>
+        ]
+        and
+        [
+            _Elem=char
+        ]
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: Conversion requires a second user-defined-conversion operator or constructor
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(1157): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const _Ty &,const unsigned __int64,const unsigned __int64,const _Alloc &)'
+        with
+        [
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(798): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(_Iter,_Iter,const _Alloc &)'
+        with
+        [
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(792): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const unsigned __int64,const _Elem,const _Alloc &)'
+        with
+        [
+            _Elem=char,
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(775): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const _Elem *const ,const _Alloc &)'
+        with
+        [
+            _Elem=char,
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\.media-cache\driver-toolchain\Microsoft.VC.14.44.17.14.CRT.Headers.base\Contents\VC\Tools\MSVC\14.44.35207\include\xstring(762): note: or       'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string(const _Elem *const ,const unsigned __int64,const _Alloc &)'
+        with
+        [
+            _Elem=char,
+            _Alloc=std::allocator<char>
+        ]
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: while trying to match the argument list '(bool)'
+$REPOSITORY\native\Core.hpp(72): note: see declaration of 'udm::atomicText'
+$REPOSITORY\native\BatchImportEditUiTests.cpp(48): note: while trying to match the argument list '(std::filesystem::path, bool)'

@@ -1,0 +1,127 @@
+{
+  "scope": "Private Core observer at worker handoff/publication/exception/cleanup; no installed application altered",
+  "sourceVersion": "8.81",
+  "events": [
+    {
+      "fixture": "trace-held.bin-after-commit.json",
+      "active": true,
+      "cancelled": true,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "after-commit",
+      "prepared": true,
+      "status": "Complete",
+      "targetExists": true
+    },
+    {
+      "fixture": "trace-held.bin-after-scan.json",
+      "active": true,
+      "cancelled": true,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "after-scan",
+      "prepared": true,
+      "status": "Complete",
+      "targetExists": true
+    },
+    {
+      "fixture": "trace-held.bin-before-commit.json",
+      "active": true,
+      "cancelled": false,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "before-commit",
+      "prepared": true,
+      "status": "Verifying",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-held.bin-before-notify.json",
+      "active": false,
+      "cancelled": true,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "before-notify",
+      "prepared": true,
+      "status": "Complete",
+      "targetExists": true
+    },
+    {
+      "fixture": "trace-held.bin-transfer-returned.json",
+      "active": true,
+      "cancelled": false,
+      "deferring": false,
+      "error": "",
+      "individual": true,
+      "point": "transfer-returned",
+      "prepared": true,
+      "status": "Verifying",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-save-failure.bin-after-scan.json",
+      "active": true,
+      "cancelled": true,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "after-scan",
+      "prepared": true,
+      "status": "Queued",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-save-failure.bin-before-commit.json",
+      "active": true,
+      "cancelled": false,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "before-commit",
+      "prepared": true,
+      "status": "Verifying",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-save-failure.bin-before-notify.json",
+      "active": false,
+      "cancelled": true,
+      "deferring": false,
+      "error": "",
+      "individual": false,
+      "point": "before-notify",
+      "prepared": true,
+      "status": "Queued",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-save-failure.bin-exception.json",
+      "active": true,
+      "cancelled": true,
+      "deferring": false,
+      "error": "Download paused.",
+      "individual": false,
+      "point": "exception",
+      "prepared": true,
+      "status": "Pausing",
+      "targetExists": false
+    },
+    {
+      "fixture": "trace-save-failure.bin-transfer-returned.json",
+      "active": true,
+      "cancelled": false,
+      "deferring": false,
+      "error": "",
+      "individual": true,
+      "point": "transfer-returned",
+      "prepared": true,
+      "status": "Verifying",
+      "targetExists": false
+    }
+  ],
+  "productionSourceChangedByTrace": false
+}

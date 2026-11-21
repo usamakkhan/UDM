@@ -1,0 +1,468 @@
+{
+  "cases": [
+    {
+      "attack": "rename",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "write",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "write-alias",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "save-failure",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "read-held",
+      "catalogBoundaryReached": false,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "unrelated-held",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "rename",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "write",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "write-alias",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "save-failure",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "read-held",
+      "catalogBoundaryReached": false,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "unrelated-held",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "The fixture creates a second real name for the journal bytes",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Failed catalog persistence or refused journal ownership retains the exact original journal",
+      "passed": true
+    },
+    {
+      "name": "Refused recovery cannot leave a falsely accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A later explicit retry accepts preserved bytes and retires the owned journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "An existing journal reader deliberately refuses deletion sharing",
+      "passed": true
+    },
+    {
+      "name": "Failed catalog persistence or refused journal ownership retains the exact original journal",
+      "passed": true
+    },
+    {
+      "name": "Refused recovery cannot leave a falsely accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A later explicit retry accepts preserved bytes and retires the owned journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "An unrelated scoped replacement journal refuses deletion sharing",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Scoped recovery leaves an unrelated locked journal untouched without claiming it",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "The fixture creates a second real name for the journal bytes",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Failed catalog persistence or refused journal ownership retains the exact original journal",
+      "passed": true
+    },
+    {
+      "name": "Refused recovery cannot leave a falsely accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A later explicit retry accepts preserved bytes and retires the owned journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "An existing journal reader deliberately refuses deletion sharing",
+      "passed": true
+    },
+    {
+      "name": "Failed catalog persistence or refused journal ownership retains the exact original journal",
+      "passed": true
+    },
+    {
+      "name": "Refused recovery cannot leave a falsely accepted completion row",
+      "passed": true
+    },
+    {
+      "name": "A later explicit retry accepts preserved bytes and retires the owned journal",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A real interrupted ordinary or paired publication supplies the recovery journal",
+      "passed": true
+    },
+    {
+      "name": "An unrelated scoped replacement journal refuses deletion sharing",
+      "passed": true
+    },
+    {
+      "name": "Recovery excludes pathname replacement and writes through every journal hard link during its actual catalog flush",
+      "passed": true
+    },
+    {
+      "name": "A reader sharing deletion can inspect the exact pinned journal during recovery",
+      "passed": true
+    },
+    {
+      "name": "Successful recovery retires its own journal after catalog acceptance",
+      "passed": true
+    },
+    {
+      "name": "Scoped recovery leaves an unrelated locked journal untouched without claiming it",
+      "passed": true
+    },
+    {
+      "name": "Recovery retains the exact downloaded output bytes",
+      "passed": true
+    },
+    {
+      "name": "Paired recovery retains the original version's exact bytes",
+      "passed": true
+    },
+    {
+      "name": "An owned journal has a retained second link",
+      "passed": true
+    },
+    {
+      "name": "The held snapshot retains legacy UTF-8 BOM handling",
+      "passed": true
+    },
+    {
+      "name": "A journal lease rejects byte writes through an alias",
+      "passed": true
+    },
+    {
+      "name": "A journal lease preserves its captured pathname",
+      "passed": true
+    },
+    {
+      "name": "Handle-based retirement removes only the owned link and preserves other links' bytes",
+      "passed": true
+    },
+    {
+      "name": "An over-limit journal is rejected before use without removing its bytes",
+      "passed": true
+    },
+    {
+      "name": "Releasing an unaccepted lease never deletes its journal",
+      "passed": true
+    },
+    {
+      "name": "A refused read-only retirement preserves the exact journal after its lease unwinds",
+      "passed": true
+    },
+    {
+      "name": "The fixture restores only its own journal attribute",
+      "passed": true
+    },
+    {
+      "name": "An explicit retry can retire the same journal once its refusal is removed",
+      "passed": true
+    },
+    {
+      "name": "A directory cannot be interpreted or retired as a journal",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

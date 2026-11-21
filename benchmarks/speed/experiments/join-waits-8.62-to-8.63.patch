@@ -1,0 +1,168 @@
+--- a/native/PrefinishWriteback.hpp
++++ b/native/PrefinishWriteback.hpp
+@@ -13,10 +13,16 @@
+ // Opportunistic writeback only; the final publication flush remains required.
+ class PrefinishWriteback {
+ public:
+- struct Stats {unsigned flushes=0,errors=0,adjustments=0;double seconds=0;int64_t leadBytes=0;};
++ struct Stats {
++  unsigned flushes=0,errors=0,adjustments=0;
++  double seconds=0,longestFlushSeconds=0,finishWaitSeconds=0;
++  int64_t leadBytes=0;
++  bool inFlightAtFinish=false,discardedPending=false;
++ };
+ private:
++ friend struct PrefinishWritebackTestAccess;
+  std::mutex mutex;std::condition_variable changed;
+- bool stopping=false,pending=false,firstQueued=false,secondQueued=false,thirdQueued=false;
++ bool stopping=false,pending=false,inFlight=false,firstQueued=false,secondQueued=false,thirdQueued=false;
+  const bool singleFlush,paced;
+  int64_t total,first,minimumLead,second,third;std::atomic<int64_t> next,latest{0};
+  const std::chrono::steady_clock::time_point started=std::chrono::steady_clock::now();
+@@ -24,9 +30,9 @@
+  void run()noexcept{
+   for(;;){
+    std::unique_lock<std::mutex> lock(mutex);changed.wait(lock,[&]{return stopping||pending;});if(stopping)return;
+-   pending=false;lock.unlock();const auto began=std::chrono::steady_clock::now();bool ok=false;try{ok=flush();}catch(...){}
++   pending=false;inFlight=true;lock.unlock();const auto began=std::chrono::steady_clock::now();bool ok=false;try{ok=flush();}catch(...){}
+    const auto now=std::chrono::steady_clock::now();const auto elapsed=std::chrono::duration<double>(now-began).count();
+-   lock.lock();++stats.flushes;if(!ok)++stats.errors;stats.seconds+=elapsed;
++   lock.lock();inFlight=false;++stats.flushes;if(!ok)++stats.errors;stats.seconds+=elapsed;stats.longestFlushSeconds=std::max(stats.longestFlushSeconds,elapsed);
+    // A slow first flush needs more runway than a fixed final 2 MiB. Estimate
+    // from credited progress and measured IO; move the last request earlier,
+    // never before half-body and never add another operation.
+@@ -55,6 +61,13 @@
+   {std::lock_guard<std::mutex> lock(mutex);if(stopping)return;if(!firstQueued&&received>=first){firstQueued=true;pending=true;}if(!secondQueued&&received>=second){secondQueued=true;pending=true;}if(paced&&!thirdQueued&&received>=third){thirdQueued=true;pending=true;}next.store(!firstQueued?first:!secondQueued?second:paced&&!thirdQueued?third:std::numeric_limits<int64_t>::max(),std::memory_order_relaxed);}
+   changed.notify_one();
+  }
+- Stats finish(){{std::lock_guard<std::mutex> lock(mutex);stopping=true;}changed.notify_one();if(worker.joinable())worker.join();std::lock_guard<std::mutex> lock(mutex);return stats;}
++ Stats finish(){
++  const auto began=std::chrono::steady_clock::now();const bool joining=worker.joinable();
++  {std::lock_guard<std::mutex> lock(mutex);if(joining){stats.inFlightAtFinish=inFlight;stats.discardedPending=pending;}stopping=true;}
++  changed.notify_one();if(joining)worker.join();
++  std::lock_guard<std::mutex> lock(mutex);
++  if(joining)stats.finishWaitSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
++  return stats;
++ }
+ };
+ }
+--- a/native/PrefinishWritebackTests.cpp
++++ b/native/PrefinishWritebackTests.cpp
+@@ -2,6 +2,13 @@
+ #include "PrefinishWriteback.hpp"
+ #include <future>
+ #include <iostream>
++namespace udm {
++struct PrefinishWritebackTestAccess {
++ static bool closing(PrefinishWriteback& writeback) {
++  std::lock_guard<std::mutex> lock(writeback.mutex);return writeback.stopping;
++ }
++};
++}
+ using namespace udm;
+ int wmain(int argc,wchar_t** argv){if(argc!=2)return 2;auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};try{
+  {std::promise<void> entered,release;auto ready=entered.get_future();auto released=release.get_future().share();std::atomic_uint calls=0;PrefinishWriteback writeback(8*1048576LL,1,[&]{if(!calls.fetch_add(1)){entered.set_value();released.wait();}return true;});std::future<void> progress;std::future<PrefinishWriteback::Stats> finish;struct Release {std::promise<void>& p;~Release(){try{p.set_value();}catch(...){}}} cleanup{release};writeback.progress(1048576);check(ready.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout,"Data writeback is not requested before its in-flight threshold");writeback.progress(4*1048576LL);check(ready.wait_for(std::chrono::seconds(3))==std::future_status::ready,"A completed body prefix schedules actual background writeback");progress=std::async(std::launch::async,[&]{writeback.progress(7*1048576LL);});check(progress.wait_for(std::chrono::seconds(1))==std::future_status::ready,"Credited transfer progress does not wait for a held disk flush");progress.get();finish=std::async(std::launch::async,[&]{return writeback.finish();});check(finish.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout,"Shutdown joins an already running writeback before its file handle can close");release.set_value();auto stats=finish.get();check(stats.flushes>=1&&stats.flushes<=2&&stats.errors==0,"Threshold requests are bounded/coalesced and successful flush statistics remain accurate");writeback.progress(8*1048576LL);check(writeback.finish().flushes==stats.flushes,"Finished writeback cannot schedule another operation");}
+@@ -69,4 +76,32 @@
+   writeback.progress(config.first/8);check(ready.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout,"Out-of-scope size or connection count cannot enable split pacing");
+   writeback.progress(config.first/2);const bool enteredLegacy=ready.wait_for(std::chrono::seconds(3))==std::future_status::ready;const auto stats=writeback.finish();check(enteredLegacy&&stats.flushes==1&&stats.errors==0,"Out-of-scope scheduler retains the legacy half-body operation");
+  }
++ {
++  PrefinishWriteback idle(8*1048576LL,1,[]{return true;});
++  const auto stats=idle.finish(),again=idle.finish();
++  check(stats.flushes==0&&stats.seconds==0&&stats.longestFlushSeconds==0&&!stats.inFlightAtFinish&&!stats.discardedPending,
++        "Idle teardown distinguishes no optional IO from a completed flush");
++  check(std::isfinite(stats.finishWaitSeconds)&&stats.finishWaitSeconds>=0&&again.finishWaitSeconds==stats.finishWaitSeconds,
++        "Repeated finish preserves the original bounded join measurement");
++ }
++ {
++  std::promise<void> entered,release;auto ready=entered.get_future();auto released=release.get_future().share();
++  PrefinishWriteback held(8*1048576LL,1,[&]{entered.set_value();released.wait();return true;});
++  std::future<PrefinishWriteback::Stats> finishing;
++  struct Release {std::promise<void>& p;~Release(){try{p.set_value();}catch(...){}}} cleanup{release};
++  held.progress(4*1048576LL);
++  check(ready.wait_for(std::chrono::seconds(3))==std::future_status::ready,"Diagnostic fixture holds a real optional operation");
++  held.progress(7*1048576LL);finishing=std::async(std::launch::async,[&]{return held.finish();});
++  const auto deadline=GetTickCount64()+3000;
++  while(!PrefinishWritebackTestAccess::closing(held)&&GetTickCount64()<deadline)Sleep(1);
++  check(PrefinishWritebackTestAccess::closing(held)&&finishing.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout,
++        "Diagnostic fixture observes entered teardown while its IO remains held");
++  release.set_value();const auto stats=finishing.get(),again=held.finish();
++  check(stats.inFlightAtFinish&&stats.discardedPending&&stats.flushes==1&&stats.errors==0,
++        "Teardown reports in-flight IO separately from a discarded unstarted request");
++  check(std::isfinite(stats.finishWaitSeconds)&&stats.finishWaitSeconds>0&&stats.longestFlushSeconds>0&&stats.seconds>=stats.longestFlushSeconds,
++        "Joined diagnostics report actual wait and longest completed flush durations");
++  check(again.finishWaitSeconds==stats.finishWaitSeconds&&again.longestFlushSeconds==stats.longestFlushSeconds&&again.inFlightAtFinish==stats.inFlightAtFinish,
++        "Repeated teardown cannot overwrite the original held-operation evidence");
++ }
+  }catch(const std::exception& e){error=e.what();}atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;}
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -695,7 +695,7 @@
+   bool resumeWithoutHttp2=false,resumeWithoutHttp3=false,catalogHasSavedBytes=false;
+   std::string savedStrongDate;
+   {
+-   Lock lock(m.mutex);auto& data=job->data;data.erase("OrderedBodyWrites");data.erase("DiskCreditCheckpoint");const auto& segments=data["Segments"];
++   Lock lock(m.mutex);auto& data=job->data;data.erase("OrderedBodyWrites");data.erase("DiskCreditCheckpoint");data.erase("HttpJoinWaits");const auto& segments=data["Segments"];
+    refreshPending=yes(data,"RefreshPendingValidation");
+    if(refreshPending){
+     protectSavedRefresh=num(data,"Received")>0;
+@@ -1754,18 +1754,26 @@
+   try{for(int w=0;w<connections;++w)workers.emplace_back(workerBody,w);}catch(...){
+    group->stop=true;rangeWorkChanged.notify_all();for(auto& worker:workers)worker.join();throw;
+   }
++  const auto receiverJoinBegan=std::chrono::steady_clock::now();
+   for(auto& worker:workers)worker.join();
++  const auto receiverJoinSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-receiverJoinBegan).count();
+   const auto workersJoined=GetTickCount64();
++  double orderedSettlementSeconds=0;
+   if(ordered){
++   const auto began=std::chrono::steady_clock::now();
+    const auto result=(error||cancel->cancelled())?ordered->pause():ordered->finish();
+    if(result.failure){error=result.failure;changed=false;repairable=false;}
+    else if(!error&&!cancel->cancelled()&&!result.complete){error=std::make_exception_ptr(std::runtime_error("The ordered download did not write the complete body."));changed=false;repairable=false;}
+    if(result.complete)bodyCache->adoptCompletedStorage(ordered->takeCompletedStorage(),size);
+    {Lock lock(m.mutex);job->data["OrderedBodyWrites"]={{"Used",true},{"AcceptedBytes",result.acceptedBytes},{"WrittenBytes",result.writtenBytes},{"Complete",result.complete},{"Paused",result.paused},{"Failed",bool(result.failure)}};}
++   orderedSettlementSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+   }
+   PrefinishWriteback::Stats writeback;if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
+-  {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes}};}
++  {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes},{"LongestFlushSeconds",writeback.longestFlushSeconds},{"FinishWaitSeconds",writeback.finishWaitSeconds},{"InFlightAtFinish",writeback.inFlightAtFinish},{"DiscardedPending",writeback.discardedPending}};}
++  const auto hashJoinBegan=std::chrono::steady_clock::now();
+   joinHasher.stop();
++  const auto prefixHasherSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-hashJoinBegan).count();
++  {Lock lock(m.mutex);job->data["HttpJoinWaits"]={{"ReceiverThreadsSeconds",receiverJoinSeconds},{"OrderedSettlementSeconds",orderedSettlementSeconds},{"PrefinishFinishSeconds",writeback.finishWaitSeconds},{"PrefixHasherSeconds",prefixHasherSeconds}};}
+   cancel->check();
+   i64 bufferedChecks=0,diskChecks=0;
+   if(ranges&&!error)try{
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ ﻿#pragma once
+-#define UDM_VERSION_TUPLE 8,62,0,0
+-#define UDM_VERSION_STRING "8.62"
+-#define UDM_VERSION_WSTRING L"8.62"
++#define UDM_VERSION_TUPLE 8,63,0,0
++#define UDM_VERSION_STRING "8.63"
++#define UDM_VERSION_WSTRING L"8.63"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.26",
++  "version": "0.72.27",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.26",
++  "version": "0.72.27",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",

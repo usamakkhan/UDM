@@ -1,0 +1,5739 @@
+{
+  "passed": true,
+  "case": "split-skip-b",
+  "bytes": 67108864,
+  "diagnosticOnly": true,
+  "binarySha256": "0EC59C99D25519BBCBD2DF927820A1BC2BAEA95F2C33F3233D2143E9E6857EF3",
+  "optionalDataFlushSuppressed": true,
+  "processExitWallMs": 2569.1207500003657,
+  "durableWallMs": 3066.4342000000033,
+  "processExitTailMs": 788.4403499992914,
+  "durableTailMs": 1285.753799998929,
+  "firstPathMs": 727.2775000001275,
+  "firstSharedReaderMs": 727.7434999996331,
+  "firstExclusiveReaderMs": 761.767999998483,
+  "qpcMappingErrorBoundSeconds": 7.0000005507608876e-06,
+  "nativeEventCount": 379,
+  "nativeEventsDropped": 0,
+  "slowOperations": [
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479371488,
+      "afterLastOriginByteMs": -1448.9906000017072,
+      "eventKind": "operation-span",
+      "operationDurationMs": 13.4406,
+      "operationEndMs": -1435.5500000017073
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479509431,
+      "afterLastOriginByteMs": -1435.1963000008254,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.621900000000004,
+      "operationEndMs": -1402.5744000008253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479838553,
+      "afterLastOriginByteMs": -1402.2841000005428,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3953,
+      "operationEndMs": -1369.888800000543
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130479943437,
+      "afterLastOriginByteMs": -1391.7957000012393,
+      "eventKind": "operation-span",
+      "operationDurationMs": 259.92019999999997,
+      "operationEndMs": -1131.8755000012393
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4904,
+      "counter": 130480163772,
+      "afterLastOriginByteMs": -1369.7622000017873,
+      "eventKind": "operation-span",
+      "operationDurationMs": 111.9597,
+      "operationEndMs": -1257.8025000017874
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481293967,
+      "afterLastOriginByteMs": -1256.7427000012685,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.848200000000002,
+      "operationEndMs": -1238.8945000012686
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481475681,
+      "afterLastOriginByteMs": -1238.5713000021497,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6763,
+      "operationEndMs": -1205.8950000021496
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481805197,
+      "afterLastOriginByteMs": -1205.6197000019893,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7161,
+      "operationEndMs": -1172.9036000019892
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482135673,
+      "afterLastOriginByteMs": -1172.5721000020712,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.999899999999997,
+      "operationEndMs": -1140.5722000020712
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482458156,
+      "afterLastOriginByteMs": -1140.3238000020792,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.728699999999996,
+      "operationEndMs": -1107.5951000020793
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130482549905,
+      "afterLastOriginByteMs": -1131.14890000179,
+      "eventKind": "operation-span",
+      "operationDurationMs": 127.60199999999999,
+      "operationEndMs": -1003.54690000179
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130482552068,
+      "afterLastOriginByteMs": -1130.9326000009605,
+      "eventKind": "operation-span",
+      "operationDurationMs": 127.47449999999999,
+      "operationEndMs": -1003.4581000009605
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482788880,
+      "afterLastOriginByteMs": -1107.2514000006777,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6015,
+      "operationEndMs": -1074.6499000006777
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483118142,
+      "afterLastOriginByteMs": -1074.3252000011125,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.473299999999995,
+      "operationEndMs": -1041.8519000011124
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483446168,
+      "afterLastOriginByteMs": -1041.5226000022813,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8586,
+      "operationEndMs": -1008.6640000022812
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483777712,
+      "afterLastOriginByteMs": -1008.3682000022236,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.681,
+      "operationEndMs": -976.6872000022236
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130483845371,
+      "afterLastOriginByteMs": -1001.6023000007408,
+      "eventKind": "operation-span",
+      "operationDurationMs": 7.3575,
+      "operationEndMs": -994.2448000007408
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130483886457,
+      "afterLastOriginByteMs": -997.4937000006321,
+      "eventKind": "operation-span",
+      "operationDurationMs": 22.322100000000002,
+      "operationEndMs": -975.1716000006321
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130483891110,
+      "afterLastOriginByteMs": -997.0284000009997,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.0683,
+      "operationEndMs": -973.9601000009997
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130483921719,
+      "afterLastOriginByteMs": -993.9675000005082,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6648,
+      "operationEndMs": -961.3027000005081
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484097480,
+      "afterLastOriginByteMs": -976.3914000013756,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8228,
+      "operationEndMs": -943.5686000013756
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484112784,
+      "afterLastOriginByteMs": -974.861000000601,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.7301,
+      "operationEndMs": -973.1309000006011
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484124660,
+      "afterLastOriginByteMs": -973.673400001644,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5918,
+      "operationEndMs": -941.081600001644
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484132233,
+      "afterLastOriginByteMs": -972.9161000013846,
+      "eventKind": "operation-span",
+      "operationDurationMs": 2.9621,
+      "operationEndMs": -969.9540000013847
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484163540,
+      "afterLastOriginByteMs": -969.7854000005464,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.8423,
+      "operationEndMs": -967.9431000005463
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484207373,
+      "afterLastOriginByteMs": -965.4021000005741,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2639,
+      "operationEndMs": -933.1382000005741
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484251348,
+      "afterLastOriginByteMs": -961.0046000016155,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.599799999999995,
+      "operationEndMs": -928.4048000016155
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484428460,
+      "afterLastOriginByteMs": -943.2934000014939,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4138,
+      "operationEndMs": -910.8796000014938
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 2996,
+      "counter": 130484446349,
+      "afterLastOriginByteMs": -941.5045000005193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 22.096,
+      "operationEndMs": -919.4085000005193
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130484451545,
+      "afterLastOriginByteMs": -940.9849000021495,
+      "eventKind": "operation-span",
+      "operationDurationMs": 21.7163,
+      "operationEndMs": -919.2686000021495
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484531079,
+      "afterLastOriginByteMs": -933.0315000006522,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.3765,
+      "operationEndMs": -924.6550000006522
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484579562,
+      "afterLastOriginByteMs": -928.1832000015129,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6027,
+      "operationEndMs": -895.5805000015129
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484615466,
+      "afterLastOriginByteMs": -924.5928000018466,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.833099999999998,
+      "operationEndMs": -900.7597000018467
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130484667656,
+      "afterLastOriginByteMs": -919.3738000012672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 9.9778,
+      "operationEndMs": -909.3960000012672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484669053,
+      "afterLastOriginByteMs": -919.2341000016313,
+      "eventKind": "operation-span",
+      "operationDurationMs": 11.0294,
+      "operationEndMs": -908.2047000016313
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484755595,
+      "afterLastOriginByteMs": -910.5799000008119,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.226,
+      "operationEndMs": -878.3539000008119
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130484770178,
+      "afterLastOriginByteMs": -909.1216000015265,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.861599999999996,
+      "operationEndMs": -876.2600000015266
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484782324,
+      "afterLastOriginByteMs": -907.907000000705,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.195,
+      "operationEndMs": -875.712000000705
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484860973,
+      "afterLastOriginByteMs": -900.0421000018832,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3214,
+      "operationEndMs": -867.7207000018832
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484908032,
+      "afterLastOriginByteMs": -895.3362000011111,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.418299999999995,
+      "operationEndMs": -862.9179000011111
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485027074,
+      "afterLastOriginByteMs": -883.4320000005391,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3185,
+      "operationEndMs": -851.1135000005391
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485080598,
+      "afterLastOriginByteMs": -878.0796000010014,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.737700000000004,
+      "operationEndMs": -845.3419000010014
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485102945,
+      "afterLastOriginByteMs": -875.8449000015389,
+      "eventKind": "operation-span",
+      "operationDurationMs": 13.743699999999999,
+      "operationEndMs": -862.1012000015389
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485106542,
+      "afterLastOriginByteMs": -875.4852000020037,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.392900000000004,
+      "operationEndMs": -843.0923000020036
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485191307,
+      "afterLastOriginByteMs": -867.0087000009516,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.771800000000002,
+      "operationEndMs": -835.2369000009517
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485234895,
+      "afterLastOriginByteMs": -862.6499000019976,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4846,
+      "operationEndMs": -830.1653000019976
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485242755,
+      "afterLastOriginByteMs": -861.8639000014809,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5651,
+      "operationEndMs": -829.2988000014809
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485353221,
+      "afterLastOriginByteMs": -850.8173000009265,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3242,
+      "operationEndMs": -818.4931000009265
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485410766,
+      "afterLastOriginByteMs": -845.0628000009601,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8296,
+      "operationEndMs": -812.2332000009601
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485433246,
+      "afterLastOriginByteMs": -842.8148000020883,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.864,
+      "operationEndMs": -809.9508000020883
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485518413,
+      "afterLastOriginByteMs": -834.2981000005238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1008,
+      "operationEndMs": -802.1973000005238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485562205,
+      "afterLastOriginByteMs": -829.9189000008482,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3574,
+      "operationEndMs": -797.5615000008482
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485571105,
+      "afterLastOriginByteMs": -829.0289000015036,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.377700000000004,
+      "operationEndMs": -796.6512000015036
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130485602966,
+      "afterLastOriginByteMs": -825.842800000828,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.978299999999997,
+      "operationEndMs": -804.864500000828
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485679237,
+      "afterLastOriginByteMs": -818.2157000010193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 21.035899999999998,
+      "operationEndMs": -797.1798000010193
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485741821,
+      "afterLastOriginByteMs": -811.9573000021774,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.978800000000003,
+      "operationEndMs": -779.9785000021774
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485764803,
+      "afterLastOriginByteMs": -809.6591000012268,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.353100000000005,
+      "operationEndMs": -777.3060000012267
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130485815271,
+      "afterLastOriginByteMs": -804.6123000021908,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.266799999999996,
+      "operationEndMs": -772.3455000021908
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485847435,
+      "afterLastOriginByteMs": -801.3959000018076,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.827099999999998,
+      "operationEndMs": -769.5688000018076
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485889558,
+      "afterLastOriginByteMs": -797.1836000015173,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4422,
+      "operationEndMs": -764.7414000015174
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485891687,
+      "afterLastOriginByteMs": -796.9707000011113,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.575,
+      "operationEndMs": -764.3957000011112
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485896837,
+      "afterLastOriginByteMs": -796.4557000013883,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5513,
+      "operationEndMs": -763.9044000013884
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486064518,
+      "afterLastOriginByteMs": -779.6876000011252,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.774699999999996,
+      "operationEndMs": -746.9129000011253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486091246,
+      "afterLastOriginByteMs": -777.0148000017798,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2365,
+      "operationEndMs": -744.7783000017798
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486140660,
+      "afterLastOriginByteMs": -772.0734000013181,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6325,
+      "operationEndMs": -739.440900001318
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130486166734,
+      "afterLastOriginByteMs": -769.4660000015574,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.2556,
+      "operationEndMs": -761.2104000015574
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130486173424,
+      "afterLastOriginByteMs": -768.7970000006317,
+      "eventKind": "operation-span",
+      "operationDurationMs": 15.154900000000001,
+      "operationEndMs": -753.6421000006317
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486217000,
+      "afterLastOriginByteMs": -764.4394000017201,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4005,
+      "operationEndMs": -732.0389000017201
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486219827,
+      "afterLastOriginByteMs": -764.1567000009672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.572900000000004,
+      "operationEndMs": -731.5838000009672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486224247,
+      "afterLastOriginByteMs": -763.7147000023106,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6478,
+      "operationEndMs": -731.0669000023106
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486249940,
+      "afterLastOriginByteMs": -761.1454000016238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 24.3201,
+      "operationEndMs": -736.8253000016238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486325354,
+      "afterLastOriginByteMs": -753.60400000136,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.749000000000002,
+      "operationEndMs": -735.8550000013599
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486395105,
+      "afterLastOriginByteMs": -746.6289000021789,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3441,
+      "operationEndMs": -714.2848000021788
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486416358,
+      "afterLastOriginByteMs": -744.5036000008258,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.775600000000004,
+      "operationEndMs": -711.7280000008258
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486469538,
+      "afterLastOriginByteMs": -739.1856000012922,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8129,
+      "operationEndMs": -706.3727000012922
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130486494119,
+      "afterLastOriginByteMs": -736.727500001507,
+      "eventKind": "operation-span",
+      "operationDurationMs": 3.6479,
+      "operationEndMs": -733.079600001507
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486511079,
+      "afterLastOriginByteMs": -735.031500002151,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7135,
+      "operationEndMs": -703.318000002151
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486531385,
+      "afterLastOriginByteMs": -733.0009000015707,
+      "eventKind": "operation-span",
+      "operationDurationMs": 29.278,
+      "operationEndMs": -703.7229000015707
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486543652,
+      "afterLastOriginByteMs": -731.7742000013823,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9403,
+      "operationEndMs": -698.8339000013823
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486547934,
+      "afterLastOriginByteMs": -731.3460000023042,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.513,
+      "operationEndMs": -698.8330000023042
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486552723,
+      "afterLastOriginByteMs": -730.8671000009781,
+      "eventKind": "operation-span",
+      "operationDurationMs": 33.0064,
+      "operationEndMs": -697.8607000009781
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486721383,
+      "afterLastOriginByteMs": -714.0011000010418,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1957,
+      "operationEndMs": -681.8054000010418
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486746963,
+      "afterLastOriginByteMs": -711.4431000009063,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2496,
+      "operationEndMs": -679.1935000009063
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486800285,
+      "afterLastOriginByteMs": -706.1109000005672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0765,
+      "operationEndMs": -674.0344000005672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486830455,
+      "afterLastOriginByteMs": -703.0939000014769,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0302,
+      "operationEndMs": -671.0637000014768
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486835504,
+      "afterLastOriginByteMs": -702.5890000022628,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.8466000000000005,
+      "operationEndMs": -696.7424000022628
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486876235,
+      "afterLastOriginByteMs": -698.5159000014391,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2832,
+      "operationEndMs": -666.2327000014392
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486876834,
+      "afterLastOriginByteMs": -698.4560000018973,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2014,
+      "operationEndMs": -666.2546000018973
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486885360,
+      "afterLastOriginByteMs": -697.6034000017535,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3099,
+      "operationEndMs": -665.2935000017535
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486901334,
+      "afterLastOriginByteMs": -696.0060000019439,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.002900000000004,
+      "operationEndMs": -664.003100001944
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487046495,
+      "afterLastOriginByteMs": -681.4899000019068,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5174,
+      "operationEndMs": -648.9725000019068
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130487070661,
+      "afterLastOriginByteMs": -679.0733000016189,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.6286000000000005,
+      "operationEndMs": -672.4447000016189
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487123556,
+      "afterLastOriginByteMs": -673.7838000008196,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5492,
+      "operationEndMs": -641.2346000008196
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487137592,
+      "afterLastOriginByteMs": -672.3802000014985,
+      "eventKind": "operation-span",
+      "operationDurationMs": 25.9713,
+      "operationEndMs": -646.4089000014984
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487157880,
+      "afterLastOriginByteMs": -670.3514000018913,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7323,
+      "operationEndMs": -638.6191000018913
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487202810,
+      "afterLastOriginByteMs": -665.8584000015253,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6181,
+      "operationEndMs": -633.2403000015253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487203579,
+      "afterLastOriginByteMs": -665.7815000016853,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5623,
+      "operationEndMs": -633.2192000016853
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487211153,
+      "afterLastOriginByteMs": -665.0241000006645,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6778,
+      "operationEndMs": -632.3463000006644
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487228898,
+      "afterLastOriginByteMs": -663.2496000020183,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.876599999999996,
+      "operationEndMs": -631.3730000020182
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487374543,
+      "afterLastOriginByteMs": -648.6851000008755,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.687,
+      "operationEndMs": -615.9981000008755
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487404128,
+      "afterLastOriginByteMs": -645.7266000015807,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.398,
+      "operationEndMs": -613.3286000015806
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487452149,
+      "afterLastOriginByteMs": -640.924500001347,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4743,
+      "operationEndMs": -608.4502000013471
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487482542,
+      "afterLastOriginByteMs": -637.8852000016195,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0884,
+      "operationEndMs": -605.7968000016195
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487532156,
+      "afterLastOriginByteMs": -632.923800001663,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2309,
+      "operationEndMs": -600.692900001663
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487532727,
+      "afterLastOriginByteMs": -632.8667000016139,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.173300000000005,
+      "operationEndMs": -600.6934000016139
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487542139,
+      "afterLastOriginByteMs": -631.925500001671,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.132099999999994,
+      "operationEndMs": -599.793400001671
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130487548396,
+      "afterLastOriginByteMs": -631.2998000012158,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.6908,
+      "operationEndMs": -625.6090000012158
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487605936,
+      "afterLastOriginByteMs": -625.5458000014187,
+      "eventKind": "operation-span",
+      "operationDurationMs": 27.3237,
+      "operationEndMs": -598.2221000014187
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487704424,
+      "afterLastOriginByteMs": -615.6970000010915,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3397,
+      "operationEndMs": -583.3573000010915
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130487729361,
+      "afterLastOriginByteMs": -613.2033000012598,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.6623,
+      "operationEndMs": -604.5410000012598
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487779665,
+      "afterLastOriginByteMs": -608.1729000015912,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5868,
+      "operationEndMs": -575.5861000015911
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130487804428,
+      "afterLastOriginByteMs": -605.6966000014654,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.3992,
+      "operationEndMs": -604.2974000014655
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487816594,
+      "afterLastOriginByteMs": -604.4800000017858,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.769,
+      "operationEndMs": -580.7110000017858
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487818924,
+      "afterLastOriginByteMs": -604.2470000011235,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.471899999999998,
+      "operationEndMs": -572.7751000011235
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487858328,
+      "afterLastOriginByteMs": -600.3066000012041,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5362,
+      "operationEndMs": -567.770400001204
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487858726,
+      "afterLastOriginByteMs": -600.2668000019185,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5342,
+      "operationEndMs": -567.7326000019184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487865874,
+      "afterLastOriginByteMs": -599.5520000014949,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8238,
+      "operationEndMs": -566.7282000014949
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487886793,
+      "afterLastOriginByteMs": -597.4601000016264,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.997400000000003,
+      "operationEndMs": -565.4627000016264
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488030746,
+      "afterLastOriginByteMs": -583.0648000010115,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.23609999999999,
+      "operationEndMs": -550.8287000010115
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130488055485,
+      "afterLastOriginByteMs": -580.5909000009706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.5445,
+      "operationEndMs": -579.0464000009706
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488071604,
+      "afterLastOriginByteMs": -578.9790000017092,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.024,
+      "operationEndMs": -547.9550000017092
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488108240,
+      "afterLastOriginByteMs": -575.3154000012728,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6526,
+      "operationEndMs": -542.6628000012728
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488141347,
+      "afterLastOriginByteMs": -572.0047000013437,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.6911,
+      "operationEndMs": -540.3136000013437
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488186534,
+      "afterLastOriginByteMs": -567.4860000017361,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.124100000000006,
+      "operationEndMs": -535.3619000017361
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488186889,
+      "afterLastOriginByteMs": -567.450500000632,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5076,
+      "operationEndMs": -534.942900000632
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488197075,
+      "afterLastOriginByteMs": -566.4319000006799,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1117,
+      "operationEndMs": -534.3202000006798
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488213202,
+      "afterLastOriginByteMs": -564.8192000007839,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1292,
+      "operationEndMs": -532.6900000007839
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488356186,
+      "afterLastOriginByteMs": -550.5208000013226,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9278,
+      "operationEndMs": -517.5930000013226
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488389415,
+      "afterLastOriginByteMs": -547.1979000012652,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7866,
+      "operationEndMs": -515.4113000012652
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488438007,
+      "afterLastOriginByteMs": -542.3387000009825,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1156,
+      "operationEndMs": -510.2231000009825
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130488459167,
+      "afterLastOriginByteMs": -540.2227000013227,
+      "eventKind": "operation-span",
+      "operationDurationMs": 11.9544,
+      "operationEndMs": -528.2683000013227
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488510520,
+      "afterLastOriginByteMs": -535.0874000014301,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4641,
+      "operationEndMs": -502.62330000143004
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488514055,
+      "afterLastOriginByteMs": -534.733900001811,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5319,
+      "operationEndMs": -502.202000001811
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488520667,
+      "afterLastOriginByteMs": -534.0727000020706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4131,
+      "operationEndMs": -501.65960000207065
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488542601,
+      "afterLastOriginByteMs": -531.8793000005826,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.957800000000002,
+      "operationEndMs": -499.92150000058257
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488579342,
+      "afterLastOriginByteMs": -528.2052000020485,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.6935,
+      "operationEndMs": -507.51170000204854
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488688341,
+      "afterLastOriginByteMs": -517.3053000016807,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4046,
+      "operationEndMs": -484.9007000016807
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488714963,
+      "afterLastOriginByteMs": -514.6431000011944,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5523,
+      "operationEndMs": -482.0908000011944
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488762089,
+      "afterLastOriginByteMs": -509.9305000021559,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5292,
+      "operationEndMs": -477.4013000021559
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488793594,
+      "afterLastOriginByteMs": -506.7800000015268,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0596,
+      "operationEndMs": -474.7204000015268
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488837854,
+      "afterLastOriginByteMs": -502.3540000020148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4451,
+      "operationEndMs": -469.9089000020148
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488841773,
+      "afterLastOriginByteMs": -501.96210000103747,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.452099999999994,
+      "operationEndMs": -469.5100000010375
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488846736,
+      "afterLastOriginByteMs": -501.4658000018244,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.495000000000005,
+      "operationEndMs": -468.9708000018244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488869092,
+      "afterLastOriginByteMs": -499.23020000096585,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0234,
+      "operationEndMs": -467.20680000096587
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489016652,
+      "afterLastOriginByteMs": -484.47420000229613,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.343700000000005,
+      "operationEndMs": -452.1305000022961
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130489041756,
+      "afterLastOriginByteMs": -481.9638000008126,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.9154,
+      "operationEndMs": -476.04840000081265
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489090113,
+      "afterLastOriginByteMs": -477.12810000120953,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7311,
+      "operationEndMs": -444.39700000120956
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489101539,
+      "afterLastOriginByteMs": -475.9855000011157,
+      "eventKind": "operation-span",
+      "operationDurationMs": 26.683,
+      "operationEndMs": -449.30250000111573
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489125376,
+      "afterLastOriginByteMs": -473.60180000214314,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.873199999999997,
+      "operationEndMs": -441.72860000214314
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489164991,
+      "afterLastOriginByteMs": -469.64030000162893,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.589,
+      "operationEndMs": -437.05130000162893
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489168567,
+      "afterLastOriginByteMs": -469.28270000171324,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7052,
+      "operationEndMs": -436.57750000171325
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489173663,
+      "afterLastOriginByteMs": -468.7731000012718,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6387,
+      "operationEndMs": -436.13440000127184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489196987,
+      "afterLastOriginByteMs": -466.44070000184,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3756,
+      "operationEndMs": -434.06510000184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489342933,
+      "afterLastOriginByteMs": -451.8461000006937,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1754,
+      "operationEndMs": -419.67070000069367
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489375601,
+      "afterLastOriginByteMs": -448.57930000216584,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.412599999999998,
+      "operationEndMs": -417.16670000216584
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489420074,
+      "afterLastOriginByteMs": -444.1320000005362,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4084,
+      "operationEndMs": -411.7236000005362
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489451607,
+      "afterLastOriginByteMs": -440.9787000022334,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.6899,
+      "operationEndMs": -409.28880000223336
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489493629,
+      "afterLastOriginByteMs": -436.77650000063295,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4315,
+      "operationEndMs": -404.3450000006329
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489497602,
+      "afterLastOriginByteMs": -436.3792000021931,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.495400000000004,
+      "operationEndMs": -403.8838000021931
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489502159,
+      "afterLastOriginByteMs": -435.92350000108127,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.442400000000006,
+      "operationEndMs": -403.48110000108124
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130489521454,
+      "afterLastOriginByteMs": -433.9940000008937,
+      "eventKind": "operation-span",
+      "operationDurationMs": 4.8033,
+      "operationEndMs": -429.19070000089374
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489570081,
+      "afterLastOriginByteMs": -429.1313000012451,
+      "eventKind": "operation-span",
+      "operationDurationMs": 27.4742,
+      "operationEndMs": -401.6571000012451
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489668782,
+      "afterLastOriginByteMs": -419.2612000006193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.967299999999994,
+      "operationEndMs": -386.29390000061926
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489697794,
+      "afterLastOriginByteMs": -416.3600000010774,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.470400000000005,
+      "operationEndMs": -383.88960000107744
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489746889,
+      "afterLastOriginByteMs": -411.45050000159245,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4248,
+      "operationEndMs": -379.02570000159244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489776286,
+      "afterLastOriginByteMs": -408.5108000017499,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2141,
+      "operationEndMs": -376.29670000174985
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489821040,
+      "afterLastOriginByteMs": -404.03540000079374,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4886,
+      "operationEndMs": -371.5468000007937
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489825090,
+      "afterLastOriginByteMs": -403.63040000192996,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4227,
+      "operationEndMs": -371.20770000192994
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489828602,
+      "afterLastOriginByteMs": -403.2792000016343,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6148,
+      "operationEndMs": -370.6644000016343
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489851483,
+      "afterLastOriginByteMs": -400.99110000119254,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1156,
+      "operationEndMs": -368.87550000119256
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490001457,
+      "afterLastOriginByteMs": -385.9937000015634,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.993199999999998,
+      "operationEndMs": -354.0005000015634
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490030606,
+      "afterLastOriginByteMs": -383.0788000013854,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.470900000000004,
+      "operationEndMs": -351.60790000138536
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490074232,
+      "afterLastOriginByteMs": -378.7162000007811,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4022,
+      "operationEndMs": -346.3140000007811
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490105583,
+      "afterLastOriginByteMs": -375.58110000099987,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.870700000000003,
+      "operationEndMs": -343.71040000099987
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490148646,
+      "afterLastOriginByteMs": -371.27480000162905,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7896,
+      "operationEndMs": -338.48520000162904
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490151670,
+      "afterLastOriginByteMs": -370.97240000184684,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4756,
+      "operationEndMs": -338.49680000184685
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490156808,
+      "afterLastOriginByteMs": -370.45860000216635,
+      "eventKind": "operation-span",
+      "operationDurationMs": 33.064299999999996,
+      "operationEndMs": -337.39430000216635
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490179949,
+      "afterLastOriginByteMs": -368.1445000020176,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.8216,
+      "operationEndMs": -336.3229000020176
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490324280,
+      "afterLastOriginByteMs": -353.7114000009751,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7594,
+      "operationEndMs": -320.9520000009751
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490353803,
+      "afterLastOriginByteMs": -350.7591000015964,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.910800000000002,
+      "operationEndMs": -318.8483000015964
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490401381,
+      "afterLastOriginByteMs": -346.0013000021718,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8869,
+      "operationEndMs": -313.1144000021718
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490432012,
+      "afterLastOriginByteMs": -342.93820000129926,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4738,
+      "operationEndMs": -310.4644000012993
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490479435,
+      "afterLastOriginByteMs": -338.195900001665,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4923,
+      "operationEndMs": -305.703600001665
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490479979,
+      "afterLastOriginByteMs": -338.14150000216614,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4372,
+      "operationEndMs": -305.7043000021661
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490490074,
+      "afterLastOriginByteMs": -337.1320000005653,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6257,
+      "operationEndMs": -304.5063000005653
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490505706,
+      "afterLastOriginByteMs": -335.56880000105593,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1892,
+      "operationEndMs": -303.3796000010559
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490655243,
+      "afterLastOriginByteMs": -320.6151000013051,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0269,
+      "operationEndMs": -288.5882000013051
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490680703,
+      "afterLastOriginByteMs": -318.06910000159405,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1916,
+      "operationEndMs": -285.87750000159406
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490733444,
+      "afterLastOriginByteMs": -312.7950000016426,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5533,
+      "operationEndMs": -280.24170000164264
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490764142,
+      "afterLastOriginByteMs": -309.7252000006847,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9406,
+      "operationEndMs": -277.7846000006847
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490807408,
+      "afterLastOriginByteMs": -305.39860000135377,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.577099999999994,
+      "operationEndMs": -272.8215000013538
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490807906,
+      "afterLastOriginByteMs": -305.3488000023208,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9856,
+      "operationEndMs": -273.3632000023208
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490819572,
+      "afterLastOriginByteMs": -304.1822000013781,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.848000000000003,
+      "operationEndMs": -272.33420000137806
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490833940,
+      "afterLastOriginByteMs": -302.74540000209527,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.000800000000005,
+      "operationEndMs": -270.74460000209524
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490978999,
+      "afterLastOriginByteMs": -288.23950000150944,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5991,
+      "operationEndMs": -255.64040000150945
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130491003612,
+      "afterLastOriginByteMs": -285.77820000100473,
+      "eventKind": "operation-span",
+      "operationDurationMs": 7.3853,
+      "operationEndMs": -278.39290000100476
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491062073,
+      "afterLastOriginByteMs": -279.9321000020427,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9175,
+      "operationEndMs": -248.01460000204273
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491090850,
+      "afterLastOriginByteMs": -277.0544000013615,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.624100000000002,
+      "operationEndMs": -245.4303000013615
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491130478,
+      "afterLastOriginByteMs": -273.0916000018624,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.501200000000004,
+      "operationEndMs": -240.59040000186238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491135577,
+      "afterLastOriginByteMs": -272.5817000009556,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4044,
+      "operationEndMs": -240.1773000009556
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491140330,
+      "afterLastOriginByteMs": -272.1064000015758,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.419999999999995,
+      "operationEndMs": -239.68640000157583
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491160889,
+      "afterLastOriginByteMs": -270.0505000011617,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1344,
+      "operationEndMs": -237.9161000011617
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491308176,
+      "afterLastOriginByteMs": -255.32180000118387,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4741,
+      "operationEndMs": -222.84770000118388
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491384010,
+      "afterLastOriginByteMs": -247.73840000125347,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.620599999999996,
+      "operationEndMs": -215.11780000125347
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130491408025,
+      "afterLastOriginByteMs": -245.3369000013481,
+      "eventKind": "operation-span",
+      "operationDurationMs": 3.9652999999999996,
+      "operationEndMs": -241.3716000013481
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491448326,
+      "afterLastOriginByteMs": -241.30680000052962,
+      "eventKind": "operation-span",
+      "operationDurationMs": 28.7096,
+      "operationEndMs": -212.59720000052963
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491458169,
+      "afterLastOriginByteMs": -240.32250000163913,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.531200000000005,
+      "operationEndMs": -207.79130000163912
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491461987,
+      "afterLastOriginByteMs": -239.94070000117063,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5494,
+      "operationEndMs": -207.39130000117063
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491466472,
+      "afterLastOriginByteMs": -239.49220000213245,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6046,
+      "operationEndMs": -206.88760000213244
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130491483070,
+      "afterLastOriginByteMs": -237.83240000193473,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.2207,
+      "operationEndMs": -231.61170000193474
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491545904,
+      "afterLastOriginByteMs": -231.54900000190537,
+      "eventKind": "operation-span",
+      "operationDurationMs": 26.4263,
+      "operationEndMs": -205.12270000190537
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491636057,
+      "afterLastOriginByteMs": -222.5337000018044,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4756,
+      "operationEndMs": -190.0581000018044
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130491670876,
+      "afterLastOriginByteMs": -219.05180000067048,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.9315,
+      "operationEndMs": -198.12030000067048
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491713264,
+      "afterLastOriginByteMs": -214.81300000050396,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3923,
+      "operationEndMs": -182.42070000050396
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491743229,
+      "afterLastOriginByteMs": -211.81650000107766,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0055,
+      "operationEndMs": -179.81100000107767
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491786374,
+      "afterLastOriginByteMs": -207.50200000111363,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.502700000000004,
+      "operationEndMs": -174.99930000111362
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491789805,
+      "afterLastOriginByteMs": -207.15890000064974,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5722,
+      "operationEndMs": -174.58670000064973
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491794461,
+      "afterLastOriginByteMs": -206.69330000055197,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6434,
+      "operationEndMs": -174.049900000552
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491816957,
+      "afterLastOriginByteMs": -204.4437000022299,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1467,
+      "operationEndMs": -172.29700000222988
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130491882866,
+      "afterLastOriginByteMs": -197.85280000178318,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4983,
+      "operationEndMs": -165.35450000178318
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491963894,
+      "afterLastOriginByteMs": -189.75000000136788,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.609100000000005,
+      "operationEndMs": -157.14090000136787
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492039870,
+      "afterLastOriginByteMs": -182.15240000063204,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8763,
+      "operationEndMs": -149.27610000063203
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492070274,
+      "afterLastOriginByteMs": -179.11200000162353,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0308,
+      "operationEndMs": -147.08120000162353
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492114173,
+      "afterLastOriginByteMs": -174.72210000050836,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5582,
+      "operationEndMs": -142.16390000050836
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492117762,
+      "afterLastOriginByteMs": -174.36320000160777,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6059,
+      "operationEndMs": -141.75730000160777
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130492122807,
+      "afterLastOriginByteMs": -173.85870000180148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6375,
+      "operationEndMs": -141.2212000018015
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492145466,
+      "afterLastOriginByteMs": -171.59280000123545,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.143,
+      "operationEndMs": -139.44980000123545
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492211030,
+      "afterLastOriginByteMs": -165.03640000155428,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.698100000000004,
+      "operationEndMs": -132.33830000155427
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492292847,
+      "afterLastOriginByteMs": -156.85470000062196,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2934,
+      "operationEndMs": -124.56130000062197
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492371438,
+      "afterLastOriginByteMs": -148.9956000023085,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9841,
+      "operationEndMs": -117.0115000023085
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492398034,
+      "afterLastOriginByteMs": -146.33600000161096,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1312,
+      "operationEndMs": -114.20480000161095
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492442416,
+      "afterLastOriginByteMs": -141.8978000019706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6394,
+      "operationEndMs": -109.25840000197061
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492446140,
+      "afterLastOriginByteMs": -141.52540000213776,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2676,
+      "operationEndMs": -109.25780000213776
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130492451122,
+      "afterLastOriginByteMs": -141.02720000119007,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7553,
+      "operationEndMs": -108.27190000119006
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492474089,
+      "afterLastOriginByteMs": -138.73050000074727,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.972,
+      "operationEndMs": -106.75850000074726
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492541851,
+      "afterLastOriginByteMs": -131.95430000087072,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.215599999999995,
+      "operationEndMs": -99.73870000087072
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492618744,
+      "afterLastOriginByteMs": -124.26500000219676,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2905,
+      "operationEndMs": -91.97450000219675
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492693971,
+      "afterLastOriginByteMs": -116.7423000006238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9608,
+      "operationEndMs": -83.7815000006238
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130492720328,
+      "afterLastOriginByteMs": -114.1066000018327,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.7967,
+      "operationEndMs": -107.3099000018327
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492771830,
+      "afterLastOriginByteMs": -108.9564000012615,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2802,
+      "operationEndMs": -76.67620000126149
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492772337,
+      "afterLastOriginByteMs": -108.90570000083244,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.814299999999996,
+      "operationEndMs": -76.09140000083244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492788831,
+      "afterLastOriginByteMs": -107.2563000016089,
+      "eventKind": "operation-span",
+      "operationDurationMs": 25.9153,
+      "operationEndMs": -81.3410000016089
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492800518,
+      "afterLastOriginByteMs": -106.08760000104667,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.95,
+      "operationEndMs": -74.13760000104666
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492867754,
+      "afterLastOriginByteMs": -99.3640000015148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5203,
+      "operationEndMs": -66.8437000015148
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492945697,
+      "afterLastOriginByteMs": -91.56970000185538,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3019,
+      "operationEndMs": -59.26780000185538
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493026160,
+      "afterLastOriginByteMs": -83.52340000055847,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9756,
+      "operationEndMs": -50.54780000055847
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130493098248,
+      "afterLastOriginByteMs": -76.31460000084189,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3065,
+      "operationEndMs": -44.00810000084189
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130493103217,
+      "afterLastOriginByteMs": -75.8177000006981,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3551,
+      "operationEndMs": -43.462600000698096
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130493127110,
+      "afterLastOriginByteMs": -73.4284000009211,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.994500000000002,
+      "operationEndMs": -41.4339000009211
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493358873,
+      "afterLastOriginByteMs": -50.25210000167135,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3414,
+      "operationEndMs": -17.91070000167135
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130493429158,
+      "afterLastOriginByteMs": -43.22360000151093,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5528,
+      "operationEndMs": -10.670800001510933
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493685488,
+      "afterLastOriginByteMs": -17.590600002222345,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.7212,
+      "operationEndMs": 0.1305999977776544
+    }
+  ],
+  "events": [
+    {
+      "stage": "app-init-entry",
+      "thread": 16320,
+      "counter": 130476490687,
+      "afterLastOriginByteMs": -1737.0707000009133,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "manager-ready",
+      "thread": 16320,
+      "counter": 130476674462,
+      "afterLastOriginByteMs": -1718.6932000022352,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "frame-created",
+      "thread": 16320,
+      "counter": 130478185613,
+      "afterLastOriginByteMs": -1567.578100000901,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "pipe-ready",
+      "thread": 16320,
+      "counter": 130478187388,
+      "afterLastOriginByteMs": -1567.4006000008376,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "automation-start",
+      "thread": 16320,
+      "counter": 130478187391,
+      "afterLastOriginByteMs": -1567.4003000021912,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "automation-finished",
+      "thread": 16320,
+      "counter": 130478197187,
+      "afterLastOriginByteMs": -1566.42070000089,
+      "recordWorkSeconds": 4e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 16320,
+      "counter": 130478203487,
+      "afterLastOriginByteMs": -1565.7907000022533,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 16320,
+      "counter": 130478203970,
+      "afterLastOriginByteMs": -1565.7424000019091,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 16320,
+      "counter": 130478203972,
+      "afterLastOriginByteMs": -1565.7422000022052,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 16320,
+      "counter": 130478203975,
+      "afterLastOriginByteMs": -1565.7419000017399,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 16320,
+      "counter": 130478203982,
+      "afterLastOriginByteMs": -1565.7412000018667,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 16320,
+      "counter": 130478211669,
+      "afterLastOriginByteMs": -1564.9725000021135,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 16320,
+      "counter": 130478211674,
+      "afterLastOriginByteMs": -1564.9720000019443,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 16320,
+      "counter": 130478213469,
+      "afterLastOriginByteMs": -1564.7925000012037,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 16320,
+      "counter": 130478213472,
+      "afterLastOriginByteMs": -1564.7922000007384,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 16320,
+      "counter": 130478214720,
+      "afterLastOriginByteMs": -1564.667400001781,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 16320,
+      "counter": 130478214721,
+      "afterLastOriginByteMs": -1564.6673000010196,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 16320,
+      "counter": 130478624524,
+      "afterLastOriginByteMs": -1523.6870000007912,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 16320,
+      "counter": 130478624541,
+      "afterLastOriginByteMs": -1523.6853000005794,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 16320,
+      "counter": 130478745377,
+      "afterLastOriginByteMs": -1511.6017000018473,
+      "recordWorkSeconds": 4e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 16320,
+      "counter": 130478745384,
+      "afterLastOriginByteMs": -1511.6010000019742,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "app-init-returning",
+      "thread": 16320,
+      "counter": 130478746016,
+      "afterLastOriginByteMs": -1511.5378000009514,
+      "recordWorkSeconds": 5e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "initial-refresh-entry",
+      "thread": 16320,
+      "counter": 130478747729,
+      "afterLastOriginByteMs": -1511.366500000804,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "initial-refresh-returned",
+      "thread": 16320,
+      "counter": 130478750125,
+      "afterLastOriginByteMs": -1511.1269000008178,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receivers-join-begin",
+      "thread": 672,
+      "counter": 130479365747,
+      "afterLastOriginByteMs": -1449.5647000021563,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479371488,
+      "afterLastOriginByteMs": -1448.9906000017072,
+      "eventKind": "operation-span",
+      "operationDurationMs": 13.4406,
+      "operationEndMs": -1435.5500000017073
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479509431,
+      "afterLastOriginByteMs": -1435.1963000008254,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.621900000000004,
+      "operationEndMs": -1402.5744000008253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130479838553,
+      "afterLastOriginByteMs": -1402.2841000005428,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3953,
+      "operationEndMs": -1369.888800000543
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130479943437,
+      "afterLastOriginByteMs": -1391.7957000012393,
+      "eventKind": "operation-span",
+      "operationDurationMs": 259.92019999999997,
+      "operationEndMs": -1131.8755000012393
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4904,
+      "counter": 130480163772,
+      "afterLastOriginByteMs": -1369.7622000017873,
+      "eventKind": "operation-span",
+      "operationDurationMs": 111.9597,
+      "operationEndMs": -1257.8025000017874
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481293967,
+      "afterLastOriginByteMs": -1256.7427000012685,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.848200000000002,
+      "operationEndMs": -1238.8945000012686
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481475681,
+      "afterLastOriginByteMs": -1238.5713000021497,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6763,
+      "operationEndMs": -1205.8950000021496
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130481805197,
+      "afterLastOriginByteMs": -1205.6197000019893,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7161,
+      "operationEndMs": -1172.9036000019892
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482135673,
+      "afterLastOriginByteMs": -1172.5721000020712,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.999899999999997,
+      "operationEndMs": -1140.5722000020712
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482458156,
+      "afterLastOriginByteMs": -1140.3238000020792,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.728699999999996,
+      "operationEndMs": -1107.5951000020793
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130482549905,
+      "afterLastOriginByteMs": -1131.14890000179,
+      "eventKind": "operation-span",
+      "operationDurationMs": 127.60199999999999,
+      "operationEndMs": -1003.54690000179
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130482552068,
+      "afterLastOriginByteMs": -1130.9326000009605,
+      "eventKind": "operation-span",
+      "operationDurationMs": 127.47449999999999,
+      "operationEndMs": -1003.4581000009605
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130482788880,
+      "afterLastOriginByteMs": -1107.2514000006777,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6015,
+      "operationEndMs": -1074.6499000006777
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483118142,
+      "afterLastOriginByteMs": -1074.3252000011125,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.473299999999995,
+      "operationEndMs": -1041.8519000011124
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483446168,
+      "afterLastOriginByteMs": -1041.5226000022813,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8586,
+      "operationEndMs": -1008.6640000022812
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130483777712,
+      "afterLastOriginByteMs": -1008.3682000022236,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.681,
+      "operationEndMs": -976.6872000022236
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130483845371,
+      "afterLastOriginByteMs": -1001.6023000007408,
+      "eventKind": "operation-span",
+      "operationDurationMs": 7.3575,
+      "operationEndMs": -994.2448000007408
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130483886457,
+      "afterLastOriginByteMs": -997.4937000006321,
+      "eventKind": "operation-span",
+      "operationDurationMs": 22.322100000000002,
+      "operationEndMs": -975.1716000006321
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130483888538,
+      "afterLastOriginByteMs": -997.2856000022148,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130483891110,
+      "afterLastOriginByteMs": -997.0284000009997,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.0683,
+      "operationEndMs": -973.9601000009997
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130483921719,
+      "afterLastOriginByteMs": -993.9675000005082,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6648,
+      "operationEndMs": -961.3027000005081
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484097480,
+      "afterLastOriginByteMs": -976.3914000013756,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8228,
+      "operationEndMs": -943.5686000013756
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484112784,
+      "afterLastOriginByteMs": -974.861000000601,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.7301,
+      "operationEndMs": -973.1309000006011
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484124660,
+      "afterLastOriginByteMs": -973.673400001644,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5918,
+      "operationEndMs": -941.081600001644
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484132233,
+      "afterLastOriginByteMs": -972.9161000013846,
+      "eventKind": "operation-span",
+      "operationDurationMs": 2.9621,
+      "operationEndMs": -969.9540000013847
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484163540,
+      "afterLastOriginByteMs": -969.7854000005464,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.8423,
+      "operationEndMs": -967.9431000005463
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484207373,
+      "afterLastOriginByteMs": -965.4021000005741,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2639,
+      "operationEndMs": -933.1382000005741
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484251348,
+      "afterLastOriginByteMs": -961.0046000016155,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.599799999999995,
+      "operationEndMs": -928.4048000016155
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484428460,
+      "afterLastOriginByteMs": -943.2934000014939,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4138,
+      "operationEndMs": -910.8796000014938
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 2996,
+      "counter": 130484446349,
+      "afterLastOriginByteMs": -941.5045000005193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 22.096,
+      "operationEndMs": -919.4085000005193
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130484451545,
+      "afterLastOriginByteMs": -940.9849000021495,
+      "eventKind": "operation-span",
+      "operationDurationMs": 21.7163,
+      "operationEndMs": -919.2686000021495
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130484531079,
+      "afterLastOriginByteMs": -933.0315000006522,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.3765,
+      "operationEndMs": -924.6550000006522
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484579562,
+      "afterLastOriginByteMs": -928.1832000015129,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6027,
+      "operationEndMs": -895.5805000015129
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484615466,
+      "afterLastOriginByteMs": -924.5928000018466,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.833099999999998,
+      "operationEndMs": -900.7597000018467
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130484667656,
+      "afterLastOriginByteMs": -919.3738000012672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 9.9778,
+      "operationEndMs": -909.3960000012672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484669053,
+      "afterLastOriginByteMs": -919.2341000016313,
+      "eventKind": "operation-span",
+      "operationDurationMs": 11.0294,
+      "operationEndMs": -908.2047000016313
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130484755595,
+      "afterLastOriginByteMs": -910.5799000008119,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.226,
+      "operationEndMs": -878.3539000008119
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130484770178,
+      "afterLastOriginByteMs": -909.1216000015265,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.861599999999996,
+      "operationEndMs": -876.2600000015266
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130484782324,
+      "afterLastOriginByteMs": -907.907000000705,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.195,
+      "operationEndMs": -875.712000000705
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130484860973,
+      "afterLastOriginByteMs": -900.0421000018832,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3214,
+      "operationEndMs": -867.7207000018832
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130484908032,
+      "afterLastOriginByteMs": -895.3362000011111,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.418299999999995,
+      "operationEndMs": -862.9179000011111
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485027074,
+      "afterLastOriginByteMs": -883.4320000005391,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3185,
+      "operationEndMs": -851.1135000005391
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485080598,
+      "afterLastOriginByteMs": -878.0796000010014,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.737700000000004,
+      "operationEndMs": -845.3419000010014
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485102945,
+      "afterLastOriginByteMs": -875.8449000015389,
+      "eventKind": "operation-span",
+      "operationDurationMs": 13.743699999999999,
+      "operationEndMs": -862.1012000015389
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485106542,
+      "afterLastOriginByteMs": -875.4852000020037,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.392900000000004,
+      "operationEndMs": -843.0923000020036
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485191307,
+      "afterLastOriginByteMs": -867.0087000009516,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.771800000000002,
+      "operationEndMs": -835.2369000009517
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485234895,
+      "afterLastOriginByteMs": -862.6499000019976,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4846,
+      "operationEndMs": -830.1653000019976
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485242755,
+      "afterLastOriginByteMs": -861.8639000014809,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5651,
+      "operationEndMs": -829.2988000014809
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485353221,
+      "afterLastOriginByteMs": -850.8173000009265,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3242,
+      "operationEndMs": -818.4931000009265
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485410766,
+      "afterLastOriginByteMs": -845.0628000009601,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8296,
+      "operationEndMs": -812.2332000009601
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485433246,
+      "afterLastOriginByteMs": -842.8148000020883,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.864,
+      "operationEndMs": -809.9508000020883
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485518413,
+      "afterLastOriginByteMs": -834.2981000005238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1008,
+      "operationEndMs": -802.1973000005238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485562205,
+      "afterLastOriginByteMs": -829.9189000008482,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3574,
+      "operationEndMs": -797.5615000008482
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485571105,
+      "afterLastOriginByteMs": -829.0289000015036,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.377700000000004,
+      "operationEndMs": -796.6512000015036
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130485602966,
+      "afterLastOriginByteMs": -825.842800000828,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.978299999999997,
+      "operationEndMs": -804.864500000828
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485679237,
+      "afterLastOriginByteMs": -818.2157000010193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 21.035899999999998,
+      "operationEndMs": -797.1798000010193
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130485679508,
+      "afterLastOriginByteMs": -818.1886000020313,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130485741821,
+      "afterLastOriginByteMs": -811.9573000021774,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.978800000000003,
+      "operationEndMs": -779.9785000021774
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130485764803,
+      "afterLastOriginByteMs": -809.6591000012268,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.353100000000005,
+      "operationEndMs": -777.3060000012267
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130485815271,
+      "afterLastOriginByteMs": -804.6123000021908,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.266799999999996,
+      "operationEndMs": -772.3455000021908
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130485847435,
+      "afterLastOriginByteMs": -801.3959000018076,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.827099999999998,
+      "operationEndMs": -769.5688000018076
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130485889558,
+      "afterLastOriginByteMs": -797.1836000015173,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4422,
+      "operationEndMs": -764.7414000015174
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130485891687,
+      "afterLastOriginByteMs": -796.9707000011113,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.575,
+      "operationEndMs": -764.3957000011112
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130485896837,
+      "afterLastOriginByteMs": -796.4557000013883,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5513,
+      "operationEndMs": -763.9044000013884
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486064518,
+      "afterLastOriginByteMs": -779.6876000011252,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.774699999999996,
+      "operationEndMs": -746.9129000011253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486091246,
+      "afterLastOriginByteMs": -777.0148000017798,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2365,
+      "operationEndMs": -744.7783000017798
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486140660,
+      "afterLastOriginByteMs": -772.0734000013181,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6325,
+      "operationEndMs": -739.440900001318
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130486166734,
+      "afterLastOriginByteMs": -769.4660000015574,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.2556,
+      "operationEndMs": -761.2104000015574
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130486173424,
+      "afterLastOriginByteMs": -768.7970000006317,
+      "eventKind": "operation-span",
+      "operationDurationMs": 15.154900000000001,
+      "operationEndMs": -753.6421000006317
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486217000,
+      "afterLastOriginByteMs": -764.4394000017201,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4005,
+      "operationEndMs": -732.0389000017201
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486219827,
+      "afterLastOriginByteMs": -764.1567000009672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.572900000000004,
+      "operationEndMs": -731.5838000009672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486224247,
+      "afterLastOriginByteMs": -763.7147000023106,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6478,
+      "operationEndMs": -731.0669000023106
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486249940,
+      "afterLastOriginByteMs": -761.1454000016238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 24.3201,
+      "operationEndMs": -736.8253000016238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486325354,
+      "afterLastOriginByteMs": -753.60400000136,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.749000000000002,
+      "operationEndMs": -735.8550000013599
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486395105,
+      "afterLastOriginByteMs": -746.6289000021789,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3441,
+      "operationEndMs": -714.2848000021788
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486416358,
+      "afterLastOriginByteMs": -744.5036000008258,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.775600000000004,
+      "operationEndMs": -711.7280000008258
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486469538,
+      "afterLastOriginByteMs": -739.1856000012922,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8129,
+      "operationEndMs": -706.3727000012922
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130486494119,
+      "afterLastOriginByteMs": -736.727500001507,
+      "eventKind": "operation-span",
+      "operationDurationMs": 3.6479,
+      "operationEndMs": -733.079600001507
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486511079,
+      "afterLastOriginByteMs": -735.031500002151,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7135,
+      "operationEndMs": -703.318000002151
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486531385,
+      "afterLastOriginByteMs": -733.0009000015707,
+      "eventKind": "operation-span",
+      "operationDurationMs": 29.278,
+      "operationEndMs": -703.7229000015707
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486543652,
+      "afterLastOriginByteMs": -731.7742000013823,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9403,
+      "operationEndMs": -698.8339000013823
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486547934,
+      "afterLastOriginByteMs": -731.3460000023042,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.513,
+      "operationEndMs": -698.8330000023042
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486552723,
+      "afterLastOriginByteMs": -730.8671000009781,
+      "eventKind": "operation-span",
+      "operationDurationMs": 33.0064,
+      "operationEndMs": -697.8607000009781
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130486721383,
+      "afterLastOriginByteMs": -714.0011000010418,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1957,
+      "operationEndMs": -681.8054000010418
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130486746963,
+      "afterLastOriginByteMs": -711.4431000009063,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2496,
+      "operationEndMs": -679.1935000009063
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130486800285,
+      "afterLastOriginByteMs": -706.1109000005672,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0765,
+      "operationEndMs": -674.0344000005672
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130486830455,
+      "afterLastOriginByteMs": -703.0939000014769,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0302,
+      "operationEndMs": -671.0637000014768
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486835504,
+      "afterLastOriginByteMs": -702.5890000022628,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.8466000000000005,
+      "operationEndMs": -696.7424000022628
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130486876235,
+      "afterLastOriginByteMs": -698.5159000014391,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2832,
+      "operationEndMs": -666.2327000014392
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130486876834,
+      "afterLastOriginByteMs": -698.4560000018973,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2014,
+      "operationEndMs": -666.2546000018973
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130486885360,
+      "afterLastOriginByteMs": -697.6034000017535,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3099,
+      "operationEndMs": -665.2935000017535
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130486901334,
+      "afterLastOriginByteMs": -696.0060000019439,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.002900000000004,
+      "operationEndMs": -664.003100001944
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487046495,
+      "afterLastOriginByteMs": -681.4899000019068,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5174,
+      "operationEndMs": -648.9725000019068
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130487046716,
+      "afterLastOriginByteMs": -681.4678000009735,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130487070661,
+      "afterLastOriginByteMs": -679.0733000016189,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.6286000000000005,
+      "operationEndMs": -672.4447000016189
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487123556,
+      "afterLastOriginByteMs": -673.7838000008196,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5492,
+      "operationEndMs": -641.2346000008196
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487137592,
+      "afterLastOriginByteMs": -672.3802000014985,
+      "eventKind": "operation-span",
+      "operationDurationMs": 25.9713,
+      "operationEndMs": -646.4089000014984
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487157880,
+      "afterLastOriginByteMs": -670.3514000018913,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7323,
+      "operationEndMs": -638.6191000018913
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487202810,
+      "afterLastOriginByteMs": -665.8584000015253,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6181,
+      "operationEndMs": -633.2403000015253
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487203579,
+      "afterLastOriginByteMs": -665.7815000016853,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5623,
+      "operationEndMs": -633.2192000016853
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487211153,
+      "afterLastOriginByteMs": -665.0241000006645,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6778,
+      "operationEndMs": -632.3463000006644
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487228898,
+      "afterLastOriginByteMs": -663.2496000020183,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.876599999999996,
+      "operationEndMs": -631.3730000020182
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487374543,
+      "afterLastOriginByteMs": -648.6851000008755,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.687,
+      "operationEndMs": -615.9981000008755
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487404128,
+      "afterLastOriginByteMs": -645.7266000015807,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.398,
+      "operationEndMs": -613.3286000015806
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487452149,
+      "afterLastOriginByteMs": -640.924500001347,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4743,
+      "operationEndMs": -608.4502000013471
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487482542,
+      "afterLastOriginByteMs": -637.8852000016195,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0884,
+      "operationEndMs": -605.7968000016195
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487532156,
+      "afterLastOriginByteMs": -632.923800001663,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2309,
+      "operationEndMs": -600.692900001663
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487532727,
+      "afterLastOriginByteMs": -632.8667000016139,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.173300000000005,
+      "operationEndMs": -600.6934000016139
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487542139,
+      "afterLastOriginByteMs": -631.925500001671,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.132099999999994,
+      "operationEndMs": -599.793400001671
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130487548396,
+      "afterLastOriginByteMs": -631.2998000012158,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.6908,
+      "operationEndMs": -625.6090000012158
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487605936,
+      "afterLastOriginByteMs": -625.5458000014187,
+      "eventKind": "operation-span",
+      "operationDurationMs": 27.3237,
+      "operationEndMs": -598.2221000014187
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130487704424,
+      "afterLastOriginByteMs": -615.6970000010915,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3397,
+      "operationEndMs": -583.3573000010915
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130487729361,
+      "afterLastOriginByteMs": -613.2033000012598,
+      "eventKind": "operation-span",
+      "operationDurationMs": 8.6623,
+      "operationEndMs": -604.5410000012598
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130487779665,
+      "afterLastOriginByteMs": -608.1729000015912,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5868,
+      "operationEndMs": -575.5861000015911
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130487804428,
+      "afterLastOriginByteMs": -605.6966000014654,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.3992,
+      "operationEndMs": -604.2974000014655
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130487816594,
+      "afterLastOriginByteMs": -604.4800000017858,
+      "eventKind": "operation-span",
+      "operationDurationMs": 23.769,
+      "operationEndMs": -580.7110000017858
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130487818924,
+      "afterLastOriginByteMs": -604.2470000011235,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.471899999999998,
+      "operationEndMs": -572.7751000011235
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130487858328,
+      "afterLastOriginByteMs": -600.3066000012041,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5362,
+      "operationEndMs": -567.770400001204
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130487858726,
+      "afterLastOriginByteMs": -600.2668000019185,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5342,
+      "operationEndMs": -567.7326000019184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130487865874,
+      "afterLastOriginByteMs": -599.5520000014949,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8238,
+      "operationEndMs": -566.7282000014949
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130487886793,
+      "afterLastOriginByteMs": -597.4601000016264,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.997400000000003,
+      "operationEndMs": -565.4627000016264
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488030746,
+      "afterLastOriginByteMs": -583.0648000010115,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.23609999999999,
+      "operationEndMs": -550.8287000010115
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130488055485,
+      "afterLastOriginByteMs": -580.5909000009706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 1.5445,
+      "operationEndMs": -579.0464000009706
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488071604,
+      "afterLastOriginByteMs": -578.9790000017092,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.024,
+      "operationEndMs": -547.9550000017092
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488108240,
+      "afterLastOriginByteMs": -575.3154000012728,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6526,
+      "operationEndMs": -542.6628000012728
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488141347,
+      "afterLastOriginByteMs": -572.0047000013437,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.6911,
+      "operationEndMs": -540.3136000013437
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488186534,
+      "afterLastOriginByteMs": -567.4860000017361,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.124100000000006,
+      "operationEndMs": -535.3619000017361
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488186889,
+      "afterLastOriginByteMs": -567.450500000632,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5076,
+      "operationEndMs": -534.942900000632
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488197075,
+      "afterLastOriginByteMs": -566.4319000006799,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1117,
+      "operationEndMs": -534.3202000006798
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488213202,
+      "afterLastOriginByteMs": -564.8192000007839,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1292,
+      "operationEndMs": -532.6900000007839
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488356186,
+      "afterLastOriginByteMs": -550.5208000013226,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9278,
+      "operationEndMs": -517.5930000013226
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130488356421,
+      "afterLastOriginByteMs": -550.497300000643,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488389415,
+      "afterLastOriginByteMs": -547.1979000012652,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.7866,
+      "operationEndMs": -515.4113000012652
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488438007,
+      "afterLastOriginByteMs": -542.3387000009825,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1156,
+      "operationEndMs": -510.2231000009825
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130488459167,
+      "afterLastOriginByteMs": -540.2227000013227,
+      "eventKind": "operation-span",
+      "operationDurationMs": 11.9544,
+      "operationEndMs": -528.2683000013227
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488510520,
+      "afterLastOriginByteMs": -535.0874000014301,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4641,
+      "operationEndMs": -502.62330000143004
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488514055,
+      "afterLastOriginByteMs": -534.733900001811,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5319,
+      "operationEndMs": -502.202000001811
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488520667,
+      "afterLastOriginByteMs": -534.0727000020706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4131,
+      "operationEndMs": -501.65960000207065
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488542601,
+      "afterLastOriginByteMs": -531.8793000005826,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.957800000000002,
+      "operationEndMs": -499.92150000058257
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488579342,
+      "afterLastOriginByteMs": -528.2052000020485,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.6935,
+      "operationEndMs": -507.51170000204854
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130488688341,
+      "afterLastOriginByteMs": -517.3053000016807,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4046,
+      "operationEndMs": -484.9007000016807
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130488714963,
+      "afterLastOriginByteMs": -514.6431000011944,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5523,
+      "operationEndMs": -482.0908000011944
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130488762089,
+      "afterLastOriginByteMs": -509.9305000021559,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5292,
+      "operationEndMs": -477.4013000021559
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130488793594,
+      "afterLastOriginByteMs": -506.7800000015268,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0596,
+      "operationEndMs": -474.7204000015268
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130488837854,
+      "afterLastOriginByteMs": -502.3540000020148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4451,
+      "operationEndMs": -469.9089000020148
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130488841773,
+      "afterLastOriginByteMs": -501.96210000103747,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.452099999999994,
+      "operationEndMs": -469.5100000010375
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130488846736,
+      "afterLastOriginByteMs": -501.4658000018244,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.495000000000005,
+      "operationEndMs": -468.9708000018244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130488869092,
+      "afterLastOriginByteMs": -499.23020000096585,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0234,
+      "operationEndMs": -467.20680000096587
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489016652,
+      "afterLastOriginByteMs": -484.47420000229613,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.343700000000005,
+      "operationEndMs": -452.1305000022961
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130489041756,
+      "afterLastOriginByteMs": -481.9638000008126,
+      "eventKind": "operation-span",
+      "operationDurationMs": 5.9154,
+      "operationEndMs": -476.04840000081265
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489090113,
+      "afterLastOriginByteMs": -477.12810000120953,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7311,
+      "operationEndMs": -444.39700000120956
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489101539,
+      "afterLastOriginByteMs": -475.9855000011157,
+      "eventKind": "operation-span",
+      "operationDurationMs": 26.683,
+      "operationEndMs": -449.30250000111573
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489125376,
+      "afterLastOriginByteMs": -473.60180000214314,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.873199999999997,
+      "operationEndMs": -441.72860000214314
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489164991,
+      "afterLastOriginByteMs": -469.64030000162893,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.589,
+      "operationEndMs": -437.05130000162893
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489168567,
+      "afterLastOriginByteMs": -469.28270000171324,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7052,
+      "operationEndMs": -436.57750000171325
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489173663,
+      "afterLastOriginByteMs": -468.7731000012718,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6387,
+      "operationEndMs": -436.13440000127184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489196987,
+      "afterLastOriginByteMs": -466.44070000184,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3756,
+      "operationEndMs": -434.06510000184
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489342933,
+      "afterLastOriginByteMs": -451.8461000006937,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1754,
+      "operationEndMs": -419.67070000069367
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489375601,
+      "afterLastOriginByteMs": -448.57930000216584,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.412599999999998,
+      "operationEndMs": -417.16670000216584
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489420074,
+      "afterLastOriginByteMs": -444.1320000005362,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4084,
+      "operationEndMs": -411.7236000005362
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489451607,
+      "afterLastOriginByteMs": -440.9787000022334,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.6899,
+      "operationEndMs": -409.28880000223336
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489493629,
+      "afterLastOriginByteMs": -436.77650000063295,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4315,
+      "operationEndMs": -404.3450000006329
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489497602,
+      "afterLastOriginByteMs": -436.3792000021931,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.495400000000004,
+      "operationEndMs": -403.8838000021931
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489502159,
+      "afterLastOriginByteMs": -435.92350000108127,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.442400000000006,
+      "operationEndMs": -403.48110000108124
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130489521454,
+      "afterLastOriginByteMs": -433.9940000008937,
+      "eventKind": "operation-span",
+      "operationDurationMs": 4.8033,
+      "operationEndMs": -429.19070000089374
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489570081,
+      "afterLastOriginByteMs": -429.1313000012451,
+      "eventKind": "operation-span",
+      "operationDurationMs": 27.4742,
+      "operationEndMs": -401.6571000012451
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130489668782,
+      "afterLastOriginByteMs": -419.2612000006193,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.967299999999994,
+      "operationEndMs": -386.29390000061926
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130489668803,
+      "afterLastOriginByteMs": -419.25910000099975,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130489697794,
+      "afterLastOriginByteMs": -416.3600000010774,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.470400000000005,
+      "operationEndMs": -383.88960000107744
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130489746889,
+      "afterLastOriginByteMs": -411.45050000159245,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4248,
+      "operationEndMs": -379.02570000159244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130489776286,
+      "afterLastOriginByteMs": -408.5108000017499,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2141,
+      "operationEndMs": -376.29670000174985
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130489821040,
+      "afterLastOriginByteMs": -404.03540000079374,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4886,
+      "operationEndMs": -371.5468000007937
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130489825090,
+      "afterLastOriginByteMs": -403.63040000192996,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4227,
+      "operationEndMs": -371.20770000192994
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130489828602,
+      "afterLastOriginByteMs": -403.2792000016343,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6148,
+      "operationEndMs": -370.6644000016343
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130489851483,
+      "afterLastOriginByteMs": -400.99110000119254,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1156,
+      "operationEndMs": -368.87550000119256
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490001457,
+      "afterLastOriginByteMs": -385.9937000015634,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.993199999999998,
+      "operationEndMs": -354.0005000015634
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490030606,
+      "afterLastOriginByteMs": -383.0788000013854,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.470900000000004,
+      "operationEndMs": -351.60790000138536
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490074232,
+      "afterLastOriginByteMs": -378.7162000007811,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4022,
+      "operationEndMs": -346.3140000007811
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490105583,
+      "afterLastOriginByteMs": -375.58110000099987,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.870700000000003,
+      "operationEndMs": -343.71040000099987
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490148646,
+      "afterLastOriginByteMs": -371.27480000162905,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7896,
+      "operationEndMs": -338.48520000162904
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490151670,
+      "afterLastOriginByteMs": -370.97240000184684,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4756,
+      "operationEndMs": -338.49680000184685
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490156808,
+      "afterLastOriginByteMs": -370.45860000216635,
+      "eventKind": "operation-span",
+      "operationDurationMs": 33.064299999999996,
+      "operationEndMs": -337.39430000216635
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490179949,
+      "afterLastOriginByteMs": -368.1445000020176,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.8216,
+      "operationEndMs": -336.3229000020176
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490324280,
+      "afterLastOriginByteMs": -353.7114000009751,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7594,
+      "operationEndMs": -320.9520000009751
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490353803,
+      "afterLastOriginByteMs": -350.7591000015964,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.910800000000002,
+      "operationEndMs": -318.8483000015964
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490401381,
+      "afterLastOriginByteMs": -346.0013000021718,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8869,
+      "operationEndMs": -313.1144000021718
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490432012,
+      "afterLastOriginByteMs": -342.93820000129926,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4738,
+      "operationEndMs": -310.4644000012993
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490479435,
+      "afterLastOriginByteMs": -338.195900001665,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4923,
+      "operationEndMs": -305.703600001665
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490479979,
+      "afterLastOriginByteMs": -338.14150000216614,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4372,
+      "operationEndMs": -305.7043000021661
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490490074,
+      "afterLastOriginByteMs": -337.1320000005653,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6257,
+      "operationEndMs": -304.5063000005653
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490505706,
+      "afterLastOriginByteMs": -335.56880000105593,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1892,
+      "operationEndMs": -303.3796000010559
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490655243,
+      "afterLastOriginByteMs": -320.6151000013051,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0269,
+      "operationEndMs": -288.5882000013051
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130490680703,
+      "afterLastOriginByteMs": -318.06910000159405,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1916,
+      "operationEndMs": -285.87750000159406
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130490733444,
+      "afterLastOriginByteMs": -312.7950000016426,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5533,
+      "operationEndMs": -280.24170000164264
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130490764142,
+      "afterLastOriginByteMs": -309.7252000006847,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9406,
+      "operationEndMs": -277.7846000006847
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130490807408,
+      "afterLastOriginByteMs": -305.39860000135377,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.577099999999994,
+      "operationEndMs": -272.8215000013538
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130490807906,
+      "afterLastOriginByteMs": -305.3488000023208,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9856,
+      "operationEndMs": -273.3632000023208
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130490819572,
+      "afterLastOriginByteMs": -304.1822000013781,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.848000000000003,
+      "operationEndMs": -272.33420000137806
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130490833940,
+      "afterLastOriginByteMs": -302.74540000209527,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.000800000000005,
+      "operationEndMs": -270.74460000209524
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130490978999,
+      "afterLastOriginByteMs": -288.23950000150944,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5991,
+      "operationEndMs": -255.64040000150945
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130490979270,
+      "afterLastOriginByteMs": -288.2124000007025,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 32156,
+      "counter": 130491003612,
+      "afterLastOriginByteMs": -285.77820000100473,
+      "eventKind": "operation-span",
+      "operationDurationMs": 7.3853,
+      "operationEndMs": -278.39290000100476
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491062073,
+      "afterLastOriginByteMs": -279.9321000020427,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9175,
+      "operationEndMs": -248.01460000204273
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491090850,
+      "afterLastOriginByteMs": -277.0544000013615,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.624100000000002,
+      "operationEndMs": -245.4303000013615
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491130478,
+      "afterLastOriginByteMs": -273.0916000018624,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.501200000000004,
+      "operationEndMs": -240.59040000186238
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491135577,
+      "afterLastOriginByteMs": -272.5817000009556,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4044,
+      "operationEndMs": -240.1773000009556
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491140330,
+      "afterLastOriginByteMs": -272.1064000015758,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.419999999999995,
+      "operationEndMs": -239.68640000157583
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491160889,
+      "afterLastOriginByteMs": -270.0505000011617,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1344,
+      "operationEndMs": -237.9161000011617
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491308176,
+      "afterLastOriginByteMs": -255.32180000118387,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4741,
+      "operationEndMs": -222.84770000118388
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491384010,
+      "afterLastOriginByteMs": -247.73840000125347,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.620599999999996,
+      "operationEndMs": -215.11780000125347
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130491408025,
+      "afterLastOriginByteMs": -245.3369000013481,
+      "eventKind": "operation-span",
+      "operationDurationMs": 3.9652999999999996,
+      "operationEndMs": -241.3716000013481
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491448326,
+      "afterLastOriginByteMs": -241.30680000052962,
+      "eventKind": "operation-span",
+      "operationDurationMs": 28.7096,
+      "operationEndMs": -212.59720000052963
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491458169,
+      "afterLastOriginByteMs": -240.32250000163913,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.531200000000005,
+      "operationEndMs": -207.79130000163912
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491461987,
+      "afterLastOriginByteMs": -239.94070000117063,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5494,
+      "operationEndMs": -207.39130000117063
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491466472,
+      "afterLastOriginByteMs": -239.49220000213245,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6046,
+      "operationEndMs": -206.88760000213244
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 3012,
+      "counter": 130491483070,
+      "afterLastOriginByteMs": -237.83240000193473,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.2207,
+      "operationEndMs": -231.61170000193474
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491545904,
+      "afterLastOriginByteMs": -231.54900000190537,
+      "eventKind": "operation-span",
+      "operationDurationMs": 26.4263,
+      "operationEndMs": -205.12270000190537
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491636057,
+      "afterLastOriginByteMs": -222.5337000018044,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4756,
+      "operationEndMs": -190.0581000018044
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130491670876,
+      "afterLastOriginByteMs": -219.05180000067048,
+      "eventKind": "operation-span",
+      "operationDurationMs": 20.9315,
+      "operationEndMs": -198.12030000067048
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130491713264,
+      "afterLastOriginByteMs": -214.81300000050396,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3923,
+      "operationEndMs": -182.42070000050396
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130491743229,
+      "afterLastOriginByteMs": -211.81650000107766,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0055,
+      "operationEndMs": -179.81100000107767
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130491786374,
+      "afterLastOriginByteMs": -207.50200000111363,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.502700000000004,
+      "operationEndMs": -174.99930000111362
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130491789805,
+      "afterLastOriginByteMs": -207.15890000064974,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5722,
+      "operationEndMs": -174.58670000064973
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130491794461,
+      "afterLastOriginByteMs": -206.69330000055197,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6434,
+      "operationEndMs": -174.049900000552
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130491816957,
+      "afterLastOriginByteMs": -204.4437000022299,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1467,
+      "operationEndMs": -172.29700000222988
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130491882866,
+      "afterLastOriginByteMs": -197.85280000178318,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.4983,
+      "operationEndMs": -165.35450000178318
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130491963894,
+      "afterLastOriginByteMs": -189.75000000136788,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.609100000000005,
+      "operationEndMs": -157.14090000136787
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492039870,
+      "afterLastOriginByteMs": -182.15240000063204,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.8763,
+      "operationEndMs": -149.27610000063203
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492070274,
+      "afterLastOriginByteMs": -179.11200000162353,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.0308,
+      "operationEndMs": -147.08120000162353
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492114173,
+      "afterLastOriginByteMs": -174.72210000050836,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5582,
+      "operationEndMs": -142.16390000050836
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492117762,
+      "afterLastOriginByteMs": -174.36320000160777,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6059,
+      "operationEndMs": -141.75730000160777
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130492122807,
+      "afterLastOriginByteMs": -173.85870000180148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6375,
+      "operationEndMs": -141.2212000018015
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492145466,
+      "afterLastOriginByteMs": -171.59280000123545,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.143,
+      "operationEndMs": -139.44980000123545
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492211030,
+      "afterLastOriginByteMs": -165.03640000155428,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.698100000000004,
+      "operationEndMs": -132.33830000155427
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492292847,
+      "afterLastOriginByteMs": -156.85470000062196,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2934,
+      "operationEndMs": -124.56130000062197
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492371438,
+      "afterLastOriginByteMs": -148.9956000023085,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.9841,
+      "operationEndMs": -117.0115000023085
+    },
+    {
+      "stage": "optional-data-suppressed",
+      "thread": 29860,
+      "counter": 130492371714,
+      "afterLastOriginByteMs": -148.96800000133226,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492398034,
+      "afterLastOriginByteMs": -146.33600000161096,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.1312,
+      "operationEndMs": -114.20480000161095
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492442416,
+      "afterLastOriginByteMs": -141.8978000019706,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.6394,
+      "operationEndMs": -109.25840000197061
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492446140,
+      "afterLastOriginByteMs": -141.52540000213776,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2676,
+      "operationEndMs": -109.25780000213776
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 2996,
+      "counter": 130492451122,
+      "afterLastOriginByteMs": -141.02720000119007,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.7553,
+      "operationEndMs": -108.27190000119006
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492474089,
+      "afterLastOriginByteMs": -138.73050000074727,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.972,
+      "operationEndMs": -106.75850000074726
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492541851,
+      "afterLastOriginByteMs": -131.95430000087072,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.215599999999995,
+      "operationEndMs": -99.73870000087072
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492618744,
+      "afterLastOriginByteMs": -124.26500000219676,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2905,
+      "operationEndMs": -91.97450000219675
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130492693971,
+      "afterLastOriginByteMs": -116.7423000006238,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9608,
+      "operationEndMs": -83.7815000006238
+    },
+    {
+      "stage": "slow-file-write",
+      "thread": 4644,
+      "counter": 130492720328,
+      "afterLastOriginByteMs": -114.1066000018327,
+      "eventKind": "operation-span",
+      "operationDurationMs": 6.7967,
+      "operationEndMs": -107.3099000018327
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130492771830,
+      "afterLastOriginByteMs": -108.9564000012615,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.2802,
+      "operationEndMs": -76.67620000126149
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130492772337,
+      "afterLastOriginByteMs": -108.90570000083244,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.814299999999996,
+      "operationEndMs": -76.09140000083244
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4644,
+      "counter": 130492788831,
+      "afterLastOriginByteMs": -107.2563000016089,
+      "eventKind": "operation-span",
+      "operationDurationMs": 25.9153,
+      "operationEndMs": -81.3410000016089
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130492800518,
+      "afterLastOriginByteMs": -106.08760000104667,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.95,
+      "operationEndMs": -74.13760000104666
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 32156,
+      "counter": 130492867754,
+      "afterLastOriginByteMs": -99.3640000015148,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5203,
+      "operationEndMs": -66.8437000015148
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 4904,
+      "counter": 130492945697,
+      "afterLastOriginByteMs": -91.56970000185538,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3019,
+      "operationEndMs": -59.26780000185538
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493026160,
+      "afterLastOriginByteMs": -83.52340000055847,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.9756,
+      "operationEndMs": -50.54780000055847
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 30596,
+      "counter": 130493098248,
+      "afterLastOriginByteMs": -76.31460000084189,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3065,
+      "operationEndMs": -44.00810000084189
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130493103217,
+      "afterLastOriginByteMs": -75.8177000006981,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3551,
+      "operationEndMs": -43.462600000698096
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 3012,
+      "counter": 130493127110,
+      "afterLastOriginByteMs": -73.4284000009211,
+      "eventKind": "operation-span",
+      "operationDurationMs": 31.994500000000002,
+      "operationEndMs": -41.4339000009211
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493358873,
+      "afterLastOriginByteMs": -50.25210000167135,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.3414,
+      "operationEndMs": -17.91070000167135
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31904,
+      "counter": 130493429158,
+      "afterLastOriginByteMs": -43.22360000151093,
+      "eventKind": "operation-span",
+      "operationDurationMs": 32.5528,
+      "operationEndMs": -10.670800001510933
+    },
+    {
+      "stage": "slow-response-read",
+      "thread": 31468,
+      "counter": 130493685488,
+      "afterLastOriginByteMs": -17.590600002222345,
+      "eventKind": "operation-span",
+      "operationDurationMs": 17.7212,
+      "operationEndMs": 0.1305999977776544
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 31468,
+      "counter": 130493871112,
+      "afterLastOriginByteMs": 0.971799998296774,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 3012,
+      "counter": 130493879139,
+      "afterLastOriginByteMs": 1.7744999986462062,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 32156,
+      "counter": 130493879692,
+      "afterLastOriginByteMs": 1.829799997722148,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 4904,
+      "counter": 130493880262,
+      "afterLastOriginByteMs": 1.886799998828792,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 30596,
+      "counter": 130493881964,
+      "afterLastOriginByteMs": 2.056999997876119,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 4644,
+      "counter": 130493882344,
+      "afterLastOriginByteMs": 2.0949999980075518,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 2996,
+      "counter": 130493884255,
+      "afterLastOriginByteMs": 2.286099997945712,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receiver-return",
+      "thread": 31904,
+      "counter": 130493885823,
+      "afterLastOriginByteMs": 2.4428999986412236,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 18012,
+      "counter": 130493890284,
+      "afterLastOriginByteMs": 2.8889999994134996,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 18012,
+      "counter": 130493891033,
+      "afterLastOriginByteMs": 2.9638999985763803,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 18012,
+      "counter": 130493891036,
+      "afterLastOriginByteMs": 2.964199999041739,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 18012,
+      "counter": 130493891039,
+      "afterLastOriginByteMs": 2.964499997688108,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 18012,
+      "counter": 130493891056,
+      "afterLastOriginByteMs": 2.966199997899821,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "receivers-join-end",
+      "thread": 672,
+      "counter": 130493891686,
+      "afterLastOriginByteMs": 3.02919999921869,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "prefinish-stop-begin",
+      "thread": 672,
+      "counter": 130493891752,
+      "afterLastOriginByteMs": 3.035799998542643,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "prefinish-stop-end",
+      "thread": 672,
+      "counter": 130493893085,
+      "afterLastOriginByteMs": 3.169099998558522,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "prefix-stop-begin",
+      "thread": 672,
+      "counter": 130493893295,
+      "afterLastOriginByteMs": 3.1900999983918155,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "prefix-stop-end",
+      "thread": 672,
+      "counter": 130493893300,
+      "afterLastOriginByteMs": 3.1905999985610833,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 18012,
+      "counter": 130493900799,
+      "afterLastOriginByteMs": 3.940499998861924,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 18012,
+      "counter": 130493900801,
+      "afterLastOriginByteMs": 3.940699998565833,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 18012,
+      "counter": 130493902633,
+      "afterLastOriginByteMs": 4.123899998376146,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 18012,
+      "counter": 130493902634,
+      "afterLastOriginByteMs": 4.123999999137595,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 18012,
+      "counter": 130493903589,
+      "afterLastOriginByteMs": 4.219499998725951,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 18012,
+      "counter": 130493903591,
+      "afterLastOriginByteMs": 4.21969999842986,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 18012,
+      "counter": 130494187726,
+      "afterLastOriginByteMs": 32.63319999859959,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 18012,
+      "counter": 130494187737,
+      "afterLastOriginByteMs": 32.63429999788059,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 18012,
+      "counter": 130494324186,
+      "afterLastOriginByteMs": 46.27919999802543,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 18012,
+      "counter": 130494324194,
+      "afterLastOriginByteMs": 46.27999999866006,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "body-settled",
+      "thread": 672,
+      "counter": 130494343559,
+      "afterLastOriginByteMs": 48.216499999398366,
+      "recordWorkSeconds": 9.6e-06,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "metadata-begin",
+      "thread": 672,
+      "counter": 130494398202,
+      "afterLastOriginByteMs": 53.68079999789188,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "metadata-end",
+      "thread": 672,
+      "counter": 130494414161,
+      "afterLastOriginByteMs": 55.276699999012635,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "output-flush-begin",
+      "thread": 672,
+      "counter": 130494414414,
+      "afterLastOriginByteMs": 55.30199999884644,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "output-flush-end",
+      "thread": 672,
+      "counter": 130500684109,
+      "afterLastOriginByteMs": 682.2714999980235,
+      "recordWorkSeconds": 5e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "worker-commit-begin",
+      "thread": 672,
+      "counter": 130500717271,
+      "afterLastOriginByteMs": 685.5876999979955,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "intent-write-begin",
+      "thread": 672,
+      "counter": 130500724843,
+      "afterLastOriginByteMs": 686.3448999993125,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "save-atomic-entry",
+      "thread": 672,
+      "counter": 130500726072,
+      "afterLastOriginByteMs": 686.4677999983542,
+      "recordWorkSeconds": 4e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "save-dirs-ready",
+      "thread": 672,
+      "counter": 130500734997,
+      "afterLastOriginByteMs": 687.3602999985451,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 672,
+      "counter": 130500735000,
+      "afterLastOriginByteMs": 687.3605999990104,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "save-file-opened",
+      "thread": 672,
+      "counter": 130500736857,
+      "afterLastOriginByteMs": 687.5462999978481,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 672,
+      "counter": 130500736860,
+      "afterLastOriginByteMs": 687.5465999983135,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "save-bytes-written",
+      "thread": 672,
+      "counter": 130500738224,
+      "afterLastOriginByteMs": 687.6829999982874,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 672,
+      "counter": 130500738226,
+      "afterLastOriginByteMs": 687.6831999979913,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 672,
+      "counter": 130501115671,
+      "afterLastOriginByteMs": 725.4276999992726,
+      "recordWorkSeconds": 6e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "save-buffer-flushed",
+      "thread": 672,
+      "counter": 130501115679,
+      "afterLastOriginByteMs": 725.4284999980882,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "intent-write-end",
+      "thread": 672,
+      "counter": 130501127389,
+      "afterLastOriginByteMs": 726.5994999979739,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "rename-begin",
+      "thread": 672,
+      "counter": 130501128614,
+      "afterLastOriginByteMs": 726.7219999994268,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "rename-pin-end",
+      "thread": 672,
+      "counter": 130501138660,
+      "afterLastOriginByteMs": 727.7265999982774,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "catalog-write-begin",
+      "thread": 672,
+      "counter": 130501141670,
+      "afterLastOriginByteMs": 728.0275999983132,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 672,
+      "counter": 130501142333,
+      "afterLastOriginByteMs": 728.0938999992941,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 672,
+      "counter": 130501143353,
+      "afterLastOriginByteMs": 728.1958999992639,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 672,
+      "counter": 130501143355,
+      "afterLastOriginByteMs": 728.1960999989678,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 672,
+      "counter": 130501143358,
+      "afterLastOriginByteMs": 728.1963999994332,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 672,
+      "counter": 130501143366,
+      "afterLastOriginByteMs": 728.1971999982488,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 672,
+      "counter": 130501151348,
+      "afterLastOriginByteMs": 728.9953999988938,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 672,
+      "counter": 130501151350,
+      "afterLastOriginByteMs": 728.9955999985978,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 672,
+      "counter": 130501153194,
+      "afterLastOriginByteMs": 729.1799999984505,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 672,
+      "counter": 130501153197,
+      "afterLastOriginByteMs": 729.1802999989159,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 672,
+      "counter": 130501154292,
+      "afterLastOriginByteMs": 729.2897999977868,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 672,
+      "counter": 130501154294,
+      "afterLastOriginByteMs": 729.2899999993097,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 672,
+      "counter": 130501351560,
+      "afterLastOriginByteMs": 749.0165999988676,
+      "recordWorkSeconds": 5e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 672,
+      "counter": 130501351575,
+      "afterLastOriginByteMs": 749.0180999993754,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 672,
+      "counter": 130501463138,
+      "afterLastOriginByteMs": 760.1743999985047,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 672,
+      "counter": 130501463144,
+      "afterLastOriginByteMs": 760.1749999994354,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "catalog-write-end",
+      "thread": 672,
+      "counter": 130501463757,
+      "afterLastOriginByteMs": 760.2362999987236,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "catalog-resolve-end",
+      "thread": 672,
+      "counter": 130501463833,
+      "afterLastOriginByteMs": 760.243899998386,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "accepted-pins-begin",
+      "thread": 672,
+      "counter": 130501464180,
+      "afterLastOriginByteMs": 760.2785999988555,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "accepted-pins-end",
+      "thread": 672,
+      "counter": 130501464488,
+      "afterLastOriginByteMs": 760.3093999987323,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "publication-cleanup-end",
+      "thread": 672,
+      "counter": 130501466450,
+      "afterLastOriginByteMs": 760.5055999993056,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "worker-commit-end",
+      "thread": 672,
+      "counter": 130501474371,
+      "afterLastOriginByteMs": 761.2976999989769,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "worker-final-proof-done",
+      "thread": 672,
+      "counter": 130501478714,
+      "afterLastOriginByteMs": 761.7319999990286,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "worker-notify-begin",
+      "thread": 672,
+      "counter": 130501478737,
+      "afterLastOriginByteMs": 761.7342999983521,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "worker-notify-end",
+      "thread": 672,
+      "counter": 130501478866,
+      "afterLastOriginByteMs": 761.7471999983536,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "close-entry",
+      "thread": 16320,
+      "counter": 130501480253,
+      "afterLastOriginByteMs": 761.88589999947,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "integration-stop-begin",
+      "thread": 16320,
+      "counter": 130501491102,
+      "afterLastOriginByteMs": 762.970799998584,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "integration-stop-end",
+      "thread": 16320,
+      "counter": 130501493951,
+      "afterLastOriginByteMs": 763.2556999978988,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "file-info-stop-end",
+      "thread": 16320,
+      "counter": 130501496355,
+      "afterLastOriginByteMs": 763.4960999985196,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "manager-stop-begin",
+      "thread": 16320,
+      "counter": 130501534105,
+      "afterLastOriginByteMs": 767.2710999977426,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-entry",
+      "thread": 16320,
+      "counter": 130501534121,
+      "afterLastOriginByteMs": 767.2726999990118,
+      "recordWorkSeconds": 4e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-periodic-begin",
+      "thread": 16320,
+      "counter": 130501534260,
+      "afterLastOriginByteMs": 767.2865999993519,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-periodic-end",
+      "thread": 16320,
+      "counter": 130501536739,
+      "afterLastOriginByteMs": 767.5344999988738,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-joins-done",
+      "thread": 16320,
+      "counter": 130501536785,
+      "afterLastOriginByteMs": 767.5390999993397,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-publications-done",
+      "thread": 16320,
+      "counter": 130501536789,
+      "afterLastOriginByteMs": 767.5394999987475,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-proof-done",
+      "thread": 16320,
+      "counter": 130501541139,
+      "afterLastOriginByteMs": 767.9744999986724,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "stop-return",
+      "thread": 16320,
+      "counter": 130501541141,
+      "afterLastOriginByteMs": 767.9746999983763,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "manager-stop-end",
+      "thread": 16320,
+      "counter": 130501541142,
+      "afterLastOriginByteMs": 767.9747999991378,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "icons-stop-begin",
+      "thread": 16320,
+      "counter": 130501541143,
+      "afterLastOriginByteMs": 767.9748999980802,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "icons-stop-end",
+      "thread": 16320,
+      "counter": 130501541162,
+      "afterLastOriginByteMs": 767.9767999979958,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "command-files-stop-end",
+      "thread": 16320,
+      "counter": 130501541165,
+      "afterLastOriginByteMs": 767.9770999984612,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "windows-cleanup-end",
+      "thread": 16320,
+      "counter": 130501549888,
+      "afterLastOriginByteMs": 768.8493999994535,
+      "recordWorkSeconds": 2e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "close-return",
+      "thread": 16320,
+      "counter": 130501685374,
+      "afterLastOriginByteMs": 782.3979999993753,
+      "recordWorkSeconds": 3e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "exit-instance-begin",
+      "thread": 16320,
+      "counter": 130501685605,
+      "afterLastOriginByteMs": 782.4210999988281,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "automation-reset-end",
+      "thread": 16320,
+      "counter": 130501685608,
+      "afterLastOriginByteMs": 782.4213999992935,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "manager-reset-end",
+      "thread": 16320,
+      "counter": 130501691530,
+      "afterLastOriginByteMs": 783.0135999993217,
+      "recordWorkSeconds": 1e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "ole-term-end",
+      "thread": 16320,
+      "counter": 130501708034,
+      "afterLastOriginByteMs": 784.6639999988838,
+      "recordWorkSeconds": 4e-07,
+      "eventKind": "instant-marker"
+    },
+    {
+      "stage": "exit-instance-end",
+      "thread": 16320,
+      "counter": 130501708045,
+      "afterLastOriginByteMs": 784.6650999981648,
+      "recordWorkSeconds": 0.0,
+      "eventKind": "instant-marker"
+    }
+  ],
+  "spans": [
+    {
+      "stage": "receiverJoin",
+      "thread": 672,
+      "startMs": -1449.5647000021563,
+      "endMs": 3.02919999921869,
+      "durationMs": 1452.593900001375,
+      "portionAfterLastOriginByteMs": 3.02919999921869
+    },
+    {
+      "stage": "prefinishStop",
+      "thread": 672,
+      "startMs": 3.035799998542643,
+      "endMs": 3.169099998558522,
+      "durationMs": 0.13330000001587905,
+      "portionAfterLastOriginByteMs": 0.13330000001587905
+    },
+    {
+      "stage": "prefixHasherStop",
+      "thread": 672,
+      "startMs": 3.1900999983918155,
+      "endMs": 3.1905999985610833,
+      "durationMs": 0.0005000001692678779,
+      "portionAfterLastOriginByteMs": 0.0005000001692678779
+    },
+    {
+      "stage": "metadata",
+      "thread": 672,
+      "startMs": 53.68079999789188,
+      "endMs": 55.276699999012635,
+      "durationMs": 1.5959000011207536,
+      "portionAfterLastOriginByteMs": 1.5959000011207536
+    },
+    {
+      "stage": "outputWriteback",
+      "thread": 672,
+      "startMs": 55.30199999884644,
+      "endMs": 682.2714999980235,
+      "durationMs": 626.9694999991771,
+      "portionAfterLastOriginByteMs": 626.9694999991771
+    },
+    {
+      "stage": "durableIntent",
+      "thread": 672,
+      "startMs": 686.3448999993125,
+      "endMs": 726.5994999979739,
+      "durationMs": 40.25459999866143,
+      "portionAfterLastOriginByteMs": 40.25459999866143
+    },
+    {
+      "stage": "renameAndPin",
+      "thread": 672,
+      "startMs": 726.7219999994268,
+      "endMs": 727.7265999982774,
+      "durationMs": 1.0045999988506082,
+      "portionAfterLastOriginByteMs": 1.0045999988506082
+    },
+    {
+      "stage": "catalogSave",
+      "thread": 672,
+      "startMs": 728.0275999983132,
+      "endMs": 760.2362999987236,
+      "durationMs": 32.20870000041032,
+      "portionAfterLastOriginByteMs": 32.20870000041032
+    },
+    {
+      "stage": "releaseAcceptedFile",
+      "thread": 672,
+      "startMs": 760.2785999988555,
+      "endMs": 760.3093999987323,
+      "durationMs": 0.03079999987676274,
+      "portionAfterLastOriginByteMs": 0.03079999987676274
+    },
+    {
+      "stage": "managerStop",
+      "thread": 16320,
+      "startMs": 767.2710999977426,
+      "endMs": 767.9747999991378,
+      "durationMs": 0.7037000013951911,
+      "portionAfterLastOriginByteMs": 0.7037000013951911
+    },
+    {
+      "stage": "exitInstance",
+      "thread": 16320,
+      "startMs": 782.4210999988281,
+      "endMs": 784.6650999981648,
+      "durationMs": 2.2439999993366655,
+      "portionAfterLastOriginByteMs": 2.2439999993366655
+    }
+  ],
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "hashMatches": true,
+  "finishPhases": {
+    "AdvisoryHashInput": "write-buffer",
+    "AdvisoryHashOverlap": true,
+    "AdvisoryHashSeconds": 0.1306926,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 4.1e-06,
+    "Content": 0.0004851,
+    "DirectSize": 1.57e-05,
+    "FlushPublished": 0.6270144,
+    "Hash": 5.39e-05,
+    "HashMode": "deferred",
+    "LateHash": 4.74e-05,
+    "PrePublicationMetadata": 0.0050997,
+    "PrefetchReceipt": 1.5e-06,
+    "PreparedTransferFinalizeSeconds": 0.6341596,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 0.0001269,
+    "PublishedFileFlush": 0.6267308,
+    "PublishedFileOpen": 0.0001053,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0013907,
+    "SettleDestination": 0.001119,
+    "SettleLengthQuery": 9.55e-05,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.0001323,
+    "SettleSnapshot": 2.71e-05,
+    "SettleValidateFolder": 8e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0006807,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "publicationPhases": {
+    "IntentOperations": {
+      "bytes-written": 0.0001254,
+      "directories-ready": 0.0010141,
+      "publish": 0.0010583,
+      "temporary-flushed": 0.0378647,
+      "temporary-opened": 0.0001877
+    },
+    "PrepareIntent": 0.0004703,
+    "PrepareSource": 0.000227,
+    "Rename": 0.0011287,
+    "TimingScope": "through-rename-before-final-catalog-save",
+    "VerifyIdentity": 1.6e-06,
+    "WriteIntent": 0.040255
+  },
+  "httpJoinWaits": {
+    "OrderedSettlementSeconds": 0.0,
+    "PrefinishFinishSeconds": 9.97e-05,
+    "PrefixHasherSeconds": 5e-07,
+    "ReceiverThreadsSeconds": 1.4525936
+  },
+  "prefinishWriteback": {
+    "Adjustments": 0,
+    "DiscardedPending": false,
+    "Errors": 0,
+    "FinishWaitSeconds": 9.97e-05,
+    "Flushes": 7,
+    "InFlightAtFinish": false,
+    "LeadBytes": 0,
+    "LongestFlushSeconds": 1.2e-06,
+    "Mode": "data-only",
+    "Seconds": 7.3999999999999995e-06,
+    "WakeNotifications": 7
+  }
+}

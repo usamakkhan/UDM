@@ -1,0 +1,324 @@
+{
+  "version": "8.41",
+  "extensionSourceVersion": "0.72.5",
+  "passed": true,
+  "focusedChecks": 817,
+  "suites": [
+    {
+      "name": "PublicationPreparationTests",
+      "passed": true,
+      "checks": 87,
+      "resultSha256": "DE91CBDB09816FE5DB64914E5487865BD0635CB8021C10E717E361D9577034EB"
+    },
+    {
+      "name": "PublicationOwnershipTests",
+      "passed": true,
+      "checks": 186,
+      "resultSha256": "E684719634F613224273BFE43C641307FFC13EDBC9FFF73D5F6C42FE8D237123"
+    },
+    {
+      "name": "PublicationCommitTests",
+      "passed": true,
+      "checks": 347,
+      "resultSha256": "761B25F36FF70724F18F5E5852DD98BDEA12BF2309CF387A07D9ED5A6F4444B4"
+    },
+    {
+      "name": "PublicationRecoveryTests",
+      "passed": true,
+      "checks": 52,
+      "resultSha256": "2BBA6A9CAD20B0FF14B501F6896C3BC8B518091158D2A8896E19339EC8967BF4"
+    },
+    {
+      "name": "CompletedCheckpointTests",
+      "passed": true,
+      "checks": 145,
+      "resultSha256": "AA93A7E13C3CD8CE9717DBA344B244C3EF84E46ECF618A5EA38D13CBDE1F3CE0"
+    }
+  ],
+  "binaries": [
+    {
+      "name": "Udm.Automation.exe",
+      "version": "8.41",
+      "sha256": "D3A2A5CB24380104B0A014CCB19C4750FB433EC0E6A6C06096B7025CAA1F5546"
+    },
+    {
+      "name": "Udm.CompletedCheckpointTests.exe",
+      "version": "8.41",
+      "sha256": "78D4E340CE9BF1FB4D2EBA9C54B8A405376B97E09D41FA151629C86829DDE9B1"
+    },
+    {
+      "name": "UDM.exe",
+      "version": "8.41",
+      "sha256": "C6E462FD393491519FC8A6B5C990A909AFE990B7FE58CCD164C9B5D2A5ADDCE9"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "version": "8.41",
+      "sha256": "0A86ACE90B07CE9447A9CDA23E7437379B28510F3D7CB816591526D448B9C0F3"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "version": "8.41",
+      "sha256": "482ADAAA05B738C1DFB0F25D7A080E80A34D649FC57D865DFA4C9485410EE487"
+    },
+    {
+      "name": "Udm.PublicationCommitTests.exe",
+      "version": "8.41",
+      "sha256": "CE2BCB01BA6FDDCC1EADC369F7B22044028AC8F5F3457C0E14E98BF27F924C24"
+    },
+    {
+      "name": "Udm.PublicationOwnershipTests.exe",
+      "version": "8.41",
+      "sha256": "B6818776CC9EE78089BF852CCD77015AB03D8FDF941C25C3E08DE3AECD33D618"
+    },
+    {
+      "name": "Udm.PublicationPreparationTests.exe",
+      "version": "8.41",
+      "sha256": "70FBC162F71B61705132365A41495DAB7939B83C9C71A167C641A64046F7D45B"
+    },
+    {
+      "name": "Udm.PublicationRecoveryTests.exe",
+      "version": "8.41",
+      "sha256": "0A3D0DA903C1686345DD992400B07219F74C82091485E2003F6161A065DC21D5"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "version": "8.41",
+      "sha256": "7971DAA095137BB8EC6B0E4B3BF77D806B76812E3925916A1E0B9CDBC5D060B6"
+    }
+  ],
+  "coreObjects": [
+    {
+      "name": "Core.obj",
+      "sha256": "4A3F03D95D61DA714899F7B8B3F66DA3515C98D0E56D8249EAC4F2F496CDAC6A",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "PacProxy.obj",
+      "sha256": "FCAB2F578E05A518A51414C0C205E31848B214AB0E0E6B897466B9C799C3ED2E",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Queue.obj",
+      "sha256": "37C09256674EB840C981D997D4F81A53EB2663E424776A13AA62EF745E585EAE",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "FileWorkflows.obj",
+      "sha256": "51E7B9B73D20329348925F9D0D8A2F24A9457642740EF622F87441A730C8AC94",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Duplicates.obj",
+      "sha256": "042581C2F3572D4E8D16BBD8AF8A206F17F043523A2F06238FC9BEE1DA08EC8A",
+      "storage": "private 8.41"
+    },
+    {
+      "name": "Transfer.obj",
+      "sha256": "FF953DA4427A99533F5E509F9542108B0F98EB3859BD13013F25A3294FE3195F",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Grabber.obj",
+      "sha256": "EBCB2D905A42CE52B03016666F4D02261F46FD99BE9BF1555CE4186635DD03F4",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "GrabberLinks.obj",
+      "sha256": "3A8D3CEB1312BF10AB14081E0D0E55C98E8A3E05C7AB16D250F2691875F69A7D",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Streaming.obj",
+      "sha256": "F2F2E07B7703D3056F95EF2EAC3C4ECAB18064D21F53C3253D654BB07A7A317B",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Adaptive.obj",
+      "sha256": "9026CABB54538FCE3F0CBB17443489A3DACA683B73545D90DB11D39058C7F3D2",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "DashManifest.obj",
+      "sha256": "87C586EDBBF88A6998A676227C0516A223ADD71365AFCB276063C47A40A4F386",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "YouTubePlayer.obj",
+      "sha256": "C043AB327E8DE99208F9D31AB866539C1CE2A58846BCBC354352991BC7DAC4B5",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Bridge.obj",
+      "sha256": "D118E698C7665B844DD1ADAD4206EF62B9B94065707376EEFFB5972710CE3F96",
+      "storage": "private 8.41"
+    },
+    {
+      "name": "Network.obj",
+      "sha256": "0944CAECDFF9053744E7A3C8BA92C69A2997D9014CC71998994990EC8301A64A",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "SocksProxy.obj",
+      "sha256": "668D20053C7F4B4334754C82AEFEE9852F724CEAD9C4D306A446988C4FED5918",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "OfflineSite.obj",
+      "sha256": "46F70E97EF79391FCB7A481C50BCA8A64D32F5A4EE7ADAE55023F6B16B8B2624",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "DialUp.obj",
+      "sha256": "B09BAED29BDA60FA70B7106468164709CF72A4A45526F3102A2FE140B38F5427",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Ftp.obj",
+      "sha256": "E8B79A24F455D933CF3CC29F594B421E6FBF2053CC8B6817402C49545B5E0C73",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "DownloadPreview.obj",
+      "sha256": "A0BF29E3D04EC94C41D302DE7770760A1D1E2EA126C203BF29F9CB03A742A550",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "ZipPreview.obj",
+      "sha256": "D6C488653F2594FA4100735A9AE756BA84D7BAB84DB364C30283F703C7F5FE26",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "QueueWake.obj",
+      "sha256": "F9FED92B62F8DEBD2C1622660CF821A0A91AF76461711019D5DC70867C854DDC",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "Scanner.obj",
+      "sha256": "999F50C4CB249189E2C1A5ED71E1DEDA5D18D3495CA4C9BF2176DC7307BBE4C3",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "CaptureExclusions.obj",
+      "sha256": "D027785AE9B16FB99A2656EABFA2D17D11B202DFB76CB00DE9497C6D6CC07B95",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "CaptureAdmission.obj",
+      "sha256": "A005EBD49BDF253F0ED977A8B4DDA4EFF7A665A876611FF29F60E781458BB171",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-adler32.obj",
+      "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-crc32.obj",
+      "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-inffast.obj",
+      "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-inflate.obj",
+      "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-inftrees.obj",
+      "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "zlib-zutil.obj",
+      "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-constants.obj",
+      "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-context.obj",
+      "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-dictionary.obj",
+      "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-platform.obj",
+      "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-shared_dictionary.obj",
+      "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-common-transform.obj",
+      "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-bit_reader.obj",
+      "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-decode.obj",
+      "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-huffman.obj",
+      "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-prefix.obj",
+      "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-state.obj",
+      "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1",
+      "storage": "canonical 8.39"
+    },
+    {
+      "name": "brotli-dec-static_init.obj",
+      "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188",
+      "storage": "canonical 8.39"
+    }
+  ],
+  "redBaseline": {
+    "version": "8.40",
+    "failedAsExpected": true,
+    "case": "Already-renamed real publication; concurrent writer admitted while catalog acceptance held",
+    "error": "Verified recovered bytes reject a concurrent writer until catalog acceptance"
+  },
+  "canonical839CoreUnchanged": true,
+  "protectedPersonalCatalogsAndInstalledExecutableUnchanged": true,
+  "installedVersion": "8.32",
+  "installationPerformed": false,
+  "performanceParityVerified": false,
+  "recoveryModelMutexReleased": false,
+  "remaining": [
+    "Reserved recovery transaction and caller migration",
+    "Installed runtime comparison including background work",
+    "Retained sequential/split finishing delays"
+  ],
+  "cleanup": {
+    "logicalBytesRemoved": 99099085,
+    "files": 447,
+    "skippedPaths": 2
+  }
+}

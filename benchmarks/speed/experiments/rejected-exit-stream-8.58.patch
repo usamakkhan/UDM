@@ -1,0 +1,54 @@
+--- a/benchmarks/speed/finish_user_io_agent.js
++++ b/benchmarks/speed/finish_user_io_agent.js
+@@ -2,18 +2,23 @@
+ // Diagnostic observation only. Never replaces a function, argument or result.
+ // Records only paths containing the caller's unique owned-workload token.
+ const records = [], files = new Map(), mappings = new Map(), listeners = [];
+-let armed = false, dropped = 0, sequence = 0;
++let armed = false, streamed = false, dropped = 0, sequence = 0;
+ const limit = 12000;
+ const nativeResolvedSamples = [];
+ const nativeMetrics = { calls: 0, pathsResolved: 0, pathsMatched: 0, pathFailures: 0, nonDiskSkipped: 0, fileTypeFailures: 0 };
+ const kernel = Process.getModuleByName('kernel32.dll');
+-const counter = new NativeFunction(kernel.getExportByName('QueryPerformanceCounter'), 'bool', ['pointer']);
++const counter = new NativeFunction(kernel.getExportByName('QueryPerformanceCounter'), 'bool', ['pointer'], { scheduling: 'exclusive' });
+ const frequency = new NativeFunction(kernel.getExportByName('QueryPerformanceFrequency'), 'bool', ['pointer']);
+ const clock = Memory.alloc(8);
+ if (!frequency(clock)) throw new Error('QueryPerformanceFrequency failed');
+ const hz = clock.readS64().toNumber();
+ function ticks() { if (!counter(clock)) throw new Error('QueryPerformanceCounter failed'); return clock.readS64().toNumber(); }
+-function emit(record) { if (records.length < limit) records.push(record); else ++dropped; }
++function emit(record) {
++  if (records.length < limit) {
++    records.push(record);
++    if (streamed) send({ type: 'owned-io-event', record });
++  } else ++dropped;
++}
+ function text(p, wide) { try { return (wide ? p.readUtf16String() : p.readAnsiString()).slice(0, 32760); } catch (_) { return ''; } }
+ function valid(h) { return !h.isNull() && !h.equals(ptr(-1)); }
+ function install(name, callbacks) {
+@@ -23,9 +28,10 @@
+ function snapshot() { return { frequency: hz, now: ticks(), dropped, nativeMetrics, nativeResolvedSamples, openFiles: files.size, openMappings: mappings.size, records }; }
+ rpc.exports = {
+   identity() { return { pid: Process.id, image: Process.mainModule.path, arch: Process.arch, frequency: hz }; },
+-  start(token) {
++  start(token, stream = false) {
++    if (typeof stream !== 'boolean') throw new Error('Stream mode must be boolean');
+     if (armed || !/^[a-z0-9]{24,64}$/.test(token)) throw new Error('A fresh unique workload token is required');
+-    armed = true;
++    armed = true; streamed = stream;
+     const matches = path => {
+       const lower = path.toLowerCase();
+       if (lower.includes(token)) return true;
+@@ -168,6 +174,11 @@
+         }
+       }));
+     }
++    if (streamed) listeners.push(Interceptor.attach(ntdll.getExportByName('RtlExitUserProcess'), {
++      onEnter(args) {
++        send({ type: 'owned-io-terminal', exitStatus: args[0].toUInt32(), snapshot: snapshot() });
++      }
++    }));
+     Interceptor.flush();
+     return { armed: true, hooks: listeners.length, begin: ticks() };
+   },

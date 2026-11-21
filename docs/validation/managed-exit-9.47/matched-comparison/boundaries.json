@@ -1,0 +1,89 @@
+{
+  "rows": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "releaseToAcquireMs": 0.02699999511241913,
+      "actualWriterSleepMs": 761.6268000006676,
+      "totalMs": 839.9261000007391,
+      "processWallMs": 1527.941300002567
+    },
+    {
+      "round": 1,
+      "variant": "control",
+      "releaseToAcquireMs": 16.344700001180172,
+      "actualWriterSleepMs": 765.2326000034809,
+      "totalMs": 864.3778999969363,
+      "processWallMs": 1460.3478999997606
+    },
+    {
+      "round": 1,
+      "variant": "current",
+      "releaseToAcquireMs": -0.017000004649162292,
+      "actualWriterSleepMs": 759.8354000002146,
+      "totalMs": 829.2625999972224,
+      "processWallMs": 1661.9451999940793
+    },
+    {
+      "round": 2,
+      "variant": "control",
+      "releaseToAcquireMs": 0.14719999581575394,
+      "actualWriterSleepMs": 763.7057000026107,
+      "totalMs": 1023.2322999984026,
+      "processWallMs": 1597.562700000708
+    },
+    {
+      "round": 2,
+      "variant": "current",
+      "releaseToAcquireMs": -0.031199999153614044,
+      "actualWriterSleepMs": 764.694200001657,
+      "totalMs": 844.7124999985099,
+      "processWallMs": 1461.2456999966525
+    },
+    {
+      "round": 2,
+      "variant": "baseline",
+      "releaseToAcquireMs": -0.2677000015974045,
+      "actualWriterSleepMs": 755.8596000000834,
+      "totalMs": 842.83710000664,
+      "processWallMs": 1429.9497000029078
+    },
+    {
+      "round": 3,
+      "variant": "current",
+      "releaseToAcquireMs": 0.006300002336502075,
+      "actualWriterSleepMs": 765.8382999971509,
+      "totalMs": 843.145100004971,
+      "processWallMs": 1384.4030000036582
+    },
+    {
+      "round": 3,
+      "variant": "baseline",
+      "releaseToAcquireMs": -0.3945999965071678,
+      "actualWriterSleepMs": 753.111200004816,
+      "totalMs": 832.4504000023007,
+      "processWallMs": 1432.150400003593
+    },
+    {
+      "round": 3,
+      "variant": "control",
+      "releaseToAcquireMs": 15.812399998307228,
+      "actualWriterSleepMs": 753.7899000048637,
+      "totalMs": 852.2195999994874,
+      "processWallMs": 1410.6979999996838
+    }
+  ],
+  "medianReleaseToAcquireMs": {
+    "baseline": -0.2677000015974045,
+    "control": 15.812399998307228,
+    "current": -0.017000004649162292
+  },
+  "medianTotalMs": {
+    "baseline": 839.9261000007391,
+    "control": 864.3778999969363,
+    "current": 843.145100004971
+  },
+  "matchedMedianTotalGatePassed": false,
+  "prior946RegressionRetained": true,
+  "installedIdmComparison": false
+}

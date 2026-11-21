@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "baseline": "9.2",
+  "changes": [
+    {
+      "path": "browser/chromium/manifest.json",
+      "baseline": "837D16B3889E4C83448D89E715A19E8FC9841564A95FB9A6831306A5A949AF01",
+      "current": "0BCCF7D1B92013FD82AFF896FA69AEC9A5D7C19958D1A0551D0BBAB44C6E5961"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "baseline": "43BE231DCF639334668B1B034B7E2EADC6B914501891523F4276D0251619E6BA",
+      "current": "5B2ABB0BBCFB0574C4C998183851F579B3974DE26D1F078ECC30869374499615"
+    },
+    {
+      "path": "native/CapturePresentationUiTests.cpp",
+      "baseline": "258F585753EB3F5BCE439335E695165AF109AB158189B9B742BE1B6830920510",
+      "current": "6C908CA276E018F88F9EEE737C4ABB285226A4A1DFB1C581BB7DD483ECE89F39"
+    },
+    {
+      "path": "native/Version.hpp",
+      "baseline": "54F2570A4F05998F86FA51379C144E17B160377204B117E51FBBE68658E1F3AF",
+      "current": "8009A83934D6B4DF8721C0E7C9644C795C303B60F1589190E87D7E79D28D4F31"
+    }
+  ],
+  "productionBehaviorSourcesUnchanged": true,
+  "baselineBackendAssertions": 3334,
+  "baselineBackendNotRelabeledAsCurrent": true,
+  "currentBackendAssertions": 122
+}

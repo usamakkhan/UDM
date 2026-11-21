@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "checks": 88,
+  "runs": [
+    {
+      "drive": "C",
+      "checks": 44,
+      "passed": true,
+      "binarySha256": "F10071A9517420A6BF562B1EA18F3F95F3DEDC1F2D2CFDAACCA8782F29242C16",
+      "payloads": [
+        {
+          "name": "ordered-file.bin",
+          "bytes": 262144,
+          "sha256": "31A1F9DEA0169551092D05E8BF4A446228C8C3EB4C9B713C66ADCB7FD53C89BE"
+        },
+        {
+          "name": "paused-file.bin",
+          "bytes": 8192,
+          "sha256": "89C152EAFCEF9BEF9C261F780939B420AF64306FC23E1A754269CAF6C050C63E"
+        }
+      ]
+    },
+    {
+      "drive": "D",
+      "checks": 44,
+      "passed": true,
+      "binarySha256": "F10071A9517420A6BF562B1EA18F3F95F3DEDC1F2D2CFDAACCA8782F29242C16",
+      "payloads": [
+        {
+          "name": "ordered-file.bin",
+          "bytes": 262144,
+          "sha256": "31A1F9DEA0169551092D05E8BF4A446228C8C3EB4C9B713C66ADCB7FD53C89BE"
+        },
+        {
+          "name": "paused-file.bin",
+          "bytes": 8192,
+          "sha256": "89C152EAFCEF9BEF9C261F780939B420AF64306FC23E1A754269CAF6C050C63E"
+        }
+      ]
+    }
+  ],
+  "initialChecksExcludedFromAggregate": 37,
+  "productIntegrated": false,
+  "nativeVersionUnchanged": "8.59",
+  "extensionVersionUnchanged": "0.72.23",
+  "durabilityBarrierInComponent": false,
+  "performanceCompared": false,
+  "limits": [
+    "The prototype has a separate budget slot; it must reuse the existing cache lease/storage before activation.",
+    "Written spans acknowledge a callback that returned success; they are not a completed durability barrier.",
+    "Production resume snapshot overlays, response ownership, cancellation/error propagation and publication integration are not implemented.",
+    "The callback must complete every requested byte or throw; partial-return detection belongs to the storage adapter."
+  ]
+}

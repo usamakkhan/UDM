@@ -1,0 +1,12 @@
+--- native/MainFeatures.hpp@9.56
++++ native/MainFeatures.hpp@9.55
+@@ -138,8 +138,7 @@
+    };working(true);read();
+   };d.DoModal();task.finish();
+  }
+-#include "AppearanceCommandUi.hpp"
+- void chooseFont(){LOGFONTW value{};font.GetLogFont(&value);CFontDialog d(&value,CF_SCREENFONTS|CF_INITTOLOGFONTSTRUCT|CF_LIMITSIZE,nullptr,this);d.m_cf.nSizeMin=6;d.m_cf.nSizeMax=18;if(d.DoModal()!=IDOK)return;d.GetCurrentFont(&value);startAppearanceCommand({AppearanceChange::Font,utf8(value.lfFaceName),std::clamp((int)(std::abs(value.lfHeight)/scale),8,24),(int)value.lfWeight});}
++ void chooseFont(){LOGFONTW value{};font.GetLogFont(&value);CFontDialog d(&value,CF_SCREENFONTS|CF_INITTOLOGFONTSTRUCT|CF_LIMITSIZE,nullptr,this);d.m_cf.nSizeMin=6;d.m_cf.nSizeMax=18;if(d.DoModal()!=IDOK)return;d.GetCurrentFont(&value);auto p=preferences();p["FontName"]=utf8(value.lfFaceName);p["FontHeight"]=std::clamp((int)(std::abs(value.lfHeight)/scale),8,24);p["FontWeight"]=value.lfWeight;manager.setSettings(p);applyAppearance();}
+  void refreshSystemTheme(){const auto settings=repaintAppearancePreferences();uiDark=useDarkUi(yes(settings,"DarkMode"),windowsHighContrast());themeFrame(m_hWnd);menuTheme.apply(m_hWnd,menu.GetSafeHmenu(),uiDark,windowDpi());table.theme(true);themeScrollbars(tree.GetSafeHwnd());status.Invalidate();tree.SetBkColor(uiDark?CategoryPaneFrame::darkTree:uiBackground());tree.SetTextColor(uiDark?RGB(255,255,255):uiForeground());refreshOpenForms();if(basket&&basket->GetSafeHwnd())basket->refreshTheme();RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);renderedAppearance["DarkMode"]=yes(settings,"DarkMode");}
+  afx_msg void OnSysColorChange(){CFrameWnd::OnSysColorChange();if(table.GetSafeHwnd())refreshSystemTheme();}
+  afx_msg void OnSettingChange(UINT flags,LPCTSTR section){CFrameWnd::OnSettingChange(flags,section);listOrderCache.clear();invalidateDownloadStatusLocale();for(auto& row:rowSnapshots)row.reset();if(table.GetSafeHwnd())refreshSystemTheme();}

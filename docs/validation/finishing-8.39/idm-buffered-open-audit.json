@@ -1,0 +1,72 @@
+{
+  "target": "IDMan.exe",
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "readOnly": true,
+  "method": "PE32 import-slot mapping and original-byte checks, independently decoded by pinned Microsoft DUMPBIN /DISASM /RANGE from aligned 0x570320 and 0x570470 procedure entries.",
+  "createFileWImportPreferredVa": "0x6944a0",
+  "calls": [
+    {
+      "preferredVa": "0x57033f",
+      "desiredAccess": "0xc0000000",
+      "shareMode": 1,
+      "securityAttributes": 0,
+      "creationDisposition": 4,
+      "flagsAndAttributes": 0,
+      "templateFile": 0,
+      "returnHandleStoredAtObjectOffset": "0x14",
+      "straightLineArgumentBytesVerified": true
+    },
+    {
+      "preferredVa": "0x57048d",
+      "desiredAccess": "0xc0000000",
+      "shareMode": 1,
+      "securityAttributes": 0,
+      "creationDisposition": 4,
+      "flagsAndAttributes": 0,
+      "templateFile": 0,
+      "returnHandleStoredAtObjectOffset": "0x14",
+      "straightLineArgumentBytesVerified": true
+    }
+  ],
+  "flushCandidate": {
+    "entryPreferredVa": "0x570290",
+    "importCallPreferredVa": "0x570294",
+    "importPreferredVa": "0x6943a8",
+    "handleObjectOffset": "0x14",
+    "bytesVerified": true
+  },
+  "interpretation": {
+    "twoObservedOpensUseBufferedIO": true,
+    "twoObservedOpensUseWriteThrough": false,
+    "twoObservedOpensUseOverlappedIO": false,
+    "sameObjectFieldLayoutObserved": true,
+    "sameRuntimeObjectProven": false,
+    "benchmarkDownloadPathProven": false,
+    "rootCauseVerified": false
+  },
+  "rea": {
+    "version": "6.5.0",
+    "configuredDoctorHealthy": true,
+    "toolsExpected": 207,
+    "toolsObserved": 207,
+    "deepAnalysisRepeated": false,
+    "priorDeepAnalysisResult": "Ghidra startup timeout at 330 seconds; see finishing-8.33/rea-analysis-attempt.json"
+  },
+  "traceAttempt04": {
+    "recordingStarted": false,
+    "workloadStarted": false,
+    "result": "Windows canceled elevation before helper start; no current owned recorder observed"
+  },
+  "productSourceChanged": false,
+  "installedAppChanged": false,
+  "newPayloadsCreated": false,
+  "limitations": [
+    "The handle layout alone does not prove shared class identity, same runtime object, caller reachability, filename or transfer mode.",
+    "Other file-open paths, dynamic resolution and dependencies remain unexamined.",
+    "This does not establish flush cadence, execution frequency, disk queueing, filter overhead or durability equivalence."
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers"
+  ]
+}

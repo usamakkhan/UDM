@@ -1,0 +1,28 @@
+--- native/Transfer.cpp@9.61
++++ native/Transfer.cpp@9.60
+@@ -2571,7 +2571,6 @@
+  }
+  phases["StageOutput"]=phase(stageMark);
+  auto finalCommit=PreparedTransferCommit::available(m,job,cancel);
+- struct JoinFinalWriteback {PreparedTransferCommit* owner;bool& handedOff;~JoinFinalWriteback(){if(owner&&!handedOff)owner->joinWriteback();}} joinFinalWriteback{finalCommit,stageHandedOff};
+  const bool prepareFinal=finalCommit&&ownsConnection&&single&&stripped<=0&&!copiedAcrossVolumes&&!post&&!ftp&&!yes(j,"SparseDataFile",true)&&num(j,"Size")>0&&num(j,"Size")<=64*1048576&&str(j,"ReplacementOf").empty()&&fixedVolume(data);
+ 
+  struct AdvisoryHashResult {std::string digest;double seconds=0;};std::shared_ptr<Cancel> advisoryCancel;std::future<AdvisoryHashResult> advisoryHash;
+@@ -2624,9 +2623,6 @@
+   // completed body unnecessarily and may invoke extra filesystem/filter work.
+   const bool normalize=!copiedAcrossVolumes&&yes(j,"SparseDataFile",true);
+   if(prepareFinal)finalCommit->beginFinalization();
+-  const bool overlapping=prepareFinal&&finalCommit->startWriteback(data,normalize);
+-  if(overlapping){phases["PublishedWritebackOverlap"]=true;phases["PublishedWritebackTimingScope"]="worker-operation-durations-and-owner-join";}
+-  else{
+   UDM_FINISH_POINT("output-flush-begin");const auto writeback=publishedWriteback(copiedAcrossVolumes?job->target():data,normalize);
+   UDM_FINISH_POINT("output-flush-end");phases["PublishedFileOpen"]=writeback.openSeconds;phases["PublishedSparseNormalize"]=writeback.normalizeSeconds;
+   phases["PublishedFileFlush"]=writeback.flushSeconds;phases["PublishedFileClose"]=writeback.closeSeconds;phases["PublishedWriteAccess"]="write-only";
+@@ -2634,7 +2630,6 @@
+   if(!writeback.confirmed){keepParts=true;Lock lock(m.mutex);job->data["FinishWarning"]="The published file's final writeback or normalization could not be confirmed; the downloaded data was kept in the parts folder.";}
+   phases["FlushPublished"]=phase(mark);phases["Unsparse"]=normalize?phases["FlushPublished"]:Json(0.0);phases["SparseNormalization"]=normalize?"requested":"not-needed";
+   {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+-  }
+  }
+  if(deferredHash){ // Failure leaves the advisory digest blank and preserves completion.
+   // The digest is advisory: a stop or exit while it runs leaves it blank rather than holding the thread.

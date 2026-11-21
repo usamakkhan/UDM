@@ -1,0 +1,76 @@
+{
+  "preflightOnly": true,
+  "qualification": false,
+  "sourceVersion": "9.34",
+  "linkedCoreVersion": "9.33",
+  "result": {
+    "checks": [
+      {
+        "name": "Initial batch preparation publishes an owned result",
+        "passed": true
+      },
+      {
+        "name": "Settings and categories are captured from the same catalog read",
+        "passed": true
+      },
+      {
+        "name": "Stored queue identities and role/collision labels belong to that same cohort",
+        "passed": true
+      },
+      {
+        "name": "Initial preparation changes no settings, jobs, catalog or command guard",
+        "passed": true
+      },
+      {
+        "name": "Preview policy refresh observes current settings without mutating an older snapshot",
+        "passed": true
+      },
+      {
+        "name": "Preview-only preparation skips unused category and queue work",
+        "passed": true
+      },
+      {
+        "name": "A real writer holds Manager before the initial batch read",
+        "passed": true
+      },
+      {
+        "name": "The initial reader returns without waiting for the catalog writer",
+        "passed": true
+      },
+      {
+        "name": "An initial batch owner cannot start duplicate readers",
+        "passed": true
+      },
+      {
+        "name": "Cancellation joins acquisition before the external writer releases",
+        "passed": true
+      },
+      {
+        "name": "Another accepted command defers initial batch reading",
+        "passed": true
+      },
+      {
+        "name": "Cancelling the initial read never clears another command's guard",
+        "passed": true
+      },
+      {
+        "name": "Read errors are returned with their worker consumed",
+        "passed": true
+      },
+      {
+        "name": "The same owner can retry initial preparation after a read failure",
+        "passed": true
+      },
+      {
+        "name": "Notification failure cannot undo the published cohort",
+        "passed": true
+      },
+      {
+        "name": "Repeated cleanup leaves no reader or accepted ownership behind",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  }
+}

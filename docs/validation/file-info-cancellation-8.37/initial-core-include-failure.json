@@ -1,0 +1,8 @@
+{
+  "failedBeforeProductionBinariesChanged": true,
+  "source": "native/Streaming.cpp",
+  "compilerError": "C1083: Cannot open include file brotli/decode.h",
+  "cause": "The private incremental configuration lacked the include directory already present in native/build.ps1.",
+  "correction": "Added native/vendor/brotli/c/include and rebuilt all 24 native core units. Eighteen canonical zlib/Brotli objects remained unchanged. Initial logs and partial hashes retained privately.",
+  "productSourceChangedForBuildCorrection": false
+}

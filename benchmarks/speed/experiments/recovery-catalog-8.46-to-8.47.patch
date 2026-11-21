@@ -1,0 +1,587 @@
+--- a/native/PublicationCatalogProof.hpp
++++ b/native/PublicationCatalogProof.hpp
+@@ -5,7 +5,25 @@
+ // In-process evidence tied to the exact serialized catalog snapshot. Neither
+ // an ID nor an unrelated newer sequence can acknowledge a publication.
+ class PublicationCatalogProof {
+- struct Entry {Json expected,related;std::string id,job,relatedJob;std::atomic<unsigned long long> durable{0};size_t captures=0;bool owner=true,resolving=false,receipt=false;explicit Entry(Json row,bool privateReceipt):expected(std::move(row)),id(str(expected,"PublicationCommitId")),job(str(expected,"Id")),receipt(privateReceipt){};};
++public:
++ struct RecoveryRow {Json before,after;bool inCatalog=true;};
++private:
++ struct RecoveryBinding {Json values=Json::object();std::set<std::string> absent;std::string id;bool inCatalog=true;};
++ static RecoveryBinding recoveryBinding(const RecoveryRow& row){
++  RecoveryBinding result;result.id=str(row.after,"Id");result.inCatalog=row.inCatalog;
++  if(result.id!=str(row.before,"Id")||!std::regex_match(result.id,std::regex("[a-fA-F0-9]{32}"))||!fs::path(wide(str(row.after,"Folder"))).is_absolute()||str(row.after,"FileName").empty()||safeName(str(row.after,"FileName"))!=str(row.after,"FileName"))throw std::runtime_error("Invalid recovery catalog binding.");
++  for(auto it=row.after.begin();it!=row.after.end();++it)if(!row.before.contains(it.key())||row.before.at(it.key())!=it.value())result.values[it.key()]=it.value();
++  for(auto it=row.before.begin();it!=row.before.end();++it)if(!row.after.contains(it.key()))result.absent.insert(it.key());
++  for(const char* key:{"Id","Folder","FileName","Status","Size","Received","Sha256","Finished","PublicationCommitId"}){if(row.after.contains(key))result.values[key]=row.after.at(key);else result.absent.insert(key);}
++  return result;
++ }
++ static bool recoveryRowMatches(const RecoveryBinding& expected,const Json& row){for(auto it=expected.values.begin();it!=expected.values.end();++it)if(!row.contains(it.key())||row.at(it.key())!=it.value())return false;for(const auto& key:expected.absent)if(row.contains(key))return false;return true;}
++ static bool containsRecoveryRow(const Json& catalog,const RecoveryBinding& expected){
++  auto downloads=catalog.find("Downloads");if(downloads==catalog.end()||!downloads->is_array())return false;std::vector<const Json*> pending;for(const auto& row:*downloads)pending.push_back(&row);size_t count=0;bool matches=false;
++  while(!pending.empty()){const auto& row=*pending.back();pending.pop_back();if(!row.is_object())continue;if(str(row,"Id")==expected.id){++count;matches=recoveryRowMatches(expected,row);}for(const char* key:{"Video","Audio"})if(row.contains(key)&&row.at(key).is_object())pending.push_back(&row.at(key));}
++  return expected.inCatalog?count==1&&matches:count==0;
++ }
++ struct Entry {std::vector<RecoveryBinding> recovery;Json recoveryReceipt;Json expected,related;std::string id,job,relatedJob;std::atomic<unsigned long long> durable{0};size_t captures=0;bool owner=true,resolving=false,receipt=false;explicit Entry(Json row,bool privateReceipt):expected(std::move(row)),id(str(expected,"PublicationCommitId")),job(str(expected,"Id")),receipt(privateReceipt){};};
+  struct State {std::mutex mutex;std::condition_variable changed;std::map<const Manager*,std::map<std::string,std::shared_ptr<Entry>>> entries;};
+  static State& state(){static auto* value=new State;return *value;}
+  static void retire(State& state,const Manager* manager,const std::shared_ptr<Entry>& entry){if(entry->owner||entry->captures)return;auto found=state.entries.find(manager);if(found==state.entries.end())return;auto item=found->second.find(entry->id);if(item!=found->second.end()&&item->second==entry)found->second.erase(item);if(found->second.empty())state.entries.erase(found);}
+@@ -14,6 +32,7 @@
+   while(!pending.empty()){const auto& row=*pending.back();pending.pop_back();if(!row.is_object())continue;if(str(row,"Id")==str(expected,"Id")){++matches;for(auto it=expected.begin();it!=expected.end();++it)if(!row.contains(it.key())||row.at(it.key())!=it.value())return false;}for(const char* child:{"Video","Audio"})if(row.contains(child)&&row.at(child).is_object())pending.push_back(&row.at(child));}return matches==1;
+  }
+  static bool contains(const Json& catalog,const Entry& entry){
++  if(!entry.recovery.empty()){for(const auto& row:entry.recovery)if(!containsRecoveryRow(catalog,row))return false;if(!entry.recoveryReceipt.is_null()){auto receipts=catalog.find("PublicationReceipts");if(receipts==catalog.end()||!receipts->is_object())return false;auto found=receipts->find(str(entry.recoveryReceipt,"PublicationCommitId"));if(found==receipts->end()||*found!=entry.recoveryReceipt)return false;}return true;}
+   if(!entry.related.is_null()&&!containsRow(catalog,entry.related))return false;
+   if(!entry.receipt)return containsRow(catalog,entry.expected);
+   auto receipts=catalog.find("PublicationReceipts");if(receipts==catalog.end()||!receipts->is_object())return false;auto found=receipts->find(entry.id);return found!=receipts->end()&&*found==entry.expected;
+@@ -50,6 +69,20 @@
+   if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&(item.second->job==entry->job||item.second->relatedJob==entry->job||(!entry->relatedJob.empty()&&(item.second->job==entry->relatedJob||item.second->relatedJob==entry->relatedJob)))))throw std::runtime_error("Another catalog publication owns this completion.");
+   if(found==shared.entries.end()){std::map<std::string,std::shared_ptr<Entry>> entries;entries.emplace(entry->id,entry);shared.entries.emplace(&manager,std::move(entries));}else found->second.emplace(entry->id,entry);return Lease(manager,std::move(entry));
+  }
++ // Recovery binds the owned row delta (including removed fields), identity
++ // and membership to actual serialized snapshots. No persisted ID or sequence
++ // alone can acknowledge a legacy/Paused/private recovery outcome.
++ static Lease prepareRecovery(const Manager& manager,const std::vector<RecoveryRow>& rows,const Json& receipt=Json()){
++  if(rows.empty()||rows.size()>2)throw std::runtime_error("Invalid recovery catalog rows.");
++  auto entry=std::make_shared<Entry>(rows.front().after,false);entry->id=guid();
++  for(const auto& row:rows){if(str(row.after,"Status")!="Complete"&&str(row.after,"Status")!="Paused")throw std::runtime_error("Invalid recovery outcome binding.");if(!row.inCatalog&&str(row.after,"Status")=="Complete"&&(receipt.is_null()||str(receipt,"Id")!=str(row.after,"Id")))throw std::runtime_error("A private recovered completion requires its exact catalog receipt.");entry->recovery.push_back(recoveryBinding(row));}
++  if(rows.size()==2){entry->relatedJob=str(rows.back().after,"Id");if(entry->relatedJob==entry->job)throw std::runtime_error("Duplicate recovery catalog row.");}
++  if(!receipt.is_null()){if(binding(receipt)!=receipt)throw std::runtime_error("Invalid private recovery receipt.");entry->recoveryReceipt=receipt;}
++  auto& shared=state();std::lock_guard<std::mutex> lock(shared.mutex);auto found=shared.entries.find(&manager);
++  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&(item.second->job==entry->job||item.second->relatedJob==entry->job||(!entry->relatedJob.empty()&&(item.second->job==entry->relatedJob||item.second->relatedJob==entry->relatedJob)))))throw std::runtime_error("Another catalog publication owns this recovery.");
++  if(found==shared.entries.end()){std::map<std::string,std::shared_ptr<Entry>> entries;entries.emplace(entry->id,entry);shared.entries.emplace(&manager,std::move(entries));}else found->second.emplace(entry->id,entry);return Lease(manager,std::move(entry));
++ }
++ static bool recoveryMatches(const Json& before,const Json& applied,const Json& current){return recoveryRowMatches(recoveryBinding(RecoveryRow{before,applied,true}),current);}
+  // Caller holds Manager::mutex. Validate all bindings before capturing any.
+  static Publication capture(const Manager& manager,const Json& catalog){auto& shared=state();std::lock_guard<std::mutex> lock(shared.mutex);auto found=shared.entries.find(&manager);if(found==shared.entries.end())return {};std::vector<std::shared_ptr<Entry>> included;
+   for(const auto& item:found->second){const auto& entry=item.second;if(!entry->owner){if(entry->captures&&!entry->durable.load(std::memory_order_acquire))throw std::runtime_error("An abandoned publication outcome is still pending.");continue;}if(entry->resolving&&!entry->durable.load(std::memory_order_acquire))throw std::runtime_error("A publication catalog outcome is being resolved. Retry shortly.");if(!contains(catalog,*entry))throw std::runtime_error("A catalog snapshot cannot omit or change its pending publication.");included.push_back(entry);}
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -181,10 +181,10 @@
+ }catch(const std::exception&){/* Cleanup never prevents opening or saving the catalog. */}}
+ 
+ OfferPresentation Manager::presentOffer(JobPtr job){
+- Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download was removed.");
++ std::unique_lock<std::recursive_mutex> lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download was removed.");
+  if(!str(job->data,"DuplicateOf").empty())throw std::runtime_error("Choose how to handle this duplicate first.");
+  if(str(job->data,"Status")=="Complete"){existingOffers.erase(job->id());return OfferPresentation::Complete;}
+- if(existingOffers.count(job->id())&&!isActive(job)&&str(job->data,"Status")!="Queued"){auto before=job->data;auto limit=job->sessionLimit;try{resume(job);}catch(...){job->data=before;job->sessionLimit=limit;throw;}}
++ if(existingOffers.count(job->id())&&!isActive(job)&&str(job->data,"Status")!="Queued"){lock.unlock();resume(job);lock.lock();if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download was removed.");if(str(job->data,"Status")=="Complete"){existingOffers.erase(job->id());return OfferPresentation::Complete;}}
+  existingOffers.erase(job->id());
+  return isActive(job)||str(job->data,"Status")=="Queued"?OfferPresentation::Progress:OfferPresentation::Information;
+ }
+@@ -195,15 +195,21 @@
+  fs::path target;std::string originalId,replacementHash,previousPath;bool registered=false,catalogBound=false;Json destinationInputs;std::function<void(const char*)> publicationObservation;std::unique_ptr<PublicationOwnership> publicationOwner;JobPtr leasedOriginal;
+  {Lock lock(mutex);if(finalCommit){const auto worker=job?active.find(job->id()):active.end();if(worker==active.end()||worker->second.get()!=cancel)throw std::runtime_error("The prepared transfer lost its worker ownership.");}if(stopping)throw std::runtime_error("UDM is closing.");if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before publishing this file.");if(!job)throw std::runtime_error("The download was removed before publication.");registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();target=job->target();originalId=str(job->data,"ReplacementOf");replacementHash=str(job->data,"ReplacementHash");previousPath=str(job->data,"PreviousPath");destinationInputs=publicationDestinationInputs(job->data);publicationObservation=catalogCheckpoint;
+   {auto pending=jobs;std::unordered_set<const Job*> seen;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;if(item==job){catalogBound=true;break;}if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}}
+-  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target};
+   if(!originalId.empty()){
+    for(const auto& item:jobs)if(item->id()==originalId)leasedOriginal=item;
+    if(!leasedOriginal||leasedOriginal==job||isActive(leasedOriginal))throw std::runtime_error("The original download changed. Its file was not replaced.");
+-   if(cancel)cancel->check();requirePublicationRecovered(*this,job);
+-   // Reconcile both roles of an older transaction before moving its file again.
+-   // A failed/locked predecessor must leave the new staging and intent untouched.
+-   recoverReplacements(leasedOriginal);
+-   if(str(leasedOriginal->data,"Status")!="Complete"||leasedOriginal->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("Recovery changed the original download. Review the destination before replacing it.");
++  }
++ }
++ if(!originalId.empty()){
++  if(cancel)cancel->check();{Lock lock(mutex);requirePublicationRecovered(*this,job);}
++  // Predecessor recovery must not inherit this new publication's model lease.
++  recoverReplacements(leasedOriginal,true);
++ }
++ {Lock lock(mutex);
++  if(stopping||catalogTransaction||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed while preparing publication. Its files were preserved.");
++  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target};
++  if(!originalId.empty()){
++   if(std::find(jobs.begin(),jobs.end(),leasedOriginal)==jobs.end()||isActive(leasedOriginal)||str(leasedOriginal->data,"Status")!="Complete"||leasedOriginal->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("Recovery changed the original download. Review the destination before replacing it.");
+    owned.push_back(leasedOriginal);destinations.push_back(leasedOriginal->target());destinations.emplace_back(wide(previousPath));
+   }
+   publicationOwner=std::make_unique<PublicationOwnership>(*this,std::move(owned),destinations);
+@@ -384,8 +390,10 @@
+  const auto from=source.lexically_normal().wstring(),to=target.lexically_normal().wstring();
+  if(CompareStringOrdinal(from.c_str(),-1,to.c_str(),-1,TRUE)!=CSTR_EQUAL)discardRetainedMediaOutput(before);
+ }
+-void Manager::recoverReplacements(JobPtr scope){
+- Lock recoveryLock(mutex);
++void Manager::recoverReplacements(JobPtr scope,bool requireCatalogMember){
++ std::unique_lock<std::recursive_mutex> recoveryLock(mutex);
++ if(stopping)throw std::runtime_error("UDM is closing.");
++ if(requireCatalogMember&&(!scope||std::find(jobs.begin(),jobs.end(),scope)==jobs.end()))throw std::runtime_error("This download is no longer in the list.");
+  auto prepareRecoveredScan=[&](Json& recovered,const Json& current){
+   const auto result=current.find("ScanResult");
+   // A journal can survive its completed catalog commit. Keep any scan
+@@ -430,8 +438,26 @@
+   }
+   auto found=publicationJobs.find(id);return found==publicationJobs.end()?JobPtr{}:found->second;
+  };
++ // Every unlocked checkpoint retains its affected job tree, destination paths,
++ // journal and verified bytes. Only detached catalog snapshots leave this lease;
++ // verification/discovery IO is migrated in the next transaction phase.
++ auto modelJob=[&](const std::string& id)->JobPtr{auto pending=jobs;std::unordered_set<const Job*> seen;JobPtr result;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;if(item->id()==id){if(result&&result!=item)throw std::runtime_error("Recovery found ambiguous catalog membership.");result=item;}if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}return result;};
++ auto recoveryPaths=[&](const std::vector<JobPtr>& owners,std::vector<fs::path> paths){auto pending=owners;std::unordered_set<const Job*> seen;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;paths.push_back(item->target());auto previous=str(item->data,"PreviousPath");if(!previous.empty())paths.emplace_back(wide(previous));if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}paths.erase(std::remove_if(paths.begin(),paths.end(),[](const fs::path& path){return path.empty();}),paths.end());return paths;};
++ struct RecoveredRow {JobPtr job;Json before,applied,destination;bool inCatalog,registered;};
++ auto capturedRow=[&](const JobPtr& job,const Json& before,bool inCatalog,bool registered){return RecoveredRow{job,before,job->data,publicationDestinationInputs(job->data),inCatalog,registered};};
++ auto checkpointRecovery=[&](const std::vector<RecoveredRow>& rows,const Json& receipt,bool inserted){
++  PublicationCatalogProof::Lease proof;std::function<void(const char*)> observation;
++  const auto rollback=[&]{for(const auto& row:rows)row.job->data=PublicationCommit::rollback(row.before,row.applied,row.job->data);if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);};
++  try{std::vector<PublicationCatalogProof::RecoveryRow> bindings;for(const auto& row:rows)bindings.push_back({row.before,row.applied,row.inCatalog});proof=PublicationCatalogProof::prepareRecovery(*this,bindings,receipt);observation=catalogCheckpoint;}catch(...){rollback();throw;}
++  recoveryLock.unlock();std::exception_ptr failure;
++  try{if(observation)observation("recovery-catalog-prepared");save();}catch(...){failure=std::current_exception();}
++  const bool accepted=proof.resolve();recoveryLock.lock();jobsById.clear();publicationJobs.clear();publicationIndexReady=false;
++  if(!accepted){rollback();proof.release();if(failure)std::rethrow_exception(failure);throw std::runtime_error("The recovered file has not been durably recorded. Its journal was preserved.");}
++  for(const auto& row:rows)if(modelJob(str(row.applied,"Id"))!=(row.inCatalog?row.job:JobPtr{})||(std::find(jobs.begin(),jobs.end(),row.job)!=jobs.end())!=row.registered||publicationDestinationInputs(row.job->data)!=row.destination||!PublicationCatalogProof::recoveryMatches(row.before,row.applied,row.job->data))throw std::runtime_error("The recovered download changed after catalog publication. Keep its files and recovery journal.");
++ };
+  auto publications=root/L"publications";
+  if(fs::exists(publications))for(const auto& entry:fs::directory_iterator(publications)){
++  if(stopping)throw std::runtime_error("UDM is closing.");
+   if(entry.path().extension()!=L".json")continue;
+   if(scope&&!scopeIds.count(utf8(entry.path().stem().wstring())))continue;
+   if(catalogTransaction)throw std::runtime_error("Recover this download before starting a catalog batch. Its publication journal has been preserved.");
+@@ -442,12 +468,18 @@
+   if(!job||entry.path().stem()!=wide(job->id())||!op.contains("Before")||!op.contains("After")||str(op["Before"],"Id")!=job->id()||str(op["After"],"Id")!=job->id())throw std::runtime_error("Publication recovery requires its preserved download record.");
+   if(!scope&&PublicationOwnership::treeOwned(*this,job))continue;
+   auto target=fs::path(wide(str(op,"Target"))),staging=fs::path(wide(str(op,"Staging")));
++  const auto rowTarget=[](const Json& row){return(fs::path(wide(str(row,"Folder")))/wide(str(row,"FileName"))).lexically_normal();};
++  if(rowTarget(op["Before"])!=target.lexically_normal()||rowTarget(op["After"])!=target.lexically_normal())throw std::runtime_error("Recovery record destinations changed. Keep its file and journal.");
+   const auto hash=str(op,"Hash");
+   const bool validIdentity=hash.empty()&&op.contains("StagedIdentity")&&op["StagedIdentity"].is_object();
+   if(target.lexically_normal()!=job->target().lexically_normal()||target.lexically_normal()==staging.lexically_normal()||
+      (!validIdentity&&!std::regex_match(hash,std::regex("[a-f0-9]{64}")))||str(op["After"],"Sha256")!=hash||
+      str(op["After"],"Status")!="Complete")throw std::runtime_error("Publication recovery paths or file identity changed. Keep the files and recovery record.");
+   const auto commitId=PublicationCommit::identity(op);PublicationCommit::validateCurrent(op,job->data);
++  if(!scope&&isActive(job))continue;
++  if(!scope&&PublicationOwnership::reserved(*this,target,job))continue;
++  const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
++  PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging}));owner.beginCommit();
+   auto before=job->data;
+   std::optional<RecoveredPublicationBytes> published;
+   if(!commitId.empty()&&str(before,"PublicationCommitId")==commitId){
+@@ -474,7 +506,7 @@
+   }
+   else job->data["Status"]="Paused";
+   Json receipt;bool insertedReceipt=false;if(ephemeral&&published){receipt=PublicationCatalogProof::binding(op["After"]);insertedReceipt=PublicationCatalogProof::installReceipt(*this,receipt);}
+-  try{save();}catch(...){job->data=before;if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
++  checkpointRecovery({capturedRow(job,before,inCatalog,registered)},receipt,insertedReceipt);
+   if(published){
+    published->release(); // Accepted catalog now owns completion; metadata/cleanup may unlink aliases.
+    if(retainedMediaOutputPath(op["Before"]).empty())markZone(target);
+@@ -484,21 +516,23 @@
+  }
+  // Older builds could publish and hash the final file before a catalog save
+  // failed, without a publication journal. Reconcile only that exact failure.
+- for(auto job:jobs){if(scope&&!scopeIds.count(job->id()))continue;if(PublicationOwnership::treeOwned(*this,job))continue;const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
++ const auto legacyJobs=jobs;for(auto job:legacyJobs){if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())continue;if(scope&&!scopeIds.count(job->id()))continue;if(isActive(job))continue;const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
+   if(str(data,"Status")!="Failed"||str(data,"Error").find("Could not replace the saved state (Windows error 1175).")!=0||str(data,"Finished").empty()||data.contains("OriginalResponse")||!str(data,"ReplacementOf").empty()||num(data,"Size",-1)<0||num(data,"Received")!=num(data,"Size")||!std::regex_match(hash,std::regex("[a-f0-9]{64}")))continue;
+   auto expected=lower(str(data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)continue;
+-  std::error_code ec;auto target=job->target();Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
++  auto target=job->target();PublicationOwnership owner(*this,{job},recoveryPaths({job},{target}));owner.beginCommit();
++  std::error_code ec;Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
+   try{if(fileHash(target)!=hash)continue;}catch(const std::exception&){continue;}
+   if(catalogTransaction)throw std::runtime_error("Recover this completed file before starting a catalog batch.");
+   auto before=job->data;auto after=completeData(before,target,hash);after["Finished"]=before["Finished"];after["QueueMember"]=retainCompletedMembership(*this,before);after["PublicationRecovered"]=date();job->data=std::move(after);
+   prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;
+-  try{save();}catch(...){job->data=before;throw;}
++  checkpointRecovery({capturedRow(job,before,true,true)},Json(),false);
+  }
+  // A completed anonymous internal file never becomes a visible download row.
+  // Its private receipt may outlive unlink until the next checkpoint or restart.
+  if(!scope&&!catalogTransaction){auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto retained=*rows;bool changed=false;for(auto it=rows->begin();it!=rows->end();++it){const auto descriptor=PublicationCatalogProof::binding(it.value());if(it.key()!=str(descriptor,"PublicationCommitId"))throw std::runtime_error("Private publication receipt identity changed.");auto target=fs::path(wide(str(descriptor,"Folder")))/wide(str(descriptor,"FileName"));if(!fs::exists(publications/(wide(str(descriptor,"Id"))+L".json"))&&!fs::exists(root/L"replacements"/(wide(str(descriptor,"Id"))+L".json"))&&!PublicationOwnership::reserved(*this,target)){retained.erase(it.key());changed=true;}}if(changed){auto previous=*rows;if(retained.empty())state.erase(rows);else rows->swap(retained);try{save();}catch(...){state["PublicationReceipts"]=std::move(previous);throw;}}}}
+  auto folder=root/L"replacements";if(!fs::exists(folder))return;
+  for(auto& entry:fs::directory_iterator(folder)){
++  if(stopping)throw std::runtime_error("UDM is closing.");
+   if(entry.path().extension()!=L".json")continue;
+   if(!scope){auto known=findPublicationJob(utf8(entry.path().stem().wstring()));if(known&&PublicationOwnership::treeOwned(*this,known))continue;}
+   // Discovery does not claim unrelated scoped journals. Parse again from the
+@@ -514,6 +548,11 @@
+   if(scope&&(isActive(job)||isActive(original)))throw std::runtime_error("Wait for the replacement and its original download to stop before recovery.");
+   ReplacementCommit::validateCurrent(op,job->data,original->data);
+   auto target=fs::path(wide(str(op,"Target"))),previous=fs::path(wide(str(op,"Previous")));
++  if(!scope&&(isActive(job)||isActive(original)||PublicationOwnership::reserved(*this,target,job)||PublicationOwnership::reserved(*this,previous,original)))continue;
++  if(str(op.at("Before"),"Id")!=job->id()||str(op.at("After"),"Id")!=job->id()||str(op.at("OriginalBefore"),"Id")!=original->id()||str(op.at("OriginalAfter"),"Id")!=original->id())throw std::runtime_error("Replacement recovery record identities changed. Keep both files and its journal.");
++  const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
++  if(modelJob(original->id())!=original)throw std::runtime_error("The recovered original history changed.");
++  PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,fs::path(wide(str(op,"Staging")))}));owner.beginCommit();
+   auto newBytes=recoverReplacementBytes(target,str(op,"NewHash"));
+   auto previousBytes=newBytes?recoverReplacementBytes(previous,str(op,"OldHash")):std::optional<RecoveredPublicationBytes>{};
+   std::optional<RecoveredPublicationBytes> originalBytes;
+@@ -536,7 +575,7 @@
+   // Prepare both records before changing live state. Preserve independent current
+   // metadata on new-format recovery; legacy journals retain their old behavior.
+   job->data.swap(recovered);original->data.swap(recoveredOriginal);
+-  try{save();}catch(...){original->data.swap(recoveredOriginal);job->data.swap(recovered);if(inserted)PublicationCatalogProof::eraseReceipt(*this,receipt);throw;}
++  checkpointRecovery({capturedRow(job,recovered,inCatalog,registered),capturedRow(original,recoveredOriginal,true,true)},receipt,inserted);
+   newBytes.reset();previousBytes.reset();originalBytes.reset(); // Catalog acceptance precedes releasing either verified version.
+   if(published)finishRetainedMediaRecovery(op.at("Before"),target);
+   journal.retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -514,14 +514,16 @@
+ JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);const auto destinationFolder=fs::absolute(fs::path(wide(folder)));folder=utf8(destinationFolder.wstring());if(relocationReserves(destinationFolder))throw std::runtime_error("That folder is reserved by a file move.");bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");filename=availableDownloadName(*this,destinationFolder,filename);auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
+ bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||PublicationOwnership::treeOwned(*this,j)||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
+ void Manager::resume(JobPtr j){
+- Lock lock(mutex);
+- if(isActive(j)){
+-  // Download Later can leave a worker finishing its receipt. Queue the user's
+-  // request without taking over its parts or starting a second worker.
+-  if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);
+-  return;
+- }
+- recoverReplacements(j);
++ {Lock lock(mutex);if(!j)throw std::runtime_error("This download is no longer in the list.");
++  if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return;}
++  if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");}
++ recoverReplacements(j,true);
++ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
++ if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return;}
++ resumeAfterRecovery(j);
++}
++// Caller owns the model lease and has already reconciled this publication tree.
++void Manager::resumeAfterRecovery(JobPtr j){
+  const auto response=j->data.find("OriginalResponse");
+  if(response!=j->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing")){
+   startOriginalResponseSave(j);return;
+@@ -594,13 +596,16 @@
+  if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
+ }
+ void Manager::remove(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
++ {Lock lock(mutex);
++  if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
++  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
++  recoverFileOperation(j);
++ }
++ // Keep the selected record until publication recovery has accepted its files.
++ recoverReplacements(j,true);
+  Lock l(mutex);
+- if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
++ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
+- recoverFileOperation(j);
+- // Preserve the selected record until its own publication tree is reconciled.
+- // Child-track and replacement journals need that record for later recovery.
+- recoverReplacements(j);
+  if(expectedComplete&&(std::find(jobs.begin(),jobs.end(),j)==jobs.end()||(str(j->data,"Status")=="Complete")!=*expectedComplete))throw std::runtime_error("The selected download changed during recovery. Review the selection before removing it.");
+  for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
+  auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
+@@ -783,9 +788,9 @@
+ void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
+ void Manager::ensureConnection(JobPtr j,const Cancel& c){Json prefs;{Lock l(mutex);prefs=state["Settings"];}ensureDialConnection(prefs,c,[this,j](const std::string& message){Lock l(mutex);if(message.empty())j->data.erase("ConnectionStatus");else j->data["ConnectionStatus"]=message;});}
+ void requestLiveHlsFinish(Manager& manager,JobPtr job){
+- Lock lock(manager.mutex);if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
++ std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
+  auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
+- if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job))manager.resume(job);
++ if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resume(job);}
+ }
+ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{PreparedTransferCommit finalCommit(*this,j,c,!prefetch);bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+   std::function<void(const char*)> completedCheckpoint;
+@@ -1061,16 +1066,14 @@
+  eraseCapturePresentations(state,job->id());try{save();}catch(...){job->data=before;restoreCaptureRows(state,captures);throw;}cancelAddressRefresh(job);
+ }
+ void Manager::recoverBeforeConfigure(JobPtr j,bool beforeStart){
+- if(!isActive(j)&&str(j->data,"Status")!="Complete"&&(beforeStart||publicationNeedsRecovery(*this,j))){
+-  // The journal must resolve against the destination it originally recorded.
+-  recoverReplacements(j);
+-  if(str(j->data,"Status")=="Complete")
+-   throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
+- }
++ {Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");if(isActive(j)||str(j->data,"Status")=="Complete")return;if(!beforeStart&&!publicationNeedsRecovery(*this,j))return;}
++ recoverReplacements(j,true);
++ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
++ if(str(j->data,"Status")=="Complete")throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
+ }
+ void Manager::configure(JobPtr j,const Json& edit){
+- Lock lock(mutex);
+  recoverBeforeConfigure(j);
++ Lock lock(mutex);if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+  auto next=configuredDownload(j,edit,false);
+  j->data.swap(next);
+  try{save();}catch(...){j->data.swap(next);throw;}
+@@ -1171,17 +1174,28 @@
+  try{save();}catch(...){state["Projects"].swap(old);throw;}
+ }
+ int Manager::addProject(const Json& project,const std::string& queue,bool paused,bool immediate,bool resumeExisting){
+- Lock l(mutex);if(catalogTransaction)throw std::runtime_error("A project is already being added.");
++ std::unique_lock<std::recursive_mutex> l(mutex);if(catalogTransaction)throw std::runtime_error("A project is already being added.");
+  auto p=project;validateGrabberProject(p,state["Settings"]);validateGrabberActions(p);GrabberFilters filters(p);
+  std::map<std::string,JobPtr> existingLinks;for(auto j:jobs)if(str(j->data,"ProjectId")==str(p,"Id"))existingLinks[str(j->data,"Url")]=j;
+  // Recovery must commit before the batch defers saves. Otherwise resume could
+  // remove a recovery journal while its recovered catalog state is still staged.
+- if(immediate&&resumeExisting&&str(p,"Template")!="Offline website (ZIP)")for(const auto& link:p["Links"])if(yes(link,"Selected",true)){
+-  auto found=existingLinks.find(str(link,"Url"));if(found!=existingLinks.end()&&!isActive(found->second)&&str(found->second->data,"Status")!="Complete")recoverReplacements(found->second);
++ if(immediate&&resumeExisting&&str(p,"Template")!="Offline website (ZIP)"){
++  std::vector<JobPtr> recover;std::map<std::string,JobPtr> selected;std::set<const Job*> seen;
++  for(const auto& link:p["Links"])if(yes(link,"Selected",true)){auto url=str(link,"Url");auto found=existingLinks.find(url);auto job=found==existingLinks.end()?JobPtr{}:found->second;selected[url]=job;if(job&&!isActive(job)&&str(job->data,"Status")!="Complete"&&seen.insert(job.get()).second)recover.push_back(job);}
++  if(!recover.empty()){
++   Json savedProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))savedProject=saved;
++   l.unlock();for(const auto& job:recover)recoverReplacements(job,true);l.lock();
++   Json currentProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))currentProject=saved;
++   if(currentProject!=savedProject)throw std::runtime_error("The saved project changed during recovery. Reopen it before adding downloads.");
++   if(stopping||catalogTransaction)throw std::runtime_error("The project changed while preparing recovery. Retry the project command.");
++   auto checked=p;validateGrabberProject(checked,state["Settings"]);validateGrabberActions(checked);if(checked!=p)throw std::runtime_error("Project settings changed during recovery. Review the project before adding it.");
++   existingLinks.clear();for(auto job:jobs)if(str(job->data,"ProjectId")==str(p,"Id"))existingLinks[str(job->data,"Url")]=job;
++   for(const auto& item:selected){auto found=existingLinks.find(item.first);auto current=found==existingLinks.end()?JobPtr{}:found->second;if(current!=item.second)throw std::runtime_error("The selected project downloads changed during recovery. Review the project before retrying.");}
++  }
+  }
+  auto oldJobs=jobs;auto oldProjects=state["Projects"],oldScheduled=Json(schedulePaused);int count=0;
+  std::vector<Json> oldData;std::vector<std::optional<i64>> oldLimits;for(auto j:jobs){oldData.push_back(j->data);oldLimits.push_back(j->sessionLimit);}
+- auto startMatched=[&](JobPtr job){if(!immediate||isActive(job)||str(job->data,"Status")=="Complete")return;resume(job);job->data["GrabberImmediate"]=true;job->data["GrabberParallel"]=num(p,"DownloadParallel",2);job->data["SuppressProgressDialog"]=true;job->data["SuppressCompletionDialog"]=true;};
++ auto startMatched=[&](JobPtr job){if(!immediate||isActive(job)||str(job->data,"Status")=="Complete")return;resumeAfterRecovery(job);job->data["GrabberImmediate"]=true;job->data["GrabberParallel"]=num(p,"DownloadParallel",2);job->data["SuppressProgressDialog"]=true;job->data["SuppressCompletionDialog"]=true;};
+  // No worker can observe the staged jobs while this lock is held. The only
+  // persistent write contains both the complete selection and its saved project.
+  catalogTransaction=true;
+--- a/native/Core.hpp
++++ b/native/Core.hpp
+@@ -278,6 +278,7 @@
+  void start(JobPtr);
+  void recoverBeforeConfigure(JobPtr,bool beforeStart=false);
+  void queueIndividualResume(JobPtr);
++ void resumeAfterRecovery(JobPtr);
+  Json configuredDownload(JobPtr,const Json&,bool prefetchedTransfer);
+  bool finishPrefetchDecision(JobPtr,const Json&,const FileInfoFolderChoice*,bool startNow,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice=nullptr);
+  std::optional<Json> queuesWithDownloadDraft(const std::string& queue,const DownloadQueueChoice* queueChoice);
+@@ -397,7 +398,9 @@
+  void applyCaptureExclusions(const Json&,bool site,bool address,bool suppress);
+  // Call without an outer manager lock: replacement verification performs disk I/O.
+  void publishFile(JobPtr,const fs::path& staging,const std::string& hash,const Cancel* cancel=nullptr,const LivePublicationDetails* live=nullptr);
+- void recoverReplacements(JobPtr scope={});
++ // Call without an outer model lease for detached recovery checkpoints.
++ // Verification/discovery IO and legacy outer UI scopes are migrated separately.
++ void recoverReplacements(JobPtr scope={},bool requireCatalogMember=false);
+  std::vector<JobPtr> pendingOffers;
+  std::vector<std::vector<BrowserBatchRow>> pendingBrowserBatches;
+  Json pendingBrowserPresentations(const JobPtr& only={})const;
+--- a/native/FileWorkflows.cpp
++++ b/native/FileWorkflows.cpp
+@@ -75,9 +75,9 @@
+ }
+ 
+ void Manager::finishStoppedFileInfo(JobPtr job,const Json& edit,const FileInfoFolderChoice& folderChoice,const std::optional<FileInfoLogin>& login,bool defer,const DownloadQueueChoice* queueChoice){
++ recoverBeforeConfigure(job,!defer);
+  Lock lock(mutex);
+  if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+- recoverBeforeConfigure(job,!defer);
+  if(!defer&&!isActive(job)){
+   const auto response=job->data.find("OriginalResponse");
+   if(response!=job->data.end()){
+@@ -384,7 +384,8 @@
+ void Manager::relocate(JobPtr job,const fs::path& requested,const Cancel* cancellation,const RelocationObserver& observer){
+  RelocationReporter reporter{cancellation,observer};reporter.check();reporter.report(RelocationPhase::Preparing);
+  std::unique_lock<std::recursive_mutex> lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!relocationId.empty())throw std::runtime_error("Another file move is in progress.");if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Move/Rename is available for completed downloads.");if(catalogTransaction)throw std::runtime_error("Finish the catalog operation before moving a file.");if(fs::exists(root/L"file-operation.json"))recoverFileOperation();
+- recoverReplacements(job);
++ lock.unlock();recoverReplacements(job,true);lock.lock();
++ if(stopping||!relocationId.empty()||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||catalogTransaction)throw std::runtime_error("The download changed while preparing its move. Review it before retrying.");
+  if(str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status. Review it before moving its file.");
+  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement before moving or renaming it.");
+  if(!requested.is_absolute()||safeName(utf8(requested.filename().wstring()))!=utf8(requested.filename().wstring()))throw std::runtime_error("Choose an absolute destination with a valid file name.");
+@@ -783,9 +784,10 @@
+  HRESULT STDMETHODCALLTYPE ResetTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE PauseTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE ResumeTimer()override{return S_OK;}
+ };
+ void Manager::recycleCompleted(JobPtr job,HWND owner,bool allowMissingForRemoval){
+- Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file still in the download list can be recycled.");
+- recoverFileOperation(job);
+- recoverReplacements(job);
++ {Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file still in the download list can be recycled.");
++  recoverFileOperation(job);}
++ recoverReplacements(job,true);
++ Lock lock(mutex);
+  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status or catalog entry. Review it before recycling its file.");
+  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement first.");
+  auto path=job->target();if(!path.is_absolute())throw std::runtime_error("Choose an existing regular downloaded file.");
+--- a/native/Queue.cpp
++++ b/native/Queue.cpp
+@@ -134,11 +134,12 @@
+ }
+ void Manager::scheduleExistingDownload(JobPtr job,const Json& original,const DownloadQueueChoice& choice,
+                                        const Json& edit,const FileInfoFolderChoice& folderChoice){
++ {Lock initial(mutex);if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");if(!canScheduleExistingDownload(job))throw std::runtime_error("This download is no longer ready to schedule. Pause the download and its queue first.");}
++ recoverBeforeConfigure(job);
+  Lock lock(mutex);
+  if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
+  if(!canScheduleExistingDownload(job))
+   throw std::runtime_error("This download is no longer ready to schedule. Pause the download and its queue first.");
+- recoverBeforeConfigure(job);
+  checkScheduleDownloadDraft(job->data,original);
+  if(!choice.create||!choice.window)throw std::runtime_error("Choose a one-time schedule.");
+  auto queues=queuesWithDownloadDraft(choice.name,&choice);
+@@ -161,11 +162,12 @@
+ }
+ void Manager::reviseDownloadSchedule(JobPtr job,const Json& originalQueue,const Json& originalDownload,const ScheduledDownloadWindow& window,
+                                     const Json& edit,const FileInfoFolderChoice& folderChoice){
++ {Lock initial(mutex);const auto current=editableDownloadSchedule(job);if(!current||*current!=originalQueue)throw std::runtime_error("The schedule changed while the wizard was open. Reopen it to review the latest settings.");if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");}
++ recoverBeforeConfigure(job);
+  Lock lock(mutex);
+  const auto current=editableDownloadSchedule(job);
+  if(!current||*current!=originalQueue)throw std::runtime_error("The schedule changed while the wizard was open. Reopen it to review the latest settings.");
+  if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
+- recoverBeforeConfigure(job);
+  checkScheduleDownloadDraft(job->data,originalDownload);
+  auto next=configuredDownload(job,edit,false),settings=state["Settings"];
+  rememberFileInfoDestination(settings,str(next,"Category"),fs::path(wide(str(next,"Folder"))),folderChoice);
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,46,0,0
+-#define UDM_VERSION_STRING "8.46"
+-#define UDM_VERSION_WSTRING L"8.46"
++#define UDM_VERSION_TUPLE 8,47,0,0
++#define UDM_VERSION_STRING "8.47"
++#define UDM_VERSION_WSTRING L"8.47"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -17,6 +17,8 @@
+   {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+   {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
+   {"source": "RecoveryJournalTests", "timeoutSeconds": 120},
++  {"source": "RecoveryCatalogTests", "timeoutSeconds": 180},
++  {"source": "CapturePresentationModelTests", "timeoutSeconds": 120},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+   {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+   {"source": "PublicationOwnershipTests", "timeoutSeconds": 120},
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.10",
++  "version": "0.72.11",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.10",
++  "version": "0.72.11",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- /dev/null
++++ b/native/RecoveryCatalogTests.cpp
+@@ -0,0 +1,102 @@
++#include "Core.hpp"
++#include "PublicationCatalogProof.hpp"
++#include <future>
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void observe(Manager& m,std::function<void(const char*)> callback){Lock lock(m.mutex);m.catalogCheckpoint=std::move(callback);}
++ static void batch(Manager& m,bool value){Lock lock(m.mutex);m.catalogTransaction=value;}
++ static bool closing(Manager& m){Lock lock(m.mutex);return m.stopping;}
++};}
++using namespace udm;
++struct RecoveryObservation {Manager& manager;~RecoveryObservation(){CatalogCheckpointTestAccess::observe(manager,{});}};
++struct RecoveryGate {
++ std::promise<void> entered,released;std::shared_future<void> ready=entered.get_future().share(),wait=released.get_future().share();std::atomic_bool held=false,done=false,expired=false;
++ void hold(){if(!held.exchange(true)){entered.set_value();if(wait.wait_for(std::chrono::seconds(10))!=std::future_status::ready){expired=true;throw std::runtime_error("Recovery fixture deadline");}}}
++ void release(){if(!done.exchange(true))released.set_value();}~RecoveryGate(){release();}
++};
++static void settings(Manager& m,const fs::path& files){fs::create_directories(files);auto p=m.state["Settings"];p["DownloadFolder"]=utf8(files.wstring());p["CategoryFolders"]=false;m.setSettings(p);}
++static const Json* savedRow(const Json& catalog,const std::string& id){std::vector<const Json*> pending;for(const auto& row:catalog.at("Downloads"))pending.push_back(&row);const Json* found=nullptr;while(!pending.empty()){const auto& row=*pending.back();pending.pop_back();if(!row.is_object())continue;if(str(row,"Id")==id){if(found)throw std::runtime_error("Duplicate persisted recovery row");found=&row;}for(const char* key:{"Video","Audio"})if(row.contains(key)&&row.at(key).is_object())pending.push_back(&row.at(key));}return found;}
++static bool sameRecoveryCore(const Json& current,const Json& saved){for(const char* key:{"Id","Folder","FileName","Status","Size","Received","Sha256","Finished","PublicationCommitId","ReplacementOf","ReplacementHash","PreviousPath"})if(current.contains(key)!=saved.contains(key)||(current.contains(key)&&current.at(key)!=saved.at(key)))return false;return true;}
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array(),cases=Json::array();std::string error,activeCase;bool passed=false;
++ auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
++ try{
++  for(const std::string entry:{"direct","resume","file-info","schedule","project"})for(const bool journalBacked:{false,true}){
++   if(entry=="schedule"&&!journalBacked)continue;
++   activeCase=entry+(journalBacked?"-journal":"-legacy");const auto folder=root/wide(activeCase);Manager m(folder/L"catalog");settings(m,folder/L"files");auto job=m.add("https://example.invalid/recovery.bin");atomicText(job->target(),"verified bytes",false);const auto hash=fileHash(job->target());
++   Json project={{"Id",guid()},{"Name","Recovery project"},{"StartUrl","https://example.invalid/index.html"},{"Depth",1},{"MaxPages",5},{"Links",Json::array({Json{{"Url",str(job->data,"Url")},{"Selected",true}}})}};if(entry=="project")job->data["ProjectId"]=str(project,"Id");
++   job->data["Status"]="Failed";job->data["Error"]="Could not replace the saved state (Windows error 1175). Retry after closing programs that hold the state file.";job->data["Size"]=14;job->data["Received"]=14;job->data["Sha256"]=hash;job->data["Finished"]=date();job->data["QueueMember"]=false;m.save();
++   if(journalBacked){const auto stage=folder/L"stage.part";fs::rename(job->target(),stage);job->data["Status"]="Paused";job->data["Error"]="";m.save();CatalogCheckpointTestAccess::observe(m,[](const char* point){if(std::string_view(point)=="publication-file-moved")throw std::runtime_error("Owned interruption");});try{m.publishFile(job,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});}
++   const auto originalDraft=job->data;
++   auto gate=std::make_shared<RecoveryGate>();CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)=="temporary-flushed")gate->hold();});
++   RecoveryObservation clear{m};
++   auto work=std::async(std::launch::async,[&]{if(entry=="resume")m.resume(job);else if(entry=="file-info")m.finishStoppedFileInfo(job,Json::object(),FileInfoFolderChoice{},std::nullopt,false);else if(entry=="schedule")m.scheduleExistingDownload(job,originalDraft,DownloadQueueChoice{},Json::object(),FileInfoFolderChoice{});else if(entry=="project")m.addProject(project,"Main queue",true,true,true);else m.recoverReplacements(job);});struct Release {std::shared_ptr<RecoveryGate> gate;~Release(){gate->release();}} release{gate};
++   check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"The public recovery entry reaches its actual held catalog flush");
++   {std::unique_lock<std::recursive_mutex> ui(m.mutex,std::try_to_lock);check(ui.owns_lock(),"Direct, Resume and File Info recovery leave the model available during catalog IO");check(m.isActive(job)&&m.downloadDestinationReserved(job->target()),"Recovery owns its job tree and destination until catalog acceptance");auto view=m.snapshot();check(view["Downloads"].size()==1,"An independent UI snapshot remains available during the held recovery write");job->data["Description"]="independent metadata";m.state["Settings"]["RecoveryUiMarker"]=activeCase;}
++   m.resume(job);bool refused=false;try{m.remove(job);}catch(...){refused=true;}check(refused,"Removal cannot take over a recovering job");refused=false;try{m.configure(job,{{"FileName","changed.bin"}});}catch(...){refused=true;}check(refused,"Configuration cannot redirect a recovering file");
++   gate->release();std::string workflowError;try{work.get();}catch(const std::exception& e){workflowError=e.what();}CatalogCheckpointTestAccess::observe(m,{});
++   check((entry=="file-info"||entry=="schedule")?workflowError=="The saved file was recovered at its previous destination. Use Move in File Properties to change its location.":workflowError.empty(),"Public recovery preserves its Complete versus recovered-File-Info outcome");
++   check(!gate->expired&&str(job->data,"Status")=="Complete"&&fileHash(job->target())==hash&&str(job->data,"Description")=="independent metadata"&&!m.isActive(job),"Explicit release accepts exact bytes, preserves independent metadata and releases ownership");m.save();cases.push_back({{"entry",entry},{"journalBacked",journalBacked},{"modelAvailable",true},{"exactBytes",true}});m.stop();
++  }
++  for(const std::string outcome:{"ordinary-complete","ordinary-paused","replacement-complete","replacement-paused","legacy-complete","private-complete","private-paused"})for(const std::string fault:{"none","catalog-failure","noncontaining","later-containing","later-retry","lost-ack","deferred","receipt-removed","removed-field"}){
++   if(fault=="receipt-removed"&&outcome!="private-complete")continue;if(fault=="removed-field"&&outcome!="replacement-complete")continue;
++   activeCase=outcome+"-"+fault;const auto folder=root/wide(activeCase);Manager m(folder/L"catalog");const auto files=folder/L"files";settings(m,files);const bool paired=outcome.find("replacement")==0,privateRow=outcome.find("private")==0,legacy=outcome=="legacy-complete",completed=outcome.find("complete")!=std::string::npos;
++   JobPtr original;std::string oldHash;if(paired){original=m.add("https://example.invalid/original","","output.bin","Main queue",true);atomicText(original->target(),"old bytes",false);oldHash=fileHash(original->target());original->data["Status"]="Complete";original->data["Size"]=9;original->data["Received"]=9;original->data["Sha256"]=oldHash;original->data["Finished"]=date();}
++   auto job=m.add("https://example.invalid/recovered","",paired?"next.bin":"output.bin","Main queue",true);if(paired){job->data["FileName"]=str(original->data,"FileName");job->data["ReplacementOf"]=original->id();job->data["ReplacementHash"]=oldHash;job->data["PreviousPath"]=utf8((files/L"previous.bin").wstring());}if(privateRow)m.jobs.erase(std::find(m.jobs.begin(),m.jobs.end(),job));m.save();
++   const auto stage=files/((completed||paired)?L".udm-"+wide(job->id())+L".assembling":L"unrecognized.stage"),target=job->target(),journal=m.root/(paired?L"replacements":L"publications")/(wide(job->id())+L".json");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage);
++   if(legacy){fs::rename(stage,target);job->data["Status"]="Failed";job->data["Error"]="Could not replace the saved state (Windows error 1175). Retry after closing programs that hold the state file.";job->data["Size"]=14;job->data["Received"]=14;job->data["Sha256"]=hash;job->data["Finished"]=date();m.save();}
++   else{CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)==(paired?(completed?"replacement-file-moved":"replacement-intent-written"):"publication-intent-written"))throw std::runtime_error("Owned interrupted intent");});try{m.publishFile(job,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});check(fs::exists(journal),"The checkpoint scenario begins with a real preserved publication intent");}
++   const auto before=job->data;auto gate=std::make_shared<RecoveryGate>();std::atomic<DWORD> workerId=0;std::atomic_bool first=false,second=false;std::promise<void> otherCaptured;auto otherReady=otherCaptured.get_future();bool rejected=false;
++   CatalogCheckpointTestAccess::observe(m,[&](const char* point){
++    const std::string_view phase(point);if(GetCurrentThreadId()!=workerId.load()){if(phase=="snapshot-prepared"&&!second.exchange(true))otherCaptured.set_value();return;}
++    if(phase=="recovery-catalog-prepared"&&fault=="deferred"){CatalogCheckpointTestAccess::batch(m,true);return;}
++    if(phase=="snapshot-prepared"&&!first.exchange(true)){
++     {Lock lock(m.mutex);job->data["Description"]="independent checkpoint metadata";if(fault=="noncontaining"){if(privateRow)m.jobs.push_back(job);else job->data["Status"]="Failed";}if(fault=="removed-field")job->data["ReplacementOf"]=original->id();if(fault=="receipt-removed")m.state.erase("PublicationReceipts");}
++     if(fault=="noncontaining"||fault=="removed-field"||fault=="receipt-removed"){try{m.save();}catch(...){rejected=true;throw;}}
++     if(fault=="later-containing")gate->hold();
++    }
++    if(phase=="temporary-flushed"){if(fault=="catalog-failure")throw std::runtime_error("Owned recovery flush failure");if(fault=="later-retry"){gate->hold();throw std::runtime_error("Owned failed earlier snapshot");}}
++    if(phase=="publication-catalog-written"&&fault=="lost-ack")throw std::runtime_error("Owned acknowledgement loss");
++   });
++   std::future<void> later;RecoveryObservation clear{m};
++   auto work=std::async(std::launch::async,[&]{workerId=GetCurrentThreadId();m.recoverReplacements(job);});struct Release {std::shared_ptr<RecoveryGate> gate;~Release(){gate->release();}} release{gate};
++   if(fault=="later-containing"||fault=="later-retry"){
++    check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Recovery exposes the actual snapshot or flush boundary for a later writer");
++    {Lock lock(m.mutex);job->data["Description"]="independent checkpoint metadata";m.state["Settings"]["ContainingRecoveryMarker"]=activeCase;}
++    later=std::async(std::launch::async,[&]{m.save();});check(otherReady.wait_for(std::chrono::seconds(5))==std::future_status::ready,"The later writer captures an actual containing snapshot");if(fault=="later-containing")later.get();gate->release();
++   }
++   std::string failure;try{work.get();}catch(const std::exception& e){failure=e.what();}if(later.valid())later.get();CatalogCheckpointTestAccess::observe(m,{});CatalogCheckpointTestAccess::batch(m,false);
++   const bool failed=fault=="catalog-failure"||fault=="noncontaining"||fault=="lost-ack"||fault=="deferred"||fault=="receipt-removed"||fault=="removed-field";
++   check(failed?!failure.empty():failure.empty(),"Only a snapshot-bound durable outcome acknowledges recovery");
++   if(fault=="noncontaining"||fault=="receipt-removed"||fault=="removed-field")check(rejected,"A later noncontaining row, removed-field regression or missing private receipt is rejected before writing");
++   if(privateRow&&fault=="noncontaining"){Lock lock(m.mutex);m.jobs.erase(std::find(m.jobs.begin(),m.jobs.end(),job));}
++   if(failed){check(legacy||fs::exists(journal),"Unproved recovery preserves its original journal");check(!m.isActive(job),"Every failed checkpoint releases its runtime job/path reservation");m.recoverReplacements(job);}
++   check(!gate->expired&&str(job->data,"Status")== (completed?"Complete":"Paused")&&(legacy||!fs::exists(journal)),"Accepted recovery or explicit retry reaches the correct complete or paused state");
++   check(completed?fs::exists(target)&&fileHash(target)==hash:fs::exists(stage)&&fileHash(stage)==hash,"Every outcome preserves the exact downloaded bytes");
++   if(paired)check(fileHash(completed?files/L"previous.bin":target)==oldHash,"Paired recovery preserves the original file in the correct location");
++   if(fault!="deferred")check(str(job->data,"Description")=="independent checkpoint metadata","Acceptance and conditional rollback preserve independent current metadata");
++   check(privateRow?m.jobs.empty():std::find(m.jobs.begin(),m.jobs.end(),job)!=m.jobs.end(),"Private recovery never inserts a visible catalog row");
++   const auto disk=Json::parse(readText(m.root/L"state.json"));const auto persisted=savedRow(disk,job->id());check(privateRow?!persisted:persisted&&sameRecoveryCore(job->data,*persisted),"Before another save, the accepted catalog contains the exact recovery core or private-row absence");
++   if(privateRow&&completed){const auto& receipts=disk.at("PublicationReceipts");bool recorded=false;for(const auto& receipt:receipts)if(str(receipt,"Id")==job->id()&&str(receipt,"Status")=="Complete"&&num(receipt,"Size")==14&&str(receipt,"Sha256")==hash)recorded=true;check(recorded,"A private completed outcome has its exact durable receipt before cleanup checkpoints");}
++   if(paired){const auto persistedOriginal=savedRow(disk,original->id());check(persistedOriginal&&sameRecoveryCore(original->data,*persistedOriginal),"Both replacement roles are acknowledged in the same actual persisted snapshot");}
++   m.save();cases.push_back({{"outcome",outcome},{"fault",fault},{"expectedFailure",failed},{"rejectedNoncontainingWriter",rejected},{"finalStatus",str(job->data,"Status")}});m.stop();
++  }
++  {
++   activeCase="shutdown-checkpoint";Manager m(root/L"shutdown-checkpoint/catalog");const auto files=root/L"shutdown-checkpoint/files";settings(m,files);auto job=m.add("https://example.invalid/shutdown","","output.bin","Main queue",true);const auto stage=files/(L".udm-"+wide(job->id())+L".assembling");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage),id=job->id();
++   CatalogCheckpointTestAccess::observe(m,[](const char* point){if(std::string_view(point)=="publication-intent-written")throw std::runtime_error("Owned shutdown intent");});try{m.publishFile(job,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});
++   auto gate=std::make_shared<RecoveryGate>();CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)=="temporary-flushed")gate->hold();});RecoveryObservation clear{m};std::future<void> stop;auto work=std::async(std::launch::async,[&]{m.recoverReplacements(job);});struct Release {std::shared_ptr<RecoveryGate> gate;~Release(){gate->release();}} release{gate};
++   check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Shutdown scenario reaches the held recovery checkpoint");stop=std::async(std::launch::async,[&]{m.stop();});const auto deadline=GetTickCount64()+5000;while(!CatalogCheckpointTestAccess::closing(m)&&GetTickCount64()<deadline)Sleep(5);
++   check(CatalogCheckpointTestAccess::closing(m)&&stop.wait_for(std::chrono::milliseconds(0))!=std::future_status::ready,"Shutdown waits for the reserved recovery transaction to settle");gate->release();std::string failure;try{work.get();}catch(const std::exception& e){failure=e.what();}stop.get();CatalogCheckpointTestAccess::observe(m,{});
++   check((failure.empty()||failure=="UDM is closing.")&&fileHash(job->target())==hash&&str(job->data,"Status")=="Complete"&&!fs::exists(m.root/L"publications"/(wide(id)+L".json")),"Shutdown retains the acknowledged completion and exact bytes without leaving its old journal");bool refused=false;try{m.recoverReplacements(job);}catch(...){refused=true;}check(refused,"A stopped Manager cannot acquire a new recovery owner after shutdown finishes");
++  }
++  {
++   activeCase="projection-proof";Manager m(root/L"projection-proof");settings(m,root/L"projection-proof-files");auto job=m.add("https://example.invalid/proof","","proof.bin","Main queue",true);auto before=job->data,after=before;after["Status"]="Paused";
++   PublicationCatalogProof::Lease proof;{Lock lock(m.mutex);job->data=after;proof=PublicationCatalogProof::prepareRecovery(m,{{before,after,true}});}check(!proof.resolve(),"A prior checkpoint sequence alone cannot acknowledge a newly prepared recovery");proof.release();
++   before=after;before["RecoveryRemovedField"]=true;{Lock lock(m.mutex);job->data=before;}m.save();after=before;after.erase("RecoveryRemovedField");{Lock lock(m.mutex);job->data=after;proof=PublicationCatalogProof::prepareRecovery(m,{{before,after,true}});}
++   {Lock lock(m.mutex);job->data["RecoveryRemovedField"]=true;}bool refused=false;try{m.save();}catch(...){refused=true;}check(refused,"Removed fields are part of the recovery snapshot proof");{Lock lock(m.mutex);job->data.erase("RecoveryRemovedField");}m.save();check(proof.resolve(),"An exact later snapshot can prove a recovery with removed fields");proof.release();
++   {Lock lock(m.mutex);proof=PublicationCatalogProof::prepareRecovery(m,{{after,after,false}});}refused=false;try{m.save();}catch(...){refused=true;}check(refused&&!proof.resolve(),"A visible row cannot satisfy a private absence binding");proof.release();m.stop();
++  }
++  passed=true;
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"case",activeCase},{"checks",checks},{"cases",cases}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
++}
+--- /dev/null
++++ b/native/CapturePresentationModelTests.cpp
+@@ -0,0 +1,15 @@
++#include "Core.hpp"
++#include <iostream>
++using namespace udm;
++static Json checks=Json::array();
++static void check(bool value,const std::string& label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);}
++template<class F>static void rejects(F&& action,const std::string& label){bool refused=false;try{action();}catch(...){refused=true;}check(refused,label);}
++#include "CaptureAtomicChecks.hpp"
++#include "CapturePresentationChecks.hpp"
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);std::string error;
++ WSADATA sockets{};if(WSAStartup(MAKEWORD(2,2),&sockets))return 3;const auto apartment=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
++ try{capturePresentationChecks(root);}catch(const std::exception& e){error=e.what();}
++ if(SUCCEEDED(apartment))CoUninitialize();WSACleanup();atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
++ std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}

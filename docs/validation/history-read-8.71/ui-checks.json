@@ -1,0 +1,166 @@
+{
+  "passed": true,
+  "checks": 37,
+  "exitCode": 0,
+  "separateDesktop": true,
+  "desktopSwitched": false,
+  "userInputInjected": false,
+  "sourceSha256": "9BAC807F63A7257529C3199E256DDBC8B88880CB744EF5194F494AB5D86E79B3",
+  "appSourceSha256": "C4F8775F3ACE2FD129A439075B22ABC3B3B7C3F7CD80F8BA85FF321620E4DBB8",
+  "binarySha256": "898E3AD9F33CB105C3EB49A8D6F7FC35B174FBEC21D4BA4A2FD87319C57E1B8E",
+  "result": {
+    "checks": [
+      {
+        "name": "Owned main window contains the test download",
+        "passed": true
+      },
+      {
+        "name": "The actual modal-size path has a visible viewport",
+        "passed": true
+      },
+      {
+        "name": "Initial control and displayed model size agree",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer holds the model before the nested refresh",
+        "passed": true
+      },
+      {
+        "name": "The production nested-refresh path returns while the writer remains held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves the real control and its text cache",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves unrelated cells and selection",
+        "passed": true
+      },
+      {
+        "name": "The next production refresh updates both the real size cell and cache",
+        "passed": true
+      },
+      {
+        "name": "Successful refresh retains unrelated presentation and selection",
+        "passed": true
+      },
+      {
+        "name": "Subsequent refresh converges without reverting the new value",
+        "passed": true
+      },
+      {
+        "name": "Main-list tooltip comes from the displayed row snapshot",
+        "passed": true
+      },
+      {
+        "name": "A model writer holds changed live data during advisory UI reads",
+        "passed": true
+      },
+      {
+        "name": "The actual tooltip notification returns cached text while live data is locked",
+        "passed": true
+      },
+      {
+        "name": "Advisory command-state reads report busy instead of waiting",
+        "passed": true
+      },
+      {
+        "name": "Busy toolbar refresh preserves the real existing button state",
+        "passed": true
+      },
+      {
+        "name": "Selection file-status refresh also returns during a catalog hold",
+        "passed": true
+      },
+      {
+        "name": "Fresh rows and unchanged-structure navigation refresh update the tooltip",
+        "passed": true
+      },
+      {
+        "name": "Advisory command reads become available after release",
+        "passed": true
+      },
+      {
+        "name": "Ordinary command validation uses current model state rather than retained toolbar state",
+        "passed": true
+      },
+      {
+        "name": "Out-of-range tooltip notifications cannot access a live job",
+        "passed": true
+      },
+      {
+        "name": "A programmatic project filter captures the matching cohort",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer changes both navigation and a row during a full refresh",
+        "passed": true
+      },
+      {
+        "name": "Full production refresh returns busy and restores its reentrancy flag",
+        "passed": true
+      },
+      {
+        "name": "A busy full refresh retains coherent tree, rows, cache and selection",
+        "passed": true
+      },
+      {
+        "name": "Advisory selection skips deferred-history validation while the model is held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh retries do not enqueue an immediate history message loop",
+        "passed": true
+      },
+      {
+        "name": "After release a removed project resolves to its surviving Grabber parent",
+        "passed": true
+      },
+      {
+        "name": "The next full refresh updates the matching row and retains its selection",
+        "passed": true
+      },
+      {
+        "name": "An existing category filter applies its captured empty cohort",
+        "passed": true
+      },
+      {
+        "name": "Hidden refresh observes status without rebuilding retained history controls",
+        "passed": true
+      },
+      {
+        "name": "A visible refresh catches up after hidden-history deferral",
+        "passed": true
+      },
+      {
+        "name": "A custom category filter applies the captured unfinished cohort",
+        "passed": true
+      },
+      {
+        "name": "Removing a selected category applies its surviving ancestor and matching rows together",
+        "passed": true
+      },
+      {
+        "name": "A new queue filter applies its matching captured row",
+        "passed": true
+      },
+      {
+        "name": "Removing a selected queue falls back to All Downloads coherently",
+        "passed": true
+      },
+      {
+        "name": "Authoritative selection still rejects a deleted job retained in deferred hidden controls",
+        "passed": true
+      },
+      {
+        "name": "Returning to a visible window removes the deleted retained history row",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "ownedDesktopClosed": true
+}

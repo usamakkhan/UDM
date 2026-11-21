@@ -1,4 +1,5 @@
 #include "CatalogAdmissionRegistry.hpp"
+#include "BrowserAdmissionContext.hpp"
 #include <future>
 #include <iostream>
 using namespace udm;
@@ -68,6 +69,26 @@ int wmain(int argc,wchar_t** argv){
    if(succeeds)waiting.installed();waiting.release();write={};
    check(resolving.lookup("wait").phase==Registry::Phase::Missing,"Resolved ownership retires after publication and handoff");
   }
+  for(bool succeeds:{false,true}){
+   Registry joined;check(!joined.observe("join","digest"),"Observing an absent token creates no ownership");auto owner=joined.acquire("join","binding","digest");
+   rejects([&]{joined.observe("join","other");},"A different fingerprint cannot observe an owned token");
+   rejects([&]{joined.observe("join","");},"A missing fingerprint cannot join an owned token");
+   auto observer=joined.observe("join","digest");owner.prepare(reservation("join","job-join","join.mp4","binding"));auto view=catalog();auto write=joined.overlay(view);
+   std::promise<void> began;auto started=began.get_future();auto result=std::async(std::launch::async,[&]{began.set_value();return observer.wait();});started.wait();
+   const bool initiallyWaiting=result.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout;
+   if(succeeds)write.published(17);else owner.release();
+   const bool stillWaiting=result.wait_for(std::chrono::milliseconds(20))==std::future_status::timeout;
+   if(succeeds)owner.installed();else write={};
+   const bool notified=result.wait_for(std::chrono::seconds(2))==std::future_status::ready;
+   const bool accepted=result.get();owner.release();write={};
+   check(initiallyWaiting,"An observer waits without stealing or releasing admission ownership");
+   check(stillWaiting,"Observers require live installation after publication, or all captured failures after owner release");
+   check(notified&&accepted==succeeds,"An observer wakes on the exact installed success or terminal failed ownership");
+   check(joined.lookup("join").phase==Registry::Phase::Missing,"An observer retains evidence without keeping the token reserved");
+  }
+  {Registry retained;auto owner=retained.acquire("orphan","binding","digest");auto observer=retained.observe("orphan","digest");owner.prepare(reservation("orphan","job-orphan","orphan.mp4","binding"));auto view=catalog();auto write=retained.overlay(view);write.published(18);owner.release();write={};check(observer.wait(),"A terminal durable-but-uninstalled owner remains a publication proof, never permission to resubmit");}
+  {BrowserAdmissionContext joined(true,nullptr,nullptr,true);check(joinBrowserAdmissionAllowed,"Only explicit joined contexts enable ownership waiting");{BrowserAdmissionContext ordinary;check(!joinBrowserAdmissionAllowed,"Nested ordinary contexts keep the non-waiting contract");}check(joinBrowserAdmissionAllowed,"Nested contexts restore the outer join policy");}
+  check(!joinBrowserAdmissionAllowed,"Joined context lifetime restores the thread's original policy");
  }catch(const std::exception& e){error=e.what();}
  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);
  std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;

@@ -1,0 +1,15 @@
+{
+  "appFunctionalChange": false,
+  "nativeVersion": "8.39",
+  "changes": [
+    "Native path resolution now uses invocation-local output memory instead of a shared buffer across potentially cooperative NativeFunction calls.",
+    "Native completed-byte total no longer grants full writer coverage; overlapping/repeated writes require explicit interval proof."
+  ],
+  "controllerSyntaxChecked": true,
+  "nativeAgentSha256": "3c568bc2172055cb31909bf746d1814ca10ab00c5f5d3d08075f80be7c1216d5",
+  "liveRevalidationPerformed": false,
+  "idmPromptReportedByUser": true,
+  "idmPromptTextPending": true,
+  "fullWriterCoverageVerified": false,
+  "performanceParityVerified": false
+}

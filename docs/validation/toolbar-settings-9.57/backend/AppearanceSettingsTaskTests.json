@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "Accepted appearance intent returns while the model is held",
+      "passed": true
+    },
+    {
+      "name": "A duplicate cannot replace accepted work or release its guard",
+      "passed": true
+    },
+    {
+      "name": "A failed weak notification leaves the result guarded until acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Dark toggle uses the latest live value rather than a stale rendered preference",
+      "passed": true
+    },
+    {
+      "name": "Appearance merge retains unrelated concurrent fields",
+      "passed": true
+    },
+    {
+      "name": "Owned acknowledgement includes Manager canonical rate normalization",
+      "passed": true
+    },
+    {
+      "name": "Categories toggle changes the current committed visibility",
+      "passed": true
+    },
+    {
+      "name": "A category change preserves every unrelated field",
+      "passed": true
+    },
+    {
+      "name": "Owned font values persist together",
+      "passed": true
+    },
+    {
+      "name": "A font change preserves all non-font settings",
+      "passed": true
+    },
+    {
+      "name": "Font Reset uses canonical defaults and preserves unrelated fields",
+      "passed": true
+    },
+    {
+      "name": "Each tray style changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Each tray style changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Each tray style changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Acknowledged settings agree with the durable catalog",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Invalid appearance intent acquires no guard and changes no durable state",
+      "passed": true
+    },
+    {
+      "name": "Another decision rejects appearance work without stealing its guard",
+      "passed": true
+    },
+    {
+      "name": "A real persistence failure is returned without false save acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Persistence failure rolls back current settings and leaves the catalog intact",
+      "passed": true
+    },
+    {
+      "name": "Explicit retry succeeds after persistence recovery",
+      "passed": true
+    },
+    {
+      "name": "Owner cleanup joins an accepted save before releasing its guard",
+      "passed": true
+    },
+    {
+      "name": "Publishing a saved result occurs after unlock and survives observer failure",
+      "passed": true
+    },
+    {
+      "name": "Repeated owner cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

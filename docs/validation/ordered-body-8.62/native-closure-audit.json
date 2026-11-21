@@ -1,0 +1,208 @@
+{
+  "passed": true,
+  "recompiled": [
+    "Core",
+    "PacProxy",
+    "Queue",
+    "FileWorkflows",
+    "Duplicates",
+    "Transfer",
+    "Grabber",
+    "GrabberLinks",
+    "Streaming",
+    "Adaptive",
+    "DashManifest",
+    "YouTubePlayer",
+    "Bridge",
+    "Network",
+    "SocksProxy",
+    "OfflineSite",
+    "DialUp",
+    "Ftp",
+    "DownloadPreview",
+    "ZipPreview",
+    "QueueWake",
+    "Scanner",
+    "CaptureExclusions",
+    "CaptureAdmission"
+  ],
+  "units": [
+    {
+      "source": "native/Core.cpp",
+      "changedDependencies": [
+        "native/CatalogDiskCredit.hpp",
+        "native/Core.cpp",
+        "native/Core.hpp",
+        "native/WrittenDiskCheckpoint.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/PacProxy.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Queue.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/FileWorkflows.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Duplicates.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Transfer.cpp",
+      "changedDependencies": [
+        "native/CatalogDiskCredit.hpp",
+        "native/Core.hpp",
+        "native/OrderedBodyWriter.hpp",
+        "native/Transfer.cpp",
+        "native/WrittenBodyCache.hpp",
+        "native/WrittenDiskCheckpoint.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Grabber.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/GrabberLinks.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Streaming.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Adaptive.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/DashManifest.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/YouTubePlayer.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Bridge.cpp",
+      "changedDependencies": [
+        "native/Core.hpp",
+        "native/Version.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Network.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/SocksProxy.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/OfflineSite.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/DialUp.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Ftp.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/DownloadPreview.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/ZipPreview.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/QueueWake.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Scanner.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/CaptureExclusions.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/CaptureAdmission.cpp",
+      "changedDependencies": [
+        "native/Core.hpp"
+      ],
+      "recompiled": true
+    }
+  ]
+}

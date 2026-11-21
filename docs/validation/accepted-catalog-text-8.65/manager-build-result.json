@@ -1,0 +1,385 @@
+{
+  "passed": true,
+  "builds": [
+    {
+      "label": "old64",
+      "nativeVersion": "8.64",
+      "source": "benchmarks\\speed\\accepted_catalog_manager_control.cpp",
+      "sourceSha256": "5ECDAE5E91CD0F27EBE806D18544882B296F86EAD9ABD2D74B9E973788981548",
+      "coreHeaderSha256": "BC38B87204EDDED9C7885B36489A5D3AE7F0F1F5C773445285FE65FC52E415EF",
+      "binaryPath": "<development>\\accepted-manager-comparison-8.65\\release-native\\manager-old64.exe",
+      "binarySha256": "90F36AA62360995500B956C41204BCE18246E07E42C94332C50404835F6FDA83",
+      "objectPath": "<development>\\accepted-manager-comparison-8.65\\objects\\manager-old64.obj",
+      "objectSha256": "4D87E470288F62FFFE786A56EC9638466B5AC35594B4164ABF042AA66CE17237",
+      "coreObjects": [
+        {
+          "path": "<development>\\finishing-8.64\\objects\\Core.obj",
+          "sha256": "067436C8BD487A9B01357AACFC7F97FC4446AD6FCA442913D0E13BE5F42F935D"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\PacProxy.obj",
+          "sha256": "8F77DDEB1ACCA186984D480B016B302155BED9D43D8052472913185EB0F40B87"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Queue.obj",
+          "sha256": "86DFB612C048886C14128F84CDF56051EA5EDB184953288D35330B594207C9F1"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\FileWorkflows.obj",
+          "sha256": "639C79B08A32D2F2FC7F1D2FC2A946B3934AB00B218893109CFEF4308389FCCE"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Duplicates.obj",
+          "sha256": "623D20D544C043EE9155367CD1758FFCDBD33F624B0A354A8A775C42A9AA0247"
+        },
+        {
+          "path": "<development>\\finishing-8.63\\objects\\Transfer.obj",
+          "sha256": "D05586E16DE75FCBACF732EA91B32953E11775374599BD66AD13BD1680B93CFA"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Grabber.obj",
+          "sha256": "ADE2D2360CC119E959DD0E716482B66ADEC471DD00F63447A1EC17F8AC4FD9D1"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\GrabberLinks.obj",
+          "sha256": "7EE8061DF73E7E203F413AFB43293A461B3B479BF8A0D2173118A59141B85834"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Streaming.obj",
+          "sha256": "B0CFD8C65E75CEF0C39A6C9D56845CC480B227F59DB74C11DE7A32A2CC67E00F"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Adaptive.obj",
+          "sha256": "B457B19C8CB2ED4829137E116F70185475E78FC06F1663C0867CF244F734A6A1"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\DashManifest.obj",
+          "sha256": "22960E83EDE3BE08AF54D975505E9EC684EEC68E39925FEA8CEDAD989D90249C"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\YouTubePlayer.obj",
+          "sha256": "8718EC97EC6808CEF55DFFAE92AD7082B0CCCB629C6EB679BC2A4613A588D40C"
+        },
+        {
+          "path": "<development>\\finishing-8.64\\objects\\Bridge.obj",
+          "sha256": "4F1687463A28BE0E308418A1345CAE09F9672C605F85C7C6550DAFB8F3B2B3A7"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Network.obj",
+          "sha256": "05D9A5F4625CF9E73914A2701A2AAADA8BEB276CA695B0476B23BB8A1BC966AB"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\SocksProxy.obj",
+          "sha256": "4F9A1224A6C8C2B80157508BE2D99DA253A15362EAA6EE923B1A0123449CF6A6"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\OfflineSite.obj",
+          "sha256": "6EF035E3402007799714A9DEACFD0DC49F8229A10B6F180587D24EB7E9C6307A"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\DialUp.obj",
+          "sha256": "8D789CB04BF40B69A9AECCCA9627BA9EA6A2552A8FD2F66745AA3330B4C8487B"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Ftp.obj",
+          "sha256": "EA21DB04415617D2B711B9B54A8BAF6F90650E2CE1845851BC5C636D5A865361"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\DownloadPreview.obj",
+          "sha256": "06830BEB747769C76D3FF9B4CD344959ED790873022DE2553862B55CFE80F8C7"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\ZipPreview.obj",
+          "sha256": "D609659099EE05D5AC5825B522FD1DA35D3977894DC9BC0AAA79BE83793923FD"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\QueueWake.obj",
+          "sha256": "37532A30605045E37A87054C1255EC6F40C9E2F1A46532B60CD0DD1E8970EFE3"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\Scanner.obj",
+          "sha256": "D5D976ECF1F3E54E550E7DAE95272D571613BCE1687045B84CECE8AAF4CA1058"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\CaptureExclusions.obj",
+          "sha256": "34480E4F57F3476AD5B8AE10F4AC04B0F7780931E527BBAF83A64AC441C8659C"
+        },
+        {
+          "path": "<development>\\finishing-8.62\\objects\\CaptureAdmission.obj",
+          "sha256": "5DFA8F1092BA9747DE93BE461032DA9EAB7BADB8870E9D12879B2FE64E26D811"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-adler32.obj",
+          "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-crc32.obj",
+          "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inffast.obj",
+          "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inflate.obj",
+          "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inftrees.obj",
+          "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-zutil.obj",
+          "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-constants.obj",
+          "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-context.obj",
+          "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-dictionary.obj",
+          "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-platform.obj",
+          "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-shared_dictionary.obj",
+          "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-transform.obj",
+          "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-bit_reader.obj",
+          "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-decode.obj",
+          "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-huffman.obj",
+          "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-prefix.obj",
+          "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-state.obj",
+          "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-static_init.obj",
+          "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188"
+        }
+      ]
+    },
+    {
+      "label": "new65",
+      "nativeVersion": "8.65",
+      "source": "benchmarks\\speed\\accepted_catalog_manager_control.cpp",
+      "sourceSha256": "5ECDAE5E91CD0F27EBE806D18544882B296F86EAD9ABD2D74B9E973788981548",
+      "coreHeaderSha256": "B10EE720CCB2141FD18BDDE5AFD86D9DFFE1456E3BFCDB631979C06D1CBB7CDE",
+      "binaryPath": "<development>\\accepted-manager-comparison-8.65\\release-native\\manager-new65.exe",
+      "binarySha256": "AF11E142E674F4CDC272B22934E89D134C2D31E764647842A22B191B3C42BEC5",
+      "objectPath": "<development>\\accepted-manager-comparison-8.65\\objects\\manager-new65.obj",
+      "objectSha256": "F2A3037F73D07119F1F04CF7DECABC455014094ADFC11C977408444E2ADA6982",
+      "coreObjects": [
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Core.obj",
+          "sha256": "1883958F2DB737420FA080406271EC1B99E818FD4CAE0979DDB7EC2B5C4108E4"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\PacProxy.obj",
+          "sha256": "8708FB2A08351BB7A6D66A9EA6A34951AFD104C6A161E9CC126B958D5E1F8610"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Queue.obj",
+          "sha256": "A93ECCB368159E591577348D26BE32B9C1FADD37E40B2D6029BC40401E6E4216"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\FileWorkflows.obj",
+          "sha256": "19E763C1DFCD8E3D621215CABA6E8B227092F6DA3935502B3759D93B64E71485"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Duplicates.obj",
+          "sha256": "6F2E90AA3064C54F75081A6E77429FC9C492A4B75773C405C6F88FBD37C0F269"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Transfer.obj",
+          "sha256": "334D2EB0753832D982735DD5BDE68308C5AD1B13C75F092D3178F0C1B5601118"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Grabber.obj",
+          "sha256": "07A1E3FD11C5B3F0EB09EAF91CDC01617141E0E05AFBECBC6B8DC088A8237E1F"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\GrabberLinks.obj",
+          "sha256": "66AE1C9625C61E346DA2D8242D2A8978C75E98983299B3A53419C55EC6605544"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Streaming.obj",
+          "sha256": "EAE1AEC3D7CE855605DCA86C0971164BCB67BA603B8876074AFCE55F72DAFDF5"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Adaptive.obj",
+          "sha256": "41D3BB71D2E6C97B40DA9434FCDAB694ACB810EC28F2BEE0813178311EBA0BEB"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\DashManifest.obj",
+          "sha256": "757159BBE0005654F31E28714196C27A21846F63FA42CD24C61F70F107912D24"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\YouTubePlayer.obj",
+          "sha256": "EBC6A4AF7BDCB2D58FB78A5DBE3F08F5AEC6C14868D25E70E50406712294A0BB"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Bridge.obj",
+          "sha256": "00BA4206CA1D6B7E370FFAF66E94275B69CC12A8B09AF557F1069EF0D31AC6A6"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Network.obj",
+          "sha256": "D5821B459595C80C38CF144DA767F2928B3FA0C27577E37CED1F0F44207864FE"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\SocksProxy.obj",
+          "sha256": "C681367DB5E9B9DD7E335351C77EE8BF38928D0A3906AC1CE2002C3463421395"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\OfflineSite.obj",
+          "sha256": "DAE91DB3089E6D35916D2D516408268A6792A070B1ACFFC780AD3EEA14558482"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\DialUp.obj",
+          "sha256": "9BB25B50918FFBA15A74C4727E8D00FB8642BC3F36E902A413512C3A2D92D234"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Ftp.obj",
+          "sha256": "6F0D953993F5D6B49288A7A8039011038BAC79EBFCF7B01BBE6BCD9F3A77B6CA"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\DownloadPreview.obj",
+          "sha256": "AAF48AE726B0BF743AF44F00D17A75BB072046D334738E90A26AAA527FB32035"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\ZipPreview.obj",
+          "sha256": "0D3CBCF2CEDE85E6D8844CFB05534CCB080B5417B185AD25D93358DD3A8B1A28"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\QueueWake.obj",
+          "sha256": "697DB87C7D647328832911F6176570C67AB759146E81A0AA03AC56907340D239"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\Scanner.obj",
+          "sha256": "0C7A9957C0B7EA7E70AA94ABE31C16C89790FF25D622DCD710C3B1740B606DDB"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\CaptureExclusions.obj",
+          "sha256": "9378BFE37D8C6B7690C25D8B6766A2E2DB03193A27E10404565FA8B31AE67154"
+        },
+        {
+          "path": "<development>\\finishing-8.65\\objects\\CaptureAdmission.obj",
+          "sha256": "A812A06383AC8C75FF835B4643FE339F9573F903EDDF35CFEBB37856EDF0B633"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-adler32.obj",
+          "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-crc32.obj",
+          "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inffast.obj",
+          "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inflate.obj",
+          "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-inftrees.obj",
+          "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\zlib-zutil.obj",
+          "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-constants.obj",
+          "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-context.obj",
+          "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-dictionary.obj",
+          "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-platform.obj",
+          "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-shared_dictionary.obj",
+          "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-common-transform.obj",
+          "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-bit_reader.obj",
+          "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-decode.obj",
+          "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-huffman.obj",
+          "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-prefix.obj",
+          "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-state.obj",
+          "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1"
+        },
+        {
+          "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-static_init.obj",
+          "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188"
+        }
+      ]
+    }
+  ],
+  "baselineHeaderReconstructedFromQualifiedSnapshot": true,
+  "sharedHeadersReusedThroughForwarders": [
+    {
+      "path": "native/third_party/json.hpp",
+      "sha256": "AAF127C04CB31C406E5B04A63F1AE89369FCCDE6D8FA7CDDA1ED4F32DFC5DE63",
+      "provenance": "current tracked vendor bytes; not separately listed in baseline receipt"
+    },
+    {
+      "path": "native/SpeedMeter.hpp",
+      "sha256": "B6EDE5C49F17AC8BD03B5C5B2F1517DBA3E8F34E262968182E5EC6F9274A63D8",
+      "provenance": "qualified baseline input"
+    },
+    {
+      "path": "native/PeriodicCheckpoint.hpp",
+      "sha256": "F2B4A92BFD67AE1E33D01AA2BC40CF66B5540CA156B4DCB0E460F7F6826D0BDF",
+      "provenance": "qualified baseline input"
+    }
+  ]
+}

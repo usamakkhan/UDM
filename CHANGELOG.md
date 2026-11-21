@@ -1,12 +1,802 @@
 # Release history
 
+## 9.65 / extension 0.73.29
+
+Bind failed prepared-stage cleanup to the original stable file identity and delete through its checked handle, preserving a replacement file or directory at the old name. Reuse the pre-flush snapshot on the async path; retain recovery journals and joined-worker ordering. The same component and fully frozen real HTTP controls reproduce data loss on 9.64 and pass on 9.65. Five native products build; all 1,315 assertions in fourteen affected suites pass. Source extension manifests advance to 0.73.29. No new speed claim or installation follows; the existing IDM performance gaps remain open.
+
+See [failure cleanup ownership and retained gaps](docs/prepared-cleanup-owner-9.65.md).
+
+## 9.64 / extension 0.73.28
+
+Keep the prepared owner alive through failed publication cleanup: reset its in-place scope and join owned body work before failure status or active ownership retires. A same-fixture real HTTP control fails on frozen 9.63 and passes twelve lifetime assertions on 9.64. Build five native products and pass 1,289 affected checks. Successful I/O policy is unchanged; the prior speed gaps remain open and no new speed claim or installation follows. Source manifests advance to 0.73.28; installed 8.68 is unchanged.
+
+See [failure lifetime and retained performance gaps](docs/publication-failure-owner-9.64.md).
+
+## 9.63 / extension 0.73.27
+
+Capture source metadata and stable identity on the writer-excluding file object before asynchronous flush, avoiding the blocking query found in 9.62. Bind known-hash recovery to that captured identity and retain post-join validation. Build five 9.63 native products; pass 1,277 affected checks. Three clock traces prove actual intent/body overlap, and all 27 normal comparison files verify. Sequential/split finishing regressions and IDM first availability remain open; the candidate is not promoted for installation. Source manifests advance to 0.73.27; installed 8.68 is unchanged.
+
+See [diagnosis, implementation and every remaining performance gap](docs/publication-source-snapshot-9.63.md).
+
+## 9.62 / extension 0.73.26
+
+Keep one writer-excluding file object through owned asynchronous final body writeback and durable publication, scheduling owned asynchronous body writeback without the rejected 9.61 full-file rehash; later traces show a source query still serialized intent preparation. Build five native 9.62 products; pass 1,275 affected assertions. All 27 downloads verify. Median split finishing improves by 26.9 ms against 9.60, but total-time and sequential regressions remain; IDM first availability still wins all nine pairs. Neither the no-regression gate nor full parity passes. Source manifests advance to 0.73.26; installed 8.68 is unchanged.
+
+See [implementation, measurements and open gates](docs/publication-owned-pin-9.62.md).
+
+## 9.61 / extension 0.73.25 — rejected candidate
+
+An owned early-intent prototype uses a metadata snapshot, strict promotion and full rehash. Five products and 1,273 assertions pass, but all nine finishing pairs lose against 9.60. Do not install/promote this approach as a speed fix. All observations and the initial compile failure are preserved. See [rejected candidate](docs/publication-overlap-9.61.md).
+
+## 9.60 / extension 0.73.24
+
+Release ordinary publication file pins after the exact completed catalog proof is accepted, before journal cleanup, while retaining publication ownership and directory protection through cleanup. Keep pre-acceptance write/rename exclusion and all existing flush/checkpoint work. Build five native 9.60 products and pass 994 affected assertions. All 27 matched download outputs verify correctly. The IDM first-availability gate and the all-pairs no-regression gate against 9.59 still fail, despite faster process-exit medians. Source browser manifests advance to 0.73.24; installed 8.68 remains unchanged.
+
+See [qualification and failed performance gates](docs/publication-availability-9.60.md).
+
+## 9.59 / extension 0.73.23
+
+Fix caught startup failures for silent command-line requests: report to inherited error output when available and exit with status 1 instead of waiting on an error dialog. Validate instance tags before opening a catalog, while preserving quiet-looking option values and successful/recovery exit behavior. Build five native 9.59 products; pass 199 backend and 40 real App launch assertions. Source browser manifests advance to 0.73.23. New 9.58-versus-IDM observations win all nine whole-process and output-durability pairs but lose six first-availability pairs; full parity remains open. Installed 8.68 is unchanged.
+
+See [qualification and measured parity gaps](docs/silent-launch-9.59.md).
+
+## 9.58 / extension 0.73.22
+
+Open standalone Browser Integration before waiting for shared settings, with cancellable background preparation, save its owned draft on a joined worker, and merge only edited browser fields into current settings. Nested menu and panel edits preserve live sibling values; unchanged effective defaults do not write the catalog. The held-model opening observation improves from 2535.8 ms on frozen 9.57 to 48.5 ms on 9.58. Build five native products and pass 292 backend plus 80 native UI assertions. Source browser manifests advance to 0.73.22. Installed 8.68 remains unchanged; installed IDM parity and the earlier total-time gate stay open.
+
+See [qualification and scope](docs/browser-integration-9.58.md).
+
+## 9.57 / extension 0.73.21
+
+Move toolbar size, captions, looks, visibility, skin selection, layout persistence and Reload onto the owned appearance worker. Merge only the changed fields, prepare immutable skin pixels outside the catalog lock, render without reopening skin files, and restore the current layout on failure without a second model read. The held-model toolbar command returns in about 22 ms versus 2.56 seconds on frozen 9.56. Build five native 9.57 products and pass 251 backend plus 1,293 optimized UI assertions. Browser source manifests advance to 0.73.21. Installed 8.68 remains unchanged; installed IDM parity and the prior total-time gate remain open.
+
+See [qualification and scope](docs/toolbar-settings-9.57.md).
+
+## 9.56 / extension 0.73.20
+
+Move dark mode, category visibility, font selection/reset and tray-style saves onto an accepted worker with narrow drafts and fresh-field merges. Render acknowledged values without reading the shared catalog again; preserve live unrelated settings, rollback/retry, guarded controls and deferred Close/Exit. The held-model dark command returns in about 5 ms versus 2.54 seconds on frozen 9.55. Build five native 9.56 products and pass 218 backend plus 1,420 optimized UI assertions. Source browser manifests advance to 0.73.20. Installed 8.68 remains unchanged; installed IDM parity and the prior total-time gate remain open.
+
+See [qualification and scope](docs/appearance-command-9.56.md).
+
+## 9.55 / extension 0.73.19
+
+Reuse the main font and skip redundant native font-change messages when its face, pixel height and weight are unchanged. Repair detached control bindings, prepare replacements before releasing the old font, and retain the previous valid font on creation failure. Build all five native 9.55 products; pass 187 backend and 910 optimized UI assertions. Source browser manifests advance to 0.73.19. Installed 8.68 and extension files 0.72.32 remain unchanged; installed IDM parity and the prior total-time gate remain open.
+
+See [qualification and scope](docs/font-reuse-9.55.md).
+
+## 9.54 / extension 0.73.18
+
+Cache built-in toolbar sources and bounded size/style/DPI rasters; reuse the active native normal, hot and disabled image lists on unchanged repaints. Keep custom skins fresh, make Reload invalidate built-in assets explicitly, and preserve current image handles if regeneration fails. Build five native 9.54 products and pass 187 backend plus 814 optimized UI assertions. Source browser manifests advance to 0.73.18. Installed 8.68 and extension files 0.72.32 remain unchanged; installed IDM parity and the prior total-time gate remain open.
+
+See [qualification and scope](docs/toolbar-cache-9.54.md).
+
+## 9.53 / extension 0.73.17
+
+Use owned appearance snapshots for Windows system-theme and DPI repaints, with a nonblocking settings read and fallback to the last rendered state. Keep font, toolbar and layout reads coherent while leaving ordinary preference commands on their existing settings path. Correct the busy-resize fallback to inspect the real toolbar window style. Controlled system-color handling improves from 2,503.01 ms on frozen 9.52 to 15.48 ms. Build five native 9.53 products; pass 154 backend and 1,336 UI assertions on child-attested desktops. Source browser manifests advance to 0.73.17. Installed 8.68 remains unchanged; installed IDM parity and the previous total-time gate remain open.
+
+See [qualification and timing scope](docs/appearance-9.53.md).
+
+## 9.52 / extension 0.73.16
+
+Move Speed Limiter On/Off persistence off the UI thread. Preserve the live remembered rate, startup choice and limiter mode, update radio state only after a committed result, and keep local selection/sort/paint responsive. Reserve Close and explicit Exit until the accepted save is acknowledged; cancel an ordinary close through Show even after acknowledgement, and cancel deferred Exit on save failure for explicit retry. Controlled held-model command return improves from 2,612.99 ms on frozen 9.51 to 9.49 ms. Build five native 9.52 products; pass 154 backend and 864 native UI assertions on child-attested desktops. Source browser manifests advance to 0.73.16. Installed 8.68 remains unchanged; installed IDM parity and the earlier total-time gate remain open.
+
+See [qualification and timing scope](docs/global-toggle-9.52.md).
+
+## 9.51 / extension 0.73.15
+
+Open Speed Limiter settings before waiting for the catalog, prepare its values on a cancellable worker, and save an immutable draft under an acceptance guard. Merge only edited limiter fields into live settings, preserving the current on/off state and mode. Controlled held-model opening improves from 2,542.2 ms on frozen 9.50 to 52.4 ms on 9.51. Build five native products; pass 134 backend and 581 UI assertions on child-attested desktops. Source browser manifests advance to 0.73.15. Installed 8.68 and the installed extension remain unchanged; installed IDM parity and the older total-time gate remain open.
+
+See [qualification and timing scope](docs/global-limit-9.51.md).
+
+## 9.50 / extension 0.73.14
+
+Columns now opens before waiting for a catalog writer, loads saved hidden widths asynchronously, and saves an immutable draft without blocking the UI. Failed reads offer Retry; failed saves retain edits. Accepted saves cannot be abandoned by Cancel, and forced closure still applies a committed layout. Five native 9.50 products built; 102 backend and 1,346 UI assertions passed. Both source browser manifests advance to 0.73.14. Installed 8.68 remains unchanged. Historical desktop-isolation claims are corrected; fresh tests use child-attested native desktop assignment. Installed IDM parity and the prior total-time gate remain open.
+
+See [qualification and timing scope](docs/columns-9.50.md).
+
+## 9.49 / extension 0.73.13
+
+- Remove blocking acquisition from list-layout bookkeeping for every caller. A held-model sort command takes 1,997.3 ms on frozen 9.48 and 0.31 ms on 9.49; all 11 sort choices return in 0.25–0.40 ms in the controlled fixture. Preserve latest widths, order and sort through timer catch-up or normal Exit before catch-up. Build five native 9.49 products and pass 77 backend plus 1,390 native UI assertions. Both source browser manifests advance to 0.73.13; installed 8.68 remains unchanged. The prior matched total-time gate and installed IDM parity remain open. [Evidence and remaining work](docs/layout-write-9.49.md).
+
+## 9.48 / extension 0.73.12
+
+- Avoid validating an unrelated selected download before dispatching Exit or local view commands. Preserve live row-action validation and selection-aware export. The same native Select All fixture blocks for 2,002.6 ms on frozen 9.47 and returns in 0.2 ms on 9.48 while its model writer is still held. Quick Filter returns in 27.5 ms and selected/deferred Exit in 12.3 ms. Build five native 9.48 products and pass 77 backend plus 526 native UI assertions, including all three real export entries and byte-exact resumed downloads. Both source browser manifests advance to 0.73.12; installed 8.68 remains unchanged. The prior 9.47 total-time gate and installed IDM parity remain open. [Evidence and remaining work](docs/command-dispatch-9.48.md).
+
+## 9.47 / extension 0.73.11
+
+- Replace timed Exit model-lock retries with direct acquisition on a Manager-owned worker. Cancel a destroyed window without waiting for that acquisition; join all retained workers before Manager's final checkpoint. Build five native 9.47 products and pass 867 backend plus 1,360 native UI assertions. In three rotating rounds, pre-unlock-marker-to-acquisition median changes from 15.82 ms in 9.46 to 0.03 ms in 9.47. Controlled total-cleanup medians are 839.9 / 864.4 / 843.1 ms for 9.45 / 9.46 / 9.47. The matched median total gate remains open; universal and installed IDM parity remain unproven. Both source extension manifests advance to 0.73.11; installed 8.68 remains unchanged. [Evidence and remaining work](docs/managed-exit-9.47.md).
+
+## 9.46 / extension 0.73.10
+
+- Prepare a contended Exit layout merge on an owned worker while preserving the immediate fast path and the existing final checkpoint. Pass 49 backend and 1,360 native UI checks, including retry, direct destruction and concurrent settings. Matched command-return median improves from 842.8 to 14.2 ms, but matched total teardown median regresses by 21.1 ms; the total-time performance gate remains open. Build five native 9.46 products and advance both source extension manifests to 0.73.10. Installed 8.68 remains unchanged. [Evidence and remaining work](docs/exit-layout-9.46.md).
+
+## 9.45 / extension 0.73.9
+
+- Keep a pending context menu from consuming a child dialog's Escape key, and retire pending requests when another command or row activation supersedes them. The same real-modal fixture fails on 9.44 and passes on 9.45. Build five native products; pass 30 focused backend and 509 native UI checks. A separate controlled Exit trace locates a 761.9 ms layout lock wait under a deliberate 750 ms catalog hold; that wait remains to be fixed. Both source extension manifests advance to 0.73.9. Installed 8.68 remains unchanged. [Evidence and remaining work](docs/menu-focus-9.45.md).
+
+## 9.44 / extension 0.73.8
+
+- Prepare the download context menu on one owned cancellable reader, retain native popup advice and queue choices, reject obsolete cohorts, and join before window destruction. Under a held writer the request returns in 0 ms at timer resolution instead of the 9.43 baseline's 2,016 ms; popup visibility still waits for a coherent read. Build five native 9.44 products; pass 84 focused backend and 480 native UI checks. Both source extension manifests advance to 0.73.8. Installed 8.68 remains unchanged; installed IDM timing is not claimed. [Evidence and remaining work](docs/download-menu-9.44.md).
+
+## 9.43 / extension 0.73.7
+
+- Correct the legacy menu fixture to acknowledge completed Resume before rendering the next batch, and require the intended active/completed native selection before Stop. All 458 menu checks pass, including isolated Stop, deferred Stop All, scheduler non-restart and three byte-exact resumed files. Build five native 9.43 products; advance both source extension manifests to 0.73.7. This is a validation/maintenance increment with unchanged download-engine behavior. Installed 8.68 remains unchanged. [Evidence and remaining work](docs/menu-acknowledgment-9.43.md).
+
+## 9.42 / extension 0.73.6
+
+- Keep selection-dependent menu advice consistent with the displayed row when Manager is busy. Capture runtime activity/prefetch flags with immutable rows; refresh supported selection actions from that cohort instead of retaining another selection's menu state. Keep live validation on invocation. Build five 9.42 products from 636 frozen product-build inputs; pass 90 focused backend and 867 current UI assertions. The legacy menu suite passes the former active-selection Stop failure, then stops after 435 assertions at: Selected Stop pauses transfer and closes only its progress window. Both source extension manifests advance to 0.73.6; installed 8.68 remains unchanged. [Evidence and remaining work](docs/selection-9.42.md).
+
+## 9.41 / extension 0.73.5
+
+- Keep valid requested history filters when queues/projects/categories are added, renamed or reordered. Fix the first-refresh mismatch where the tree selected a new queue but the list showed All Downloads. Retain deleted-node ancestor fallback and nonblocking busy reads. Build five 9.41 products from 634 frozen inputs; pass 68 focused backend and 35 current UI assertions. The legacy menu suite passes the previously failing queue-view assertion, then stops after 413 assertions at: Active selection enables Stop. Source extension manifests advance to 0.73.5; installed 8.68 remains unchanged. [Evidence and remaining work](docs/navigation-9.41.md).
+
+## 9.40 / extension 0.73.4
+
+- Keep the main window responsive while Close waits for a fresh close-to-tray policy. Coalesce repeated Close clicks; let Show cancel a pending hide; retain deferred automation review. Remove blocking settings reads from toolbar/category resizing and waiting-status layout. Build five 9.40 products from 632 frozen inputs; pass 452 targeted backend and 1,582 native UI assertions. Source extension manifests advance to 0.73.4; installed 8.68 remains unchanged. One initial GUI watchdog expiry remains unexplained despite three unchanged-binary passing repeats; an additional legacy menu suite fails a queue-view check. [Evidence and remaining work](docs/main-close-9.40.md).
+
+## 9.39 / extension 0.73.3
+
+- Refresh only the changed imported-file metadata slot instead of probing the whole batch. Reuse an existing preview's policy and preserve other rows; recreate a missing owner from fresh settings for just the selected index. Keep explicit Retry available after partial recovery. Build five 9.39 products from 629 frozen inputs; pass 876 targeted backend and 1,559 current UI assertions. Source extension manifests advance to 0.73.3; installed 8.68 is preserved. [Evidence and remaining work](docs/import-single-9.39.md).
+
+## 9.38 / extension 0.73.2
+
+- Reject registered clicks from disabled dialogs/controls, mismatched notification sources and destroyed children. Freeze batch command/change/list notifications during refresh and admission, while preserving Cancel and paint. Validate every refresh source identity before publishing any metadata, reject superseded results and retain inline Retry. Build five 9.38 products from 627 frozen inputs; pass 838 targeted backend and 1,480 current UI assertions. Source extension manifests advance to 0.73.2; installed 8.68 remains unchanged. [Evidence and remaining work](docs/batch-command-9.38.md).
+
+## 9.37 / extension 0.73.1
+
+- Prepare bulk and per-file batch preview requests on an owned cancellable worker. Preserve edited fields and explicit choices, invalidate stale metadata before waiting, and keep a per-file edit to one preview slot without reacquiring Manager. Build five 9.37 products from 625 frozen inputs; pass 796 targeted backend and 1,394 actual UI assertions. Source extension manifests advance to 0.73.1; installed 8.68 is preserved. [Evidence and remaining work](docs/batch-refresh-9.37.md).
+
+## 9.36 / extension 0.73.0
+
+- Prepare batch rows, request context and initial metadata on the cancellable worker, then show a virtual native list that renders visible cells. Preserve source identities through checks, sorting, filtering and cell updates. Build five 9.36 products from 623 frozen inputs; pass 752 targeted backend assertions across 30 C:/D: runs and 1,339 actual UI assertions. Source extension manifests roll to 0.73.0. Installed 8.68 remains unchanged. [Measurements, evidence and remaining work](docs/batch-virtual-9.36.md).
+
+## 9.35 / extension 0.72.99
+
+- Complete the batch loading-to-full-view transition by reapplying current anchors and palette and routing keyboard focus to the new file list. Anchor loading status/Retry/Cancel during browser-dialog resizing; retain window geometry, logical column widths and monotonic command IDs. Build five 9.35 products from 619 frozen inputs; pass 714 targeted backend assertions across 28 C:/D: runs and 1290 current UI assertions (261 transition, 90 opening/late metadata, 108 batch admission, 831 Main/Options). Ten authenticated selected files still complete with one transfer request each. Remove 36 owned fixture/compiler roots and 38 temporary build files (370.1 MiB logical bytes). Installed 8.68 and extension files 0.72.32 remain unchanged. [Evidence and remaining work](docs/batch-transition-9.35.md).
+
+## 9.34 / extension 0.72.98
+
+- Open batch loading controls before acquiring Manager, prepare settings/categories/queue labels on an owned cancellable reader, and rebuild the full view from one cohort. Refresh preview policy off the window thread, invalidate old request metadata before waiting, retain inline Retry and preserve destination/checkbox edits. Treat a submitted checkbox cohort as explicit intent so late HTML metadata cannot undo it after queue cancellation or save failure. Build five 9.34 products from 618 frozen inputs; pass 714 targeted backend assertions across 28 C:/D: runs, 90 opening/late-metadata, 108 batch-admission and 831 Main/Options UI assertions. Ten selected files still download completely with one authenticated transfer request each. Remove 35 owned fixture/compiler roots and 37 temporary build files (388.7 MiB logical bytes). Installed 8.68 and extension files 0.72.32 remain unchanged. [Evidence and remaining work](docs/batch-opening-9.34.md).
+
+## 9.33 / extension 0.72.97
+
+- Move batch queue-policy preparation and canonical admission/save/start off the window thread. Freeze one owned selection and complete browser request context, allow cancellation before acceptance, retain accepted-save ownership through acknowledgement, preserve inline errors/retry and reuse the prepared queue cohort. Build five 9.33 products from 615 frozen inputs; pass 682 targeted backend assertions across 26 C:/D: runs, 108 actual batch-control assertions and 831 Main/Options assertions. Ten selected authenticated sample files download completely with one transfer request each. Remove 32 owned fixture/compiler roots and 34 temporary build files (332.5 MiB logical bytes). Installed 8.68 and extension files 0.72.32 remain unchanged. [Evidence and remaining work](docs/batch-admission-9.33.md).
+
+## 9.32 / extension 0.72.96
+
+- Open the generic queue selector before its catalog read completes, with cancellable background preparation, one names/labels cohort, inline failure and Retry. Keep editing disabled until ready, retain locally created queue choices and Schedule, and give both prepared and generic selectors an explicit Cancel button. File Info keeps its existing prepared path and canonical command validation. Build five 9.32 products from 612 frozen repository inputs; pass 602 targeted backend assertions across 24 C:/D: runs, 81 actual selector-control assertions and 831 Main/Options assertions. Remove 55 owned fixture/compiler roots and 69 temporary build files (462.4 MiB logical bytes). Installed 8.68 and extension files 0.72.32 remain unchanged. [Evidence and remaining work](docs/queue-choices-9.32.md).
+
+## 9.31 / extension 0.72.95 - superseded native build
+
+- Builds five products and passes 602 targeted backend assertions. The standalone selector test fails compilation with MFC/Winsock2 header-order error C1189 before a UI fixture starts. Correct test header order in 9.32, retain the failure and exclude its later mixed-version preflight from qualification. Not installed or qualified.
+
+## 9.30 / extension 0.72.94
+
+- Prepare File Info's Start session check and Download Later queue-policy lookup on an owned cancellable reader. Keep fields frozen and Cancel available, preserve inline errors and retry, and open the queue selector from one prepared names/labels cohort. Start skips queue preparation; a suppressed prompt stays suppressed. Canonical save workers retain authority. Build five products from 609 frozen inputs; pass 570 targeted backend assertions across twenty-two C:/D: runs and 1700 UI assertions (831 Main/Options, 257 pending, 327 presentation, 46 first-paint and 239 wizard). Remove 79 owned fixture/compiler roots and 102 temporary build files (833.7 MiB logical bytes). Installed 8.68, catalogs and shared helpers remain unchanged. [Evidence and remaining work](docs/file-info-actions-9.30.md).
+
+## 9.29 / extension 0.72.93 - intermediate native build
+
+- Builds five products and passes 570 backend checks. Stop the UI compile before execution after source inspection shows its expected page omits the required session-binding fragment. Correct marker validation in 9.30; not installed or qualified.
+
+## 9.28 / extension 0.72.92 - superseded candidate
+
+- Builds five products and passes 570 backend checks. Its Main run stops after 520 assertions when session recovery is cancelled before requiring the asynchronous page event; its URI expectation also omits the binding fragment. Preserve that failure; wait for the real callback and validate its binding marker before cancelling in 9.30. Not installed or qualified.
+
+## 9.27 / extension 0.72.91
+
+- Move listed/revised scheduling eligibility, original download/queue snapshots and initial fields onto the wizard's owned preparation task. Main dispatch uses a strong cached selection without waiting for command-state or deferred-selection validation; the worker and final save revalidate current state. Retain original UTC windows, draft comparisons, inline errors, Cancel and shutdown ownership. Build five products from 607 frozen inputs; pass 536 targeted backend assertions across twenty C:/D: runs and 1621 UI assertions (752 Main/Options, 257 pending, 327 presentation, 46 first-paint and 239 wizard). Remove 52 owned fixture/compiler roots and 65 temporary build files (666.0 MiB logical bytes). Installed 8.68, catalogs and shared helpers remain unchanged. [Evidence and remaining work](docs/listed-schedule-9.27.md).
+
+## 9.26 / extension 0.72.90 - superseded candidate
+
+- Builds five products and passes 536 backend plus 239 wizard assertions. Main stops at assertion 569 before the new commands because the fixture attempts row selection while its frame is hidden. Preserve that failure; show the owned frame and wait for row convergence in 9.27. Not installed or fully qualified.
+
+## 9.25 / extension 0.72.89
+
+- Open the Schedule wizard before catalog acquisition. Prepare categories, filtered folder history, category policy, queue-name advice and File Info's connection/speed defaults on an owned cancellable reader. Keep navigation disabled until ready, retain explicit Retry and shutdown ownership, and use the snapshot for editor actions while final saves revalidate current state. Build five products from 607 frozen inputs. Pass 512 targeted backend assertions across twenty C:/D: runs and 1539 UI assertions (738 Main/Options, 257 pending, 327 presentation, 46 first-paint and 171 wizard). Remove 31 owned fixture/compiler roots and 46 temporary build files (423.2 MiB logical bytes). Installed 8.68, catalogs and shared media helpers remain unchanged. [Evidence and remaining work](docs/schedule-preparation-9.25.md).
+
+## 9.24 / extension 0.72.88 - incomplete candidate
+
+- Introduces asynchronous schedule preparation. A malformed saved-login fixture fails before its first assertion; stop the owned partial build before product compilation. Preserve the failed preflight and frozen inventory; no complete build or installation is claimed. Correct the fixture through the normal saved-login constructor in 9.25.
+
+## 9.23 / extension 0.72.87
+
+- Show a matching prepared snapshot's read-only address, destination, category, size provenance and server filename on File Info's first paint while an owned worker revalidates current state. Keep Start/Later/Schedule/name adoption disabled until revalidation and preserve Cancel. Pass 470 targeted backend assertions over eighteen C:/D: runs and 738 Main/Options, 257 pending, 327 presentation and 46 first-paint assertions. Build five products from 605 frozen inputs; source extension manifests are 0.72.87. Remove 26 owned fixture/compiler roots and 28 temporary build files (335.1 MiB logical bytes), preserving current products/cores and 9.22 products. Installed 8.68, catalogs and media helpers remain unchanged. The first-paint fixture verifies advisory hints under a held model and name adoption only after revalidation. Keep the earlier missing-tools failures and 9.22 diagnostic separate. [Evidence and remaining work](docs/first-paint-hints-9.23.md).
+
+## 9.22 / extension 0.72.86
+
+- Move File Info's Use server name preparation to an owned advisory worker; release Manager before filesystem checks, reject obsolete display/draft results and preserve manual folders and custom remember rules. Defer Start/Later and drain Cancel safely. Build five products; pass 388 targeted backend assertions across fourteen C:/D: runs and 738 Main/Options, 257 pending, 327 presentation assertions. Retain the superseded 9.21 fixture failure separately. Remove 22 owned fixture roots and 50 temporary build files (466.6 MiB logical bytes). Installed 8.68, catalogs and helpers remain unchanged. The optional first-paint size-label diagnostic, other synchronous actions and live parity comparisons remain open. [Evidence](docs/server-filename-9.22.md).
+
+## 9.21 / extension 0.72.85 — superseded candidate
+
+- Introduces asynchronous server-name adoption. The redirect-category test uses an empty extension list and stops at assertion 9. Five products build, but the candidate is not qualified or installed; the explicit ZIP fixture is corrected in 9.22.
+
+## 9.20 / extension 0.72.84
+
+- Keep Save To's immediate writes responsive: category Browse, remember-path, server date, temporary Browse and Use default capture owned commands and save on the worker. Acknowledge only affected preferences/baselines and refresh only their controls; preserve other unfinished drafts and uncollected text. Retain accepted-write ownership through errors, with rollback and explicit retry.
+- Build five products; pass 308 targeted backend and 1216 optimized UI assertions (632 Main/Options, 257 pending, 327 presentation). Keep the older all-static-label /Od failure separate from qualification. Remove 35 owned fixture roots and 80 temporary build files (972.4 MiB logical bytes); preserve installed 8.68 and personal data. [Evidence and remaining work](docs/immediate-options-9.20.md).
+
+## 9.18–9.19 / extensions 0.72.82–0.72.83 — superseded candidates
+
+- 9.18 introduces owned immediate Save To commits and passes 308 backend checks. Preserve its older /Od label failure, single-refresh presentation failure and intervened 622-assertion Main failure. The synthetic warning's actual OK button has ID 2; its driver incorrectly sent hard-coded IDOK.
+- 9.19 corrects warning acknowledgement and drives the asynchronous receipt wave. Main/Options passes all 632 assertions and pending File Info passes 257, but presentation still requires IndividualStart after the authenticated file has already completed. Its exact terminal payload and cleared flag are recorded. Parallel native entry compilation records C1060 heap failures; only a verified partial core/output cache is retained. Neither candidate is an installed or qualified release.
+
+
+## 9.17 / extension 0.72.81
+
+- Open category properties from Main and Options without a caller settings wait. Return the owned accepted snapshot to File Info/Options; keep category draft/baseline fields coherent without rereading Manager and preserve unrelated unfinished Options changes. Category commands skip unrelated download-selection validation; model-backed menu advice preserves its displayed state during a busy snapshot. Download commands keep their existing authoritative checks.
+- Build five products; pass 260 targeted backend and 1099 UI assertions (515 Main/Options, 257 pending, 327 presentation). Remove 29 owned test roots and 59 temporary build files (922.7 MiB logical bytes); preserve installed 8.68 and personal data. [Evidence and remaining work](docs/category-callers-9.17.md).
+
+## 9.14–9.16 / extensions 0.72.78–0.72.80 — superseded candidates
+
+- 9.14 returns owned category settings through File Info and Options and removes caller pre-reads. Its native/backend, pending and presentation checks pass, but Main stops at an unrestored hidden-window row setup. Preserve the original failure; this candidate is not a qualified release.
+- 9.15 restores visible Video navigation in an isolated /Od driver but fails entry checks without enough control-readiness diagnostics. 9.16 adds nonblocking model-backed menu advice and two held-writer menu checks; its diagnostic identifies a timer observing the second category window before its controls exist. Neither has a normal product build. The corrected 9.17 driver waits for visible, constructed controls; all diagnostic results are excluded from optimized qualification.
+
+
+## 9.13 / extension 0.72.77
+
+- Open File Info category properties immediately, load settings off the window thread and permit cancellation before the catalog is readable. Save owned drafts asynchronously, reject duplicate OK/Close during accepted work and return the fresh category list without a parent model wait.
+- Preserve correction drafts after failed validation and retain concurrent unrelated preferences. Build five products; pass 260 targeted backend and 1044 UI assertions (460 Main, 257 pending, 327 presentation). Remove 13 owned test roots and 22 temporary build files (303.9 MiB logical bytes); preserve installed 8.68 and personal data. [Evidence and remaining work](docs/category-properties-9.13.md).
+
+## 9.12 / extension 0.72.76
+
+- Keep File Info category changes responsive while settings are busy. Coalesce rapid choices, preserve late filename/folder/rule edits and defer Start/Download Later until the selected folder is ready. Cancel drains owned work before releasing Manager.
+- Keep advisory selection and menu preference updates from waiting on Manager; actual command execution retains authoritative validation. Correct the native CCmdUI test index bounds.
+- Build five native products; pass 222 targeted backend and 1,026 UI assertions (442 Main, 257 pending, 327 presentation). Remove 27 owned test roots and 58 temporary build files. Installed 8.68, personal catalogs and media helpers remain unchanged. [Evidence and remaining work](docs/file-info-category-9.12.md).
+
+## 9.10–9.11 / extensions 0.72.74–0.72.75 — superseded candidates
+
+- 9.10 introduces the owned category reader and draft merge; its Main workflow fails at the earlier held-content warning despite passing targeted backend and the other UI suites. 9.11 changes advisory reads; its diagnostic menu probe omits CCmdUI index bounds and exits without assertion results. A separate corrected diagnostic probe passes. Preserve both candidates separately from optimized 9.12 qualification; neither is an installed release.
+
+
+## 9.9 / extension 0.72.73
+
+- Restore qualification of the older default native browser-presentation workflow with owned asynchronous Save, receipt acknowledgement, Resume/login and network-session interfaces. Retain stale/undisplayed capture checks, partial bytes, exact-size states and a complete authenticated loopback download.
+- Build five products; pass 327 optimized presentation checks and 122 focused backend checks. Keep the 9.2 broad baseline separate. Clean 11 owned fixture roots and 32 temporary build files; preserve installed 8.68 and personal catalogs. [Evidence and remaining work](docs/presentation-workflow-9.9.md).
+
+## 9.3–9.8 / extensions 0.72.67–0.72.72 — superseded diagnostic drafts
+
+- Preserve the compile failure and all original assertion failures while migrating the driver: removed network-session members, the old Queued-only Start expectation, synthetic size fixture state and missing asynchronous command acknowledgement. The 9.8 diagnostic identifies a held decision guard with an unlocked model; 9.9 pumps and acknowledges that owned command. These /Od fixture drafts are not native-product releases or optimized qualification.
+
+## 9.2 / extension 0.72.66
+
+- Keep parent File Info responsive after address/media recovery. Prepare stop, saved URL/page and login values on an owned worker, retain draft destinations, and guard subsequent admission with the exact saved request selection. Cancel drains accepted work before owner release.
+- Build five products; pass 3,334 backend and 698 actual UI assertions. Clean 78 fixture roots and 87 temporary build files; preserve installed 8.68 and personal catalogs. [Evidence and remaining work](docs/file-info-refresh-9.2.md).
+
+## 9.1 / extension 0.72.65
+
+- Open ordinary/FTP/media address recovery before Manager waits. Serialize preparation, browser-offer reads, reviewed saves and displayed receipt cleanup on one owned worker. Keep Cancel and repainting responsive, preserve accepted saves and reject undisplayed replacement changes.
+- Build five native products; pass 3,270 backend and 678 actual UI assertions. Remove 78 owned fixture roots and 119 temporary build files. Installed UDM remains 8.68. [Evidence and remaining work](docs/download-refresh-9.1.md).
+
+## 9.0 / extension 0.72.64 — superseded development draft
+
+- The focused shared-helper preflight passes 33 checks, but UI compilation rejects protected Form caption access. Retain that failure, correct title-setting through SetWindowText and rebuild fresh as 9.1. No installation or qualification claim is made for 9.0.
+
+## 8.99 / extension 0.72.63
+
+- Deliver owned ZIP completion messages after local parsing, remote reads and prefetched-file readiness. Publish results before notification, isolate callback exceptions and keep callbacks safe after window teardown.
+- Verify the real ZIP list updates with its polling timer removed. Build five products; pass 3,204 backend and 657 actual UI assertions.
+- Clean 148 owned fixture directories and 176 temporary build files, including six displaced cache objects. Preserve previous native products, installed 8.68 and personal catalogs. [Evidence and remaining work](docs/zip-completion-8.99.md).
+
+## 8.98 / extension 0.72.62 — superseded development candidate
+
+- Build all native products and pass 3,204 backend assertions. Preserve the failed Main UI visibility assertion: a child HWND can be observed before modal initialization has shown it. Retain the held-writer and deadline requirements, wait for actual visibility and qualify 8.99 from fresh inputs.
+
+## 8.97 / extension 0.72.61
+
+- Restore ordinary ZIP Preview after admission settles, using the current eligibility snapshot. Open ZIP preview before model reads or prefetch stopping. Prepare selected requests and private credentials off the UI thread; retain a responsive closing window until accepted preparation settles.
+- Preserve restoration selection across capacity/decision retries; reject changed routing and membership before launch, stop or restoration. Keep active HTTP confirmation on its existing file reader.
+- Build five products; pass 3,170 backend and 651 actual UI assertions. Remove 146 owned fixture directories and 216 temporary build files; preserve installed 8.68 and personal catalogs. [Evidence and remaining work](docs/zip-preparation-8.97.md).
+
+## 8.96 / extension 0.72.60 — superseded development candidate
+
+- Build five products and pass 3,170 backend assertions. Preserve the original and fresh same-binary Main UI failures: a one-refresh duplicate fixture expectation and an ordinary ZIP button left disabled after admission. Correct the visible-history fixture precondition, restore ZIP eligibility-driven enabling, add diagnostics and qualify 8.97 instead.
+
+## 8.95 / extension 0.72.59 — superseded development candidate
+
+- Real HTTP preflight reaches 32 successful assertions, then a selected stop rejects an empty no-redirect response address newly added by the transfer. Preserve the failed result, normalize only empty resolved-address metadata, retain nonempty address guards and qualify fresh 8.97 inputs.
+
+## 8.94 / extension 0.72.58 — superseded development candidate
+
+- Introduce asynchronous ZIP entry/preparation and selected stop authority. Source audit finds restoration retries could drop their guard; interrupt the incomplete build, preserve the audit, strengthen the retry ownership and positive workflow tests, and qualify 8.97 instead.
+
+## 8.93 / extension 0.72.57
+
+- Keep pending ZIP previews responsive while waiting for a prefetched archive. Read the receipt and file length on an owned cancellable worker, and revalidate the selected request, ownership and parts path before exposing the file.
+- Build five products; pass 3,088 backend and 634 actual UI assertions. Clean 70 owned fixture directories and 80 temporary build files. Installed UDM remains 8.68. [Evidence and remaining work](docs/prefetched-zip-8.93.md).
+
+## 8.92 / extension 0.72.56 — superseded development candidate
+
+- Restore version/manifest UTF-8 encoding. Compilation then rejects private activity-map access in the new fixtures; use the existing public reserved-response fixture state and qualify the fresh 8.93 build instead.
+
+## 8.91 / extension 0.72.55 — superseded development candidate
+
+- Introduce the prefetched ZIP readiness reader. An encoding error in version files prevents qualification; diagnostics are retained with the final 8.93 evidence.
+
+## 8.90 / extension 0.72.54
+
+- Prepare File Info metadata asynchronously and wake it on actual HTTP completion. Cancel obsolete credential/selection checks; reject changed progress, completion, capture requirements and protected proxy routing before launch.
+- Build five products; pass 3,046 backend and 628 actual UI assertions. Clean 68 owned fixture directories and 147 temporary build files. Installed UDM remains 8.68. [Evidence and remaining work](docs/file-info-preview-8.90.md).
+
+## 8.89 / extension 0.72.53 — superseded development stage
+
+- Add direct HTTP-completion notification. Preserve the 25-check preflight; source audit identifies missing final eligibility checks and the protected proxy field mismatch. Stop incomplete builds and qualify the corrections as 8.90.
+
+## 8.88 / extension 0.72.52 — development stage
+
+- Introduce owned cancellable preview preparation. Included in the final 8.90 implementation; no separate build qualification or release claimed.
+
+## 8.87 / extension 0.72.51
+
+- Keep More available during background admission now that its queue inputs are owned. Carry cold File Info preparation, responsive cancellation and a transition within the same window; ignore stale bootstrap commands and show known exact bytes before Start.
+- Build five products; pass 2,984 backend and 617 actual UI assertions. Clean 129 owned fixture directories and 214 temporary build files, preserving current core cache, installed UDM 8.68 and personal catalogs. [Evidence and remaining work](docs/file-info-initial-8.87.md).
+
+## 8.86 / extension 0.72.50 — superseded development candidate
+
+- Introduce owned initial-view preparation, private address/login resolution, coherent queue snapshots and the deferred control transition. Backend validation passes, but UI qualification exposes the existing More admission restriction. Preserve the initial MFC compiler correction and failed UI evidence; use 8.87 for the qualified candidate. [Investigation](docs/file-info-initial-8.87.md).
+
+## 8.85 / extension 0.72.49
+
+- Queue browser presentation acknowledgements off Main’s UI thread; preserve fresh mixed-group captures and exact failed-attempt recovery through Retry/Close. Drain accepted work before shutdown.
+- Build five products; pass 2,944 backend and 580 actual UI assertions. Preserve superseded fixture evidence, clean owned payloads and 178 temporary build files, and retain installed UDM 8.68 and personal catalogs. [Evidence and next work](docs/browser-acknowledgement-8.85.md).
+
+## 8.84 / extension 0.72.48
+
+- Keep accepted File Info attached through benign metadata/preference refreshes while rejecting changed selected requests and tracks. Preserve edited destination and description.
+- Build five products; pass 2,886 backend and 566 actual UI assertions. Remove 61 fixture roots and 69 temporary build files; preserve installed 8.68 and personal catalogs. [Evidence and remaining work](docs/file-info-selection-8.84.md).
+
+## 8.83 / extension 0.72.47
+
+- Open already-accepted prepared media through the early File Info route; move job/receipt/current-view binding to an owned reader that can cancel its model-lock wait. Preserve drafts, retry identity and grouped acknowledgement ownership.
+- Build five products; pass 2,852 backend and 556 actual UI assertions, including Main's real accepted-notification handler and pending/retry/cancellation workflows. Preserve initial fixture failures and the token-format correction proof; use existing media helpers without binary copies.
+- Remove 63 fixture roots, 64 temporary build files and a source copy. The zero-copy helper junction remains because automatic approval review blocked removal. Installed UDM remains 8.68. [Evidence and remaining work](docs/file-info-binding-8.83.md).
+
+## 8.82 / extension 0.72.46
+
+- Fix a scheduler race that paused a manually requested download between prepared handoff and publication after its persistent IndividualStart flag was retired. Keep generation-bound runtime ownership through finishing, without another catalog write; explicit Pause remains effective.
+- Carry 8.81 asynchronous File Info admission, queued early Start/Later and joined Cancel. Build five products; pass 2,794 backend assertions and 302 actual UI assertions. Correct BOM-aware dependency scanning and retain initial compiler/UI failures and ownership trace evidence.
+- Remove 77 owned fixture roots, 127 temporary build files and five source copies; preserve installed files and personal catalogs. Candidate only; installed UDM remains 8.68. [Detailed evidence](docs/independent-finishing-8.82.md).
+
+## 8.81 / extension 0.72.45 — superseded, unqualified development build
+
+- Move File Info prefetch admission/capacity attempts off the window thread; retain early Start/Later intent and join admission before asynchronous Cancel. The corrected new C: prefetch suite passes 42 assertions.
+- Broader qualification exposes an ordinary publication race; preserve its failed runs and controlled diagnosis instead of claiming release readiness. 8.82 contains the fix and complete requalification. [Investigation](docs/file-info-prefetch-8.81.md).
+
+## 8.80 / extension 0.72.44
+
+- Read repeated File Info display metadata on an owned joined worker; retain coherent size and filename controls while the catalog is busy. Coalesce requests and prevent completion-driven refresh loops. Keep explicit decisions authoritative and guard main shutdown while a File Info dialog owns reads.
+- Build all five native products; pass 2,648 backend assertions, 183 main/File Info/network/login/progress UI assertions and 88 progress-menu assertions. Remove 54 fixture roots, 56 temporary test build files and the owned source copy. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/file-info-display-8.80.md).
+
 Milestone headings use the reconciled two-digit sequence. Parenthetical recorded numbers identify the original build or changelog values. The [archived tag ledger](#archived-tag-version-ledger) covers tagged milestones that lack a paired heading.
+
+## 8.79 / extension 0.72.43
+
+- Run network polling, endpoint enumeration and monitor controls on one joined operation worker. Render immutable cached network views, coalesce busy polls, preserve mutation acknowledgement semantics and settle captured-response shutdown before Manager exit.
+- Build five products and pass 2,578 backend assertions, 170 actual main/network/login/progress assertions and 88 progress-menu assertions. Retain the corrected monitor fixture's failure evidence; remove 53 fixture roots and 54 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/network-session-8.79.md).
+
+## 8.78 / extension 0.72.42
+
+- Prepare main-list duplicate prompts on the Resume worker and run duplicate choice, replacement verification and existing-download retry on an owned joined decision. Validate displayed request identity, preserve failed-save recovery, and defer close/repeated submit until acknowledgement.
+- Build five products and pass 2,376 backend assertions, 159 actual main/login/progress window assertions and 88 progress-menu assertions. Remove 48 fixture roots and 50 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/duplicate-decision-8.78.md).
+
+## 8.77 / extension 0.72.41
+
+- Run main-list Resume classification, recovery, durable queueing and dispatch on a joined worker. Retain checked follow-up views and apply complete content decisions on a worker, with stale-request validation and saved-choice recovery.
+- Build five products and pass 2,314 backend assertions, 139 actual main/login/progress window assertions and 88 progress-menu assertions. Remove 48 fixture roots and 48 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/resume-selection-8.77.md).
+
+## 8.76 / extension 0.72.40
+
+- Prepare requested queue-retry login views on owned workers, including credential resolution and current challenge/policy/source checks. Present only a ready view, retain pending requests on Cancel, and protect login presentations from main-window shutdown.
+- Build five products and pass 2,246 backend assertions, 125 actual main/login window assertions and 88 progress-menu assertions. Remove 44 fixture roots and 46 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/requested-authentication-8.76.md).
+
+## 8.75 / extension 0.72.39
+
+- Run Sign in and retry persistence, guarded resume and immediate dispatch on an owned decision task. Keep login controls responsive with a busy state, defer close until command settlement, and preserve a retryable saved identity when credential saving succeeds but retry preparation fails.
+- Build five products and pass 2,170 backend assertions plus 104 isolated window assertions, including the actual held-save dialog and complete authenticated retry. Remove 41 fixture roots and 42 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/authentication-login-8.75.md).
+
+## 8.74 / extension 0.72.38
+
+- Prepare and durably claim automatic login prompts on an owned joined task, including credential resolution before UI construction. Revalidate the challenge before presenting/applying credentials; asynchronously rearm unpresented or failed dialogs and restore unpresented claims before shutdown.
+- Build five products and pass 2,082 backend assertions plus 97 isolated window assertions, including real prepared login rendering under a held model and complete owned Basic/Digest transfers on both drives. Remove 37 fixture roots and 38 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence, ownership and remaining work](docs/authentication-task-8.74.md).
+
+## 8.73 / extension 0.72.37
+
+- Snapshot automatic confirmation, review and authentication discovery with a try-lock. Retain unpresented confirmation and browser-batch reservations across busy reads and presentation failures; roll back seen markers after failed dialog creation. Restore the authentication pending flag if its durable claim fails.
+- Build five products and pass 1,996 backend assertions plus 79 isolated main-window assertions, with owned presenter callbacks for the new discovery cases. Remove 35 owned fixture roots and 36 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence, ownership and remaining work](docs/automatic-prompts-8.73.md).
+
+## 8.72 / extension 0.72.36
+
+- Run desktop model ticks and queue dispatch on one joined, coalescing worker. Wake the live window with an owned integer identity after work completes; stop and join maintenance before Manager shutdown, with restart after failed durable shutdown. Skip busy timer layout, quota, hangup and queue-completion discovery reads.
+- Preserve the File Info decision acknowledgement guard and synchronous authoritative countdown checks. Build five products and pass 1,934 backend assertions plus 54 actual main-window assertions; remove 34 owned fixture roots and 34 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence, ownership and remaining work](docs/model-maintenance-8.72.md).
+
+## 8.71 / extension 0.72.35
+
+- Capture navigation, filtered history rows, settings, status observations and selection identities in one nonblocking model read, then apply controls after release. Keep the prior view intact while the model is busy and retry on a later timer tick. Read pending browser offers without waiting for a held catalog.
+- Build five products and pass 1,780 backend assertions plus 37 actual main-window assertions on an isolated owned desktop. Remove 29 owned fixture roots and 28 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/history-read-8.71.md).
+
+## 8.70 / extension 0.72.34
+
+- Build list tooltips from immutable row/navigation snapshots and skip busy-model toolbar/selection-file advisory refreshes. Preserve previous button states while busy; actual commands retain current-model validation. Normal full-history refresh and other synchronous owners remain separate work.
+- Build five products and pass 1,624 backend assertions plus twenty actual MFC main-window assertions on a separate owned desktop. Remove 23 owned fixture roots and 24 temporary test build files. Candidate only; installed UDM remains 8.68. [Evidence and remaining work](docs/main-advisory-8.70.md).
+
+## 8.69 / extension 0.72.33
+
+- Keep modal-dialog size refresh from waiting on a busy catalog: retain existing cells for that tick, read only the visible range when the model becomes available, and update controls after releasing the snapshot lock. This targets one remaining nested main-window timer stall; broader synchronous UI work remains separate.
+- Build all five products and pass 1,606 backend assertions plus ten actual MFC main-window assertions on a separate owned desktop. Remove owned fixtures and temporary test build files. Tested development candidate; installed UDM remains 8.68. [Evidence and remaining UI work](docs/modal-size-refresh-8.69.md).
+
+## 8.68 / extension 0.72.32
+
+- Hash bounded independent copies of successful cached write prefixes during reception, then reuse the joined partial hash at completion. Detect cache rewrites/resets, preserve gap and ownership checks, and retain conservative full-hash fallback and mandatory durability/publication barriers. Build, installation and actual complete-time comparisons are recorded separately.
+- Build and install five native products and both manifests; pass 1,580 assertions and actual both-drive pause/reload/resume controls. The matched split comparison improves median finishing by 56.9 ms and total elapsed by 109.6 ms against 8.67; post-flush hash wait falls from 44.58 to 0.042 ms. Preserve all individual losses, including one development tail 3.35 ms behind IDM.
+- The installed executable wins all nine paired IDM cases at exit, durable and full-elapsed endpoints. Remove generated payloads, fixture trees, twenty temporary test build artifacts and the private comparator copy. [Detailed evidence and scope](docs/reception-hash-8.68.md).
+
+## 8.67 / extension 0.72.31
+
+- Remove redundant progress-side writeback locking and notifications below the next dirty-byte trigger and while IO is active. Preserve the 8 MiB trigger, credited-byte accounting, joined shutdown and final durable publication barrier. Verify concurrent completion/progress handoff before performance and installation.
+- Build and install all five native products with both manifest updates. Pass 1,342 assertions and real pause/reload/resume controls on both drives. The installed app wins all nine paired IDM cases at exit, durable and full-elapsed endpoints; split medians are 348 ms finishing and 2.597 s total versus IDM 397 ms / 3.604 s.
+- Retain all four-way development observations: the original 155 ms regression does not reproduce, and 8.67's finishing median remains 17.4 ms longer than 8.66 there. Exact no-loss causality is unproven. Reject the queued-writer probe, remove generated payloads/fixtures/test binaries, and preserve rollback/evidence. [Details](docs/data-writeback-8.67.md).
+
+## 8.66 / extension 0.72.30
+
+- Drain split-download cached data on a single joined background worker using data-only writeback, triggered by newly credited written bytes. Avoid repeated full metadata/storage-cache synchronization during reception; retain the mandatory final durable flush and all publication/recovery ordering. A failed optional request disables further drainage and never supplies disk/resume credit.
+- Build five matched native products and pass 1,336 assertions plus actual pause/reload/resume checks on both drives. Three D: 64 MiB split trials beat IDM at process-exit, post-exit-flush and full-elapsed endpoints. Retain the roughly 155 ms median full-elapsed regression versus 8.65; no universal speed-parity claim. Remove generated payloads, fixtures and temporary test binaries. [Results and limitations](docs/data-writeback-8.66.md). No installer or deployment.
+
+## 8.65 / extension 0.72.29
+
+- Bind the accepted serialization to its durable snapshot/sequence and compare actual pinned catalog text during completion, shutdown and destruction. Remove repeated disk-proof JSON parsing and the remaining destructor pathname reopen. Preserve explicit saves, pending-operation guards, real reads and conservative fallback.
+- Rebuild all 24 C++ core units and matched products. Pass 1,992 selected assertions, 120 exact disk proofs, forty actual Manager stop measurements and two normal App integrity/exit/post-exit-flush samples. Warm 7,500-record Manager stop improves from 123.0 to 42.8 ms on C: and 119.6 to 44.6 ms on D:; no overall download/IDM parity claim.
+- Remove 794 fixture files, both sample payloads and seventeen obsolete 8.63 build files while preserving current and 8.64 baseline dependencies. No installer, deployment, administrator prompt, push or release. [Evidence and memory/provenance scope](docs/accepted-catalog-text-8.65.md).
+
+## 8.64 / extension 0.72.28
+
+- Read completion/shutdown proof catalogs through their existing pinned handles, removing redundant pathname size/open operations while preserving full content comparison, exclusion, size limits and fallback durability. Add a registered pinned-reader fixture.
+- Build ten products and five fixtures; pass 502 selected assertions, 120 exact cached-catalog proofs and two real App integrity/exit/post-exit-flush samples. All six proof medians improve, with every slower pair retained. This is not a whole-app speed or IDM parity claim.
+- Remove 178 generated files and both App payloads. Installed app stays unchanged; no installer, deployment, administrator prompt, push or release. Ordered writes stay private. [Evidence](docs/pinned-catalog-read-8.64.md).
+
+## 8.63 / extension 0.72.27
+
+- Separate native HTTP receiver/ordered/prefinish/hasher waits and record longest optional flush, in-flight-at-finish and discarded pending work. Preserve original teardown measurements across repeated finish. Clear generation-specific timings before reuse.
+- Retain existing IO scheduling, mandatory final flush and publication ordering; this adds attribution rather than claiming a latency fix. Keep ordered writes private after the prior no-regression result.
+- Build ten products and five fixtures with all resources reporting 8.63. Pass 696 selected assertions in ten C:/D: runs and four actual 64 MiB App integrity/exit/post-exit-flush samples. Remove 176 generated files and all sample payloads. Installed app stays unchanged; no installer, deployment, push or release. [Evidence](docs/join-waits-8.63.md).
+
+## 8.62 / extension 0.72.26
+
+- Integrate a gated native ordered-body HTTP candidate using the existing one-buffer budget, accepted-byte retry validation, asynchronous storage-failure notification, written-credit checkpoints and joined same-allocation hash handoff. Normal builds remain synchronous pending promotion gates.
+- Preserve accepted queued data on pause, separate already-accounted reception from legacy progress accounting, remove unused ordered-worker file opens and clear stale per-generation usage diagnostics.
+- Pass 1,780 selected checks in twenty final-binary-matched runs. Build five private qualification and five normal products. Verify a real 64 MiB ordered App transfer, an 8 MiB normal App transfer, and actual 16 MiB pause/reload/resume plus 22 dropped-connection recovery with independent bytes/hashes, normal exit and post-exit flush.
+- Remove 953 generated files and all smoke payloads; retain matched inputs/products and sanitized evidence, including the rejected no-tick driver. Installed app stays 8.32; no installer, deployment, push or release. No balanced speed or IDM parity claim. [Details](docs/ordered-body-8.62.md).
+
+- Further test-only qualification: 126 assertions in fourteen actual Manager storage-fault cases on C:/D:, with corrupt failed-byte exclusion, held-IO pause/rollback and full recovery hashes. Production source/objects and versions stay unchanged; remove all owned fixture data. [Evidence](docs/ordered-storage-fault-8.62.md).
+
+- Further test-only HTTP qualification: 24 actual Manager cases / 126 assertions on C:/D:, covering original-body retention, one-use URLs, helper denial/malformed identity, truncated response recovery and replacement blocked by a held old-generation save. Independent final bytes/hashes pass; 128 generated files / 219,930,803 logical bytes removed. No production version or default activation change. [Evidence](docs/ordered-responses-8.62.md).
+
+- Further test-only shutdown qualification: 20 assertions in four actual Manager processes on C:/D:. A held old save blocks stop; joined shutdown preserves independently verified partial credit, and fresh-process resumes complete exact files. Remove 21 generated files / 34,841,252 logical bytes. No production or version change. [Evidence](docs/ordered-shutdown-8.62.md).
+
+- Further test-only lifecycle qualification: 62 assertions in ten actual Manager processes on C:/D:. Active/retiring folder, refresh-address and removal mutations are refused; failed operation saves roll back, and inactive edits retain verified resume credit. Fresh-process folder/refresh downloads complete exact hashes. Remove 40 generated files / 60,226,000 logical bytes. No production or version change. [Evidence](docs/ordered-lifecycle-8.62.md).
+
+- Further test-only performance qualification: 36 matched normal/private App transfers across C:/D:, including process exit and separate output flush, pass exact correctness checks. Split wall medians improve, but C: finishing median regresses and one split pair is slower overall; keep ordered writes private. Retain every outlier and remove all payloads/owned metadata. Versions unchanged. [Results and decision](docs/ordered-comparison-8.62.md).
+
+## 8.61 / extension 0.72.25
+
+- Integrate generation-bound disk-credit checkpoint leases into the existing synchronous cache-eligible fresh root HTTP path. Persist acknowledged segment prefixes while preserving live UI and network/quota counters.
+- Keep detached save leases through catalog publication and result handling; reconcile and retire outside pending saves before reset/publication. Pin the actual expected parts file with a real read handle. Retain the rejected attribute-only pin attempt as evidence.
+- Pass 1,644 selected checks across eighteen final-binary-matched runs, including held successful/failed actual Manager saves, pending browser-admission overlays, native checkpoint concurrency and physical pin/reload checks. Build five products and twelve fixtures from 522 inputs.
+- Verify a real 64 MiB split App download uses the binding, reconciles every byte and passes exact length/hash/catalog, normal exit and separate output flush checks. Remove generated fixtures and payloads. Ordered network writes remain inactive; no speed parity claim. Installed app stays 8.32; no installer, deployment, push or release. [Details](docs/native-disk-credit-8.61.md).
+
+## 8.60 / extension 0.72.24
+
+- Share one 64 MiB storage owner and atomic budget between the production body cache and standalone ordered writer. Transfer the same allocation through cache invalidation, uniquely owned writer admission and joined successful completion, retaining the budget until the last reader releases it.
+- Refuse completed-body export after pause, abort, failure or unsettled work. Ordered network writes remain inactive pending disk-credit checkpoint and cancellation integration; final flush and publication policy remain unchanged.
+- Pass 1,303 native checks plus 94 standalone checks. Build five products and eight fixtures from 518 inputs; verify a real 64 MiB split App download with write-buffer hashing, exact length/hash/catalog, normal exit and a separate output flush.
+- Remove generated fixtures and payloads while retaining qualified products/core objects. Installed desktop stays 8.32; no installer, deployment, push or release. No finishing-speed or IDM parity claim. [Details](docs/shared-body-storage-8.60.md).
+
+## 8.59 / extension 0.72.23
+
+- Fix the full-body cache's process-budget lease: a download worker could release a mutex acquired by the parent thread when optional caching was disabled. Use a thread-independent atomic owner token, release storage before handing off the budget, and explicitly prevent ownership copies/moves.
+- Keep the one-buffer 64 MiB cap, serialized cache-data access, exact byte coverage and disk fallback. No flush, allocation or HTTP request policy change.
+- Pass 1,263 selected checks in twelve final-binary-matched runs, including 79 cache checks on each drive with cross-thread invalidation/destruction and 24 eight-contender rounds. Build five native products and eight fixtures from 516 inputs; recompile Transfer and Bridge with forty qualified core objects retained.
+- Verify a real 64 MiB split App download uses the write-buffer cache, matches its hash/catalog, exits normally and passes a separate output flush. Remove 407 generated files / 126,169,357 logical bytes plus its payload. Installed desktop stays 8.32; no installer, deployment, push or release. No finishing-speed or IDM parity claim. [Details](docs/cache-lease-8.59.md).
+
+## 8.58 / extension 0.72.22
+
+- Fix valid Unicode filenames rejected when stem truncation left half a surrogate pair before the extension. Clip the name prefix and extension at complete UTF-16 boundaries while preserving existing budgets, ASCII output, device-name rules and regex caching.
+- Reproduce the actual admission failure against qualified 8.57. Pass 2,286 selected checks across thirteen final-binary-matched runs, including 290 filename and 84 Unicode workflow checks on each drive.
+- Cover manual/native browser-message admission, reported server names, Properties, exact Windows targets, refused-save rollback, nested audio/video catalog loading, stable reload and original backup preservation.
+- Build five products and nine fixtures from 516 inputs; rebuild Core and Bridge, retaining forty qualified core objects. Complete a real one-request 4 MiB download with the original split-emoji CLI name, exact normalized target, hash/catalog/normal-exit/post-exit-flush checks.
+- Remove 768 generated files / 133,914,094 logical bytes plus its payload. Installed desktop stays 8.32; no installer, deployment, push or release. No finishing-speed or installed/browser parity claim. [Details](docs/unicode-filename-8.58.md).
+
+## 8.57 / extension 0.72.21
+
+- Reuse the unchanged reserved-filename pattern across calls instead of reconstructing its regex for each loaded/admitted name.
+- Pass 1,926 selected checks across eleven final-binary-matched runs, including 194 filename rules per drive and twelve simultaneous first-use workers. The qualified 8.56 engine also passes the new filename fixture.
+- Build five products and eight fixtures from 515 inputs; rebuild Core and Bridge, retaining forty qualified core objects.
+- Compare eighteen production-core controller processes. Filename-batch thread cycles fall roughly 70%; constructor wall times vary widely, with slower candidate runs retained. No consistent full-startup, GUI, installed or IDM parity claim.
+- Record a separate valid-Unicode truncation failure in 8.56 for the next correctness increment. Pass a real one-request 4 MiB lifecycle/hash smoke; remove 670 generated files / 267,417,915 logical bytes plus its payload. Installed desktop remains 8.32; no installer, deployment, push or release. [Details](docs/filename-startup-8.57.md).
+
+## 8.56 / extension 0.72.20
+
+- Transfer parsed catalog records into Jobs, removing the redundant whole-record deep copy while retaining existing validation, normalization, backup and recovery behavior.
+- Add 112 load/failure-preservation checks on each drive: nested audio/video, long and unknown metadata, interrupted states, malformed late/nested records and exact original/backup preservation.
+- Pass 1,863 selected checks in ten final-binary-matched runs. Build five products and seven fixtures from 513 inputs; rebuild Core and Bridge and retain forty qualified core references.
+- Measure eighteen hidden startup launches. With 7,500 records, median manager-ready falls 447.2012 → 406.3427 ms and initial-refresh-returned 651.7352 → 609.4440 ms. Empty-history medians are slightly slower; no universal, visible-paint, installed or IDM parity claim.
+- Pass a real one-request 4 MiB lifecycle/hash/normal-exit/post-exit-flush smoke. Remove 793 generated files / 333,714,036 logical bytes plus its payload. Installed desktop stays 8.32; no installer, deployment, push or release. [Details](docs/catalog-load-8.56.md).
+
+## 8.55 / extension 0.72.19
+
+- Remove unnecessary whole-history startup snapshots and restrict Start/Stop rollback copies to potentially modified queue rows, including same-queue completed nonmembers and Start's review-field exceptions.
+- Restore transient schedule pause hints on failed startup persistence. Preserve wake timers, retry, synchronization and persist-before-cancel ordering.
+- Pass 593 selected checks across thirteen final-binary-matched runs; build five native products and ten fixtures from 512 inputs with Queue and Bridge rebuilt.
+- Measure hidden startup with 7,500 records: median queue phase 46.3258 → 0.0468 ms; post-pipe-construction marker 693.7648 → 627.8318 ms. These are three samples per engine, without visible-paint, installed or IDM parity claims.
+- Pass a real one-request 4 MiB integrity/lifecycle smoke. Remove 677 generated files / 352,091,647 logical bytes plus its payload. Installed desktop remains 8.32; no installer, deployment, push or release. [Details](docs/queue-startup-8.55.md).
+
+## 8.54 / extension 0.72.18
+
+- Move receipt-only recovery journal checks and catalog persistence outside recovery's own model lease. Retain immutable descriptors, scope revalidation, shutdown enrollment and exclusion of affected destinations and journal names.
+- Make ordinary/replacement publishers and journal recovery honor journal-name reservations. Refuse a conflicting reused identifier before moving bytes, while allowing unrelated real publication during a held inventory check.
+- Bind retirement to actual serialized receipt absence. Accept a later containing snapshot after an earlier save fails; reject noncontaining, deferred and unknown outcomes. Roll back only missing exact keys, preserving concurrent receipts and current metadata.
+- Pass 22,769 selected checks in 21 final-binary-matched runs, including 267 pruning checks on each drive, all sixteen selected backend suites and retained publication/recovery fault coverage. Preserve the four-case 8.53 blocked-model control and the corrected fixture assertion separately from final qualification.
+- Build five products and sixteen fixtures from 510 inputs using five rebuilt native core units and nineteen audited retained native units. Verify 8.54 on all 21 outputs and 0.72.18 in both source extension manifests. Pass an actual one-request 4 MiB app lifecycle/hash/post-exit-flush smoke.
+- Remove 14,422 owned generated files / 243,500,410 logical bytes, its separate 4 MiB payload and 15,147 empty test directories. Keep a compact cleanup receipt and compressed private inventory. No installation, installer creation, push or release; installed desktop stays 8.32. Finishing-speed parity and remaining caller/namespace gates stay open. [Details](docs/recovery-pruning-8.54.md).
+
+## 8.53 / extension 0.72.17
+
+- Dispatch completed and unfinished Properties saves to an owned worker. Keep the actual message pump active while real catalog IO is held; close only after acknowledgement, or restore the controls/draft and report the error for correction/retry.
+- Guard the full preparation/acknowledgement lifecycle against reentrant Close and duplicate OK, including control-freezing notifications. Worker actions capture owned edits/header deltas and manager/job references, without control or dialog captures.
+- Recheck completed-job membership, closing, batches and current session under the saving lease. Preserve atomic logical header merging, guarded unfinished recovery, fast input validation and completed-file relocation. Remember a successful relocation before retrying a failed metadata save.
+- Pass 2,896 selected checks across 17 runs matched to final binary hashes, including 55 new backend checks per drive, four actual-window probes (62 checks) and the existing 522-check Properties suite. Keep the qualified paused 8.52 blocked-UI control separate from invalid completed-fixture attempts and repaired warning-dialog driving.
+- Build five products, nine backend fixtures and two UI fixtures from 509 source inputs with all 24 native core units rebuilt. Pass a real 4 MiB lifecycle/hash/normal-exit/post-exit-flush smoke; remove 1,071 owned files / 321,629,212 logical bytes plus the payload. Installed desktop stays 8.32; backend/pruning locks, zone metadata and original IDM finishing-speed gaps remain open. [Details](docs/properties-save-8.53.md).
+
+## 8.52 / extension 0.72.16
+
+- Release recovery's own model lease during accepted verified-handle closure, zone/retained-output metadata work and exact-handle journal retirement. Close still-owned verified handles outside that lease during exceptional unwind too.
+- Reserve the separate immutable retained source alongside publication destinations. Retain full operation ownership until cleanup ends; validate accepted rows and the exact private receipt around each cleanup boundary.
+- Preserve durable completion when cleanup fails. Read-only journals retain their exact intent for explicit retry; failures after retirement preserve accepted history and do not erase a successor receipt.
+- Pass 25,218 selected checks in 28 runs, including 4,471 cleanup checks and 306 real workflow cases per drive. Cover independent saves, mutated scope/graph/membership, batches, shutdown, private receipts, read-only retirement, refused retained deletion and hard-link cleanup.
+- Build five products and twenty-one fixtures from 507 frozen inputs, two rebuilt core units and twenty-two retained native units. Pass a one-request 4 MiB lifecycle/hash/normal-exit/post-exit-flush smoke; remove 13,971 owned files / 293,728,138 logical bytes plus its payload. Installed desktop remains 8.32, without installer/deployment/push/release. Receipt-only pruning and original IDM finishing-speed losses remain unresolved. [Details](docs/recovery-cleanup-8.52.md).
+
+## 8.51 / extension 0.72.15
+
+- Release recovery's own model lease during journal enumeration, bounded reading/parsing and exclusive same-object claim. Retain shutdown enrollment, scoped input revalidation and full operation reservations before reconciliation.
+- Reuse exact held content without a second read. Refuse changed file identity, identical-content clones, missing scoped intents, changed graphs/destinations and shutdown while preserving bytes/history.
+- Preserve active synchronization replacement workers during predecessor discovery. Retain the real retry regression that exposed the initial guard error and the corrected fixture failures.
+- Pass 16,276 selected checks across 26 runs, including 2,795 discovery checks and 238 workflow cases on each drive. Build five products and twenty fixtures from 506 frozen inputs, five rebuilt core units and nineteen retained native units.
+- Pass a complete one-request 4 MiB lifecycle/hash/normal-exit/post-exit-flush smoke. Remove 9,495 owned files / 273,029,223 logical bytes plus the payload. Installed desktop stays 8.32; no installer, deployment, push or release. Original IDM finishing-speed losses remain unresolved. [Details and qualification](docs/recovery-discovery-8.51.md).
+
+## 8.50 / extension 0.72.14
+
+- Fix four reproduced false-completion cases in replacement recovery: completed new/old metadata could record Size 100 for actual 14/9-byte files, and rollback could resurrect stale original accounting while consuming the journal.
+- Require completed-pair counts, digest and destination to match each verified held file. Reconcile retained/restored originals from measured size, received bytes, digest and target; preserve descriptions, finish history and unpublished replacement bytes.
+- Apply one bounded integer completed-counter schema to normal and recovery proof preparation. Preserve zero-byte files, exact restoration length, private receipts, failure rollback and explicit retry.
+- All 10,686 checks pass across 24 runs, including 2,490 metadata checks on each drive. The separate five-case 8.49 probe and its exact source remain. Five products and nineteen fixtures built from three rebuilt core units and twenty-one retained native units.
+- Complete a one-request 4 MiB lifecycle/hash/normal-exit/post-exit-flush smoke. Remove 4,478 owned files / 241,807,467 logical bytes plus the payload. Installation stays deferred at 8.32; no installer, deployment, push or release. Discovery/cleanup work and IDM finishing-speed parity remain unresolved. [Details and qualification](docs/replacement-metadata-8.50.md).
+
+## 8.49 / extension 0.72.13
+
+- Run ordinary publication, paired replacement and legacy-completion byte IO outside recovery's model lease using immutable inputs and held ownership. Revalidate current identity, membership, graph, destination, verification fields and shutdown before applying history.
+- Classify the replacement target from one held digest instead of reading/hashing the old original twice. Reuse the legacy repair's measured handle/length, preserving independent current metadata for both current and legacy journal application.
+- All 5,706 production-code checks pass across 22 runs, including 1,166 byte-IO checks on each of C: and D:. The separate instrumented 8.48 control passes 90 checks and verifies blocked-model behavior and the redundant old-target hash pass.
+- Build five products and eighteen fixtures using two rebuilt core units and twenty-two retained native units with checked source closure. Complete a one-request 4 MiB app lifecycle/hash/normal-exit/post-exit-flush smoke. No IDM timing or universal speedup claim.
+- Remove 2,377 owned files / 240,384,792 logical bytes plus the smoke payload, retaining source/control reconstruction and evidence. Installed app remains 8.32, with installation deferred. Journal discovery/read, post-acceptance cleanup/pruning, further caller audit and original finishing-delay parity remain unresolved. [Details and qualification](docs/recovery-byte-io-8.49.md).
+
+## 8.48 / extension 0.72.12
+
+- Release the five identified UI recovery scopes through guarded backend operations. Recheck progress actions after recovery; preserve current authentication/session headers in Properties and roll back failed edits to the refreshed current row.
+- Keep cancellation eligibility atomic through recovery completion and removal, including Awaiting offers recovered to Paused. Preserve completed and newly accepted downloads; recheck browser receipt identity and reject overlapping cancellation of a provisional recovery state.
+- All 3,374 focused checks pass across 20 runs, including the new 206-check actual command-adapter matrix on C: and D:, existing cancellation and Properties request-draft regressions. Five products and seventeen fixtures built from a rebuilt native core.
+- Complete and hash-check a one-request 4 MiB app download through normal exit and a separate output flush; retain initial fixture failures and exact reconstructible source deltas. Retire owned temporary payloads and redundant targets.
+- Installed app remains 8.32, with installation deferred. Verification/discovery IO, other mutation saves, installed visual/browser checks and original finishing-delay parity remain unresolved. [Details and evidence](docs/recovery-ui-commands-8.48.md).
+
+## 8.47 / extension 0.72.11
+
+- Reserve recovery job trees and destinations before verification; release recovery's own model lease during catalog serialization, durable save and acknowledgement.
+- Bind acceptance to exact captured recovery changes, removed fields, row presence/absence and private completion receipts. Support actual later containing writers; preserve journals and independent edits on failed/unknown outcomes.
+- Move backend recovery preparation outside command mutation leases and revalidate current inputs. Preserve recovered File Info warnings, project batch ordering and active internal-child Resume behavior.
+- All 2,829 focused checks pass across 16 runs, including 558 new recovery checks on each of C: and D:. Build five products and fourteen fixtures from the rebuilt native core; hash-check a real 4 MiB app download through normal exit and post-exit flush.
+- Remove 1,787 owned files / 187,721,662 logical bytes plus the smoke payload, retaining initial failures and reconstructible source deltas. Installed desktop remains 8.32, with installation deferred. Verification IO, four outer UI scopes and original finishing-delay parity remain open. [Design and qualification](docs/recovery-catalog-checkpoint-8.47.md).
+
+## 8.46 / extension 0.72.10
+
+- Bind ordinary and replacement recovery to an immutable opened journal and retire that exact file by handle. Prevent concurrent pathname replacement and byte writes through hard links from consuming a newer journal.
+- Reject refused journal ownership before changing the selected row; preserve journals on failure and support explicit retry. Keep unrelated locked scoped journals untouched.
+- Retire the 8.45 metadata experiment after its performance gate failed; restore the qualified ordinary transfer path and preserve the source delta and all measured losses.
+- All 1,661 focused checks pass, including journal cases on C: and D:. Five production programs and eleven fixtures built; a real 4 MiB app lifecycle/hash smoke passed. Generated payloads and redundant/retired artifacts removed.
+- Installed desktop remains 8.32; research-first installation deferral, recovery mutex migration and finishing-delay parity remain open. [Implementation and evidence](docs/recovery-journal-ownership-8.46.md).
+
+## 8.45 / extension 0.72.9 — experimental candidate — retired by 8.46
+
+- Prepare Internet-zone metadata before fresh bounded local HTTP body transfers; final verification preserves the exact correct marker and repairs a changed or missing one. Other paths retain their existing metadata call.
+- Build five native products and five fixtures; all 489 focused checks and both 4 MiB early-marker/tamper downloads pass against the corrected link. Source extension versions advance; browser JavaScript is unchanged.
+- Full-lifetime performance gate **not accepted**: alternating D: 64 MiB trials have essentially unchanged exit medians and a worse candidate post-exit durability median. Retain all results; no claim of being faster than 8.44 or IDM.
+- Remove generated payloads, fixtures and redundant target objects. Installed desktop remains 8.32; no installation, installer, release or push. [Details and evidence](docs/early-zone-metadata-8.45.md).
+
+## 8.44 / extension 0.72.8
+
+- Retire the 8.43 body/intent overlap after its timing gate failed to demonstrate a speedup. Restore ordinary serial write-only body writeback, with no extra per-file flush task or newly generated early intents.
+- Retain verified recovery support for saved early intents and final-name protection through normal catalog acceptance.
+- Built five native products and ten fixtures; all 1,491 focused checks passed. One actual 64 MiB lifecycle/hash smoke completed and its payload was removed; concurrent REA analysis excludes a controlled timing claim.
+- Preserve the exact experiment source delta and measured losses; retire obsolete prototype binaries/core objects. Installation remains deferred at 8.32. Fresh actual IDM comparison and finishing parity remain unverified.
+
+## 8.43 / extension 0.72.7 — experimental candidate
+
+- Overlap eligible ordinary-transfer body writeback with durable publication-intent preparation. Both barriers precede rename and completed-catalog acceptance; recovery explicitly verifies and flushes early-intent bytes before accepting them.
+- Preserve early intents after denied write access, changed/truncated bytes or unrecognized staging paths. Keep body and destination-name pins through catalog acceptance, plus automatic checkpoint coalescing until publication resolves.
+- Built five native products and ten fixtures; all 1,473 focused checks passed, including owned process interruption before the body-flush syscall.
+- Withhold installation: two alternating D: 64 MiB trials did not demonstrate a speedup (median application-exit tail 266.595 ms for 8.42 versus 269.816 ms for 8.43). Both wins and losses remain in the evidence. Installed desktop remains 8.32.
+
+## 8.42 / extension 0.72.6
+
+- Retain both verified replacement versions, or the restored original, until recovery catalog persistence succeeds. Recheck the measured identity after restoring the original name; reject reparse-point files during verification.
+- Reproduce a concurrent-writer failure against 8.41 and add paired/restore recovery ownership checks. All 1,249 focused checks passed; five native products and seven fixtures are built. Installation remains deferred.
+
+## 8.41 / extension 0.72.5
+
+- Retain verified publication-recovery file ownership through catalog acceptance, rejecting concurrent writes and renames. Recheck the measured file identity after staging rename.
+- Add real interrupted-publication tests for staged and already-renamed recovery. The concurrent-writer regression failed against 8.40; all 817 focused checks now pass. Five native products and five fixtures are built; installation remains deferred.
+
+## 8.40 / extension 0.72.4
+
+- Move pinned publication-directory checks outside the shared model mutex while retaining destination revalidation and durable publication barriers.
+- Cover model responsiveness and folder changes at the final directory-validation boundary.
+- Built five native products and five focused fixtures; all 803 publication/recovery checks passed. Installation remains deferred.
 
 ## Unreleased
 
 - Developer diagnostics: the isolated HLS fixture can capture a private NetLog and export sanitized owned-loopback parser errors, response framing and body-byte counts. Added privacy checks and a guarded intentionally malformed preview to verify actual error capture without admitting a download. Product versions/behavior remain unchanged; the intermittent natural preview failure remains unresolved.
 
 - Transfer finish after review: the advisory SHA-256 computed after publication now stops with the download (Stop or exit no longer waits for a full-file hash) and, for a file copied to another volume, reads the published copy after the parts are cleared; a copy onto a network or removable destination is flushed before completion is committed, and a fixed-disk copy whose writeback cannot be confirmed keeps its parts and records a warning; the stale keep-alive retry honours Retries=0; speed limits are clamped the same way everywhere.
+## 8.39 / browser 0.72.3
+
+- Retain failed pending cancellations in a bounded recovery queue. A separate cancellation-error dialog explains the failure and offers explicit background Retry without showing the main list. Generation-bound retry/dismiss actions exclude stale decisions and duplicate retries; repeated failure remains visible rather than reporting success. Main-window notification has a timer fallback.
+- Failed/active cancellation offers retain their presentation claim until recovery is handled, preventing refresh from reopening File Info prematurely. The recovery status says “could not be confirmed” to account for partly persisted cleanup; Close acknowledges an unresolved notice without asserting success.
+- All 1,849 focused checks pass, including 91 cancellation/controller checks and 247 real File Info checks per theme. Twenty binaries qualify from 497 frozen inputs and 42 core objects; Bridge rebuilt and forty-one objects retained. All sixteen focused runs were repeated after final claim integration.
+- Removed 1,276 generated files and fifteen obsolete 8.38 fixture executables (213,380,863 logical bytes total), preserving results, rollback products, pinned references, tools and personal data. Installation stays deferred at 8.32. Production main-frame/browser/shutdown acceptance and finishing-delay parity remain open. [Implementation and evidence](docs/file-info-cancellation-recovery-8.39.md)
+
+## 8.38 / browser 0.72.2
+
+- Retain a pending File Info session's claim through its cancellation callback. Late matching producers inherit Cancel without posting another notification; terminal cleanup retires all queued keys and successor claims before reporting completion. Stale cancellation of user-confirmed work clears its obsolete presentation receipt without deleting the download.
+- All 1,764 focused checks pass, including 72 cancellation/ownership checks and 214 real File Info checks in each theme. Twenty binaries qualify from 496 frozen inputs and 42 core objects; Bridge/CaptureAdmission rebuilt and forty objects retained.
+- Removed 593 generated files and fifteen obsolete 8.37 fixture executables (209,141,548 logical bytes total), preserving results, rollback products, pinned references and personal data. Installation remains deferred at 8.32. Visible persistence-failure recovery, installed-browser/session-end acceptance and finishing-delay parity remain open. [Implementation and evidence](docs/file-info-cancellation-8.38.md)
+
+## 8.37 / browser 0.72.1
+
+- Retain a private request fingerprint in pending File Info sessions. Cancel follows exactly matching in-flight ownership outside the Manager lock, safely removes only an unconfirmed accepted job, or durably releases a missing receipt before the session retires. Coalescing rejects a changed request fingerprint. Preserve accepted history, user-confirmed work and existing receipt compatibility.
+- All 1,706 focused checks pass, including 46 cancellation/restart/failure checks, 142 race/ownership checks and 198 real File Info checks per theme. Twenty binaries qualify from 496 frozen inputs and 42 core objects. All 24 native core units rebuilt; eighteen unchanged compression objects were retained. The first private rebuild lacked the canonical Brotli include path; its failure is preserved and the complete core rebuilt after correction.
+- Removed 585 generated files (163,257,917 logical bytes) and 28 obsolete 8.35/8.36 fixture executables (86,178,816 logical bytes), retaining historical results, product rollback binaries, pinned references, canonical tools and personal catalogs. Installation remains deferred at 8.32. Cancellation callback presentation ownership and user-visible failure recovery remain open, alongside installed-browser acceptance and finishing-delay parity. [Implementation and evidence](docs/file-info-cancellation-8.37.md)
+
+## 8.36 / browser 0.72.0
+
+- Coalesce a validated same-receipt browser File Info successor into its retained presentation, carrying the draft and cancellation without posting a second window notification. Retry activity belongs to the session; stale generations cannot submit another Retry. A joined worker reuses a matching producer-owned successor without taking over that producer's completion lifetime. Preserve an undispatched original notification by retargeting its inbox entry.
+- All 1,660 focused checks pass, including 142 race/ownership checks and 198 real File Info checks in each light/dark mode. Nineteen native binaries qualify from 495 frozen inputs and 42 core objects; Bridge rebuilt and 41 objects retained. The initial race-fixture wait assertion failure is preserved; only that fixture was rebuilt after correcting its session-completion condition and extending boundary checks.
+- Removed 578 generated files (156,586,062 logical bytes), preserving current/prior binaries, canonical tools/core objects and personal catalogs. Installation remains deferred; installed desktop is 8.32. Browser version carries after component 99 under the two-digit policy. Installed-browser, full session-end and post-retirement cancellation gates remain open; finishing-delay parity is unresolved. [Implementation, evidence and limits](docs/file-info-coalescing-8.36.md)
+
+## 8.35 / browser 0.71.99
+
+- File Info's explicit admission Retry now follows an exactly matching in-flight browser receipt outside the Manager lock. It rechecks durable acceptance and the live download before binding the same presentation; a definitely failed competing admission may yield to the already requested Retry. Ordinary browser and legacy callers retain their non-waiting busy behavior. Preserve the session's draft and cancellation through the joined attempt; no generic uncertain outcome authorizes another submission.
+- All 1,486 checks pass across thirteen focused backend fixtures and light/dark real File Info runs. All nineteen native binaries (five production, fourteen fixtures) qualify from 495 frozen inputs and 42 core objects. Preserved the first UI fixture failure and fixed its post-modal weak-reference assertion; product/core bytes were unchanged by that fixture correction.
+- Removed 567 generated fixture/compiler files (155,983,501 logical bytes), preserving current/prior binaries, canonical core/media tools and personal catalogs. Installation remains deferred; installed desktop is 8.32. Two independently notified browser producers, installed-browser acceptance and finishing-delay parity remain open. [Implementation, evidence and limits](docs/retry-join-8.35.md)
+
+## 8.34 / browser 0.71.98
+
+- Hash fresh, known-length non-range HTTP responses from their successful write buffers, including large sequential downloads. This removes the trailing prefix-reader thread on that proven single-writer path. Preserve pending-confirmation, resumed and range-probe exclusions, required-digest checks and fallback behavior. Keep existing full-body retention limits; flush pacing and publication barriers are unchanged.
+- Add a live loopback regression for large sequential bodies, correct and incorrect required digests, and multiworker range exclusion. All 1,930 checks in 21 selected suites passed; 26 binaries built and verified from 494 frozen inputs and 42 core objects. Preserved the initial missing-helper fixture failure and corrected it using a shared-tools junction.
+- Portable comparison verified all eighteen files and confirmed inline hashing in all three large sequential runs, but the finishing target remains unmet: exit tails won 4/9 pairs and full elapsed runs 8/9; the sequential median tail was 568.490 versus IDM's 341.011 ms. Retain every loss and the separate post-exit flush endpoints. Removed 253 generated files (1,070,640,722 logical bytes), preserving personal data, current/prior binaries, core objects and canonical tools. Installation remains deferred; installed desktop stays 8.32. [Results and limits](docs/finishing-performance-8.34.md)
+
+- Follow-up controlled D: comparison verified eighteen files; exit tails won 5/9 and full elapsed runs 9/9, while all split tails lost. Approved tracing stopped/exported safely but failed owned-process coverage, so kernel attribution remains unverified. Corrected recorder deadlines, added private D: workload placement and prepared a larger ring with trace-only UDM-last ordering; 21 tooling checks pass. Total cleanup now covers 282 files / 2,563,368,802 logical bytes. No additional app behavior, installation or version change is claimed for these research/tooling updates.
+
+- Add a standalone read-only ETL consumer to avoid large XML exports and reject incomplete target lifetimes/flush pairs. Twenty normalized fault checks, five CLI checks and a real five-event process-local ETL smoke match Windows reference counts; kernel mapping remains unverified. Removed seven fixture/compiler files (4,414,461 logical bytes); total 8.34 cleanup is 289 files / 2,567,783,263 logical bytes. This is investigation tooling, with no further app/version/install change or new UAC request.
+
+## 8.33 / browser 0.71.97
+
+- Add owned diagnostic-only finish timestamps separating file/journal/catalog IO, acknowledgement, cleanup and teardown. A loaded 1.201-second split sample spent 447 ms in final file flushing, 140 ms in intent publication and 300 ms in catalog publication (256 ms in FlushFileBuffers); acknowledgement/Manager stop were fast. Diagnostic load is explicit, and these results do not replace shipping qualification.
+- Coalesce redundant automatic checkpoint IO only while every active owner is finalizing eligible full-body ordinary downloads, with no pending admission/publication capture or storage error. Preserve explicit saves, retries, other active work, scoped marker release and all mandatory durability barriers. File-flush pacing is unchanged.
+- All 1,913 maintained checks passed and all 25 binaries qualified after a fixture precondition correction. Windows canceled elevation before any installed file changed; 8.32 remains installed and the 8.33 comparison is pending. Deleted 287 generated files (1,980,442,579 logical bytes), preserving ready binaries/core, personal data and evidence. [Detailed findings and status](docs/finishing-performance-8.33.md)
+- The exact qualified executable subsequently passed all eighteen portable download size/hash checks from its build folder. Original and separate output-flush tails each won 8/9 pairs; full elapsed runs won 9/9. All sequential/split tail pairs won, but one 4 MiB control pair lost, so the all-pairs target remains false and installed-path performance is pending. Added and parser-validated a small Windows IO profile with 16 MiB configured system buffers; no live system recording started.
+- Added normal-token trace controller and separate named administrator recorder with deadline/owner-loss cleanup, failed-export/unknown-state handling and bounded recovery logs. Nineteen supplemental lifecycle tests, a read-only plan and a two-transfer case-filter smoke passed; no live privileged collection occurred. The optional benchmark filter is a documented measurement-input amendment, with original source hash reconstructed and full default protocol preserved. Native app binaries remain unchanged.
+
+## 8.32 / browser 0.71.96
+
+- Admit one optional early flush after one-eighth credited progress for fixed-volume 32–64 MiB split transfers with two through eight workers. Later progress cannot request another; other split sizes and higher concurrency retain previous eligibility.
+- Reduce the three-operation sequential schedule's minimum final runway from eight MiB to four MiB while retaining measured slow-IO advancement, joined teardown and the mandatory final publication flush. Installed and hash-verified after 1,901 maintained checks and all 25 native binaries built. All eighteen final sizes/hashes and saved digests matched, settings restored and personal data/tools preserved. The experiment does not establish a speed gain: original tails won 4/9, full elapsed times 8/9, and separate output-flush tails 9/9 but full durable times 8/9. Sequential/split median original tails still lost and one split full download lost. The target remains unmet. Removed 266 generated files (1,096,280,687 logical bytes). [Design and results](docs/finishing-performance-8.32.md)
+
+## 8.31 / browser 0.71.95
+
+- Bound sequential local-file early writeback for known 32–64 MiB bodies to quarter-body, half-body and eight-MiB-before-EOF milestones. Keep one joined worker, coalesced requests, adaptive runway and the mandatory final publication flush. Other transfer sizes and multiple connections retain their prior schedule.
+- Fourteen added scheduling/teardown checks cover both boundary sizes, held IO, operation limits, nonblocking progress and advisory errors. Installed and hash-verified after all 1,887 maintained checks passed and all 25 binaries built. Sequential 64 MiB median exit tails were 246.421 versus IDM 451.068 ms; median tails through symmetric output flush were 261.464 versus 636.667 ms. Original paired tails won 7/9 and full elapsed runs 9/9; the stricter original target remains unmet. Separate output-durability tails/full runs won 9/9 each. Every final size/hash and saved digest matched; settings/catalogs/tools preserved. Removed 266 generated files (1,096,001,246 logical bytes). [Design and results](docs/finishing-performance-8.31.md)
+
+## 8.30 / browser 0.71.94
+
+- Prepare final transfer metadata before the owning worker's existing journaled publication, avoiding a duplicate acknowledged complete-catalog write for bounded ordinary HTTP downloads. Keep downloaded parts until acknowledgement and require matching durable/model proof before skipping the worker's redundant save.
+- Add real-worker cancellation, retained-parts, first-checkpoint failure/recovery and one-completion-write checks. All 1,873 maintained checks passed and all 25 binaries built. Installed and hash-verified on the third attempt with unchanged personal catalogs/tools. All eighteen comparison files/hashes matched and IDM settings were restored. The no-slower target remains unmet: original finishing tails won 6/9, separate output-durability tails 7/9, and full elapsed runs 9/9 at both endpoints. Sequential 64 MiB median exit tail was 419.426 versus 370.395 ms; observed output and recovery-intent flush waits remain. Removed 246 generated fixture/compiler/comparison files (1,032,827,287 logical bytes), preserving qualified binaries/core and personal data. [Design and validation](docs/finishing-performance-8.30.md)
+
+## 8.29 / browser 0.71.93
+
+- Final published-file writeback requests write access only and measures open, sparse normalization, FlushFileBuffers and close separately, with individual Windows errors. Failed confirmation retains parts; the sparse branch no longer ignores flush failures. Sixteen added checks cover real bytes, operation attribution/order/access, failure handling and actual HTTP-worker integration.
+- The comparison runner optionally adds a symmetric explicit completed-output flush after process exit, preserving original exit metrics and separately recording durability endpoints before hashing. [Design and validation](docs/finishing-performance-8.29.md)
+- Installed after 1,848 maintained checks passed; a supplemental four-check actual NTFS sparse normalization probe also preserved the independently verified bytes. All eighteen comparison outputs and final UDM hashes matched. Nine measured opens were 0.138–0.263 ms; the slower split flush was 266.728 ms, identifying current flush waiting rather than opening. The old 2.7-second combined sample cannot be separated retroactively.
+- The no-slower target remains unmet: original exit timing won five paired tails and all nine full elapsed runs; the separately retained symmetric output-durability endpoint won eight tails and all nine full elapsed runs. Its remaining sequential 64 MiB loss was 720.012 versus 671.327 ms. New post-exit flushes change cache conditions, so no code-only speedup is claimed. All failures remain. Corrected stale launcher labels in 8.26–8.29 after executable-hash/resource verification, with raw records and timing fingerprints preserved. Individually removed 270 generated files / 1,099,818,205 logical bytes, retaining current artifacts and personal catalogs. [Complete evidence](docs/finishing-performance-8.29.md)
+
+## 8.28 / browser 0.71.92
+
+- Prepare publication-journal storage on the worker before the network body, outside the model lock. Create the actual durable intent only after verification, preserving journal ordering and final writeback. Five real paused-origin checks verify early directory preparation without a premature intent.
+- Split atomic intent observation into directory readiness, temporary-file opening, bytes written, flush/close and final publication while preserving aggregate/full-exit timing. [Design and validation](docs/finishing-performance-8.28.md)
+- Installed after all 1,832 checks passed; 25 binaries, 490 inputs and 42 core objects qualified, with unchanged personal catalogs. Every comparison output/final-record hash matched. The original comparison still fails the target: seven of nine paired finishing tails and eight full elapsed times favored UDM. A 2.715-second split tail was traced to 1.831 seconds in published-file opening/flushing, 295 ms intent flush/close and 129 ms catalog writing; settlement was fast. The historical 16.7-second event did not recur and its exact cause remains unknown.
+- A separate symmetric post-exit flush diagnostic retained original metrics and found another 526 ms flushing IDM's output versus 0.436 ms for UDM in one pair. It does not replace the failed primary result or prove IDM's internal API choices. Individually removed 789 generated files, 3,311,914,806 logical bytes, preserving current binaries/core, source, catalogs, shared tools, rollback/evidence and required historical fixtures. [All outcomes and limitations](docs/finishing-performance-8.28.md)
+
+## 8.27 / browser 0.71.91
+
+- Reuse the prepared, writer-excluding source handle for unknown-digest publication identity and fallback SHA-256 instead of opening the staging pathname again. Named-source and destination revalidation, required checksums and journal/catalog durability remain. Five source-pin tests cover identity/size, writer denial, fallback digest and rename safety.
+- Export per-operation publication timings from actual Manager-owned workers before their final checkpoint; standalone publication keeps its existing durable proof. The comparison metric and thresholds are unchanged. [Design and validation](docs/finishing-performance-8.27.md)
+- Installed after all 1,827 checks passed. All eighteen output/final-record hashes matched. UDM won nine full elapsed comparisons and eight finishing tails; sequential trial 2 still lost at 522.237 versus 376.288 ms, including 115 ms intent writing and 65 ms catalog writing. Source identity and rename were negligible. The no-slower target remains unmet; all split tails were faster and the historical 16.7-second stall did not recur. All eighteen benchmark payloads were rechecked and removed afterward. [Complete results](docs/validation/finishing-8.27/comparison.json)
+
+## 8.26 / browser 0.71.90
+
+- Move preliminary finish-path destination filesystem validation outside the shared model lock, using an immutable owned job snapshot. Publication-time source/destination pins and current-state revalidation remain. A slow inspection no longer monopolizes the model lock.
+- Split settlement attribution into lock acquisition, snapshotting, folder inspection, destination-directory work, recovery-journal checks and actual-length query/correction. Preserve the aggregate total and all background work in timing comparisons. Five held-validator checks cover lock access, snapshot ownership, state transition and actual delay attribution. [Design and validation](docs/finishing-performance-8.26.md)
+- Installed after all 1,822 checks passed, with 25 verified binaries and unchanged personal catalogs. All eighteen output/final-record hashes matched. UDM won nine paired full elapsed times and eight finishing tails; sequential trial 2 remained slower at 470.056 versus 340.412 ms, including 236 ms publication work. All three split tails were faster and the old 16.7-second stall did not recur, without proving its historic cause. The target remains unmet. Removed all eighteen verified benchmark payloads afterward. [Complete results](docs/validation/finishing-8.26/comparison.json)
+
+## 8.25 / browser 0.71.89
+
+- After workers, periodic checkpoints, relocation and publication ownership settle, reuse the exact acknowledged final checkpoint only when there is no pending admission/publication outcome and the pinned actual catalog matches the current snapshot. Dirty, missing, malformed, externally changed, unreadable or failed state still triggers a real shutdown save. Explicit saves remain forced. This removes the redundant post-completion catalog flush without moving background work past process exit.
+- Added fifteen shutdown fallback/persistence/repeated-stop checks and updated lifecycle write counts. The publication failure/retry fixture now includes a genuinely unsaved setting before locking the catalog, so it continues to test a required failed save. All 1,817 checks passed; 25 binaries, 489 inputs and 42 core objects qualified. Installed seven hash-verified files and updated version registration, preserving personal catalogs and shared tools. Initial fixture/environment failures remain separately recorded.
+- All eighteen full-process outputs and final UDM hashes matched, but the performance target remains unmet: six of nine paired finishing tails and six full elapsed times favored UDM. Median tails UDM/IDM: 110.888/343.908 ms (4 MiB), 109.311/372.474 ms (sequential 64 MiB), 307.246/461.824 ms (split 64 MiB). A 16.748-second split outlier includes 14.345 seconds in Settle; split full elapsed median is slower. Preserve all outliers; further tracing must identify the individual blocking call. Individually removed 1,032,470,602 logical bytes of benchmark/fixture payloads and unique compiler outputs. [Design, complete results and remaining work](docs/finishing-performance-8.25.md)
+
+## 8.24 / browser 0.71.88
+
+- Retain eligible credited parallel HTTP body bytes in one optional 64 MiB slot. Track actual interval coverage, bound fragmentation and fall back to file hashing on invalid input, contention or allocation failure. Advisory hashing can overlap publication without rereading the file; required checksum and final durability gates remain.
+- All 1,802 native checks passed; 25 binaries, 489 frozen inputs and 42 core objects verified. Installed seven changed files with matching hashes and unchanged personal catalogs. The original comparison still failed the no-slower target; its results remain separate from the single comparison after storage cleanup. Removed 1,294 owned generated/test files, recovering approximately 2.75 GB observed free space. Shared media-helper hard links, current core, rollback records and source were preserved. [Implementation and measurements](docs/finishing-performance-8.24.md) · [Qualification](docs/validation/finishing-8.24.json)
+
+## 8.23 / browser 0.71.87
+
+- Use measured first-flush duration and credited body throughput to advance the second opportunistic writeback when a fixed final-2-MiB point would leave too little runway. The request remains bounded to half-body and two total operations; required final flush is unchanged. Added held-worker regression checks for adaptation, bounds and no extra late operation.
+- Overlap optional same-file advisory hashing with publication and final writeback. All body/trailing-hash writers are already joined; the hash task exclusively owns the hasher, supports the hard-link rename and writeback share modes, and uses a child cancellation token. A scope guard stops it on unwind and the future joins before staging cleanup or hasher destruction. Required server/user/replacement checksums remain before publication. Copies and resource exhaustion retain serial fallback. New fields distinguish full advisory time and the remaining foreground wait.
+- All 1,778 native checks passed; 24 binaries, 487 frozen inputs and 42 core objects verified. Installed and independently checked all eighteen comparison outputs and final recorded hashes. Median UDM/IDM completion tails were 189.162/401.268 ms (4 MiB), 169.373/357.317 ms (64 MiB sequential), and 431.701/413.071 ms (64 MiB split). Split tail and individual outliers still failed the no-slower target, despite faster median full elapsed times in all three cases. Initial candidate fixture results are retained separately; the delivered ownership-guard build relinked and reran all targets. [Results](docs/validation/finishing-8.23/comparison.json). No setup package, release or media-helper copies.
+
+## 8.22 / browser 0.71.86
+
+- Preserve the first forced shutdown save and explicit saves. Avoid a duplicate destructor save only after successful shutdown, with no worker/active ownership, batch, storage error or stale checkpoint sequence. Snapshot the current state, overlay admission reservations and capture publication outcomes; any pending capture prevents the shortcut. Pin and re-read the real non-reparse catalog and require an exact match with the acknowledged checkpoint. Changed live state, missing/malformed/replaced/unreadable catalogs and failed writes retain the forced-save path. No synthetic acknowledgement is used.
+- Added eleven lifecycle checks, bringing the catalog suite to 25 checks. They count actual durable-write boundaries and inspect restored catalogs/receipts, including an equal-content pending admission that must still issue a fresh write. All 1,774 focused native checks pass, including 274 completion checks through observed exit 0. Twenty-four binaries have verified 8.22 resources/hashes, 487 frozen inputs and 42 core objects; Core/CaptureAdmission/FileWorkflows/Bridge rebuilt, 38 hashes retained. A new fixture accessor type error was corrected before delivery; final Core is rebuilt and all final targets link against its final hash. [Qualification](docs/validation/finishing-8.22.json) · [Architecture](docs/finishing-performance-8.22.md)
+- Installed all seven changed payloads after Windows approval, with every installed hash verified and both personal catalogs unchanged. All eighteen full-process comparison outputs and final UDM SHA-256 values match. Median UDM/IDM tails: 118.564/442.065 ms (4 MiB), 560.663/325.819 ms (64 MiB sequential), 536.626/374.405 ms (64 MiB split). The full-background target remains unmet; all outliers remain, including a 1,968.313 ms UDM 4 MiB trial. Sequential stalls include 469–828 ms waiting for an in-flight prefinish flush; split flush/hash work remains serialized. Removed eighteen verified comparison payloads (830,472,192 logical bytes). No setup package, release, push or media-helper copies. [Installation](docs/validation/finishing-8.22/installed.json) · [Results](docs/validation/finishing-8.22/comparison.json) · [Cleanup](docs/validation/finishing-8.22/comparison-cleanup.json)
+
+## 8.21 / browser 0.71.85
+
+- CLI automatic Exit now checks the final transfer wake-up instead of waiting exclusively for the 500 ms main timer. It retains actual inactive ownership, scanner acceptance, exact saved-catalog, modal-state and successful-message-post gates. The timer remains a fallback. Eight writeback checks establish distinct half-body/near-end operations for 4 MiB and 64 MiB sequential responses; 4 MiB now uses 3.5 MiB for its near-end request. Required final flush remains.
+- Added thirteen completion-fixture checks with the main timer disabled. Publication, an early Finished event, a pending scan, dirty final catalog and disabled owner cannot bypass completion readiness; a durable idle completion posts one Exit, with no duplicate on repeated events. Transfer phases now record final writeback/hash/parts cleanup separately from earlier publication. All 1,763 focused checks pass. Twenty-four binaries have verified resources/hashes, 487 frozen inputs (including the tracked comparison runner) and 42 core objects; Transfer/Bridge rebuild and 40 hashes remain unchanged. [Qualification](docs/validation/finishing-8.21.json)
+- Added a tracked full-lifetime comparator using actual Windows process-exit timestamps. It waits for observed current-session app processes, validates output hashes and final persisted UDM SHA-256 after exit, restores IDM connection values/types, retains outliers and never kills processes or deletes outputs. This includes automatic quit scheduling and shutdown, not exact internal completion or GUI dialog visibility. [Protocol](docs/finishing-performance-8.21.md)
+- Installed all seven changed native/manifest payloads, hash-verified with both personal catalogs unchanged and rollback copies retained. The first elevation ended before the helper ran; a built-in Windows PowerShell retry worked, initially rejected reopened Chrome before staging, then succeeded after authorized session closure and process-exit settling. No setup package or shared-media-tool copies. [Installation](docs/validation/finishing-8.21/installed.json)
+- All 18 installed comparison outputs and final UDM SHA-256 values match. Full-exit median tails UDM/IDM: 155.691/485.981 ms (4 MiB), 656.544/402.749 ms (64 MiB sequential), 484.377/445.522 ms (64 MiB split). The full-background target remains unmet. The 8.20 full-exit baseline is preserved separately; it must not be confused with earlier first-file-availability scores. [Comparison](docs/validation/finishing-8.21/comparison.json) · [Baseline](docs/validation/finishing-8.21/baseline-8.20.json)
+- Removed eighteen baseline and eighteen updated comparison payloads, 830,472,192 logical bytes in each batch, after exact-root, no-reparse, size and SHA-256 checks. Reports, catalogs/journals, rollback copies, sources/helpers and current builds remain. Desktop control still fails to initialize; no fresh live IDM dialog timing claim. [Baseline cleanup](docs/validation/finishing-8.21/baseline-cleanup.json) · [Comparison cleanup](docs/validation/finishing-8.21/comparison-cleanup.json)
+
+## 8.20 / browser 0.71.84
+
+- Bounded known-size parallel HTTP layouts up to 64 MiB on fixed volumes reserve regular files during preparation. Fresh outputs avoid post-EOF sparse conversion; existing sparse files and larger/unknown/network layouts retain sparse-aware resume. Saved segment Done continues to bound credited data. Final writeback remains.
+- Finishing queries actual length before requesting a writer; a correctly sized file avoids that reopen, with PublicationPreparation still checking/pinning source identity and length. Opportunistic prefinish writeback is limited to sequential transfers after the 8.19 parallel experiment regressed.
+- All 1,742 focused native checks pass, including five new actual completed-worker assertions; 24 binaries have verified 8.20 resources/hashes, 486 frozen sources and 42 core objects. Transfer/Bridge rebuilt; 40 unchanged core hashes retained. An initial admission suite stopped at 14 checks because the fresh fixture directory lacked its media-tools junction. The original result is retained privately; one junction to existing installed tools resolved the environment and the suite passed all 73 checks. No product changes or helper copies for that retry. [Qualification](docs/validation/finishing-8.20.json) · [Environment retry](docs/validation/finishing-8.20/environment-retry.json)
+- Installed five native payloads and both manifests, with all seven installed hashes verified and both known personal catalogs unchanged. Rollback copies retained. No setup package, release or media-helper copies. Browser runtime JavaScript is unchanged; active browser version and live GUI behavior are not freshly verified. [Installation](docs/validation/finishing-8.20/installed.json)
+- All 18 installed-app comparison outputs match independent SHA-256. Three-trial median first-exclusive-availability tails UDM/IDM: 41.948/24.515 ms (4 MiB), 39.362/19.041 ms (64 MiB sequential), 51.836/98.307 ms (64 MiB split). Sequential gaps remain 17.433 and 20.321 ms. The split observation can precede later flush/hash work and does not establish full finishing parity. All outliers remain, including split trial 2 at 3,340.040 ms UDM / 187.270 ms IDM. IDM connection settings restored. The requested no-slower target remains unmet. [Comparison](docs/validation/finishing-8.20/comparison.json) · [Investigation and next architecture](docs/finishing-performance-8.20.md)
+- Removed 18 verified comparison outputs (830,472,192 logical bytes), plus 677 individually verified generated objects, superseded fixtures and owned test payloads (699,373,854 logical bytes). Current binaries, 42 reusable core objects, shared tools, historical fixtures, catalogs/journals, results, sources/helpers and installation rollback copies remain. Physical allocation reclaimed is not measured. [Comparison cleanup](docs/validation/finishing-8.20/comparison-cleanup.json) · [Artifact cleanup](docs/validation/finishing-8.20/artifacts-cleanup.json)
+
+## 8.19 / browser 0.71.83
+
+- Added bounded opportunistic data-file writeback during transfer, outside the progress/model mutex, at half-body and a connection-aware near-end milestone. In-flight flushing joins and its writer handle closes before publication preparation. Final file flushes, required content/checksum gates and journal/catalog durability remain. Post-publication metadata now has its own timing phase.
+- All 1,737 focused native checks pass, including 11 new writeback lifetime, nonblocking progress, coalescing, error and real-flush checks. Twenty-four binaries have verified resources/hashes, 486 frozen inputs and 42 core objects; Transfer/Bridge rebuild, 40 unchanged core hashes retained. Installed five native payloads and both manifests with rollback copies and unchanged personal catalogs. No media helpers copied or setup package created. [Qualification](docs/validation/finishing-8.19.json) · [Installation](docs/validation/finishing-8.19/installed.json)
+- The three-trial paired loopback comparison still fails the finishing target in all three cases: median UDM/IDM tail 65.969/21.913 ms (4 MiB), 97.507/30.213 ms (64 MiB sequential), 710.981/139.676 ms (64 MiB split). All 18 file hashes match. IDM connection settings restored; test payloads removed (830,472,192 logical bytes). The first exclusive file-open observation is not a GUI completion measurement. [Results and limits](docs/validation/finishing-8.19/comparison.json) · [Cleanup](docs/validation/finishing-8.19/comparison-cleanup.json)
+
+## 8.18 / browser 0.71.82
+
+- Fresh sequential HTTP files grow with credited writes as regular files. Sparse-aware resume and parallel layouts remain. Normal outputs skip unnecessary sparse normalization while retaining final writeback. Content classification uses a bounded, coverage-checked cache of actual credited write bytes when available, falling back to disk for missing/resumed/decoded prefixes. Background prefix hashing wakes on progress rather than relying only on a polling interval.
+- All 1,726 focused native checks pass, including 13 bounded prefix-cache checks and 15 additional real completed-worker checks. Twenty-three binaries built and installed payloads verified. Required verification, final flush, recovery and security metadata remain. [Qualification](docs/validation/finishing-8.18.json)
+- Three paired trials per case fail all finishing medians despite correct file hashes: UDM/IDM 79.479/20.956 ms (4 MiB), 232.791/28.532 ms (64 MiB sequential), 359.581/116.088 ms (64 MiB split). Content sniffing is reduced to sub-millisecond work in the measured runs; flush/commit/normalization spikes remain. A separate owned-file zone-tag probe does not support tagging as the primary spike source, so security-zone behavior was retained. All 18 comparison payloads removed (830,472,192 logical bytes). [Comparison](docs/validation/finishing-8.18/comparison.json) · [Probe](docs/validation/finishing-8.18/zone-probe.json) · [Cleanup](docs/validation/finishing-8.18/comparison-cleanup.json)
+
+## 8.17 / browser 0.71.81
+
+- Before a new paired publication acquires ownership or moves any file, it rejects its own unresolved intent, honors cancellation and reconciles the selected original publication tree. Recovery covers both roles of an earlier paired operation. Complete status and the selected destination are revalidated afterward. Locked, malformed or changed predecessor evidence stops the next operation with its new staging intact. Failed prior catalog saves can be recovered before the original complete-state check.
+- The new checks reproduce the defect against the qualified 8.16 core at chain-ordinary after 282 checks. The corrected build passes 395 replacement checks, including 99 new chained-journal checks, and all 1,698 focused native checks. Twenty-two binaries have verified 8.17 resources/hashes, 482 frozen inputs and 42 core objects; Duplicates/Bridge rebuild and 40 core hashes remain unchanged. Eight isolated browser regression suites pass. [Evidence](docs/validation/chained-recovery-8.17.json)
+- Installed 8.17 and both browser packages 0.71.81 using 17 individually verified payload replacements (19,204,878 bytes), with rollback copies and both known catalogs preserved. Shared FFmpeg helpers were not copied. No setup package or release was created. Active browser reload/capture and GUI behavior remain unverified. [Installation](docs/validation/installed-8.17.json)
+- Completed eight installed-app comparison transfers with matching hashes. UDM total times were 0.996/2.488/8.764/1.954 seconds against IDM 2.506/3.146/9.321/3.229 seconds for 4 MiB, 16 MiB, 64 MiB sequential and 64 MiB split cases. One trial each; private empty UDM catalog versus existing IDM profile, unchanged IDM connection settings. UDM finishing tail remained longer in three of four cases. No GUI timing claim. [Comparison](docs/validation/idm-comparison-8.17.json)
+- Removed 286 generated fixtures/objects/payloads (257,553,421 logical bytes), plus eight completed comparison files (310,378,496 logical bytes). Current binaries, reusable core, historical fixtures, catalogs/journals and rollback copies remain.
+- Predecessor recovery still uses model-locked filesystem/hash/save work. Fresh GUI dialog/focus comparisons are blocked by desktop-control initialization failure. The CLI comparison is one cold-launch trial per case, with an initially empty private UDM catalog and the existing IDM profile; it does not prove general speed or exact IDM parity. Next: isolate the observed post-transfer finishing cost, detach recovery with explicit ownership/outcomes, and restore live desktop/browser comparisons.
+
+- Removed 90 obsolete November 11 compiler objects/debug symbols from four explicitly checked D:/udm-ab benchmark build folders (1,231,831,158 logical bytes), retaining sources, executables and logs. Observed D: free space rose from 4,194,304 to 1,244,135,424 bytes during cleanup; this is an observation, not isolated physical-allocation accounting. [Evidence](docs/validation/old-d-benchmark-artifacts-8.17.json)
+
 ## 8.16 / browser 0.71.80
 
 - Paired replacements now write their intent, perform ReplaceFile, serialize/write the final catalog and clean up the journal outside the publisher model acquisition. Runtime ownership protects both records and the previous-version path. One identity and one containing-snapshot proof bind both completed rows, including an exact private receipt when the new output is internal and unregistered. Current metadata is merged at final apply; failed or superseded original writes may succeed only through an actual containing pair snapshot. Unacknowledged outcomes conditionally roll back matching new-row completion contributions while keeping original history bound to its actual previous-version file. Both physical versions and the journal remain; no potentially acknowledged swap is reversed. New-format recovery validates correlation, destinations and hashes, finds dependent journals through either record, and preserves later queue/scanner metadata on each exact row while merging interrupted outcomes into current records.

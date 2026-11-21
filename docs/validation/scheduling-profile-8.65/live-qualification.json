@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "recordedUtc": "2026-11-18T18:51:55.323543+00:00",
+  "existingApprovalSucceeded": true,
+  "duplicatePromptOpened": false,
+  "workerPid": 27580,
+  "expiresUtc": "2026-11-18T21:50:35.9186869Z",
+  "workerScope": "fixed hash-pinned scheduling collector, up to 20 requests",
+  "fixtureOnly": true,
+  "bytes": 8192,
+  "normalExit": true,
+  "payloadIntegrityPassed": true,
+  "payloadDeleted": true,
+  "collectorExit": 0,
+  "traceSessionAbsent": true,
+  "eventsLost": 0,
+  "buffersLost": 0,
+  "unknownMetadataEvents": 86672,
+  "independentQualificationPassed": false,
+  "failures": [
+    "unknownMetadataEvents",
+    "context switch evidence",
+    "native flush thread scheduling overlap"
+  ],
+  "largeAppWorkloadStarted": false,
+  "kernelCauseVerified": false,
+  "productSourceChanged": false,
+  "nextAction": "Identify authoritative schemas for the missing scheduling events and instrument a bounded schema inventory before another live qualification. Retain rejection; do not infer a flush cause or run the larger workload."
+}

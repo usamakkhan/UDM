@@ -1,0 +1,77 @@
+{
+  "rows": [
+    {
+      "case": "split-control-a",
+      "suppressed": false,
+      "processExitWallMs": 2518.594099999973,
+      "processExitTailMs": 235.9080999995058,
+      "durableWallMs": 3011.9221000004472,
+      "mandatoryOutputFlushMs": 102.72059999999999,
+      "receiverJoinAfterLastSendMs": 8.011349997104844,
+      "maxWriteCallMs": 261.0024,
+      "realOptionalCalls": 7,
+      "suppressedCallbacks": 0
+    },
+    {
+      "case": "split-skip-b",
+      "suppressed": true,
+      "processExitWallMs": 2569.1207500003657,
+      "processExitTailMs": 788.4403499992914,
+      "durableWallMs": 3066.4342000000033,
+      "mandatoryOutputFlushMs": 626.7308,
+      "receiverJoinAfterLastSendMs": 3.02919999921869,
+      "maxWriteCallMs": 259.92019999999997,
+      "realOptionalCalls": 0,
+      "suppressedCallbacks": 7
+    },
+    {
+      "case": "split-skip-c",
+      "suppressed": true,
+      "processExitWallMs": 2532.186750000619,
+      "processExitTailMs": 725.9340500004328,
+      "durableWallMs": 3031.7521000015404,
+      "mandatoryOutputFlushMs": 613.8761999999999,
+      "receiverJoinAfterLastSendMs": 1.5620500016666483,
+      "maxWriteCallMs": 291.2618,
+      "realOptionalCalls": 0,
+      "suppressedCallbacks": 7
+    },
+    {
+      "case": "split-control-d",
+      "suppressed": false,
+      "processExitWallMs": 2296.4774499996565,
+      "processExitTailMs": 297.9839500003436,
+      "durableWallMs": 2803.0261999992945,
+      "mandatoryOutputFlushMs": 100.1067,
+      "receiverJoinAfterLastSendMs": 85.97170000030019,
+      "maxWriteCallMs": 263.2468,
+      "realOptionalCalls": 7,
+      "suppressedCallbacks": 0
+    }
+  ],
+  "medians": {
+    "normal": {
+      "processExitWallMs": 2407.5357749998147,
+      "processExitTailMs": 266.9460249999247,
+      "durableWallMs": 2907.474149999871,
+      "mandatoryOutputFlushMs": 101.41364999999999,
+      "receiverJoinAfterLastSendMs": 46.991524998702516,
+      "maxWriteCallMs": 262.1246
+    },
+    "optionalSuppressed": {
+      "processExitWallMs": 2550.6537500004924,
+      "processExitTailMs": 757.1871999998621,
+      "durableWallMs": 3049.093150000772,
+      "mandatoryOutputFlushMs": 620.3035,
+      "receiverJoinAfterLastSendMs": 2.2956250004426693,
+      "maxWriteCallMs": 275.591
+    }
+  },
+  "order": "normal, suppressed, suppressed, normal",
+  "sameBinary": true,
+  "productPolicyUnchanged": true,
+  "mandatoryFlushRetainedAndSuccessfulInEveryRun": true,
+  "optionalSuppressionRejected": true,
+  "writeStallsPersistWithoutOptionalCalls": true,
+  "notAnUninstrumentedPerformanceClaim": true
+}

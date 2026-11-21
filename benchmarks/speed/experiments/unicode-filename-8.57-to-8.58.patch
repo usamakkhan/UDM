@@ -1,0 +1,119 @@
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -373,5 +373,9 @@
+   {
+     "source": "FilenameValidationTests",
+     "timeoutSeconds": 120
++  },
++  {
++    "source": "UnicodeFilenameWorkflowTests",
++    "timeoutSeconds": 120
+   }
+ ]
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -65,7 +65,7 @@
+ double real(const Json& j,const char* k,double d){return j.contains(k)&&j[k].is_number()?j[k].get<double>():d;}
+ bool yes(const Json& j,const char* k,bool d){return j.contains(k)&&j[k].is_boolean()?j[k].get<bool>():d;}
+ std::string guid(){GUID g{};if(FAILED(CoCreateGuid(&g)))throw std::runtime_error("Cannot create a download identifier.");wchar_t b[40];StringFromGUID2(g,b,40);std::string s=lower(utf8(b));s.erase(std::remove_if(s.begin(),s.end(),[](char c){return c=='{'||c=='}'||c=='-';}),s.end());return s;}
+-std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";static const std::regex reservedName("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)");if(std::regex_search(lower(utf8(w)),reservedName))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();w=w.substr(0,140)+ext.substr(0,19);if(!w.empty()&&w.back()>=0xD800&&w.back()<=0xDBFF)w.pop_back();}return utf8(w);}
++std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";static const std::regex reservedName("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)");if(std::regex_search(lower(utf8(w)),reservedName))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();const auto prefix=[](const std::wstring& value,size_t limit){auto clipped=value.substr(0,limit);if(!clipped.empty()&&clipped.back()>=0xD800&&clipped.back()<=0xDBFF)clipped.pop_back();return clipped;};w=prefix(w,140)+prefix(ext,19);}return utf8(w);}
+ std::vector<std::string> words(const std::string& v){std::vector<std::string> out;std::regex re("[^\\s,;]+");for(auto i=std::sregex_iterator(v.begin(),v.end(),re);i!=std::sregex_iterator();++i){auto s=lower(i->str());if(std::find(out.begin(),out.end(),s)==out.end())out.push_back(s);}return out;}
+ std::string category(const std::string& f){auto ext=lower(utf8(fs::path(wide(f)).extension().wstring()));const std::pair<const char*,const char*> rules[]={{"Archives",".zip .7z .rar .gz .tar .iso"},{"Video",".mp4 .mkv .webm .mov .avi .ts"},{"Music",".mp3 .flac .wav .ogg .m4a .aac"},{"Programs",".exe .msi .msix .apk"},{"Images",".jpg .jpeg .png .svg .webp .gif"},{"Documents",".pdf .doc .docx .xlsx .txt .epub .pptx .csv"}};for(auto r:rules)for(auto x:words(r.second))if(x==ext)return r.first;return "Other";}
+ std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"Bytes","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?2:0)<<n<<' '<<u[i];return s.str();}
+--- a/native/FilenameValidationTests.cpp
++++ b/native/FilenameValidationTests.cpp
+@@ -14,6 +14,21 @@
+   for(const auto* device:{"con","prn","aux","nul"})for(const std::string suffix:{"",".bin"})cases.emplace_back(std::string(device)+suffix,"_"+std::string(device)+suffix);
+   for(int i=1;i<=9;++i)for(const std::string prefix:{"COM","lpt"}){const auto name=prefix+std::to_string(i)+".bin";cases.emplace_back(name,"_"+name);}
+   for(int c=1;c<32;++c)cases.emplace_back("a"+std::string(1,(char)c)+"b","a_b");
++  // Independent expected boundaries: keep a complete pair or omit it wholly.
++  for(const std::string symbol:{"🙂","𝄞",u8"\U00010000",u8"\U0010FFFF"}){
++   cases.emplace_back(std::string(137,'a')+symbol+std::string(30,'b')+".mp4",std::string(137,'a')+symbol+"b.mp4");
++   cases.emplace_back(std::string(138,'a')+symbol+std::string(30,'b')+".mp4",std::string(138,'a')+symbol+".mp4");
++   cases.emplace_back(std::string(139,'a')+symbol+std::string(30,'b')+".mp4",std::string(139,'a')+".mp4");
++   cases.emplace_back(std::string(140,'a')+symbol+std::string(30,'b')+".mp4",std::string(140,'a')+".mp4");
++   cases.emplace_back(std::string(141,'a')+symbol+std::string(30,'b')+".mp4",std::string(140,'a')+".mp4");
++   cases.emplace_back(std::string(158,'a')+symbol,std::string(158,'a')+symbol);
++   cases.emplace_back(std::string(159,'a')+symbol,std::string(140,'a'));
++   cases.emplace_back(std::string(180,'a')+"."+std::string(16,'z')+symbol+std::string(20,'q'),std::string(140,'a')+"."+std::string(16,'z')+symbol);
++   cases.emplace_back(std::string(180,'a')+"."+std::string(17,'z')+symbol+std::string(20,'q'),std::string(140,'a')+"."+std::string(17,'z'));
++   cases.emplace_back(std::string(180,'a')+"."+std::string(18,'z')+symbol+std::string(20,'q'),std::string(140,'a')+"."+std::string(18,'z'));
++   cases.emplace_back(std::string(139,'a')+symbol+std::string(30,'b')+"."+std::string(17,'z')+symbol+std::string(20,'q'),std::string(139,'a')+"."+std::string(17,'z'));
++   cases.emplace_back("CON."+std::string(134,'a')+symbol+std::string(30,'b')+".mp4","_CON."+std::string(134,'a')+".mp4");
++  }
+   for(const auto& item:cases){const auto normalized=safeName(item.first);check(normalized==item.second,"Filename normalization preserves explicit device, path, Unicode, control and truncation rules");check(safeName(normalized)==normalized,"Normalized filename is stable on a second admission");}
+   for(const std::string invalid:{std::string(1,(char)0xff),std::string("\xc0\xaf",2),std::string("\xed\xa0\x80",3),std::string("\xf0\x9f\x99",3)}){bool refused=false;try{safeName(invalid);}catch(const std::exception&){refused=true;}check(refused,"Malformed UTF-8 filenames remain refused");}
+  }catch(const std::exception& e){error=e.what();}
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,57,0,0
+-#define UDM_VERSION_STRING "8.57"
+-#define UDM_VERSION_WSTRING L"8.57"
++#define UDM_VERSION_TUPLE 8,58,0,0
++#define UDM_VERSION_STRING "8.58"
++#define UDM_VERSION_WSTRING L"8.58"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.21",
++  "version": "0.72.22",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.21",
++  "version": "0.72.22",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/UnicodeFilenameWorkflowTests.cpp
++++ b/native/UnicodeFilenameWorkflowTests.cpp
+@@ -0,0 +1,37 @@
++#include "Core.hpp"
++#include "PropertiesRequestDraft.hpp"
++#include <iostream>
++using namespace udm;
++static Json checks=Json::array();
++static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
++int wmain(int argc,wchar_t**argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);CoInitializeEx(nullptr,COINIT_MULTITHREADED);std::string error,active;Json cases=Json::array();
++ const std::string emoji="🙂";const std::vector<std::pair<std::string,std::string>> names={
++  {std::string(139,'a')+emoji+std::string(30,'b')+".mp4",std::string(139,'a')+".mp4"},
++  {std::string(138,'a')+emoji+std::string(30,'b')+".mp4",std::string(138,'a')+emoji+".mp4"},
++  {std::string(137,'a')+emoji+std::string(30,'b')+".mp4",std::string(137,'a')+emoji+"b.mp4"},
++  {std::string(180,'a')+"."+std::string(17,'z')+emoji+std::string(20,'q'),std::string(140,'a')+"."+std::string(17,'z')},
++  {std::string(139,'a')+emoji+std::string(30,'b')+"."+std::string(17,'z')+emoji+std::string(20,'q'),std::string(139,'a')+"."+std::string(17,'z')},
++  {std::string(180,'a')+"."+std::string(16,'z')+emoji+std::string(20,'q'),std::string(140,'a')+"."+std::string(16,'z')+emoji}};
++ try{for(size_t i=0;i<names.size();++i){
++  const auto folder=root/std::to_wstring(i);const auto files=folder/L"f";fs::create_directories(files/L"a");fs::create_directories(files/L"b");const auto& input=names[i].first;const auto& expected=names[i].second;active=std::to_string(i)+"/manual";
++  check(utf8(wide(input))==input&&wide(input).size()>160,"Regression input is a valid Unicode filename requiring truncation");
++  std::string id,hash;fs::path target;
++  {Manager m(folder/L"d");auto settings=m.state["Settings"];settings["DownloadFolder"]=utf8((files/L"a").wstring());settings["CategoryFolders"]=false;settings["PrefetchFileInfo"]=false;settings["DuplicatePolicy"]="Numbered";m.setSettings(settings);
++   auto job=m.add("https://fixture.invalid/manual/"+std::to_string(i),"",input,"Main queue",true);id=job->id();target=job->target();
++   check(str(job->data,"FileName")==expected&&target.filename().wstring()==wide(expected),"Manual admission chooses the exact valid Unicode target");check(str(job->data,"Status")=="Paused"&&utf8(wide(expected))==expected,"Unicode normalization preserves paused admission and valid UTF-8");
++   const std::string payload="owned Unicode target bytes";atomicText(target,payload,false);hash=fileHash(target);check(readText(target)==payload,"Windows creates and reads the exact normalized Unicode target");
++   PropertiesHeaderPatch headers({},{});m.configureProperties(job,{{"FileName",expected},{"Description","Unicode properties accepted"}},headers);check(str(job->data,"Description")=="Unicode properties accepted"&&job->target()==target&&fileHash(target)==hash,"Properties accepts the normalized name without moving or changing existing bytes");
++   active=std::to_string(i)+"/browser";settings["DownloadFolder"]=utf8((files/L"b").wstring());m.setSettings(settings);auto browser=m.receive({{"action","add"},{"url","https://fixture.invalid/browser/"+std::to_string(i)},{"filename",input},{"reportedServerName",input},{"downloadLater",true}});
++   check(browser&&str(browser->data,"FileName")==expected&&str(browser->data,"BrowserReportedFileName")==expected,"Native browser-message admission normalizes both suggested and reported server names");check(str(browser->data,"Status")=="Paused"&&browser->target().parent_path()==files/L"b","Browser Download Later remains paused in the owned destination");
++   const auto before=m.snapshot();const auto saved=readText(m.root/L"state.json");const auto blocked=m.root/L"state.json.tmp";fs::create_directory(blocked);bool refused=false;try{m.add("https://fixture.invalid/refused/"+std::to_string(i),utf8((files/L"c").wstring()),input,"Main queue",true);}catch(...){refused=true;}fs::remove(blocked);
++   check(refused&&m.snapshot()==before&&readText(m.root/L"state.json")==saved,"Actual catalog refusal rolls back Unicode admission without a partial saved row");m.stop();
++  }
++  active=std::to_string(i)+"/reload";{Manager m(folder/L"d");check(m.jobs.size()==2&&m.jobs[0]->id()==id&&str(m.jobs[0]->data,"FileName")==expected&&str(m.jobs[1]->data,"FileName")==expected,"Saved manual and browser Unicode names reload exactly");check(fileHash(target)==hash,"Reload leaves existing normalized output bytes exact");m.stop();}
++  active=std::to_string(i)+"/raw-nested-load";const auto loaded=folder/L"l";fs::create_directories(loaded);auto row=Json{{"Id",guid()},{"FileName",input},{"Folder",utf8((files/L"a").wstring())},{"Url","https://fixture.invalid/raw"},{"Status","Paused"},{"Queue","Main queue"},{"Description","Raw Unicode metadata"},{"Segments",Json::array()}};auto child=row;child["Id"]=guid();row["Video"]=child;child["Id"]=guid();row["Audio"]=child;auto settings=defaultSettings();settings["DownloadFolder"]=utf8(files.wstring());settings["CategoryFolders"]=false;auto raw=Json{{"Schema",1},{"Settings",settings},{"Downloads",Json::array({row})},{"Queues",Json::array({defaultQueue()})}}.dump();atomicText(loaded/L"state.json",raw,false);
++  {Manager m(loaded,Manager::StartupRecovery::Desktop);auto job=m.jobs.at(0);check(str(job->data,"FileName")==expected&&job->video&&job->audio&&str(job->video->data,"FileName")==expected&&str(job->audio->data,"FileName")==expected,"Raw catalog parent and nested audio/video names normalize without invalid surrogates");check(job->id()==str(row,"Id")&&str(job->data,"Description")=="Raw Unicode metadata","Raw catalog normalization preserves record identity and metadata");m.stop();check(readText(loaded/L"state.before-native.json")==raw,"First-load backup retains the original valid Unicode input byte for byte");}
++  {Manager m(loaded);const auto saved=m.snapshot()["Downloads"].at(0);check(str(saved,"FileName")==expected&&str(saved["Video"],"FileName")==expected&&str(saved["Audio"],"FileName")==expected,"Normalized parent and nested track names remain stable through another save/load");m.stop();}
++  cases.push_back({{"case",i},{"normalizedUnits",wide(expected).size()},{"existingOutputPreserved",true}});
++ }}catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"case",active},{"error",error},{"checks",checks},{"cases",cases}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";CoUninitialize();return error.empty()?0:1;
++}

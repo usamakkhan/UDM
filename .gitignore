@@ -47,3 +47,10 @@ tests/performance-0.10/*.obj
 benchmarks/speed/results/*/downloads/
 benchmarks/speed/.work/
 __pycache__/
+
+# Retain the silent-launch regression harness; keep generated UI outputs local.
+!benchmarks/ui/
+benchmarks/ui/*
+!benchmarks/ui/silent_launch.py
+!benchmarks/ui/owned_windows_process.py
+!benchmarks/ui/owned_desktop_probe.cpp

@@ -11,7 +11,7 @@ class DownloadPreview {
  struct State;
  std::shared_ptr<State> state;
 public:
- DownloadPreview(Json download,Json preferences,int timeoutMs=10000,Manager* sessionManager=nullptr,JobPtr sessionJob={});
+ DownloadPreview(Json download,Json preferences,int timeoutMs=10000,Manager* sessionManager=nullptr,JobPtr sessionJob={},std::function<void()> onReady={});
  ~DownloadPreview();
  DownloadPreview(const DownloadPreview&)=delete;DownloadPreview& operator=(const DownloadPreview&)=delete;
  Json snapshot()const;

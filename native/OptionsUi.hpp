@@ -15,11 +15,12 @@ class Options:public Form {
  CWnd *serverEdit=nullptr,*serverDelete=nullptr,*loginEdit=nullptr,*loginRemove=nullptr;
  std::function<void()> reloadCategory;static constexpr int ox=7,oy=27;
  FileInfoDecisionTask saveTask;bool handlingSave=false,closeAfterSave=false,restartAfterSave=false;
- struct SavedOptions {Json settings;std::shared_ptr<DialCredentialFields::Batch> credentials;};
+ struct SavedOptions {Json settings;std::shared_ptr<DialCredentialFields::Batch> credentials;std::shared_ptr<ImmediateOptionsResult> immediate;};
  struct AcceptedOptions {Json baseline,draft;std::optional<bool> startupChoice;std::shared_ptr<SavedOptions> result;std::function<bool()> startupRead;std::function<void(bool)> startupWrite;bool close=false,restart=false;};
  AsyncDialLookup soundLookup{"Sound file","Cannot validate sound files."};std::shared_ptr<AcceptedOptions> soundDraft;bool soundPending=false;CWnd* soundStatus=nullptr;
  std::shared_ptr<SavedOptions> savedOptions;std::vector<std::pair<HWND,BOOL>> saveEnablement;
  // UI-only continuation: never included in the worker-owned result/batch.
+ std::function<void()> immediateRefresh;std::function<std::wstring(CWnd*,const std::wstring&)> saveToFolderPicker=chooseFolder;
  std::function<void()> credentialSuccess;std::function<void(const DialEntry&)> connectionDialog;
  std::function<void()> restartHosts=restartBrowserHosts;
  std::function<void(const std::vector<std::string>&)> validateSoundFiles=validateOptionsSoundFiles;
@@ -86,6 +87,13 @@ class Options:public Form {
   },taskNotifier());
   savedOptions=std::move(result);closeAfterSave=accepted->close;restartAfterSave=accepted->restart;for(const auto& item:saveEnablement)::EnableWindow(item.first,FALSE);showOptionsWork("Saving configuration...");
  }
+ void applyImmediateOptionsChange(ImmediateOptionsDraft draft,std::function<void()> refresh){
+  if(!settingsReady||soundPending||saveTask.valid()||handlingSave)throw std::runtime_error("Another configuration change is pending.");
+  auto result=std::make_shared<SavedOptions>();result->immediate=std::make_shared<ImmediateOptionsResult>();auto* source=&manager;rememberSaveControls();
+  try{saveTask.startAction(manager,[source,draft=std::move(draft),result]{*result->immediate=applyImmediateOptions(*source,draft);return FileInfoDecisionResult{};},taskNotifier());}
+  catch(...){restoreSaveControls();if(refresh)refresh();throw;}
+  savedOptions=std::move(result);immediateRefresh=std::move(refresh);closeAfterSave=restartAfterSave=false;for(const auto& item:saveEnablement)::EnableWindow(item.first,FALSE);showOptionsWork("Saving download folders and file settings...");
+ }
  void applyOptions(bool closeWhenSaved=false,bool restartWhenSaved=false){
   if(!settingsReady||soundPending||saveTask.valid()||handlingSave)return;if(manager.fileInfoDecisionPending.load())throw std::runtime_error("Another download decision is being saved. Try again shortly.");collect();auto accepted=std::make_shared<AcceptedOptions>();accepted->baseline=original;accepted->draft=prefs;accepted->result=std::make_shared<SavedOptions>();if(dialCredentials)accepted->result->credentials=dialCredentials->prepareBatch();if(startupEdited||yes(original,"RunAtLogin")!=yes(prefs,"RunAtLogin"))accepted->startupChoice=yes(prefs,"RunAtLogin");accepted->startupRead=readStartup;accepted->startupWrite=writeStartup;accepted->close=closeWhenSaved;accepted->restart=restartWhenSaved;
   auto files=optionsSoundFiles(accepted->draft);rememberSaveControls();
@@ -104,6 +112,11 @@ class Options:public Form {
   if(failure){try{std::rethrow_exception(failure);}catch(const std::exception& e){error(this,e);}catch(...){error(this,std::runtime_error("The configuration could not be saved. Your entries are still available."));}}
   saveTask.release();
   restoreSaveControls();hideOptionsWork();
+  if(savedOptions->immediate){
+   if(!failure)acknowledgeImmediateOptions(prefs,original,*savedOptions->immediate);
+   auto refresh=std::move(immediateRefresh);savedOptions.reset();closeAfterSave=restartAfterSave=false;
+   try{if(refresh)refresh();}catch(const std::exception& e){error(this,e);}handlingSave=false;return;
+  }
   if(savedOptions->credentials)dialCredentials->acknowledgeBatch(*savedOptions->credentials);
   if(!failure&&savedOptions->settings.is_object()){startupLookup.invalidate();startupEdited=false;startupReadError.clear();if(startupControl)startupControl->EnableWindow(TRUE);if(startupStatus)startupStatus->SetWindowText(L"");if(startupRetry)startupRetry->ShowWindow(SW_HIDE);original=savedOptions->settings;prefs=original;reload();}
   savedOptions.reset();auto continuation=std::move(credentialSuccess);credentialSuccess={};const bool closeOnSuccess=closeAfterSave,restartOnSuccess=restartAfterSave;closeAfterSave=restartAfterSave=false;

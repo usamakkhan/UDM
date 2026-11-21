@@ -1,0 +1,166 @@
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -337,10 +337,9 @@
+   Lock lock(mutex);
+   if(stopping&&threads.empty()&&active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){
+-    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+-    if(disk&&GetFileInformationByHandle(disk.h,&info)&&!(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))
+-     alreadySaved=Json::parse(readText(path,32*1024*1024))==checkpointState;
++   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
++    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+    }
+   }
+  }catch(...){/* A failed recheck keeps the original forced-save path. */}
+@@ -421,7 +420,7 @@
+  publication.published(sequence);
+  if(publicationProof&&checkpoint)checkpoint("publication-catalog-written");
+  publicationProof.published(sequence);
+-Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointSequence=sequence;storageError.clear();}}
++Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointText=std::move(serialized);checkpointSequence=sequence;storageError.clear();}}
+  catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
+ }
+ bool Manager::jobMatchesCheckpoint(const Job& job,const Json& saved){
+@@ -853,8 +852,8 @@
+      Lock lock(mutex);
+      if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+       auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-      if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+-       if(disk)alreadySaved=Json::parse(readPinnedCatalogText(disk.h,32*1024*1024))==checkpointState;
++      if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++       if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+       }
+      }
+     }catch(...){/* Missing proof retains the final forced checkpoint. */}
+@@ -896,9 +895,9 @@
+   Lock lock(mutex);
+   if(active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+-   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&current==checkpointState){
++   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+     const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+-    if(disk)alreadySaved=Json::parse(readPinnedCatalogText(disk.h,32*1024*1024))==checkpointState;
++    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
+    }
+   }
+  }catch(...){/* Any missing proof retains a real durable shutdown write. */}
+--- a/native/Core.hpp
++++ b/native/Core.hpp
+@@ -257,6 +257,9 @@
+  std::chrono::steady_clock::time_point lastTick=std::chrono::steady_clock::now();
+  unsigned long long checkpointSequence=0;
+  Json checkpointState;
++ // Exact serialization retained only with its accepted durable snapshot and
++ // sequence. Runtime-only; never a substitute for reading the pinned file.
++ std::string checkpointText;
+  // Detached snapshots are serialized outside mutex; file writes use this mutex
+  // in sequence order, so an earlier snapshot cannot overwrite a later one.
+  std::mutex catalogWriteMutex;unsigned long long catalogSequence=0,catalogWritten=0;
+--- a/native/CatalogCheckpointTests.cpp
++++ b/native/CatalogCheckpointTests.cpp
+@@ -1,5 +1,6 @@
+ #include "Core.hpp"
+ #include "CatalogAdmissionRegistry.hpp"
++#include <future>
+ #include <iostream>
+ namespace udm {
+ struct CatalogCheckpointTestAccess {
+@@ -10,6 +11,8 @@
+  static void stopping(Manager& m,bool value){Lock lock(m.mutex);m.stopping=value;}
+  static std::function<void(const char*)>& checkpoint(Manager& m){return m.catalogCheckpoint;}
+  static void transaction(Manager& m,bool value){Lock lock(m.mutex);m.catalogTransaction=value;}
++ static std::string text(Manager& m){Lock lock(m.mutex);return m.checkpointText;}
++ static void forgetText(Manager& m){Lock lock(m.mutex);m.checkpointText.clear();}
+ };
+ }
+ using namespace udm;
+@@ -99,6 +102,55 @@
+    owner.stop();check(writes==before+1,"Repeated clean shutdown does not repeat the durable write");
+    CatalogCheckpointTestAccess::checkpoint(owner)={};
+   }
++  {
++   unsigned writes=0;bool fail=false;Manager owner(root/L"accepted-text");
++   CatalogCheckpointTestAccess::checkpoint(owner)=[&](const char* stage){if(std::string_view(stage)=="temporary-flushed"){++writes;if(fail)throw std::runtime_error("accepted-text injected failure");}};
++   owner.save();const auto first=readText(owner.root/L"state.json");
++   check(CatalogCheckpointTestAccess::text(owner)==first,"Accepted text belongs to the actual durable snapshot");
++   owner.state["Settings"]["AcceptedTextMarker"]="new generation";fail=true;bool rejected=false;
++   try{owner.save();}catch(const std::exception&){rejected=true;}fail=false;
++   check(rejected&&CatalogCheckpointTestAccess::text(owner)==first&&readText(owner.root/L"state.json")==first,
++         "Failed persistence cannot replace accepted bytes with an uncommitted serialization");
++   owner.save();const auto second=readText(owner.root/L"state.json");
++   check(second!=first&&CatalogCheckpointTestAccess::text(owner)==second,"Successful retry replaces both accepted snapshot and its exact bytes");
++   const auto before=writes;CatalogCheckpointTestAccess::forgetText(owner);owner.stop();
++   check(writes==before+1,"Absent accepted bytes force a durable stop checkpoint despite matching parsed state");
++   check(CatalogCheckpointTestAccess::text(owner)==readText(owner.root/L"state.json"),"Fallback persistence installs a fresh accepted serialization");
++   CatalogCheckpointTestAccess::checkpoint(owner)={};
++  }
++  for(const bool bom:{false,true}){
++   unsigned writes=0;Manager owner(root/(bom?L"accepted-bom":L"accepted-whitespace"));
++   CatalogCheckpointTestAccess::checkpoint(owner)=[&](const char* stage){if(std::string_view(stage)=="temporary-flushed")++writes;};
++   owner.save();const auto text=CatalogCheckpointTestAccess::text(owner);const auto before=writes;
++   atomicText(owner.root/L"state.json",bom?std::string("\xEF\xBB\xBF")+text:Json::parse(text).dump(2),false);
++   owner.stop();
++   check(writes==before+(bom?0:1),"BOM normalization remains accepted while alternate JSON formatting requires a conservative save");
++   check(CatalogCheckpointTestAccess::text(owner)==readText(owner.root/L"state.json"),"The real catalog and accepted text agree after formatting validation");
++   CatalogCheckpointTestAccess::checkpoint(owner)={};
++  }
++  {
++   Manager owner(root/L"accepted-text-superseded");owner.state["Settings"]["AcceptedTextMarker"]="old";owner.save();
++   std::promise<void> entered,release;auto ready=entered.get_future();auto released=release.get_future().share();
++   std::atomic<DWORD> worker{0};std::atomic_bool once{false};std::future<void> saving;
++   struct Cleanup {Manager& owner;std::promise<void>& release;std::future<void>& saving;~Cleanup(){try{release.set_value();}catch(...){}if(saving.valid())try{saving.get();}catch(...){}CatalogCheckpointTestAccess::checkpoint(owner)={};}} cleanup{owner,release,saving};
++   CatalogCheckpointTestAccess::checkpoint(owner)=[&](const char* stage){if(std::string_view(stage)=="snapshot-prepared"&&GetCurrentThreadId()==worker&&!once.exchange(true)){entered.set_value();released.wait();}};
++   saving=std::async(std::launch::async,[&]{worker=GetCurrentThreadId();owner.save();});
++   check(ready.wait_for(std::chrono::seconds(3))==std::future_status::ready,"An actual detached older save is held before coordinator admission");
++   {Lock lock(owner.mutex);owner.state["Settings"]["AcceptedTextMarker"]="new";}owner.save();
++   const auto newer=readText(owner.root/L"state.json");
++   check(CatalogCheckpointTestAccess::text(owner)==newer&&str(Json::parse(newer)["Settings"],"AcceptedTextMarker")=="new",
++         "A newer accepted save owns the cached bytes while an older serialization is held");
++   release.set_value();saving.get();
++   check(CatalogCheckpointTestAccess::text(owner)==newer&&readText(owner.root/L"state.json")==newer,
++         "Skipped stale publication cannot overwrite the newer accepted byte cache");
++  }
++  {
++   unsigned writes=0;auto owner=std::make_unique<Manager>(root/L"destructor-missing-accepted-text");
++   CatalogCheckpointTestAccess::checkpoint(*owner)=[&](const char* stage){if(std::string_view(stage)=="temporary-flushed")++writes;};
++   owner->save();owner->stop();const auto expected=owner->snapshot();const auto path=owner->root/L"state.json";
++   const auto before=writes;CatalogCheckpointTestAccess::forgetText(*owner);owner.reset();
++   check(writes==before+1&&Json::parse(readText(path))==expected,"Destructor cannot skip its repair save without accepted-byte ownership");
++  }
+   passed=true;
+  }catch(const std::exception& e){error=e.what();}
+  atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ ﻿#pragma once
+-#define UDM_VERSION_TUPLE 8,64,0,0
+-#define UDM_VERSION_STRING "8.64"
+-#define UDM_VERSION_WSTRING L"8.64"
++#define UDM_VERSION_TUPLE 8,65,0,0
++#define UDM_VERSION_STRING "8.65"
++#define UDM_VERSION_WSTRING L"8.65"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.28",
++  "version": "0.72.29",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.28",
++  "version": "0.72.29",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",

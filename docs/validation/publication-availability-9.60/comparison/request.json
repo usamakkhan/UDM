@@ -1,0 +1,27 @@
+{
+  "args": [
+    "python",
+    "$REPOSITORY\\benchmarks\\speed\\compare-completion.py",
+    "--output-root",
+    "$REPOSITORY\\.media-cache\\owned-publication-availability-comparison-9.60",
+    "--udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-availability-build-9.60\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "109A2317BEDFD444489451297D193A421A76210DC8D88A1514EA4E383B4B4284",
+    "--baseline-udm",
+    "$REPOSITORY\\.media-cache\\owned-silent-launch-build-9.59\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "37517677325F225417DE04555FB98723155172723F9DC55B87D3AEC336DBAB42",
+    "--label",
+    "9.60 acceptance-boundary file-pin release versus frozen 9.59 and IDM",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.60",
+  "baselineVersion": "9.59",
+  "compilerQuiet": true,
+  "order": "Three rotating client positions per case",
+  "status": "launching"
+}

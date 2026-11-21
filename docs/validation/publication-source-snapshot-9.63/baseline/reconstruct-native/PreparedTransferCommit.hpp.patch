@@ -1,0 +1,42 @@
+--- native/PreparedTransferCommit.hpp@9.63
++++ native/PreparedTransferCommit.hpp@9.62
+@@ -2,7 +2,6 @@
+ #include "Core.hpp"
+ #include "PublicationRecovery.hpp"
+ #include "PublishedWriteback.hpp"
+-#include "PublicationSourcePin.hpp"
+ #include <future>
+ namespace udm {
+ // Same-thread handoff from an ordinary transfer to its owning Manager worker.
+@@ -13,7 +12,7 @@
+  inline static thread_local PreparedTransferCommit* current=nullptr;
+  PreparedTransferCommit* previous;Manager& manager;JobPtr job;std::shared_ptr<Cancel> cancel;bool allowed;
+  bool ready=false,inCommit=false,accepted=false,keepParts=false;
+- std::unique_ptr<PublicationSourcePin> writebackPin;std::future<PublishedWritebackResult> writeback;
++ Handle writebackPin;std::future<PublishedWritebackResult> writeback;
+  fs::path staging,parts,target;Json destination;std::string digest;
+  struct Finalizing {std::mutex mutex;std::map<const Manager*,std::set<const Cancel*>> owners;std::map<const Manager*,std::map<const Cancel*,std::pair<const Job*,const PreparedTransferCommit*>>> independent;};
+  static Finalizing& finalizing(){static auto* value=new Finalizing;return *value;}
+@@ -35,15 +34,15 @@
+   const auto began=std::chrono::steady_clock::now();
+   // The write-only object excludes every other writer from open through exact
+   // acceptance. Its duplicate flushes on the task; publication adopts this pin.
+-  try{
+-   auto pin=PublicationSourcePin::open(path);if(!pin)return false;auto body=pin->duplicate();if(!body)return false;
+-   const auto opening=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+-   writeback=std::async(std::launch::async,[body=std::move(body),path,opening]()mutable{return flushPinned(std::move(body),path,opening);});writebackPin=std::move(pin);return true;
+-  }catch(...){return false;}
++  Handle pin(CreateFileW(path.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
++  BY_HANDLE_FILE_INFORMATION info{};if(!pin||!GetFileInformationByHandle(pin.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return false;
++  HANDLE duplicated=INVALID_HANDLE_VALUE;if(!DuplicateHandle(GetCurrentProcess(),pin.h,GetCurrentProcess(),&duplicated,0,FALSE,DUPLICATE_SAME_ACCESS))return false;
++  Handle body(duplicated);const auto opening=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
++  try{writeback=std::async(std::launch::async,[body=std::move(body),path,opening]()mutable{return flushPinned(std::move(body),path,opening);});writebackPin.h=pin.h;pin.h=INVALID_HANDLE_VALUE;return true;}catch(...){return false;}
+  }
+  bool hasWritebackPin()const noexcept{return bool(writebackPin);}
+- std::unique_ptr<PublicationSourcePin> takeWritebackPin()noexcept{return std::move(writebackPin);}
+- void releaseWritebackPin()noexcept{writebackPin.reset();}
++ HANDLE takeWritebackPin()noexcept{const auto result=writebackPin.h;writebackPin.h=INVALID_HANDLE_VALUE;return result;}
++ void releaseWritebackPin()noexcept{if(writebackPin){CloseHandle(writebackPin.h);writebackPin.h=INVALID_HANDLE_VALUE;}}
+  bool pendingWriteback()const noexcept{return writeback.valid();}
+  void joinWriteback()noexcept{if(writeback.valid())try{writeback.wait();}catch(...){}}
+  void finishWriteback(){

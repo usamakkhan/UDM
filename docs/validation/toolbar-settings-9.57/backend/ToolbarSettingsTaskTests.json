@@ -1,0 +1,138 @@
+{
+  "checks": [
+    {
+      "name": "Each toolbar size changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Each toolbar size changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Each toolbar size changes only its owned setting",
+      "passed": true
+    },
+    {
+      "name": "Each toolbar caption mode preserves unrelated fields",
+      "passed": true
+    },
+    {
+      "name": "Each toolbar caption mode preserves unrelated fields",
+      "passed": true
+    },
+    {
+      "name": "Each toolbar caption mode preserves unrelated fields",
+      "passed": true
+    },
+    {
+      "name": "Explicit skin validation and bitmap decoding do not hold the catalog lock",
+      "passed": true
+    },
+    {
+      "name": "Validated skin result becomes ready",
+      "passed": true
+    },
+    {
+      "name": "A valid selected skin is saved with its immutable prepared pixels",
+      "passed": true
+    },
+    {
+      "name": "A later toolbar command reads fresh skin pixels without changing an earlier immutable result",
+      "passed": true
+    },
+    {
+      "name": "Choosing a built-in look clears the external skin without losing other settings",
+      "passed": true
+    },
+    {
+      "name": "Choosing a built-in look clears the external skin without losing other settings",
+      "passed": true
+    },
+    {
+      "name": "Toolbar visibility toggles the live value without replacing other fields",
+      "passed": true
+    },
+    {
+      "name": "Toolbar visibility toggles the live value without replacing other fields",
+      "passed": true
+    },
+    {
+      "name": "Layout saving preserves separators and compatible order and hidden fields",
+      "passed": true
+    },
+    {
+      "name": "Layout saving preserves separators and compatible order and hidden fields",
+      "passed": true
+    },
+    {
+      "name": "Layout saving preserves separators and compatible order and hidden fields",
+      "passed": true
+    },
+    {
+      "name": "Reload prepares the current skin without invoking any persistence checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar choices acquire no save guard",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar choices acquire no save guard",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar choices acquire no save guard",
+      "passed": true
+    },
+    {
+      "name": "Invalid skin path drafts are rejected synchronously",
+      "passed": true
+    },
+    {
+      "name": "Invalid skin path drafts are rejected synchronously",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar layouts never acquire a guard or write settings",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar layouts never acquire a guard or write settings",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar layouts never acquire a guard or write settings",
+      "passed": true
+    },
+    {
+      "name": "Invalid toolbar layouts never acquire a guard or write settings",
+      "passed": true
+    },
+    {
+      "name": "A missing selected skin fails before any settings write",
+      "passed": true
+    },
+    {
+      "name": "Real persistence failure returns the current layout for owned rollback and preserves the catalog",
+      "passed": true
+    },
+    {
+      "name": "A failed toolbar layout can be retried explicitly",
+      "passed": true
+    },
+    {
+      "name": "An unavailable previously saved skin preserves the setting and returns an owned fallback diagnosis",
+      "passed": true
+    },
+    {
+      "name": "Built-in selection clears an unavailable external skin",
+      "passed": true
+    },
+    {
+      "name": "Read-only Reload does not claim or perform canonical persistence changes",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

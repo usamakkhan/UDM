@@ -8,11 +8,13 @@ struct ScheduledDownloadDraft {
  Headers headers;
  std::string previousQueue;
  std::optional<i64> connections,speedLimit;
+ Json originalDownload=Json::object(),originalSchedule;
 };
 
 inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloadDraft draft,
- const std::function<FileInfoDecisionAction(const ScheduledDownloadDraft&)>& prepareSave,const Json& existingQueue=Json(),bool enterSource=false){
- const bool revising=existingQueue.is_object();
+ const std::function<FileInfoDecisionAction(const ScheduledDownloadDraft&)>& prepareSave,Json existingQueue=Json(),bool enterSource=false,JobPtr metadataJob={},SchedulePreparationMode preparationMode=SchedulePreparationMode::Defaults){
+ FileInfoDialogOwner modalOwner;
+ const bool revising=preparationMode==SchedulePreparationMode::Revise||existingQueue.is_object();
  Form dialog(revising?"Edit download schedule":"Schedule download",370,265,owner);
  dialog.dialogUnits=true;
  enum Page {Source,Destination,Dates,Options,Review,PageCount};
@@ -23,32 +25,21 @@ inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloa
  std::vector<std::pair<HWND,BOOL>> savedEnablement;
  std::array<std::vector<CWnd*>,PageCount> controls;
  std::array<CWnd*,PageCount> first{};
- const auto categoryKeys=manager.categories();
-  const auto initialFolder=utf8(draft.target.parent_path().wstring());
-  std::vector<std::string> recentFolders;
-  if(!initialFolder.empty())recentFolders.push_back(initialFolder);
-  {
-   Lock lock(manager.mutex);
-   const auto history=manager.state["Settings"].find("SaveFolderHistory");
-   if(history!=manager.state["Settings"].end()&&history->is_array())
-    for(const auto& item:*history){
-     if(!item.is_string())continue;
-     const auto value=item.get<std::string>();
-     if(fs::path(wide(value)).is_absolute()&&std::find(recentFolders.begin(),recentFolders.end(),value)==recentFolders.end())
-      recentFolders.push_back(value);
-     if(recentFolders.size()==20)break;
-    }
-  }
- const auto savedStart=existingQueue.is_object()?existingQueue.value("StartOnceUtc",Json()):Json();
- const auto savedStop=existingQueue.is_object()?existingQueue.value("StopOnceUtc",Json()):Json();
- const auto stopUtc=parseDate(savedStop);
+ SchedulePreparationTask preparation;bool closingPreparation=false;std::exception_ptr preparationFailure;
+ std::vector<std::string> categoryKeys,initialQueues,recentFolders;Json settings=Json::object();
+ auto initialFolder=utf8(draft.target.parent_path().wstring());
+ auto savedStart=existingQueue.is_object()?existingQueue.value("StartOnceUtc",Json()):Json();
+ auto savedStop=existingQueue.is_object()?existingQueue.value("StopOnceUtc",Json()):Json();
+ auto stopUtc=parseDate(savedStop);
  auto stopAnchor=stopUtc;
  auto startAnchor=savedStart;
  ScheduledDownloadWindow window;
  std::string suggestedName,suggestedFolder;
  int suggestedCategory=CB_ERR;
  draft.queue.create=!revising;
- dialog.init=[&]{
+ const auto buildControls=[&]{
+  if(!initialFolder.empty())recentFolders.push_back(initialFolder);
+  for(const auto& item:settings.value("SaveFolderHistory",Json::array())){const auto value=item.get<std::string>();if(std::find(recentFolders.begin(),recentFolders.end(),value)==recentFolders.end())recentFolders.push_back(value);if(recentFolders.size()==20)break;}
   auto heading=dialog.label("",9,8,352);
   auto add=[&](Page step,auto* control){controls[step].push_back(control);return control;};
 
@@ -106,11 +97,9 @@ inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloa
    const auto chosen=chooseFolder(&dialog,wide(text(folder)));
    if(!chosen.empty())setFolder(utf8(chosen));
   });
-  dialog.bind(useCategoryFolder,[&manager,&categoryKeys,category,setFolder]{
+  dialog.bind(useCategoryFolder,[&settings,&categoryKeys,category,setFolder]{
    const auto index=category->GetCurSel();
    if(index==CB_ERR)throw std::runtime_error("Choose a category.");
-   Json settings;
-   {Lock lock(manager.mutex);settings=manager.state["Settings"];}
    setFolder(categoryFolder(settings,categoryKeys.at(index)));
   });
   dialog.bindChange(folder,[folder,previewDestination](UINT code){
@@ -323,8 +312,6 @@ inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloa
      Headers headers;
      if(dialog.checked(auth)){field=user;setBasicLogin(headers,text(user),text(password));}
      if(url.full!=draft.address||suggestedCategory==CB_ERR){
-      Json settings;
-      {Lock lock(manager.mutex);settings=manager.state["Settings"];}
       const auto filename=safeName(unescape(url.path));
       const auto key=downloadCategory(filename,url.host,settings);
       const auto index=std::find(categoryKeys.begin(),categoryKeys.end(),key)-categoryKeys.begin();
@@ -367,7 +354,7 @@ inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloa
      if(queueName.empty()||queueName.size()>80)throw std::runtime_error("Enter a queue name up to 80 characters.");
      const auto key=lower(queueName);
      if(key=="download limits")throw std::runtime_error("Choose a different name. Scheduler uses Download limits for its quota page.");
-     if(!revising)for(const auto& existing:queueNames(manager))
+     if(!revising)for(const auto& existing:initialQueues)
       if(lower(existing)==key)throw std::runtime_error("A queue with that name already exists.");
      field=start.second;
      const auto startTime=readTime(start,startAnchor);
@@ -455,7 +442,39 @@ inline bool scheduleDownloadWizard(CWnd* owner,Manager& manager,ScheduledDownloa
   };
   show();
  };
- return dialog.DoModal()==IDOK;
+ dialog.init=[&]{
+  auto status=dialog.label("Preparing schedule...",9,8,352,25);
+  auto next=dialog.button("&Next >",228,244,67,[]{});next->EnableWindow(FALSE);
+  auto cancel=dialog.button("Cancel",302,244,59,[]{});auto retry=dialog.button("&Retry",9,244,67,[]{});retry->ShowWindow(SW_HIDE);
+  const auto read=[&,status,retry]{
+   if(preparation.valid()||closingPreparation)return;retry->ShowWindow(SW_HIDE);status->SetWindowText(L"Preparing schedule...");
+   try{preparation.start(manager,metadataJob,dialog.taskNotifier()
+#ifdef UDM_SCHEDULE_WIZARD_COMPONENT_TEST
+    ,schedulePreparationTestObserver
+#else
+    ,SchedulePreparationObserver{}
+#endif
+    ,preparationMode);}catch(const std::exception& error){status->SetWindowText(cs(error.what()));retry->ShowWindow(SW_SHOW);}
+  };
+  dialog.accept=[]{};
+  dialog.cancel=[&,status,cancel,retry]{if(closingPreparation)return;if(!preparation.valid()){dialog.close(IDCANCEL);return;}closingPreparation=true;preparation.cancelRead();cancel->EnableWindow(FALSE);retry->ShowWindow(SW_HIDE);status->SetWindowText(L"Closing...");};
+  dialog.bind(cancel,dialog.cancel);dialog.bind(retry,read);
+  dialog.pulse=[&,status,retry,buildControls]{
+   if(!preparation.ready())return;auto result=preparation.take();
+   if(closingPreparation||result.cancelled){dialog.close(IDCANCEL);return;}
+   if(!result.error.empty()){status->SetWindowText(cs(result.error));retry->ShowWindow(SW_SHOW);return;}
+   dialog.afterCurrentPulse([&,result=std::move(result),buildControls]()mutable{
+    try{
+     if(result.listed){auto& context=*result.listed;draft.target=std::move(context.target);draft.category=std::move(context.category);draft.description=std::move(context.description);draft.previousQueue=std::move(context.previousQueue);draft.originalDownload=std::move(context.original);draft.originalSchedule=std::move(context.queue);existingQueue=draft.originalSchedule;initialFolder=utf8(draft.target.parent_path().wstring());savedStart=existingQueue.is_object()?existingQueue.value("StartOnceUtc",Json()):Json();savedStop=existingQueue.is_object()?existingQueue.value("StopOnceUtc",Json()):Json();stopUtc=parseDate(savedStop);stopAnchor=stopUtc;startAnchor=savedStart;}
+     categoryKeys=std::move(result.categories);initialQueues=std::move(result.queues);settings=std::move(result.settings);if(result.connections)draft.connections=result.connections;if(result.speedLimit)draft.speedLimit=result.speedLimit;
+     dialog.clearOwnedControls();buildControls();dialog.refreshTheme();dialog.SetTimer(Form::pulseTimer,Form::pulseInterval,nullptr);
+    }catch(...){preparationFailure=std::current_exception();dialog.close(IDCANCEL);}
+   });
+  };
+  dialog.SetTimer(Form::pulseTimer,40,nullptr);read();
+ };
+ dialog.afterInit=[&]{dialog.ShowWindow(SW_SHOW);dialog.UpdateWindow();dialog.PostMessage(WM_TIMER,Form::pulseTimer,0);};
+ const auto result=dialog.DoModal();preparation.finish();if(preparationFailure)std::rethrow_exception(preparationFailure);return result==IDOK;
 }
 
 inline void addScheduledDownload(CWnd* owner,Manager& manager,std::string address){
@@ -473,36 +492,14 @@ inline void addScheduledDownload(CWnd* owner,Manager& manager,std::string addres
 }
 
 inline void scheduleListedDownload(CWnd* owner,Manager& manager,const JobPtr& job,bool revise){
- std::optional<Json> queue;
- Json original=Json::object();
  ScheduledDownloadDraft initial;
- {
-  Lock lock(manager.mutex);
-  if(revise){
-   queue=manager.editableDownloadSchedule(job);
-   if(!queue)throw std::runtime_error("This download no longer has an editable schedule.");
-  }else{
-   if(!manager.canScheduleExistingDownload(job))throw std::runtime_error("Pause the download and its queue before adding a schedule.");
-   initial.previousQueue=str(job->data,"Queue");
-  }
-  for(const auto* field:{"Queue","Folder","FileName","Category","Description","Connections","LimitKbps"})
-   original[field]=job->data.value(field,Json());
-  initial.target=job->target();
-  initial.category=str(job->data,"Category");
-  initial.description=str(job->data,"Description");
-  initial.connections=num(job->data,"Connections",8);
-  initial.speedLimit=num(job->data,"LimitKbps");
- }
- scheduleDownloadWizard(owner,manager,std::move(initial),[&](const ScheduledDownloadDraft& draft){
-  return [source=&manager,target=job,queue,original,draft]{
-  const auto folder=draft.target.parent_path();
-  FileInfoFolderChoice choice;
-  if(draft.rememberFolder)choice.rememberedCategoryFolder=folder;
-  const Json edit={{"Folder",utf8(folder.wstring())},{"FileName",utf8(draft.target.filename().wstring())},
-                   {"Category",draft.category},{"Description",draft.description},
-                   {"Connections",*draft.connections},{"LimitKbps",*draft.speedLimit}};
-  if(queue)source->reviseDownloadSchedule(target,*queue,original,*draft.queue.window,edit,choice);
-  else source->scheduleExistingDownload(target,original,draft.queue,edit,choice);
-  return FileInfoDecisionResult{};};
- },queue.value_or(Json()));
+ scheduleDownloadWizard(owner,manager,std::move(initial),[source=&manager,target=job,revise](const ScheduledDownloadDraft& draft){
+  return [source,target,revise,draft]{
+   const auto folder=draft.target.parent_path();FileInfoFolderChoice choice;if(draft.rememberFolder)choice.rememberedCategoryFolder=folder;
+   const Json edit={{"Folder",utf8(folder.wstring())},{"FileName",utf8(draft.target.filename().wstring())},{"Category",draft.category},{"Description",draft.description},{"Connections",*draft.connections},{"LimitKbps",*draft.speedLimit}};
+   if(revise)source->reviseDownloadSchedule(target,draft.originalSchedule,draft.originalDownload,*draft.queue.window,edit,choice);
+   else source->scheduleExistingDownload(target,draft.originalDownload,draft.queue,edit,choice);
+   return FileInfoDecisionResult{};
+  };
+ },Json(),false,job,revise?SchedulePreparationMode::Revise:SchedulePreparationMode::Listed);
 }

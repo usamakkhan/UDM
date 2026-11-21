@@ -1,0 +1,23 @@
+{
+  "observed": true,
+  "nativeVersion": "8.52",
+  "readOnlyInspection": true,
+  "binarySha256": "6347C254459CDF9B7347732350D7E4B7BB4ED805055699D49E4DC4C514DFBD0B",
+  "cases": [
+    {
+      "case": "ordinary-complete-none",
+      "bytes": 14,
+      "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+      "zoneIdentifier": "[ZoneTransfer]\r\nZoneId=3\r\n"
+    },
+    {
+      "case": "replacement-complete-none",
+      "bytes": 14,
+      "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+      "zoneIdentifier": null
+    }
+  ],
+  "sourceReason": "Ordinary recovery calls markZone when the retained path is empty; paired recovery calls finishRetainedMediaRecovery, which returns before markZone when that path is empty. The same branch exists in qualified 8.51.",
+  "scope": "Inherited UDM internal metadata difference, not an IDM policy comparison. No fix or installed behavior claimed.",
+  "next": "Verify desired zone policy and the corresponding IDM behavior before changing this separate branch."
+}

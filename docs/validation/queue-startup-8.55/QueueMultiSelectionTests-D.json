@@ -1,0 +1,146 @@
+{
+  "checks": [
+    {
+      "name": "Up moves a contiguous selection together, leaving other queue slot unchanged",
+      "passed": true
+    },
+    {
+      "name": "Up at top preserves selected order",
+      "passed": true
+    },
+    {
+      "name": "Down restores contiguous group",
+      "passed": true
+    },
+    {
+      "name": "Up moves separated selections one queue position",
+      "passed": true
+    },
+    {
+      "name": "Down moves separated selections one queue position",
+      "passed": true
+    },
+    {
+      "name": "Bottom group cannot reverse or move beyond end",
+      "passed": true
+    },
+    {
+      "name": "Drag uses queue order, deduplicates selection and inserts before destination",
+      "passed": true
+    },
+    {
+      "name": "Drop on selected member is a no-op",
+      "passed": true
+    },
+    {
+      "name": "Drop after last row appends selected group",
+      "passed": true
+    },
+    {
+      "name": "Mixed queue selection rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing selected job rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid arrow direction rejected",
+      "passed": true
+    },
+    {
+      "name": "Wrong queue drag destination rejected",
+      "passed": true
+    },
+    {
+      "name": "Removed selected member rejects whole batch",
+      "passed": true
+    },
+    {
+      "name": "Removed destination rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid operations leave all jobs unchanged",
+      "passed": true
+    },
+    {
+      "name": "Arrow save failure reported",
+      "passed": true
+    },
+    {
+      "name": "Arrow save failure rolls back full order",
+      "passed": true
+    },
+    {
+      "name": "Drag save failure reported",
+      "passed": true
+    },
+    {
+      "name": "Drag save failure rolls back full order",
+      "passed": true
+    },
+    {
+      "name": "Removal save failure reported",
+      "passed": true
+    },
+    {
+      "name": "Removal save failure restores every selected record",
+      "passed": true
+    },
+    {
+      "name": "Removal updates entire selection",
+      "passed": true
+    },
+    {
+      "name": "Removed queued jobs become paused",
+      "passed": true
+    },
+    {
+      "name": "Removal retains downloaded file and catalog records",
+      "passed": true
+    },
+    {
+      "name": "Removal persists across catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Arrow group order persists across catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Cross-queue save failure reported",
+      "passed": true
+    },
+    {
+      "name": "Cross-queue failure restores every original membership",
+      "passed": true
+    },
+    {
+      "name": "Cross-queue batch changes both memberships",
+      "passed": true
+    },
+    {
+      "name": "Cross-queue membership persists on reopen",
+      "passed": true
+    },
+    {
+      "name": "Completed member prevents entire batch entering ordinary download queue",
+      "passed": true
+    },
+    {
+      "name": "Completed-file rejection leaves earlier validated members unchanged",
+      "passed": true
+    },
+    {
+      "name": "Saved completed HTTP file may stay in synchronization queue",
+      "passed": true
+    },
+    {
+      "name": "Stale queue destination rejected",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

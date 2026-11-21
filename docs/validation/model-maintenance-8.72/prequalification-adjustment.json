@@ -1,0 +1,8 @@
+{
+  "stage": "Prequalification design review",
+  "changedSource": "native/App.cpp",
+  "beforeSha256": "0CAA8CD6675E9C66459F757852371B7A8C47C882C85686DF66DBE6F6E275551E",
+  "afterSha256": "B410368B0A00078A4540ECC3F1FE492754A21414ADD9724F8541DEE9F4A78313",
+  "reason": "Completion countdowns retain a fresh synchronous Manager tick before authoritative power/exit readiness checks. Only regular desktop and Options ticks are moved off the UI thread. App must be rebuilt against this final input before qualification. Maintenance errors are displayed after the completion-triggered history refresh so that refresh cannot immediately clear them. Queued desktop maintenance rechecks the File Info presentation guard under Manager lock before entering tick/dispatch; later timer acknowledgement retains scheduling intent.",
+  "installedAppChanged": false
+}

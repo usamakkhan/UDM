@@ -1,0 +1,25 @@
+--- native/App.cpp@9.53
++++ native/App.cpp@9.52
+@@ -648,11 +648,10 @@
+   // Keep the rendered layout responsive when a model writer is busy. A later
+   // successful layout applies fresh settings; no close policy is guessed here.
+   Json settings;
+-  if(appearanceReadSnapshot)settings=*appearanceReadSnapshot;
+-  else if(optionsAppearanceSnapshot)settings=*optionsAppearanceSnapshot;
++  if(optionsAppearanceSnapshot)settings=*optionsAppearanceSnapshot;
+   else{std::unique_lock lock(manager.mutex,std::try_to_lock);
+    if(lock.owns_lock())settings=manager.state["Settings"];
+-   else settings={{"HideToolbar",!(::GetWindowLongW(toolbar.GetSafeHwnd(),GWL_STYLE)&WS_VISIBLE)},{"HideCategories",!(categoryFrame.GetStyle()&WS_VISIBLE)}};
++   else settings={{"HideToolbar",!(toolbar.GetStyle()&WS_VISIBLE)},{"HideCategories",!(categoryFrame.GetStyle()&WS_VISIBLE)}};
+   }
+   int bar=layoutToolbar(w,settings);
+   const int bottom=statusShown()?px(24):0;
+@@ -1352,7 +1351,7 @@
+   try{
+    if(dpiColumnWidths.size()!=columnCount){dpiColumnWidths.assign(columnCount,0);dpiRenderedWidths.assign(columnCount,-1);}
+    for(int i=0;i<columnCount;++i){const int current=table.GetColumnWidth(i);if(current!=dpiRenderedWidths[i])dpiColumnWidths[i]=isReferenceColumnWidth(i,current,previous)?(double)referenceColumnWidths[i]*96/referenceColumnDpi:(double)current*96/previous;}
+-   scale=next/96.0f;rebuildListImages();applyRenderedAppearance();
++   scale=next/96.0f;rebuildListImages();applyAppearance();
+    for(int i=0;i<columnCount;++i){dpiRenderedWidths[i]=(int)std::lround(dpiColumnWidths[i]*next/96);table.SetColumnWidth(i,dpiRenderedWidths[i]);}
+    SetWindowPos(nullptr,suggested.left,suggested.top,suggested.right-suggested.left,suggested.bottom-suggested.top,SWP_NOZORDER|SWP_NOACTIVATE);
+   }catch(const std::exception& e){showStatus(e.what());}

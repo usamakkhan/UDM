@@ -1,0 +1,25 @@
+--- native/ToolbarUi.hpp@9.56
++++ native/ToolbarUi.hpp@9.55
+@@ -119,7 +119,6 @@
+   item(CMD_TOOLBAR_HIDE,L"Hide toolbar",yes(p,"HideToolbar"));
+  }
+  void toolbarPopup(CPoint point){
+-  if(appearanceCommandTask.valid())return;
+   if(point.x<0){CRect r;toolbar.GetWindowRect(&r);point=CPoint(r.left+px(8),r.bottom);}
+   CMenu popup;popup.CreatePopupMenu();fillToolbarMenu(popup);menuTheme.popup(popup.GetSafeHmenu(),uiDark);auto id=popup.TrackPopupMenu(TPM_RETURNCMD|TPM_NONOTIFY|TPM_RIGHTBUTTON,point.x,point.y,this);menuTheme.releasePopup(popup.GetSafeHmenu());if(id)command(id);
+  }
+@@ -164,11 +163,11 @@
+   return FALSE;
+  }
+  afx_msg void OnInitMenuPopup(CMenu* popup,UINT index,BOOL systemMenu){
+-  const bool queuePopup=!appearanceCommandTask.valid()&&!systemMenu&&updateQueuePopup(popup);
+-  if(!appearanceCommandTask.valid()&&popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);
++  const bool queuePopup=!systemMenu&&updateQueuePopup(popup);
++  if(popup&&popup->GetSafeHmenu()==toolbarMenu.GetSafeHmenu())fillToolbarMenu(*popup);
+   {struct UpdateScope {bool& flag;bool previous;UpdateScope(bool& value,bool enabled):flag(value),previous(value){flag=enabled;}~UpdateScope(){flag=previous;}} updating(queuePopupUpdating,queuePopup);
+    CFrameWnd::OnInitMenuPopup(popup,index,systemMenu);
+   }
+   if(!systemMenu&&popup)menuTheme.popup(popup->GetSafeHmenu(),uiDark);
+  }
+- afx_msg void OnUpdateToolbarSkin(CCmdUI* ui){ui->Enable(!appearanceCommandTask.valid());}
++ afx_msg void OnUpdateToolbarSkin(CCmdUI* ui){ui->Enable(TRUE);}

@@ -1,0 +1,88 @@
+{
+  "groups": [
+    {
+      "scope": "8.18, backend",
+      "logicalBytes": 1222655.0,
+      "files": 180
+    },
+    {
+      "scope": "8.18, completion-ui",
+      "logicalBytes": 14.0,
+      "files": 6
+    },
+    {
+      "scope": "8.18, gzip-live",
+      "logicalBytes": 5829.0,
+      "files": 3
+    },
+    {
+      "scope": "8.18, objects",
+      "logicalBytes": 188750822.0,
+      "files": 23
+    },
+    {
+      "scope": "8.18, release-native",
+      "logicalBytes": 60097536.0,
+      "files": 18
+    },
+    {
+      "scope": "8.19, backend",
+      "logicalBytes": 2271231.0,
+      "files": 181
+    },
+    {
+      "scope": "8.19, completion-ui",
+      "logicalBytes": 14.0,
+      "files": 6
+    },
+    {
+      "scope": "8.19, gzip-live",
+      "logicalBytes": 5829.0,
+      "files": 3
+    },
+    {
+      "scope": "8.19, objects",
+      "logicalBytes": 191683857.0,
+      "files": 24
+    },
+    {
+      "scope": "8.19, release-native",
+      "logicalBytes": 61373952.0,
+      "files": 19
+    },
+    {
+      "scope": "8.20, backend",
+      "logicalBytes": 2271231.0,
+      "files": 181
+    },
+    {
+      "scope": "8.20, completion-ui",
+      "logicalBytes": 14.0,
+      "files": 6
+    },
+    {
+      "scope": "8.20, gzip-live",
+      "logicalBytes": 5829.0,
+      "files": 3
+    },
+    {
+      "scope": "8.20, objects",
+      "logicalBytes": 191685041.0,
+      "files": 24
+    }
+  ],
+  "files": 677,
+  "retained": [
+    "Current 24 binaries",
+    "Reusable 42 core objects",
+    "Shared installed tools and junctions",
+    "Sources and helpers",
+    "Catalogs, journals and result records",
+    "Deployment rollback copies",
+    "Historical 8.0 and 7.97 fixtures"
+  ],
+  "allAbsent": true,
+  "logicalBytesRemoved": 699373854,
+  "method": "Individual owned generated artifacts only; exact-root containment, no reparse parents, byte count and SHA-256 checked immediately before deletion.",
+  "physicalAllocationMeasured": false
+}

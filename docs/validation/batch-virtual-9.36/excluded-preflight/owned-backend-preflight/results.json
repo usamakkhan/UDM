@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "Initial browser projection retains source order and filters repeated plain links",
+      "passed": true
+    },
+    {
+      "name": "Projected browser rows retain explicit unchecked semantics",
+      "passed": true
+    },
+    {
+      "name": "URL names and normalized extensions are prepared before the GUI consumes rows",
+      "passed": true
+    },
+    {
+      "name": "Scoped observed size metadata avoids an unnecessary preview request",
+      "passed": true
+    },
+    {
+      "name": "The initial category destination is projected from the same settings snapshot",
+      "passed": false
+    }
+  ],
+  "error": "The initial category destination is projected from the same settings snapshot",
+  "passed": false
+}

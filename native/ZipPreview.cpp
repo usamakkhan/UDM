@@ -64,6 +64,7 @@ ZipListing previewLocalZip(const fs::path& path,const Cancel& cancel){
  result.entries=zipContents(source,cancel);result.size=source.length;result.validated=source.validated;return result;
 }
 namespace {
+void notifyZipReady(const std::function<void()>& notify)noexcept{if(notify)try{notify();}catch(...) {}}
 struct LocalZipReaderSlot {
  static std::atomic_uint active;bool held=false;
  LocalZipReaderSlot(){held=active.fetch_add(1)<4;if(!held)active.fetch_sub(1);}
@@ -78,17 +79,18 @@ struct RemoteZipReaderSlot {
 std::atomic_uint RemoteZipReaderSlot::active{0};
 }
 struct LocalZipPreviewTask::Shared {Cancel cancel;mutable std::mutex mutex;ZipPreviewState result;};
-LocalZipPreviewTask::LocalZipPreviewTask(fs::path path):state(std::make_shared<Shared>()){
- auto slot=std::make_shared<LocalZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous ZIP previews are still closing. Wait for them to finish and try again.";return;}
- auto shared=state;try{std::thread([shared,slot,path=std::move(path)]{
+LocalZipPreviewTask::LocalZipPreviewTask(fs::path path,std::function<void()> onReady):state(std::make_shared<Shared>()){
+ auto slot=std::make_shared<LocalZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous ZIP previews are still closing. Wait for them to finish and try again.";notifyZipReady(onReady);return;}
+ auto shared=state;try{std::thread([shared,slot,path=std::move(path),onReady]()mutable{
   ZipPreviewState outcome;
   try{outcome.listing=std::make_shared<ZipListing>(previewLocalZip(path,shared->cancel));outcome.status="Ready";}
   catch(const Cancelled&){outcome.status="Cancelled";}
   catch(const std::exception& e){outcome.status="Error";outcome.message=e.what();}
   catch(...){outcome.status="Error";outcome.message="Cannot read ZIP directory.";}
   if(shared->cancel.cancelled()){outcome.listing.reset();outcome.status="Cancelled";outcome.message.clear();}
-  std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);
- }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();}
+  {std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);}
+  slot.reset();notifyZipReady(onReady);
+ }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();notifyZipReady(onReady);}
 }
 LocalZipPreviewTask::~LocalZipPreviewTask(){stop();}
 void LocalZipPreviewTask::stop()noexcept{state->cancel.stop=true;}
@@ -104,10 +106,10 @@ ZipListing previewRemoteZip(const Json& data,const Json& preferences,const Cance
  }return result;
 }
 struct ZipPreviewTask::Shared {Cancel cancel;mutable std::mutex mutex;ZipPreviewState result;};
-ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Json&)> save,int timeoutMs):state(std::make_shared<Shared>()){
+ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Json&)> save,int timeoutMs,std::function<void()> onReady):state(std::make_shared<Shared>()){
  state->cancel.deadline=GetTickCount64()+static_cast<ULONGLONG>(std::clamp(timeoutMs,1,120000));
- auto slot=std::make_shared<RemoteZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous remote ZIP previews are still closing. Wait for them to finish and try again.";return;}
- auto shared=state;try{std::thread([shared,slot,data=std::move(data),prefs=std::move(prefs),save=std::move(save)]{
+ auto slot=std::make_shared<RemoteZipReaderSlot>();if(!slot->held){state->result.status="Error";state->result.message="Previous remote ZIP previews are still closing. Wait for them to finish and try again.";notifyZipReady(onReady);return;}
+ auto shared=state;try{std::thread([shared,slot,data=std::move(data),prefs=std::move(prefs),save=std::move(save),onReady]()mutable{
   ZipPreviewState outcome;
   auto persist=[shared,save](const Json& session){shared->cancel.check();if(save)save(session);};
   try{outcome.listing=std::make_shared<ZipListing>(previewRemoteZip(data,prefs,shared->cancel,std::move(persist)));outcome.status="Ready";}
@@ -117,8 +119,9 @@ ZipPreviewTask::ZipPreviewTask(Json data,Json prefs,std::function<void(const Jso
   catch(const std::exception& e){outcome.status="Error";outcome.message=e.what();}
   catch(...){outcome.status="Error";outcome.message="Cannot read the remote ZIP directory.";}
   if(shared->cancel.cancelled()){outcome.listing.reset();outcome.status=shared->cancel.stop?"Cancelled":"Error";outcome.message=shared->cancel.stop?"":"ZIP preview timed out. Close it and try again.";}
-  std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);
- }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();}
+  {std::lock_guard<std::mutex> lock(shared->mutex);shared->result=std::move(outcome);}
+  slot.reset();notifyZipReady(onReady);
+ }).detach();}catch(const std::exception& e){state->result.status="Error";state->result.message=e.what();notifyZipReady(onReady);}
 }
 ZipPreviewTask::~ZipPreviewTask(){stop();}
 void ZipPreviewTask::stop()noexcept{state->cancel.stop=true;}

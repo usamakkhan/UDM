@@ -1,0 +1,8 @@
+from pathlib import Path
+import os,json,subprocess
+base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development';area=Path('<repo>/.media-cache/owned-intent-write-through-probe-9.64');area.mkdir(exist_ok=False);(area/'temp').mkdir();(area/'.udm-build-owned').write_text('Owned diagnostic-only metadata persistence probe',encoding='utf-8');scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});env={**env,'TEMP':str(area/'temp'),'TMP':str(area/'temp')};source=root/'benchmarks/speed/intent_write_through_probe.cpp';exe=release/'intent-write-through-probe.exe';before=sha(source)
+with (area/'compile.log').open('w',encoding='utf-8') as log:p=subprocess.run([str(compiler),*common,str(source),'/Fo'+str(out/'Probe.obj'),'/Fe'+str(exe),'/link',*system,'/SUBSYSTEM:CONSOLE','/DYNAMICBASE','/NXCOMPAT','/INCREMENTAL:NO'],cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+if p.returncode:print((area/'compile.log').read_text(encoding='utf-8',errors='replace')[-4000:])
+assert p.returncode==0 and sha(source)==before;folder=area/'owned-files'
+with (area/'run.log').open('w',encoding='utf-8') as log:p=subprocess.run([str(exe),str(folder)],cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=120)
+r=json.loads((folder/'results.json').read_text(encoding='utf-8-sig'));(area/'build.json').write_text(json.dumps(dict(passed=p.returncode==0 and r['passed'],diagnosticOnly=True,sourceSha256=before,binarySha256=sha(exe),binary=str(exe),result=str(folder/'results.json')),indent=2),encoding='utf-8');print(json.dumps(r,indent=2))

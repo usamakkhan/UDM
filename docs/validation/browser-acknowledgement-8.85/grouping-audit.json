@@ -1,0 +1,258 @@
+{
+  "initialBuildInterrupted": true,
+  "reason": "Review found that claiming any token could suppress a fresh capture in a mixed group. Require all tokens to be claimed before suppressing a presentation; enqueue only fresh tokens. Restart with fresh frozen inputs.",
+  "initialPreflight": {
+    "checks": [
+      {
+        "name": "A real catalog writer holds Manager before acknowledgement is queued",
+        "passed": true
+      },
+      {
+        "name": "Enqueue returns while the owned acknowledgement waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "Only captured tokens are claimed during the actual save wait",
+        "passed": true
+      },
+      {
+        "name": "A displayed receipt cannot schedule a duplicate acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "A saved acknowledgement releases its claim and posts a result-only notification",
+        "passed": true
+      },
+      {
+        "name": "The real Manager saves exactly the captured token and preserves a later offer",
+        "passed": true
+      },
+      {
+        "name": "Successful saving leaves no stale ownership or error",
+        "passed": true
+      },
+      {
+        "name": "A real durable-save failure is retained for UI recovery",
+        "passed": true
+      },
+      {
+        "name": "Failed acknowledgement restores the offer and preserves the accepted download",
+        "passed": true
+      },
+      {
+        "name": "A failed save retains ownership without starting an automatic retry loop",
+        "passed": true
+      },
+      {
+        "name": "Explicit Retry schedules the same failed receipt",
+        "passed": true
+      },
+      {
+        "name": "Successful Retry clears only the saved acknowledgement failure",
+        "passed": true
+      },
+      {
+        "name": "A consumed failure cannot replay Retry or dismiss another outcome",
+        "passed": true
+      },
+      {
+        "name": "An independent failed receipt exposes a recovery identity",
+        "passed": true
+      },
+      {
+        "name": "A repeated failed Retry advances its exact recovery attempt",
+        "passed": true
+      },
+      {
+        "name": "Stale recovery actions cannot consume a newer failed attempt",
+        "passed": true
+      },
+      {
+        "name": "Close suppresses a repeated dialog this session without claiming a durable acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "A stopped owner rejects new acknowledgement work",
+        "passed": true
+      },
+      {
+        "name": "A preserved Manager can resume with a joined new worker after a failed shutdown",
+        "passed": true
+      },
+      {
+        "name": "One worker serializes all 64 bounded accepted acknowledgements",
+        "passed": true
+      },
+      {
+        "name": "Capacity rejection never claims an unqueued receipt",
+        "passed": true
+      },
+      {
+        "name": "Shutdown waits for already accepted acknowledgement work instead of dropping it",
+        "passed": true
+      },
+      {
+        "name": "Shutdown drains every accepted acknowledgement before returning",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "A failed UI wake-up cannot turn a successful save into a failed acknowledgement",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "correctedPreflight": {
+    "checks": [
+      {
+        "name": "A real catalog writer holds Manager before acknowledgement is queued",
+        "passed": true
+      },
+      {
+        "name": "Enqueue returns while the owned acknowledgement waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "Only captured tokens are claimed during the actual save wait",
+        "passed": true
+      },
+      {
+        "name": "A fresh token keeps a mixed presentation eligible while an older token is owned",
+        "passed": true
+      },
+      {
+        "name": "A displayed receipt cannot schedule a duplicate acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "A saved acknowledgement releases its claim and posts a result-only notification",
+        "passed": true
+      },
+      {
+        "name": "The real Manager saves exactly the captured token and preserves a later offer",
+        "passed": true
+      },
+      {
+        "name": "Successful saving leaves no stale ownership or error",
+        "passed": true
+      },
+      {
+        "name": "A real durable-save failure is retained for UI recovery",
+        "passed": true
+      },
+      {
+        "name": "Failed acknowledgement restores the offer and preserves the accepted download",
+        "passed": true
+      },
+      {
+        "name": "A failed save retains ownership without starting an automatic retry loop",
+        "passed": true
+      },
+      {
+        "name": "Explicit Retry schedules the same failed receipt",
+        "passed": true
+      },
+      {
+        "name": "Successful Retry clears only the saved acknowledgement failure",
+        "passed": true
+      },
+      {
+        "name": "A consumed failure cannot replay Retry or dismiss another outcome",
+        "passed": true
+      },
+      {
+        "name": "An independent failed receipt exposes a recovery identity",
+        "passed": true
+      },
+      {
+        "name": "A repeated failed Retry advances its exact recovery attempt",
+        "passed": true
+      },
+      {
+        "name": "Stale recovery actions cannot consume a newer failed attempt",
+        "passed": true
+      },
+      {
+        "name": "Close suppresses a repeated dialog this session without claiming a durable acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "A stopped owner rejects new acknowledgement work",
+        "passed": true
+      },
+      {
+        "name": "Restart acknowledges the fresh token in a mixed group without erasing a dismissed failure",
+        "passed": true
+      },
+      {
+        "name": "One worker serializes all 64 bounded accepted acknowledgements",
+        "passed": true
+      },
+      {
+        "name": "Capacity rejection never claims an unqueued receipt",
+        "passed": true
+      },
+      {
+        "name": "Shutdown waits for already accepted acknowledgement work instead of dropping it",
+        "passed": true
+      },
+      {
+        "name": "Shutdown drains every accepted acknowledgement before returning",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "Malformed offers cannot create background work or ownership",
+        "passed": true
+      },
+      {
+        "name": "A failed UI wake-up cannot turn a successful save into a failed acknowledgement",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "primaryQualificationExcludesBothPreflights": true,
+  "sourceChanges": [
+    {
+      "path": "native/BrowserPresentationAcks.hpp",
+      "beforeSha256": "EA7F5DB06235E432B8D5EDD041E48DB10149906B9B517E55E4CC1DD07E6C5B5B",
+      "afterSha256": "001D26AD5A6534E6F284590F3A18DC8693606DABF39F3141DA8A00255C66F580"
+    },
+    {
+      "path": "native/BrowserPresentationAcksTests.cpp",
+      "beforeSha256": "E4B1D0338CAA44BAB19BBE15DBE75BB0F0716199921600A1D19EA30F92417B73",
+      "afterSha256": "F3B1BD3E0D1FEE0265232858B9C6318EFC91F349BF450E1FCF03E6D58FA46FCB"
+    }
+  ],
+  "assertionsWeakened": false
+}

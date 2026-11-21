@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "direct",
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "resume",
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "file-info-start",
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location."
+    }
+  ],
+  "diagnosticValid": true,
+  "error": "",
+  "recoveryResponsivenessFixed": false,
+  "baselineVersion": "8.40",
+  "appFunctionalChange": false,
+  "sourceSha256": "b07759c133d8b6fad6a39142c18b63b70c3d3e5eefdd24ad5e1f97f7f172c653",
+  "cleanup": {
+    "files": 11,
+    "logicalBytesRemoved": 5290052
+  },
+  "scope": "Held actual catalog persistence boundary; verifies caller behavior and model-lock exclusion, not kernel/disk attribution."
+}

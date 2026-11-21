@@ -1,0 +1,35 @@
+{
+    "newElevationRequested":  false,
+    "controls":  [
+                     {
+                         "failedAsExpected":  false,
+                         "state":  "process-created",
+                         "case":  "success",
+                         "nativeErrorCode":  null,
+                         "passed":  true
+                     },
+                     {
+                         "failedAsExpected":  true,
+                         "state":  "canceled",
+                         "case":  "cancel",
+                         "nativeErrorCode":  1223,
+                         "passed":  true
+                     },
+                     {
+                         "failedAsExpected":  true,
+                         "state":  "failed-or-indeterminate",
+                         "case":  "error",
+                         "nativeErrorCode":  null,
+                         "passed":  true
+                     },
+                     {
+                         "failedAsExpected":  true,
+                         "state":  "failed-or-indeterminate",
+                         "case":  "missing",
+                         "nativeErrorCode":  null,
+                         "passed":  true
+                     }
+                 ],
+    "actualProcessLaunches":  0,
+    "passed":  true
+}

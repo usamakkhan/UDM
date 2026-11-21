@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "acceptMilliseconds": 516.0,
+      "acceptReturnedBeforeRelease": false,
+      "closeGuard": false,
+      "completed": false,
+      "heartbeatsWhileIoHeld": 0,
+      "ioOnUiThread": true,
+      "watchdogRequired": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "The actual Properties dialog exposes its six editable fields",
+      "passed": true
+    },
+    {
+      "name": "The actual saved-catalog flush was held",
+      "passed": true
+    },
+    {
+      "name": "The actual Properties action persists the submitted description",
+      "passed": true
+    },
+    {
+      "name": "The submitted description is present in the durable catalog",
+      "passed": true
+    },
+    {
+      "name": "The 8.52 baseline blocks its UI thread during the real flush",
+      "passed": true
+    }
+  ]
+}

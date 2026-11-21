@@ -1,0 +1,37 @@
+{
+  "appFunctionalChange": false,
+  "nativeVersion": "8.39",
+  "fixturePassed": true,
+  "fixtureArchitecture": "x64",
+  "fixtureEvents": 11,
+  "fixtureNativeCompletedBytes": 262144,
+  "fixtureNativeFlushes": 2,
+  "fixtureHashMatched": true,
+  "idmX86Attempt": "Timed out after 60 seconds without settled output; cleanup detached observer and left IDM running.",
+  "idmWriterCoveragePassed": false,
+  "rootCauseVerified": false,
+  "performanceParityVerified": false,
+  "failureEvidenceLimitation": "Controller did not persist the final in-memory snapshot on its timeout path; fix failure capture before repeating.",
+  "cleanup": [
+    {
+      "name": "990e36306b8d4274a7949b459de6b62b.bin.done",
+      "bytes": 262144,
+      "sha256": "2e5a918c66117f8934d6fc5b5153f1ab1a0b29545fcccd0aaecd44532226698c"
+    },
+    {
+      "name": "user-io-fixture.exe",
+      "bytes": 126464,
+      "sha256": "307705587b3f310dd66edf60328729567ed9ed5af6d36593f7a0da3ac801a56a"
+    },
+    {
+      "name": "user-io-fixture.obj",
+      "bytes": 58943,
+      "sha256": "88ada299053191d7266d23ab7eab937bf267f08fa3f45ff3d505d5415bcd1951"
+    }
+  ],
+  "agentSha256": "676c5d77f2768cda44e0d84f2466b6eafe4ea4067c49f1f05b70a25034e1a1bc",
+  "references": [
+    "https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntwritefile",
+    "https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntflushbuffersfileex"
+  ]
+}

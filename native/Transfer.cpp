@@ -1,9 +1,25 @@
+#include "PreparedTransferCommit.hpp"
+#include "PublishedWriteback.hpp"
+#include "FinishSettlement.hpp"
 #include "ContentDispositionName.hpp"
+#include "WrittenPrefix.hpp"
+#include "WrittenBodyCache.hpp"
+#include "CatalogDiskCredit.hpp"
+#include "OrderedBodyWriter.hpp"
+#include "PrefinishWriteback.hpp"
+#include "DataOnlyWriteback.hpp"
 #include "MediaStorage.hpp"
 #include "MediaAssemblyVerification.hpp"
 #include "MediaPublication.hpp"
 #include "StreamCache.hpp"
 #include "Core.hpp"
+#ifdef UDM_FINISH_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#define UDM_FINISH_POINT(stage) nativeUiTraceRecord(stage)
+#else
+#define UDM_FINISH_POINT(stage) ((void)0)
+#endif
+
 #include "StreamHash.hpp"
 #include "PostBodyStore.hpp"
 #include "Ftp.hpp"
@@ -327,6 +343,16 @@ static fs::path partPath(const fs::path& folder,i64 index){wchar_t b[32];swprint
 // Current layout: one <job-id>.data file of the final size. Every range writes in
 // place at Start+Done, so completion is a hash pass and a rename instead of a copy.
 static fs::path dataPath(const fs::path& folder,const std::string& id){return folder/(wide(id)+L".data");}
+// Only a link to the exact current partial file is reusable after an interrupted
+// stage. Open both objects and remove the checked link by handle, never by name.
+static bool retireOwnedStagingLink(const fs::path& stage,const fs::path& data)noexcept{
+ try{
+  Handle original(CreateFileW(data.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));if(!original)return false;
+  const auto identity=stableFileIdentity(original.h);if(identity.is_null())return false;
+  Handle link(CreateFileW(stage.c_str(),DELETE|FILE_READ_ATTRIBUTES,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));if(!link||stableFileIdentity(link.h)!=identity)return false;
+  FILE_DISPOSITION_INFO disposition{TRUE};return SetFileInformationByHandle(link.h,FileDispositionInfo,&disposition,sizeof(disposition))!=FALSE;
+ }catch(...){return false;}
+}
 static void clearParts(const fs::path& folder){if(fs::exists(folder))for(const auto& p:fs::directory_iterator(folder))if(p.is_regular_file()&&(p.path().extension()==L".part"||p.path().extension()==L".data"))fs::remove(p.path());}
 static i64 fileLength(HANDLE file){LARGE_INTEGER size{};if(!GetFileSizeEx(file,&size))throw std::runtime_error("Cannot read the download file size.");return size.QuadPart;}
 static void setFileLength(HANDLE file,i64 size){FILE_END_OF_FILE_INFO info{};info.EndOfFile.QuadPart=size;if(!SetFileInformationByHandle(file,FileEndOfFileInfo,&info,sizeof(info)))throw std::runtime_error("Cannot reserve space for the download file.");}
@@ -377,12 +403,12 @@ static i64 retainedDataPrefix(HANDLE file,i64 length,bool sparse,i64 start,i64 s
 // Without the file, saved progress is lost: the ranges restart at zero.
 // The file is sparse while incomplete so that writes far past the valid data
 // length are not preceded by zero-filling everything before them.
-static std::vector<fs::path> prepareDataFile(const fs::path& parts,const std::string& id,i64 size,Json& segments,const Cancel& cancel){
+static std::vector<fs::path> prepareDataFile(const fs::path& parts,const std::string& id,i64 size,Json& segments,const Cancel& cancel,bool allowSparse,bool reserveRegular,bool& sparseResult){
  const auto path=dataPath(parts,id);const bool existed=fs::exists(path);
  Handle file(CreateFileW(path.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
  if(!file)throw std::runtime_error("Cannot create the download file.");
- if(!existed)setSparse(file.h,true);
- const bool sparse=existed&&hasSparseAllocations(file.h);
+ if(allowSparse&&!hasSparseAllocations(file.h))setSparse(file.h,true);
+ const bool sparse=hasSparseAllocations(file.h);sparseResult=sparse;
  const i64 length=fileLength(file.h);std::vector<char> buffer;
  std::vector<fs::path> migrated;
  for(auto& segment:segments){
@@ -402,7 +428,10 @@ static std::vector<fs::path> prepareDataFile(const fs::path& parts,const std::st
   }
   segment["Done"]=have;
  }
- if(size>=0&&fileLength(file.h)!=size)setFileLength(file.h,size);
+ const auto settledLength=fileLength(file.h);
+ // A sequential file grows with successful writes: its length remains a usable
+ // resume bound rather than preallocated zeros ahead of the saved prefix.
+ if(size>=0&&settledLength!=size&&(sparse||allowSparse||reserveRegular||settledLength>size))setFileLength(file.h,size);
  if(!migrated.empty()&&!FlushFileBuffers(file.h))throw std::runtime_error("Could not flush the migrated partial download.");
  return migrated;
 }
@@ -462,13 +491,14 @@ struct PrefixHasher {
  struct Reader {
   Handle file;
   std::vector<char> buffer;
+  bool allowRename=false;
  };
  std::unique_ptr<StreamHash> hash;i64 hashed=0;bool valid=false,inlineWrite=false;
- Bytes buffered;
+ Bytes buffered;WrittenPrefix writtenPrefix;
  size_t bufferLimit=contentSniffReadLimit;
  std::string digest;
  void reset(bool fromWrite=false,size_t captureSize=0){
-  hash=std::make_unique<StreamHash>();hashed=0;digest.clear();buffered.clear();valid=true;inlineWrite=fromWrite;
+  hash=std::make_unique<StreamHash>();hashed=0;digest.clear();buffered.clear();writtenPrefix.reset(contentSniffReadLimit);valid=true;inlineWrite=fromWrite;
   bufferLimit=contentSniffReadLimit;
   if(captureSize>bufferLimit)try{buffered.reserve(captureSize);bufferLimit=captureSize;}catch(const std::bad_alloc&){}
  }
@@ -506,7 +536,7 @@ struct PrefixHasher {
   if(!valid||limit<=hashed)return;
   cancel.check();
   if(!reader.file){
-   reader.file.h=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
+   reader.file.h=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|(reader.allowRename?FILE_SHARE_DELETE:0),nullptr,OPEN_EXISTING,0,nullptr);
    if(!reader.file)throw std::runtime_error("Cannot read the downloaded file.");
    reader.buffer.resize(assemblyBuffer);
   }
@@ -522,32 +552,6 @@ struct PrefixHasher {
   advance(reader,path,limit,cancel,checkpoint);
  }
 };
-// Keep at most one cross-drive range response in memory. The partial on disk
-// remains the recovery source if allocation fails or a retry invalidates this cache.
-struct CrossDriveStage {
- static constexpr i64 maxBytes=64*1048576;
- static std::mutex slot;
- std::unique_lock<std::mutex> lease;
- Bytes bytes;
- bool valid=false;
- void reset(i64 size){
-  if(lease.owns_lock()){Bytes{}.swap(bytes);lease.unlock();}
-  valid=false;
-  if(size<=0||size>maxBytes)return;
-  lease=std::unique_lock(slot,std::try_to_lock);
-  if(!lease.owns_lock())return;
-  try{bytes.resize(static_cast<size_t>(size));valid=true;}catch(const std::bad_alloc&){lease.unlock();}
- }
- void wrote(const BYTE* source,size_t count,i64 offset){
-  if(!valid||!count)return;
-  if(offset<0||static_cast<uint64_t>(offset)>bytes.size()||count>bytes.size()-static_cast<size_t>(offset)){valid=false;return;}
-  std::copy_n(source,count,bytes.data()+static_cast<size_t>(offset));
- }
- const Bytes* body(i64 size,i64 complete)const{
-  return valid&&size==complete&&size==static_cast<i64>(bytes.size())?&bytes:nullptr;
- }
-};
-std::mutex CrossDriveStage::slot;
 // Copy the retained tail and hash exactly the bytes written to staging.
 static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& cancel,i64& skip,
                          StreamHash& digest,std::vector<char>& buffer,HANDLE verified=INVALID_HANDLE_VALUE){
@@ -604,7 +608,7 @@ static i64 checkedDirectOutputSize(const Bytes& head,i64 size){
 }
 static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
- JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,CrossDriveStage* crossDriveStage=nullptr){
+ JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false){
  const auto httpStartTick=GetTickCount64();
  // HTTP/3 multiplexes every range of this download over one QUIC connection, which on a shared
  // link gets one connection's share: Alpine over a 4 MB/s link took 143 to 156 s against 64 s on
@@ -702,7 +706,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   bool resumeWithoutHttp2=false,resumeWithoutHttp3=false,catalogHasSavedBytes=false;
   std::string savedStrongDate;
   {
-   Lock lock(m.mutex);const auto& data=job->data;const auto& segments=data["Segments"];
+   Lock lock(m.mutex);auto& data=job->data;data.erase("OrderedBodyWrites");data.erase("DiskCreditCheckpoint");data.erase("HttpJoinWaits");const auto& segments=data["Segments"];
    refreshPending=yes(data,"RefreshPendingValidation");
    if(refreshPending){
     protectSavedRefresh=num(data,"Received")>0;
@@ -963,10 +967,16 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    if(resetParts)clearParts(parts);
    // File work happens outside the catalog lock: folding an older layout into the
    // single file may copy a lot of data. No worker exists yet, so the plan is ours.
-   const auto migrated=prepareDataFile(parts,job->id(),size,plan,*cancel);
+   const bool allowSparse=plan.size()>1||std::any_of(plan.begin(),plan.end(),[](const Json& segment){return num(segment,"Start")>0;})||((size<0||size>freshHttpRangeSize)&&(ranges||initialRangeProbe==InitialRangeProbe::Pending));
+   // Reserve bounded local parallel downloads as regular files before body IO.
+   // This pays allocation during transfer instead of normalizing sparse extents
+   // after EOF. Larger/unknown/network and existing sparse files retain the
+   // sparse-aware resume path. Saved segment Done still bounds credited bytes.
+   const bool reserveRegular=allowSparse&&size>=0&&size<=64*1048576LL&&fixedVolume(dataPath(parts,job->id()));
+   bool sparseDataFile=false;const auto migrated=prepareDataFile(parts,job->id(),size,plan,*cancel,allowSparse&&!reserveRegular,reserveRegular,sparseDataFile);
    cancel->check();
    {
-    Lock lock(m.mutex);auto& data=job->data;data["Segments"]=plan;
+    Lock lock(m.mutex);auto& data=job->data;data["Segments"]=plan;data["SparseDataFile"]=sparseDataFile;
     i64 received=0;for(const auto& segment:plan)received+=num(segment,"Done");
     data["Received"]=received;
     if(resetParts)data.erase("HttpPartsResetPending");
@@ -998,7 +1008,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   // chunks once the range workers return, preserving the completed prefix.
   Cancel hashCancel;hashCancel.parent=group;
   std::mutex hashIdleMutex;
-  std::condition_variable hashIdle;
+  std::condition_variable hashIdle;std::atomic<unsigned long long> hashGeneration{0};
   std::thread hashing;
   bool inlineHash=false,memoryStage=false;
   i64 size=-1,cacheSize=0;
@@ -1007,33 +1017,78 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
     Lock lock(m.mutex);
     const auto& record=job->data;
     size=num(record,"Size",-1);
-    // A fresh small response has one writer and can hash its write buffers.
-    inlineHash=fresh&&size>0&&size<=freshHttpRangeSize&&!yes(record,"ConfirmationPending");
-    if(crossDriveStage&&fresh&&num(record,"Received")==0&&size>freshHttpRangeSize&&!yes(record,"ConfirmationPending")&&
+    // Small fresh responses and proven non-range responses have one writer.
+    // Hash their successful writes instead of rereading them on a trailing thread.
+    const bool sequentialResponse=!verifyRangeOnReconnect&&!yes(record,"RangeSupported")&&initialRangeProbe!=InitialRangeProbe::Pending;
+    inlineHash=fresh&&size>0&&(size<=freshHttpRangeSize||sequentialResponse)&&!yes(record,"ConfirmationPending");
+    if(bodyCache&&(retainInlineBody||(yes(record,"RangeSupported")&&num(record,"Connections",8)>1&&!verifyRangeOnReconnect&&str(record,"HttpContentEncoding")!="gzip"))&&fresh&&num(record,"Received")==0&&size>freshHttpRangeSize&&!yes(record,"ConfirmationPending")&&
        str(record,"ExpectedSha256").empty()&&str(record,"ServerSha256").empty()&&str(record,"ReplacementOf").empty())cacheSize=size;
    }
-   hasher->reset(inlineHash,inlineHash&&crossDriveStage?static_cast<size_t>(size):0);
-   if(crossDriveStage){
-    crossDriveStage->reset(cacheSize);
-    memoryStage=crossDriveStage->valid;
+   // Extending inline hashing must not extend full-body memory retention.
+   hasher->reset(inlineHash,inlineHash&&size<=freshHttpRangeSize&&bodyCache&&retainInlineBody?static_cast<size_t>(size):0);
+   if(bodyCache){
+    bodyCache->reset(cacheSize);
+    memoryStage=bodyCache->valid;
    }
   }
-  if(hasher&&!inlineHash&&!memoryStage){hashing=std::thread([&]{try{
-   PrefixHasher::Reader reader;
+  // Exercise generation-bound disk checkpoints on the existing synchronous
+  // cache-eligible root path before ordered network writes are introduced.
+  std::unique_ptr<CatalogDiskCredit::Lease> diskCredit;
+  if(memoryStage&&size>0)diskCredit=CatalogDiskCredit::attach(m,job,cancel);
+  Handle prefinishFile;std::unique_ptr<PrefinishWriteback> prefinish;
+  std::unique_ptr<DataOnlyWriteback> dataWriteback;
+  std::atomic<i64> orderedWritten{0};Handle orderedFile;std::unique_ptr<OrderedBodyWriter> ordered;
+#ifdef UDM_ORDERED_BODY_QUALIFICATION
+  // Private qualification path until queued ownership, interruption and whole-
+  // lifetime performance gates pass. No browser/IPC preference enables it.
+  if(diskCredit&&memoryStage&&!inlineHash){
+   bool eligible;{Lock lock(m.mutex);eligible=yes(job->data,"RangeSupported")&&num(job->data,"Connections",8)>1;}
+   if(eligible){
+    auto storage=bodyCache->releaseStorage();
+    try{
+     orderedFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+     if(!orderedFile)throw std::runtime_error("Cannot open ordered download storage");
+     ordered=std::make_unique<OrderedBodyWriter>(static_cast<size_t>(size),[&](size_t offset,const BYTE* bytes,size_t count){
+      auto operation=diskCredit->beginBufferedWrite(static_cast<i64>(offset),static_cast<i64>(count));
+      writeAt(orderedFile.h,bytes,count,static_cast<i64>(offset));operation.acknowledge();
+      hasher->writtenPrefix.capture(bytes,count,static_cast<i64>(offset));
+      const auto written=orderedWritten.fetch_add(static_cast<i64>(count))+static_cast<i64>(count);
+      try{if(dataWriteback)dataWriteback->progress(written);else if(prefinish)prefinish->progress(written);}catch(...){/* Optional writeback cannot invalidate a successful write. */}
+     },256*1024,std::move(storage),[&](std::exception_ptr){group->stop=true;});
+    }catch(...){
+     storage.reset();if(orderedFile){CloseHandle(orderedFile.h);orderedFile.h=INVALID_HANDLE_VALUE;}
+     bodyCache->reset(cacheSize);memoryStage=bodyCache->valid;
+    }
+   }
+  }
+#endif
+  bool memoryHashRevisionSet=false;uint64_t memoryHashRevision=0;
+  if(hasher&&!inlineHash&&!ordered){hashing=std::thread([&]{try{
+   PrefixHasher::Reader reader;Bytes memoryPrefix;
+   if(memoryStage)memoryPrefix.reserve(WrittenBodyCache::prefixCopyLimit);
    while(!hashCancel.cancelled()){
-    Json segments;
+    const auto observed=hashGeneration.load(std::memory_order_acquire);Json segments;
     {
      // A checkpoint can hold the manager lock for disk I/O. Hashing is
      // optional during transfer and must remain stoppable during that wait.
      std::unique_lock lock(m.mutex,std::try_to_lock);
-     if(lock.owns_lock()&&!hashCancel.cancelled())segments=job->data["Segments"];
+     if(lock.owns_lock()&&!hashCancel.cancelled()){
+      if(memoryStage){
+       uint64_t stamp=0;
+       if(!bodyCache->copyWrittenPrefix(hasher->hashed,memoryPrefix,stamp)||(memoryHashRevisionSet&&memoryHashRevision!=stamp)){hasher->valid=false;return;}
+       memoryHashRevision=stamp;memoryHashRevisionSet=true;
+      }else segments=job->data["Segments"];
+     }
+    }
+    if(memoryStage&&!memoryPrefix.empty()){
+     hashCancel.check();hasher->hash->update(memoryPrefix.data(),memoryPrefix.size());hasher->hashed+=static_cast<i64>(memoryPrefix.size());memoryPrefix.clear();continue;
     }
     const auto limit=segments.is_array()?PrefixHasher::contiguous(std::move(segments),hasher->hashed):hasher->hashed;
     if(limit>hasher->hashed)
      hasher->advance(reader,dataFile,std::min(limit,hasher->hashed+(i64)(16*assemblyBuffer)),hashCancel);
     else{
      std::unique_lock lock(hashIdleMutex);
-     hashIdle.wait_for(lock,std::chrono::milliseconds(20),[&]{return hashCancel.cancelled();});
+     hashIdle.wait_for(lock,std::chrono::milliseconds(20),[&]{return hashCancel.cancelled()||hashGeneration.load(std::memory_order_acquire)!=observed;});
     }
    }
   }catch(const Cancelled&){}catch(...){hasher->valid=false;}});}
@@ -1066,6 +1121,14 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    }
    job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
   }
+  if(size>=1048576&&(connections==1||(connections<=8&&size>=32*1048576LL&&size<=64*1048576LL))&&fixedVolume(dataFile))try{
+   prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+   if(prefinishFile){
+    const auto dataFlush=connections>1?dataOnlyFlush():nullptr;
+    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{return flushBodyData(dataFlush,prefinishFile.h);});
+    else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+   }
+  }catch(...){dataWriteback.reset();prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}
   std::vector<std::chrono::steady_clock::time_point> assigned(connections);
   std::vector<i64> receivedAtAssignment(connections,0);
   // A peer is healthy only while its current response is making progress.
@@ -1481,9 +1544,12 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
          Lock lock(m.mutex);job->data["Segments"][index]["HttpBoundarySha256"]=digest;
         }else{
          BYTE saved[httpOverlapLimit];
-         Handle input(CreateFileW(dataFile.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
-         if(!input||readAt(input.h,saved,overlap,requestStart)!=overlap)
-          throw std::runtime_error("Cannot read the saved HTTP resume boundary.");
+         if(ordered){
+          if(!ordered->readAccepted(static_cast<size_t>(requestStart),saved,overlap))throw std::runtime_error("Cannot read the buffered HTTP resume boundary.");
+         }else{
+          Handle input(CreateFileW(dataFile.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
+          if(!input||readAt(input.h,saved,overlap,requestStart)!=overlap)throw std::runtime_error("Cannot read the saved HTTP resume boundary.");
+         }
          if(memcmp(saved,incoming,overlap)!=0)
           throw HttpOverlapMismatch("The HTTP resume bytes do not match the saved file. The old partial download was kept.",index);
         }
@@ -1493,9 +1559,10 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         job->data["RangeSupported"]=true;
         verifyRangeOnReconnect=false;
        }
-       // One handle per worker on the shared output file; every write names its offset.
-       Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
-       if(!output)throw std::runtime_error("Cannot write the partial download.");
+       // The ordered path has one storage thread and one output handle. Only
+       // legacy synchronous workers need their own positioned-write handle.
+       Handle output;
+       if(!ordered){output.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);if(!output)throw std::runtime_error("Cannot write the partial download.");}
        if(ranges){
         {Lock lock(m.mutex);responseEnd[worker]=retainedInitial?num(data,"Size")-1:num(segment,"End");acceptedResponses[worker]=1;}
         rangeWorkChanged.notify_all();
@@ -1564,6 +1631,7 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         }
         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
         readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);
+        if(ordered){Lock lock(m.mutex);job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+n;}
         size_t keep;i64 at,ownedAfterWrite=-1;
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
@@ -1589,23 +1657,30 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
         if(ownedAfterWrite!=0&&(need<0||readBytes<need-have)){
          beginBodyRead(buffers[1-current],ownedAfterWrite);
         }
-        if(keep)writeAt(output.h,buffer,keep,at);
+        if(keep){
+         if(ordered){try{ordered->put(static_cast<size_t>(at),buffer,keep);}catch(const OrderedBodyWriter::Conflict&){throw HttpOverlapMismatch("The retried HTTP bytes do not match the buffered representation.",index);}}
+         else if(diskCredit){auto written=diskCredit->beginWrite(at,static_cast<i64>(keep));writeAt(output.h,buffer,keep,at);written.acknowledge();}
+         else writeAt(output.h,buffer,keep,at);
+        }
         if(inlineHash)hasher->wrote(buffer,keep,at);
         {
          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
          const size_t credit=ranges?(size_t)std::min<i64>((i64)keep,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):keep;
-         if(memoryStage)crossDriveStage->wrote(buffer,credit,at);
-         m.progress(job,credit,index,&activity);
+         if(memoryStage&&!ordered)bodyCache->wrote(buffer,credit,at);
+         if(hasher&&!ordered)hasher->writtenPrefix.capture(buffer,credit,at);
+         m.progress(job,credit,index,&activity,!ordered);
+         if(!ordered){if(dataWriteback)dataWriteback->progress(num(job->data,"Received"));else if(prefinish)prefinish->progress(num(job->data,"Received"));}
          const auto end=at+(i64)credit;
          if(ranges&&credit&&end==num(actual,"End")+1&&end<num(data,"Size")){
           const auto tailSize=(size_t)std::min(end,httpOverlapLimit);
           if(credit>=tailSize)
            std::copy_n(buffer+credit-tailSize,tailSize,writtenTails[end].begin());
          }
-         job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-credit);
+         if(!ordered)job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-credit);
          if((!headChecked||checkOutputSize)&&credit&&head.size()<headLimit)
           head.insert(head.end(),buffer,buffer+std::min<size_t>(credit,headLimit-head.size()));
         }
+        if(hasher&&!inlineHash&&!ordered&&keep){hashGeneration.fetch_add(1,std::memory_order_release);hashIdle.notify_one();}
         if(head.size()>=contentSniffWindow)checkHead(false);
         if(checkOutputSize&&!sizeChecked&&head.size()>=outputHeaderSize){
          sizeChecked=true;
@@ -1706,9 +1781,26 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
   try{for(int w=0;w<connections;++w)workers.emplace_back(workerBody,w);}catch(...){
    group->stop=true;rangeWorkChanged.notify_all();for(auto& worker:workers)worker.join();throw;
   }
+  const auto receiverJoinBegan=std::chrono::steady_clock::now();
   for(auto& worker:workers)worker.join();
+  const auto receiverJoinSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-receiverJoinBegan).count();
   const auto workersJoined=GetTickCount64();
+  double orderedSettlementSeconds=0;
+  if(ordered){
+   const auto began=std::chrono::steady_clock::now();
+   const auto result=(error||cancel->cancelled())?ordered->pause():ordered->finish();
+   if(result.failure){error=result.failure;changed=false;repairable=false;}
+   else if(!error&&!cancel->cancelled()&&!result.complete){error=std::make_exception_ptr(std::runtime_error("The ordered download did not write the complete body."));changed=false;repairable=false;}
+   if(result.complete)bodyCache->adoptCompletedStorage(ordered->takeCompletedStorage(),size);
+   {Lock lock(m.mutex);job->data["OrderedBodyWrites"]={{"Used",true},{"AcceptedBytes",result.acceptedBytes},{"WrittenBytes",result.writtenBytes},{"Complete",result.complete},{"Paused",result.paused},{"Failed",bool(result.failure)}};}
+   orderedSettlementSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+  }
+  PrefinishWriteback::Stats writeback;if(dataWriteback)writeback=dataWriteback->finish();else if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
+  {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Mode",dataWriteback?"data-only":"full"},{ "WakeNotifications",writeback.notifications},{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes},{"LongestFlushSeconds",writeback.longestFlushSeconds},{"FinishWaitSeconds",writeback.finishWaitSeconds},{"InFlightAtFinish",writeback.inFlightAtFinish},{"DiscardedPending",writeback.discardedPending}};}
+  const auto hashJoinBegan=std::chrono::steady_clock::now();
   joinHasher.stop();
+  const auto prefixHasherSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-hashJoinBegan).count();
+  {Lock lock(m.mutex);job->data["HttpJoinWaits"]={{"ReceiverThreadsSeconds",receiverJoinSeconds},{"OrderedSettlementSeconds",orderedSettlementSeconds},{"PrefinishFinishSeconds",writeback.finishWaitSeconds},{"PrefixHasherSeconds",prefixHasherSeconds}};}
   cancel->check();
   i64 bufferedChecks=0,diskChecks=0;
   if(ranges&&!error)try{
@@ -1738,8 +1830,14 @@ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& ca
    }
   }catch(const HttpOverlapMismatch&){recordError(true,true);}
   const auto boundariesVerified=GetTickCount64();
-  joinHasher.join();
+  const auto memoryHashJoinBegan=std::chrono::steady_clock::now();joinHasher.join();
+  const auto memoryHashJoinSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-memoryHashJoinBegan).count();
   const auto prefixHashStopped=GetTickCount64();
+  {Lock lock(m.mutex);
+   if(hasher&&memoryStage&&!ordered&&memoryHashRevisionSet&&!bodyCache->matchesPrefixRevision(memoryHashRevision))hasher->valid=false;
+   job->data["ReceptionHash"]={{"Source",memoryStage&&!ordered?"written-cache-prefix":"file-or-inline"},{"Bytes",hasher&&hasher->valid?hasher->hashed:0},{"Valid",hasher&&hasher->valid},{"JoinSeconds",memoryHashJoinSeconds}};
+  }
+  if(diskCredit){diskCredit->close();Lock lock(m.mutex);job->data["DiskCreditCheckpoint"]={{"Used",true},{"ReconciledBytes",num(job->data,"Received")}};}
   {
    Lock lock(m.mutex);
    const auto lastByte=lastProgressTick.load();
@@ -1932,14 +2030,15 @@ static void verifyYouTubeTtml(Manager& m,JobPtr job,const fs::path& parts,bool s
 static void checkDownloadedContent(Manager& m,JobPtr job,const fs::path& parts,bool layoutSingle,const PrefixHasher& hasher,const fs::path& decoded={}){
  Json j,settings;{Lock l(m.mutex);j=job->data;settings=m.state["Settings"];}
  if(!str(j,"ProjectId").empty()||yes(j,"GrabberImmediate"))return;
- const auto cached=layoutSingle&&decoded.empty()?hasher.prefix(num(j,"Size",-1)):nullptr;
+ Bytes capturedPrefix;const auto cachedInline=layoutSingle&&decoded.empty()?hasher.prefix(num(j,"Size",-1)):nullptr;
+ const Bytes* cached=cachedInline;if(!cached&&layoutSingle&&decoded.empty()&&hasher.writtenPrefix.read(num(j,"Size",-1),capturedPrefix))cached=&capturedPrefix;
  Bytes diskPrefix;
  if(!decoded.empty()){diskPrefix.resize(contentSniffReadLimit);std::ifstream input(decoded,std::ios::binary);if(!input)throw std::runtime_error("Cannot inspect decoded HTTP data.");input.read(reinterpret_cast<char*>(diskPrefix.data()),(std::streamsize)diskPrefix.size());diskPrefix.resize((size_t)input.gcount());if(input.bad())throw std::runtime_error("Cannot inspect decoded HTTP data.");}
  else if(!cached)diskPrefix=leadingBytes(parts,job->id(),layoutSingle,j.value("Segments",Json::array()),contentSniffReadLimit);
  const auto& head=cached?*cached:diskPrefix;
  const auto result=sniffContent(head.data(),std::min(head.size(),contentSniffReadLimit),true);
  const auto name=str(j,"FileName"),expected=fileExtension(name);
- {Lock l(m.mutex);auto& data=job->data;data["ContentCheck"]=sniffVerdictName(result.verdict);data["SniffedType"]=result.mime;data["SniffedExtension"]=result.extension;
+ {Lock l(m.mutex);auto& data=job->data;data["ContentCheck"]=sniffVerdictName(result.verdict);data["ContentPrefixSource"]=cached?"write-buffer":"file";data["SniffedType"]=result.mime;data["SniffedExtension"]=result.extension;
   if(result.prefixLength)data["ContentPrefixBytes"]=(i64)result.prefixLength;else data.erase("ContentPrefixBytes");}
  // Inserted web page text before the file: media captured from the browser's
  // video panel drops it without asking, as IDM does for its video downloads;
@@ -2250,7 +2349,10 @@ static void preserveFailedPlainPost(Manager& m,const JobPtr& job,const fs::path&
   try{Lock lock(m.mutex);job->data["PostResponseRetentionWarning"]=error.what();}catch(...){}
  }catch(...){}
 }
-void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){requirePublicationRecovered(m,job);const bool ownsConnection=!limitOwner;if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();const auto transferStartTick=GetTickCount64();auto networkEnd=started;bool networkFinished=false,rememberPrefetch=false;double prior,confirmationSeconds=0,ftpConfirmationWait=0;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;VerifiedPrefetch verifiedPrefetch;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);try{
+void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr limitOwner,std::shared_ptr<Rate> sharedRate){requirePublicationRecovered(m,job);const bool ownsConnection=!limitOwner;if(!limitOwner)limitOwner=job;if(!sharedRate)sharedRate=std::make_shared<Rate>();auto started=std::chrono::steady_clock::now();const auto transferStartTick=GetTickCount64();auto networkEnd=started;bool networkFinished=false,rememberPrefetch=false;double prior,confirmationSeconds=0,ftpConfirmationWait=0;Json prefs;Headers headers;fs::path folder,parts;std::string url;PrefixHasher hasher;VerifiedPrefetch verifiedPrefetch;{Lock l(m.mutex);validateGrabberFolder(job->data);prior=real(job->data,"TransferSeconds");prefs=browserSessionPreferences(browserProxyPreferences(m.state["Settings"],job->data),job->data);headers=readHeaders(job->data);url=str(job->data,"Url");folder=fs::path(wide(str(job->data,"Folder")));parts=m.root/L"parts"/wide(job->id());if(!str(job->data,"PartsFolder").empty())parts=fs::path(wide(str(job->data,"PartsFolder")));else if(!fs::exists(parts)&&!str(prefs,"TemporaryFolder").empty()){parts=fs::path(wide(str(prefs,"TemporaryFolder")))/L"UDM-parts"/wide(job->id());job->data["PartsFolder"]=utf8(parts.wstring());m.save();}}fs::create_directories(folder);fs::create_directories(parts);
+ // Prepare recovery metadata storage before receiving bytes, outside the model
+ // lock. The actual durable intent is still written only after verification.
+ fs::create_directories(m.root/L"publications");try{
  bool pendingReset;
  {Lock lock(m.mutex);pendingReset=yes(job->data,"HttpPartsResetPending");}
  if(pendingReset){
@@ -2260,7 +2362,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  }
  const Url address(url);
  const bool ftp=address.scheme=="ftp";
- CrossDriveStage mediumStage;
+ WrittenBodyCache mediumStage;
  bool post;{Lock lock(m.mutex);post=!ftp&&!str(job->data,"ProtectedRequest").empty();}
  if(post){
   if(!completedPrefetch(m,job,parts,*cancel,false,false,nullptr,verifiedPrefetch)){
@@ -2281,7 +2383,7 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
     const auto sourceDrive=parts.root_name().wstring(),destinationDrive=folder.root_name().wstring();
     const bool crossDrive=ownsConnection&&sourceDrive.size()==2&&destinationDrive.size()==2&&
      sourceDrive.back()==L':'&&destinationDrive.back()==L':'&&_wcsicmp(sourceDrive.c_str(),destinationDrive.c_str())!=0;
-    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,crossDrive?&mediumStage:nullptr);
+    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,ownsConnection?&mediumStage:nullptr,crossDrive);
    }
    rememberPrefetch=true;
   }
@@ -2353,12 +2455,14 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
  const bool verifiedNumbered=!verifiedPrefetch.numberedParts.empty();
  const bool single=!verifiedNumbered&&!ftp&&fs::exists(data);
  checkDownloadedContent(m,job,parts,single,hasher);phases["Content"]=phase(mark);
- cancel->check();Json j;{Lock l(m.mutex);job->data.erase("PrefetchedFinalSize");job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait;job->data["Status"]="Verifying";j=job->data;validateGrabberFolder(j);}
+ cancel->check();Json j=finishSettlementSnapshot(m,job,prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait,phases,[](const Json& value){validateGrabberFolder(value);});
+ auto settleOperation=std::chrono::steady_clock::now();
+ const auto settleElapsed=[&]{const auto now=std::chrono::steady_clock::now();const auto result=std::chrono::duration<double>(now-settleOperation).count();settleOperation=now;return result;};
  // Assemble beside the confirmed destination, including a folder selected
  // while prefetch was in flight. Parts remain in their existing working area.
- folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);
- requirePublicationRecovered(m,job);
- auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");struct StagingCleanup{Manager& manager;JobPtr job;fs::path path;~StagingCleanup(){try{if(!publicationNeedsRecovery(manager,job)){std::error_code error;fs::remove(path,error);}}catch(...){/* Uncertain recovery state retains staging. */}}} cleanup{m,job,staging};
+ folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);phases["SettleDestination"]=settleElapsed();
+ requirePublicationRecovered(m,job);phases["SettleRecoveryCheck"]=settleElapsed();
+ auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");bool stageHandedOff=false,stageCreated=false;struct StagingCleanup{Manager& manager;JobPtr job;fs::path path;bool& handedOff;bool& created;~StagingCleanup(){if(handedOff||!created)return;try{if(!publicationNeedsRecovery(manager,job)){std::error_code error;fs::remove(path,error);}}catch(...){/* Uncertain recovery state retains staging. */}}} cleanup{m,job,staging,stageHandedOff,stageCreated};
  i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false,copiedAcrossVolumes=false,keepParts=false,partsCleared=false;i64 complete=0;
  const Bytes* stagedMedium=nullptr;
   const auto serverSha256=single&&!post?str(j,"ServerSha256"):std::string{};
@@ -2376,21 +2480,30 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
    digest=verifiedPrefetch.sha256;
   }
   if(digest.empty()){
-   Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!file)throw std::runtime_error("Cannot open the downloaded file.");
    const i64 size=num(j,"Size",-1);
-   if(size>=0&&fileLength(file.h)!=size)setFileLength(file.h,size);
+   // An unchanged length needs no writer reopen. PublicationPreparation still
+   // pins and validates the exact file identity and length before its rename.
+   settleOperation=std::chrono::steady_clock::now();
+   std::error_code lengthError;const auto actual=fs::file_size(data,lengthError);phases["SettleLengthQuery"]=settleElapsed();
+   if(lengthError)throw std::runtime_error("Cannot read the downloaded file size.");
+   if(size>=0&&actual!=static_cast<uintmax_t>(size)){
+    Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!file)throw std::runtime_error("Cannot open the downloaded file.");
+    if(fileLength(file.h)!=size)setFileLength(file.h,size);
+    phases["SettleLengthFix"]=settleElapsed();
+   }
+   phases["SettleWriterReopen"]=size>=0&&actual!=static_cast<uintmax_t>(size);
   }
   phases["Settle"]=phase(mark);
   // The sparse attribute is cleared after publication: on a nearly full or mechanical disk
   // NTFS can take many seconds over it (12 s measured for 384 MiB), and the file is complete
   // and readable with the attribute still set.
-  if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file.");std::vector<char> buffer(assemblyBuffer);copyFileTail(data,output.h,*cancel,skip,assembled,buffer);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
+  if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file without replacing an existing staging item. Keep its files and choose another destination.");stageCreated=true;std::vector<char> buffer(assemblyBuffer);copyFileTail(data,output.h,*cancel,skip,assembled,buffer);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
   else{
    complete=PrefixHasher::contiguous(j["Segments"],0);
     const bool mustVerify=!serverSha256.empty()||!str(j,"ExpectedSha256").empty()||!str(j,"ReplacementOf").empty();
    if(!digest.empty())phases["HashMode"]="verified-prefetch";
    else if(hasher.valid&&hasher.hashed==complete){phases["HashMode"]=hasher.inlineWrite?"inline":"trailing";digest=hasher.finish();}
-   else if(!mustVerify){deferredHash=true;phases["HashMode"]=hasher.valid?"deferred":"deferred-full";} // the file is complete and usable now; its SHA-256 is recorded a moment later (IDM publishes without hashing at all)
+   else if(!mustVerify){deferredHash=true;phases["HashMode"]=hasher.valid?"deferred":"deferred-full";} // An advisory digest may finish later; required digests still gate publication.
    else{if(hasher.valid){try{hasher.advance(data,complete,*cancel);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}
     const bool trailing=hasher.valid&&hasher.hashed==complete;phases["HashMode"]=trailing?"trailing":"full";digest=trailing?hasher.finish():fileHash(data,[&]{cancel->check();});}
   }
@@ -2401,8 +2514,8 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   std::sort(segments.begin(),segments.end(),[](const Json& a,const Json& b){return num(a,"Start")<num(b,"Start");});
   StreamHash assembled;
   {
-   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
-   if(!output)throw std::runtime_error("Cannot create the assembled file.");
+   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,0,nullptr));
+   if(!output)throw std::runtime_error("Cannot create the assembled file without replacing an existing staging item. Keep its files and choose another destination.");stageCreated=true;
    std::vector<char> buffer(assemblyBuffer);
    for(const auto& segment:segments){
     const auto index=num(segment,"Index");
@@ -2435,12 +2548,13 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   // Publish the verified file itself. A second link in the destination folder
   // lets publishFile rename it there while the resumable file stays until the
   // catalog has committed completion; another volume or file system gets a copy.
-  std::error_code ec;fs::remove(staging,ec);
-  if(!CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)){
+  bool linked=CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)!=FALSE;
+  if(!linked&&retireOwnedStagingLink(staging,data))linked=CreateHardLinkW(staging.c_str(),data.c_str(),nullptr)!=FALSE;
+  if(!linked){
    // Another volume: a buffered copy lets the cache take the write and the file is complete at once,
    // as IDM's assembly is; CopyFileW copies large files unbuffered and waits on the destination disk
    // (3.7 to 7 s for 384 MiB onto a hard disk). The copy is flushed after publication.
-   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!output)throw std::runtime_error("Cannot stage the downloaded file for publication.");
+   Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!output)throw std::runtime_error("Cannot stage the downloaded file without replacing an existing item. Keep its files and choose another destination.");stageCreated=true;
    if(deferredHash)stagedMedium=mediumStage.body(num(j,"Size",-1),complete);
    const auto body=stagedMedium?stagedMedium:(!digest.empty()?hasher.body(num(j,"Size",-1)):nullptr);
    if(body){
@@ -2463,35 +2577,75 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
    if(!fixedVolume(staging)){if(!FlushFileBuffers(output.h))throw std::runtime_error("The downloaded file could not be written through to its destination.");phases["FlushStaged"]=phase(stageMark);}
    copiedAcrossVolumes=true;
   }else{
-   phases["StageMode"]="hard-link";
+   stageCreated=true;phases["StageMode"]="hard-link";
   }
  }
  phases["StageOutput"]=phase(stageMark);
- m.publishFile(job,staging,digest,cancel.get());phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}markZone(job->target());if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(job->target().c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+ auto finalCommit=PreparedTransferCommit::available(m,job,cancel);
+ struct JoinFinalWriteback {PreparedTransferCommit* owner;bool& handedOff;~JoinFinalWriteback(){if(owner&&!handedOff)owner->joinWriteback();}} joinFinalWriteback{finalCommit,stageHandedOff};
+ const bool prepareFinal=finalCommit&&ownsConnection&&single&&stripped<=0&&!copiedAcrossVolumes&&!post&&!ftp&&!yes(j,"SparseDataFile",true)&&num(j,"Size")>0&&num(j,"Size")<=64*1048576&&str(j,"ReplacementOf").empty()&&fixedVolume(data);
+
+ struct AdvisoryHashResult {std::string digest;double seconds=0;};std::shared_ptr<Cancel> advisoryCancel;std::future<AdvisoryHashResult> advisoryHash;
+ struct StopAdvisory {std::shared_ptr<Cancel>& token;~StopAdvisory(){if(token)token->stop=true;}} stopAdvisory{advisoryCancel};
+ phases["AdvisoryHashOverlap"]=false;
+ if(deferredHash&&single&&stripped<=0&&!copiedAcrossVolumes)try{
+  // All body writers and the trailing hasher have joined. Only this task now
+  // accesses hasher. Share deletion for the hard-link rename, and writes for
+  // the subsequent flush; the advisory digest is not a publication gate.
+  const auto memoryBody=mediumStage.body(num(j,"Size",-1),complete);phases["AdvisoryHashInput"]=memoryBody?"write-buffer":"file";
+  advisoryCancel=std::make_shared<Cancel>();advisoryCancel->parent=cancel;
+  advisoryHash=std::async(std::launch::async,[&hasher,data,complete,memoryBody,lifetime=advisoryCancel]{
+   AdvisoryHashResult result;const auto began=std::chrono::steady_clock::now();const auto checkpoint=[&]{lifetime->check();};
+   try{
+    if(memoryBody){
+     if(hasher.valid&&hasher.hashed>=0&&static_cast<uint64_t>(hasher.hashed)<=memoryBody->size()){
+      while(static_cast<uint64_t>(hasher.hashed)<memoryBody->size()){checkpoint();const auto count=std::min<size_t>(assemblyBuffer,memoryBody->size()-static_cast<size_t>(hasher.hashed));hasher.hash->update(memoryBody->data()+hasher.hashed,count);hasher.hashed+=static_cast<i64>(count);}result.digest=hasher.finish();
+     }else{StreamHash hash;for(size_t offset=0;offset<memoryBody->size();){checkpoint();const auto count=std::min<size_t>(assemblyBuffer,memoryBody->size()-offset);hash.update(memoryBody->data()+offset,count);offset+=count;}result.digest=hash.finish();}
+    }
+    else{
+     if(hasher.valid){try{PrefixHasher::Reader reader;reader.allowRename=true;hasher.advance(reader,data,complete,*lifetime);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}
+     if(hasher.valid&&hasher.hashed==complete)result.digest=hasher.finish();
+     else{Handle source(CreateFileW(data.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(source)result.digest=fileHash(source.h,checkpoint);}
+    }
+   }catch(...){result.digest.clear();}
+   result.seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();return result;
+  });
+  phases["AdvisoryHashOverlap"]=true;
+ }catch(...){/* Resource exhaustion retains the existing serial fallback. */}
+ // The future joins on every unwind before staging cleanup and hasher lifetime
+ // end. Required server/user/replacement digests were already checked above.
+ if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+ else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+ {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+ const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
  // The file and its catalog entry are published. Let the UI present completion
  // before NTFS normalization and advisory hashing. The worker remains active,
  // so opening the file, scans and completion actions keep their existing gates.
  bool announcePublication=false;
- if(ownsConnection&&single&&stripped<=0){
+ if(!prepareFinal&&ownsConnection&&single&&stripped<=0){
   Lock lock(m.mutex);
   const auto worker=m.active.find(job->id());
   announcePublication=worker!=m.active.end()&&worker->second==cancel;
  }
  if(announcePublication&&m.filePublished)
   try{m.filePublished(job);}catch(...){/* The file has already been committed. */}
+ const auto metadataFinished=std::chrono::steady_clock::now();phases[prepareFinal?"PrePublicationMetadata":"PostPublicationMetadata"]=std::chrono::duration<double>(metadataFinished-mark).count();mark=metadataFinished;
  if(single&&stripped<=0){
-  if(copiedAcrossVolumes){
-   // The copied destination is a regular file. The sparse source is about to
-   // be discarded, so only the published file needs the writeback. If that
-   // writeback cannot be confirmed, the source stays in the parts folder.
-   Handle published(CreateFileW(job->target().c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
-   if(!published||!FlushFileBuffers(published.h)){keepParts=true;Lock lock(m.mutex);job->data["FinishWarning"]="The published file's writeback could not be confirmed; the downloaded data was kept in the parts folder.";}
-   phases["FlushPublished"]=phase(mark);
-  }else{
-   Handle file(CreateFileW(data.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));if(file){setSparse(file.h,false);FlushFileBuffers(file.h);}
-   phases["Unsparse"]=phase(mark);
-  }
+  // Flush needs write access only. Requesting read access here reopens the
+  // completed body unnecessarily and may invoke extra filesystem/filter work.
+  const bool normalize=!copiedAcrossVolumes&&yes(j,"SparseDataFile",true);
+  if(prepareFinal)finalCommit->beginFinalization();
+  const bool overlapping=prepareFinal&&finalCommit->startWriteback(data,normalize);
+  if(overlapping){phases["PublishedWritebackOverlap"]=true;phases["PublishedWritebackTimingScope"]="worker-operation-durations-and-owner-join";}
+  else{
+  UDM_FINISH_POINT("output-flush-begin");const auto writeback=publishedWriteback(copiedAcrossVolumes?job->target():data,normalize);
+  UDM_FINISH_POINT("output-flush-end");phases["PublishedFileOpen"]=writeback.openSeconds;phases["PublishedSparseNormalize"]=writeback.normalizeSeconds;
+  phases["PublishedFileFlush"]=writeback.flushSeconds;phases["PublishedFileClose"]=writeback.closeSeconds;phases["PublishedWriteAccess"]="write-only";
+  phases["PublishedOpenError"]=writeback.openError;phases["PublishedNormalizeError"]=writeback.normalizeError;phases["PublishedFlushError"]=writeback.flushError;phases["PublishedCloseError"]=writeback.closeError;
+  if(!writeback.confirmed){keepParts=true;Lock lock(m.mutex);job->data["FinishWarning"]="The published file's final writeback or normalization could not be confirmed; the downloaded data was kept in the parts folder.";}
+  phases["FlushPublished"]=phase(mark);phases["Unsparse"]=normalize?phases["FlushPublished"]:Json(0.0);phases["SparseNormalization"]=normalize?"requested":"not-needed";
   {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+  }
  }
  if(deferredHash){ // Failure leaves the advisory digest blank and preserves completion.
   // The digest is advisory: a stop or exit while it runs leaves it blank rather than holding the thread.
@@ -2499,7 +2653,8 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
   if(copiedAcrossVolumes&&!keepParts){try{clearParts(parts);}catch(const fs::filesystem_error&){}partsCleared=true;}
   const auto hashSource=copiedAcrossVolumes?job->target():data;const auto checkpoint=[&]{cancel->check();};
   std::string late;try{
-   if(stagedMedium){StreamHash hash;hash.update(stagedMedium->data(),stagedMedium->size());late=hash.finish();}
+   if(advisoryHash.valid()){const auto result=advisoryHash.get();late=result.digest;phases["AdvisoryHashSeconds"]=result.seconds;}
+   else if(stagedMedium){StreamHash hash;hash.update(stagedMedium->data(),stagedMedium->size());late=hash.finish();}
    else{if(hasher.valid){try{hasher.advance(hashSource,complete,*cancel);}catch(const Cancelled&){throw;}catch(...){hasher.valid=false;}}late=hasher.valid&&hasher.hashed==complete?hasher.finish():fileHash(hashSource,checkpoint);}
   }catch(...){late.clear();}
   phases["LateHash"]=phase(mark);
@@ -2514,7 +2669,15 @@ void transfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,JobPtr
     try{m.save();}catch(...){/* The completed download was already committed. */}
   }
  }
- if(!keepParts&&!partsCleared)try{clearParts(parts);}catch(const fs::filesystem_error&){}
+ const auto cleanupStarted=std::chrono::steady_clock::now();
+ if(prepareFinal){
+  std::string finalDigest=digest;if(finalDigest.empty()){Lock lock(m.mutex);finalDigest=str(job->data,"Sha256");}
+  finalCommit->prepare(staging,parts,finalDigest,keepParts);stageHandedOff=true;phases["CleanupPartsOrder"]="after-final-publication-checkpoint";
+ }else{if(!keepParts&&!partsCleared)try{clearParts(parts);}catch(const fs::filesystem_error&){}phases["CleanupParts"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-cleanupStarted).count();}
+ // Includes final data writeback, normalization, advisory hash and parts cleanup.
+ // The Manager-owned completion checkpoint and application shutdown follow it.
+ phases[prepareFinal?"PreparedTransferFinalizeSeconds":"TransferBackgroundTotal"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-networkEnd).count()-confirmationSeconds;
+ {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
  }
  }catch(...){if(networkFinished)preserveFailedPlainPost(m,job,parts,*cancel,hasher);Lock l(m.mutex);job->data["TransferSeconds"]=prior+std::chrono::duration<double>((networkFinished?networkEnd:std::chrono::steady_clock::now())-started).count()-ftpConfirmationWait;job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;throw;}{Lock l(m.mutex);job->data["ElapsedSeconds"]=real(job->data,"ElapsedSeconds")+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds-ftpConfirmationWait;}
 }

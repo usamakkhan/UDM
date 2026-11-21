@@ -1,0 +1,300 @@
+{
+  "summary": [
+    {
+      "case": "single-4m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 107.13020000002871,
+          "baseline": 109.4916000001831,
+          "idm": 27.194499998586252
+        },
+        "processExitTailSeconds": {
+          "udm": 153.5300499999721,
+          "baseline": 156.3632499983214,
+          "idm": 374.29099999826576
+        },
+        "processExitWallSeconds": {
+          "udm": 1008.8278000002902,
+          "baseline": 1010.6893499978469,
+          "idm": 2068.183350000254
+        },
+        "durableTailSeconds": {
+          "udm": 191.21110000014596,
+          "baseline": 177.57480000000214,
+          "idm": 492.87460000050487
+        },
+        "durableWallSeconds": {
+          "udm": 1032.4663999999757,
+          "baseline": 1031.9008999995276,
+          "idm": 2166.4278999996895
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 147.60089999981574,
+          "baseline": 141.78329999958805,
+          "idm": 77.88819999950647
+        },
+        "processExitTailSeconds": {
+          "udm": 193.03045000197017,
+          "baseline": 191.4142499990703,
+          "idm": 365.9953000005771
+        },
+        "processExitWallSeconds": {
+          "udm": 8898.784350001733,
+          "baseline": 8903.39585000038,
+          "idm": 9933.468499999435
+        },
+        "durableTailSeconds": {
+          "udm": 207.05749999979162,
+          "baseline": 204.0643000000273,
+          "idm": 1036.6858999987016
+        },
+        "durableWallSeconds": {
+          "udm": 8912.811399999555,
+          "baseline": 8916.045900001336,
+          "idm": 10595.635899999252
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 207.3512999995728,
+          "baseline": 235.20599999937986,
+          "idm": 125.03169999945385
+        },
+        "processExitTailSeconds": {
+          "udm": 255.69790000008652,
+          "baseline": 282.57214999939606,
+          "idm": 402.80935000009777
+        },
+        "processExitWallSeconds": {
+          "udm": 2406.1877000003733,
+          "baseline": 2331.1027500003547,
+          "idm": 3394.04685000045
+        },
+        "durableTailSeconds": {
+          "udm": 282.770800000435,
+          "baseline": 299.9655999992683,
+          "idm": 1072.4711000002571
+        },
+        "durableWallSeconds": {
+          "udm": 2433.2606000007218,
+          "baseline": 2349.9140000003536,
+          "idm": 4085.195499999827
+        }
+      }
+    }
+  ],
+  "winsOfNine": {
+    "baseline": {
+      "firstAvailabilityTailSeconds": 6,
+      "processExitTailSeconds": 6,
+      "processExitWallSeconds": 4,
+      "durableTailSeconds": 5,
+      "durableWallSeconds": 3
+    },
+    "idm": {
+      "firstAvailabilityTailSeconds": 0,
+      "processExitTailSeconds": 9,
+      "processExitWallSeconds": 9,
+      "durableTailSeconds": 9,
+      "durableWallSeconds": 9
+    }
+  },
+  "pairs": [
+    {
+      "case": "single-4m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": true,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": false,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": false,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": false,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": false,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": false,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 1,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 2,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": false,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": false,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 3,
+      "wins": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": true,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": false,
+          "durableTailSeconds": true,
+          "durableWallSeconds": false
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": false,
+          "processExitTailSeconds": true,
+          "processExitWallSeconds": true,
+          "durableTailSeconds": true,
+          "durableWallSeconds": true
+        }
+      }
+    }
+  ],
+  "allSamplesRetained": true,
+  "idmExitCodes": [
+    1
+  ],
+  "idmExitStatusMeaningVerified": false,
+  "availabilityGatePassed": false,
+  "allPairsVersusBaselineNoRegressionGatePassed": false,
+  "wholeProjectParityProven": false
+}

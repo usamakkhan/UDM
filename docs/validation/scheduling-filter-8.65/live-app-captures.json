@@ -1,0 +1,114 @@
+{
+  "completedAppCaptures": 2,
+  "rows": [
+    {
+      "case": "split",
+      "bytes": 67108864,
+      "connections": 8,
+      "passedIntegrityAndExit": true,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "kernelEventsLost": 0,
+      "kernelBuffersLost": 0,
+      "kernelSessionAbsent": true,
+      "nativePhaseValidated": true,
+      "diskCorrelationsValidated": true,
+      "schedulingJoinPassed": true,
+      "schedulingFailures": [],
+      "finalNativeFlushMs": 927.2062,
+      "lastBodyWriteToMfcReturnMs": 1567.7097,
+      "linkedDiskRequestKinds": {
+        "read": {
+          "requests": 0,
+          "transferBytes": 0,
+          "intervalUnionMs": 0.0
+        },
+        "write": {
+          "requests": 55,
+          "transferBytes": 51544064,
+          "intervalUnionMs": 518.3607
+        },
+        "flushbuffers": {
+          "requests": 2,
+          "transferBytes": 0,
+          "intervalUnionMs": 21.2255
+        }
+      },
+      "linkedDiskRequestIntervalUnionMs": 539.5862,
+      "payloadWorkAbsent": true,
+      "cleanup": {
+        "passed": true,
+        "ownedWorkTreeRemoved": true,
+        "workFilesRemoved": 7,
+        "logicalWorkBytesRemoved": 67123367,
+        "uniqueFileBytesRemoved": 67123367,
+        "compactMetadataBytesPreserved": 8956,
+        "generatedAppCopyRemoved": true
+      },
+      "inputSha256": {
+        "app-result-private.json": "A1A1DA6BEDEFA3D2FD6B342B3102E9CB73F24C282ABFD959CF86EC00B4AE06EB",
+        "results.json": "7EB2CA28D7BC8AD70C57150ACBCAC066002C66D02F3960CF297B06E1EA7513E6",
+        "native-io-private.json": "9C3E40C60F799F9F7BB2467BFDFCB3204EB4831995F2CA5923C24A8AF449568E",
+        "payload-cleanup.json": "B8151776989AB4A036F3D05CFCC8D9BB14DE09F079EA182EEBAC3FFA5E491A5A"
+      },
+      "observedOffCpuMs": 911.5138
+    },
+    {
+      "case": "sequential",
+      "bytes": 67108864,
+      "connections": 1,
+      "passedIntegrityAndExit": true,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "kernelEventsLost": 0,
+      "kernelBuffersLost": 0,
+      "kernelSessionAbsent": true,
+      "nativePhaseValidated": true,
+      "diskCorrelationsValidated": true,
+      "schedulingJoinPassed": true,
+      "schedulingFailures": [],
+      "finalNativeFlushMs": 83.8555,
+      "lastBodyWriteToMfcReturnMs": 276.9313,
+      "linkedDiskRequestKinds": {
+        "read": {
+          "requests": 0,
+          "transferBytes": 0,
+          "intervalUnionMs": 0.0
+        },
+        "write": {
+          "requests": 9,
+          "transferBytes": 4800512,
+          "intervalUnionMs": 49.7459
+        },
+        "flushbuffers": {
+          "requests": 2,
+          "transferBytes": 0,
+          "intervalUnionMs": 32.9127
+        }
+      },
+      "linkedDiskRequestIntervalUnionMs": 82.6586,
+      "payloadWorkAbsent": true,
+      "cleanup": {
+        "passed": true,
+        "ownedWorkTreeRemoved": true,
+        "workFilesRemoved": 7,
+        "logicalWorkBytesRemoved": 67120869,
+        "uniqueFileBytesRemoved": 67120869,
+        "compactMetadataBytesPreserved": 7635,
+        "generatedAppCopyRemoved": true
+      },
+      "inputSha256": {
+        "app-result-private.json": "5207E950209C239D542A946443B56CC70D9AF23940218C26D07A2470ACB9B98F",
+        "results.json": "A7BCB693CBCFB706852BC22CF0A503CE6E62027C0B490D9DA54793D08EAF0E1E",
+        "native-io-private.json": "EBA3283E9EDC3FC94AB4DC3364FC92033CDF636F65530668C63F1B2794AF656E",
+        "payload-cleanup.json": "D965E95610B5AED1BDBB190064250C3922B3E12E0E7C7D817A7D458073DA8155"
+      },
+      "observedOffCpuMs": 82.5014
+    }
+  ],
+  "newDownloadBytes": 134217728,
+  "fullSchemaQualificationPassed": false,
+  "kernelCauseVerified": false,
+  "performanceComparison": false,
+  "installedAppChanged": false,
+  "versionsChanged": false,
+  "warning": "Existing Frida runtime printed idund did not start listening; capture, App exit and payload checks still completed."
+}

@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "label": "9.63 pre-flush metadata capture with identity-bound recovery versus frozen 9.62 and IDM",
+  "transfers": 27,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 165.781,
+        "baseline": 170.093,
+        "idm": 385.061
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          150.392,
+          190.346,
+          165.781
+        ],
+        "baseline": [
+          151.266,
+          170.093,
+          269.019
+        ],
+        "idm": [
+          385.061,
+          333.258,
+          396.55
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 220.109,
+        "baseline": 199.279,
+        "idm": 562.216
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          229.432,
+          220.109,
+          216.459
+        ],
+        "baseline": [
+          199.279,
+          202.409,
+          183.948
+        ],
+        "idm": [
+          566.76,
+          562.216,
+          357.277
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 309.387,
+        "baseline": 304.074,
+        "idm": 395.765
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          308.331,
+          442.107,
+          309.387
+        ],
+        "baseline": [
+          263.35,
+          304.074,
+          492.918
+        ],
+        "idm": [
+          432.183,
+          395.765,
+          394.731
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

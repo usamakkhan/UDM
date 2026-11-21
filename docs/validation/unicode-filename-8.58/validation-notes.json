@@ -1,0 +1,20 @@
+{
+  "finalRuns": 13,
+  "finalChecks": 2286,
+  "filenameChecksPerDrive": 290,
+  "unicodeWorkflowChecksPerDrive": 84,
+  "baselineEngine": "8.57",
+  "baselineActualAdmissionFailureReproduced": true,
+  "baselineFailureIncludedInPassingAggregate": false,
+  "initialFixtureRepair": "The first fixture set DuplicatePolicy=Add, which the existing setSettings validator correctly rejects. Changed the fixture to the supported Numbered policy; no production policy change. Rebuilt the baseline fixture and then reproduced the actual Unicode error.",
+  "firstFocusedProbes": {
+    "filenameChecks": 290,
+    "unicodeWorkflowChecks": 84,
+    "passed": true,
+    "includedInFinalAggregate": false
+  },
+  "workflowScope": "Real Manager add/Properties/native browser-message receipt, owned Windows file creation/read/hash, actual catalog write refusal, parent/nested track load and exact backup preservation. This is not a Chrome toolbar/GUI acceptance test.",
+  "surrogateCoverage": "Complete, split and outside-boundary pairs in the stem and extension; both boundaries in one name; exact 160-unit names; reserved-name prefix shift; four supplementary scalars including minimum and maximum surrogate ranges. Existing invalid UTF-8 rules remain.",
+  "installedAcceptanceVerified": false,
+  "idmParityVerified": false
+}

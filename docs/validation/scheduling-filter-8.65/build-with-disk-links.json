@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "sources": [
+    {
+      "path": "benchmarks\\speed\\finish_thread_filtered_lifetime.cpp",
+      "sha256": "7DA7E546459329C89884943B9F451A724854E44C6B45248F5DDD453C9B9B804E"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_realtime_lifetime.cpp",
+      "sha256": "4DC3D3BF0A2C2ECA7DD3E559E07B6581D47737D03303511E52F7F333C1C187DE"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_etl_reader.cpp",
+      "sha256": "3CBC32C828B61C60B586BCBFA90200CB3C96066CEFD69898CD6D0A09396CC9D9"
+    },
+    {
+      "path": "benchmarks\\speed\\TraceSchemaInventory.hpp",
+      "sha256": "9C4F089CA635200943F3B91707928C45D4EC1F1B4CF776C7CB74E2336CF634D4"
+    },
+    {
+      "path": "benchmarks\\speed\\trace_schema_inventory_control.cpp",
+      "sha256": "C6A2212C64284E2964440E21033D2030215DDF3B0B8FE743870B487BB41FFC4B"
+    },
+    {
+      "path": "benchmarks\\speed\\TraceDiskIo.hpp",
+      "sha256": "E8E3F37A53B6B8DAC3F9CDA0E5D3C3F10AB62FAE35251C9DDD2F685DDDC1C2EC"
+    },
+    {
+      "path": "benchmarks\\speed\\trace_disk_io_control.cpp",
+      "sha256": "F53DF50BF46D0514785287DB3AB5E180FE61D54C4E71DEB662C9A6E8F005132A"
+    }
+  ],
+  "nativeControls": 21,
+  "diskControls": {
+    "checks": 25,
+    "kernelSessionStarted": false,
+    "liveCoverageProven": false,
+    "passed": true
+  },
+  "replay": {
+    "passed": true,
+    "inputRecords": 6883,
+    "retainedRecords": 308,
+    "unrelatedRecords": 6575,
+    "retainedRecordsExactlyMatchIndependentSelection": true,
+    "originalReportSha256": "634269BB1D1901FAC8B66F87807854FC7CD7772B23DC151C48B9203DAD6748AF"
+  },
+  "supersedesBuildReceiptSha256": "E9C95C96C7AE455B1D93DDE3B4986964CA1F54077BA9BF5F03FB224A215437D5",
+  "unelevatedCollectorRefused": true,
+  "newElevationRequested": false,
+  "productSourceChanged": false,
+  "liveCoverageProven": false,
+  "outputs": [
+    {
+      "name": "finish_thread_filtered_lifetime",
+      "binarySha256": "4493C5CABF30729E824F92E4D2165E8C8716BD2297B3FDD82CD7B79945A50E42",
+      "objectSha256": "A24DA18745DCF80F99DB7B439F1BCA84A34C6D6EBE7F233183B6FBFE57B05C1A"
+    },
+    {
+      "name": "trace_schema_inventory_control",
+      "binarySha256": "A013185B01AAAA40BAC9CCC2107F8EB5DFB209AE35E70ACE422ABB74BF2734DA",
+      "objectSha256": "DBBFE1762ECC55636C65ECF41B872E0A39BA50D93B544D3F4F8526F24FD2C38B"
+    },
+    {
+      "name": "trace_disk_io_control",
+      "binarySha256": "D3187FB67CA35722DBC2842ABBB59A3061B0B1A181EFDD35EE81167CCD1E0564",
+      "objectSha256": "0A7509D495BB8AA524C133EF373A230EC3766CBEC52EB2A691A899353B6A423C"
+    }
+  ]
+}

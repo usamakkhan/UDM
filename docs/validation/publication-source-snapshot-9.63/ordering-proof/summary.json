@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "proofs": [
+    {
+      "case": "owned-single-4m-owned-1",
+      "passed": true,
+      "sourceCaptureBeforeBody": true,
+      "sourceInformationQueryDuringBody": false,
+      "namedSourceValidationAfterBodyJoin": true,
+      "bodyIntentOverlapMs": 42.62700000162814,
+      "normalAppEntryObject": true
+    },
+    {
+      "case": "owned-single-64m-owned-1",
+      "passed": true,
+      "sourceCaptureBeforeBody": true,
+      "sourceInformationQueryDuringBody": false,
+      "namedSourceValidationAfterBodyJoin": true,
+      "bodyIntentOverlapMs": 111.4850000012666,
+      "normalAppEntryObject": true
+    },
+    {
+      "case": "owned-split-64m-owned-1",
+      "passed": true,
+      "sourceCaptureBeforeBody": true,
+      "sourceInformationQueryDuringBody": false,
+      "namedSourceValidationAfterBodyJoin": true,
+      "bodyIntentOverlapMs": 24.168500000670093,
+      "normalAppEntryObject": true
+    }
+  ],
+  "diagnosticOnly": true,
+  "normalAppObjectFrozen": true,
+  "notAnUninstrumentedSpeedComparison": true
+}

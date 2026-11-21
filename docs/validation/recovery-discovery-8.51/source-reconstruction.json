@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeSha256": "DA3A75DC2DF0303EA9F4330759B8DB6D9A828F8D94F9A68C01B5256CECDD0558",
+      "afterSha256": "AF0157B0B1EB69DF36DCD96B3C14AAF640F1028BF9B49526A1CBC59CED2236DF",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "beforeSha256": "C44C31A8CD1812139D237C2B54D63006B3B845189985736C5A94945AB758B9B0",
+      "afterSha256": "ED03072B9FFA4D365BFEF82EAEB82A04146C3FBFA852F81D7BBC0DF2E5977455",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/PublicationOwnership.hpp",
+      "beforeSha256": "9FB02A429836B2B4FC5B2E03B118DA1A45B1B473F5A7F2DD567CD0C397FC8E45",
+      "afterSha256": "E3CF6912328D819D44454520CDD769286D70A344BF07B1869D94A8864823152C",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/RecoveryJournal.hpp",
+      "beforeSha256": "03A914BB7A47480B5261F582560D4F94CC4B9400F6440D9B50C1B4FAE2429836",
+      "afterSha256": "611B5D550D81741188698DB8FDE5910CD66635BC3B6CBBEF80C90D6E8B95DF67",
+      "beforeExists": true,
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeSha256": "B30F8BB879030EB2CFEE6EBF5DF3F3893318B1B3A13108EF60C1B8CFB8E822B9",
+      "afterSha256": "751B4AEEAB64647352A4D9852B9DF2E119869950113E0C51F3402F6776FF78EA",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeSha256": "D89D90D8D9708BFA96658458BB18C815AB307446804903DFA359A25EC76E201D",
+      "afterSha256": "A1C8BE97E0ED681A789788790292A217104A60A6BF06567414D6EBA4262701E8",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeSha256": "F9C50AAB4FAA5F8DDFE4680C151BB41CE7949B9D38C0C91503DA8DA7812D20C0",
+      "afterSha256": "9F7D8C97F539C30A5F483B48AC702C1FDA610A92191EC8F8F880B7DA33F02949",
+      "beforeExists": true,
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/RecoveryDiscoveryTests.cpp",
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "76FB80D7E1B7F2F75A4D7D14862B138545DD3D3C20460C83C539B10D285448B4",
+      "beforeExists": false,
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/recovery-discovery-8.50-to-8.51.patch",
+  "patchSha256": "5F6F5DD2C7BE8C1AA25CB14F48FA732201B7E89C726D10666975B4B9A795B9EC",
+  "verifiedBothDirections": true,
+  "scope": "Exact eight source inputs from qualified 8.50; normalized patch and per-side line endings reconstruct raw bytes."
+}

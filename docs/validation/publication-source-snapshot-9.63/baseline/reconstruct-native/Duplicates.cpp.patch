@@ -1,0 +1,45 @@
+--- native/Duplicates.cpp@9.63
++++ native/Duplicates.cpp@9.62
+@@ -221,12 +221,12 @@
+  auto checkpoint=[&]{if(cancel)cancel->check();};checkpoint();
+  if(publicationObservation)publicationObservation("publication-preflight-begin");
+  const bool overlap=finalCommit&&finalCommit->pendingWriteback()&&finalCommit->hasWritebackPin()&&originalId.empty()&&!knownHash.empty();
+- std::unique_ptr<PublicationSourcePin> bodyPin;if(overlap)bodyPin=finalCommit->takeWritebackPin();
++ Handle bodyPin;if(overlap)bodyPin.h=finalCommit->takeWritebackPin();
+  else if(finalCommit){finalCommit->finishWriteback();finalCommit->releaseWritebackPin();}
+  PublicationPreparation prepared(staging,destinationInputs,std::move(bodyPin));
+  if(publicationObservation)publicationObservation("publication-preflight-ready");timing("PrepareSource");checkpoint();
+  auto hash=knownHash;
+- Json stagedIdentity;if(overlap)stagedIdentity=prepared.sourceIdentity();
++ Json stagedIdentity;
+  if(hash.empty()){
+   if(originalId.empty()){
+    stagedIdentity=prepared.sourceIdentity();
+@@ -244,9 +244,7 @@
+   if(!(*protectOriginal)||!fs::is_regular_file(target)||fileHash(protectOriginal->h,checkpoint)!=replacementHash||!matchesOriginal())throw std::runtime_error("The original file changed on disk. Its contents were not replaced.");
+   LARGE_INTEGER length{};if(!GetFileSizeEx(protectOriginal->h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the original file size.");originalSize=length.QuadPart;
+  }
+- timing("VerifyIdentity");checkpoint();if(!overlap)prepared.validateSourceName(staging);
+- // The owned source stays writer-excluded. Its name and captured identity are
+- // checked after the body join; querying that file during flush serializes IO.
++ timing("VerifyIdentity");checkpoint();prepared.validateSourceName(staging);
+  // Pinned filesystem handles protect this check; the model lock cannot make
+  // filesystem metadata atomic. Revalidate model inputs only after this IO.
+  prepared.validateDirectories();
+@@ -381,7 +379,7 @@
+  if(!GetFileInformationByHandle(file.h,&information)||(information.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||
+     !GetFileSizeEx(file.h,&size)||size.QuadPart!=num(operation.at("After"),"Size",-1))return rejected();
+  const auto expected=str(operation,"Hash");
+- if((expected.empty()||operation.contains("StagedIdentity"))&&stableFileIdentity(file.h)!=operation.at("StagedIdentity"))return rejected();
++ if(expected.empty()&&stableFileIdentity(file.h)!=operation.at("StagedIdentity"))return rejected();
+  if(observer)observer("recovery-file-opened");
+  auto digest=fileHash(file.h,[&]{if(observer)observer("recovery-hash-read");});if(observer)observer("recovery-hash-complete");
+  if(!expected.empty()&&digest!=expected)return rejected();
+@@ -585,7 +583,6 @@
+   const auto rowTarget=[](const Json& row){return(fs::path(wide(str(row,"Folder")))/wide(str(row,"FileName"))).lexically_normal();};
+   if(rowTarget(op["Before"])!=target.lexically_normal()||rowTarget(op["After"])!=target.lexically_normal())throw std::runtime_error("Recovery record destinations changed. Keep its file and journal.");
+   const auto hash=str(op,"Hash");
+-  if(op.contains("StagedIdentity")&&!op["StagedIdentity"].is_object())throw std::runtime_error("Publication source identity is invalid. Keep its files and recovery record.");
+   const bool validIdentity=hash.empty()&&op.contains("StagedIdentity")&&op["StagedIdentity"].is_object();
+   if(target.lexically_normal()!=job->target().lexically_normal()||target.lexically_normal()==staging.lexically_normal()||
+      (!validIdentity&&!std::regex_match(hash,std::regex("[a-f0-9]{64}")))||str(op["After"],"Sha256")!=hash||

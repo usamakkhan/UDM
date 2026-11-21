@@ -1,0 +1,24 @@
+#include "PreparedTransferCommit.hpp"
+#include <iostream>
+namespace udm {struct CatalogCheckpointTestAccess {
+ static void start(Manager& m,JobPtr j){Lock lock(m.mutex);m.start(j);}
+ static void observe(Manager& m,std::function<void(const char*)> callback){Lock lock(m.mutex);m.catalogCheckpoint=std::move(callback);}
+};}
+using namespace udm;
+class FailureOrigin {
+ SOCKET listener=INVALID_SOCKET;std::thread worker;std::atomic_bool stopping=false;std::string payload=std::string(131072,'x');
+ void serve(){while(!stopping){auto socket=accept(listener,nullptr,nullptr);if(socket==INVALID_SOCKET)return;DWORD timeout=3000;setsockopt(socket,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<const char*>(&timeout),sizeof(timeout));std::string request;char buffer[4096];while(request.find("\r\n\r\n")==std::string::npos&&request.size()<32768){auto n=recv(socket,buffer,sizeof(buffer),0);if(n<=0)break;request.append(buffer,n);}if(!request.empty()){const bool head=request.rfind("HEAD ",0)==0;auto response=std::string("HTTP/1.1 200 OK\r\nContent-Length: 131072\r\nContent-Type: application/octet-stream\r\nAccept-Ranges: none\r\nConnection: close\r\n\r\n");if(!head)response+=payload;size_t at=0;while(at<response.size()){auto n=send(socket,response.data()+at,static_cast<int>(response.size()-at),0);if(n<=0)break;at+=n;}}shutdown(socket,SD_BOTH);closesocket(socket);}}
+public:
+ std::string address;FailureOrigin(){listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Owned listener failed");sockaddr_in endpoint{};endpoint.sin_family=AF_INET;endpoint.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,reinterpret_cast<sockaddr*>(&endpoint),sizeof(endpoint))||listen(listener,8))throw std::runtime_error("Owned bind failed");int size=sizeof(endpoint);if(getsockname(listener,reinterpret_cast<sockaddr*>(&endpoint),&size))throw std::runtime_error("Owned port failed");address="http://127.0.0.1:"+std::to_string(ntohs(endpoint.sin_port));worker=std::thread([this]{serve();});}~FailureOrigin(){stopping=true;shutdown(listener,SD_BOTH);closesocket(listener);if(worker.joinable())worker.join();}
+};
+
+int wmain(int argc,wchar_t** argv){if(argc!=2)return 2;auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
+ const auto check=[&](bool ok,const char* label){checks.push_back({{"passed",ok},{"name",label}});};
+ try{WSADATA wsa{};if(WSAStartup(MAKEWORD(2,2),&wsa))throw std::runtime_error("Socket startup failed");FailureOrigin origin;
+ for(const std::string point:{"publication-preflight-begin","publication-preflight-ready"})for(bool directory:{false,true}){
+  auto folder=root/wide(point+(directory?"-directory":"-equal-bytes"));Manager manager(folder/L"catalog");auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((folder/L"files").wstring());prefs["CategoryFolders"]=false;prefs["Connections"]=1;prefs["Parallel"]=1;prefs["ProxyMode"]="Connect directly";prefs["StopOnWebPage"]=false;prefs["CorrectFileExtensions"]=false;prefs["Sound"]=false;manager.setSettings(prefs);auto job=manager.add(origin.address+"/owned.bin","","output.bin","Main queue",true);auto staging=job->target().parent_path()/(L".udm-"+wide(job->id())+L".assembling"),moved=staging;moved+=L".moved";std::atomic_bool reached=false;
+  CatalogCheckpointTestAccess::observe(manager,[&](const char* phase){if(point==phase&&!reached.exchange(true)){if(!MoveFileExW(staging.c_str(),moved.c_str(),0))throw std::runtime_error("Source rename failed");if(directory)fs::create_directory(staging);else atomicText(staging,std::string(131072,'x'),false);throw std::runtime_error("Owned source substitution before intent");}});
+  CatalogCheckpointTestAccess::start(manager,job);bool retired=false;const auto deadline=GetTickCount64()+10000;do{{Lock lock(manager.mutex);retired=!manager.isActive(job);}if(!retired)Sleep(2);}while(!retired&&GetTickCount64()<deadline);manager.stop();CatalogCheckpointTestAccess::observe(manager,{});
+  check(reached&&retired&&str(job->snapshot(),"Status")=="Failed","Real HTTP publication failure retires after its owned cleanup");check(fs::exists(moved)&&fs::file_size(moved)==131072&&!fs::exists(job->target()),"Original received bytes remain and no final file is published");check(directory?fs::is_directory(staging):(fs::exists(staging)&&fs::is_regular_file(staging)&&fileHash(staging)==fileHash(moved)),"Real Manager failure preserves the foreign staging name");
+ }}catch(const std::exception& e){error=e.what();}const bool passed=error.empty()&&std::all_of(checks.begin(),checks.end(),[](const Json& row){return yes(row,"passed");});atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":"failed")<<"\n";return passed?0:1;
+}

@@ -1,4 +1,9 @@
 // Included inside udm after Form and property helpers.
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+inline std::function<void(Form&,const FileInfoRefreshResult&)> fileInfoRefreshTestApplied;
+inline std::function<void(Form&,const FileInfoCategoryResult&)> fileInfoCategoryTestApplied;
+inline std::function<void(Form&,const FileInfoNameResult&)> fileInfoNameTestApplied;
+#endif
 inline void populateDownloadCategories(CComboBox& control,const std::vector<std::string>& keys,size_t selected){
  const bool visible=(control.GetStyle()&WS_VISIBLE)!=0;
  if(visible)control.SetRedraw(FALSE);
@@ -25,7 +30,7 @@ inline void populateDownloadCategories(CComboBox& control,const std::vector<std:
  }
  control.SetCurSel(keys.empty()?CB_ERR:static_cast<int>(selected<keys.size()?selected:0));
 }
-inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false,bool cancelNewOffer=false,std::shared_ptr<const FileInfoInitialView> preparedView={},std::shared_ptr<const PendingFileInfoInbox::Operation> pending={},bool* pendingBound=nullptr){
+inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=false,bool cancelNewOffer=false,std::shared_ptr<const FileInfoInitialView> preparedView={},std::shared_ptr<const PendingFileInfoInbox::Operation> pending={},bool* pendingBound=nullptr,Json* pendingPresentation=nullptr){
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("file-info-entry");
 #endif
@@ -33,26 +38,26 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
  nativeUiTraceRecord("file-info-entry");
 #endif
  if(properties){fileProperties(parent,m,job);return true;}
+ FileInfoDialogOwner displayOwner;
  if(!job&&(!pending||!preparedView||!preparedView->media||preparedView->formRequest))throw std::runtime_error("This prepared download cannot be displayed yet.");
- const auto currentView=job?captureFileInfoInitialView(m,*job):preparedView;
- const auto initialView=preparedView&&sameFileInfoInitialView(*preparedView,*currentView)?std::move(preparedView):currentView;
-#ifdef UDM_PRODUCTION_UI_TIMING_TEST
- nativeUiTraceRecord(!job?"file-info-view-pending":initialView==currentView?"file-info-view-current":"file-info-view-prepared");
-#endif
- Json data=initialView->data,prefs=initialView->preferences;
- const auto& addressInputs=initialView->addressInputs;
- const auto initialTarget=initialView->target;
- const auto initialSavedSize=initialView->savedSize;
- const bool media=initialView->media,directResponse=initialView->directResponse;
- const bool formRequest=initialView->formRequest,trimResponse=initialView->trimResponse;
- projectHttpOutput(data);
- const auto hasDirectResponseHeaders=[directResponse](const Json& record){
+ std::shared_ptr<const FileInfoInitialView> initialView;
+ Json data=Json::object(),prefs=Json::object(),addressInputs=Json::object();fs::path initialTarget;
+ i64 initialSavedSize=-1;bool media=false,directResponse=false,formRequest=false,trimResponse=false,initialReady=false;
+ int nameRow=20,footerOffset=32;std::string extension,initialAddress;
+ const auto setInitialView=[&](std::shared_ptr<const FileInfoInitialView> view,std::optional<std::string> address=std::nullopt){
+  initialView=std::move(view);data=initialView->data;prefs=initialView->preferences;addressInputs=initialView->addressInputs;initialTarget=initialView->target;
+  initialSavedSize=initialView->savedSize;media=initialView->media;directResponse=initialView->directResponse;formRequest=initialView->formRequest;trimResponse=initialView->trimResponse;
+  projectHttpOutput(data);nameRow=media?0:20;footerOffset=nameRow+12;extension=lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()));
+  initialAddress=address?std::move(*address):downloadAddress(addressInputs);initialReady=true;
+ };
+ if(!job)setInitialView(preparedView);
+ const auto hasDirectResponseHeaders=[&directResponse](const Json& record){
   return directResponse&&hasNonemptyString(record,"ResponseFileNameUrl")&&str(record,"ResponseFileNameUrl")==str(record,"Url");
  };
- const auto replacementNeedsResponse=[directResponse](const Json& record){
+ const auto replacementNeedsResponse=[&directResponse](const Json& record){
   return directResponse&&yes(record,"RefreshPendingValidation")&&Url(str(record,"Url")).scheme!="ftp";
  };
- const auto trackBytes=[media](const Json& record){
+ const auto trackBytes=[&media](const Json& record){
   if(!media||str(record,"Status")=="Complete")return i64{0};
   i64 total=0;
   for(const auto* name:{"Video","Audio"}){
@@ -64,8 +69,6 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   }
   return total>0?total:reportedMediaSize(record);
  };
- const int nameRow=media?0:20;
- const int footerOffset=nameRow+12;
  constexpr UINT_PTR initialPrefetchTimer=8;
  const auto addressRejected=[](const Json& record){
   const auto status=num(record,"LastHttpStatus");
@@ -78,15 +81,54 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   const auto next=addressRejected(record)?"Refresh the address if the link expired":"Start Download to retry";
   return "HTTP "+std::to_string(status)+" - "+next;
  };
- Form dialog("Download File Info",380,128+footerOffset,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::unique_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio,previewAddress;
- const auto extension=lower(utf8(fs::path(wide(str(data,"FileName"))).extension().wstring()));
+ Form dialog("Download File Info",380,128+footerOffset,parent);dialog.dialogUnits=true;HICON fileIcon=nullptr;std::shared_ptr<DownloadPreview> preview;std::string previewVideo,previewAudio,previewAddress;
  std::string extensionType;
+ bool zipDialogShowing=false,refreshDialogShowing=false;
  bool waitingForPrefetchSlot=false,draftLoginChanged=false,refreshFailedMedia=false,refreshFailedAddress=false;
  enum class PendingIntent {None,Start,Later};PendingIntent pendingIntent=PendingIntent::None;
  std::function<void(bool)> freezeDraft;std::function<void()> runPendingIntent,laterAction;
  bool pendingIconRequested=false,pendingFailed=false;
  CWnd* pendingRetryControl=nullptr;
+ FileInfoInitialTask initialTask;bool initialLoginPrepared=false;std::exception_ptr initialConstructionFailure;
+ FileInfoPrefetchTask prefetchTask;
+ FileInfoRefreshTask refreshTask;std::vector<std::pair<HWND,BOOL>> refreshControls;std::string refreshError;
+ FileInfoCategoryTask categoryTask;std::optional<FileInfoCategoryRequest> queuedCategory;uint64_t categoryRevision=0;FileInfoCategoryDraft categoryDraft;std::string categoryError;bool applyingCategory=false,categorySettled=false;
+ FileInfoActionTask actionTask;bool actionCompleting=false;std::string actionError;std::vector<std::pair<HWND,BOOL>> actionControls;std::function<void(const FileInfoActionResult&)> actionCompletion;std::function<void(bool,std::function<void(const FileInfoActionResult&)>)> prepareAction;
+ FileInfoNameTask nameTask;std::string nameError;bool nameSettled=false;std::function<void()> pumpName,refreshNameActions;
+ std::function<void()> pumpCategory,refreshCategoryActions;
+ const auto categoryWaiting=[&]{return categoryTask.valid()||queuedCategory.has_value();};
+ FileInfoBindingTask bindingTask;
  FileInfoDecisionTask decisionTask;
+ FileInfoPreviewTask previewTask;std::optional<FileInfoPreviewRequest> queuedPreview;uint64_t previewGeneration=0,runningPreviewGeneration=0;std::string previewLookupError;
+ const auto advancePreviewGeneration=[&]{if(previewGeneration==std::numeric_limits<uint64_t>::max())throw std::runtime_error("File details identities exhausted. Close this dialog and try again.");++previewGeneration;};
+ const auto stopPreviewWork=[&]{queuedPreview.reset();previewTask.cancel();if(preview)preview->stop();};
+ const auto invalidatePreview=[&]{
+  advancePreviewGeneration();queuedPreview.reset();previewTask.cancel();if(preview){preview->stop();preview.reset();}previewAddress.clear();previewVideo.clear();previewAudio.clear();previewLookupError.clear();
+ };
+ const auto pumpPreview=[&]{
+  if(previewTask.valid()&&previewTask.ready()){
+   try{auto result=previewTask.take();if(result.generation==previewGeneration&&result.job==job&&!result.cancelled&&!decisionTask.valid()){
+    previewLookupError=std::move(result.message);previewAddress=std::move(result.address);previewVideo=std::move(result.video);previewAudio=std::move(result.audio);preview=std::move(result.preview);
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    if(fileInfoPreviewTestPublished)fileInfoPreviewTestPublished(dialog,result);
+#endif
+   }else if(result.preview)result.preview->stop();}
+   catch(const std::exception& failure){if(runningPreviewGeneration==previewGeneration)previewLookupError=failure.what();}
+  }
+  if(!previewTask.valid()&&queuedPreview&&!decisionTask.valid()){
+   auto request=std::move(*queuedPreview);queuedPreview.reset();runningPreviewGeneration=request.generation;
+   try{previewTask.start(m,std::move(request),dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    ,fileInfoPreviewTestObserver
+#endif
+   );}catch(const std::exception& failure){previewLookupError=failure.what();}
+  }
+ };
+
+ std::unique_ptr<FileInfoDisplayTask> displayTask;
+ bool admissionNeedsLookup=false,admissionHasInitialSize=false,cancellingDecision=false;
+ std::vector<std::pair<HWND,BOOL>> admissionControls;
+ std::function<void()> dispatchCancellation;
  std::vector<std::pair<HWND,BOOL>> decisionControls;
  std::function<bool(FileInfoDecisionDraft)> dispatchDecision;
  bool finishingDecision=false;
@@ -96,6 +138,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
  std::pair<std::string,std::string> initial;
  std::function<void()> updateLoginControls;
  const auto loadLogin=[&]{
+  if(initialLoginPrepared){initialLoginPrepared=false;return;}
   const auto headers=media?Headers{}:siteRequestHeaders(str(data,"Url"),readHeaders(data),prefs);
   initial=basicLogin(headers);
   initiallyBasic=lower(headerValue(headers,"Authorization")).rfind("basic ",0)==0;
@@ -103,7 +146,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
  struct AdvancedFields{
   std::vector<CWnd*> controls;
   QueueCombo* queue=nullptr;
-  CWnd *useLogin=nullptr,*user=nullptr,*password=nullptr,*remember=nullptr,*detail=nullptr,*refreshDetails=nullptr,*page=nullptr;
+  CWnd *useLogin=nullptr,*user=nullptr,*password=nullptr,*remember=nullptr,*detail=nullptr,*refreshDetails=nullptr,*page=nullptr,*schedule=nullptr;
  } advanced;
  // Share one bounded Shell worker across confirmations, including when a handler stalls.
  static AsyncFileIcons fileDetails(FileIconMode::LargeWithType);
@@ -133,14 +176,19 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
  };
  std::vector<fs::path> destinationFolders;
  auto destinationListName=initialTarget.filename();
- dialog.init=[&]{
+ const auto buildInitialControls=[&]{
+  displayTask=std::make_unique<FileInfoDisplayTask>(dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+   ,fileInfoDisplayTestObserver
+#endif
+  );
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   traceCapturePresentation("file-info-controls-start");
 #endif
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
   nativeUiTraceRecord("file-info-controls-start");
 #endif
-  dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);auto address=dialog.edit(downloadAddress(addressInputs),64,3,244,14,true);
+  dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);auto address=dialog.edit(initialAddress,64,3,244,14,true);
   dialog.control(L"STATIC","Category",SS_RIGHT,5,22,54,10);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   traceCapturePresentation("file-info-category-create");
@@ -171,10 +219,10 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   traceCapturePresentation("file-info-category-populated");
 #endif
   auto editCategory=dialog.button("+",183,21,16,[&,category,rebuildCategories]{
-   Json settings;{Lock lock(m.mutex);settings=m.state["Settings"];}
-   const auto name=showCategoryProperties(&dialog,m,settings,"");
+   CategoryPropertiesResult saved;
+   const auto name=showCategoryProperties(&dialog,m,"",&saved);
    if(!name)return;
-   rebuildCategories(*name);
+   rebuildCategories(*name,&saved.categories);
    dialog.SendMessage(WM_COMMAND,MAKEWPARAM(category->GetDlgCtrlID(),CBN_SELCHANGE),(LPARAM)category->GetSafeHwnd());
   });
   acceptanceControls.push_back(editCategory);editCategory->EnableWindow(job!=nullptr);
@@ -235,20 +283,38 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   auto pathRule=dialog.check(pathCaption(),yes(prefs.value("CategoryRememberLast",Json::object()),selectedCategory().c_str()),69,55,232);
   auto updatePathCaption=[pathRule,pathCaption]{pathRule->SetWindowText(cs(pathCaption()));};
   auto categoryFolder=dialog.edit(utf8(initialTarget.parent_path().wstring()),69,69,232);categoryFolder->EnableWindow(dialog.checked(pathRule));dialog.bind(pathRule,[&dialog,pathRule,categoryFolder,destination]{categoryFolder->EnableWindow(dialog.checked(pathRule));if(dialog.checked(pathRule))categoryFolder->SetWindowText(cs(utf8(fs::path(wide(text(destination))).parent_path().wstring())));});
-  auto updateCategory=[&,selectedCategory,destination,categoryFolder,pathRule,updatePathCaption]{
-   Json settings;if(!job)settings=prefs;else{Lock lock(m.mutex);settings=m.state["Settings"];}
-   const auto key=selectedCategory();
-   const auto folder=udm::categoryFolder(settings,key);
-   const auto filename=fs::path(wide(text(destination))).filename();
-   destination->SetWindowText(cs(utf8((fs::path(wide(folder))/filename).wstring())));
-   categoryFolder->SetWindowText(cs(folder));
-   pathRule->SendMessage(BM_SETCHECK,yes(settings.value("CategoryRememberLast",Json::object()),key.c_str())?BST_CHECKED:BST_UNCHECKED);
-   categoryFolder->EnableWindow(dialog.checked(pathRule));
-   updatePathCaption();
+  pumpCategory=[&,categoryKeys,selectedCategory,destination,categoryFolder,pathRule,updatePathCaption,compactSize]{
+   categorySettled=false;
+   if(categoryTask.valid()&&categoryTask.ready()){
+    FileInfoCategoryResult result;try{result=categoryTask.take();}catch(const std::exception& failure){result.request={categoryRevision,selectedCategory()};result.error=failure.what();}catch(...){result.request={categoryRevision,selectedCategory()};result.error="The category folder could not be read. Choose the category again.";}
+    if(result.request.revision==categoryRevision&&result.request.category==selectedCategory()){
+     if(!result.cancelled&&!result.error.empty()){categoryError=std::move(result.error);pendingIntent=PendingIntent::None;if(freezeDraft)freezeDraft(false);compactSize->SetWindowText(cs(categoryError));}
+     else if(const auto next=mergeFileInfoCategory(result,categoryRevision,selectedCategory(),categoryDraft,{fs::path(wide(text(destination))),text(categoryFolder),dialog.checked(pathRule)})){
+      categorySettled=true;applyingCategory=true;struct ApplyingCategory{bool& active;~ApplyingCategory(){active=false;}} applying{applyingCategory};
+      if(text(destination)!=utf8(next->destination.wstring()))destination->SetWindowText(next->destination.c_str());
+      categoryFolder->SetWindowText(cs(next->rememberFolder));pathRule->SendMessage(BM_SETCHECK,next->remember?BST_CHECKED:BST_UNCHECKED);categoryFolder->EnableWindow(next->remember);updatePathCaption();
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+      if(fileInfoCategoryTestApplied)fileInfoCategoryTestApplied(dialog,result);
+#endif
+     }
+    }
+   }
+   if(!categoryTask.valid()&&queuedCategory){auto request=std::move(*queuedCategory);queuedCategory.reset();
+    try{categoryTask.start(job?&m:nullptr,job?Json::object():fileInfoCategoryPreferences(prefs),job?std::vector<std::string>{}:*categoryKeys,std::move(request),dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+     ,fileInfoCategoryTestObserver
+#endif
+    );}catch(const std::exception& failure){categoryError=failure.what();pendingIntent=PendingIntent::None;if(freezeDraft)freezeDraft(false);compactSize->SetWindowText(cs(categoryError));}
+   }
+   if(refreshCategoryActions)refreshCategoryActions();
+  };
+  auto updateCategory=[&,selectedCategory,destination,categoryFolder,pathRule,updatePathCaption,compactSize]{
+   if(categoryRevision==std::numeric_limits<uint64_t>::max())throw std::runtime_error("Category choices exhausted. Close File Info and try again.");
+   categoryTask.cancelRead();categoryError.clear();categoryDraft={fs::path(wide(text(destination))),text(categoryFolder),dialog.checked(pathRule)};queuedCategory=FileInfoCategoryRequest{++categoryRevision,selectedCategory()};updatePathCaption();compactSize->SetWindowText(L"Updating category folder...");pumpCategory();
   };
   auto categoryTouched=std::make_shared<bool>(false);
   dialog.bindChange(category,[categoryTouched,updateCategory]{*categoryTouched=true;updateCategory();});
-  auto syncPath=[&dialog,&destinationFolders,&destinationListName,categoryFolder,pathRule,destination](const fs::path& path){
+  auto syncPath=[&dialog,&destinationFolders,&destinationListName,&applyingCategory,categoryFolder,pathRule,destination](const fs::path& path){
    const auto name=path.filename();
    if(!name.empty()&&name!=destinationListName){
     // Replace the list items without clearing the edit or its undo history.
@@ -263,7 +329,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     if(text(destination)!=draft)destination->SetWindowText(cs(draft));
     if(destination->GetEditSel()!=selection)destination->SetEditSel(LOWORD(selection),HIWORD(selection));
    }
-   if(dialog.checked(pathRule))categoryFolder->SetWindowText(path.parent_path().c_str());
+   if(!applyingCategory&&dialog.checked(pathRule))categoryFolder->SetWindowText(path.parent_path().c_str());
   };
   dialog.bindChange(destination,[destination,syncPath](UINT notification){
    if(notification==CBN_SELCHANGE){
@@ -290,12 +356,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
   traceCapturePresentation("file-info-fields-ready");
 #endif
-  auto suggestedName=[&](const Json& current,bool previewAllowed,const Json& metadata){
-   if(media||!str(current,"ReplacementOf").empty())return std::string{};
-   if(!draftLoginChanged&&yes(current,"ConfirmationPending")&&str(current,"ResponseFileNameUrl")==str(current,"Url"))return str(current,"ResponseFileName");
-   if((draftLoginChanged||previewAllowed)&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready")return str(metadata,"SuggestedFileName");
-   return draftLoginChanged||yes(current,"RefreshPendingValidation")?std::string{}:str(current,"BrowserReportedFileName");
-  };
+  auto suggestedName=[&](const Json& current,bool previewAllowed,const Json& metadata){return media?std::string{}:fileInfoServerSuggestion(current,draftLoginChanged,previewAllowed,previewAddress,metadata);};
   const auto canUseSuggestedName=[destination](const std::string& name){
    return !name.empty()&&safeName(name)==name&&utf8(fs::path(wide(text(destination))).filename().wstring())!=name;
   };
@@ -304,41 +365,36 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   if(!media){
    const auto name=suggestedName(data,false,Json::object());
    serverName=dialog.control(L"STATIC",name.empty()?"":"Server name: "+name,SS_ENDELLIPSIS,7,112,266,10);
-   useServerName=dialog.button("Use server name",279,109,94,[&,selectedCategory,selectCategory,categoryKeys,categoryTouched,destination,categoryFolder,pathRule,updatePathCaption,syncPath,suggestedName,canUseSuggestedName,serverName]{
-   fs::path path;std::string nextCategory;Json categorySettings;
-   {Lock lock(m.mutex);auto current=job->snapshot();const auto metadata=preview?preview->snapshot():Json::object();
-    const bool canCheck=!replacementNeedsResponse(current)&&(!m.isActive(job)||draftLoginChanged)&&canPreviewDownload(*job,draftLoginChanged);
-    const auto name=suggestedName(current,canCheck,metadata);
-    // The response can replace the suggestion before the next UI refresh.
-    if(!canUseSuggestedName(name)||text(serverName)!="Server name: "+name){
-     dialog.PostMessage(WM_TIMER,7);
-     return;
+   const auto nameDraft=[&,selectedCategory,categoryTouched,destination,categoryFolder,pathRule]{return FileInfoNameDraft{fs::path(wide(text(destination))),selectedCategory(),text(categoryFolder),dialog.checked(pathRule),*categoryTouched,draftLoginChanged,categoryRevision,previewGeneration};};
+   useServerName=dialog.button("Use server name",279,109,94,[&,nameDraft,categoryKeys,serverName,canUseSuggestedName]{
+    if(!job||decisionTask.valid()||finishingDecision||actionTask.valid()||actionCompleting||m.fileInfoDecisionPending||nameTask.valid()||categoryWaiting()||prefetchTask.valid()||refreshTask.valid()||pendingIntent!=PendingIntent::None)return;
+    const auto label=text(serverName);if(label.rfind("Server name: ",0)!=0)return;const auto name=label.substr(13);if(!canUseSuggestedName(name))return;
+    FileInfoNameRequest request{nameDraft(),name,previewAddress,directResponse,*categoryKeys,preview};nameError.clear();nameSettled=false;nameTask.start(m,job,std::move(request),dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+     ,fileInfoNameTestObserver
+#endif
+    );if(refreshNameActions)refreshNameActions();if(refreshCategoryActions)refreshCategoryActions();
+   });
+   refreshNameActions=[&,useServerName,serverName,canUseSuggestedName]{
+    if(decisionTask.valid()||finishingDecision){useServerName->EnableWindow(FALSE);return;}
+    const auto label=text(serverName);const bool available=label.rfind("Server name: ",0)==0&&canUseSuggestedName(label.substr(13));const bool waiting=nameTask.valid();
+    const std::string caption=waiting?"Checking name...":"Use server name";if(text(useServerName)!=caption)useServerName->SetWindowText(cs(caption));const bool enabled=job&&available&&!waiting&&!categoryWaiting()&&!m.fileInfoDecisionPending&&!prefetchTask.valid()&&!refreshTask.valid()&&pendingIntent==PendingIntent::None;if((useServerName->IsWindowEnabled()!=FALSE)!=enabled)useServerName->EnableWindow(enabled);
+   };
+   pumpName=[&,nameDraft,destination,categoryFolder,pathRule,selectCategory,updatePathCaption,syncPath,serverName,compactSize]{
+    if(!nameTask.ready())return;FileInfoNameResult result;try{result=nameTask.take();}catch(const std::exception& error){result.error=error.what();}catch(...){result.error="The server filename could not be checked. Try again.";}nameSettled=true;
+    const bool unchanged=sameFileInfoNameDraft(result.request.draft,nameDraft())&&text(serverName)=="Server name: "+result.request.expectedName;
+    if(result.cancelled||result.stale||!result.error.empty()||!unchanged){nameError=!unchanged&&!result.request.expectedName.empty()?"Your destination or filename context changed. Choose Use server name again to apply it.":!result.error.empty()?result.error:"Server filename changed. Review it and choose Use server name again.";pendingIntent=PendingIntent::None;if(freezeDraft)freezeDraft(false);}
+    else{
+     const bool previous=applyingCategory;applyingCategory=true;struct Restore{bool& value;bool previous;~Restore(){value=previous;}} restore{applyingCategory,previous};
+     if(result.categoryChanged){selectCategory(result.category);updatePathCaption();pathRule->SendMessage(BM_SETCHECK,result.remember?BST_CHECKED:BST_UNCHECKED);categoryFolder->SetWindowText(cs(utf8(result.destination.parent_path().wstring())));categoryFolder->EnableWindow(result.remember);}
+     destination->SetWindowText(result.destination.c_str());syncPath(result.destination);nameError.clear();
     }
-    auto folder=fs::path(wide(text(destination))).parent_path();
-    const auto& settings=m.state["Settings"];const auto priorCategory=selectedCategory();auto host=Url(str(current,"Url")).host;
-    if(!*categoryTouched&&!yes(current,"CategoryExplicit")&&priorCategory==downloadCategory(str(current,"FileName"),host,settings)){
-     if(!draftLoginChanged&&yes(current,"ConfirmationPending")&&str(current,"ResponseFileNameUrl")==str(current,"Url")){auto resolved=reveal(str(current,"ProtectedResolvedUrl"));if(!resolved.empty())host=Url(resolved).host;}
-     else if((draftLoginChanged||!m.isActive(job))&&str(current,"Url")==previewAddress&&str(metadata,"Status")=="Ready"&&!str(metadata,"ResponseHost").empty())host=str(metadata,"ResponseHost");
-     auto proposed=downloadCategory(name,host,settings);
-     if(proposed!=priorCategory&&std::find(categoryKeys->begin(),categoryKeys->end(),proposed)!=categoryKeys->end()){
-      nextCategory=proposed;categorySettings=settings;
-      const auto automaticFolder=fs::path(wide(udm::categoryFolder(settings,priorCategory)));
-      if(lower(utf8(folder.lexically_normal().wstring()))==lower(utf8(automaticFolder.lexically_normal().wstring())))folder=fs::path(wide(udm::categoryFolder(settings,nextCategory)));
-     }
-    }
-    path=folder/wide(name);
-    if(!path.is_absolute())throw std::runtime_error("Choose an absolute destination folder first.");
-    if(m.relocationReserves(path))throw std::runtime_error("That destination is reserved by a file move.");if(path!=job->target()&&fs::exists(path))throw std::runtime_error("Destination already exists. Keep your current name or choose another one.");
-    if(m.downloadDestinationReserved(path,job))throw std::runtime_error("That destination belongs to another download.");
-   }
-   if(!nextCategory.empty()){
-    selectCategory(nextCategory);updatePathCaption();
-    pathRule->SendMessage(BM_SETCHECK,yes(categorySettings.value("CategoryRememberLast",Json::object()),nextCategory.c_str())?BST_CHECKED:BST_UNCHECKED);
-    categoryFolder->SetWindowText(cs(utf8(path.parent_path().wstring())));categoryFolder->EnableWindow(dialog.checked(pathRule));
-   }
-   destination->SetWindowText(path.c_str());syncPath(path);
-  });
-   useServerName->EnableWindow(canUseSuggestedName(name));
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    if(fileInfoNameTestApplied)fileInfoNameTestApplied(dialog,result);
+#endif
+    if(!nameError.empty())compactSize->SetWindowText(cs(nameError));if(refreshNameActions)refreshNameActions();if(refreshCategoryActions)refreshCategoryActions();
+   };
+   refreshNameActions();
   }
   loadLogin();
   const auto loginChanged=[&advanced,&dialog,media,&initiallyBasic,&initial]{
@@ -346,50 +402,34 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     text(advanced.user)!=initial.first||text(advanced.password)!=initial.second);
   };
   const auto initialQueue=str(data,"Queue","Main queue");
-  const auto selectedQueue=[&advanced,&m,initialQueue]{
+  const auto selectedQueue=[&advanced,&initialView,initialQueue]{
    if(advanced.queue)return advanced.queue->queueName();
-   const auto names=queueNames(m);
+   const auto& names=initialView->queues;
    if(std::find(names.begin(),names.end(),initialQueue)!=names.end())return initialQueue;
    return names.empty()?std::string{}:names.front();
   };
   const auto initialDetail=formRequest?"Form download (POST). Restarting submits the form again.":str(data,"FormatDescription");
-  const auto draftPreviewRecord=[](Json& record){
-   record["Status"]="Awaiting confirmation";record["Received"]=0;record["Segments"]=Json::array();record.erase("ContentType");
+  auto refreshLookup=[&](bool automatic=false){
+   if(decisionTask.valid()||actionCompleting||actionTask.valid()||prefetchTask.valid()||!job)return;
+   if(automatic&&(previewTask.valid()||queuedPreview))return;
+   invalidatePreview();FileInfoPreviewRequest request;request.job=job;request.generation=previewGeneration;request.expectedUrl=str(data,"Url");request.automatic=automatic;request.draftLogin=draftLoginChanged;request.timeoutMs=media?240000:10000;
+   if(draftLoginChanged){request.user=text(advanced.user);request.password=text(advanced.password);request.loginEnabled=dialog.checked(advanced.useLogin);}
+   queuedPreview=std::move(request);pumpPreview();
   };
-  auto refreshLookup=[&,draftPreviewRecord](bool automatic=false){
-   if(preview){preview->stop();preview.reset();}
-   Json current,settings;
-   {
-    Lock lock(m.mutex);
-    if(m.isActive(job)&&!draftLoginChanged)return;
-    const auto& record=job->data;
-    // A temporary replacement URL may expire on any request, including HEAD.
-    if(replacementNeedsResponse(record))return;
-    if(automatic&&(!serverRetryReady(record,epoch())||yes(record,"AuthenticationPromptPending")||yes(record,"BrowserVerificationRequired")||
-       num(record,"LastHttpStatus")>=400||num(record,"LastFtpStatus")>=400||
-       yes(record,"WebPageReceived")||yes(record,"ContentPrefixPending")))return;
-    // These are display hints. The GET still establishes the transfer size.
-    if(automatic&&directResponse&&!draftLoginChanged&&reportedDirectResponseSize(record)>0&&
-       hasNonemptyString(record,"BrowserReportedFileName"))return;
-    current=job->snapshot();settings=m.state["Settings"];
-   }
-   if(draftLoginChanged){
-    // Preview the edited request without changing the running download.
-    draftPreviewRecord(current);
-    auto h=readHeaders(current);setBasicLogin(h,text(advanced.user),text(advanced.password),dialog.checked(advanced.useLogin));
-    current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());
-   }
-   if(!canPreviewDownload(current))return;
-   previewAddress=str(current,"Url");
-   previewVideo=current.contains("Video")&&current["Video"].is_object()?str(current["Video"],"Url"):"";previewAudio=current.contains("Audio")&&current["Audio"].is_object()?str(current["Audio"],"Url"):"";
-   preview=std::make_unique<DownloadPreview>(std::move(current),std::move(settings),media?240000:10000,draftLoginChanged?nullptr:&m,job);
-  };
-  auto tryPrefetch=[&]{
+  auto tryPrefetch=[&,previewButton](bool lookup=true,bool hasSize=false,Json expectedSelection=Json::object()){
+   if(decisionTask.valid()||actionCompleting||actionTask.valid()||prefetchTask.valid())return false;
+   if(!prefetchTask.start(m,job,dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+     ,fileInfoPrefetchTestObserver
+#else
+     ,{}
+#endif
+     ,std::move(expectedSelection)))return false;
    waitingForPrefetchSlot=false;
-   const auto admission=m.beginPrefetch(job);
-   waitingForPrefetchSlot=admission==PrefetchAdmission::AtCapacity;
-   if(admission==PrefetchAdmission::Started&&preview&&str(preview->snapshot(),"Status")!="Ready")preview.reset();
-   return admission;
+   if(lookup){admissionNeedsLookup=true;admissionHasInitialSize=hasSize;}
+   admissionControls.clear();for(auto control:acceptanceControls)if(control&&control->GetSafeHwnd()){admissionControls.push_back({control->GetSafeHwnd(),control->IsWindowEnabled()});control->EnableWindow(FALSE);}
+   previewButton->EnableWindow(FALSE);
+   return true;
   };
   auto lookupAfterAdmission=[&,refreshLookup](PrefetchAdmission admission,bool hasSize){
    deferredLookup.reset();
@@ -399,118 +439,114 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(admission==PrefetchAdmission::AtCapacity&&!hasSize)
     deferredLookup=std::chrono::steady_clock::now()+std::chrono::seconds(1);
   };
-  auto refreshMedia=[&,tryPrefetch]{
-   if(refreshDownloadAddress(&dialog,m,job,true,DownloadRefreshMode::FileInfo)){
-    preview.reset();
-    tryPrefetch();
-    dialog.pulse();
-   }
+  auto continueRecovery=[&,compactSize](Json selection){
+   invalidatePreview();waitingForPrefetchSlot=false;admissionNeedsLookup=false;deferredLookup.reset();refreshError.clear();
+   if(!refreshTask.start(m,job,std::move(selection),dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    ,fileInfoRefreshTestObserver
+#endif
+   ))return;
+   refreshControls.clear();EnumChildWindows(dialog.GetSafeHwnd(),[](HWND window,LPARAM context)->BOOL{wchar_t kind[40]{},label[64]{};GetClassNameW(window,kind,40);GetWindowTextW(window,label,64);if(wcscmp(label,L"&Cancel")&&(!_wcsicmp(kind,L"BUTTON")||!_wcsicmp(kind,L"EDIT")||!_wcsicmp(kind,L"COMBOBOX")))reinterpret_cast<std::vector<std::pair<HWND,BOOL>>*>(context)->push_back({window,IsWindowEnabled(window)});return TRUE;},reinterpret_cast<LPARAM>(&refreshControls));
+   for(const auto& control:refreshControls)::EnableWindow(control.first,FALSE);
+   compactSize->SetWindowText(L"Updating refreshed download details...");
   };
-  auto refreshLink=[&,address,tryPrefetch,lookupAfterAdmission]{
-   if(!refreshDownloadAddress(&dialog,m,job,true,DownloadRefreshMode::FileInfo))return;
-   m.endPrefetch(job);
-   preview.reset();
-   {
-    Lock lock(m.mutex);
-    for(const auto* key:{"Url","ProtectedHeaders","DownloadPage"})data[key]=str(job->data,key);
-    const auto& settings=m.state["Settings"];
-    if(settings.contains("SiteLogins"))prefs["SiteLogins"]=settings.at("SiteLogins");
-    else prefs.erase("SiteLogins");
-   }
-   address->SetWindowText(cs(str(data,"Url")));
-   loadLogin();
-   if(advanced.useLogin){
-    updatingLogin=true;
-    advanced.useLogin->SendMessage(BM_SETCHECK,initiallyBasic?BST_CHECKED:BST_UNCHECKED);
-    advanced.user->SetWindowText(cs(initial.first));
-    advanced.password->SetWindowText(cs(initial.second));
-    advanced.remember->SendMessage(BM_SETCHECK,BST_UNCHECKED);
-    advanced.page->SetWindowText(cs(recoveryPage(data)));
-    updateLoginControls();
-    updatingLogin=false;
-   }
-   draftLoginChanged=false;
-   lookupAfterAdmission(tryPrefetch(),false);
-   dialog.pulse();
+  auto refreshMedia=[&,continueRecovery]{
+   if(prefetchTask.valid()||refreshTask.valid())return;
+   refreshDialogShowing=true;struct RefreshOwner{bool& active;~RefreshOwner(){active=false;}} owner{refreshDialogShowing};Json selection;
+   if(refreshDownloadAddress(&dialog,m,job,true,DownloadRefreshMode::FileInfo,&selection))continueRecovery(std::move(selection));
+  };
+  auto refreshLink=[&,continueRecovery]{
+   if(prefetchTask.valid()||refreshTask.valid())return;
+   refreshDialogShowing=true;struct RefreshOwner{bool& active;~RefreshOwner(){active=false;}} owner{refreshDialogShowing};Json selection;
+   if(refreshDownloadAddress(&dialog,m,job,true,DownloadRefreshMode::FileInfo,&selection))continueRecovery(std::move(selection));
   };
   if(media)dialog.bind(previewButton,[&,refreshLookup,refreshMedia]{
    if(refreshFailedMedia)refreshMedia();else refreshLookup();
   });
   else dialog.bind(previewButton,[&,refreshLookup,tryPrefetch,loginChanged,refreshLink]{
+   if(prefetchTask.valid())return;
    if(refreshFailedAddress){refreshLink();return;}
-   std::string zipName,zipUrl,zipHeaders;
-   {
-    Lock lock(m.mutex);
-    const auto& record=job->data;
-    if(!draftLoginChanged&&m.isActive(job)&&yes(record,"ConfirmationPending")&&Url(str(record,"Url")).scheme!="ftp"){
-     zipName=str(record,"FileName");
-     zipUrl=str(record,"Url");
-     zipHeaders=str(record,"ProtectedHeaders");
-    }else if(replacementNeedsResponse(record))return;
-   }
-   if(!zipUrl.empty()){
-    // A disengaged result keeps waiting. An empty path ends the preview
-    // without issuing a replacement request for this prefetch.
-    auto ready=[&,zipUrl,zipHeaders]()->std::optional<fs::path>{
-     fs::path savedZip;
-     i64 savedSize;
-     {
-      Lock lock(m.mutex);
-      const auto& record=job->data;
-      if(!m.isActive(job)||!yes(record,"ConfirmationPending")||str(record,"Url")!=zipUrl||
-         str(record,"ProtectedHeaders")!=zipHeaders)return fs::path{};
-      const auto receipt=record.find("CompletedPrefetch");
-      savedSize=num(record,"Size",-1);
-      if(yes(record,"RefreshPendingValidation")||receipt==record.end()||num(*receipt,"Version")!=1||
-         str(*receipt,"Url")!=zipUrl||str(*receipt,"Headers")!=zipHeaders||
-         savedSize<0||num(*receipt,"Size",-1)!=savedSize||num(record,"Received")!=savedSize)return std::nullopt;
-      const auto custom=str(record,"PartsFolder");
-      const auto folder=custom.empty()?m.root/L"parts"/wide(job->id()):fs::path(wide(custom));
-      savedZip=folder/(wide(job->id())+L".data");
-     }
-     std::error_code diskError;
-     if(fs::file_size(savedZip,diskError)!=static_cast<uintmax_t>(savedSize)||diskError)return fs::path{};
-     return savedZip;
-    };
-    fileInfoZipDialog(&dialog,Json{{"FileName",zipName}},{},{},std::move(ready));
-    return;
-   }
-   auto metadata=preview?preview->snapshot():Json::object();if(preview)preview->stop();bool prefetch;{Lock lock(m.mutex);prefetch=yes(job->data,"ConfirmationPending");}m.endPrefetch(job);
-   try{Json current,settings;{Lock lock(m.mutex);current=job->data;settings=m.state["Settings"];}if(str(metadata,"Status")=="Ready")current["ContentType"]=str(metadata,"ContentType");
-    if(loginChanged()){auto h=readHeaders(current);setBasicLogin(h,text(advanced.user),text(advanced.password),dialog.checked(advanced.useLogin));current["ProtectedHeaders"]=h.empty()?"":protect(legacyDictionary(Json(h)).dump());}
-    fileInfoZipDialog(&dialog,current,settings,draftLoginChanged?std::function<void(const Json&)>{}:browserSessionSaver(m,job,readBrowserSession(current)));
-   }catch(...){if(prefetch&&!draftLoginChanged)tryPrefetch();throw;}
-   if(prefetch&&!draftLoginChanged)tryPrefetch();
+   FileInfoZipRequest request;request.job=job;request.expectedUrl=str(data,"Url");request.draftLogin=draftLoginChanged;
+   if(preview){auto metadata=preview->snapshot();if(str(metadata,"Status")=="Ready")request.mime=str(metadata,"ContentType");}
+   if(draftLoginChanged){request.user=text(advanced.user);request.password=text(advanced.password);request.loginEnabled=dialog.checked(advanced.useLogin);}
+   invalidatePreview();zipDialogShowing=true;struct ReleaseZip{bool& value;~ReleaseZip(){value=false;}} releaseZip{zipDialogShowing};
+   const auto outcome=fileInfoPreparedZipDialog(&dialog,m,std::move(request),str(data,"FileName"));
+   if(outcome.resumePrefetch)tryPrefetch(true,false,outcome.selection);
    refreshLookup();
   });
   const bool hasInitialSize=initialResponseSize>=0||initialReportedSize>0;
-  dialog.pulse=[&,size,type,compactSize,byteLine,retainedLine,icon,initialDetail,previewStatus,previewButton,serverName,useServerName,suggestedName,canUseSuggestedName,refreshLookup,tryPrefetch,lookupAfterAdmission,hasInitialSize,firstPulse=true,fallbackStarted=false,checkedMediaRefresh=false,fastSizePulse=false,prefetchError=std::string{}]() mutable{
-   if(finishingDecision)return;
+  dialog.pulse=[&,size,type,compactSize,byteLine,retainedLine,icon,initialDetail,previewStatus,previewButton,serverName,useServerName,suggestedName,canUseSuggestedName,refreshLookup,tryPrefetch,lookupAfterAdmission,address,hasInitialSize,firstPulse=true,fallbackStarted=false,checkedMediaRefresh=false,fastSizePulse=false,prefetchError=std::string{}]() mutable{
+   if(finishingDecision||actionCompleting||zipDialogShowing||refreshDialogShowing)return;
    if(decisionTask.valid()){
     if(!decisionTask.ready())return;
     finishingDecision=true;
-    try{const auto result=decisionTask.get();if(!result.warning.empty())error(&dialog,std::runtime_error(result.warning));dialog.close();}
-    catch(const std::exception& failure){for(const auto& control:decisionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);decisionControls.clear();dialog.SetTimer(Form::pulseTimer,Form::pulseInterval,nullptr);error(&dialog,failure);}
-    catch(...){for(const auto& control:decisionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);decisionControls.clear();error(&dialog,std::runtime_error("The download decision failed. Your edits are still available."));}
-    decisionTask.release();finishingDecision=false;if(auto frame=AfxGetMainWnd();frame&&frame->GetSafeHwnd())frame->PostMessage(WM_TIMER,1,0);return;
+    const auto restoreCancelledAdmission=[&]{if(cancellingDecision){for(const auto& control:actionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);actionControls.clear();actionCompletion={};if(!refreshControls.empty()){refreshError="Recovery cleanup failed. Refresh the saved request again before continuing.";refreshFailedMedia=media;refreshFailedAddress=!media;for(const auto& control:refreshControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);refreshControls.clear();previewButton->SetWindowText(L"&Refresh...");previewButton->EnableWindow(TRUE);}for(const auto& control:admissionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);admissionControls.clear();if(freezeDraft)freezeDraft(false);}};
+    try{const auto result=decisionTask.get();if(!result.warning.empty())error(&dialog,std::runtime_error(result.warning));dialog.close(cancellingDecision?IDCANCEL:IDOK);}
+    catch(const std::exception& failure){for(const auto& control:decisionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);decisionControls.clear();restoreCancelledAdmission();dialog.SetTimer(Form::pulseTimer,Form::pulseInterval,nullptr);error(&dialog,failure);}
+    catch(...){for(const auto& control:decisionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);decisionControls.clear();restoreCancelledAdmission();error(&dialog,std::runtime_error("The download decision failed. Your edits are still available."));}
+    decisionTask.release();cancellingDecision=false;finishingDecision=false;if(auto frame=AfxGetMainWnd();frame&&frame->GetSafeHwnd())frame->PostMessage(WM_TIMER,1,0);return;
    }
+   if(actionTask.valid()){
+    if(!actionTask.ready())return;auto result=actionTask.take();auto completion=std::move(actionCompletion);actionCompleting=true;
+    dialog.afterCurrentPulse([&,result=std::move(result),completion=std::move(completion),compactSize]()mutable{
+     struct FinishAction{bool& active;~FinishAction(){active=false;}} finish{actionCompleting};
+     for(const auto& control:actionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);actionControls.clear();
+     if(result.cancelled)return;
+     if(!result.error.empty()){actionError=result.error;compactSize->SetWindowText(cs(actionError));return;}
+     try{if(completion)completion(result);}catch(const std::exception& failure){actionError=failure.what();compactSize->SetWindowText(cs(actionError));}catch(...){actionError="The download action could not be prepared. Try again.";compactSize->SetWindowText(cs(actionError));}
+    });return;
+   }
+   if(pumpName)pumpName();
+   if(pumpCategory)pumpCategory();
+   if((categorySettled||nameSettled)&&!nameTask.valid()&&!m.fileInfoDecisionPending&&!categoryWaiting()&&categoryError.empty()&&job&&pendingIntent!=PendingIntent::None&&!prefetchTask.valid()&&!refreshTask.valid()&&runPendingIntent){runPendingIntent();return;}
+   if(refreshTask.valid()){
+    if(!refreshTask.ready())return;
+    FileInfoRefreshResult refreshed;try{refreshed=refreshTask.take();}catch(const std::exception& failure){refreshed.error=failure.what();}catch(...){refreshed.error="The refreshed download details could not be read.";}
+    for(const auto& control:refreshControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);refreshControls.clear();
+    if(refreshed.cancelled||!refreshed.error.empty()){
+     refreshError=refreshed.error.empty()?"Refreshed details were cancelled. Refresh again to continue.":std::move(refreshed.error);pendingIntent=PendingIntent::None;if(freezeDraft)freezeDraft(false);refreshFailedMedia=media;refreshFailedAddress=!media;previewButton->SetWindowText(L"&Refresh...");previewButton->ShowWindow(SW_SHOW);previewButton->EnableWindow(TRUE);compactSize->SetWindowText(cs(refreshError));return;
+    }
+    refreshError.clear();prefetchTask.clearSelection();
+    if(!refreshed.media){
+     for(const auto* key:{"Url","ProtectedHeaders","DownloadPage"})data[key]=str(refreshed.data,key);
+     if(refreshed.preferences.contains("SiteLogins"))prefs["SiteLogins"]=std::move(refreshed.preferences["SiteLogins"]);else prefs.erase("SiteLogins");
+     address->SetWindowText(cs(refreshed.address));initial=std::move(refreshed.login);initiallyBasic=refreshed.basic;
+     if(advanced.useLogin){updatingLogin=true;struct RestoreLogin{bool& active;~RestoreLogin(){active=false;}} restoreLogin{updatingLogin};advanced.useLogin->SendMessage(BM_SETCHECK,initiallyBasic?BST_CHECKED:BST_UNCHECKED);advanced.user->SetWindowText(cs(initial.first));advanced.password->SetWindowText(cs(initial.second));advanced.remember->SendMessage(BM_SETCHECK,BST_UNCHECKED);advanced.page->SetWindowText(cs(refreshed.page));updateLoginControls();}
+     draftLoginChanged=false;
+    }
+    try{tryPrefetch(true,false,std::move(refreshed.selection));}catch(const std::exception& failure){refreshError=failure.what();pendingIntent=PendingIntent::None;if(freezeDraft)freezeDraft(false);compactSize->SetWindowText(cs(refreshError));}
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    if(fileInfoRefreshTestApplied)fileInfoRefreshTestApplied(dialog,refreshed);
+#endif
+    return;
+   }
+   if(!refreshError.empty())return;
    if(m.fileInfoDecisionPending)return;
    if(!job){
     const auto next=pending->latest();if(next!=pending){pending=next;pendingFailed=false;pendingIntent=PendingIntent::None;}
     dialog.SetTimer(Form::pulseTimer,40,nullptr);
     applyFileDetails(icon,true);if(!pendingIconRequested){pendingIconRequested=true;fileDetails.request(extension);}
     if(!pending->retrying()&&pending->outcome()!=PendingFileInfoInbox::Outcome::Pending&&!pendingFailed){
-     JobPtr accepted;{Lock lock(m.mutex);for(const auto& candidate:m.jobs)if(candidate->id()==pending->view->jobId&&str(candidate->data,"Status")=="Awaiting confirmation"&&!yes(candidate->data,"IndividualStart"))accepted=candidate;}
-     if(accepted&&pending->attach()){
-      job=std::move(accepted);if(pendingBound)*pendingBound=true;
+     if(bindingTask.valid()&&bindingTask.ready()){
+      FileInfoBindingResult result;try{result=bindingTask.take();}catch(...){pendingFailed=true;}
+      if(!pendingFailed&&result.operation==pending&&!result.deferred){
+       if(result.job&&!result.cancelled&&pending->attach()){
+      job=std::move(result.job);if(pendingBound)*pendingBound=true;if(pendingPresentation)*pendingPresentation=std::move(result.presentation);
       for(auto control:acceptanceControls)control->EnableWindow(TRUE);
-      if(pendingRetryControl)pendingRetryControl->SetWindowText(L"More >>");
+      if(pendingRetryControl){pendingRetryControl->SetWindowText(L"More >>");pendingRetryControl->EnableWindow(TRUE);}
       if(freezeDraft)freezeDraft(false);
       dialog.SetTimer(Form::pulseTimer,Form::pulseInterval,nullptr);
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
       nativeUiTraceRecord("pending-file-info-bound");
 #endif
-     }else pendingFailed=true;
+       }else pendingFailed=true;
+      }
+     }
+     if(!job&&!pendingFailed&&!bindingTask.valid()&&!dialog.taskPulseActive())bindingTask.start(m,pending,dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+      ,fileInfoBindingTestObserver
+#endif
+     );
     }
     if(!job){
      const auto message=pending->retrying()?"Retrying download admission...":pendingFailed?(pending->outcome()==PendingFileInfoInbox::Outcome::Accepted?"This download was already accepted. Check download history to continue.":pending->outcome()==PendingFileInfoInbox::Outcome::Rejected?(pending->supportsRetry()?"UDM could not accept this download. Your edits are retained; choose Retry.":"UDM could not accept this download. Your draft is retained; close this dialog to capture again."):"UDM could not confirm acceptance. Your draft is retained; check download history before capturing again."):pendingIntent==PendingIntent::Start?"Starting after the download is accepted...":pendingIntent==PendingIntent::Later?"Adding to the queue after acceptance...":"Preparing the download. You can edit the destination or start now.";
@@ -520,9 +556,29 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
      return;
     }
    }
-   const auto attemptPrefetch=[&]{
-    try{const auto admission=tryPrefetch();prefetchError.clear();return admission;}
-    catch(const std::exception& e){prefetchError=e.what();return PrefetchAdmission::Unavailable;}
+   if(prefetchTask.valid()&&prefetchTask.ready()){
+    FileInfoPrefetchResult result;bool failed=false;
+    try{result=prefetchTask.take();prefetchError.clear();}catch(const std::exception& e){failed=true;prefetchError=e.what();}catch(...){failed=true;prefetchError="Background preparation failed.";}
+    for(const auto& control:admissionControls)if(IsWindow(control.first))::EnableWindow(control.first,control.second);admissionControls.clear();
+    waitingForPrefetchSlot=result.deferred||result.admission==PrefetchAdmission::AtCapacity;
+    if(result.admission==PrefetchAdmission::Started){
+     advancePreviewGeneration();queuedPreview.reset();previewTask.cancel();
+     if(preview&&str(preview->snapshot(),"Status")!="Ready"){preview->stop();preview.reset();}
+    }
+    if(pendingIntent!=PendingIntent::None&&!nameTask.valid()&&!categoryWaiting()&&categoryError.empty()&&runPendingIntent){runPendingIntent();return;}
+    if(!result.deferred){
+     if(admissionNeedsLookup){admissionNeedsLookup=false;lookupAfterAdmission(result.admission,admissionHasInitialSize);}
+     else if(deferredLookup&&(result.admission!=PrefetchAdmission::AtCapacity||std::chrono::steady_clock::now()>=*deferredLookup)){
+      deferredLookup.reset();if(result.admission!=PrefetchAdmission::Started&&!preview)refreshLookup(true);
+     }
+    }
+    if(failed)waitingForPrefetchSlot=false;
+    displayTask->request(m,job,draftLoginChanged);
+   }
+   pumpPreview();
+   const auto attemptPrefetch=[&](bool lookup,bool hasSize=false){
+    try{tryPrefetch(lookup,hasSize);}
+    catch(const std::exception& e){prefetchError=e.what();waitingForPrefetchSlot=false;}
    };
    if(firstPulse)dialog.KillTimer(initialPrefetchTimer);
    if(firstPulse&&dialog.IsWindowEnabled()){
@@ -535,45 +591,29 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     firstPulse=false;
     applyFileDetails(icon,true);
     if(!fileDetailsApplied)fileDetails.request(extension);
-    const auto admission=!draftLoginChanged&&!preview?attemptPrefetch():PrefetchAdmission::Unavailable;
-    lookupAfterAdmission(admission,hasInitialSize);
+    if(!draftLoginChanged&&!preview)attemptPrefetch(true,hasInitialSize);
+    else lookupAfterAdmission(PrefetchAdmission::Unavailable,hasInitialSize);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
     traceCapturePresentation("first-prefetch-returned");
 #endif
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
     nativeUiTraceRecord("first-prefetch-returned");
 #endif
-   }else if(waitingForPrefetchSlot&&!draftLoginChanged&&dialog.IsWindowEnabled()){
-    const auto admission=attemptPrefetch();
-    if(deferredLookup&&(admission!=PrefetchAdmission::AtCapacity||std::chrono::steady_clock::now()>=*deferredLookup)){
-     deferredLookup.reset();
-     if(admission!=PrefetchAdmission::Started&&!preview)refreshLookup(true);
-    }
+   }else if(waitingForPrefetchSlot&&!draftLoginChanged&&dialog.IsWindowEnabled()&&!prefetchTask.valid()&&!dialog.taskPulseActive()){
+    attemptPrefetch(false);
    }
    const bool waitingForSlot=waitingForPrefetchSlot&&!draftLoginChanged;
    applyFileDetails(icon,true);
-   // The display needs progress and metadata, not the capture plan, request
-   // context, or nested transfer journals. Preview actions take their own snapshot.
-   Json current=Json::object();
-   bool active,canCheck,replacementPending;
-   i64 savedOutputSize,assembledOutputSize;
-   {
-    Lock lock(m.mutex);
-    const auto& source=job->data;
-    for(const char* key:{"Url","SourceUrl","Status","ConfirmationPending","Size","HttpContentEncoding","HttpDecodedSize","HttpDecodedReceived","ContentType","MediaPhase","PrefetchedFinalSize",
-     "Received","Error","LastHttpStatus","RefreshPendingValidation","BrowserVerificationRequired","SabrSessionRefreshRequired","SabrRetainedBytes","StreamCompletedMs","EstimatedMediaSize","ReportedMediaSize","BrowserReportedDirectSize",
-     "ReplacementOf","ResponseFileNameUrl","ResponseFileName","BrowserReportedFileName","ConnectionStatus"}){
-     const auto value=source.find(key);
-     if(value!=source.end())current[key]=*value;
-    }
-    if(job->video)current["Video"]={{"Url",str(job->video->data,"Url")},{"Size",num(job->video->data,"Size",-1)}};
-    if(job->audio)current["Audio"]={{"Url",str(job->audio->data,"Url")},{"Size",num(job->audio->data,"Size",-1)}};
-    active=m.isActive(job);
-    replacementPending=replacementNeedsResponse(source);
-    canCheck=!replacementPending&&(!active||draftLoginChanged)&&canPreviewDownload(*job,draftLoginChanged);
-    savedOutputSize=savedMediaOutputSize(source);
-    assembledOutputSize=job->assembledPrefetchSize;
-   }
+   // Completion wakes consume the last coherent view. Only cadence/input
+   // pulses request another read, avoiding a completion/request spin loop.
+   const auto displayResult=displayTask->take();
+   if(!dialog.taskPulseActive())displayTask->request(m,job,draftLoginChanged);
+   const auto view=displayResult.snapshot;
+   if(!view||view->job!=job||view->draftLogin!=draftLoginChanged)return;
+   if(!view->member){if(freezeDraft)freezeDraft(true);compactSize->SetWindowText(L"This download is no longer available.");return;}
+   Json current=view->data;
+   const bool active=view->active,canCheck=view->canCheck,replacementPending=view->replacementPending;
+   const auto savedOutputSize=view->savedOutputSize,assembledOutputSize=view->assembledOutputSize;
    projectHttpOutput(current);
    const bool pending=yes(current,"ConfirmationPending");
    const bool matchingPrefetch=pending&&active&&!draftLoginChanged;
@@ -583,22 +623,22 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    const bool sessionRejected=yes(current,"SabrSessionRefreshRequired");
    const auto explicitRetryLabel=draftLoginChanged?std::string{}:retryLabel(current);
    if(media&&!active&&(prefetchFailed||sessionRejected)){
-    if(!checkedMediaRefresh)refreshFailedMedia=m.canRefreshAddress(job);
+    if(!checkedMediaRefresh)refreshFailedMedia=view->canRefreshAddress;
     checkedMediaRefresh=true;
    }else checkedMediaRefresh=refreshFailedMedia=false;
    if(prefetchFailed&&!media&&!draftLoginChanged&&!preview&&!fallbackStarted&&num(current,"Size",-1)<0&&canCheck){
     fallbackStarted=true;
     refreshLookup(true);
    }
-   auto metadata=preview?preview->snapshot():Json::object();auto phase=str(metadata,"Status");
+   auto metadata=preview?preview->snapshot():Json::object();const bool preparingLookup=previewTask.valid()||queuedPreview.has_value();auto phase=str(metadata,"Status");
    if(yes(metadata,"CalculatedMediaSize")&&(!current["Video"].is_object()||!current["Audio"].is_object()||str(current["Video"],"Url")!=previewVideo||str(current["Audio"],"Url")!=previewAudio)){metadata=Json::object();phase="Unavailable";}
    if(!media&&str(current,"Url")!=previewAddress){metadata=Json::object();phase="Unavailable";}
+   if(preparingLookup)phase="Checking";else if(!previewLookupError.empty()){metadata={{"Status","Error"},{"Message",previewLookupError}};phase="Error";}
    if(!media){
     auto name=suggestedName(current,canCheck,metadata);
     const auto label=name.empty()?(phase=="Checking"||(active&&yes(current,"ConfirmationPending"))?"Checking server filename...":"No server filename available."):"Server name: "+name;
     if(text(serverName)!=label)serverName->SetWindowText(cs(label));
-    const bool canUseName=canUseSuggestedName(name);
-    if((useServerName->IsWindowEnabled()!=FALSE)!=canUseName)useServerName->EnableWindow(canUseName);
+    if(refreshNameActions)refreshNameActions();
    }
    const bool hasResponseHeaders=hasDirectResponseHeaders(current);
    // Admission clears the old response marker. A matching active HTTP
@@ -694,18 +734,19 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     compactText+="Background download stopped";
    }
    if(text(compactSize)!=compactText)compactSize->SetWindowText(cs(compactText));
-   const bool canRefresh=refreshFailedMedia||(canCheck&&phase!="Checking");
+   const bool canRefresh=!prefetchTask.valid()&&!preparingLookup&&(refreshFailedMedia||(canCheck&&phase!="Checking"));
    auto refreshDetails=media?previewButton:advanced.refreshDetails;
    if(refreshDetails&&(refreshDetails->IsWindowEnabled()!=FALSE)!=canRefresh)refreshDetails->EnableWindow(canRefresh);
-   refreshFailedAddress=directResponse&&!active&&!draftLoginChanged&&addressRejected(current)&&m.canRefreshAddress(job);
+   refreshFailedAddress=directResponse&&!active&&!draftLoginChanged&&addressRejected(current)&&view->canRefreshAddress;
    const auto label=refreshFailedMedia||refreshFailedAddress?"&Refresh...":media?"Check si&ze":"&Preview";
    if(text(previewButton)!=label)previewButton->SetWindowText(cs(label));
    bool showPreview=refreshFailedMedia||canCheck;
    if(!media){
-    Lock lock(m.mutex);
-    showPreview=refreshFailedAddress||((!replacementPending||matchingPrefetch)&&canPreviewZip(job->data,mime,!draftLoginChanged));
+    showPreview=refreshFailedAddress||((!replacementPending||matchingPrefetch)&&canPreviewZip(view->zipInputs,mime,!draftLoginChanged));
    }
    if(((previewButton->GetStyle()&WS_VISIBLE)!=0)!=showPreview)previewButton->ShowWindow(showPreview?SW_SHOW:SW_HIDE);
+   if(!media){const bool enabled=showPreview&&!prefetchTask.valid();if((previewButton->IsWindowEnabled()!=FALSE)!=enabled)previewButton->EnableWindow(enabled);}
+   if(status.empty()&&!previewLookupError.empty())status=previewLookupError;
    auto detailText=status.empty()?initialDetail:status;
    if(!explicitRetryLabel.empty())detailText=str(current,"Error",explicitRetryLabel);
    else if(sessionRejected)detailText="Refresh the media session in your browser to continue.";
@@ -716,7 +757,12 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    else if(exactPrefetch<0&&matchingPrefetch)detailText="Downloaded: "+bytes(num(current,"Received"))+". Waiting for your confirmation.";
    else if(!prefetchError.empty()&&!active&&!draftLoginChanged)detailText="Background download could not start: "+prefetchError;
    if(advanced.detail&&text(advanced.detail)!=detailText)advanced.detail->SetWindowText(cs(detailText));
-   if(pendingIntent!=PendingIntent::None&&runPendingIntent)runPendingIntent();
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+   if(fileInfoDisplayTestRendered)fileInfoDisplayTestRendered(dialog,view);
+#endif
+   if(!actionError.empty())compactSize->SetWindowText(cs(actionError));else if(!nameError.empty())compactSize->SetWindowText(cs(nameError));else if(!categoryError.empty())compactSize->SetWindowText(cs(categoryError));else if(categoryWaiting())compactSize->SetWindowText(L"Updating category folder...");
+   if(refreshCategoryActions)refreshCategoryActions();
+   if(pendingIntent!=PendingIntent::None&&!prefetchTask.valid()&&!nameTask.valid()&&!categoryWaiting()&&categoryError.empty()&&runPendingIntent)runPendingIntent();
   };
   auto buildAdvanced=[&,initialQueue,initialDetail,refreshLookup,loginChanged](const std::function<bool(CWnd*)>& schedule){
    if(advanced.queue)return;
@@ -728,8 +774,9 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    auto open=track(dialog.button("Open page",319,154+footerOffset,50,[&dialog,page]{Url u(text(page));if(u.scheme!="http"&&u.scheme!="https")throw std::runtime_error("No HTTP or HTTPS parent page is available.");openFile(&dialog,fs::path(wide(u.full)));}));
    open->EnableWindow(!text(page).empty());
    track(dialog.label("Queue",7,179+footerOffset,51));
-   auto queue=dialog.queueCombo(m,queueNames(m),initialQueue,64,175+footerOffset,244);track(queue);
-   track(dialog.button("Schedule...",319,175+footerOffset,54,[&dialog,schedule]{if(schedule(&dialog))dialog.close();}));
+   auto names=initialView->queues;if(names.empty())names.push_back(initialQueue);
+   auto queue=dialog.queueCombo(names,initialView->queueLabels,initialQueue,64,175+footerOffset,244);track(queue);
+   advanced.schedule=track(dialog.button("Schedule...",319,175+footerOffset,54,[&dialog,schedule]{if(schedule(&dialog))dialog.close();}));
    auto useLogin=advanced.useLogin=track(dialog.check("Use login and password",initiallyBasic,7,198+footerOffset,266));
    useLogin->EnableWindow(!media);
    track(dialog.label("Login",7,219+footerOffset,51));
@@ -744,7 +791,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    auto loginEdited=[&,loginChanged]{
     if(updatingLogin)return;
     draftLoginChanged=loginChanged();
-    if(preview){preview->stop();preview.reset();}
+    invalidatePreview();
     if(dialog.pulse)dialog.pulse();
    };
    dialog.bind(useLogin,[enabled,loginEdited]{enabled();loginEdited();});enabled();
@@ -762,7 +809,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
     if(!remembered.is_absolute())throw std::runtime_error("Choose an absolute category folder.");
     folderChoice.rememberedCategoryFolder=std::move(remembered);
    }
-   if(preview)preview->stop();
+   invalidatePreview();
    const bool loginEnabled=!media&&advanced.useLogin&&dialog.checked(advanced.useLogin);
    const bool rememberLogin=!media&&advanced.remember&&dialog.checked(advanced.remember);
    if(loginEnabled){auto validation=readHeaders(data);setBasicLogin(validation,text(advanced.user),text(advanced.password));}
@@ -783,39 +830,37 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    FileInfoDecisionDraft draft{std::move(edit),std::move(rememberedLogin),std::move(folderChoice),std::move(login),choice?std::optional<DownloadQueueChoice>(*choice):std::nullopt,startNow,media,loginUnchanged,startQueue};
    return draft;
   };
-  auto apply=[&,captureDecision](bool startNow,const DownloadQueueChoice* choice=nullptr,bool startQueue=false){return dispatchDecision(captureDecision(startNow,choice,nullptr,startQueue));};
-  auto schedule=[&m,&dialog,&job,destination,description,selectedCategory,pathRule,captureDecision](CWnd* owner){
-   ScheduledDownloadDraft initial{fs::path(wide(text(destination))),text(description),selectedCategory(),dialog.checked(pathRule),{}};
-   {
-    Lock lock(m.mutex);
-    initial.connections=num(job->data,"Connections",8);
-    initial.speedLimit=num(job->data,"LimitKbps");
-   }
-   return scheduleDownloadWizard(owner,m,std::move(initial),[&m,&job,captureDecision](const ScheduledDownloadDraft& draft){auto command=captureDecision(false,&draft.queue,&draft);return [source=&m,target=job,command=std::move(command)]{return applyFileInfoDecision(*source,target,command);};});
+  prepareAction=[&,compactSize](bool starting,std::function<void(const FileInfoActionResult&)> completion){
+   if(decisionTask.valid()||finishingDecision||actionCompleting||actionTask.valid())return;
+   actionControls.clear();EnumChildWindows(dialog.GetSafeHwnd(),[](HWND window,LPARAM context)->BOOL{wchar_t kind[40]{},label[64]{};GetClassNameW(window,kind,40);GetWindowTextW(window,label,64);if(wcscmp(label,L"&Cancel")&&(!_wcsicmp(kind,L"BUTTON")||!_wcsicmp(kind,L"EDIT")||!_wcsicmp(kind,L"COMBOBOX")))reinterpret_cast<std::vector<std::pair<HWND,BOOL>>*>(context)->push_back({window,IsWindowEnabled(window)});return TRUE;},reinterpret_cast<LPARAM>(&actionControls));
+   try{actionTask.start(m,job,dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    ,fileInfoActionTestObserver
+#else
+    ,FileInfoActionObserver{}
+#endif
+    ,starting?FileInfoActionKind::Start:FileInfoActionKind::Later);}catch(...){actionControls.clear();throw;}
+   actionCompletion=std::move(completion);actionError.clear();for(const auto& control:actionControls)::EnableWindow(control.first,FALSE);
+   compactSize->SetWindowText(starting?L"Preparing download...":L"Preparing queue selection...");dialog.SetTimer(Form::pulseTimer,40,nullptr);dialog.UpdateWindow();
   };
-  dialog.accept=[&,apply,refreshMedia]{
-   if(decisionTask.valid()||finishingDecision)return;
+  auto apply=[&,captureDecision](bool startNow,const DownloadQueueChoice* choice=nullptr,bool startQueue=false){return dispatchDecision(captureDecision(startNow,choice,nullptr,startQueue));};
+  auto schedule=[&m,&dialog,&job,&prefetchTask,&categoryWaiting,&categoryError,&nameTask,&decisionTask,&finishingDecision,&actionTask,destination,description,selectedCategory,pathRule,captureDecision](CWnd* owner){
+   if(!job||decisionTask.valid()||finishingDecision||actionTask.valid()||nameTask.valid()||prefetchTask.valid()||categoryWaiting()||!categoryError.empty())return false;
+   ScheduledDownloadDraft initial{fs::path(wide(text(destination))),text(description),selectedCategory(),dialog.checked(pathRule),{}};
+   return scheduleDownloadWizard(owner,m,std::move(initial),[&m,&job,captureDecision](const ScheduledDownloadDraft& draft){auto command=captureDecision(false,&draft.queue,&draft);return [source=&m,target=job,command=std::move(command)]{return applyFileInfoDecision(*source,target,command);};},Json(),false,job);
+  };
+  dialog.accept=[&,apply,refreshMedia,compactSize]{
+   if(decisionTask.valid()||finishingDecision||actionTask.valid()||actionCompleting)return;
    if(!job){if(!pendingFailed){pendingIntent=PendingIntent::Start;if(freezeDraft)freezeDraft(true);}return;}
-   bool sessionRejected;{Lock lock(m.mutex);sessionRejected=yes(job->data,"SabrSessionRefreshRequired");}
-   if(sessionRejected){refreshMedia();return;}
-   if(decisionTask.valid())return;
-   if(apply(true))dialog.close();
+   if(nameTask.valid()||prefetchTask.valid()||refreshTask.valid()||categoryWaiting()){pendingIntent=PendingIntent::Start;if(freezeDraft)freezeDraft(true);return;}
+   if(!categoryError.empty()){compactSize->SetWindowText(cs(categoryError));return;}
+   if(!refreshError.empty()){compactSize->SetWindowText(cs(refreshError));return;}
+   prepareAction(true,[&,apply,refreshMedia](const FileInfoActionResult& result){if(result.refreshSession){refreshMedia();return;}if(apply(true))dialog.close();});
   };
   dialog.cancel=[&]{
-   if(decisionTask.valid()||finishingDecision)return;
+   if(decisionTask.valid()||finishingDecision||actionCompleting)return;
    if(!job){pending->requestCancel();dialog.close(IDCANCEL);return;}
-   if(preview)preview->stop();
-   m.endPrefetch(job,!cancelNewOffer);
-   {
-    Lock lock(m.mutex);
-    if(cancelNewOffer&&!m.isActive(job)&&!job->data.contains("OriginalResponse")&&
-       !yes(job->data,"IndividualStart")){
-     const auto status=str(job->data,"Status");
-     if(status=="Awaiting confirmation"||status=="Paused"||status=="Failed")m.remove(job,false,true);
-     else m.pause(job);
-    }else m.pause(job);
-   }
-   dialog.close(IDCANCEL);
+   dispatchCancellation();
   };
   const bool initiallyExpanded=initiallyBasic||formRequest;
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
@@ -824,7 +869,7 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   if(initiallyExpanded)buildAdvanced(schedule);
   auto more=dialog.button(initiallyExpanded?"<< Less":"More >>",319,110+footerOffset,50,[]{});
   pendingRetryControl=more;
-  acceptanceControls.push_back(more);more->EnableWindow(job!=nullptr);
+  more->EnableWindow(job!=nullptr);
   auto toggle=[&,more,previewStatus](bool expanded){
    const auto show=expanded?SW_SHOW:SW_HIDE;
    for(auto w:advanced.controls)w->ShowWindow(show);
@@ -843,18 +888,18 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   else previewStatus->ShowWindow(SW_HIDE);
   auto scheduleButton=dialog.button("Sche&dule...",7,110+footerOffset,51,[&dialog,schedule]{if(schedule(&dialog))dialog.close();});
   acceptanceControls.push_back(scheduleButton);scheduleButton->EnableWindow(job!=nullptr);
-  laterAction=[&,apply,selectedQueue,schedule]{
-   if(decisionTask.valid()||finishingDecision)return;
+  refreshCategoryActions=[&,editCategory,scheduleButton]{const bool enabled=job&&!m.fileInfoDecisionPending&&!nameTask.valid()&&!categoryWaiting()&&!prefetchTask.valid()&&!refreshTask.valid()&&!decisionTask.valid()&&!finishingDecision&&pendingIntent==PendingIntent::None;editCategory->EnableWindow(enabled);scheduleButton->EnableWindow(enabled&&categoryError.empty());if(advanced.schedule)advanced.schedule->EnableWindow(enabled&&categoryError.empty());};
+  laterAction=[&,apply,selectedQueue,schedule,compactSize]{
+   if(decisionTask.valid()||finishingDecision||actionTask.valid()||actionCompleting)return;
    if(!job){if(!pendingFailed){pendingIntent=PendingIntent::Later;if(freezeDraft)freezeDraft(true);}return;}
-   bool ask;{Lock lock(m.mutex);ask=yes(m.state["Settings"],"QueuePromptLater",true);}std::optional<DownloadQueueChoice> choice;
-   if(ask){
-    bool scheduled=false;
-    choice=chooseDownloadQueue(&dialog,m,selectedQueue(),false,[&](CWnd* owner){return scheduled=schedule(owner);});
-    if(scheduled){dialog.close();return;}
-    if(!choice)return;
-   }
-   if(decisionTask.valid())return;
-   if(apply(false,choice?&*choice:nullptr,true))dialog.close();
+   if(nameTask.valid()||prefetchTask.valid()||refreshTask.valid()||categoryWaiting()){pendingIntent=PendingIntent::Later;if(freezeDraft)freezeDraft(true);return;}
+   if(!categoryError.empty()){compactSize->SetWindowText(cs(categoryError));return;}
+   if(!refreshError.empty()){compactSize->SetWindowText(cs(refreshError));return;}
+   prepareAction(false,[&,apply,selectedQueue,schedule](const FileInfoActionResult& result){
+    std::optional<DownloadQueueChoice> choice;
+    if(result.promptLater){bool scheduled=false;choice=chooseDownloadQueue(&dialog,m,selectedQueue(),false,[&](CWnd* owner){return scheduled=schedule(owner);},&result.queues);if(scheduled){dialog.close();return;}if(!choice)return;}
+    if(decisionTask.valid())return;if(apply(false,choice?&*choice:nullptr,true))dialog.close();
+   });
   };
   auto later=dialog.button("Download &Later",64,110+footerOffset,74,laterAction);
   auto start=dialog.button("&Start Download",149,110+footerOffset,74,dialog.accept);dialog.defaultButton(start);dialog.button("&Cancel",234,110+footerOffset,74,dialog.cancel);
@@ -873,8 +918,21 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
    compactSize->SetWindowText(starting?L"Starting download...":L"Adding download to queue...");
    dialog.SetTimer(Form::pulseTimer,40,nullptr);dialog.UpdateWindow();return false;
   };
+  dispatchCancellation=[&,compactSize]{
+   invalidatePreview();refreshTask.cancel();queuedCategory.reset();categoryTask.cancelRead();nameTask.cancelRead();actionTask.cancelRead();
+   decisionControls.clear();
+   EnumChildWindows(dialog.GetSafeHwnd(),[](HWND window,LPARAM value)->BOOL{wchar_t kind[40]{};GetClassNameW(window,kind,40);if(!_wcsicmp(kind,L"BUTTON")||!_wcsicmp(kind,L"EDIT")||!_wcsicmp(kind,L"COMBOBOX"))reinterpret_cast<std::vector<std::pair<HWND,BOOL>>*>(value)->push_back({window,IsWindowEnabled(window)});return TRUE;},reinterpret_cast<LPARAM>(&decisionControls));
+   try{decisionTask.startAction(m,[&,target=job,removeOffer=cancelNewOffer]{
+    actionTask.finish();nameTask.finish();categoryTask.finish();refreshTask.finish();cancelFileInfoPrefetch(m,target,prefetchTask,removeOffer);
+    return FileInfoDecisionResult{};
+   },dialog.taskNotifier());}catch(...){decisionControls.clear();throw;}
+   cancellingDecision=true;pendingIntent=PendingIntent::None;waitingForPrefetchSlot=false;admissionNeedsLookup=false;deferredLookup.reset();
+   for(const auto& control:decisionControls)::EnableWindow(control.first,FALSE);
+   compactSize->SetWindowText(L"Stopping background download...");dialog.SetTimer(Form::pulseTimer,40,nullptr);dialog.UpdateWindow();
+  };
   runPendingIntent=[&]{
    const auto intent=pendingIntent;pendingIntent=PendingIntent::None;
+   if(freezeDraft)freezeDraft(false);
    try{if(intent==PendingIntent::Start)dialog.accept();else if(intent==PendingIntent::Later)laterAction();}
    catch(const std::exception& failure){freezeDraft(false);error(&dialog,failure);}
    catch(...){freezeDraft(false);error(&dialog,std::runtime_error("The queued download action failed. Your edits are still available."));}
@@ -885,6 +943,60 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
 #ifdef UDM_PRODUCTION_UI_TIMING_TEST
   nativeUiTraceRecord("file-info-controls-ready");
 #endif
+ };
+ dialog.init=[&]{
+  if(initialReady){buildInitialControls();return;}
+  const auto loading=fileInfoLoadingView(preparedView,job->id());
+  dialog.control(L"STATIC","URL",SS_RIGHT,5,5,54,10);auto url=dialog.edit(loading.address,64,3,244,14,true);url->EnableWindow(FALSE);
+  const auto loadingCategory=loading.available?categoryDisplayName(loading.category):std::string{};
+  dialog.control(L"STATIC","Category",SS_RIGHT,5,22,54,10);dialog.combo(loading.available?std::vector<std::string>{loadingCategory}:std::vector<std::string>{},loadingCategory,64,22,116)->EnableWindow(FALSE);
+  dialog.control(L"STATIC","Save As",SS_RIGHT,5,40,54,10);dialog.combo({},loading.destination,64,38,244,true)->EnableWindow(FALSE);
+  dialog.control(L"STATIC",loading.amount,SS_CENTER,311,57,64,10);dialog.control(L"STATIC",loading.kind,SS_CENTER|SS_ENDELLIPSIS,311,69,64,8);
+  dialog.control(L"STATIC",loading.detail,SS_ENDELLIPSIS,7,74,300,10);
+  dialog.control(L"STATIC","Description",SS_RIGHT,5,92,54,10);dialog.edit(loading.description,64,91,244,14,true)->EnableWindow(FALSE);
+  if(!loading.serverName.empty()){dialog.control(L"STATIC","Server name: "+loading.serverName,SS_ENDELLIPSIS,7,112,266,10);dialog.button("Use server name",279,109,94,[]{})->EnableWindow(FALSE);}
+  auto status=dialog.label("Checking current download details...",7,128,366,10);
+  dialog.button("Sche&dule...",7,142,51,[]{})->EnableWindow(FALSE);dialog.button("Download &Later",64,142,74,[]{})->EnableWindow(FALSE);
+  dialog.button("&Start Download",149,142,74,[]{})->EnableWindow(FALSE);
+  auto cancel=dialog.button("&Cancel",234,142,74,[]{});auto retry=dialog.button("&Retry",319,142,50,[]{});retry->ShowWindow(SW_HIDE);
+  const auto startInitial=[&,status,retry]{
+   if(initialTask.valid()||decisionTask.valid())return;retry->ShowWindow(SW_HIDE);status->SetWindowText(L"Checking current download details...");
+   try{initialTask.start(m,job,preparedView,dialog.taskNotifier()
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+    ,fileInfoInitialTestObserver
+#endif
+   );}catch(const std::exception& failure){status->SetWindowText(cs(failure.what()));retry->ShowWindow(SW_SHOW);}
+  };
+  dialog.bind(retry,startInitial);dialog.accept=[]{};
+  dialog.cancel=[&,status,cancel,retry]{
+   if(decisionTask.valid())return;initialTask.cancel();
+   try{decisionTask.startAction(m,[&,target=job,removeOffer=cancelNewOffer]{initialTask.finish();cancelFileInfoPrefetch(m,target,prefetchTask,removeOffer);return FileInfoDecisionResult{};},dialog.taskNotifier());}
+   catch(const std::exception& failure){status->SetWindowText(cs(failure.what()));retry->ShowWindow(SW_SHOW);return;}
+   cancel->EnableWindow(FALSE);retry->ShowWindow(SW_HIDE);status->SetWindowText(L"Stopping background download...");
+  };dialog.bind(cancel,dialog.cancel);
+  dialog.pulse=[&,status,cancel,retry]{
+   if(decisionTask.valid()){
+    if(!decisionTask.ready())return;
+    try{decisionTask.get();decisionTask.release();dialog.close(IDCANCEL);}
+    catch(const std::exception& failure){decisionTask.release();cancel->EnableWindow(TRUE);retry->ShowWindow(SW_SHOW);status->SetWindowText(cs(failure.what()));}
+    return;
+   }
+   if(!initialTask.ready())return;
+   FileInfoInitialResult result;
+   try{result=initialTask.take();}
+   catch(const std::exception& failure){status->SetWindowText(cs(failure.what()));retry->ShowWindow(SW_SHOW);return;}
+   if(result.cancelled||!result.view){status->SetWindowText(L"Download details were not prepared. Retry or cancel.");retry->ShowWindow(SW_SHOW);return;}
+   dialog.afterCurrentPulse([&,result=std::move(result)]()mutable{
+    try{
+     const auto focus=::GetFocus();const bool focused=focus==dialog.GetSafeHwnd()||::IsChild(dialog.GetSafeHwnd(),focus);
+     setInitialView(std::move(result.view),std::move(result.address));initial=std::move(result.login);initiallyBasic=result.basic;initialLoginPrepared=true;destinationListName=initialTarget.filename();
+     dialog.clearOwnedControls();dialog.resizeClient(380,128+footerOffset);buildInitialControls();dialog.refreshTheme();dialog.SetTimer(Form::pulseTimer,Form::pulseInterval,nullptr);
+     if(focused)if(auto first=::GetNextDlgTabItem(dialog.GetSafeHwnd(),nullptr,FALSE))::SetFocus(first);
+     dialog.PostMessage(WM_TIMER,initialPrefetchTimer,0);
+    }catch(...){initialConstructionFailure=std::current_exception();dialog.close(IDCANCEL);}
+   });
+  };
+  dialog.SetTimer(Form::pulseTimer,40,nullptr);startInitial();
  };
  dialog.afterInit=[&]{
   if(!job)dialog.SetTimer(Form::pulseTimer,40,nullptr);
@@ -901,5 +1013,5 @@ inline bool downloadInfo(CWnd* parent,Manager& m,JobPtr job,bool properties=fals
   if(!dialog.PostMessage(WM_TIMER,initialPrefetchTimer,0))
    dialog.SetTimer(initialPrefetchTimer,USER_TIMER_MINIMUM,nullptr);
  };
- INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){if(!job&&pending)pending->requestCancel();if(job)m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}if(job)m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1){if(!job&&pending)pending->requestCancel();throw std::runtime_error("Cannot open Download File Info.");}return result==IDOK;
+ INT_PTR result=IDCANCEL;try{result=dialog.DoModal();}catch(...){stopPreviewWork();decisionTask.release();actionTask.finish();nameTask.finish();categoryTask.finish();refreshTask.finish();initialTask.finish();previewTask.finish();bindingTask.finish();prefetchTask.finish();displayTask.reset();if(!job&&pending)pending->requestCancel();if(job&&initialReady)m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);throw;}stopPreviewWork();decisionTask.release();actionTask.finish();nameTask.finish();categoryTask.finish();refreshTask.finish();initialTask.finish();previewTask.finish();bindingTask.finish();prefetchTask.finish();displayTask.reset();if(job&&initialReady)m.endPrefetch(job);if(fileIcon)DestroyIcon(fileIcon);if(result==-1){if(!job&&pending)pending->requestCancel();throw std::runtime_error("Cannot open Download File Info.");}if(initialConstructionFailure)std::rethrow_exception(initialConstructionFailure);return result==IDOK;
 }

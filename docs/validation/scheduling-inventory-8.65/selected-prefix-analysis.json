@@ -1,0 +1,116 @@
+{
+  "passed": true,
+  "fullSchemaQualificationPassed": false,
+  "kernelCauseVerified": false,
+  "extensionBytesInterpreted": false,
+  "payloadIntegrityReverified": false,
+  "performanceComparison": false,
+  "scope": "selected thread-ID/state/wait-reason prefix fields and native-flush overlap only",
+  "failures": [],
+  "selectedPrefixRecords": 6883,
+  "nativeThreadRecords": 308,
+  "flushes": [
+    {
+      "nativeMs": 17.1845,
+      "observedOffCpuMs": 16.8899,
+      "notClassifiedOffCpuMs": 0.29460000000000003,
+      "intervals": [
+        {
+          "beginAfterNativeStartMs": 0.0756,
+          "offCpuMs": 0.2464,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0081
+        },
+        {
+          "beginAfterNativeStartMs": 0.3593,
+          "offCpuMs": 0.1719,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0091
+        },
+        {
+          "beginAfterNativeStartMs": 0.5488000000000001,
+          "offCpuMs": 0.0409,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 27,
+          "afterFirstReadyNotificationMs": 0.0224
+        },
+        {
+          "beginAfterNativeStartMs": 0.6506000000000001,
+          "offCpuMs": 0.195,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0097
+        },
+        {
+          "beginAfterNativeStartMs": 0.8741,
+          "offCpuMs": 16.073800000000002,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.008700000000000001
+        },
+        {
+          "beginAfterNativeStartMs": 16.9901,
+          "offCpuMs": 0.15560000000000002,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0048000000000000004
+        },
+        {
+          "beginAfterNativeStartMs": 17.1675,
+          "offCpuMs": 0.0063,
+          "oldStateByte": 1,
+          "oldWaitReasonByte": 31
+        }
+      ]
+    },
+    {
+      "nativeMs": 22.014,
+      "observedOffCpuMs": 21.7452,
+      "notClassifiedOffCpuMs": 0.26880000000000004,
+      "intervals": [
+        {
+          "beginAfterNativeStartMs": 0.054,
+          "offCpuMs": 0.1757,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0053
+        },
+        {
+          "beginAfterNativeStartMs": 0.2879,
+          "offCpuMs": 0.0235,
+          "oldStateByte": 1,
+          "oldWaitReasonByte": 31
+        },
+        {
+          "beginAfterNativeStartMs": 0.36110000000000003,
+          "offCpuMs": 0.1655,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0051
+        },
+        {
+          "beginAfterNativeStartMs": 0.552,
+          "offCpuMs": 21.215300000000003,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.0298
+        },
+        {
+          "beginAfterNativeStartMs": 21.811,
+          "offCpuMs": 0.1652,
+          "oldStateByte": 5,
+          "oldWaitReasonByte": 0,
+          "afterFirstReadyNotificationMs": 0.009600000000000001
+        }
+      ]
+    }
+  ],
+  "limitations": "Offsets follow the Microsoft version-tolerant parser and known-schema TDH controls. Version-5 full TDH schema remains unavailable. Off-CPU time, state/reason bytes and ReadyThread overlap do not identify disk queueing, filesystem/filter work, exact CPU time or an IDM difference.",
+  "inputSha256": {
+    "report": "634269BB1D1901FAC8B66F87807854FC7CD7772B23DC151C48B9203DAD6748AF",
+    "native": "947C1606C1FB4C86D7A8B18224F8E57864A583972CDEE3658350FED5878A4DE9",
+    "controls": "BBCF5B2FAFD6C6713D3E953E2EB6EF980429B93759E60E847FFCC26508A8BB8B"
+  }
+}

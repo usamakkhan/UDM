@@ -1,0 +1,307 @@
+{
+  "schema": 1,
+  "passed": true,
+  "purpose": "Diagnostic baseline for receipt-only pruning, not a product improvement or IDM speed comparison.",
+  "qualifiedNativeVersion": "8.53",
+  "installedVersion": "8.32",
+  "source": "benchmarks/speed/recovery_pruning_control.cpp",
+  "sourceSha256": "D52FBC76C3AA8123AA057A12EC214B15F9FE80EC872A16E6641C73B19C82F7D5",
+  "controlBinarySha256": "7B89AD901A672837A5E242A88DCD2D145EE241BF14093249D2EC02E425F38AFF",
+  "controlObjectSha256": "382699C839CB6DB52504D12135776255575F149CD05F6A5E7043E3BF44C775FA",
+  "heldBoundary": "Actual temporary-flushed catalog checkpoint during unscoped receipt-only recovery pruning. Explicit release; ten-second watchdog is a refusal, not a timing target.",
+  "results": [
+    {
+      "drive": "C",
+      "result": {
+        "cases": [
+          {
+            "actualCatalogFlushHeld": true,
+            "allCompletedBytesPreserved": true,
+            "holdExpired": false,
+            "modelAvailable": false,
+            "receiptPruningDurable": true,
+            "receipts": 1
+          },
+          {
+            "actualCatalogFlushHeld": true,
+            "allCompletedBytesPreserved": true,
+            "holdExpired": false,
+            "modelAvailable": false,
+            "receiptPruningDurable": true,
+            "receipts": 16
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "drive": "D",
+      "result": {
+        "cases": [
+          {
+            "actualCatalogFlushHeld": true,
+            "allCompletedBytesPreserved": true,
+            "holdExpired": false,
+            "modelAvailable": false,
+            "receiptPruningDurable": true,
+            "receipts": 1
+          },
+          {
+            "actualCatalogFlushHeld": true,
+            "allCompletedBytesPreserved": true,
+            "holdExpired": false,
+            "modelAvailable": false,
+            "receiptPruningDurable": true,
+            "receipts": 16
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    }
+  ],
+  "qualifiedInputsUnchanged": {
+    "sourceFiles": 509,
+    "coreObjects": 42,
+    "products": 5
+  },
+  "productCodeChanged": false,
+  "limitation": "This proves a held catalog flush blocks Model in qualified 8.53. It does not measure natural disk latency, GUI message pumping or IDM timing.",
+  "cleanup": {
+    "files": 46,
+    "logicalBytesRemoved": 7309440,
+    "outputs": [
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 471,
+        "sha256": "A1E41057DB27E483F87A03E38B61F951E22985AEEEEA10B9D64A6FE267FEF641"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 2855,
+        "sha256": "F05E039C583CB97F2C6524C7A0E14335858E4DADB401F250C9516F9A481A89A8"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 9717,
+        "sha256": "0870F3DF989B70584A2A829B748F5AFB83D14CB2476941E9E38BC8C8B7A039B8"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 2854,
+        "sha256": "11C48994E368FC99C1651F71AF5F5352656F657A43CC6B37652508C4951431BE"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 3304,
+        "sha256": "60C2A48C7A7453C7C518D8DDCB6AD54D29C69EBB0FB8082EDB6E12A601D7410F"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 471,
+        "sha256": "A1E41057DB27E483F87A03E38B61F951E22985AEEEEA10B9D64A6FE267FEF641"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 2817,
+        "sha256": "9C053EF05BCBFFD005F73449A422E279DEB901B9CE98625FC81CFE7CD64B73B6"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 9071,
+        "sha256": "C1900148E207FE539F8840FAA4103E3435249F59DC580E48554E7CBDD1B0BD15"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 2816,
+        "sha256": "82CE428D6CEB2FE5F2A5ED1F5EC02B6A14020D8F2C055A267C5AA3A15DA60118"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 3228,
+        "sha256": "4E3AD627C458AB015168CC8D90A3935664F3A9C6A6F6B590E40CDE768EB65200"
+      },
+      {
+        "kind": "owned-pruning-fixture-file",
+        "bytes": 14,
+        "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+      },
+      {
+        "kind": "diagnostic-build-output",
+        "bytes": 2214400,
+        "sha256": "7B89AD901A672837A5E242A88DCD2D145EE241BF14093249D2EC02E425F38AFF"
+      },
+      {
+        "kind": "diagnostic-build-output",
+        "bytes": 5056960,
+        "sha256": "382699C839CB6DB52504D12135776255575F149CD05F6A5E7043E3BF44C775FA"
+      }
+    ]
+  }
+}

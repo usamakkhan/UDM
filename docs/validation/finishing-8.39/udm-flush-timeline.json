@@ -1,0 +1,58 @@
+{
+  "nativeVersion": "8.39",
+  "instrumentedAttributionOnly": true,
+  "reference": "Last observed successful native body-file write return, not origin last-byte time or full application exit.",
+  "bodyWrites": 16,
+  "timeline": [
+    {
+      "role": "catalog",
+      "startAfterLastBodyWriteMs": -1109.7422,
+      "endAfterLastBodyWriteMs": -1109.0971,
+      "durationMs": 0.6451
+    },
+    {
+      "role": "body",
+      "startAfterLastBodyWriteMs": -459.1867,
+      "endAfterLastBodyWriteMs": -452.5728,
+      "durationMs": 6.6139
+    },
+    {
+      "role": "catalog",
+      "startAfterLastBodyWriteMs": -186.5426,
+      "endAfterLastBodyWriteMs": -185.6803,
+      "durationMs": 0.8623
+    },
+    {
+      "role": "body",
+      "startAfterLastBodyWriteMs": -65.9805,
+      "endAfterLastBodyWriteMs": -61.5813,
+      "durationMs": 4.3992
+    },
+    {
+      "role": "body",
+      "startAfterLastBodyWriteMs": 15.5721,
+      "endAfterLastBodyWriteMs": 17.559,
+      "durationMs": 1.9869
+    },
+    {
+      "role": "publication-intent",
+      "startAfterLastBodyWriteMs": 20.832,
+      "endAfterLastBodyWriteMs": 22.0336,
+      "durationMs": 1.2016
+    },
+    {
+      "role": "catalog",
+      "startAfterLastBodyWriteMs": 26.5882,
+      "endAfterLastBodyWriteMs": 27.3407,
+      "durationMs": 0.7525
+    }
+  ],
+  "flushesBeforeReference": 4,
+  "flushesAfterReference": 3,
+  "postReferenceNativeFlushDurationSumMs": 3.941,
+  "prePublicationMetadataMs": 10.1528,
+  "conclusion": "The seven-operation count includes four transfer-overlapped flushes; only three observed native flushes follow the last body write. Do not infer seven serial finishing barriers.",
+  "performanceParityVerified": false,
+  "kernelWaitCauseVerified": false,
+  "shutdownVerified": false
+}

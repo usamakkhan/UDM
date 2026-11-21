@@ -1,0 +1,212 @@
+{
+  "checks": [
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "Large batches use the actual native owner-data list",
+      "passed": true
+    },
+    {
+      "name": "Virtual first and last cells expose the complete prepared row data",
+      "passed": true
+    },
+    {
+      "name": "The virtual control caches viewport cells instead of materializing every cell",
+      "passed": true
+    },
+    {
+      "name": "Programmatic check updates the virtual source model",
+      "passed": true
+    },
+    {
+      "name": "Space toggles the focused virtual checkbox exactly once",
+      "passed": true
+    },
+    {
+      "name": "Space key release does not toggle again",
+      "passed": true
+    },
+    {
+      "name": "The real virtual control exposes a native checkbox hit target",
+      "passed": true
+    },
+    {
+      "name": "Native checkbox mouse messages toggle the source model exactly once",
+      "passed": true
+    },
+    {
+      "name": "The virtual list retains the actual batch column handler",
+      "passed": true
+    },
+    {
+      "name": "Sorting preserves checked selected and focused source identity",
+      "passed": true
+    },
+    {
+      "name": "Descending column sorting reads actual virtual names",
+      "passed": true
+    },
+    {
+      "name": "The actual HTML filter remains available",
+      "passed": true
+    },
+    {
+      "name": "Filtering removes the HTML source from the virtual list",
+      "passed": true
+    },
+    {
+      "name": "Filtering preserves another source's check and selection",
+      "passed": true
+    },
+    {
+      "name": "Removing the filter restores the original unchecked source identity",
+      "passed": true
+    },
+    {
+      "name": "Both actual virtual batch selection commands remain available",
+      "passed": true
+    },
+    {
+      "name": "Check All reaches every virtual row",
+      "passed": true
+    },
+    {
+      "name": "Uncheck All reaches every virtual row",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    },
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "Large batches use the actual native owner-data list",
+      "passed": true
+    },
+    {
+      "name": "Virtual first and last cells expose the complete prepared row data",
+      "passed": true
+    },
+    {
+      "name": "The virtual control caches viewport cells instead of materializing every cell",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    },
+    {
+      "name": "Create the owned large-batch timer",
+      "passed": true
+    },
+    {
+      "name": "The large batch frame exposes Cancel while its initial catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "The full large batch view becomes ready while a later catalog writer is held",
+      "passed": true
+    },
+    {
+      "name": "Large list rows retain the first and last source identities",
+      "passed": true
+    },
+    {
+      "name": "Browser batches remain explicitly unchecked at both ends of the large list",
+      "passed": true
+    },
+    {
+      "name": "Large batches use the actual native owner-data list",
+      "passed": true
+    },
+    {
+      "name": "Virtual first and last cells expose the complete prepared row data",
+      "passed": true
+    },
+    {
+      "name": "The virtual control caches viewport cells instead of materializing every cell",
+      "passed": true
+    },
+    {
+      "name": "The measured large batch closes with its readers joined and no accepted save",
+      "passed": true
+    },
+    {
+      "name": "Large batch projection and cancellation never mutate the catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "measurements": [
+    {
+      "cachedCells": 246,
+      "firstPaintMs": 32.940600000321865,
+      "firstPaintUiCpuMs": 15.625,
+      "readyAfterReleaseMs": 235.89499999955297,
+      "readyUiCpuMs": 203.125,
+      "rows": 100
+    },
+    {
+      "cachedCells": 246,
+      "firstPaintMs": 26.105800000950694,
+      "firstPaintUiCpuMs": 15.625,
+      "readyAfterReleaseMs": 463.76310000009835,
+      "readyUiCpuMs": 218.75,
+      "rows": 2000
+    },
+    {
+      "cachedCells": 246,
+      "firstPaintMs": 28.233599999919534,
+      "firstPaintUiCpuMs": 15.625,
+      "readyAfterReleaseMs": 1399.246799999848,
+      "readyUiCpuMs": 281.25,
+      "rows": 10000
+    }
+  ],
+  "passed": true
+}

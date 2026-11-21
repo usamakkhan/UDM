@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "Initial browser projection retains source order and filters repeated plain links",
+      "passed": true
+    },
+    {
+      "name": "Projected browser rows retain explicit unchecked semantics",
+      "passed": true
+    },
+    {
+      "name": "URL names and normalized extensions are prepared before the GUI consumes rows",
+      "passed": true
+    },
+    {
+      "name": "Scoped observed size metadata avoids an unnecessary preview request",
+      "passed": true
+    },
+    {
+      "name": "The initial category destination is projected from the same settings snapshot",
+      "passed": true
+    },
+    {
+      "name": "A later URL edit invalidates cached naming and destination evidence",
+      "passed": true
+    },
+    {
+      "name": "Projecting and editing a result never mutates immutable caller inputs",
+      "passed": true
+    },
+    {
+      "name": "Ordinary imports keep repeated rows and untouched default checks",
+      "passed": true
+    },
+    {
+      "name": "Import request and name preparation preserves each original address",
+      "passed": true
+    },
+    {
+      "name": "The initial browser image filter applies only to matched source context",
+      "passed": true
+    },
+    {
+      "name": "Mismatched browser context supplies no observed hints, headers, image flag or website session",
+      "passed": true
+    },
+    {
+      "name": "Media rows retain their names and unknown track-size state and are not deduplicated as ordinary URLs",
+      "passed": true
+    },
+    {
+      "name": "Prepared preview requests own the complete matching headers, route and session",
+      "passed": true
+    },
+    {
+      "name": "A saved login prevents reusing observed metadata for a potentially different authenticated request",
+      "passed": true
+    },
+    {
+      "name": "Changing browser proxy policy invalidates the observed hint fast path",
+      "passed": true
+    },
+    {
+      "name": "Projection cancellation is checked between rows without partially publishing the result",
+      "passed": true
+    },
+    {
+      "name": "Projection rejects a browser-context cardinality mismatch",
+      "passed": true
+    },
+    {
+      "name": "The owned initial worker projects rows only after releasing the catalog lock",
+      "passed": true
+    },
+    {
+      "name": "Row preparation and metadata owner creation never mutate catalog state or accepted ownership",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

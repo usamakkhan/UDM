@@ -1,0 +1,32 @@
+{
+  "label": "9.61 owned body-writeback/intent overlap versus frozen 9.60 and IDM",
+  "trial": 2,
+  "case": "single-4m",
+  "client": "idm",
+  "bytes": 4194304,
+  "configuredConnections": 1,
+  "firstAvailabilityTailSeconds": 0.05161649999899964,
+  "processExitTailSeconds": 0.5446418999981688,
+  "processExitWallSeconds": 2.343448099998568,
+  "firstAvailabilityWallSeconds": 1.850422699999399,
+  "exitAfterFirstAvailabilitySeconds": 0.49302539999916917,
+  "clockMappingErrorBoundSeconds": 6.699999175907578e-06,
+  "clockDriftSeconds": 3.600000023862293e-06,
+  "trackedProcesses": 1,
+  "requests": 1,
+  "originConnections": 1,
+  "peakConcurrent": 1,
+  "originBytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 0.5805058999994799,
+  "durableWallSeconds": 2.379312099999879,
+  "postExitToDurableSeconds": 0.03586400000131107,
+  "postExitOperations": {
+    "openSeconds": 8.589999924879521e-05,
+    "flushSeconds": 0.012874600000941427,
+    "closeSeconds": 5.03999999637017e-05
+  }
+}

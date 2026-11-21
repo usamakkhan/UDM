@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "name": "An unchanged complete request cohort matches its prepared refresh",
+      "passed": true
+    },
+    {
+      "name": "A matching refresh publishes its prepared metadata",
+      "passed": true
+    },
+    {
+      "name": "A matching refresh publishes real size and naming evidence",
+      "passed": true
+    },
+    {
+      "name": "Applying metadata preserves current destination description and explicit selection",
+      "passed": true
+    },
+    {
+      "name": "A superseding address rejects the older request cohort",
+      "passed": true
+    },
+    {
+      "name": "A rejected cohort neither partially changes earlier rows nor consumes their prepared evidence",
+      "passed": true
+    },
+    {
+      "name": "A superseding explicit name rejects old derived naming evidence",
+      "passed": true
+    },
+    {
+      "name": "A superseding protected request context rejects the old response evidence",
+      "passed": true
+    },
+    {
+      "name": "Changed batch authorization rejects the whole old request cohort",
+      "passed": true
+    },
+    {
+      "name": "A changed source count rejects old positional identities",
+      "passed": true
+    },
+    {
+      "name": "A source accepted after capture rejects the older advisory cohort",
+      "passed": true
+    },
+    {
+      "name": "Duplicated result identities cannot overwrite one row twice",
+      "passed": true
+    },
+    {
+      "name": "An out-of-range result identity is rejected before indexing current rows",
+      "passed": true
+    },
+    {
+      "name": "An incomplete bulk result cannot be presented as a complete cohort",
+      "passed": true
+    },
+    {
+      "name": "A complete bulk cohort may intentionally omit previously added rows",
+      "passed": true
+    },
+    {
+      "name": "A current single-row result changes only its captured source slot",
+      "passed": true
+    },
+    {
+      "name": "A changed-slot descriptor cannot borrow another row's prepared response",
+      "passed": true
+    },
+    {
+      "name": "A missing changed-row result cannot silently clear request suppression",
+      "passed": true
+    },
+    {
+      "name": "An invalid changed-slot descriptor is rejected",
+      "passed": true
+    },
+    {
+      "name": "Result publication uses stable identities rather than result vector order",
+      "passed": true
+    },
+    {
+      "name": "Advisory cohort validation and application never change catalog or command ownership",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

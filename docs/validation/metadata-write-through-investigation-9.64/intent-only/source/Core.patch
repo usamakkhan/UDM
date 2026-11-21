@@ -1,0 +1,17 @@
+--- native/Core.cpp
++++ intent-only/Core.cpp
+@@ -1,5 +1,6 @@
+ #include <optional>
+ #include "PreparedTransferCommit.hpp"
++#include "IntentWriteThroughExperiment.hpp"
+ #include "ServerConnections.hpp"
+ #include "BrowserProxy.hpp"
+ #include "BrowserSession.hpp"
+@@ -119,6 +120,7 @@
+ }
+ std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)throw std::runtime_error("File exceeds the supported size.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot read file.");std::string s((std::istreambuf_iterator<char>(f)),{});if(s.rfind("\xEF\xBB\xBF",0)==0)s.erase(0,3);return s;}
+ void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){
++ if(experimentWriteThroughIntent(p)){experimentAtomicIntent(p,s,backup,checkpoint);return;}
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  if(checkpoint)nativeUiTraceRecord("save-atomic-entry");
+  nativeUiTraceSaveRecord("save-atomic-entry");

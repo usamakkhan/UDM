@@ -1,0 +1,179 @@
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -1,3 +1,4 @@
++#include "InternetZone.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "PublishedWriteback.hpp"
+ #include "FinishSettlement.hpp"
+@@ -595,7 +596,7 @@
+ }
+ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
+  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
+- JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false){
++ JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false,bool* zonePreparationAttempted=nullptr){
+  const auto httpStartTick=GetTickCount64();
+  // HTTP/3 multiplexes every range of this download over one QUIC connection, which on a shared
+  // link gets one connection's share: Alpine over a 4 MB/s link took 143 to 156 s against 64 s on
+@@ -962,6 +963,12 @@
+    const bool reserveRegular=allowSparse&&size>=0&&size<=64*1048576LL&&fixedVolume(dataPath(parts,job->id()));
+    bool sparseDataFile=false;const auto migrated=prepareDataFile(parts,job->id(),size,plan,*cancel,allowSparse&&!reserveRegular,reserveRegular,sparseDataFile);
+    cancel->check();
++   // The response is already open; prepare the Internet-zone stream before
++   // body writers begin. The usual final mark still verifies it and repairs
++   // missing/changed metadata, including copy, prefix and retry fallbacks.
++   if(zonePreparationAttempted&&bodyCache&&!retainInlineBody&&fresh&&encoding.empty()&&size>0&&size<=64*1048576LL&&!sparseDataFile&&fixedVolume(dataFile)){
++    markZone(dataFile);*zonePreparationAttempted=true;
++   }
+    {
+     Lock lock(m.mutex);auto& data=job->data;data["Segments"]=plan;data["SparseDataFile"]=sparseDataFile;
+     i64 received=0;for(const auto& segment:plan)received+=num(segment,"Done");
+@@ -2274,7 +2281,7 @@
+  }
+  const Url address(url);
+  const bool ftp=address.scheme=="ftp";
+- WrittenBodyCache mediumStage;
++ WrittenBodyCache mediumStage;bool zonePreparationAttempted=false;
+  bool post;{Lock lock(m.mutex);post=!ftp&&!str(job->data,"ProtectedRequest").empty();}
+  if(post){
+   if(!completedPrefetch(m,job,parts,*cancel,false,false,nullptr,verifiedPrefetch)){
+@@ -2295,7 +2302,7 @@
+     const auto sourceDrive=parts.root_name().wstring(),destinationDrive=folder.root_name().wstring();
+     const bool crossDrive=ownsConnection&&sourceDrive.size()==2&&destinationDrive.size()==2&&
+      sourceDrive.back()==L':'&&destinationDrive.back()==L':'&&_wcsicmp(sourceDrive.c_str(),destinationDrive.c_str())!=0;
+-    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,ownsConnection?&mediumStage:nullptr,crossDrive);
++    transferHttp(m,job,cancel,prefs,headers,url,parts,limitOwner,sharedRate,{},&hasher,ownsConnection?&mediumStage:nullptr,crossDrive,&zonePreparationAttempted);
+    }
+    rememberPrefetch=true;
+   }
+@@ -2523,7 +2530,7 @@
+  if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+  else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+  {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+- const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
++ const auto metadataTarget=prepareFinal?staging:job->target();if(zonePreparationAttempted)ensureInternetZone(metadataTarget);else markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+  // The file and its catalog entry are published. Let the UI present completion
+  // before NTFS normalization and advisory hashing. The worker remains active,
+  // so opening the file, scans and completion actions keep their existing gates.
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,44,0,0
+-#define UDM_VERSION_STRING "8.44"
+-#define UDM_VERSION_WSTRING L"8.44"
++#define UDM_VERSION_TUPLE 8,45,0,0
++#define UDM_VERSION_STRING "8.45"
++#define UDM_VERSION_WSTRING L"8.45"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -14,6 +14,7 @@
+   {"source": "WrittenBodyCacheTests", "timeoutSeconds": 30},
+   {"source": "WrittenPrefixTests", "timeoutSeconds": 30},
+   {"source": "PrefinishWritebackTests", "timeoutSeconds": 30},
++  {"source": "InternetZoneTests", "timeoutSeconds": 30},
+   {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+   {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.8",
++  "version": "0.72.9",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.8",
++  "version": "0.72.9",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- /dev/null
++++ b/native/InternetZone.hpp
+@@ -0,0 +1,24 @@
++#pragma once
++#include "Core.hpp"
++#include <cstring>
++namespace udm {
++enum class InternetZoneResult {Preserved,Written,Unavailable};
++inline constexpr char internetZoneMarker[]="[ZoneTransfer]\r\nZoneId=3\r\n";
++// Only our exact complete marker can skip a write. Do not infer a safe zone
++// from a prefix, partial read, different encoding or an inaccessible stream.
++inline InternetZoneResult ensureInternetZone(const fs::path& file){
++ const auto stream=file.wstring()+L":Zone.Identifier";
++ {
++  Handle existing(CreateFileW(stream.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));
++  LARGE_INTEGER size{};char bytes[sizeof(internetZoneMarker)-1]{};DWORD read=0;
++  if(existing&&GetFileSizeEx(existing.h,&size)&&size.QuadPart==static_cast<LONGLONG>(sizeof(bytes))&&
++     ReadFile(existing.h,bytes,sizeof(bytes),&read,nullptr)&&read==sizeof(bytes)&&
++     std::memcmp(bytes,internetZoneMarker,sizeof(bytes))==0)return InternetZoneResult::Preserved;
++ }
++ Handle output(CreateFileW(stream.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));
++ DWORD written=0;
++ if(output&&WriteFile(output.h,internetZoneMarker,sizeof(internetZoneMarker)-1,&written,nullptr)&&written==sizeof(internetZoneMarker)-1)
++  return InternetZoneResult::Written;
++ return InternetZoneResult::Unavailable;
++}
++}
+--- /dev/null
++++ b/native/InternetZoneTests.cpp
+@@ -0,0 +1,51 @@
++#include "InternetZone.hpp"
++#include <iostream>
++using namespace udm;
++static void zoneBytes(const fs::path& file,const std::string& bytes){
++ const auto stream=file.wstring()+L":Zone.Identifier";
++ Handle output(CreateFileW(stream.c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));
++ DWORD written=0;if(!output||!WriteFile(output.h,bytes.data(),static_cast<DWORD>(bytes.size()),&written,nullptr)||written!=static_cast<DWORD>(bytes.size()))throw std::runtime_error("Fixture cannot seed zone stream.");
++}
++static std::string zoneText(const fs::path& file){return readText(fs::path(file.wstring()+L":Zone.Identifier"),32768);}
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
++ Json checks=Json::array();bool passed=false;std::string error;
++ auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
++ try{
++  const auto source=root/L"body.part";atomicText(source,"owned complete body",false);const auto hash=fileHash(source);
++  check(ensureInternetZone(source)==InternetZoneResult::Written,"A fresh file receives the full Internet-zone marker");
++  check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"Zone creation preserves the body and writes exactly ZoneId 3");
++  {
++   Handle reader(CreateFileW((source.wstring()+L":Zone.Identifier").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
++   check(static_cast<bool>(reader),"Fixture holds an existing correct stream with writes excluded");
++   check(ensureInternetZone(source)==InternetZoneResult::Preserved,"Correct metadata is accepted without requesting a rewrite");
++   markZone(source);check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"The legacy best-effort markZone entry leaves a read-held correct marker and body intact");
++  }
++  const std::vector<std::string> invalid={"","[ZoneTransfer]\r\nZoneId=1\r\n","[ZoneTransfer]\r\nZoneId=3","[ZoneTransfer]\r\nZoneId=3\r\nextra",std::string(16000,'x'),std::string("\xff\xfe[\0Z\0",6)};
++  for(const auto& bytes:invalid){
++   zoneBytes(source,bytes);
++   check(ensureInternetZone(source)==InternetZoneResult::Written,"Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write");
++   check(zoneText(source)==internetZoneMarker&&fileHash(source)==hash,"Repair truncates invalid metadata to the complete marker without changing bytes");
++  }
++  zoneBytes(source,"changed after preparation");
++  {
++   Handle reader(CreateFileW((source.wstring()+L":Zone.Identifier").c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));
++   check(static_cast<bool>(reader),"Fixture holds invalid metadata against writes");
++   check(ensureInternetZone(source)==InternetZoneResult::Unavailable,"A refused marker repair is not reported as preserved or written");
++   check(zoneText(source)=="changed after preparation"&&fileHash(source)==hash,"A best-effort metadata failure preserves the existing body and stream");
++  }
++  check(ensureInternetZone(source)==InternetZoneResult::Written,"Final verification repairs a changed marker after the refusal is released");
++  check(DeleteFileW((source.wstring()+L":Zone.Identifier").c_str())!=FALSE,"Fixture removes the early marker before final verification");
++  check(ensureInternetZone(source)==InternetZoneResult::Written&&zoneText(source)==internetZoneMarker,"Final verification restores a missing early marker");
++  const auto stage=root/L"stage.assembling",final=root/L"final.bin";
++  check(CreateHardLinkW(stage.c_str(),source.c_str(),nullptr)!=FALSE,"Fixture creates the normal same-volume staging hard link");
++  check(ensureInternetZone(stage)==InternetZoneResult::Preserved&&zoneText(stage)==internetZoneMarker,"Prepared metadata follows the actual body through its staging alias");
++  check(MoveFileExW(stage.c_str(),final.c_str(),0)!=FALSE,"Fixture publishes the staged hard link");
++  check(ensureInternetZone(final)==InternetZoneResult::Preserved&&fileHash(final)==hash,"Publication retains the correct marker without a second metadata write");
++  const auto copied=root/L"copied.bin";atomicText(copied,"owned complete body",false);
++  check(ensureInternetZone(copied)==InternetZoneResult::Written&&zoneText(copied)==internetZoneMarker&&fileHash(copied)==hash,"A body-only copy still gets its own final Internet-zone marker");
++  passed=true;
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);
++ std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
++}

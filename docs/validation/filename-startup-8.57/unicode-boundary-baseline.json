@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "accepted": true,
+      "inputIsValidUtf8": true,
+      "prefixAsciiUnits": 138,
+      "requestedExtension": ".mp4",
+      "result": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ud83d\ude42.mp4"
+    },
+    {
+      "accepted": false,
+      "error": "Invalid Unicode text.",
+      "inputIsValidUtf8": true,
+      "prefixAsciiUnits": 139,
+      "requestedExtension": ".mp4"
+    }
+  ],
+  "engineVersion": "8.56",
+  "probeSourceSha256": "813363CCF78B149EB22C5044F4180F9CD3BCFD5692B0CCD5E7492711D33FEEE9",
+  "probeBinarySha256": "D48CF9B2BBC6DF1E05CD875C1D56F3A96827AC810A1145A17C2546E25FA1C188",
+  "scope": "Existing qualified 8.56 behavior. Not changed by the reserved-name regex cache. Valid UTF-8 input splits a surrogate at the 140-unit stem boundary before an extension, then conversion fails. Recorded for the next filename-correctness increment."
+}

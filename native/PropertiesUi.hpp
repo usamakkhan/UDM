@@ -30,6 +30,13 @@ inline void advancedProperties(CWnd* owner,Manager& manager,Json& draft){
 inline std::string propertiesLocation(const fs::path& target,const AsyncFileStatus::Result* status=nullptr){return status&&status->missing(target)?"The file has been moved.":utf8(target.wstring());}
 inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::function<int(CMenu&,CPoint,CWnd*)>& selectMenu={},AsyncFileStatus* locationProbe=nullptr){
  Json draft;bool active;{Lock lock(manager.mutex);draft=job->snapshot();active=manager.isActive(job);}bool complete=str(draft,"Status")=="Complete",everEditable=!active;Form d("File Properties",318,246,parent);d.dialogUnits=true;HICON fileIcon=nullptr;
+ // This joined task owns only Manager/Job and value drafts; no HWND or
+ // dialog references cross into the worker. Standard close waits for saving.
+ FileInfoDecisionTask saveTask;bool handlingSave=false;
+ struct SaveHandlingScope {bool& flag;explicit SaveHandlingScope(bool& value):flag(value){flag=true;}~SaveHandlingScope(){flag=false;}};
+ std::vector<std::pair<HWND,bool>> saveControlStates;
+ const auto restoreSaveControls=[&]{for(const auto& value:saveControlStates)if(IsWindow(value.first))::EnableWindow(value.first,value.second);saveControlStates.clear();};
+ d.cancel=[&]{if(saveTask.valid()||handlingSave)return;d.close(IDCANCEL);};
  static constexpr const char* editableMetadata[]={"Category","Queue","QueueMember","Connections","LimitKbps","ExpectedSha256","SuppressCompletionDialog","ProtectedHeaders","DownloadPage"};
  const auto requestTarget=str(draft,"Url");
  Json originalProperties=Json::object();for(auto key:editableMetadata)if(draft.contains(key))originalProperties[key]=draft[key];
@@ -55,18 +62,19 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   d.label("Size:",7,60,43);auto sizeText=d.control(L"STATIC",length<0?"Unknown":bytes(length)+" ("+std::to_string(length)+" Bytes)"+(savedSize>=0?" — saved output":""),SS_ENDELLIPSIS,58,60,253,9);
   d.label("Save To:",7,77,45);auto path=d.edit(propertiesLocation(job->target()),58,74,197,14,complete);
   auto displayedDestination=std::make_shared<std::string>(text(path));
-  auto relocate=d.button(complete?"&Move":"&Browse...",261,74,50,[&,name,path,displayedDestination]{bool finished;{Lock lock(manager.mutex);if(manager.isActive(job))return;finished=str(job->data,"Status")=="Complete";}if(finished){moveCompleted(&d,manager,job);Lock lock(manager.mutex);draft["Folder"]=job->data["Folder"];draft["FileName"]=job->data["FileName"];name->SetWindowText(cs(str(draft,"FileName")));*displayedDestination=propertiesLocation(job->target());path->SetWindowText(cs(*displayedDestination));}else{CFileDialog chooser(FALSE,nullptr,wide(text(path)).c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All files|*.*||",&d);if(chooser.DoModal()==IDOK)path->SetWindowText(chooser.GetPathName());}});relocate->EnableWindow(!active);
+  auto relocate=d.button(complete?"&Move":"&Browse...",261,74,50,[&,name,path,displayedDestination]{if(saveTask.valid()||handlingSave)return;bool finished;{Lock lock(manager.mutex);if(manager.isActive(job))return;finished=str(job->data,"Status")=="Complete";}if(finished){moveCompleted(&d,manager,job);Lock lock(manager.mutex);draft["Folder"]=job->data["Folder"];draft["FileName"]=job->data["FileName"];name->SetWindowText(cs(str(draft,"FileName")));*displayedDestination=propertiesLocation(job->target());path->SetWindowText(cs(*displayedDestination));}else{CFileDialog chooser(FALSE,nullptr,wide(text(path)).c_str(),OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR,L"All files|*.*||",&d);if(chooser.DoModal()==IDOK)path->SetWindowText(chooser.GetPathName());}});relocate->EnableWindow(!active);
   d.label("Address:",7,96,44);auto address=d.edit(capturedMedia(draft)?downloadAddress(draft):str(draft,"Url"),58,93,253,14,capturedMedia(draft));
   d.label("Description:",7,115,47);auto desc=d.edit(str(draft,"Description"),58,112,253);rule(131);
   auto displayedAddress=std::make_shared<std::string>(text(address)),displayedDescription=std::make_shared<std::string>(text(desc));
   d.label("The web page from which this file was obtained:",7,136,304);
-  auto page=d.staticLink(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft),7,149,304,[&]{Url url(recoveryPage(draft));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("No HTTP or HTTPS source page is available.");openFile(&d,fs::path(wide(url.full)));});page->EnableWindow(!recoveryPage(draft).empty());rule(161);
+  auto page=d.staticLink(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft),7,149,304,[&]{if(saveTask.valid()||handlingSave)return;Url url(recoveryPage(draft));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("No HTTP or HTTPS source page is available.");openFile(&d,fs::path(wide(url.full)));});page->EnableWindow(!recoveryPage(draft).empty());rule(161);
   Json loginPrefs;{Lock lock(manager.mutex);loginPrefs=manager.state["Settings"];}auto headers=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto initial=basicLogin(headers);auto requestDraft=std::make_shared<PropertiesRequestDraft>(PropertiesRequestInput{initial.first,initial.second,headerValue(headers,"Referer")});
   d.label("Referer:",7,171,47);auto referer=d.edit(headerValue(headers,"Referer"),58,167,253);
   d.control(L"STATIC","Login",SS_RIGHT,23,188,50,9);auto user=d.edit(initial.first,80,185,126,13);
   d.control(L"STATIC","Password",SS_RIGHT,21,205,52,9);auto password=d.edit(initial.second,80,203,126,13,false,false,true);rule(220);
   auto syncAuth=[&,user,password,referer,requestDraft]{requestDraft->apply(draft,{text(user),text(password),text(referer)});};
   auto more=d.button("More...",7,227,50,[]{});d.bind(more,[&,syncAuth,user,password,referer,requestDraft,page,loginPrefs,more]{
+   if(saveTask.valid()||handlingSave)return;
    {Lock lock(manager.mutex);active=manager.isActive(job);}CMenu menu;menu.CreatePopupMenu();menu.AppendMenu(MF_STRING|(active?MF_GRAYED:MF_ENABLED),1,L"Advanced properties...");menu.AppendMenu(MF_STRING,2,L"Download links...");menu.AppendMenu(MF_STRING,3,L"Virus check...");menu.AppendMenu(MF_STRING,4,L"Last attempt and result...");menu.AppendMenu(MF_STRING|(capturedMedia(draft)||active?MF_GRAYED:MF_ENABLED)|(password->SendMessage(EM_GETPASSWORDCHAR)?MF_UNCHECKED:MF_CHECKED),5,L"Show password");if(hasAudioMetadata(draft))menu.AppendMenu(MF_STRING,7,L"Audio metadata...");menu.AppendMenu(MF_SEPARATOR);menu.AppendMenu(MF_STRING,6,L"Cancel edits");CRect anchor;more->GetWindowRect(&anchor);CPoint point(anchor.left,anchor.bottom);const auto choice=selectMenu?selectMenu(menu,point,&d):menu.TrackPopupMenu(TPM_RETURNCMD,point.x,point.y,&d);{Lock lock(manager.mutex);active=manager.isActive(job);}
    if(choice==1&&!active){syncAuth();advancedProperties(&d,manager,draft);auto h=siteRequestHeaders(str(draft,"Url"),readHeaders(draft),loginPrefs);auto login=basicLogin(h);requestDraft->reset({login.first,login.second,headerValue(h,"Referer")});user->SetWindowText(cs(login.first));password->SetWindowText(cs(login.second));referer->SetWindowText(cs(headerValue(h,"Referer")));page->SetWindowText(cs(recoveryPage(draft).empty()?"Unknown":recoveryPage(draft)));page->EnableWindow(!recoveryPage(draft).empty());}
    else if(choice==2)downloadLinkDetails(&d,manager,job);else if(choice==3)fileScanner(&d,manager,job);
@@ -76,6 +84,7 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   });
   auto canOpenLocked=[&]{return completedFileOpenReady(job->data,manager.isActive(job)||manager.isRelocating(job));};
   auto open=d.button("Open",172,227,50,[&,canOpenLocked]{
+   if(saveTask.valid()||handlingSave)return;
    fs::path target;
    {
     Lock lock(manager.mutex);
@@ -86,6 +95,15 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
   });
   open->EnableWindow(FALSE);
   d.pulse=[&,open,canOpenLocked,icon,type,path,name,statusText,sizeText,address,desc,referer,user,password,relocate,displayedDestination,displayedAddress,displayedDescription]{
+   if(handlingSave)return;
+   if(saveTask.valid()){
+    if(!saveTask.ready())return;
+    SaveHandlingScope handling(handlingSave);std::exception_ptr failure;try{saveTask.get();}catch(...){failure=std::current_exception();}
+    saveTask.release();restoreSaveControls();
+    if(!failure){d.close();return;}
+    try{std::rethrow_exception(failure);}catch(const std::exception& e){error(&d,e);}catch(...){error(&d,std::runtime_error("The properties could not be saved. Your edits are still in this dialog."));}
+    return;
+   }
    const auto currentExtension=lower(utf8(fs::path(wide(str(draft,"FileName"))).extension().wstring()));
    if(extension!=currentExtension){
     extension=currentExtension;fileDetailsApplied=false;
@@ -159,7 +177,9 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    if((open->IsWindowEnabled()!=FALSE)!=ready)open->EnableWindow(ready);
   };
   d.pulse();
-  d.accept=[&,address,desc,path,syncAuth,displayedDestination,displayedAddress,displayedDescription]{
+  d.accept=[&,address,desc,path,statusText,syncAuth,displayedDestination,displayedAddress,displayedDescription]{
+   if(saveTask.valid()||handlingSave)return;
+   SaveHandlingScope handling(handlingSave);
    bool finished;Json changes=Json::object();
    {
     Lock lock(manager.mutex);
@@ -173,16 +193,23 @@ inline void fileProperties(CWnd* parent,Manager& manager,JobPtr job,const std::f
    syncAuth();
    const PropertiesHeaderPatch requestChanges(readHeaders(originalProperties),readHeaders(draft),requestTarget);
    for(auto key:editableMetadata)if(std::string(key)!="ProtectedHeaders"&&draft.contains(key)&&draft.value(key,Json())!=originalProperties.value(key,Json()))changes[key]=draft[key];
-   if(finished){
-    if(text(path)!=*displayedDestination){const auto destination=fs::path(wide(trim(text(path))));RelocationWorkDialog progress(&d,manager,job,destination);progress.run();{Lock lock(manager.mutex);if(job->target().lexically_normal()!=destination.lexically_normal())return;}}
-    Lock lock(manager.mutex);requestChanges.apply(changes,job->data);manager.updateCompleted(job,changes);
-   }else{
-    if(text(path)!=*displayedDestination){
-     auto destination=fs::path(wide(trim(text(path))));changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());
-    }
-    Lock lock(manager.mutex);requestChanges.apply(changes,job->data);manager.configure(job,changes);
-   }
-   d.close();
+   if(changes.contains("Url")){Url checked(str(changes,"Url"));(void)checked;}
+   const auto pathText=trim(text(path));const bool destinationEdited=pathText!=*displayedDestination;
+   const auto destination=fs::path(wide(pathText));
+   if(destinationEdited&&(pathText.empty()||!destination.is_absolute()||destination.filename().empty()||safeName(utf8(destination.filename().wstring()))!=utf8(destination.filename().wstring())))throw std::runtime_error("Choose a complete destination and valid file name. Your edits are still in this dialog.");
+   if(finished&&destinationEdited){
+    RelocationWorkDialog progress(&d,manager,job,destination);progress.run();
+    {Lock lock(manager.mutex);if(job->target().lexically_normal()!=destination.lexically_normal())return;*displayedDestination=propertiesLocation(job->target());}
+   }else if(!finished&&destinationEdited){changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());}
+   {Lock lock(manager.mutex);requestChanges.validateCurrentOrigin(job->data);}
+   // Capture the command completely before dispatch. The worker merges request
+   // headers against the current session under the same mutation lease as save.
+   for(auto window=::GetWindow(d.GetSafeHwnd(),GW_CHILD);window;window=::GetWindow(window,GW_HWNDNEXT)){saveControlStates.emplace_back(window,::IsWindowEnabled(window)!=FALSE);::EnableWindow(window,FALSE);}
+   statusText->SetWindowText(L"Saving properties...");
+   try{saveTask.startAction(manager,[source=&manager,target=job,changes=std::move(changes),requestChanges,finished]{
+    if(finished)source->configureCompletedProperties(target,changes,requestChanges);else source->configureProperties(target,changes,requestChanges);
+    return FileInfoDecisionResult{};
+   },d.taskNotifier());}catch(...){restoreSaveControls();throw;}
   };
   d.defaultButton(d.button("OK",261,227,50,d.accept));
  };try{d.DoModal();}catch(...){if(fileIcon)DestroyIcon(fileIcon);throw;}if(fileIcon)DestroyIcon(fileIcon);

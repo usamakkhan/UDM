@@ -1,0 +1,34 @@
+{
+  "productChanged": false,
+  "requestedTestBytes": 16777216,
+  "kernelCauseVerified": false,
+  "sparseSupported": true,
+  "rows": [
+    {
+      "mode": "regular",
+      "writeMs": 60.22389999998268,
+      "flushMs": 84.01400000730064,
+      "logicalSize": 16777216,
+      "payloadWritten": 32768,
+      "hashMatches": true,
+      "sha256": "93CC3A72C4345869F7CFFAE703AC6190CCB29EF6EBFC9501FB440D254DC40608",
+      "allocationQuerySucceeded": true,
+      "allocatedBytes": 16777216,
+      "sparseAttribute": false
+    },
+    {
+      "mode": "sparse",
+      "writeMs": 0.13580000086221844,
+      "flushMs": 25.030899996636435,
+      "logicalSize": 16777216,
+      "payloadWritten": 32768,
+      "hashMatches": true,
+      "sha256": "93CC3A72C4345869F7CFFAE703AC6190CCB29EF6EBFC9501FB440D254DC40608",
+      "allocationQuerySucceeded": true,
+      "allocatedBytes": 131072,
+      "sparseAttribute": true
+    }
+  ],
+  "contentEquivalent": true,
+  "limits": "One regular-then-sparse instrument-free file API control, not balanced trials or a production transfer comparison. Confirms an avoidable zero-gap path to investigate; does not attribute every original flush wait."
+}

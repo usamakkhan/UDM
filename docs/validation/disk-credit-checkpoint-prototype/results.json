@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "checks": 148,
+  "runs": [
+    {
+      "drive": "C",
+      "result": "<development>\\disk-credit-checkpoint-prototype\\qualified-C\\results.json",
+      "passed": true,
+      "checks": 74,
+      "exitCode": 0,
+      "binarySha256": "E07DCBEC6C967E6F6FAC88298FA2870A743F579D51490B575F317CDC54CD13DF"
+    },
+    {
+      "drive": "D",
+      "result": "<repository>\\.media-cache\\owned-disk-credit-checkpoint-prototype-qualified-D\\results.json",
+      "passed": true,
+      "checks": 74,
+      "exitCode": 0,
+      "binarySha256": "E07DCBEC6C967E6F6FAC88298FA2870A743F579D51490B575F317CDC54CD13DF"
+    }
+  ],
+  "payloads": [
+    {
+      "drive": "C",
+      "name": "body.data",
+      "bytes": 65536,
+      "sha256": "4B640D85AB3BA30FD02C9FC9DB4A8928F416322AD27022EA58A65AAEE68A4DF2"
+    },
+    {
+      "drive": "C",
+      "name": "expected.bin",
+      "bytes": 65536,
+      "sha256": "4B640D85AB3BA30FD02C9FC9DB4A8928F416322AD27022EA58A65AAEE68A4DF2"
+    },
+    {
+      "drive": "D",
+      "name": "body.data",
+      "bytes": 65536,
+      "sha256": "4B640D85AB3BA30FD02C9FC9DB4A8928F416322AD27022EA58A65AAEE68A4DF2"
+    },
+    {
+      "drive": "D",
+      "name": "expected.bin",
+      "bytes": 65536,
+      "sha256": "4B640D85AB3BA30FD02C9FC9DB4A8928F416322AD27022EA58A65AAEE68A4DF2"
+    }
+  ],
+  "nativeVersionUnchanged": "8.60",
+  "extensionVersionUnchanged": "0.72.24",
+  "productionIntegrated": false,
+  "durabilityBarrierOwnedByCaller": true,
+  "idmPerformanceCompared": false,
+  "earlierRunsExcludedFromFinalAggregate": true
+}

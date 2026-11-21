@@ -1,0 +1,10 @@
+--- native/App.cpp@9.54
++++ native/App.cpp@9.53
+@@ -81,7 +81,6 @@
+ #include <string_view>
+ #include <unordered_map>
+ #include "ToolbarImages.hpp"
+-#include "ToolbarImageCache.hpp"
+ #include "QueueIndicators.hpp"
+ #include "TrayIcon.hpp"
+ #include <shellapi.h>

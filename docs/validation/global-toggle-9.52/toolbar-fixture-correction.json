@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "path": "native/GlobalLimitToggleUiTests.cpp",
+  "oldSha256": "B0D885AEED176D3805F702701F5B6D3D5000BDB3568634CBF3847D612AA4957D",
+  "newSha256": "A3524B46152B6A7FB595BA1A5024DECEB7115C4AA57678108086386E747B3FFD",
+  "reason": "TB_ISBUTTONENABLED advice for an absent customizable toolbar command is not a present enabled control. Require disabled state only for commands actually in the native toolbar.",
+  "productionCodeChanged": false,
+  "failedChecks": 16,
+  "initialFailureRetained": true,
+  "nativeDiagnostic": "Absent command 210 returned position UINT(-1) and state -1; all present command states had the enabled bit cleared. Check UINT(-1) explicitly."
+}

@@ -1,0 +1,61 @@
+{
+  "passed": true,
+  "existingObservationsAnalyzed": 5,
+  "rows": [
+    {
+      "drive": "D",
+      "bytes": 67108864,
+      "connections": 1,
+      "mode": "observe-read",
+      "result": "native-selection-35deea6f.json",
+      "finalNativeFlushMs": 90.7708,
+      "lastBodyWriteToMfcReturnMs": 217.9973,
+      "sourceReceiptSha256": "F0735C763A158EC0BA4DF52B4CEDC42D97ECB8AE3B4E8B4440875CB4B8067741"
+    },
+    {
+      "drive": "D",
+      "bytes": 67108864,
+      "connections": 8,
+      "mode": "observe-read",
+      "result": "native-selection-7f6f4f14.json",
+      "finalNativeFlushMs": 722.2815,
+      "lastBodyWriteToMfcReturnMs": 906.7674,
+      "sourceReceiptSha256": "7568259E29137D047E24D68F0AAA808DCD1CAAC4D336C7E59C7B370266329294"
+    },
+    {
+      "drive": "C",
+      "bytes": 67108864,
+      "connections": 1,
+      "mode": "observe-read",
+      "result": "native-selection-89476075.json",
+      "finalNativeFlushMs": 5.7262,
+      "lastBodyWriteToMfcReturnMs": 60.1205,
+      "sourceReceiptSha256": "A772CBFCF5BBE35BE493335B8AE88A4CB6DDA06D65A813343FF00F3ED2398E84"
+    },
+    {
+      "drive": "C",
+      "bytes": 8192,
+      "connections": 1,
+      "mode": "observe",
+      "result": "native-selection-ad31a0d2.json",
+      "finalNativeFlushMs": 2.3505,
+      "lastBodyWriteToMfcReturnMs": 70.9373,
+      "sourceReceiptSha256": "27802448528B2B400D20DC996332A5BBAFF149D7A0C70DFF00A3CDA73B53C3B3"
+    },
+    {
+      "drive": "C",
+      "bytes": 8192,
+      "connections": 1,
+      "mode": "observe-read",
+      "result": "native-selection-c1d2da11.json",
+      "finalNativeFlushMs": 0.7718,
+      "lastBodyWriteToMfcReturnMs": 69.8117,
+      "sourceReceiptSha256": "0C4DE4F1920D58C3ADB2588074D478E93C1F1B846D126E33588935572404AC82"
+    }
+  ],
+  "kernelJoined": false,
+  "newTargetProcesses": 0,
+  "newDownloadBytes": 0,
+  "kernelCauseVerified": false,
+  "liveCombinedCaptureQualified": false
+}

@@ -28,9 +28,30 @@
 #include "CaptureExclusions.hpp"
 #include "GuiModels.hpp"
 #include "FileInfoInitialView.hpp"
+#include "FileInfoInitialTask.hpp"
+#include "FileInfoActionTask.hpp"
+#include "BatchAdmissionTask.hpp"
+#include "BatchInitialTask.hpp"
+#include "FileInfoLoadingView.hpp"
+#include "SchedulePreparationTask.hpp"
+#include "FileInfoPreviewTask.hpp"
+#include "PrefetchedZipReadTask.hpp"
+#include "FileInfoZipTask.hpp"
+#include "DownloadRefreshTask.hpp"
+#include "FileInfoRefreshTask.hpp"
+#include "FileInfoCategoryTask.hpp"
+#include "FileInfoNameTask.hpp"
 #include "PendingFileInfoInbox.hpp"
+#include "BrowserPresentationAcks.hpp"
 #include "ServerConnections.hpp"
 #include "SiteLogins.hpp"
+#include "AuthenticationPromptTask.hpp"
+#include "AuthenticationLoginTask.hpp"
+#include "RequestedAuthenticationTask.hpp"
+#include "ResumeSelectionTask.hpp"
+#include "FileInfoDisplayTask.hpp"
+#include "FileInfoPrefetchTask.hpp"
+#include "FileInfoBindingTask.hpp"
 #include "DownloadPreview.hpp"
 #include "PreviewFilename.hpp"
 #include "AsyncFileIcons.hpp"
@@ -43,15 +64,19 @@
 #include "CompletionPolicy.hpp"
 #include "OptionsModel.hpp"
 #include "CategoryEditor.hpp"
+#include "CategoryPropertiesTask.hpp"
+#include "ImmediateOptionsCommit.hpp"
 #include <algorithm>
 #include <array>
 #include <sstream>
 #include <iomanip>
 #include "MenuBarTheme.hpp"
 namespace udm {
+#if defined(UDM_CAPTURE_PRESENTATION_COMPONENT_TEST) || defined(UDM_TOOLBAR_COMPONENT_TEST)
+inline std::function<void(const std::string&)> formRefreshPageObserver;
+#endif
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
 inline Json formInitializationTiming=Json::array();
-inline std::function<void(const std::string&)> formRefreshPageObserver;
 inline std::function<void(const char*)> capturePresentationTrace;
 inline void traceCapturePresentation(const char* stage){if(capturePresentationTrace)capturePresentationTrace(stage);}
 inline double formClockMs(){LARGE_INTEGER value,frequency;QueryPerformanceCounter(&value);QueryPerformanceFrequency(&frequency);return 1000.0*value.QuadPart/frequency.QuadPart;}
@@ -146,7 +171,9 @@ enum class ResizeAnchor {StretchWidth,StretchBoth,BottomLeft,BottomRight};
 class Form:public CDialog {
  DECLARE_MESSAGE_MAP()
  std::shared_ptr<UiTaskSignal> taskSignal;
- afx_msg LRESULT OnTaskPulse(WPARAM key,LPARAM){if(taskSignal&&taskSignal->matches(key))OnTimer(pulseTimer);return 0;}
+ std::function<void()> deferredPulseAction;
+ bool taskPulse=false;
+ afx_msg LRESULT OnTaskPulse(WPARAM key,LPARAM){if(taskSignal&&taskSignal->matches(key)){const bool previous=taskPulse;taskPulse=true;struct Restore{bool& value;bool previous;~Restore(){value=previous;}}restore{taskPulse,previous};OnTimer(pulseTimer);}return 0;}
  afx_msg void OnNcDestroy(){if(taskSignal)taskSignal->disarm();CDialog::OnNcDestroy();}
  MenuBarTheme popupTheme;
  std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
@@ -199,7 +226,7 @@ protected:
  }
  afx_msg HBRUSH OnCtlColor(CDC* dc,CWnd* wnd,UINT type){auto brush=CDialog::OnCtlColor(dc,wnd,type);if(type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN||type==CTLCOLOR_EDIT||type==CTLCOLOR_LISTBOX){bool surface=type==CTLCOLOR_STATIC||type==CTLCOLOR_BTN;dc->SetTextColor(surface&&!uiDark?GetSysColor(COLOR_BTNTEXT):uiForeground());dc->SetBkColor(surface&&!uiDark?GetSysColor(COLOR_BTNFACE):uiBackground());return (HBRUSH)(surface?dialogBrush():uiBrush()).GetSafeHandle();}return brush;}
  afx_msg BOOL OnEraseBkgnd(CDC* dc){CRect area;GetClientRect(&area);dc->FillSolidRect(area,uiDark?uiBackground():GetSysColor(COLOR_BTNFACE));return TRUE;}
- afx_msg void OnTimer(UINT_PTR id){if(pulse)try{pulse();}catch(...){}CDialog::OnTimer(id);}
+ afx_msg void OnTimer(UINT_PTR id){try{if(pulse)pulse();auto deferred=std::move(deferredPulseAction);deferredPulseAction={};if(deferred)deferred();}catch(...){}CDialog::OnTimer(id);}
  afx_msg void OnSize(UINT type,int cx,int cy){
   CDialog::OnSize(type,cx,cy);
   if(type!=SIZE_MINIMIZED)layoutAnchoredControls();
@@ -275,11 +302,20 @@ protected:
   if(pulse)SetTimer(pulseTimer,pulsePeriod,nullptr);
   return TRUE;
  }
- BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));const auto code=HIWORD(w);if(it!=actions.end()&&code==BN_CLICKED){try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(code==EN_CHANGE||code==CBN_SELCHANGE||code==CBN_EDITCHANGE)){try{changed->second(code);}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
+ BOOL OnCommand(WPARAM w,LPARAM l)override{auto it=actions.find(LOWORD(w));const auto code=HIWORD(w);if(it!=actions.end()&&code==BN_CLICKED){auto control=GetDlgItem(LOWORD(w));if(!control||!IsWindowEnabled()||!control->IsWindowEnabled()||(l&&reinterpret_cast<HWND>(l)!=control->GetSafeHwnd()))return TRUE;try{it->second();}catch(const std::exception& e){error(this,e);}return TRUE;}auto changed=changes.find(LOWORD(w));if(changed!=changes.end()&&(code==EN_CHANGE||code==CBN_SELCHANGE||code==CBN_EDITCHANGE)){try{changed->second(code);}catch(const std::exception& e){error(this,e);}return TRUE;}return CDialog::OnCommand(w,l);}
  void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}
  void OnCancel()override{if(cancel){try{cancel();}catch(const std::exception& e){error(this,e);}}else if(modeless)DestroyWindow();else CDialog::OnCancel();}
 public:
  static constexpr UINT_PTR pulseTimer=7;
+ void afterCurrentPulse(std::function<void()> action){if(deferredPulseAction)throw std::logic_error("A dialog transition is already queued.");deferredPulseAction=std::move(action);}
+ // Keep IDs monotonic: an old queued command must never target a replacement.
+ void clearOwnedControls(){actions.clear();changes.clear();logicalRects.clear();resizeAnchors.clear();for(auto& control:controls)if(control->GetSafeHwnd())control->DestroyWindow();controls.clear();}
+ void completeOwnedRebuild(CWnd* focus=nullptr){
+  layoutAnchoredControls();refreshTheme(false);
+  if(focus&&focus->GetSafeHwnd()&&::IsChild(m_hWnd,focus->GetSafeHwnd())&&focus->IsWindowEnabled()&&!IsIconic())
+   SendMessage(WM_NEXTDLGCTL,reinterpret_cast<WPARAM>(focus->GetSafeHwnd()),TRUE);
+ }
+ bool taskPulseActive()const noexcept{return taskPulse;}
  std::function<void()> taskNotifier(){if(!GetSafeHwnd())throw std::runtime_error("The task dialog is not ready.");if(!taskSignal)taskSignal=std::make_shared<UiTaskSignal>();taskSignal->arm(GetSafeHwnd());return taskSignal->notifier();}
  static constexpr UINT pulseInterval=250;
  UINT pulsePeriod=pulseInterval;
@@ -392,6 +428,9 @@ if constexpr(std::is_same_v<T,CTabCtrl>)SetWindowTheme(control->GetSafeHwnd(),L"
  }
  QueueCombo* queueCombo(Manager& manager,const std::vector<std::string>& names,const std::string& current,int x,int y,int w,bool free=false){
   const auto labels=queueDisplayLabels(manager);
+  return queueCombo(names,labels,current,x,y,w,free);
+ }
+ QueueCombo* queueCombo(const std::vector<std::string>& names,const QueueLabels& labels,const std::string& current,int x,int y,int w,bool free=false){
   auto control=combo<QueueCombo>({},"",x,y,w,free);
   for(const auto& name:names)control->addQueue(name,queueDisplayLabel(labels,name));
   if(!control->selectQueue(current)){
@@ -465,162 +504,14 @@ inline bool showBrowserOwnedDialog(Form& dialog,CWnd* owner,bool applyTheme=true
  return true;
 }
 inline void openRefreshPage(HWND owner,const std::string& value){Url url(trim(value));if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Enter the original HTTP or HTTPS download page.");
-#ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
+#if defined(UDM_CAPTURE_PRESENTATION_COMPONENT_TEST) || defined(UDM_TOOLBAR_COMPONENT_TEST)
  if(formRefreshPageObserver){formRefreshPageObserver(url.full);return;}
 #endif
  auto result=ShellExecuteW(owner,L"open",wide(url.full).c_str(),nullptr,nullptr,SW_SHOWNORMAL);if((INT_PTR)result<=32)throw std::runtime_error("Windows could not open the download page. Use the Open page button to try again.");}
 enum class DownloadRefreshMode { AllowResume, FileInfo };
-class RefreshAddressDialog:public Form {
- DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;bool allowResume;CWnd *address=nullptr,*page=nullptr,*status=nullptr;Json candidate,displayed=Json::array(),previousLinkChoices;std::string seen;
- Json refreshPresentations()const{auto offers=manager.pendingBrowserPresentations(job);if(!offers.empty()&&str(offers.front(),"kind")!="refresh")offers.clear();return offers;}
- void poll(bool advanceReview=false){
-  Lock lock(manager.mutex);
-  auto offer=manager.addressRefreshCandidate(job);
-  auto pending=refreshPresentations();
-  if(offer.is_object()){
-   if(offer.dump()!=seen||pending!=displayed){
-    candidate=offer;seen=offer.dump();displayed=pending;
-    address->SetWindowText(cs(str(offer,"url")));
-    if(!str(offer,"page").empty())page->SetWindowText(cs(str(offer,"page")));
-    status->SetWindowText(allowResume?L"A matching browser link arrived. Review the address, then choose Save or Resume.":L"A matching browser link arrived. Save it to return to Download File Info.");
-   }
-  }else if(advanceReview&&IsWindowEnabled()){
-   const auto reviews=manager.pendingBrowserCaptureReviews(job);
-   const bool newChoice=std::any_of(reviews.begin(),reviews.end(),[&](const auto& token){
-    return std::find(previousLinkChoices.begin(),previousLinkChoices.end(),token)==previousLinkChoices.end();
-   });
-   if(newChoice){
-    if(trim(text(address)).empty())close(IDCANCEL);
-    else{
-     const std::string message="A different link arrived. Close this dialog to review it, or continue with the address you entered.";
-     if(text(status)!=message)status->SetWindowText(cs(message));
-    }
-   }
-  }
- }
- void apply(bool resume){
-  Lock lock(manager.mutex);auto latest=manager.addressRefreshCandidate(job);auto pending=refreshPresentations();
-  if(latest!=candidate||pending!=displayed){
-   if(latest.is_object())poll();else{candidate=latest;seen=latest.dump();displayed=pending;}
-   status->SetWindowText(allowResume?L"The browser link changed or expired. Review the address, then choose Save or Resume again.":L"The browser link changed or expired. Review the address, then choose Save again.");return;
-  }
-  std::optional<Headers> headers;if(candidate.is_object()&&text(address)==str(candidate,"url"))headers=candidate["headers"].get<Headers>();manager.refreshAddress(job,trim(text(address)),headers,trim(text(page)));if(resume)manager.resume(job);close();
- }
- afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);if(!trim(text(page)).empty())openRefreshPage(m_hWnd,text(page));}else poll(true);}catch(const std::exception& e){status->SetWindowText(cs(e.what()));}Form::OnTimer(id);}
-public:
- const Json& displayedPresentations()const{return displayed;}
- RefreshAddressDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,Json oldChoices,DownloadRefreshMode mode):Form("Refresh download address",610,302,owner),manager(m),job(j),allowResume(mode==DownloadRefreshMode::AllowResume),previousLinkChoices(std::move(oldChoices)){init=[this,owner,reopenPage]{
-  Json data;{Lock lock(manager.mutex);data=job->data;}
-  label(str(data,"FileName"),14,12,580,23);
-  const bool ftp=Url(str(data,"Url")).scheme=="ftp";
-  label(ftp?"Paste a replacement FTP address for the same file. UDM checks the saved bytes before resuming.":"Open the download page, then send the same file to UDM from the browser. You can also paste a fresh direct link below.",14,42,580,34);
-  label("Download page",14,91,96);page=edit(recoveryPage(data),116,87,359);
-  button("Open page",485,86,109,[this]{openRefreshPage(m_hWnd,text(page));});
-  label("New address",14,126,96);address=edit("",116,122,478,47,false,true);
-  status=label(ftp?"Enter the replacement address to continue.":"Waiting for a matching link from the browser (up to 10 minutes).",14,181,580,30);
-  label("Saved parts: "+bytes(num(data,"Received"))+". Resume checks the file size and server validator before reusing them.",14,215,580,29);
-  button("Save address",allowResume?219:364,262,116,[this]{apply(false);});
-  if(allowResume)button("Save and resume",345,262,135,[this]{apply(true);});
-  button("Cancel",490,262,104,[this]{close(IDCANCEL);});accept=[this]{apply(allowResume);};
-  if(!ftp){poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);}
-  showBrowserOwnedDialog(*this,owner);
- };}
-};
-BEGIN_MESSAGE_MAP(RefreshAddressDialog,Form)
- ON_WM_TIMER()
-END_MESSAGE_MAP()
-class RefreshMediaDialog:public Form {
- DECLARE_MESSAGE_MAP()
- Manager& manager;JobPtr job;CWnd* page=nullptr;CWnd* status=nullptr;CWnd* saveButton=nullptr;CWnd* resumeButton=nullptr;std::string launchError;Json candidate,displayed=Json::array();
- std::optional<std::string> observedOffer;
- Json refreshPresentations()const{auto offers=manager.pendingBrowserPresentations(job);if(!offers.empty()&&str(offers.front(),"kind")!="refresh")offers.clear();return offers;}
- void poll(bool force=false){
-  {
-   Lock lock(manager.mutex);
-   const std::string empty;
-   const auto value=job->data.find("ProtectedRefreshOffer");
-   const auto& encrypted=value!=job->data.end()&&value->is_string()?value->get_ref<const std::string&>():empty;
-   if(!force&&observedOffer&&*observedOffer==encrypted&&
-      (encrypted.empty()||addressRefreshCandidateCurrent(candidate,epoch())))return;
-   auto latest=manager.addressRefreshCandidate(job);
-   auto pending=refreshPresentations();
-   observedOffer=encrypted;
-   candidate=std::move(latest);
-   displayed=std::move(pending);
-  }
-  const auto kind=str(candidate,"kind");
-  const bool ready=kind=="sabr"||kind=="adaptive"||kind=="direct-media";
-  if((saveButton->IsWindowEnabled()!=FALSE)!=ready)saveButton->EnableWindow(ready);
-  if(resumeButton&&(resumeButton->IsWindowEnabled()!=FALSE)!=ready)resumeButton->EnableWindow(ready);
-  const std::string message=ready?(resumeButton?"Matching streams received. Review the selection above, then save or resume.":"Matching streams received. Save the session to return to Download File Info."):launchError.empty()?"Waiting for the same video, quality and audio track from the browser (10 minutes).":launchError;
-  if(text(status)!=message)status->SetWindowText(cs(message));
- }
- void apply(bool start){Lock lock(manager.mutex);
-  if(manager.addressRefreshCandidate(job)!=candidate||refreshPresentations()!=displayed){poll(true);status->SetWindowText(L"The captured session changed or expired. Review the selection and try again.");return;}
-  manager.applyMediaRefresh(job);if(start)manager.resume(job);close();
- }
- void openPage(){openRefreshPage(m_hWnd,manager.mediaRefreshPage(job));}
- afx_msg void OnTimer(UINT_PTR id){try{if(id==2){KillTimer(2);openPage();}else poll();}catch(const std::exception& e){launchError=e.what();status->SetWindowText(cs(launchError));}Form::OnTimer(id);}
-public:
- const Json& displayedPresentations()const{return displayed;}
- RefreshMediaDialog(Manager& m,JobPtr j,CWnd* owner,bool reopenPage,DownloadRefreshMode mode):Form("Refresh media session",574,290,owner),manager(m),job(j){init=[this,owner,reopenPage,mode]{Json data;{Lock lock(manager.mutex);data=job->data;}
-  label(str(data,"FileName"),14,12,546,24);
-  const bool fixedVideo=!str(data,"ProtectedSabr").empty()&&str(data,"MediaOutput")!="audio";
-  label(fixedVideo?
-   "1. Open the original video and let it play.\r\n2. Click Download this video in the UDM panel to request the saved quality.\r\n3. Return here to save the matching session.":
-   "1. Open the original video and let it play.\r\n2. In its UDM panel, select the same quality or audio track.\r\n3. Return here to apply the matching session to this download.",14,43,546,55);
-  label("Original page",14,109,97);page=edit(str(data,"SourceUrl",str(data,"Url")),114,105,446,23,true);
-  button("Open video page",14,143,142,[this]{openPage();launchError.clear();poll(true);});
-  const auto retained=num(data,"SabrRetainedBytes");
-  label(str(data,"FormatDescription")+(!str(data,"ProtectedSabr").empty()?"\r\nRetained data: "+bytes(retained)+
-   (retained>0&&num(data,"StreamCompletedMs")<=0?". No playable progress yet.":". Filename and history are preserved."):
-   "\r\nSaved segments are checked against the fresh capture before reuse."),170,141,390,38);
-  status=label("",14,187,546,43);
-  const bool allowResume=mode==DownloadRefreshMode::AllowResume;
-  saveButton=button("Save session",allowResume?171:321,246,117,[this]{apply(false);});
-  if(allowResume)resumeButton=button("Save and resume",298,246,140,[this]{apply(true);});
-  button("Cancel",448,246,112,[this]{close(IDCANCEL);});
-  accept=[this,allowResume]{apply(allowResume);};
-  poll();SetTimer(1,250,nullptr);if(reopenPage)SetTimer(2,100,nullptr);
-  showBrowserOwnedDialog(*this,owner);
- };}
-};
-BEGIN_MESSAGE_MAP(RefreshMediaDialog,Form)
- ON_WM_TIMER()
-END_MESSAGE_MAP()
-inline bool refreshDownloadAddress(CWnd* owner,Manager& manager,JobPtr job,bool reopenPage=true,DownloadRefreshMode mode=DownloadRefreshMode::AllowResume){
- Json previousLinkChoices;
- {
-  Lock lock(manager.mutex);
-  previousLinkChoices=manager.pendingBrowserCaptureReviews(job);
-  manager.beginAddressRefresh(job,!reopenPage);
- }
- try{
-  bool streaming;{Lock lock(manager.mutex);streaming=!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty();}
-  INT_PTR result;Json displayed=Json::array();
-  if(streaming){RefreshMediaDialog dialog(manager,job,owner,reopenPage,mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
-  else{RefreshAddressDialog dialog(manager,job,owner,reopenPage,std::move(previousLinkChoices),mode);result=dialog.DoModal();displayed=dialog.displayedPresentations();}
-  if(result==-1)throw std::runtime_error("Cannot open the download refresh dialog.");
-  manager.cancelAddressRefresh(job);
-  // Cancel acknowledges only links actually shown by this dialog. A newer
-  // receipt committed after its last poll remains available for presentation.
-  for(const auto& offer:displayed)manager.finishBrowserPresentation(offer);
-  return result==IDOK;
- }catch(...){manager.cancelAddressRefresh(job);throw;}
-}
+#include "DownloadRefreshUi.hpp"
 inline std::string prompt(CWnd* parent,std::string title,std::string value=""){Form d(title,380,95,parent);CWnd* input=nullptr;std::string result;d.init=[&]{d.label("Name",10,12,48);input=d.edit(value,60,9,309);d.accept=[&]{result=trim(text(input));if(result.empty()||result.size()>80)throw std::runtime_error("Enter a name up to 80 characters.");d.close();};d.button("OK",205,58,78,d.accept);d.button("Cancel",291,58,78,[&]{d.close(IDCANCEL);});input->SetFocus();};return d.DoModal()==IDOK?result:"";}
 inline std::vector<std::string> queueNames(Manager& m){Lock l(m.mutex);std::vector<std::string> names;for(auto q:m.state["Queues"])names.push_back(str(q,"Name"));return names;}
-inline std::string primaryDownloadQueueName(const Json& queues){
- std::string fallback;
- for(const auto& queue:queues){
-  if(yes(queue,"Synchronize"))continue;
-  auto name=str(queue,"Name");
-  if(str(queue,"DefaultQueueRole")=="Download")return name;
-  if(fallback.empty()||name=="Main queue")fallback=std::move(name);
- }
- return fallback;
-}
 #include "QueueChoiceUi.hpp"
 class RelocationWorkDialog:public Form {
  using Move=std::pair<JobPtr,fs::path>;
@@ -737,47 +628,76 @@ inline void moveCompletedToFolder(CWnd* owner,Manager& manager,const std::vector
 #include "ScannerUi.hpp"
 #include "PropertiesUi.hpp"
 inline void completedProperties(CWnd* parent,Manager& manager,JobPtr job){fileProperties(parent,manager,job);}
-inline JobPtr chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate){
- Json original;{Lock lock(manager.mutex);if(str(candidate->data,"DuplicateOf").empty())return candidate;for(auto j:manager.jobs)if(j->id()==str(candidate->data,"DuplicateOf"))original=j->data;}
- Form dialog("Duplicate download link",286,154,parent);dialog.dialogUnits=true;JobPtr result;
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+inline std::function<void()> duplicateRenderObserver;
+#endif
+inline DuplicateChoiceResult chooseDuplicate(CWnd* parent,Manager& manager,JobPtr candidate,DuplicatePromptViewPtr prepared={},DuplicateDecisionObserver observer={}){
+ const auto view=prepared?std::move(prepared):captureDuplicatePrompt(manager,candidate);if(!view)return {candidate};if(view->candidate!=candidate)throw std::runtime_error("The duplicate view belongs to another download.");
+ DuplicateDialogOwner presentation;
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+ if(duplicateRenderObserver)duplicateRenderObserver();
+#endif
+ DuplicateDecisionTask task;DuplicateChoiceResult result;std::function<void(bool)> working;Form dialog("Duplicate download link",286,154,parent);dialog.dialogUnits=true;
  dialog.init=[&]{
-  dialog.edit(str(candidate->data,"Url"),5,7,274,14,true);
+  dialog.edit(view->address,5,7,274,14,true);
   dialog.label("This file already exists in your download list. Choose an option below, or Cancel to skip this file.",7,26,272,18);
-  auto numbered=dialog.check("Add the duplicate with a numbered file name",false,7,56,272);
+  auto numbered=dialog.check("Add the duplicate with a numbered file name",!view->original,7,56,272);
   auto replace=dialog.check("Add the duplicate and overwrite the existing file",false,7,73,272);
-  auto existing=dialog.check("If existing file is complete, show Download complete; otherwise resume it.",true,7,86,272,18);
-  for(auto item:{numbered,replace,existing})item->ModifyStyle(BS_TYPEMASK,BS_AUTORADIOBUTTON);
-  replace->EnableWindow((str(original,"Status")=="Complete"||str(original,"Status")=="Paused"||str(original,"Status")=="Failed")&&str(original,"ReplacementOf").empty());
+  auto existing=dialog.check("If existing file is complete, show Download complete; otherwise resume it.",bool(view->original),7,86,272,18);
+  for(auto item:{numbered,replace,existing})item->ModifyStyle(BS_TYPEMASK,BS_AUTORADIOBUTTON);replace->EnableWindow(view->canReplace);existing->EnableWindow(bool(view->original));
   auto remember=dialog.check("Remember my selection and do not show this dialog again.\r\nChange this later in UDM Options > Downloads.",false,11,132,260,18);
-  for(auto selected:{numbered,replace,existing})dialog.bind(selected,[&,selected,numbered,replace,existing,remember]{for(auto item:{numbered,replace,existing})item->SendMessage(BM_SETCHECK,item==selected?BST_CHECKED:BST_UNCHECKED);});
-  dialog.accept=[&,numbered,replace,remember]{auto mode=dialog.checked(numbered)?"Numbered":dialog.checked(replace)?"Replace":"Existing";result=manager.resolveDuplicate(candidate,mode,dialog.checked(remember));dialog.close();};
-  dialog.defaultButton(dialog.button("OK",84,112,50,dialog.accept));dialog.cancel=[&]{manager.resolveDuplicate(candidate,"Cancel");dialog.close(IDCANCEL);};dialog.button("Cancel",152,112,50,dialog.cancel);
+  for(auto selected:{numbered,replace,existing})dialog.bind(selected,[selected,numbered,replace,existing]{for(auto item:{numbered,replace,existing})item->SendMessage(BM_SETCHECK,item==selected?BST_CHECKED:BST_UNCHECKED);});
+  const auto submit=[&](const std::string& mode,bool save){if(task.active())return;task.start(manager,view,mode,save,dialog.taskNotifier(),observer);working(true);};
+  dialog.accept=[&,numbered,replace,remember,submit]{submit(dialog.checked(numbered)?"Numbered":dialog.checked(replace)?"Replace":"Existing",dialog.checked(remember));};dialog.cancel=[&,submit]{submit("Cancel",false);};
+  auto ok=dialog.button("OK",84,112,50,dialog.accept);dialog.defaultButton(ok);auto cancel=dialog.button("Cancel",152,112,50,dialog.cancel);
+  working=[=](bool busy){for(auto item:{numbered,remember,ok,cancel})item->EnableWindow(!busy);replace->EnableWindow(!busy&&view->canReplace);existing->EnableWindow(!busy&&bool(view->original));};
+  dialog.pulse=[&,working]{if(!task.ready())return;try{result=task.take();working(false);if(!result.warning.empty())dialog.MessageBox(cs(result.warning),L"UDM",MB_OK|MB_ICONWARNING);dialog.close(result.job?IDOK:IDCANCEL);}catch(const std::exception& e){working(false);dialog.MessageBox(cs(e.what()),L"UDM",MB_OK|MB_ICONERROR);}};
   showBrowserOwnedDialog(dialog,parent);
  };if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open the duplicate download dialog.");return result;
 }
 #include "CaptureExclusionsUi.hpp"
 #include "ZipPreviewUi.hpp"
-inline std::optional<std::string> showCategoryProperties(CWnd* owner,Manager& manager,const Json& p,const std::string& original){
-  std::optional<std::string> accepted;
-  Form d("UDM categories",322,177,owner);d.dialogUnits=true;
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+inline std::function<void(Form&,const CategoryPropertiesResult&)> categoryPropertiesTestSaved;
+#endif
+inline std::optional<std::string> showCategoryProperties(CWnd* owner,Manager& manager,const std::string& original,CategoryPropertiesResult* savedView=nullptr){
+  std::optional<std::string> accepted;CategoryPropertiesTask task;bool loaded=false,closing=false;std::function<void()> read;
+  Form d("UDM categories",322,192,owner);d.dialogUnits=true;
   d.init=[&]{
    d.label("Category name",9,3,235,10);auto name=d.edit(original=="Archives"?"Compressed":original,9,13,238,14,original=="Other");
-   auto paths=dictionary(p["CategoryPaths"]);std::string extensions=original.empty()?"":categoryExtensions(p,original),hosts;
-   for(const auto& rule:p["CategoryRules"])if(str(rule,"Category")==original){extensions=str(rule,"Extensions");hosts=str(rule,"Hosts");break;}
-   d.label("Automatically put in this category the following file types:",9,33,238,10);auto ex=d.edit(extensions,9,43,238,14);
-   d.label("Note: type file extensions separated by space (e.g. avi mpg mpeg)",9,58,302,10);
-   d.control(L"STATIC","",SS_ETCHEDHORZ,9,72,302,1);
-   auto restrictSites=d.check("Automatically put in this category the files from the following sites only:",!hosts.empty(),9,78,302,10);
-   auto sites=d.edit(hosts,9,90,302,14);sites->EnableWindow(!hosts.empty());
-   d.bind(restrictSites,[&,restrictSites,sites]{sites->EnableWindow(d.checked(restrictSites));});
-   d.label("Separate sites by spaces. Use *.example.com for a domain and its subdomains.",9,106,302,10);
-   d.control(L"STATIC","",SS_ETCHEDHORZ,9,121,302,1);
-   d.label("Save future downloads of this category to the following folder:",9,127,302,10);auto folder=d.edit(str(paths,original.c_str()),9,138,302,14);
-   auto remember=d.check("Remember last save path",yes(p.value("CategoryRememberLast",Json::object()),original.c_str()),9,155,228,10);
-   d.button("Browse...",261,155,50,[&,folder]{auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());},14);
-   d.accept=[&,name,ex,sites,folder,restrictSites,remember]{auto value=trim(text(name));if(original=="Archives"&&value=="Compressed")value=original;auto hosts=d.checked(restrictSites)?trim(text(sites)):std::string();if(d.checked(restrictSites)&&hosts.empty())throw std::runtime_error("Enter at least one site or turn off the site restriction.");saveCategoryProperties(manager,original,value,text(ex),hosts,trim(text(folder)),d.checked(remember));accepted=std::move(value);d.close();};
-   auto ok=d.button("OK",261,13,50,d.accept,14);d.defaultButton(ok);d.button("Cancel",261,34,50,[&]{d.close(IDCANCEL);},14);
-  };d.DoModal();return accepted;
+   d.label("Automatically put in this category the following file types:",9,33,238,10);auto ex=d.edit("",9,43,238,14);
+   d.label("Note: type file extensions separated by space (e.g. avi mpg mpeg)",9,58,302,10);d.control(L"STATIC","",SS_ETCHEDHORZ,9,72,302,1);
+   auto restrictSites=d.check("Automatically put in this category the files from the following sites only:",false,9,78,302,10);auto sites=d.edit("",9,90,302,14);
+   d.bind(restrictSites,[&,restrictSites,sites]{sites->EnableWindow(loaded&&!task.valid()&&d.checked(restrictSites));});
+   d.label("Separate sites by spaces. Use *.example.com for a domain and its subdomains.",9,106,302,10);d.control(L"STATIC","",SS_ETCHEDHORZ,9,121,302,1);
+   d.label("Save future downloads of this category to the following folder:",9,127,302,10);auto folder=d.edit("",9,138,302,14);
+   auto remember=d.check("Remember last save path",false,9,155,228,10);
+   auto browse=d.button("Browse...",261,155,50,[&,folder]{if(!loaded||task.valid())return;auto value=chooseFolder(&d,wide(text(folder)));if(!value.empty())folder->SetWindowText(value.c_str());},14);
+   auto status=d.label("Loading category settings...",9,176,302,10);
+   auto ok=d.button("OK",261,13,50,[&]{if(d.accept)d.accept();},14);d.defaultButton(ok);
+   auto cancel=d.button("Cancel",261,34,50,[&]{if(d.cancel)d.cancel();},14);
+   const auto enable=[&,name,ex,restrictSites,sites,folder,remember,browse,ok,cancel](bool enabled){for(CWnd* control:{name,ex,restrictSites,folder,remember,static_cast<CWnd*>(browse)})control->EnableWindow(enabled);sites->EnableWindow(enabled&&d.checked(restrictSites));ok->EnableWindow(!task.valid());cancel->EnableWindow(!task.saving());};
+   read=[&,status,enable,ok]{if(task.valid())return;loaded=false;closing=false;task.start(manager,{},d.taskNotifier());ok->SetWindowText(L"OK");status->SetWindowText(L"Loading category settings...");enable(false);};
+   d.cancel=[&,status,cancel]{if(task.saving())return;if(task.valid()){closing=true;task.cancelRead();status->SetWindowText(L"Closing...");cancel->EnableWindow(FALSE);}else d.close(IDCANCEL);};
+   d.accept=[&,name,ex,sites,folder,restrictSites,remember,status,enable]{
+    if(task.valid()||closing)return;if(!loaded){read();return;}
+    auto value=trim(text(name));if(original=="Archives"&&value=="Compressed")value=original;auto hosts=d.checked(restrictSites)?trim(text(sites)):std::string();if(d.checked(restrictSites)&&hosts.empty())throw std::runtime_error("Enter at least one site or turn off the site restriction.");
+    task.start(manager,CategoryPropertiesDraft{original,value,text(ex),hosts,trim(text(folder)),d.checked(remember)},d.taskNotifier());status->SetWindowText(L"Saving category settings...");enable(false);
+   };
+   d.pulse=[&,name,ex,sites,folder,restrictSites,remember,status,ok,enable]{
+    if(!task.ready())return;auto result=task.take();if(result.saved){accepted=result.name;if(savedView)*savedView=result;
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+     if(categoryPropertiesTestSaved)categoryPropertiesTestSaved(d,result);
+#endif
+     d.close();return;}
+    if(closing||result.cancelled){d.close(IDCANCEL);return;}
+    if(!result.error.empty()){status->SetWindowText(cs(result.error));ok->SetWindowText(loaded?L"OK":L"Retry");enable(loaded);return;}
+    if(!original.empty()&&std::find(result.categories.begin(),result.categories.end(),original)==result.categories.end()){status->SetWindowText(L"This category no longer exists. Close and choose another.");ok->EnableWindow(FALSE);return;}
+    const auto& p=result.settings;auto paths=dictionary(p.value("CategoryPaths",Json::array()));std::string extensions=original.empty()?"":categoryExtensions(p,original),hosts;
+    for(const auto& rule:p.value("CategoryRules",Json::array()))if(str(rule,"Category")==original){extensions=str(rule,"Extensions");hosts=str(rule,"Hosts");break;}
+    ex->SetWindowText(cs(extensions));sites->SetWindowText(cs(hosts));restrictSites->SendMessage(BM_SETCHECK,hosts.empty()?BST_UNCHECKED:BST_CHECKED);folder->SetWindowText(cs(str(paths,original.c_str())));remember->SendMessage(BM_SETCHECK,yes(p.value("CategoryRememberLast",Json::object()),original.c_str())?BST_CHECKED:BST_UNCHECKED);loaded=true;status->SetWindowText(L"");enable(true);
+   };read();
+  };d.DoModal();task.finish();return accepted;
  }
 #include "ScheduleDownloadUi.hpp"
 #include "DownloadInfoUi.hpp"
@@ -797,7 +717,8 @@ public:
  ~CaptureDialogOwner(){if(window.GetSafeHwnd())window.DestroyWindow();if(enabled&&main&&main->GetSafeHwnd())main->EnableWindow(TRUE);}
  CWnd* get(CWnd* original){return window.GetSafeHwnd()?&window:original;}
 };
-inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false,std::shared_ptr<const FileInfoInitialView> preparedView={}){
+#include "CancellationFailureUi.hpp"
+inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automatic=false,std::shared_ptr<const FileInfoInitialView> preparedView={},DuplicatePromptViewPtr duplicateView={}){
  CaptureDialogOwner captureOwner(owner,automatic);owner=captureOwner.get(owner);
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("dialog-owner-ready");
@@ -807,9 +728,9 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
 #endif
  auto context=automatic?manager.takeAutomaticCapture(job):Json::object();bool cancelled=false;
  try{
-  job=chooseDuplicate(owner,manager,job);
+  const auto choice=chooseDuplicate(owner,manager,job,std::move(duplicateView));job=choice.job;
   if(!job)cancelled=true;
-  else{auto presentation=manager.presentOffer(job);
+  else if(!choice.chosen||choice.presentation){auto presentation=choice.chosen?*choice.presentation:manager.presentOffer(job);
    if(presentation==OfferPresentation::Complete){if(manager.showCompletedDownload)manager.showCompletedDownload(job);}
    else if(presentation==OfferPresentation::Progress){if(manager.event)manager.event(job,false);}
    else{
@@ -822,7 +743,8 @@ inline void presentDownload(CWnd* owner,Manager& manager,JobPtr job,bool automat
  auto offer=manager.finishAutomaticCapture(context,cancelled);if(!offer.empty()){CaptureExclusionOffer dialog(owner,manager,offer);dialog.DoModal();}
 }
 #include "CaptureReviewUi.hpp"
-inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer,std::shared_ptr<const FileInfoInitialView> preparedView={}){
+using BrowserPresentationAcknowledger=std::function<void(const Json&)>;
+inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer,std::shared_ptr<const FileInfoInitialView> preparedView={},BrowserPresentationAcknowledger acknowledge={}){
  auto job=manager.restoreBrowserPresentation(offer);if(!job)return false;
 #ifdef UDM_CAPTURE_PRESENTATION_COMPONENT_TEST
  traceCapturePresentation("offer-restored");
@@ -837,12 +759,27 @@ inline bool presentBrowserCapture(CWnd* owner,Manager& manager,const Json& offer
  else presentDownload(owner,manager,job,true,std::move(preparedView));
  // Only the tokens offered to this dialog are acknowledged. A later request
  // must retain its own pending presentation if it arrived during the modal loop.
- manager.finishBrowserPresentation(offer);return true;
+ if(acknowledge)acknowledge(offer);else manager.finishBrowserPresentation(offer);return true;
 }
-inline void presentPendingBrowserCapture(CWnd* owner,Manager& manager,std::shared_ptr<const PendingFileInfoInbox::Operation> operation){
- CaptureDialogOwner captureOwner(owner,true);bool bound=false;
- downloadInfo(captureOwner.get(owner),manager,{},false,true,operation->view,operation,&bound);
- if(bound&&!operation->token.empty())manager.finishBrowserPresentation(Json{{"tokens",Json::array({operation->token})}});
+inline void presentPendingBrowserCapture(CWnd* owner,Manager& manager,std::shared_ptr<const PendingFileInfoInbox::Operation> operation,BrowserPresentationAcknowledger acknowledge={}){
+ CaptureDialogOwner captureOwner(owner,true);bool bound=false;Json presentation;
+ downloadInfo(captureOwner.get(owner),manager,{},false,true,operation->view,operation,&bound,&presentation);
+ if(bound){if(presentation.empty()&&!operation->token.empty())presentation={{"tokens",Json::array({operation->token})}};
+  if(!presentation.empty()){if(acknowledge)acknowledge(presentation);else manager.finishBrowserPresentation(presentation);}}
+}
+inline void presentBrowserAcknowledgementFailure(CWnd* owner,BrowserPresentationAcks& acknowledgements,const BrowserPresentationAcks::Failure& failure){
+ CaptureDialogOwner captureOwner(owner,true);auto parent=captureOwner.get(owner);
+ Form dialog("Browser acknowledgement not saved",470,196,parent);
+ dialog.init=[&]{
+  dialog.label("Your download was accepted and remains in download history.",14,14,442,34);
+  auto details=dialog.edit(failure.error,14,50,442,58,true,true);details->ModifyStyle(WS_TABSTOP,0);
+  dialog.label("Retry saves the acknowledgement. Close keeps it pending for the next launch; it will not reopen File Info this session.",14,116,442,40);
+  dialog.accept=[&]{if(acknowledgements.retry(failure))dialog.close(IDOK);else dialog.close(IDCANCEL);};
+  dialog.defaultButton(dialog.button("&Retry",252,162,96,dialog.accept));
+  dialog.cancel=[&]{acknowledgements.dismiss(failure);dialog.close(IDCANCEL);};dialog.button("&Close",360,162,96,dialog.cancel);
+ };
+ dialog.afterInit=[&]{showBrowserOwnedDialog(dialog,parent);};
+ if(dialog.DoModal()==-1)throw std::runtime_error("Cannot open browser acknowledgement recovery.");
 }
 inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=""){
  Form d("Enter new address to download",373,57,parent);d.dialogUnits=true;JobPtr job;
@@ -861,6 +798,7 @@ inline void addAddress(CWnd* parent,Manager& manager,const std::string& initial=
   address->SetFocus();address->SetEditSel(0,-1);
  };if(d.DoModal()==IDOK&&job)presentDownload(parent,manager,job);
 }
+#include "BatchVirtualList.hpp"
 #include "SelectionUi.hpp"
 class RangeMap:public CWnd {
 public:

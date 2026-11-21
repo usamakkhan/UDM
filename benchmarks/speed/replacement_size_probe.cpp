@@ -1,0 +1,17 @@
+#include "Core.hpp"
+#include <iostream>
+namespace udm {struct CatalogCheckpointTestAccess {static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}};}
+using namespace udm;
+int wmain(int argc,wchar_t** argv){if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json cases=Json::array();try{
+ for(const std::string mode:{"completed-new-size","completed-old-size","retained-original-size","restored-original-size","fractional-new-size"}){
+  const auto folder=root/wide(mode);Manager m(folder/L"catalog");const auto files=folder/L"files";fs::create_directories(files);auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8(files.wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);
+  auto old=m.add("https://fixture.example/old","","result.bin","Main queue",true);atomicText(old->target(),"old bytes",false);const auto oldHash=fileHash(old->target());old->data["Status"]="Complete";old->data["Size"]=9;old->data["Received"]=9;old->data["Sha256"]=oldHash;old->data["Finished"]=date();
+  auto job=m.add("https://fixture.example/new","","next.bin","Main queue",true);job->data["FileName"]="result.bin";job->data["ReplacementOf"]=old->id();job->data["ReplacementHash"]=oldHash;job->data["PreviousPath"]=utf8((files/L"previous.bin").wstring());m.save();const auto stage=files/L"new.part";atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage),id=job->id();const bool rollback=mode.find("original-size")!=std::string::npos;
+  CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)==(rollback?"replacement-intent-written":"replacement-file-moved"))throw std::runtime_error("Owned size probe interruption");});try{m.publishFile(job,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});const auto journal=m.root/L"replacements"/(wide(id)+L".json");auto op=Json::parse(readText(journal));
+  const auto key=mode=="completed-old-size"?"OriginalAfter":rollback?"OriginalBefore":"After";op[key]["Size"]=mode=="fractional-new-size"?Json(14.5):Json(100);op[key]["Received"]=op[key]["Size"];atomicText(journal,op.dump(),false);if(mode=="restored-original-size")fs::rename(job->target(),files/L"previous.bin");
+  std::string failure;try{m.recoverReplacements(job);}catch(const std::exception& e){failure=e.what();}
+  const auto inspect=mode=="completed-new-size"||mode=="fractional-new-size"?job:old;const auto actual=fs::file_size(inspect->target());const auto disk=Json::parse(readText(m.root/L"state.json"));Json stored;for(const auto& row:disk["Downloads"])if(str(row,"Id")==inspect->id())stored=row;
+  const bool falseComplete=failure.empty()&&str(inspect->data,"Status")=="Complete"&&(!inspect->data["Size"].is_number_integer()||inspect->data["Size"]!=Json(actual));cases.push_back({{"case",mode},{"error",failure},{"acceptedWrongCompleteSize",falseComplete},{"shownSize",inspect->data["Size"]},{"actualFileBytes",actual},{"persistedSize",stored.value("Size",Json())},{"journalConsumed",!fs::exists(journal)}});m.stop();
+ }
+ atomicText(root/L"results.json",Json{{"passed",true},{"cases",cases},{"scope","Five isolated 8.49 replacement recovery size-corruption probes; no installed data touched."}}.dump(2),false);std::cout<<cases.dump()<<"\n";return 0;
+ }catch(const std::exception& e){atomicText(root/L"failure.json",Json{{"error",e.what()}}.dump(),false);std::cerr<<e.what()<<"\n";return 1;}}

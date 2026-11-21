@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "name": "An independent writer holds Manager before actual Resume selection",
+      "passed": true
+    },
+    {
+      "name": "Starting a selected Resume returns without waiting for the held model",
+      "passed": true
+    },
+    {
+      "name": "A repeated task cannot replace its in-flight selection or release the guard",
+      "passed": true
+    },
+    {
+      "name": "An early result read cannot abandon accepted Resume work",
+      "passed": true
+    },
+    {
+      "name": "The completed selected Resume stays guarded until UI acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+      "passed": true
+    },
+    {
+      "name": "The owned selected Resume publishes the complete exact file",
+      "passed": true
+    },
+    {
+      "name": "The duplicate selection causes one accepted body request rather than an extra download",
+      "passed": true
+    },
+    {
+      "name": "Mixed selected downloads classify on the worker",
+      "passed": true
+    },
+    {
+      "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+      "passed": true
+    },
+    {
+      "name": "Classification alone neither starts a body request nor rewrites state",
+      "passed": true
+    },
+    {
+      "name": "A coherent content view is ready for presentation",
+      "passed": true
+    },
+    {
+      "name": "Another decision retains the content view for later observation",
+      "passed": true
+    },
+    {
+      "name": "Changed request identity invalidates the displayed content warning",
+      "passed": true
+    },
+    {
+      "name": "A stale content decision settles asynchronously",
+      "passed": true
+    },
+    {
+      "name": "An obsolete warning cannot persist choices or resume a replacement request",
+      "passed": true
+    },
+    {
+      "name": "The real owned catalog is pinned against the Resume save",
+      "passed": true
+    },
+    {
+      "name": "A failed queue-save produces a settled worker result",
+      "passed": true
+    },
+    {
+      "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+      "passed": true
+    },
+    {
+      "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+      "passed": true
+    },
+    {
+      "name": "A real content-choice save failure settles on the worker",
+      "passed": true
+    },
+    {
+      "name": "Failed content persistence rolls back all choices together",
+      "passed": true
+    },
+    {
+      "name": "A retry failure after a successful choice save returns a distinct result",
+      "passed": true
+    },
+    {
+      "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+      "passed": true
+    },
+    {
+      "name": "Complete content choices are actually durable before retry preparation",
+      "passed": true
+    },
+    {
+      "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "A per-item selection error does not leave the command in flight",
+      "passed": true
+    },
+    {
+      "name": "A failed item remains unchanged while a later selected retry completes its exact file",
+      "passed": false
+    }
+  ],
+  "error": "A failed item remains unchanged while a later selected retry completes its exact file",
+  "passed": false
+}

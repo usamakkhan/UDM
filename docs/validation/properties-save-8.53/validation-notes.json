@@ -1,0 +1,15 @@
+{
+  "scope": "8.53 owned Properties saving; candidate build only, not installed/browser or IDM speed acceptance.",
+  "baseline": "The actual 8.52 paused Properties window blocked its UI thread during an injected real catalog-flush hold; 0 heartbeats, watchdog released after 500 ms. Artificial hold duration is not a natural latency measurement.",
+  "retainedFixtureFailures": [
+    "Initial combined paused/completed UI probes timed out on the completed branch. The completed fixture incorrectly retained normal queue membership and raised a legitimate validation dialog. The fixture now sets QueueMember false and handles only its own message windows. Earlier partial progress and failed roots remain for audit.",
+    "The first failure/retry probe sent an incomplete message-box acknowledgement and timed out. The repaired fixture posts an actual click to its own OK button and only acknowledges retry after a new task starts. Both final failure/retry cases pass. No production error-dialog bypass was introduced."
+  ],
+  "ownership": "Worker captures only manager/job and owned metadata/header values, never HWND/control/draft references. Dialog freezes submitted inputs, ignores duplicate acceptance/close while the owned task persists, restores fields on error, and joins the task before returning.",
+  "verificationLimits": [
+    "Holding the actual catalog flush and observing WM_TIMER heartbeats proves this candidate Properties message pump is live during that hold, not installed overall responsiveness.",
+    "Regular backend catalog persistence may still hold Model. Receipt-only pruning, other callers, zone metadata consistency and original sequential/split finishing parity remain.",
+    "Completed 8.52 UI timing was not qualified; baseline proof includes paused only."
+  ],
+  "preparationGuard": "An RAII scope protects acceptance staging and completion acknowledgement against reentrant Close and duplicate OK, including inside control-enable notifications. The final probe deliberately sends those actions from WM_ENABLE and verifies one persisted save (two only for the explicit failed-save retry)."
+}

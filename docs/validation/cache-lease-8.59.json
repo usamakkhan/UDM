@@ -1,0 +1,39 @@
+{
+  "nativeVersion": "8.59",
+  "extensionSourceVersion": "0.72.23",
+  "checks": 1263,
+  "suiteRuns": 12,
+  "cacheChecksPerDrive": 79,
+  "productionExecutablesBuilt": 5,
+  "backendFixtureExecutablesBuilt": 8,
+  "sourceInputCount": 516,
+  "coreObjectCount": 42,
+  "recompiledCore": [
+    "Transfer",
+    "Bridge"
+  ],
+  "retainedCoreObjects": 40,
+  "selectedQualificationPassed": true,
+  "protectedFilesUnchanged": true,
+  "installedVersion": "8.32",
+  "installationDeferred": true,
+  "installedAppChanged": false,
+  "extensionDeployed": false,
+  "installerCreated": false,
+  "pushedOrReleased": false,
+  "idmPerformanceParityVerified": false,
+  "baselineUndefinedBehaviorExecuted": false,
+  "sourceDeltaReconstructsQualifiedBefore": true,
+  "build": "cache-lease-8.59/build-result.json",
+  "suites": "cache-lease-8.59/suite-results.json",
+  "appSmoke": "cache-lease-8.59/app-64m-cache-smoke.json",
+  "cleanup": "cache-lease-8.59/cleanup.json",
+  "cleanupFilesRemoved": 407,
+  "cleanupLogicalBytesRemoved": 126169357,
+  "limits": [
+    "Cache operations remain serialized by their owning transfer; the atomic budget does not make one cache object generally concurrent.",
+    "Cross-thread failure/destruction tests and contention are defined for the new implementation. The old ownership violation is established from its reconstructed source and the C++ mutex precondition, not a claimed reproducible old crash.",
+    "No allocation-exhaustion injection, GUI/browser acceptance or finishing-speed gain is claimed.",
+    "The 64 MiB smoke verifies full-body cache use, exact bytes/hash, actual app normal exit and a separate output flush; it is not an IDM comparison."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "reason": "Correct const iterator deduction and two fixture-only compile errors before qualification",
+  "changedSources": [
+    "native/DuplicateDecisionTask.hpp",
+    "native/DuplicateDecisionTaskTests.cpp"
+  ],
+  "reusedTargets": [
+    "RequestedAuthenticationTaskTests"
+  ],
+  "backendChecksRunBeforeCorrection": 0,
+  "failedCompileIncludedInPassingEvidence": false
+}

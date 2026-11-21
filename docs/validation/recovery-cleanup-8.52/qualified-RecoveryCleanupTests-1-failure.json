@@ -1,0 +1,2806 @@
+{
+  "case": "paused-recovery-cleanup-begin-none",
+  "cases": [
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "Owned cleanup observation failure",
+      "fault": "failure",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "retained-lock",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-begin"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "Owned cleanup observation failure",
+      "fault": "failure",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-metadata"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "Owned cleanup observation failure",
+      "fault": "failure",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retire"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "Owned cleanup observation failure",
+      "fault": "failure",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-journal-retired"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "destination",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "membership",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The download changed during file recovery. Its bytes and recovery journal were preserved.",
+      "fault": "graph",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "The catalog batch changed during recovery. Keep its bytes and recovery journal.",
+      "fault": "batch",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "Owned cleanup observation failure",
+      "fault": "failure",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    },
+    {
+      "acceptedBeforeCleanup": true,
+      "error": "UDM is closing.",
+      "fault": "shutdown",
+      "kind": "ordinary",
+      "modelAvailable": true,
+      "phase": "recovery-cleanup-complete"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Successful metadata cleanup removes the separate retained source",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes while cleanup IO is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for accepted cleanup and all held ownership",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Restart finishes or acknowledges only already-durable accepted cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "A real retained-source reader can refuse best-effort deletion",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Best-effort retained-output failure preserves the locked source and accepted final file",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Successful metadata cleanup removes the separate retained source",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes while cleanup IO is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for accepted cleanup and all held ownership",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Restart finishes or acknowledges only already-durable accepted cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Successful metadata cleanup removes the separate retained source",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes while cleanup IO is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The exclusive journal claim remains pinned until accepted retirement",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for accepted cleanup and all held ownership",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Restart finishes or acknowledges only already-durable accepted cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Successful metadata cleanup removes the separate retained source",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes while cleanup IO is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for accepted cleanup and all held ownership",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Restart finishes or acknowledges only already-durable accepted cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Successful metadata cleanup removes the separate retained source",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes while cleanup IO is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": true
+    },
+    {
+      "name": "Real journal retirement and post-acceptance cleanup leave Model available",
+      "passed": true
+    },
+    {
+      "name": "The operation graph and target remain reserved throughout cleanup",
+      "passed": true
+    },
+    {
+      "name": "The separate retained media source is reserved until cleanup retires",
+      "passed": true
+    },
+    {
+      "name": "Cleanup begins only after the correct completed or paused outcome is applied",
+      "passed": true
+    },
+    {
+      "name": "The accepted history is already durable while cleanup is held",
+      "passed": true
+    },
+    {
+      "name": "Only the actual retirement boundary consumes its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Shutdown waits for accepted cleanup and all held ownership",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup gate is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed scope, receipt, batch, failure and shutdown refuse stale cleanup continuation",
+      "passed": true
+    },
+    {
+      "name": "Accepted and refused cleanup release every operation reservation",
+      "passed": true
+    },
+    {
+      "name": "Cleanup preserves the exact verified completed file",
+      "passed": true
+    },
+    {
+      "name": "A cleanup failure preserves an unretired journal without undoing completed retirement",
+      "passed": true
+    },
+    {
+      "name": "Restart finishes or acknowledges only already-durable accepted cleanup",
+      "passed": true
+    },
+    {
+      "name": "Successful cleanup or explicit retry retires its exact journal",
+      "passed": true
+    },
+    {
+      "name": "Cleanup starts from a real interrupted file publication",
+      "passed": true
+    },
+    {
+      "name": "Recovery reaches the held post-acceptance cleanup boundary",
+      "passed": false
+    }
+  ],
+  "error": "Recovery reaches the held post-acceptance cleanup boundary",
+  "passed": false,
+  "workflowError": ""
+}

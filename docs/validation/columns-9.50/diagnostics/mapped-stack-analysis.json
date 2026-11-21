@@ -1,0 +1,811 @@
+[
+  {
+    "tid": 8604,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0x1364"
+    },
+    "stackCandidates": [
+      {
+        "module": "user32.dll",
+        "offset": "0x2aea2"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?CreateObject@?$CThreadLocal@V_AFX_THREAD_STATE@@@@SAPEAVCNoTrackObject@@XZ",
+        "offset": "0x0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?AfxGetThreadState@@YAPEAV_AFX_THREAD_STATE@@XZ",
+        "offset": "0x17"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x1675f"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?AfxInternalPumpMessage@@YAHXZ",
+        "offset": "0x27"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?RunModalLoop@CWnd@@QEAAHK@Z",
+        "offset": "0xed"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "offset": "0x0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x2f51d8"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?CreateRunDlgIndirect@CWnd@@IEAAHPEBUDLGTEMPLATE@@PEAV1@PEAUHINSTANCE__@@@Z",
+        "offset": "0x3f"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?AfxWndProc@@YA_JPEAUHWND__@@I_K_J@Z",
+        "offset": "0x0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?DoModal@CDialog@@UEAA_JXZ",
+        "offset": "0x18c"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x2f51d8"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "offset": "0x0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?customizeColumns@MainWindow@udm@@IEAAXXZ",
+        "offset": "0xa90"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x49828"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x154b9"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x3a828"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0xb93b0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0xb9498"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x161ac0"
+      },
+      {
+        "module": "comctl32.dll",
+        "offset": "0x19340"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x14dac"
+      },
+      {
+        "module": "comctl32.dll",
+        "offset": "0x19340"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x57f8"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x5818"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?headerContextProc@MainWindow@udm@@KA_JPEAUHWND__@@I_K_J11@Z",
+        "offset": "0x5f"
+      },
+      {
+        "module": "comctl32.dll",
+        "offset": "0x2ced8"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x2f92e"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x2b739"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?commandUsesManager@MainWindow@udm@@KA_NI@Z",
+        "offset": "0x1a"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "??__F_AtlBaseModule@ATL@@YAXXZ",
+        "offset": "0x49828"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?cancelClosePolicy@MainWindow@udm@@IEAA_NXZ",
+        "offset": "0xc5"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?OnWndMsg@CWnd@@MEAAHI_K_JPEA_J@Z",
+        "offset": "0x330"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "offset": "0x0"
+      },
+      {
+        "module": "Udm.ColumnsMapped.exe",
+        "symbol": "?command@MainWindow@udm@@IEAAXI@Z",
+        "offset": "0xc52"
+      }
+    ]
+  },
+  {
+    "tid": 33120,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 4356,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 28088,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 35308,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x1628a4"
+    },
+    "stackCandidates": [
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x22773"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x9432a"
+      },
+      {
+        "module": "combase.dll",
+        "offset": "0x119abe"
+      },
+      {
+        "module": "combase.dll",
+        "offset": "0x11231f"
+      },
+      {
+        "module": "combase.dll",
+        "offset": "0x20e8e"
+      },
+      {
+        "module": "combase.dll",
+        "offset": "0x11222f"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 6308,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24150"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 23212,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 30920,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0xaf04"
+    },
+    "stackCandidates": [
+      {
+        "module": "duser.dll",
+        "offset": "0x238fc"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x165d94"
+      },
+      {
+        "module": "InputSwitch.dll",
+        "offset": "0x209c0"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0xbb720"
+      },
+      {
+        "module": "duser.dll",
+        "offset": "0x236d6"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x11968"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x3fd4f"
+      },
+      {
+        "module": "msctfmonitor.dll",
+        "offset": "0xb098"
+      },
+      {
+        "module": "msctfmonitor.dll",
+        "offset": "0x0"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0x4d7c9"
+      },
+      {
+        "module": "user32.dll",
+        "offset": "0xbb720"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x165d94"
+      },
+      {
+        "module": "msctfmonitor.dll",
+        "offset": "0xb5a2"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 1892,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x162f04"
+    },
+    "stackCandidates": [
+      {
+        "module": "msctf.dll",
+        "offset": "0x1ac9c"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x32144"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x97b9"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a8ec0"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x3200b"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x520f1"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x120910"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x3ea7"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x56b63"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x9d0a0"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x5b732"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x2baa0"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a8ec0"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x2899d"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x12091e"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x2b999"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x32144"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a9160"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x3200b"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a9160"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x5d30b"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x2b999"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a9160"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x5a74"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x1a8e98"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x4f80c"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x4f761"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x25409"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x120f38"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x123800"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x5c81c"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x1165c8"
+      },
+      {
+        "module": "KERNELBASE.dll",
+        "offset": "0x5e70e"
+      },
+      {
+        "module": "msctf.dll",
+        "offset": "0x7a585"
+      },
+      {
+        "module": "sechost.dll",
+        "offset": "0xc865"
+      }
+    ]
+  },
+  {
+    "tid": 23720,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0xaf04"
+    },
+    "stackCandidates": [
+      {
+        "module": "duser.dll",
+        "offset": "0x23ffb"
+      },
+      {
+        "module": "duser.dll",
+        "offset": "0x32ad0"
+      },
+      {
+        "module": "duser.dll",
+        "offset": "0x23449"
+      },
+      {
+        "module": "duser.dll",
+        "offset": "0x22bba"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x3f0ad"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x3f17c"
+      },
+      {
+        "module": "msvcrt.dll",
+        "offset": "0x9e500"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 29680,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0xaf04"
+    },
+    "stackCandidates": [
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bc41"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bbab"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x56617"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0xe1390"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x48027"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x47fc1"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 36744,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0xaf04"
+    },
+    "stackCandidates": [
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bc41"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bbab"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x5663e"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0xe1390"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x48027"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x47f89"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbfaad"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbf960"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x251a9"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbf960"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 32204,
+    "ip": {
+      "module": "win32u.dll",
+      "offset": "0xaf04"
+    },
+    "stackCandidates": [
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bc41"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x3bbab"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x5663e"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0xe1390"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x48027"
+      },
+      {
+        "module": "SHCore.dll",
+        "offset": "0x47f89"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbfaad"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbf960"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x251a9"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0xbf960"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 32656,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x23420"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  },
+  {
+    "tid": 29116,
+    "ip": {
+      "module": "ntdll.dll",
+      "offset": "0x165a24"
+    },
+    "stackCandidates": [
+      {
+        "module": "ntdll.dll",
+        "offset": "0x24d0e"
+      },
+      {
+        "module": "kernel32.dll",
+        "offset": "0x2dda7"
+      },
+      {
+        "module": "ntdll.dll",
+        "offset": "0x7ee4c"
+      }
+    ]
+  }
+]

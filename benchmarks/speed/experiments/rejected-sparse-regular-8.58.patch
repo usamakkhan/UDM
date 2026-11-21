@@ -1,0 +1,11 @@
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -959,7 +959,7 @@
+    // This pays allocation during transfer instead of normalizing sparse extents
+    // after EOF. Larger/unknown/network and existing sparse files retain the
+    // sparse-aware resume path. Saved segment Done still bounds credited bytes.
+-   const bool reserveRegular=allowSparse&&size>=0&&size<=64*1048576LL&&fixedVolume(dataPath(parts,job->id()));
++   const bool reserveRegular=false;
+    bool sparseDataFile=false;const auto migrated=prepareDataFile(parts,job->id(),size,plan,*cancel,allowSparse&&!reserveRegular,reserveRegular,sparseDataFile);
+    cancel->check();
+    {

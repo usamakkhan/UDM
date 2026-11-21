@@ -1,0 +1,456 @@
+{
+  "passed": true,
+  "ownedRoots": [
+    {
+      "scope": "owned-data-writeback-8.81-C-DuplicateDecisionTaskTests",
+      "filesRemoved": 9,
+      "logicalBytesRemoved": 2147312
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-FileInfoDisplayTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10778
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-FileInfoPrefetchTaskTests",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 1060805
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-MonitorReconnectTests",
+      "filesRemoved": 22,
+      "logicalBytesRemoved": 642410
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-NetworkCaptureSessionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8794
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-rerun-FileInfoPrefetchTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4250994
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-rerun-ResumeSelectionTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4245521
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-1-fresh",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 5303546
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-1-original",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 1060020
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-2-fresh",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4245401
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-2-original",
+      "filesRemoved": 6,
+      "logicalBytesRemoved": 3186532
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnostic",
+      "filesRemoved": 9,
+      "logicalBytesRemoved": 3201587
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnosticFreshCore",
+      "filesRemoved": 13,
+      "logicalBytesRemoved": 5330055
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnosticTracedCore",
+      "filesRemoved": 17,
+      "logicalBytesRemoved": 2140427
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeSelectionTaskTests",
+      "filesRemoved": 6,
+      "logicalBytesRemoved": 3186674
+    },
+    {
+      "scope": "owned-modal-ui-8.81",
+      "filesRemoved": 12,
+      "logicalBytesRemoved": 5327342
+    },
+    {
+      "scope": "owned-modal-ui-8.81-rerun",
+      "filesRemoved": 10,
+      "logicalBytesRemoved": 3208575
+    },
+    {
+      "scope": "owned-progress-menu-ui-8.81",
+      "filesRemoved": 23,
+      "logicalBytesRemoved": 87794
+    }
+  ],
+  "temporaryBuildFiles": [
+    {
+      "name": "Udm.FileInfoPrefetchTaskTests.exe",
+      "bytes": 5317120,
+      "sha256": "AC77D1E4FACC1A8EB41DB1D3317F81C104F4165F94BEF4095386909BD62F99CD"
+    },
+    {
+      "name": "FileInfoPrefetchTaskTests.obj",
+      "bytes": 4559544,
+      "sha256": "E22B868D93ABFC5EE9AC0742669303864E867B0FE0D51719E7024F5C450AC5D7"
+    },
+    {
+      "name": "Udm.FileInfoDisplayTaskTests.exe",
+      "bytes": 2202624,
+      "sha256": "D01694C876AFC6083A658B3B0E2A3B3DB76C7A556EB08C0790E35E146AC71189"
+    },
+    {
+      "name": "FileInfoDisplayTaskTests.obj",
+      "bytes": 3685513,
+      "sha256": "5E59862F7C799DD257E208DBF8D97DF383C3907CE0E956E218D17987964579D3"
+    },
+    {
+      "name": "Udm.NetworkCaptureSessionTests.exe",
+      "bytes": 2028544,
+      "sha256": "EE4AE0C185254E0D9B09F8D6DBB4D6F980AB1060FCF9728A7001B4CE75EA4975"
+    },
+    {
+      "name": "NetworkCaptureSessionTests.obj",
+      "bytes": 3387985,
+      "sha256": "7ACDC68373BF2BD0032EEFF90ED33B107C6EA79E08D6FADE01EBF075EC74969F"
+    },
+    {
+      "name": "Udm.MonitorReconnectTests.exe",
+      "bytes": 2463232,
+      "sha256": "A71CE2544FFD6F9761A4185E302E34E42F5EC8063E399971889D1CFBD8193F96"
+    },
+    {
+      "name": "MonitorReconnectTests.obj",
+      "bytes": 7260151,
+      "sha256": "B03A8059ED6209191AC17F3CD2E426E386B2580BD0B7E6347A88C43A4FE622C0"
+    },
+    {
+      "name": "Udm.DuplicateDecisionTaskTests.exe",
+      "bytes": 5231104,
+      "sha256": "02B0D71824CC44E2495EAA76DDDED4DFEF1EDA46F55B108EF1A6D4D88953BDEB"
+    },
+    {
+      "name": "DuplicateDecisionTaskTests.obj",
+      "bytes": 4557766,
+      "sha256": "9067ACD491D565334287020B7F9C718BB61E1A23095F9A2977DE0B8088959A01"
+    },
+    {
+      "name": "Udm.ResumeSelectionTaskTests.exe",
+      "bytes": 5228544,
+      "sha256": "D148F89B8A33B4CB9C8D6786968CA621777F910508DD70D99002899CF108F67F"
+    },
+    {
+      "name": "ResumeSelectionTaskTests.obj",
+      "bytes": 6030481,
+      "sha256": "5E67A035AAE3EA4D8AEDC4BF5D1EFF9DED0AD1FED6FEBC17C6375D81D1C1F877"
+    },
+    {
+      "name": "Udm.RequestedAuthenticationTaskTests.exe",
+      "bytes": 5230080,
+      "sha256": "8C09C650EE41290F69BC775DCEFA0ACB6D51592BF77F4A58843715C5C3F287F5"
+    },
+    {
+      "name": "RequestedAuthenticationTaskTests.obj",
+      "bytes": 5023808,
+      "sha256": "1871FAB453952E8B976F78D71946FB149E54F641A928D894C2ADFD8A0D17C025"
+    },
+    {
+      "name": "Udm.AuthenticationLoginTaskTests.exe",
+      "bytes": 5221376,
+      "sha256": "D31F7436BF7F33AEDE1659C482027CF27298B0F17F454490A710DC75CDD0CDDB"
+    },
+    {
+      "name": "AuthenticationLoginTaskTests.obj",
+      "bytes": 4565801,
+      "sha256": "5EE9CB48FCD58547FA806183D9E80C8C6E27F30916DF1662C496A31E6E04E3B3"
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "bytes": 5180928,
+      "sha256": "D2CDEE15116F32CAD79889090907EC5C3A230390CE99F6A2B603243FA189DA72"
+    },
+    {
+      "name": "FileInfoDecisionTests.obj",
+      "bytes": 2789426,
+      "sha256": "2DE204511FACCD973B600391040C2DDA6EB9E2EE831D7C54193512000DB9A6B6"
+    },
+    {
+      "name": "Udm.AuthenticationPromptTaskTests.exe",
+      "bytes": 5220864,
+      "sha256": "72B4745D43C144D9CAEE34314FE50BA442DC792D0A0B0127C6FCEE209F798DE3"
+    },
+    {
+      "name": "AuthenticationPromptTaskTests.obj",
+      "bytes": 6152581,
+      "sha256": "3233C6BB7F42BAFEEFF5C0B335BCFB0AFE9709C2D39DC7127B36529C919B8B2C"
+    },
+    {
+      "name": "Udm.AutomaticPromptSnapshotTests.exe",
+      "bytes": 2043904,
+      "sha256": "AD701FC45E3E12B97C4BFB8020547227B70F166747E587FB7AA1A69457B2FAE8"
+    },
+    {
+      "name": "AutomaticPromptSnapshotTests.obj",
+      "bytes": 5084495,
+      "sha256": "1E390794EA8C51C6C4622B7FB83DB19795434F8614517724B5C2CFC9E4377B77"
+    },
+    {
+      "name": "Udm.ModelMaintenanceTests.exe",
+      "bytes": 5153280,
+      "sha256": "CA5203B04C9C30D873AF120ACE2DF05FDE27D49283E2AA6ED9D5E3DC9B959EC2"
+    },
+    {
+      "name": "ModelMaintenanceTests.obj",
+      "bytes": 3387937,
+      "sha256": "1238AC6F3C9A52E76492986B6D9A06C4844DFDE577CD3BD21B212498F3978B33"
+    },
+    {
+      "name": "Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "0A5D57ADF45755885FCC994BDF937BD5F65AF387553CCD338ACB82DECF3358A3"
+    },
+    {
+      "name": "UiTaskSignalTests.obj",
+      "bytes": 2169656,
+      "sha256": "0ECF4E850E4888CB34179813CFCF34A55F73759ABEF4D19998C182A07455E603"
+    },
+    {
+      "name": "Udm.LaunchQueueTests.exe",
+      "bytes": 5376000,
+      "sha256": "2F2903610723F96F22EBB162E77A0E207D231A4DD9D11BBB60F7F885C18434D1"
+    },
+    {
+      "name": "LaunchQueueTests.obj",
+      "bytes": 4284296,
+      "sha256": "B0D36F02EE5E433B90EE255CE6C1073DCF3D731DCFFFC459A76E7AC1F1F6DC2C"
+    },
+    {
+      "name": "Udm.HistoryReadSnapshotTests.exe",
+      "bytes": 2115072,
+      "sha256": "FCD13ECE2026192CBC8D8B80E1DBE50C49ECBE7961E71D40D6EBFB48B558C5E5"
+    },
+    {
+      "name": "HistoryReadSnapshotTests.obj",
+      "bytes": 6614969,
+      "sha256": "A0753D655BC41D784F378544A7A2D778D7FF9AF1D79FB6D79360E851257E3705"
+    },
+    {
+      "name": "Udm.FindFilterCacheTests.exe",
+      "bytes": 1391104,
+      "sha256": "45A0F058C84E42815DBAE4D3D580B8B9723B672BB7C620B6BCF4B01D44AA3C3F"
+    },
+    {
+      "name": "FindFilterCacheTests.obj",
+      "bytes": 5238456,
+      "sha256": "ACA6B3A6E850FC8CE5FED71E44EDA41E955A11709B3DC448C0448E50999502FC"
+    },
+    {
+      "name": "Udm.DownloadListTooltipTests.exe",
+      "bytes": 2006016,
+      "sha256": "359133BF45D46BBB4E3257E5434989102A7C63B24B91A62F4184F79E180D6640"
+    },
+    {
+      "name": "DownloadListTooltipTests.obj",
+      "bytes": 3230214,
+      "sha256": "CCFD8A3ECA6C34FC8B837BD3EE0BEE269A280369EFFFF6B434A7B69021952851"
+    },
+    {
+      "name": "Udm.ModalSizeRefreshTests.exe",
+      "bytes": 1989632,
+      "sha256": "2983BA084B7882BBF771795EA82D411A35E04A823ABDB9DB1928CB2D03FFC18F"
+    },
+    {
+      "name": "ModalSizeRefreshTests.obj",
+      "bytes": 2746299,
+      "sha256": "13C4AAA2A0AD927B5AF1ADACC7155A9868407F0E772CC5B81A349F64812D44E6"
+    },
+    {
+      "name": "Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1204736,
+      "sha256": "9A9D92E8AD2EBF65AC1BEAA5179EDB4CC1912AC2DA12B9F6528DA6698E961767"
+    },
+    {
+      "name": "WrittenBodyCacheTests.obj",
+      "bytes": 2777902,
+      "sha256": "35E338504D5CE70B62D5B21339D47ACD2F67A5309612508A1A60E11B9DBD4C3E"
+    },
+    {
+      "name": "Udm.DataOnlyWritebackTests.exe",
+      "bytes": 1213952,
+      "sha256": "FB3B404C2CB3895661D4D9938580C82BF2B7C64BAEB6EBAD735D3D69EC09D9A4"
+    },
+    {
+      "name": "DataOnlyWritebackTests.obj",
+      "bytes": 3065442,
+      "sha256": "17E9A59A3603F39E8E97532BCD19FA9F39132B4E59ED947BC5BF3C5EEBAC9B4E"
+    },
+    {
+      "name": "Udm.PrefinishWritebackTests.exe",
+      "bytes": 1254400,
+      "sha256": "39B5E792D6D9F269C22E17AF8E8C02AB34FE79229257A8AA00E20C829B7A58F2"
+    },
+    {
+      "name": "PrefinishWritebackTests.obj",
+      "bytes": 3625936,
+      "sha256": "1C63CD63BCD916037ECB86BC1FF3C19BE5BCFFCA2F50B539483A23796C10CA08"
+    },
+    {
+      "name": "Udm.CatalogDiskCreditTests.exe",
+      "bytes": 2063872,
+      "sha256": "B360D77E03DA9B4FC1C1CDC8DDA4B5E236466AC3D83CCC416B2BAB596DC572CE"
+    },
+    {
+      "name": "CatalogDiskCreditTests.obj",
+      "bytes": 6124536,
+      "sha256": "55A2E740FF6946749A5826B5811251D91A888AB658288B56F4B7A66230831A4B"
+    },
+    {
+      "name": "Udm.CompletedCheckpointTests.exe",
+      "bytes": 5042688,
+      "sha256": "FA169DEDADC405B94988A454CF95B94128E311DA7C38F1CF64F1DA602BC48FA4"
+    },
+    {
+      "name": "CompletedCheckpointTests.obj",
+      "bytes": 6316244,
+      "sha256": "7CF992B0B7C8429BAB86E9739248250F9F1A97FB0469740DDA0160FD99D2648D"
+    },
+    {
+      "name": "Udm.CatalogCheckpointTests.exe",
+      "bytes": 2050560,
+      "sha256": "A71D780CC197FB15E8F01CA4437701DDB6F182DFB04ACD14A0411E5D930DA000"
+    },
+    {
+      "name": "CatalogCheckpointTests.obj",
+      "bytes": 5266836,
+      "sha256": "5C5CA8A557C2D1A0184B8EABBD1082A53D705B6675C5588CCFCDA9AF12AF249D"
+    },
+    {
+      "name": "Udm.PublicationPreparationTests.exe",
+      "bytes": 2313216,
+      "sha256": "5D8E2A7C6C86AC7646D22E08E39E4A04EF34F0410B818E40988D303049B7936E"
+    },
+    {
+      "name": "PublicationPreparationTests.obj",
+      "bytes": 3684662,
+      "sha256": "F89B1DF170B178E48DF0D64DC048F8D54FD6D3D4606B772A5770005F0DD66FF8"
+    },
+    {
+      "name": "Udm.PublicationOwnershipTests.exe",
+      "bytes": 2555392,
+      "sha256": "5EC802FCD58F35A8FF1F284501727BD5AA91944A22F8AB4212E3F105879D4435"
+    },
+    {
+      "name": "PublicationOwnershipTests.obj",
+      "bytes": 5495369,
+      "sha256": "0C68F54F3E7E3A6DE832FB2E8F697FC1866915A2CECB16924B45E58AB05D8B78"
+    },
+    {
+      "name": "Udm.PublicationRecoveryTests.exe",
+      "bytes": 2394112,
+      "sha256": "962ACF6959F83E1E87963051A208719C0FB61B416D33B5ED859ADDCF0F089B8F"
+    },
+    {
+      "name": "PublicationRecoveryTests.obj",
+      "bytes": 3335581,
+      "sha256": "8D7C4CAD87691365F6EFA3BD94442BE4E27F210C749AE245E2C2C07069AE7781"
+    },
+    {
+      "name": "Udm.ModalSizeUiTests.exe",
+      "bytes": 11934720,
+      "sha256": "FDEA206857F2933E6BA1D0543B4656A04435B69EF1B46ADD5763E96CB603D1C2"
+    },
+    {
+      "name": "ModalSizeUiTests.obj",
+      "bytes": 54008877,
+      "sha256": "19D1B6018D82A69CED9192184429D4BD1099602416EB5BCADFE25A4449FA8F48"
+    },
+    {
+      "name": "Udm.ProgressMenuUiTests.exe",
+      "bytes": 8216576,
+      "sha256": "FABB906231E51DACF5B7B357072D0A5140E679759B85393C17840BF0E29ADC41"
+    },
+    {
+      "name": "ProgressMenuUiTests.obj",
+      "bytes": 14628036,
+      "sha256": "8972F9CDD973D0BBB8F3A7E562218336FDDAADA1EFB31F9ADA5109A16A4B482B"
+    },
+    {
+      "name": "Udm.ResumeDiagnostic.exe",
+      "bytes": 5231104,
+      "sha256": "16A34D7A2EBD926FF36CA951E302249B61AF94D13580C9952EBDE8CA8EEF2374"
+    },
+    {
+      "name": "ResumeDiagnostic.obj",
+      "bytes": 6134821,
+      "sha256": "3EC576BBAA1AE9C007888BA8F89665960D7B95CB097141208A4017D299E30EAE"
+    },
+    {
+      "name": "Udm.ResumeDiagnosticFreshCore.exe",
+      "bytes": 5231104,
+      "sha256": "A815905557584D6B8B5A4B720B8BDC55081025B3D2056B1ECE884B778FE3F2D4"
+    },
+    {
+      "name": "ResumeDiagnosticFreshCore.obj",
+      "bytes": 6134829,
+      "sha256": "1CDA5ECD366505A8013C1C70393DE4EF5638B3AF954545A64084ACE1E8B9EB7D"
+    },
+    {
+      "name": "Udm.ResumeDiagnosticTracedCore.exe",
+      "bytes": 5236736,
+      "sha256": "7099DA19F18033597490D6F88D847A35B2763B4825845001E3C29E57FEC76F0D"
+    },
+    {
+      "name": "ResumeDiagnosticTracedCore.obj",
+      "bytes": 6134829,
+      "sha256": "BC9BB5ECB8F09BEC3BBEE87F7C4765D5577106CCF1A0611BD39BEB2F2BBF5BEE"
+    },
+    {
+      "name": "Udm.ResumeFreshCore.exe",
+      "bytes": 5228544,
+      "sha256": "E0AC45CD3963F3E6198BCAD92DB931A5BCFB03CB15DCD39C6A13D026D1085315"
+    },
+    {
+      "name": "Core-fresh-diagnostic.obj",
+      "bytes": 15275078,
+      "sha256": "4923FBC2417CFF0622F636F19CB5B32B7E608A4B212B425CDD0CFCBFE0FD9FE1"
+    },
+    {
+      "name": "Core-resume-trace.obj",
+      "bytes": 15313875,
+      "sha256": "77AB7A07C0A30CC630BFEC47E9CCBE7091157581C2C2E852F020895BEB841690"
+    }
+  ],
+  "temporarySourceCopies": [
+    {
+      "name": "pre-fixture-correction-FileInfoPrefetchTaskTests.cpp",
+      "bytes": 12898,
+      "sha256": "D87CF0FB97BBA40A2A5AC43F8A7D72103F72F1B08D96F00EE079BC57ABC2D1AA"
+    },
+    {
+      "name": "pre-fixture-correction-ModalSizeUiTests.cpp",
+      "bytes": 91725,
+      "sha256": "7F82B16D29570B0E9377B2408E4B8D863A4F6CAF6C4BE02A37432EC142C23908"
+    },
+    {
+      "name": "resume-diagnostic.cpp",
+      "bytes": 12048,
+      "sha256": "3C58E6E56773FD8A696EA346D071BC96CD982388C34940AFBF5400F60B3F59C0"
+    },
+    {
+      "name": "Core-resume-trace.cpp",
+      "bytes": 119184,
+      "sha256": "52477C5DE48C150FC66C2BC60663053F31A6C3F78F8D72C59C9FE34239EE849A"
+    }
+  ],
+  "protectedOldAndNewProductsAndCoresUnchanged": true,
+  "installedFilesAndPersonalCatalogsUnchanged": true
+}

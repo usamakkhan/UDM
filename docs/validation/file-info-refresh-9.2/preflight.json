@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "Continuation preserves the exact accepted request selection",
+      "passed": true
+    },
+    {
+      "name": "Ordinary continuation durably stops its unconfirmed prefetch state",
+      "passed": true
+    },
+    {
+      "name": "The worker resolves the refreshed address, page and private Basic credentials",
+      "passed": true
+    },
+    {
+      "name": "Absent remembered site logins remain absent in the owned reply",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "Unrelated metadata changes do not invalidate the saved request",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "Remembered credentials are resolved on the worker from current settings",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "A changed saved route is rejected before prefetch or catalog mutation",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "An empty recovery selection cannot authorize continuation",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "A removed target cannot be prepared through its retained JobPtr",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "A request changed after stopping returns no usable stale launch guard",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "A real stop-save failure rolls back confirmation without returning ready metadata",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "Only an explicit continuation retry finishes the recovered stop",
+      "passed": true
+    },
+    {
+      "name": "An owned refreshed-details command starts",
+      "passed": true
+    },
+    {
+      "name": "Media continuation retains its existing prefetch semantics and does not load ordinary site credentials",
+      "passed": true
+    },
+    {
+      "name": "A real writer owns Manager before continuation",
+      "passed": true
+    },
+    {
+      "name": "The requesting thread remains free while the worker waits for Manager",
+      "passed": true
+    },
+    {
+      "name": "Advisory cancellation settles without releasing the held model",
+      "passed": true
+    },
+    {
+      "name": "A real accepted prefetch-stop checkpoint remains in flight",
+      "passed": true
+    },
+    {
+      "name": "Cancellation does not abandon an accepted durable stop",
+      "passed": true
+    },
+    {
+      "name": "Owner release joins the accepted stop before discarding its cancelled reply",
+      "passed": true
+    },
+    {
+      "name": "An in-flight continuation refuses duplicate submissions",
+      "passed": true
+    },
+    {
+      "name": "Publication precedes notification and a throwing wake-up cannot undo the result",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

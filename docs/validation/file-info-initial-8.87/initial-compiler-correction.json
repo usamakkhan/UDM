@@ -1,0 +1,94 @@
+{
+  "passed": false,
+  "qualified": false,
+  "reason": "MFC GetNextDlgTabItem(nullptr, FALSE) is ambiguous. Use the explicit Win32 HWND API and add exact-byte/stale-command UI checks. Freeze fresh inputs and rebuild.",
+  "compilerLog": "ModalSizeUiTests.cpp\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(41): warning C4458: declaration of 'result' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(19): note: see declaration of 'udm::PendingFileInfoInbox::Operation::result'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(178): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(179): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(180): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n$REPOSITORY\\native\\PropertiesUi.hpp(167): warning C4389: '!=': signed/unsigned mismatch\n$REPOSITORY\\native\\DownloadInfoUi.hpp(608): warning C4458: declaration of 'pending' hides class member\n$REPOSITORY\\native\\DownloadInfoUi.hpp(752): note: see declaration of 'udm::downloadInfo::<lambda_9>::()::<lambda_29>::pending'\n$REPOSITORY\\native\\DownloadInfoUi.hpp(969): error C2668: 'CWnd::GetNextDlgTabItem': ambiguous call to overloaded function\n$REPOSITORY\\.media-cache\\driver-toolchain\\Microsoft.VC.14.44.17.14.MFC.Headers.base\\Contents\\VC\\Tools\\MSVC\\14.44.35207\\atlmfc\\include\\afxwin.h(2482): note: could be 'COleControlSiteOrWnd *CWnd::GetNextDlgTabItem(COleControlSiteOrWnd *,BOOL) const'\n$REPOSITORY\\.media-cache\\driver-toolchain\\Microsoft.VC.14.44.17.14.MFC.Headers.base\\Contents\\VC\\Tools\\MSVC\\14.44.35207\\atlmfc\\include\\afxwin2.inl(187): note: or       'CWnd *CWnd::GetNextDlgTabItem(CWnd *,BOOL) const'\n$REPOSITORY\\native\\DownloadInfoUi.hpp(969): note: while trying to match the argument list '(nullptr, int)'\n$REPOSITORY\\native\\DownloadInfoUi.hpp(969): error C2039: 'SetFocus': is not a member of 'COleControlSiteOrWnd'\n$REPOSITORY\\.media-cache\\driver-toolchain\\Microsoft.VC.14.44.17.14.MFC.Headers.base\\Contents\\VC\\Tools\\MSVC\\14.44.35207\\atlmfc\\include\\afxocc.h(484): note: see declaration of 'COleControlSiteOrWnd'\n$REPOSITORY\\native\\SelectionUi.hpp(196): warning C4456: declaration of 'source' hides previous local declaration\n$REPOSITORY\\native\\SelectionUi.hpp(192): note: see declaration of 'source'\n$REPOSITORY\\native\\ProgressUi.hpp(192): warning C4458: declaration of 'caption' hides class member\n$REPOSITORY\\native\\Ui.hpp(163): note: see declaration of 'udm::Form::caption'\n$REPOSITORY\\native\\ProgressUi.hpp(351): warning C4456: declaration of 'tracks' hides previous local declaration\n$REPOSITORY\\native\\ProgressUi.hpp(234): note: see declaration of 'tracks'\n$REPOSITORY\\native\\ProgressUi.hpp(637): warning C4458: declaration of 'caption' hides class member\n$REPOSITORY\\native\\Ui.hpp(163): note: see declaration of 'udm::Form::caption'\n$REPOSITORY\\native\\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'width' hides class member\n$REPOSITORY\\native\\Ui.hpp(163): note: see declaration of 'udm::Form::width'\n$REPOSITORY\\native\\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'height' hides class member\n$REPOSITORY\\native\\Ui.hpp(163): note: see declaration of 'udm::Form::height'\n$REPOSITORY\\native\\OptionsUi.hpp(53): warning C4458: declaration of 'caption' hides class member\n$REPOSITORY\\native\\Ui.hpp(163): note: see declaration of 'udm::Form::caption'\n$REPOSITORY\\native\\GrabberResultUi.hpp(37): warning C4458: declaration of 'folder' hides class member\n$REPOSITORY\\native\\GrabberUi.hpp(6): note: see declaration of 'udm::GrabberDialog::folder'\n$REPOSITORY\\native\\GrabberResultUi.hpp(48): warning C4458: declaration of 'folder' hides class member\n$REPOSITORY\\native\\GrabberUi.hpp(6): note: see declaration of 'udm::GrabberDialog::folder'\n$REPOSITORY\\native\\App.cpp(220): warning C4458: declaration of 'status' hides class member\n$REPOSITORY\\native\\App.cpp(131): note: see declaration of 'udm::MainWindow::status'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(229): warning C4456: declaration of 'row' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(20): note: see declaration of 'row'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(241): warning C4456: declaration of 'chosen' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(54): note: see declaration of 'chosen'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(248): warning C4456: declaration of 'entered' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'entered'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(248): warning C4456: declaration of 'release' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'release'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(248): warning C4456: declaration of 'ready' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'ready'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(248): warning C4456: declaration of 'released' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'released'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(249): warning C4456: declaration of 'restore' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(25): note: see declaration of 'restore'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(256): warning C4456: declaration of 'restore' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(25): note: see declaration of 'restore'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(332): warning C4456: declaration of 'writer' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(27): note: see declaration of 'writer'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(333): warning C4456: declaration of 'released' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'released'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(374): warning C4456: declaration of 'job' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(16): note: see declaration of 'job'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(377): warning C4456: declaration of 'released' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'released'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(421): warning C4456: declaration of 'job' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(16): note: see declaration of 'job'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'entered' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'entered'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'release' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'release'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'ready' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'ready'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'released' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'released'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'expired' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'expired'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(424): warning C4456: declaration of 'writer' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(27): note: see declaration of 'writer'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(445): warning C4456: declaration of 'release' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'release'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(445): warning C4456: declaration of 'released' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'released'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(445): warning C4456: declaration of 'expired' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'expired'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(463): warning C4459: declaration of 'failure' hides global declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(9): note: see declaration of 'udm::failure'\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(476): warning C4456: declaration of 'expired' hides previous local declaration\n$REPOSITORY\\native\\ModalSizeUiTests.cpp(26): note: see declaration of 'expired'\n",
+  "preflight": {
+    "checks": [
+      {
+        "name": "Initial preparation settles on an owned reader",
+        "passed": true
+      },
+      {
+        "name": "A coherent render cache and its private address and credentials are prepared together",
+        "passed": true
+      },
+      {
+        "name": "The initial view includes exact metadata, queue names and display labels",
+        "passed": true
+      },
+      {
+        "name": "Preparing the dialog never admits a transfer, mutates history or consumes the offer",
+        "passed": true
+      },
+      {
+        "name": "An obsolete render cache is refreshed asynchronously",
+        "passed": true
+      },
+      {
+        "name": "A changed size replaces the stale render snapshot before controls become editable",
+        "passed": true
+      },
+      {
+        "name": "A real catalog writer holds Manager before cold preparation starts",
+        "passed": true
+      },
+      {
+        "name": "Requesting cold File Info returns while its reader waits for the real model",
+        "passed": true
+      },
+      {
+        "name": "One initial result cannot be overwritten by another request",
+        "passed": true
+      },
+      {
+        "name": "Cancelling and joining a model-waiting reader completes before that external writer must be released",
+        "passed": true
+      },
+      {
+        "name": "Cancelled initial preparation retains no worker or result",
+        "passed": true
+      },
+      {
+        "name": "An outstanding decision defers the initial view without spinning under Manager",
+        "passed": true
+      },
+      {
+        "name": "The same owned reader resumes after decision acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "A real protected POST request is prepared on the same reader",
+        "passed": true
+      },
+      {
+        "name": "The form layout is preserved without exposing its protected request body in render data",
+        "passed": true
+      },
+      {
+        "name": "A removed download settles its initial read",
+        "passed": true
+      },
+      {
+        "name": "An absent history member cannot become an editable initial dialog",
+        "passed": true
+      },
+      {
+        "name": "An initial-reader exception settles on its owner",
+        "passed": true
+      },
+      {
+        "name": "Initial errors are consumed without admitting or cancelling the user's download",
+        "passed": true
+      },
+      {
+        "name": "The same owner can Retry after a consumed initial-read failure",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "preflightExcludedFromPrimaryCounts": true,
+  "assertionsWeakened": false
+}

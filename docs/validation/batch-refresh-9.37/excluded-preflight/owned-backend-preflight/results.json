@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "name": "A full refresh preserves the complete source index space",
+      "passed": true
+    },
+    {
+      "name": "Refresh owns edited request inputs independently of later caller mutation",
+      "passed": true
+    },
+    {
+      "name": "Unchanged observed request metadata still avoids a redundant probe",
+      "passed": true
+    },
+    {
+      "name": "Projection never changes caller destination description or explicit selection",
+      "passed": true
+    },
+    {
+      "name": "A single-row refresh prepares only that source identity",
+      "passed": true
+    },
+    {
+      "name": "A row refresh owns the existing preview policy cohort",
+      "passed": true
+    },
+    {
+      "name": "Previously added rows cannot gain a new metadata request",
+      "passed": true
+    },
+    {
+      "name": "Per-file protected overrides invalidate observed hints and travel with the request",
+      "passed": true
+    },
+    {
+      "name": "Refresh retains matching global and browser headers proxy and session",
+      "passed": true
+    },
+    {
+      "name": "An edited URL loses unrelated browser context and receives a fresh fallback name",
+      "passed": true
+    },
+    {
+      "name": "Current saved-login policy invalidates a global observed-response hint",
+      "passed": true
+    },
+    {
+      "name": "Disabling the browser route invalidates its observed-response hint",
+      "passed": true
+    },
+    {
+      "name": "Refresh projection cancels before publishing a partial row set",
+      "passed": true
+    },
+    {
+      "name": "Capture rejects an out-of-range edited source",
+      "passed": true
+    },
+    {
+      "name": "Refresh rejects duplicated source identities",
+      "passed": true
+    },
+    {
+      "name": "Refresh rejects browser context from a different source cohort",
+      "passed": true
+    },
+    {
+      "name": "Global refresh worker completes its owned projection",
+      "passed": true
+    },
+    {
+      "name": "Global refresh prepares requests and their owner after releasing Manager",
+      "passed": true
+    },
+    {
+      "name": "A real writer holds Manager for the single-row refresh",
+      "passed": true
+    },
+    {
+      "name": "A row refresh does not reacquire Manager for its existing preview policy",
+      "passed": true
+    },
+    {
+      "name": "A row refresh keeps the existing preview owner and replaces only its own slot",
+      "passed": true
+    },
+    {
+      "name": "Refresh preparation changes no catalog settings download or command ownership",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

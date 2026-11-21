@@ -1,0 +1,7 @@
+{
+  "supersededForTotalComparison": true,
+  "reason": "Observer used Sleep(1) after dispatch, including after window destruction; replaced by an event-driven message wait",
+  "rawOwnerCleanupMs": 922.4342000000179,
+  "historical945UnpairedOwnerCleanupMs": 866.8346000015736,
+  "noMeasurementsDiscarded": true
+}

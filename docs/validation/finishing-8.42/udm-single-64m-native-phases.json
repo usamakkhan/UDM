@@ -1,0 +1,888 @@
+{
+  "version": "8.42",
+  "case": "single-64m",
+  "volume": "D:",
+  "bytes": 67108864,
+  "hashMatches": true,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "sourceSha256": "E824CFC2DC977AAF0F5E086B10F10D9176F750890F50C3E0B452D4B9EB0B72E3",
+  "basedOnQualifiedExecutableSha256": "1788DB3592AD8539519520EA92738C04F4F305BB558E2AC8793404E42312EEB8",
+  "diagnosticOnly": true,
+  "events": [
+    {
+      "stage": "app-init-entry",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8726.453950001087
+    },
+    {
+      "stage": "manager-ready",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8709.987150001325
+    },
+    {
+      "stage": "frame-created",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8531.018950001453
+    },
+    {
+      "stage": "pipe-ready",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8530.806950000624
+    },
+    {
+      "stage": "automation-start",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8530.806450000455
+    },
+    {
+      "stage": "automation-finished",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8530.406050000238
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.862650000723
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.818550001437
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.818450000676
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.814750001606
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.813950000971
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.251950001708
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8529.251650001243
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8528.769650001777
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8528.769450000254
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8528.643050001847
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8528.642850000324
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8494.255150000754
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8494.253250000838
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8481.462550000288
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8481.461350000245
+    },
+    {
+      "stage": "app-init-returning",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8454.167850000886
+    },
+    {
+      "stage": "initial-refresh-entry",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8450.95085000139
+    },
+    {
+      "stage": "initial-refresh-returned",
+      "thread": 25824,
+      "afterLastOriginByteMs": -8441.95055000091
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6949.583950001397
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6949.523450000925
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6949.523250001221
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6949.522850001813
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6949.521150001601
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.808550001559
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.808350001855
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.618050000732
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.617850001028
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.498350000591
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6948.498150000887
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6932.0805500010465
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6932.078950001596
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6920.889450000686
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 27668,
+      "afterLastOriginByteMs": -6920.888650001871
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5414.711050001642
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5414.660050000748
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5414.659950001806
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5414.659450001636
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5414.658350000536
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.953550001679
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.953250001214
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.761450001402
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.761150000937
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.641750001261
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5413.641550001557
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5393.06205000139
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5393.0601500014745
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5380.005250000977
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 27668,
+      "afterLastOriginByteMs": -5380.004550001104
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3869.66885000038
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3869.5668500004103
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3869.566550001764
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3869.566150000537
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3869.564750000791
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.7722500017117
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.7719500012463
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.4945500008325
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.4943500011286
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.289250001908
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3868.289050000385
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3840.9344500014413
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3840.9325500015257
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3827.71325000067
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 27668,
+      "afterLastOriginByteMs": -3827.712550000797
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.8363500016276
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.785950001664
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.7858500009024
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.7854500014946
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.784450001156
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.1514500015037
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2320.1511500010383
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2319.93335000152
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2319.933150001816
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2319.824250000238
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2319.824050000534
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2290.092450000884
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2290.0914500005456
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2278.1204500006424
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 27668,
+      "afterLastOriginByteMs": -2278.119650001827
+    },
+    {
+      "stage": "auto-save-snapshot-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -762.7273500020237
+    },
+    {
+      "stage": "auto-save-serialized",
+      "thread": 27668,
+      "afterLastOriginByteMs": -762.677150001764
+    },
+    {
+      "stage": "auto-save-write-wait",
+      "thread": 27668,
+      "afterLastOriginByteMs": -762.6770500010025
+    },
+    {
+      "stage": "auto-save-write-acquired",
+      "thread": 27668,
+      "afterLastOriginByteMs": -762.6763500011293
+    },
+    {
+      "stage": "auto-save-atomic-entry",
+      "thread": 27668,
+      "afterLastOriginByteMs": -762.6753500007908
+    },
+    {
+      "stage": "auto-save-dirs-ready",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.8861500013736
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.8859500016697
+    },
+    {
+      "stage": "auto-save-file-opened",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.6944500005047
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.6942500008008
+    },
+    {
+      "stage": "auto-save-bytes-written",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.5676500008703
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 27668,
+      "afterLastOriginByteMs": -761.5675500019279
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 27668,
+      "afterLastOriginByteMs": -739.0193500013993
+    },
+    {
+      "stage": "auto-save-buffer-flushed",
+      "thread": 27668,
+      "afterLastOriginByteMs": -739.0179500016529
+    },
+    {
+      "stage": "auto-save-file-published",
+      "thread": 27668,
+      "afterLastOriginByteMs": -727.8018500019243
+    },
+    {
+      "stage": "auto-save-write-released",
+      "thread": 27668,
+      "afterLastOriginByteMs": -727.8000500009512
+    },
+    {
+      "stage": "output-flush-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 15.200849999018828
+    },
+    {
+      "stage": "output-flush-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 84.31304999976419
+    },
+    {
+      "stage": "worker-commit-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 84.5118499983073
+    },
+    {
+      "stage": "intent-write-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.08844999960274
+    },
+    {
+      "stage": "save-atomic-entry",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.16184999825782
+    },
+    {
+      "stage": "save-dirs-ready",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.78644999943208
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.78674999807845
+    },
+    {
+      "stage": "save-file-opened",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.96354999826872
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 85.96384999873408
+    },
+    {
+      "stage": "save-bytes-written",
+      "thread": 29688,
+      "afterLastOriginByteMs": 86.07804999883228
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 86.07814999959373
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 103.40444999928877
+    },
+    {
+      "stage": "save-buffer-flushed",
+      "thread": 29688,
+      "afterLastOriginByteMs": 103.40544999962731
+    },
+    {
+      "stage": "intent-write-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 104.62354999799572
+    },
+    {
+      "stage": "catalog-write-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.83724999924016
+    },
+    {
+      "stage": "forced-save-snapshot-ready",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.90354999840201
+    },
+    {
+      "stage": "forced-save-serialized",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.97504999896046
+    },
+    {
+      "stage": "forced-save-write-wait",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.97524999866437
+    },
+    {
+      "stage": "forced-save-write-acquired",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.97544999836828
+    },
+    {
+      "stage": "forced-save-atomic-entry",
+      "thread": 29688,
+      "afterLastOriginByteMs": 105.9762499990029
+    },
+    {
+      "stage": "forced-save-dirs-ready",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.53104999801144
+    },
+    {
+      "stage": "atomic-open-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.53124999953434
+    },
+    {
+      "stage": "forced-save-file-opened",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.694249998327
+    },
+    {
+      "stage": "atomic-open-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.6944499980309
+    },
+    {
+      "stage": "forced-save-bytes-written",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.78244999871822
+    },
+    {
+      "stage": "atomic-flush-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 106.78254999947967
+    },
+    {
+      "stage": "atomic-flush-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 156.91194999817526
+    },
+    {
+      "stage": "forced-save-buffer-flushed",
+      "thread": 29688,
+      "afterLastOriginByteMs": 156.9142499993177
+    },
+    {
+      "stage": "forced-save-file-published",
+      "thread": 29688,
+      "afterLastOriginByteMs": 167.84234999795444
+    },
+    {
+      "stage": "forced-save-write-released",
+      "thread": 29688,
+      "afterLastOriginByteMs": 167.84324999935052
+    },
+    {
+      "stage": "catalog-write-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 167.9062499988504
+    },
+    {
+      "stage": "catalog-resolve-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 167.90674999901967
+    },
+    {
+      "stage": "publication-cleanup-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 168.1794499982061
+    },
+    {
+      "stage": "worker-commit-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 168.77764999844658
+    },
+    {
+      "stage": "worker-final-proof-done",
+      "thread": 29688,
+      "afterLastOriginByteMs": 169.63904999829538
+    },
+    {
+      "stage": "worker-notify-begin",
+      "thread": 29688,
+      "afterLastOriginByteMs": 169.6413499994378
+    },
+    {
+      "stage": "worker-notify-end",
+      "thread": 29688,
+      "afterLastOriginByteMs": 169.65654999876278
+    },
+    {
+      "stage": "close-entry",
+      "thread": 25824,
+      "afterLastOriginByteMs": 170.21104999912495
+    },
+    {
+      "stage": "integration-stop-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": 170.32834999918123
+    },
+    {
+      "stage": "integration-stop-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 170.54744999950344
+    },
+    {
+      "stage": "file-info-stop-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 170.74314999808848
+    },
+    {
+      "stage": "manager-stop-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.21644999882847
+    },
+    {
+      "stage": "stop-entry",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.21694999899773
+    },
+    {
+      "stage": "stop-periodic-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.23514999933832
+    },
+    {
+      "stage": "stop-periodic-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.49244999949588
+    },
+    {
+      "stage": "stop-joins-done",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.5207499985263
+    },
+    {
+      "stage": "stop-publications-done",
+      "thread": 25824,
+      "afterLastOriginByteMs": 181.52144999839948
+    },
+    {
+      "stage": "stop-proof-done",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.36594999871159
+    },
+    {
+      "stage": "stop-return",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.36624999917694
+    },
+    {
+      "stage": "manager-stop-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.3663499981194
+    },
+    {
+      "stage": "icons-stop-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.3665499996423
+    },
+    {
+      "stage": "icons-stop-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.37274999955844
+    },
+    {
+      "stage": "command-files-stop-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 182.37314999896626
+    },
+    {
+      "stage": "windows-cleanup-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 183.89824999940174
+    },
+    {
+      "stage": "close-return",
+      "thread": 25824,
+      "afterLastOriginByteMs": 210.52284999859694
+    },
+    {
+      "stage": "exit-instance-begin",
+      "thread": 25824,
+      "afterLastOriginByteMs": 210.59004999915487
+    },
+    {
+      "stage": "automation-reset-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 210.59034999962023
+    },
+    {
+      "stage": "manager-reset-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 211.60704999965674
+    },
+    {
+      "stage": "ole-term-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 213.60214999913296
+    },
+    {
+      "stage": "exit-instance-end",
+      "thread": 25824,
+      "afterLastOriginByteMs": 213.60344999811787
+    }
+  ],
+  "dropped": 0,
+  "intervals": {
+    "outputFlushMs": 69.11220000074536,
+    "intentMs": 19.53509999839298,
+    "catalogMs": 62.06899999961024,
+    "commitCleanupMs": 0.5982000002404675,
+    "workerProofMs": 0.8613999998487998,
+    "notifyToCloseMs": 0.5545000003621681,
+    "integrationStopMs": 0.21910000032221433,
+    "managerStopMs": 1.1498999992909376,
+    "iconsStopMs": 0.006199999916134402,
+    "commandFilesStopMs": 0.00039999940781854093,
+    "windowCloseMs": 26.624599999195198,
+    "exitInstanceMs": 3.0133999989629956
+  },
+  "diagnosticProcessExitTailMs": 219.49074999974982,
+  "diagnosticWallSeconds": 9.197373049999442,
+  "qpcMappingErrorBoundSeconds": 1.249999513674993e-06,
+  "exitClockMappingErrorBoundSeconds": 1.6499998309882358e-06,
+  "finishPhases": {
+    "AdvisoryHashOverlap": false,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 2.05e-05,
+    "Content": 0.0002926,
+    "DirectSize": 3.47e-05,
+    "FlushPublished": 0.0691494,
+    "Hash": 4.83e-05,
+    "HashMode": "inline",
+    "PrePublicationMetadata": 0.0105211,
+    "PrefetchReceipt": 2.06e-05,
+    "PreparedTransferFinalizeSeconds": 0.0809062,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 8.59e-05,
+    "PublishedFileFlush": 0.0687618,
+    "PublishedFileOpen": 0.0002234,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0007571,
+    "SettleDestination": 0.0005374,
+    "SettleLengthQuery": 7.53e-05,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.000113,
+    "SettleSnapshot": 1.39e-05,
+    "SettleValidateFolder": 8e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.000573,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "publicationPhases": {
+    "IntentOperations": {
+      "bytes-written": 0.000113,
+      "directories-ready": 0.0006967,
+      "publish": 0.0010368,
+      "temporary-flushed": 0.0175057,
+      "temporary-opened": 0.0001787
+    },
+    "PrepareIntent": 0.0003955,
+    "PrepareSource": 0.0001366,
+    "Rename": 0.0009019,
+    "TimingScope": "through-rename-before-final-catalog-save",
+    "VerifyIdentity": 1.6e-06,
+    "WriteIntent": 0.0195353
+  },
+  "originRequests": 1,
+  "originBytes": 67108864,
+  "protectedFilesUnchanged": true,
+  "processExitedNormally": true,
+  "performanceParityVerified": false,
+  "rootCauseVerified": false,
+  "limitations": [
+    "Diagnostic preprocessor markers change the binary; this is attribution rather than an uninstrumented speed comparison.",
+    "Application exit includes its workers, not external system services or device writeback."
+  ]
+}

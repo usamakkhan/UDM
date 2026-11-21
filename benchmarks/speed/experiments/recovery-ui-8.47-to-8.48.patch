@@ -1,0 +1,410 @@
+--- a/native/Core.hpp
++++ b/native/Core.hpp
+@@ -26,6 +26,7 @@
+ #include "SpeedMeter.hpp"
+ #include "PeriodicCheckpoint.hpp"
+ namespace udm {
++class PropertiesHeaderPatch;
+ using Json=nlohmann::json;
+ namespace fs=std::filesystem;
+ using i64=long long;
+@@ -279,6 +280,8 @@
+  void recoverBeforeConfigure(JobPtr,bool beforeStart=false);
+  void queueIndividualResume(JobPtr);
+  void resumeAfterRecovery(JobPtr);
++ void removeAfterRecovery(JobPtr,std::optional<bool>,bool);
++ void recoverReplacementsWithContinuation(JobPtr,bool,const std::function<bool()>&,const std::function<void()>&);
+  Json configuredDownload(JobPtr,const Json&,bool prefetchedTransfer);
+  bool finishPrefetchDecision(JobPtr,const Json&,const FileInfoFolderChoice*,bool startNow,const Json& rememberedLogin,const DownloadQueueChoice* queueChoice=nullptr);
+  std::optional<Json> queuesWithDownloadDraft(const std::string& queue,const DownloadQueueChoice* queueChoice);
+@@ -342,6 +345,10 @@
+  void cancelBrowserMediaPresentation(const std::string& token,const std::string& fingerprint,const std::function<void(const char*)>& checkpoint={});
+  Json browserCaptureContext(const Json&)const;
+  void scanAgain(JobPtr);
++ // The predicate runs under the model lease before and after recovery; it must not perform IO.
++ bool resumeIf(JobPtr,const std::function<bool()>&);
++ enum class OfferCancellation {AwaitingOnly,FileInfo};
++ bool cancelUnconfirmedOffer(JobPtr,OfferCancellation,const std::function<bool()>& allowed={});
+  void resume(JobPtr);void pause(JobPtr);void remove(JobPtr,std::optional<bool> expectedComplete={},bool cleanupPrefetch=false);bool isActive(JobPtr)const;
+  std::optional<bool> queueRunning(const std::string&)const;
+  bool changeQueueRunState(const std::string&,bool start);
+@@ -363,6 +370,7 @@
+  void reviseDownloadSchedule(JobPtr,const Json& originalQueue,const Json& originalDownload,
+                              const ScheduledDownloadWindow&,const Json& edit,const FileInfoFolderChoice&);
+  void configure(JobPtr,const Json&);
++ void configureProperties(JobPtr,const Json&,const PropertiesHeaderPatch&);
+  bool confirmPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice* folderChoice=nullptr,const Json& rememberedLogin=Json());
+  bool deferPrefetchedDownload(JobPtr,const Json&,const FileInfoFolderChoice&,const Json& rememberedLogin=Json(),const DownloadQueueChoice* queueChoice=nullptr);
+  void waitForPrefetchConfirmation(const JobPtr&,const Cancel&,std::optional<i64> verifiedSize={},const Json& preparedMedia={});
+@@ -523,7 +531,7 @@
+ void transfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&,JobPtr limitOwner={},std::shared_ptr<Rate> rate={});
+ void mediaTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
+ void validateAdaptive(const Json&);
+-void requestLiveHlsFinish(Manager&,JobPtr);
++void requestLiveHlsFinish(Manager&,JobPtr,const std::function<bool()>& allowed={});
+ JobPtr receiveAdaptive(Manager&,const Json&);
+ void adaptiveTransfer(Manager&,JobPtr,const std::shared_ptr<Cancel>&);
+ void validateSource(const std::string&);void validateStream(const std::string&);
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -5,6 +5,7 @@
+ #include "QueueWake.hpp"
+ #include "Scanner.hpp"
+ #include "Core.hpp"
++#include "PropertiesRequestDraft.hpp"
+ #ifdef UDM_FINISH_TIMING_TEST
+ #include "ProductionUiTiming.hpp"
+ #define UDM_FINISH_POINT(stage) nativeUiTraceRecord(stage)
+@@ -513,14 +514,18 @@
+ }
+ JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);const auto destinationFolder=fs::absolute(fs::path(wide(folder)));folder=utf8(destinationFolder.wstring());if(relocationReserves(destinationFolder))throw std::runtime_error("That folder is reserved by a file move.");bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");filename=availableDownloadName(*this,destinationFolder,filename);auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
+ bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||PublicationOwnership::treeOwned(*this,j)||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
+-void Manager::resume(JobPtr j){
++void Manager::resume(JobPtr j){resumeIf(j,{});}
++bool Manager::resumeIf(JobPtr j,const std::function<bool()>& allowed){
+  {Lock lock(mutex);if(!j)throw std::runtime_error("This download is no longer in the list.");
+-  if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return;}
++  if(allowed&&!allowed())return false;
++  if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
+   if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");}
+  recoverReplacements(j,true);
+- Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+- if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return;}
+- resumeAfterRecovery(j);
++ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");
++ if(allowed&&!allowed())return false;
++ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
++ if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
++ resumeAfterRecovery(j);return true;
+ }
+ // Caller owns the model lease and has already reconciled this publication tree.
+ void Manager::resumeAfterRecovery(JobPtr j){
+@@ -603,6 +608,10 @@
+  }
+  // Keep the selected record until publication recovery has accepted its files.
+  recoverReplacements(j,true);
++ removeAfterRecovery(j,expectedComplete,cleanupPrefetch);
++}
++// Caller has reconciled publication; repeated mutation validation remains atomic.
++void Manager::removeAfterRecovery(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
+  Lock l(mutex);
+  if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
+@@ -613,6 +622,26 @@
+  discardRetainedMediaOutput(j->data);
+  if(cleanupPrefetch)discardCancelledPrefetch(j);
+  pruneStagedPostBodies(*this);
++}
++bool Manager::cancelUnconfirmedOffer(JobPtr job,OfferCancellation policy,const std::function<bool()>& allowed){
++ bool removed=false;
++ const auto member=[&]{return job&&std::find(jobs.begin(),jobs.end(),job)!=jobs.end();};
++ const auto eligible=[&](bool recovered){
++  if(!member()||yes(job->data,"IndividualStart")||isActive(job))return false;
++  const auto status=str(job->data,"Status");
++  return policy==OfferCancellation::AwaitingOnly?(status=="Awaiting confirmation"||(recovered&&status=="Paused")):!job->data.contains("OriginalResponse")&&(status=="Awaiting confirmation"||status=="Paused"||status=="Failed");
++ };
++ // Before/after execute under recovery's own lease. No other UI command can
++ // accept the recovered Paused row between owner release and guarded removal.
++ recoverReplacementsWithContinuation(job,true,[&]{
++  if(allowed&&!allowed())return false;
++  if(!eligible(false)){
++   if(policy==OfferCancellation::FileInfo&&member()&&!yes(job->data,"IndividualStart"))pause(job);
++   return false;
++  }
++  recoverFileOperation(job);return true;
++ },[&]{if((!allowed||allowed())&&eligible(true)){removeAfterRecovery(job,false,true);removed=true;}});
++ return removed;
+ }
+ int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
+ static i64 quotaPeriodStart(const Json& state){
+@@ -787,10 +816,10 @@
+ 
+ void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
+ void Manager::ensureConnection(JobPtr j,const Cancel& c){Json prefs;{Lock l(mutex);prefs=state["Settings"];}ensureDialConnection(prefs,c,[this,j](const std::string& message){Lock l(mutex);if(message.empty())j->data.erase("ConnectionStatus");else j->data["ConnectionStatus"]=message;});}
+-void requestLiveHlsFinish(Manager& manager,JobPtr job){
+- std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
++void requestLiveHlsFinish(Manager& manager,JobPtr job,const std::function<bool()>& allowed){
++ std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(allowed&&!allowed())return;if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
+  auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
+- if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resume(job);}
++ if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resumeIf(job,[&]{return std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end()&&yes(job->data,"LiveRecording")&&yes(job->data,"LiveStopRequested")&&str(job->data,"Status")!="Complete"&&str(job->data,"Status")!="Awaiting confirmation";});}
+ }
+ void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{PreparedTransferCommit finalCommit(*this,j,c,!prefetch);bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+   std::function<void(const char*)> completedCheckpoint;
+@@ -1077,6 +1106,12 @@
+  auto next=configuredDownload(j,edit,false);
+  j->data.swap(next);
+  try{save();}catch(...){j->data.swap(next);throw;}
++}
++void Manager::configureProperties(JobPtr job,const Json& edit,const PropertiesHeaderPatch& headers){
++ recoverBeforeConfigure(job);
++ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
++ auto changes=edit;headers.apply(changes,job->data);auto next=configuredDownload(job,changes,false);
++ job->data.swap(next);try{save();}catch(...){job->data.swap(next);throw;}
+ }
+ // The caller holds the manager lock until the edited record is saved.
+ Json Manager::configuredDownload(JobPtr j,const Json& edit,bool prefetchedTransfer){
+--- a/native/ProgressUi.hpp
++++ b/native/ProgressUi.hpp
+@@ -85,7 +85,7 @@
+  std::optional<ProgressCompletionState> completion;
+ };
+ inline ProgressCommandResult applyProgressCommand(Manager& manager,const JobPtr& job,const ProgressCommandRequest& request){
+- Lock lock(manager.mutex);ProgressCommandResult result;
++ std::unique_lock<std::recursive_mutex> lock(manager.mutex);ProgressCommandResult result;
+  if(request.completionEdit){
+   if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())throw std::runtime_error("Unknown download.");
+   const auto& edit=*request.completionEdit;const bool global=yes(manager.state["Settings"],"SuppressCompletionDialog");const auto& current=job->data;
+@@ -132,7 +132,10 @@
+    const bool enabled=saving?(!active&&str(record,"Status")!="Queued"):str(record,"Status")!="Pausing";
+    if(yes(record,"LiveRecording")&&str(record,"Status")!="Complete"&&enabled){
+     if(action==ProgressMenuAction::PauseRecording&&active)manager.pause(job);
+-    else if(action==ProgressMenuAction::ResumeRecording&&!active){manager.resume(job);result.limit=progressLimitState(*job);}
++    else if(action==ProgressMenuAction::ResumeRecording&&!active){
++     lock.unlock();manager.resumeIf(job,[&]{if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return false;const auto& current=job->data;const bool busy=manager.isActive(job);return !busy&&yes(current,"LiveRecording")&&str(current,"Status")!="Complete"&&(liveSavePending(current)?str(current,"Status")!="Queued":str(current,"Status")!="Pausing");});lock.lock();
++     if(std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end())result.limit=progressLimitState(*job);
++    }
+    }
+   }
+   return result;
+@@ -144,15 +147,20 @@
+  const auto action=progressPrimaryAction(job->data,active);
+  if(action!=request.displayedAction||manager.isRelocating(job)||!progressPrimaryEnabled(job->data,active))return result;
+  if(action==ProgressAction::Pause||action==ProgressAction::StopScanWait)manager.pause(job);
+- else if(action==ProgressAction::SaveLive)requestLiveHlsFinish(manager,job);
++ else if(action==ProgressAction::SaveLive){lock.unlock();requestLiveHlsFinish(manager,job,[&]{return std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end()&&!manager.isRelocating(job)&&progressPrimaryAction(job->data,manager.isActive(job))==request.displayedAction&&progressPrimaryEnabled(job->data,manager.isActive(job));});lock.lock();}
+  else if(action==ProgressAction::Open){result.followup=ProgressCommandResult::Open;result.target=job->target();}
+  else if(action==ProgressAction::Refresh)result.followup=ProgressCommandResult::Refresh;
+  else if(action==ProgressAction::Resume){
+-  if(!active&&yes(job->data,"QueueOrigin")&&!yes(manager.state["Settings"],"SuppressAuthenticationDialog")&&authenticationDialogReady(job->data))
+-   result.followup=ProgressCommandResult::Login;
+-  else manager.resume(job);
+-  result.limit=std::pair{job->sessionLimit.value_or(num(job->data,"LimitKbps")),!job->sessionLimit.has_value()&&num(job->data,"LimitKbps")>0};
+- }
++  lock.unlock();manager.resumeIf(job,[&]{
++   if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return false;
++   const bool currentActive=manager.isActive(job);
++   if(manager.isRelocating(job)||progressPrimaryAction(job->data,currentActive)!=request.displayedAction||!progressPrimaryEnabled(job->data,currentActive))return false;
++   if(!currentActive&&yes(job->data,"QueueOrigin")&&!yes(manager.state["Settings"],"SuppressAuthenticationDialog")&&authenticationDialogReady(job->data)){result.followup=ProgressCommandResult::Login;return false;}
++   return true;
++  });lock.lock();
++  if(std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end())result.limit=progressLimitState(*job);
++ }
++
+  return result;
+ }
+ #include "ProgressGraphUi.hpp"
+--- a/native/PropertiesUi.hpp
++++ b/native/PropertiesUi.hpp
+@@ -180,7 +180,7 @@
+     if(text(path)!=*displayedDestination){
+      auto destination=fs::path(wide(trim(text(path))));changes["Folder"]=utf8(destination.parent_path().wstring());changes["FileName"]=utf8(destination.filename().wstring());
+     }
+-    Lock lock(manager.mutex);requestChanges.apply(changes,job->data);manager.configure(job,changes);
++    manager.configureProperties(job,changes,requestChanges);
+    }
+    d.close();
+   };
+--- a/native/PendingFileInfoInbox.hpp
++++ b/native/PendingFileInfoInbox.hpp
+@@ -184,8 +184,7 @@
+  {Lock lock(manager.mutex);for(const auto& candidate:manager.jobs)if(candidate->id()==operation.view->jobId)job=candidate;
+   if(!job||str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart"))return;}
+  manager.endPrefetch(job,false);
+- {Lock lock(manager.mutex);if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart"))return;
+-  manager.remove(job,false,true);}
++ if(!manager.cancelUnconfirmedOffer(job,Manager::OfferCancellation::AwaitingOnly))return;
+  if(!operation.token.empty())manager.finishBrowserPresentation(Json{{"tokens",Json::array({operation.token})}});
+ }
+ }
+--- a/native/DownloadInfoUi.hpp
++++ b/native/DownloadInfoUi.hpp
+@@ -806,15 +806,8 @@
+    if(!job){pending->requestCancel();dialog.close(IDCANCEL);return;}
+    if(preview)preview->stop();
+    m.endPrefetch(job,!cancelNewOffer);
+-   {
+-    Lock lock(m.mutex);
+-    if(cancelNewOffer&&!m.isActive(job)&&!job->data.contains("OriginalResponse")&&
+-       !yes(job->data,"IndividualStart")){
+-     const auto status=str(job->data,"Status");
+-     if(status=="Awaiting confirmation"||status=="Paused"||status=="Failed")m.remove(job,false,true);
+-     else m.pause(job);
+-    }else m.pause(job);
+-   }
++   if(cancelNewOffer)m.cancelUnconfirmedOffer(job,Manager::OfferCancellation::FileInfo);
++   else m.pause(job);
+    dialog.close(IDCANCEL);
+   };
+   const bool initiallyExpanded=initiallyBasic||formRequest;
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,47,0,0
+-#define UDM_VERSION_STRING "8.47"
+-#define UDM_VERSION_WSTRING L"8.47"
++#define UDM_VERSION_TUPLE 8,48,0,0
++#define UDM_VERSION_STRING "8.48"
++#define UDM_VERSION_WSTRING L"8.48"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -18,6 +18,7 @@
+   {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
+   {"source": "RecoveryJournalTests", "timeoutSeconds": 120},
+   {"source": "RecoveryCatalogTests", "timeoutSeconds": 180},
++  {"source": "RecoveryCommandTests", "timeoutSeconds": 180},
+   {"source": "CapturePresentationModelTests", "timeoutSeconds": 120},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+   {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.11",
++  "version": "0.72.12",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.11",
++  "version": "0.72.12",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -390,10 +390,13 @@
+  const auto from=source.lexically_normal().wstring(),to=target.lexically_normal().wstring();
+  if(CompareStringOrdinal(from.c_str(),-1,to.c_str(),-1,TRUE)!=CSTR_EQUAL)discardRetainedMediaOutput(before);
+ }
+-void Manager::recoverReplacements(JobPtr scope,bool requireCatalogMember){
++void Manager::recoverReplacements(JobPtr scope,bool requireCatalogMember){recoverReplacementsWithContinuation(scope,requireCatalogMember,{},{});}
++void Manager::recoverReplacementsWithContinuation(JobPtr scope,bool requireCatalogMember,const std::function<bool()>& before,const std::function<void()>& after){
+  std::unique_lock<std::recursive_mutex> recoveryLock(mutex);
+  if(stopping)throw std::runtime_error("UDM is closing.");
++ if(before&&!before())return;
+  if(requireCatalogMember&&(!scope||std::find(jobs.begin(),jobs.end(),scope)==jobs.end()))throw std::runtime_error("This download is no longer in the list.");
++ const auto reconcile=[&]{
+  auto prepareRecoveredScan=[&](Json& recovered,const Json& current){
+   const auto result=current.find("ScanResult");
+   // A journal can survive its completed catalog commit. Keep any scan
+@@ -580,5 +583,7 @@
+   if(published)finishRetainedMediaRecovery(op.at("Before"),target);
+   journal.retire();if(ephemeral&&published)PublicationCatalogProof::eraseReceipt(*this,receipt);
+  }
+-}
+-}
++ };
++ reconcile();if(after)after();
++}
++}
+--- a/native/CaptureAdmission.cpp
++++ b/native/CaptureAdmission.cpp
+@@ -168,6 +168,7 @@
+    if(status!="accepted"||str(row,"id").empty()||reveal(str(row,"fingerprint"))!=fingerprint)throw std::runtime_error("The accepted media selection differs from this cancellation. Download history was preserved.");
+    for(const auto& candidate:jobs)if(candidate->id()==str(row,"id"))job=candidate;
+    if(!job){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
++   if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
+    if(str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart")){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
+    break;
+   }
+@@ -180,8 +181,14 @@
+  // End prefetch outside Manager's lock, then recheck the live job. A user's
+  // Start/Later or removal wins over a stale pending-window cancellation.
+  lock.unlock();endPrefetch(job,false);lock.lock();
++ if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
+  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart")){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
+- remove(job,false,true);finishBrowserPresentation(Json{{"tokens",Json::array({token})}});
++ lock.unlock();const bool removed=cancelUnconfirmedOffer(job,OfferCancellation::AwaitingOnly,[&]{
++  const auto& rows=captureStoreView(*this);auto found=rows.find(token);
++  if(found==rows.end()||num(*found,"protocol")!=3||str(*found,"status")!="accepted"||str(*found,"id")!=job->id()||reveal(str(*found,"fingerprint"))!=fingerprint)throw std::runtime_error("The browser cancellation changed. Download history was preserved.");
++  if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
++  return true;
++ });lock.lock();if(!removed&&std::find(jobs.begin(),jobs.end(),job)!=jobs.end()&&str(job->data,"Status")=="Awaiting confirmation"&&!yes(job->data,"IndividualStart"))throw std::runtime_error("The pending download is still busy. Retry cancellation after it stops.");finishBrowserPresentation(Json{{"tokens",Json::array({token})}});
+ }
+ 
+ static Json browserPresentationOffers(const Json& rows,const std::string* onlyId=nullptr){
+--- /dev/null
++++ b/native/RecoveryCommandTests.cpp
+@@ -0,0 +1,73 @@
++// Headless calls into the actual UI command adapter and guarded backend paths.
++// No browser, native window, clipboard or downloaded-file launch is performed.
++#include <afxwin.h>
++#include <afxcmn.h>
++#include <afxdlgs.h>
++#include <afxole.h>
++#include <atlimage.h>
++#include "Ui.hpp"
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}
++};}
++using namespace udm;
++static CWinApp application;
++struct CommandGate {
++ std::promise<void> entered,released;std::shared_future<void> ready=entered.get_future().share(),wait=released.get_future().share();
++ std::atomic_bool armed=false,held=false,done=false,expired=false;std::atomic_uint flushes=0;bool failSecond=false;
++ void observe(const char* point){const std::string_view phase(point);if(phase=="recovery-catalog-prepared")armed=true;if(armed&&phase=="temporary-flushed"&&flushes.fetch_add(1)==1&&failSecond)throw std::runtime_error("Owned properties save failure");if(armed&&phase=="temporary-flushed"&&!held.exchange(true)){entered.set_value();if(wait.wait_for(std::chrono::seconds(10))!=std::future_status::ready){expired=true;throw std::runtime_error("Owned command gate expired");}}}
++ void release(){if(!done.exchange(true))released.set_value();}~CommandGate(){release();}
++};
++struct ClearCommandObserver {Manager& m;~ClearCommandObserver(){CatalogCheckpointTestAccess::observe(m,{});}};
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
++ if(!AfxWinInit(GetModuleHandleW(nullptr),nullptr,GetCommandLineW(),SW_HIDE))return 3;
++ WSADATA wsa{};if(WSAStartup(MAKEWORD(2,2),&wsa))return 3;auto apartment=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
++ Json checks=Json::array(),cases=Json::array();std::string error,activeCase,lastWorkflowError;
++ auto check=[&](bool good,const char* name){checks.push_back({{"name",name},{"passed",good}});if(!good)throw std::runtime_error(name);};
++ try{
++  for(const std::string command:{"progress-resume","recording-resume","save-live","properties-complete","properties-merge","properties-origin","cancel-pending-complete","cancel-pending-paused","cancel-file-info-complete","cancel-file-info-paused","cancel-accepted-during-recovery","cancel-receipt-changed","cancel-browser-complete","cancel-browser-paused","cancel-browser-fingerprint","properties-save-failure"}){
++   activeCase=command;const auto folder=root/wide(command);Manager m(folder/L"catalog");auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((folder/L"files").wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);fs::create_directories(folder/L"files");auto j=m.add("https://fixture.example/video","","output.bin","Main queue",true);
++   const bool browser=command.find("cancel-browser-")==0;const bool paused=command=="properties-save-failure"||command=="cancel-browser-fingerprint"||command=="properties-merge"||command=="properties-origin"||command.find("paused")!=std::string::npos||command=="cancel-accepted-during-recovery"||command=="cancel-receipt-changed";
++   if(command.find("cancel-")==0)j->data["Status"]="Awaiting confirmation";
++   if(command=="recording-resume"||command=="save-live"){j->data["LiveRecording"]=true;j->data["LiveSaveReady"]=true;}
++   Headers originalHeaders{{"Authorization","Bearer original"},{"Cookie","session=old"},{"Referer","https://fixture.example/old"}};j->data["ProtectedHeaders"]=protect(legacyDictionary(Json(originalHeaders)).dump());m.save();auto desiredHeaders=originalHeaders;setHeader(desiredHeaders,"Authorization","Bearer edited");setHeader(desiredHeaders,"Referer","https://fixture.example/new");PropertiesHeaderPatch patch(originalHeaders,desiredHeaders,str(j->data,"Url"));
++   auto uuid=guid();for(int i:{20,16,12,8})uuid.insert(i,"-");const auto token=std::to_string(epoch())+"-"+uuid,fingerprint=std::string(64,'a');
++   if(browser){m.state["BrowserCaptures"][token]={{"created",epoch()},{"protocol",3},{"status","accepted"},{"id",j->id()},{"fingerprint",protect(fingerprint)},{"presentation",{{"id",j->id()},{"kind","download"}}}};m.save();}
++   const auto stage=folder/L"files"/(paused?L"unrecognized.stage":L"stage.part");atomicText(stage,"verified command bytes",false);const auto hash=fileHash(stage);const auto journal=m.root/L"publications"/(wide(j->id())+L".json");
++   CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)==(paused?"publication-intent-written":"publication-file-moved"))throw std::runtime_error("Owned interrupted command publication");});try{m.publishFile(j,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});check(fs::exists(journal),"Command begins with a real interrupted publication journal");
++   auto gate=std::make_shared<CommandGate>();gate->failSecond=command=="properties-save-failure";CatalogCheckpointTestAccess::observe(m,[gate](const char* point){gate->observe(point);});ClearCommandObserver clear{m};std::atomic_int policyChecks=0;bool removed=false;ProgressCommandResult result;
++   auto work=std::async(std::launch::async,[&]{
++    if(command=="progress-resume"){ProgressCommandRequest r;r.displayedAction=ProgressAction::Resume;result=applyProgressCommand(m,j,r);}
++    else if(command=="recording-resume"){ProgressCommandRequest r;r.menuAction=ProgressMenuAction::ResumeRecording;result=applyProgressCommand(m,j,r);}
++    else if(command=="save-live"){ProgressCommandRequest r;r.displayedAction=ProgressAction::SaveLive;result=applyProgressCommand(m,j,r);}
++    else if(command.find("properties-")==0)m.configureProperties(j,Json{{"Description","typed properties description"}},patch);
++    else if(browser)m.cancelBrowserMediaPresentation(token,fingerprint);
++    else removed=m.cancelUnconfirmedOffer(j,command.find("file-info")!=std::string::npos?Manager::OfferCancellation::FileInfo:Manager::OfferCancellation::AwaitingOnly,[&]{++policyChecks;return !yes(j->data,"CancelIdentityChanged");});
++   });struct Release {std::shared_ptr<CommandGate> gate;~Release(){gate->release();}} release{gate};
++   check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Actual UI/backend command reaches the held recovery catalog flush");
++   {std::unique_lock<std::recursive_mutex> lock(m.mutex,std::try_to_lock);check(lock.owns_lock(),"The migrated command adapter leaves the model available during actual recovery persistence");check(m.isActive(j)&&m.downloadDestinationReserved(j->target()),"Job and destination ownership remain held during the detached checkpoint");check(m.snapshot()["Downloads"].size()==1,"An unrelated UI snapshot is available through the same held boundary");j->data["Description"]="independent current metadata";auto current=readHeaders(j->data);setHeader(current,"Cookie","session=current");current["Accept-Language"]="retained";j->data["ProtectedHeaders"]=protect(legacyDictionary(Json(current)).dump());if(command=="properties-origin")j->data["Url"]="https://other.example/video";if(command=="cancel-accepted-during-recovery")j->data["IndividualStart"]=true;if(command=="cancel-receipt-changed")j->data["CancelIdentityChanged"]=true;if(command=="cancel-browser-fingerprint")m.state["BrowserCaptures"][token]["fingerprint"]=protect(std::string(64,'b'));}
++   if(browser&&command!="cancel-browser-fingerprint"){bool refused=false;try{m.cancelBrowserMediaPresentation(token,fingerprint);}catch(const std::exception& e){refused=std::string(e.what()).find("pending file publication")!=std::string::npos;}check(refused,"A duplicate browser cancellation cannot acknowledge a provisional recovered row while its publication owner is active");{Lock lock(m.mutex);check(m.state["BrowserCaptures"][token].contains("presentation"),"Refused overlapping cancellation preserves its durable presentation claim");}}
++   gate->release();std::string failure;try{work.get();}catch(const std::exception& e){failure=e.what();}lastWorkflowError=failure;if(!failure.empty())std::cerr<<command<<": "<<failure<<"\n";CatalogCheckpointTestAccess::observe(m,{});if(browser)removed=std::find(m.jobs.begin(),m.jobs.end(),j)==m.jobs.end();check(!gate->expired,"Every held command is explicitly released before its deadline");
++   if(command=="properties-complete")check(failure=="The saved file was recovered at its previous destination. Use Move in File Properties to change its location.","Properties retains the exact recovered-completion destination warning");
++   else if(command=="properties-origin")check(failure.find("another site")!=std::string::npos,"Sensitive header assignment revalidates the current origin after recovery");
++   else if(command=="cancel-browser-fingerprint")check(failure.find("browser cancellation changed")!=std::string::npos,"A receipt fingerprint changed during detached persistence prevents atomic job removal");
++   else if(command=="properties-save-failure")check(failure=="Owned properties save failure","A failed final Properties save is reported instead of acknowledging the typed patch");
++   else check(failure.empty(),"The guarded command completes without an unexpected backend failure");
++   if(command=="properties-merge"){auto current=readHeaders(j->data);check(headerValue(current,"Cookie")=="session=current"&&headerValue(current,"Accept-Language")=="retained"&&headerValue(current,"Authorization")=="Bearer edited"&&headerValue(current,"Referer")=="https://fixture.example/new","Properties merges typed logical header changes with the current recovered session");check(str(j->data,"Description")=="typed properties description","A successful Properties patch applies typed metadata after recovery");}
++   else check(str(j->data,"Description")=="independent current metadata","Unsubmitted or rejected commands preserve independent current metadata");
++   if(command=="properties-save-failure"){auto current=readHeaders(j->data);check(headerValue(current,"Cookie")=="session=current"&&headerValue(current,"Accept-Language")=="retained"&&headerValue(current,"Authorization")=="Bearer original"&&headerValue(current,"Referer")=="https://fixture.example/old","Failed Properties persistence rolls back typed credentials while preserving the independently refreshed session");}
++   const bool shouldRemove=command=="cancel-pending-paused"||command=="cancel-file-info-paused"||command=="cancel-browser-paused";
++   check(removed==shouldRemove&&(std::find(m.jobs.begin(),m.jobs.end(),j)==m.jobs.end())==shouldRemove,"Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive");
++   if(!paused)check(str(j->data,"Status")=="Complete"&&fileHash(j->target())==hash,"The current completion wins over stale Resume, Save and cancellation actions");
++   else if(!shouldRemove)check(fs::exists(stage)&&fileHash(stage)==hash,"A paused or rejected command preserves its complete staged source");
++   check(!m.isActive(j)&&!fs::exists(journal),"Accepted recovery retires its journal and releases runtime ownership");
++   if(command.find("cancel-")==0&&!browser)check(policyChecks==2,"Cancellation identity is checked before recovery and again inside its final atomic continuation");
++   if(browser)check(m.state["BrowserCaptures"][token].contains("presentation")== (command=="cancel-browser-fingerprint"),"Only the terminal original cancellation releases the browser presentation claim");
++   const auto disk=Json::parse(readText(m.root/L"state.json"));check(disk["Downloads"].size()==(shouldRemove?0:1),"The durable catalog records exactly the accepted removal or retained job");cases.push_back({{"command",command},{"removed",removed},{"error",failure},{"modelAvailable",true}});m.stop();
++  }
++  // No recovery or speculative write is allowed for stale/detached command guards.
++  {Manager m(root/L"stale");auto job=m.add("https://fixture.example/stale");auto before=job->snapshot();bool called=false;check(!m.resumeIf(job,[&]{called=true;return false;})&&called&&job->snapshot()==before,"A rejected Resume predicate performs no queue or recovery mutation");m.jobs.clear();check(!m.cancelUnconfirmedOffer(job,Manager::OfferCancellation::AwaitingOnly),"A detached pending cancellation is a benign no-op");m.stop();}
++ }catch(const std::exception& e){error=e.what();}
++ if(SUCCEEDED(apartment))CoUninitialize();WSACleanup();atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"case",activeCase},{"workflowError",lastWorkflowError},{"checks",checks},{"cases",cases},{"headlessActualCommandAdapters",true}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}

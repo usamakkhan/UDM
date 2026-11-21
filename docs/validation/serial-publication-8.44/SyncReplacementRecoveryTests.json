@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "name": "Initial version is complete and verified",
+      "passed": true
+    },
+    {
+      "name": "Truncated replacement leaves old saved file usable",
+      "passed": true
+    },
+    {
+      "name": "Pending replacement retains its original-file link",
+      "passed": true
+    },
+    {
+      "name": "Failed in-progress replacement emits no completion",
+      "passed": true
+    },
+    {
+      "name": "Retry publishes exact new version and preserves exact old version",
+      "passed": true
+    },
+    {
+      "name": "Recovered replacement has correct synchronization labels",
+      "passed": true
+    },
+    {
+      "name": "Publication records sync time and clears pending marker",
+      "passed": true
+    },
+    {
+      "name": "Recovered replacement permits one queue completion event",
+      "passed": true
+    },
+    {
+      "name": "Recovered completion does not repeat",
+      "passed": true
+    },
+    {
+      "name": "Probe retry count carries into replacement budget",
+      "passed": true
+    },
+    {
+      "name": "Exhausted replacement keeps last successful file intact",
+      "passed": true
+    },
+    {
+      "name": "Exhausted bounded replacement finishes with disclosed failure",
+      "passed": true
+    },
+    {
+      "name": "Exhausted shared budget prevents another transfer",
+      "passed": true
+    },
+    {
+      "name": "Stop cancels further replacement retry requests",
+      "passed": true
+    },
+    {
+      "name": "Stopped replacement preserves saved file and no completion action",
+      "passed": true
+    },
+    {
+      "name": "Saved versions and pending replacement relationship survive restart",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

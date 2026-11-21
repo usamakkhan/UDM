@@ -1,0 +1,138 @@
+{
+  "checks": [
+    {
+      "name": "Begin durably prepares the ordinary recovery view and its saved progress/page",
+      "passed": true
+    },
+    {
+      "name": "Begin keeps the established paused recovery state",
+      "passed": true
+    },
+    {
+      "name": "Unchanged polls reuse the immutable decoded offer instead of reparsing it",
+      "passed": true
+    },
+    {
+      "name": "Save applies the new address durably while retaining saved bytes for validation",
+      "passed": true
+    },
+    {
+      "name": "An already accepted address save cannot replay within the session",
+      "passed": true
+    },
+    {
+      "name": "Close settles the owned recovery session",
+      "passed": true
+    },
+    {
+      "name": "Read returns a real staged browser replacement",
+      "passed": true
+    },
+    {
+      "name": "Save rejects a newer undisplayed capture and returns it for explicit review",
+      "passed": true
+    },
+    {
+      "name": "A second explicit Save accepts the actually reviewed replacement",
+      "passed": true
+    },
+    {
+      "name": "Recovery captures the cohort actually available for display",
+      "passed": true
+    },
+    {
+      "name": "A real close-save failure retains the displayed receipt for explicit Retry",
+      "passed": true
+    },
+    {
+      "name": "Explicit Retry finishes the same owned close",
+      "passed": true
+    },
+    {
+      "name": "Close acknowledges only displayed tokens and preserves the later receipt",
+      "passed": true
+    },
+    {
+      "name": "A real address-save failure rolls back the request and does not report success",
+      "passed": true
+    },
+    {
+      "name": "An explicit Save retry succeeds after storage recovery",
+      "passed": true
+    },
+    {
+      "name": "File Info mode cannot save-and-resume through an unauthorized command",
+      "passed": true
+    },
+    {
+      "name": "A changed request route invalidates the recovery session before Save",
+      "passed": true
+    },
+    {
+      "name": "FTP recovery uses its ordinary immutable view without browser waiting",
+      "passed": true
+    },
+    {
+      "name": "FTP Save updates only the address without opening a transfer",
+      "passed": true
+    },
+    {
+      "name": "A real writer owns Manager before recovery Begin",
+      "passed": true
+    },
+    {
+      "name": "Begin waits on the owned worker instead of the requesting thread",
+      "passed": true
+    },
+    {
+      "name": "Initial cancellation settles before Manager must become readable",
+      "passed": true
+    },
+    {
+      "name": "A session never begun closes without acquiring or mutating the held model",
+      "passed": true
+    },
+    {
+      "name": "Repeated advisory reads settle on the same owned session",
+      "passed": true
+    },
+    {
+      "name": "Repeated advisory reads settle on the same owned session",
+      "passed": true
+    },
+    {
+      "name": "Repeated advisory reads settle on the same owned session",
+      "passed": true
+    },
+    {
+      "name": "Advisory polls reuse one persistent worker rather than spawning a thread each time",
+      "passed": true
+    },
+    {
+      "name": "A joined session refuses further work",
+      "passed": true
+    },
+    {
+      "name": "Streaming recovery prepares the saved media selection without browser access",
+      "passed": true
+    },
+    {
+      "name": "Media page preparation preserves the live session marker and saved quality",
+      "passed": true
+    },
+    {
+      "name": "A real matching adaptive capture stages onto the original session",
+      "passed": true
+    },
+    {
+      "name": "Streaming recovery reads the actual staged adaptive selection",
+      "passed": true
+    },
+    {
+      "name": "Save applies the reviewed adaptive session while preserving deferred validation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

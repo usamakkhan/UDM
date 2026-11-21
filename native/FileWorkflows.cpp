@@ -1,4 +1,5 @@
 #include "Core.hpp"
+#include "FileInfoInitialView.hpp"
 #include "PublicationOwnership.hpp"
 #include "CatalogAdmissionRegistry.hpp"
 #include "FileIdentity.hpp"
@@ -75,9 +76,9 @@ void Manager::setDownloadLogin(JobPtr job,const std::string& user,const std::str
 }
 
 void Manager::finishStoppedFileInfo(JobPtr job,const Json& edit,const FileInfoFolderChoice& folderChoice,const std::optional<FileInfoLogin>& login,bool defer,const DownloadQueueChoice* queueChoice){
+ recoverBeforeConfigure(job,!defer);
  Lock lock(mutex);
  if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
- recoverBeforeConfigure(job,!defer);
  if(!defer&&!isActive(job)){
   const auto response=job->data.find("OriginalResponse");
   if(response!=job->data.end()){
@@ -384,7 +385,8 @@ void Manager::recoverFileOperation(JobPtr scope){
 void Manager::relocate(JobPtr job,const fs::path& requested,const Cancel* cancellation,const RelocationObserver& observer){
  RelocationReporter reporter{cancellation,observer};reporter.check();reporter.report(RelocationPhase::Preparing);
  std::unique_lock<std::recursive_mutex> lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!relocationId.empty())throw std::runtime_error("Another file move is in progress.");if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Move/Rename is available for completed downloads.");if(catalogTransaction)throw std::runtime_error("Finish the catalog operation before moving a file.");if(fs::exists(root/L"file-operation.json"))recoverFileOperation();
- recoverReplacements(job);
+ lock.unlock();recoverReplacements(job,true);lock.lock();
+ if(stopping||!relocationId.empty()||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||catalogTransaction)throw std::runtime_error("The download changed while preparing its move. Review it before retrying.");
  if(str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status. Review it before moving its file.");
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement before moving or renaming it.");
  if(!requested.is_absolute()||safeName(utf8(requested.filename().wstring()))!=utf8(requested.filename().wstring()))throw std::runtime_error("Choose an absolute destination with a valid file name.");
@@ -721,8 +723,10 @@ void Manager::waitForPrefetchConfirmation(const JobPtr& job,const Cancel& cancel
  job->data["MediaPhase"]="Publishing prepared file";
  job->data["PrefetchedFinalSize"]=*verifiedSize;
 }
-void Manager::endPrefetch(JobPtr job,bool keepPreparedOutput){
+void Manager::endPrefetch(JobPtr job,bool keepPreparedOutput,const Json* expectedSelection){
  std::unique_lock lock(mutex);
+ const auto validateSelection=[&]{if(expectedSelection&&(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!fileInfoSelectionUnchanged(*job,*expectedSelection)))throw std::runtime_error("The selected download changed while preparing ZIP preview. Close Preview and try again.");};
+ validateSelection();
  if(!yes(job->data,"ConfirmationPending"))return;
  if(auto worker=active.find(job->id());worker!=active.end()){
   // Keep the checked file before waking the worker to tear down its staging.
@@ -740,6 +744,7 @@ void Manager::endPrefetch(JobPtr job,bool keepPreparedOutput){
   if(!prefetchConfirmed.wait_for(lock,std::chrono::seconds(5),[&]{return !isActive(job);}))
    throw std::runtime_error("The background transfer is still stopping. Please retry in a moment.");
  }
+ validateSelection();
  if(!yes(job->data,"ConfirmationPending"))return;
  auto before=job->data;
  job->data.erase("PrefetchedFinalSize");
@@ -783,9 +788,10 @@ public:
  HRESULT STDMETHODCALLTYPE ResetTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE PauseTimer()override{return S_OK;}HRESULT STDMETHODCALLTYPE ResumeTimer()override{return S_OK;}
 };
 void Manager::recycleCompleted(JobPtr job,HWND owner,bool allowMissingForRemoval){
- Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file still in the download list can be recycled.");
- recoverFileOperation(job);
- recoverReplacements(job);
+ {Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Only an inactive completed file still in the download list can be recycled.");
+  recoverFileOperation(job);}
+ recoverReplacements(job,true);
+ Lock lock(mutex);
  if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||isActive(job)||str(job->data,"Status")!="Complete")throw std::runtime_error("Recovery changed this download's status or catalog entry. Review it before recycling its file.");
  for(auto other:jobs)if(str(other->data,"ReplacementOf")==job->id())throw std::runtime_error("A replacement still depends on this file. Remove the pending replacement first.");
  auto path=job->target();if(!path.is_absolute())throw std::runtime_error("Choose an existing regular downloaded file.");

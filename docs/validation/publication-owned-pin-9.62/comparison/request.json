@@ -1,0 +1,26 @@
+{
+  "args": [
+    "python",
+    "$REPOSITORY\\benchmarks\\speed\\compare-completion.py",
+    "--output-root",
+    "$REPOSITORY\\.media-cache\\owned-publication-pin-comparison-9.62",
+    "--udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-pin-build-9.62\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "D375D13E38E9B5721C097AB7215C820B73C7F2E23809E2003CFFB65123909AFB",
+    "--baseline-udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-availability-build-9.60\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "109A2317BEDFD444489451297D193A421A76210DC8D88A1514EA4E383B4B4284",
+    "--label",
+    "9.62 writer-excluding file-object handoff versus frozen 9.60 and IDM",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.62",
+  "baselineVersion": "9.60",
+  "status": "launching",
+  "qualificationFeatureDefine": null
+}

@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "name": "Prefetch admission runs to readiness on an owned worker",
+      "passed": true
+    },
+    {
+      "name": "A second request cannot replay an unacknowledged admission",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement joins the admission worker and reports Started",
+      "passed": true
+    },
+    {
+      "name": "The owned HTTP file downloads completely before Start is accepted",
+      "passed": false
+    }
+  ],
+  "error": "The owned HTTP file downloads completely before Start is accepted",
+  "passed": false
+}

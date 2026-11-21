@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "mode": "preserved",
+      "version": "8.45",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "earlyMetadata": {
+        "originBytesWhenMarkerObserved": 0,
+        "bodyLengthWhenMarkerObserved": 0,
+        "beforeOriginEof": true
+      },
+      "finalMarkerExact": true,
+      "requests": 1,
+      "originBytes": 4194304,
+      "applicationExitedNormally": true,
+      "postExitFlushSucceeded": true,
+      "publicationJournalsRemaining": 0,
+      "protectedFilesUnchanged": true,
+      "performanceComparison": false,
+      "ownedPayloadRemoved": true
+    },
+    {
+      "mode": "changed-before-eof",
+      "version": "8.45",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "earlyMetadata": {
+        "originBytesWhenMarkerObserved": 0,
+        "bodyLengthWhenMarkerObserved": 0,
+        "beforeOriginEof": true,
+        "markerChangedBeforeEof": true
+      },
+      "finalMarkerExact": true,
+      "requests": 1,
+      "originBytes": 4194304,
+      "applicationExitedNormally": true,
+      "postExitFlushSucceeded": true,
+      "publicationJournalsRemaining": 0,
+      "protectedFilesUnchanged": true,
+      "performanceComparison": false,
+      "ownedPayloadRemoved": true
+    }
+  ],
+  "allPayloadsRemoved": true,
+  "installedAppChanged": false
+}

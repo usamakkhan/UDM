@@ -1,0 +1,76 @@
+{
+  "rows": [
+    {
+      "epoch": "before",
+      "mode": "0",
+      "passed": true,
+      "expectedFailure": false,
+      "result": {
+        "exactPhysicalCache": true,
+        "jsonPreserved": true,
+        "logicalBytes": 2811,
+        "passed": true,
+        "physicalBytes": 2811,
+        "writesAfterDestructor": 1,
+        "writesAfterSave": 1,
+        "writesAfterStop": 1
+      },
+      "fixtureSha256": "8BF80E5E791FD6C2F7855A211B8159D948EB5C87D930C4748A934BD6DF40DEDF",
+      "binarySha256": "641B957EF431716775982BEE4778A57A58B3AB105FC618077C2EE7B94A48B03C"
+    },
+    {
+      "epoch": "before",
+      "mode": "3",
+      "passed": false,
+      "expectedFailure": true,
+      "result": {
+        "exactPhysicalCache": false,
+        "jsonPreserved": true,
+        "logicalBytes": 2811,
+        "passed": false,
+        "physicalBytes": 3072,
+        "writesAfterDestructor": 3,
+        "writesAfterSave": 1,
+        "writesAfterStop": 2
+      },
+      "fixtureSha256": "8BF80E5E791FD6C2F7855A211B8159D948EB5C87D930C4748A934BD6DF40DEDF",
+      "binarySha256": "641B957EF431716775982BEE4778A57A58B3AB105FC618077C2EE7B94A48B03C"
+    },
+    {
+      "epoch": "after",
+      "mode": "0",
+      "passed": true,
+      "expectedFailure": false,
+      "result": {
+        "exactPhysicalCache": true,
+        "jsonPreserved": true,
+        "logicalBytes": 2811,
+        "passed": true,
+        "physicalBytes": 2811,
+        "writesAfterDestructor": 1,
+        "writesAfterSave": 1,
+        "writesAfterStop": 1
+      },
+      "fixtureSha256": "8BF80E5E791FD6C2F7855A211B8159D948EB5C87D930C4748A934BD6DF40DEDF",
+      "binarySha256": "F267ADE020D52B08F2CBE1F0CA74C24F9DCE42FC96CA19ED90D66972BB74770D"
+    },
+    {
+      "epoch": "after",
+      "mode": "3",
+      "passed": true,
+      "expectedFailure": false,
+      "result": {
+        "exactPhysicalCache": true,
+        "jsonPreserved": true,
+        "logicalBytes": 2811,
+        "passed": true,
+        "physicalBytes": 3072,
+        "writesAfterDestructor": 1,
+        "writesAfterSave": 1,
+        "writesAfterStop": 1
+      },
+      "fixtureSha256": "8BF80E5E791FD6C2F7855A211B8159D948EB5C87D930C4748A934BD6DF40DEDF",
+      "binarySha256": "F267ADE020D52B08F2CBE1F0CA74C24F9DCE42FC96CA19ED90D66972BB74770D"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "name": "Explicit retry exhaustion emits one finish event with failed-file count",
+      "passed": true
+    },
+    {
+      "name": "Finishing processing preserves truthful per-file outcomes",
+      "passed": true
+    },
+    {
+      "name": "Completion countdown accepts exhausted bounded queue",
+      "passed": true
+    },
+    {
+      "name": "Completion message discloses failed file rather than claiming success",
+      "passed": true
+    },
+    {
+      "name": "Configured action reaches recording callback without executing system action",
+      "passed": true
+    },
+    {
+      "name": "Finished queue does not repeat action event",
+      "passed": true
+    },
+    {
+      "name": "Manual Stop cancels an already-issued completion countdown",
+      "passed": true
+    },
+    {
+      "name": "Canceled countdown cannot dispatch action",
+      "passed": true
+    },
+    {
+      "name": "Unlimited pending retries prevent finish action",
+      "passed": true
+    },
+    {
+      "name": "Stopping unfinished queue emits no finish action",
+      "passed": true
+    },
+    {
+      "name": "Credential rejection is not counted as exhausted completed work",
+      "passed": true
+    },
+    {
+      "name": "Automatic one-time disarming still allows its completion action",
+      "passed": true
+    },
+    {
+      "name": "Successful queue retains success message",
+      "passed": true
+    },
+    {
+      "name": "Explicit Stop distinguishes cancellation from one-time disarming",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "systemActionsExecuted": false
+}

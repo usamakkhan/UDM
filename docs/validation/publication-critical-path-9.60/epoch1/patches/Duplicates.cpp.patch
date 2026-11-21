@@ -1,0 +1,22 @@
+--- native/Duplicates.cpp
++++ diagnostic/Duplicates.cpp
+@@ -275,8 +275,8 @@
+   timing("PrepareIntent");UDM_FINISH_POINT("intent-write-begin");intentMark=std::chrono::steady_clock::now();atomicText(journal,intent.dump(),false,observeIntent);try{intentOperations["publish"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-intentMark).count();publicationTimings["IntentOperations"]=std::move(intentOperations);}catch(...){}timing("WriteIntent");UDM_FINISH_POINT("intent-write-end");
+   if(publicationObservation)publicationObservation("publication-intent-written");
+   prepared.validateSourceName(staging);prepared.validateDirectories();
+-  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+-  prepared.pinPublishedName(target);
++  UDM_FINISH_POINT("rename-begin");if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
++  prepared.pinPublishedName(target);UDM_FINISH_POINT("rename-pin-end");
+   timing("Rename");if(publicationObservation)publicationObservation("publication-file-moved");
+   lock.lock();
+   if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during publication. Keep its file and recovery record.");
+@@ -287,7 +287,7 @@
+   timing("PrepareCatalog");UDM_FINISH_POINT("catalog-write-begin");lock.unlock();std::exception_ptr failure;try{if(publicationObservation)publicationObservation("publication-catalog-prepared");if(finalCommit&&publicationObservation){const std::function<void(const char*)> observeFinal=[&](const char* point){if(publicationObservation){if(std::string_view(point)=="snapshot-prepared")publicationObservation("completed-transfer-checkpoint");publicationObservation(point);}};saveCatalog(false,&observeFinal);}else save();}catch(...){failure=std::current_exception();}timing("WriteCatalog");UDM_FINISH_POINT("catalog-write-end");const bool accepted=catalogProof.resolve();UDM_FINISH_POINT("catalog-resolve-end");lock.lock();
+   if(!accepted){if(str(job->data,"PublicationCommitId")==commitId)job->data=PublicationCommit::rollback(current,completed,job->data);catalogProof.release();if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);if(failure)std::rethrow_exception(failure);throw std::runtime_error("The completed file has not been durably recorded. Its recovery journal was preserved.");}
+   if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||!PublicationCommit::accepted(intent,job->data,hash))throw std::runtime_error("The completed download changed after catalog publication. Its recovery journal was preserved.");
+-  timing("AcceptCatalog");lock.unlock();prepared.releaseAcceptedFile();timing("ReleaseAcceptedFile");if(publicationObservation)publicationObservation("publication-cleanup");
++  timing("AcceptCatalog");lock.unlock();UDM_FINISH_POINT("accepted-pins-begin");prepared.releaseAcceptedFile();UDM_FINISH_POINT("accepted-pins-end");timing("ReleaseAcceptedFile");if(publicationObservation)publicationObservation("publication-cleanup");
+   std::error_code ec;const bool removed=fs::remove(journal,ec);if(removed&&publicationObservation)publicationObservation("publication-journal-removed");if(!catalogBound&&removed){lock.lock();catalogProof.release();PublicationCatalogProof::eraseReceipt(*this,receipt);lock.unlock();}timing("RemoveJournal");UDM_FINISH_POINT("publication-cleanup-end");return;
+  }
+  auto journal=root/L"replacements"/(wide(job->id())+L".json");JobPtr original;for(auto item:jobs)if(item->id()==originalId)original=item;

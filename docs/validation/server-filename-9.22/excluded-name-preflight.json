@@ -1,0 +1,166 @@
+{
+  "checks": [
+    {
+      "name": "The owned reader adopts the advertised filename and IDM-style automatic category folder",
+      "passed": true
+    },
+    {
+      "name": "An inferred category change returns its own remember-path preference",
+      "passed": true
+    },
+    {
+      "name": "Name preparation neither mutates the download/catalog nor owns a global save guard",
+      "passed": true
+    },
+    {
+      "name": "An explicit destination folder survives automatic category inference",
+      "passed": true
+    },
+    {
+      "name": "A manually chosen category is not replaced by a server filename",
+      "passed": true
+    },
+    {
+      "name": "A saved explicit category is retained",
+      "passed": true
+    },
+    {
+      "name": "An inferred category absent from the displayed cohort cannot be selected",
+      "passed": true
+    },
+    {
+      "name": "A matching active response filename takes precedence over the browser fallback",
+      "passed": true
+    },
+    {
+      "name": "A reviewed preview host participates in the existing site-restricted category policy",
+      "passed": true
+    },
+    {
+      "name": "A validated redirected response host participates in automatic category policy",
+      "passed": true
+    },
+    {
+      "name": "A server suggestion changed since display cannot replace the draft",
+      "passed": true
+    },
+    {
+      "name": "An unsafe server filename cannot escape the selected destination",
+      "passed": true
+    },
+    {
+      "name": "A replacement download never adopts informational server filenames",
+      "passed": true
+    },
+    {
+      "name": "An unvalidated replacement address cannot reuse a browser fallback filename",
+      "passed": true
+    },
+    {
+      "name": "A relative destination is rejected on the worker before applying a name",
+      "passed": true
+    },
+    {
+      "name": "A category removed while the reader waits cannot receive an adopted name",
+      "passed": true
+    },
+    {
+      "name": "An existing file is reported without overwriting its contents",
+      "passed": true
+    },
+    {
+      "name": "Another download's reserved path cannot be adopted",
+      "passed": true
+    },
+    {
+      "name": "The current saved destination remains eligible without rewriting its existing bytes",
+      "passed": true
+    },
+    {
+      "name": "A real writer precedes a server-name read",
+      "passed": true
+    },
+    {
+      "name": "The caller remains free while the advisory reader waits on Manager",
+      "passed": true
+    },
+    {
+      "name": "One owner cannot create duplicate outstanding filename workers",
+      "passed": true
+    },
+    {
+      "name": "Cancelling acquisition settles before the writer releases Manager",
+      "passed": true
+    },
+    {
+      "name": "The reader reaches its owned filesystem phase",
+      "passed": true
+    },
+    {
+      "name": "Destination filesystem work never retains the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "In-flight destination work remains owned without blocking unrelated catalog access",
+      "passed": true
+    },
+    {
+      "name": "Cancellation drains a filesystem-phase reader before owner teardown",
+      "passed": true
+    },
+    {
+      "name": "A throwing wake callback cannot undo an already-published filename result",
+      "passed": true
+    },
+    {
+      "name": "An unchanged editor context accepts its own completed preparation",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "A late destination, category, remember rule or login generation cannot be overwritten by an old name result",
+      "passed": true
+    },
+    {
+      "name": "The advisory reader waits for an unrelated accepted decision",
+      "passed": true
+    },
+    {
+      "name": "Advisory cancellation never clears another owner's decision guard",
+      "passed": true
+    },
+    {
+      "name": "A removed job cannot publish a new destination",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

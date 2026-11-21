@@ -9,6 +9,9 @@ using RejectedFileInfoSink=std::function<void(const std::string&)>;
 // Only entry points known not to hold an outer Manager lock opt into detached
 // admission. Legacy/nested in-process callers retain synchronous semantics.
 inline thread_local bool detachedBrowserAdmissionAllowed=false;
+// Only the joined File Info retry worker opts in. Pipe, legacy and UI callers
+// retain their non-waiting behavior for an already owned receipt.
+inline thread_local bool joinBrowserAdmissionAllowed=false;
 inline thread_local const PreparedFileInfoSink* preparedBrowserFileInfo=nullptr;
 inline thread_local const RejectedFileInfoSink* rejectedBrowserFileInfo=nullptr;
 // Called only after the owning lease has frozen new publications and resolved
@@ -17,11 +20,12 @@ inline thread_local const RejectedFileInfoSink* rejectedBrowserFileInfo=nullptr;
 inline void notifyRejectedBrowserFileInfo(const std::string& id)noexcept{if(rejectedBrowserFileInfo)try{(*rejectedBrowserFileInfo)(id);}catch(...){}}
 class BrowserAdmissionContext {
  bool previous;
+ bool previousJoin;
  const PreparedFileInfoSink* previousSink;
  const RejectedFileInfoSink* previousRejected;
 public:
- explicit BrowserAdmissionContext(bool allow=true,const PreparedFileInfoSink* sink=nullptr,const RejectedFileInfoSink* rejected=nullptr)noexcept:previous(detachedBrowserAdmissionAllowed),previousSink(preparedBrowserFileInfo),previousRejected(rejectedBrowserFileInfo){detachedBrowserAdmissionAllowed=allow;preparedBrowserFileInfo=allow?sink:nullptr;rejectedBrowserFileInfo=allow?rejected:nullptr;}
- ~BrowserAdmissionContext(){detachedBrowserAdmissionAllowed=previous;preparedBrowserFileInfo=previousSink;rejectedBrowserFileInfo=previousRejected;}
+ explicit BrowserAdmissionContext(bool allow=true,const PreparedFileInfoSink* sink=nullptr,const RejectedFileInfoSink* rejected=nullptr,bool join=false)noexcept:previous(detachedBrowserAdmissionAllowed),previousJoin(joinBrowserAdmissionAllowed),previousSink(preparedBrowserFileInfo),previousRejected(rejectedBrowserFileInfo){detachedBrowserAdmissionAllowed=allow;joinBrowserAdmissionAllowed=allow&&join;preparedBrowserFileInfo=allow?sink:nullptr;rejectedBrowserFileInfo=allow?rejected:nullptr;}
+ ~BrowserAdmissionContext(){detachedBrowserAdmissionAllowed=previous;joinBrowserAdmissionAllowed=previousJoin;preparedBrowserFileInfo=previousSink;rejectedBrowserFileInfo=previousRejected;}
  BrowserAdmissionContext(const BrowserAdmissionContext&)=delete;
  BrowserAdmissionContext& operator=(const BrowserAdmissionContext&)=delete;
 };

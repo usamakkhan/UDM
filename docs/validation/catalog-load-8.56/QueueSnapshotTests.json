@@ -1,0 +1,778 @@
+{
+  "case": "existing-startup-export",
+  "cases": [
+    {
+      "fault": "none",
+      "mode": "startup",
+      "refused": false
+    },
+    {
+      "fault": "actual-write-failure",
+      "mode": "startup",
+      "refused": true
+    },
+    {
+      "fault": "flushed-failure",
+      "mode": "startup",
+      "refused": true
+    },
+    {
+      "fault": "unrelated-current",
+      "mode": "startup",
+      "refused": true
+    },
+    {
+      "fault": "none",
+      "mode": "start",
+      "refused": false
+    },
+    {
+      "fault": "actual-write-failure",
+      "mode": "start",
+      "refused": true
+    },
+    {
+      "fault": "flushed-failure",
+      "mode": "start",
+      "refused": true
+    },
+    {
+      "fault": "unrelated-current",
+      "mode": "start",
+      "refused": true
+    },
+    {
+      "fault": "none",
+      "mode": "stop",
+      "refused": false
+    },
+    {
+      "fault": "actual-write-failure",
+      "mode": "stop",
+      "refused": true
+    },
+    {
+      "fault": "flushed-failure",
+      "mode": "stop",
+      "refused": true
+    },
+    {
+      "fault": "unrelated-current",
+      "mode": "stop",
+      "refused": true
+    },
+    {
+      "mode": "existing-startup-export",
+      "requests": 1
+    }
+  ],
+  "checks": [
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Successful queue preparation leaves unrelated history untouched",
+      "passed": true
+    },
+    {
+      "name": "Only accepted start/stop changes admission or worker cancellation",
+      "passed": true
+    },
+    {
+      "name": "Accepted queue settings are actually persisted",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Failed startup remains eligible for explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Healthy retry prepares startup members after exact rollback",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Failed startup remains eligible for explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Healthy retry prepares startup members after exact rollback",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves unrelated current settings",
+      "passed": true
+    },
+    {
+      "name": "Failed startup remains eligible for explicit retry",
+      "passed": true
+    },
+    {
+      "name": "Healthy retry prepares startup members after exact rollback",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Successful queue preparation leaves unrelated history untouched",
+      "passed": true
+    },
+    {
+      "name": "Only accepted start/stop changes admission or worker cancellation",
+      "passed": true
+    },
+    {
+      "name": "Accepted queue settings are actually persisted",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves unrelated current settings",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Successful queue preparation leaves unrelated history untouched",
+      "passed": true
+    },
+    {
+      "name": "Only accepted start/stop changes admission or worker cancellation",
+      "passed": true
+    },
+    {
+      "name": "Accepted queue settings are actually persisted",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Queue preparation reports actual and observed persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Failed queue preparation restores only its affected job and queue state",
+      "passed": true
+    },
+    {
+      "name": "Failed startup/start/stop restores the exact transient pause set",
+      "passed": true
+    },
+    {
+      "name": "Failed Stop never cancels a live worker before persistence",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves independent unrelated current metadata",
+      "passed": true
+    },
+    {
+      "name": "Rollback preserves unrelated current settings",
+      "passed": true
+    },
+    {
+      "name": "Queue rollback preserves passive same-label history and its independent metadata",
+      "passed": true
+    },
+    {
+      "name": "Review clearing reports an actual catalog persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Start snapshots a passive row when it really clears its retry-review field",
+      "passed": true
+    },
+    {
+      "name": "Review clearing reports an actual catalog persistence refusal",
+      "passed": true
+    },
+    {
+      "name": "Start snapshots a passive row when it really clears its retry-review field",
+      "passed": true
+    },
+    {
+      "name": "No opted-in queue performs no catalog write or record mutation",
+      "passed": true
+    },
+    {
+      "name": "No-op startup still consumes the session's once-only trigger",
+      "passed": true
+    },
+    {
+      "name": "Enabling startup preference later does not run it in the current session",
+      "passed": true
+    },
+    {
+      "name": "No-op queue startup still initializes an eligible scheduled wake timer",
+      "passed": true
+    },
+    {
+      "name": "The owned startup wake timer is canceled on shutdown",
+      "passed": true
+    },
+    {
+      "name": "Existing/default queues do not opt into waking the computer",
+      "passed": true
+    },
+    {
+      "name": "Wake planner ignores a queue without explicit opt-in",
+      "passed": true
+    },
+    {
+      "name": "Daily wake matches the next scheduler window",
+      "passed": true
+    },
+    {
+      "name": "Disabled queue cannot wake the computer",
+      "passed": true
+    },
+    {
+      "name": "Weekday mask skips a disabled day",
+      "passed": true
+    },
+    {
+      "name": "Empty weekday mask has no wake deadline",
+      "passed": true
+    },
+    {
+      "name": "Overnight queue wakes on the selected start day",
+      "passed": true
+    },
+    {
+      "name": "Overnight continuation does not invent a second morning wake",
+      "passed": true
+    },
+    {
+      "name": "Continuously open daily window has no future opening",
+      "passed": true
+    },
+    {
+      "name": "Equal enabled start and stop represent a continuously open window",
+      "passed": true
+    },
+    {
+      "name": "A disabled saved stop matching the start does not suppress the next wake",
+      "passed": true
+    },
+    {
+      "name": "An already open window schedules only its next opening",
+      "passed": true
+    },
+    {
+      "name": "Queue repetition can wake inside its active daily window",
+      "passed": true
+    },
+    {
+      "name": "Repeat outside its daily window waits for the next opening",
+      "passed": true
+    },
+    {
+      "name": "Unscheduled repeating queue uses its saved repeat deadline",
+      "passed": true
+    },
+    {
+      "name": "Overdue repeat does not register a timer in the past",
+      "passed": true
+    },
+    {
+      "name": "Run-once wake preserves its exact UTC instant",
+      "passed": true
+    },
+    {
+      "name": "Started run-once queue cannot rearm its start",
+      "passed": true
+    },
+    {
+      "name": "Due run-once queue is left to normal scheduling",
+      "passed": true
+    },
+    {
+      "name": "Spring clock gap wakes at the first valid minute in the scheduled window",
+      "passed": true
+    },
+    {
+      "name": "A completely skipped spring window matches normal scheduler behavior",
+      "passed": true
+    },
+    {
+      "name": "Autumn repeated hour first opening is scheduled correctly",
+      "passed": true
+    },
+    {
+      "name": "Autumn repeated hour later opening matches the live window predicate",
+      "passed": true
+    },
+    {
+      "name": "Date picker conversion uses the selected date's winter or summer offset",
+      "passed": true
+    },
+    {
+      "name": "Date picker round trips across daylight-saving seasons",
+      "passed": true
+    },
+    {
+      "name": "Date picker rejects a nonexistent spring clock-change time",
+      "passed": true
+    },
+    {
+      "name": "A new repeated autumn date selects its first occurrence",
+      "passed": true
+    },
+    {
+      "name": "Applying an unchanged first autumn occurrence preserves its UTC instant and hidden seconds",
+      "passed": true
+    },
+    {
+      "name": "Applying an unchanged second autumn occurrence preserves its UTC instant",
+      "passed": true
+    },
+    {
+      "name": "Editing an ambiguous date applies the documented first-occurrence rule",
+      "passed": true
+    },
+    {
+      "name": "Historical dates before the Unix epoch remain displayable",
+      "passed": true
+    },
+    {
+      "name": "Paused queue members are eligible for a scheduled wake",
+      "passed": true
+    },
+    {
+      "name": "Browser recapture or pending confirmation cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Browser recapture or pending confirmation cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Browser recapture or pending confirmation cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Unresolved duplicate prompt cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Wake cannot automatically replay an already submitted form",
+      "passed": true
+    },
+    {
+      "name": "Removed queue member cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Completed file alone does not wake the computer",
+      "passed": true
+    },
+    {
+      "name": "Completed HTTP file can wake for requested synchronization",
+      "passed": true
+    },
+    {
+      "name": "A server wait requiring review cannot wake the computer",
+      "passed": true
+    },
+    {
+      "name": "A reserved replacement suppresses the original's duplicate wake",
+      "passed": true
+    },
+    {
+      "name": "An eligible replacement supplies the wake work",
+      "passed": true
+    },
+    {
+      "name": "Enrolled FTP synchronization can trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Removed completed FTP file cannot trigger a wake",
+      "passed": true
+    },
+    {
+      "name": "Windows accepts the real absolute waitable timer request",
+      "passed": true
+    },
+    {
+      "name": "Real Windows wake timer signals at its UTC deadline while awake",
+      "passed": true
+    },
+    {
+      "name": "Stopping releases an already signaled timer",
+      "passed": true
+    },
+    {
+      "name": "Earliest eligible queue owns the one application wake timer",
+      "passed": true
+    },
+    {
+      "name": "Disabling earliest queue rearms for the next eligible one",
+      "passed": true
+    },
+    {
+      "name": "Changing the scheduled date replaces the existing timer",
+      "passed": true
+    },
+    {
+      "name": "Removing all queue work cancels the Windows wake timer",
+      "passed": true
+    },
+    {
+      "name": "Clearing wake opt-in cancels the timer immediately",
+      "passed": true
+    },
+    {
+      "name": "Queue validation rejects a non-boolean wake setting",
+      "passed": true
+    },
+    {
+      "name": "Invalid wake setting preserves saved queues",
+      "passed": true
+    },
+    {
+      "name": "Applying a queue registers its wake without a UI polling delay",
+      "passed": true
+    },
+    {
+      "name": "Failed settings persistence does not apply a wake change",
+      "passed": true
+    },
+    {
+      "name": "Failed settings save preserves the applied timer and opt-in",
+      "passed": true
+    },
+    {
+      "name": "Application shutdown cancels its wake timer",
+      "passed": true
+    },
+    {
+      "name": "Wake preference survives process-state reload",
+      "passed": true
+    },
+    {
+      "name": "Reloaded application rearms a future eligible schedule",
+      "passed": true
+    },
+    {
+      "name": "Stopping a queue removes its wake request immediately",
+      "passed": true
+    },
+    {
+      "name": "New queues require an explicit startup opt-in",
+      "passed": true
+    },
+    {
+      "name": "Queue startup setting rejects non-boolean input",
+      "passed": true
+    },
+    {
+      "name": "Invalid startup preference leaves state unchanged",
+      "passed": true
+    },
+    {
+      "name": "Saving startup preference does not begin a download in the current session",
+      "passed": true
+    },
+    {
+      "name": "Startup preference persists independently of current queue enablement",
+      "passed": true
+    },
+    {
+      "name": "Startup preparation reports a failed state write before any transfer",
+      "passed": true
+    },
+    {
+      "name": "Failed startup preparation restores jobs and queue state atomically",
+      "passed": true
+    },
+    {
+      "name": "Startup prepares paused and failed members of opted-in queues",
+      "passed": true
+    },
+    {
+      "name": "Startup skips removed members, attempted nonreplayable requests, completed files and non-opted-in queues",
+      "passed": true
+    },
+    {
+      "name": "Startup trigger is applied only once per application session",
+      "passed": true
+    },
+    {
+      "name": "Opted-in queue downloads exact bytes at startup outside its timed window",
+      "passed": true
+    },
+    {
+      "name": "Stop suspends this run without erasing next-start preference",
+      "passed": true
+    },
+    {
+      "name": "Next application session can restart a stopped opted-in queue",
+      "passed": true
+    },
+    {
+      "name": "Clearing the startup preference preserves a stopped queue at the next launch",
+      "passed": true
+    },
+    {
+      "name": "Legacy queues without the setting remain unarmed and need no history migration",
+      "passed": true
+    },
+    {
+      "name": "All-download scope retains the existing complete history export",
+      "passed": true
+    },
+    {
+      "name": "Selected scope preserves history order and ignores stale selection IDs",
+      "passed": true
+    },
+    {
+      "name": "Queue scope uses pending membership rather than retained queue labels",
+      "passed": true
+    },
+    {
+      "name": "Named queue export excludes other queues",
+      "passed": true
+    },
+    {
+      "name": "Empty selections and absent queues do not fall back to exporting everything",
+      "passed": true
+    },
+    {
+      "name": "URL export writes only the checked scoped records",
+      "passed": true
+    },
+    {
+      "name": "Catalog export preserves scoped metadata and omits credentials by default",
+      "passed": true
+    },
+    {
+      "name": "Empty export is rejected before replacing an output",
+      "passed": true
+    },
+    {
+      "name": "Rejected export preserves an existing output file",
+      "passed": true
+    },
+    {
+      "name": "A record removed while the export dialog is open cannot be silently exported",
+      "passed": true
+    },
+    {
+      "name": "Duplicate export records are rejected",
+      "passed": true
+    },
+    {
+      "name": "Import cannot arm a startup queue from a catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "systemActionsExecuted": false
+}

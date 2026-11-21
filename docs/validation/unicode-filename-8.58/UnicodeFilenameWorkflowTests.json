@@ -1,0 +1,375 @@
+{
+  "case": "5/raw-nested-load",
+  "cases": [
+    {
+      "case": 0,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 143
+    },
+    {
+      "case": 1,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 144
+    },
+    {
+      "case": 2,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 144
+    },
+    {
+      "case": 3,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 158
+    },
+    {
+      "case": 4,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 157
+    },
+    {
+      "case": 5,
+      "existingOutputPreserved": true,
+      "normalizedUnits": 159
+    }
+  ],
+  "checks": [
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    },
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    },
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    },
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    },
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    },
+    {
+      "name": "Regression input is a valid Unicode filename requiring truncation",
+      "passed": true
+    },
+    {
+      "name": "Manual admission chooses the exact valid Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Unicode normalization preserves paused admission and valid UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Windows creates and reads the exact normalized Unicode target",
+      "passed": true
+    },
+    {
+      "name": "Properties accepts the normalized name without moving or changing existing bytes",
+      "passed": true
+    },
+    {
+      "name": "Native browser-message admission normalizes both suggested and reported server names",
+      "passed": true
+    },
+    {
+      "name": "Browser Download Later remains paused in the owned destination",
+      "passed": true
+    },
+    {
+      "name": "Actual catalog refusal rolls back Unicode admission without a partial saved row",
+      "passed": true
+    },
+    {
+      "name": "Saved manual and browser Unicode names reload exactly",
+      "passed": true
+    },
+    {
+      "name": "Reload leaves existing normalized output bytes exact",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog parent and nested audio/video names normalize without invalid surrogates",
+      "passed": true
+    },
+    {
+      "name": "Raw catalog normalization preserves record identity and metadata",
+      "passed": true
+    },
+    {
+      "name": "First-load backup retains the original valid Unicode input byte for byte",
+      "passed": true
+    },
+    {
+      "name": "Normalized parent and nested track names remain stable through another save/load",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

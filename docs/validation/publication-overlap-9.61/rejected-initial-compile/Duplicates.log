@@ -1,0 +1,4 @@
+Duplicates.cpp
+$REPOSITORY\native\PublicationPreparation.hpp(39): error C2280: 'udm::Handle &udm::Handle::operator =(const udm::Handle &)': attempting to reference a deleted function
+$REPOSITORY\native\Core.hpp(84): note: see declaration of 'udm::Handle::operator ='
+$REPOSITORY\native\Core.hpp(84): note: 'udm::Handle &udm::Handle::operator =(const udm::Handle &)': function was explicitly deleted

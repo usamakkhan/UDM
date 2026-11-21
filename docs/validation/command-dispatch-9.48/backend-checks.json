@@ -1,0 +1,364 @@
+{
+  "passed": true,
+  "checks": 77,
+  "suites": [
+    {
+      "suite": "ManagedModelWorkTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 11,
+      "binarySha256": "E7A0047BF850D932D62B07B10A3886DA958F45FAB8BAA2CBDE71577F8141FE04",
+      "result": "$REPOSITORY\\.media-cache\\owned-command-dispatch-9.48-D-ManagedModelWorkTests\\results.json",
+      "assertions": [
+        {
+          "name": "A worker cannot start before its lifetime owner is bound",
+          "passed": true
+        },
+        {
+          "name": "A retained worker cannot change lifetime owners",
+          "passed": true
+        },
+        {
+          "name": "Dedicated work records its owner and rejects self join",
+          "passed": true
+        },
+        {
+          "name": "One retained owner cannot launch a second thread",
+          "passed": true
+        },
+        {
+          "name": "A running worker cannot be rebound",
+          "passed": true
+        },
+        {
+          "name": "Cancellation wakes a deferred decision wait",
+          "passed": true
+        },
+        {
+          "name": "Joining acknowledges all thread work",
+          "passed": true
+        },
+        {
+          "name": "Repeated joins are safe",
+          "passed": true
+        },
+        {
+          "name": "Retiring before launch prevents a worker escaping shutdown",
+          "passed": true
+        },
+        {
+          "name": "An unexpected action failure still completes its thread owner",
+          "passed": true
+        },
+        {
+          "name": "Worker identity never leaks into the calling thread",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "ManagerModelWorkTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 17,
+      "binarySha256": "3AB146710DB0B20A616D421E3ECA84D71F245EA0B13F8FB8CAF3B2483B4849F9",
+      "result": "$REPOSITORY\\.media-cache\\owned-command-dispatch-9.48-D-ManagerModelWorkTests\\results.json",
+      "assertions": [
+        {
+          "name": "Manager retains work before launch",
+          "passed": true
+        },
+        {
+          "name": "Duplicate retention cannot create two lifetime owners",
+          "passed": true
+        },
+        {
+          "name": "The work registry is accessible independently of a held model lock",
+          "passed": true
+        },
+        {
+          "name": "Releasing caller references cannot detach or discard a blocked worker",
+          "passed": true
+        },
+        {
+          "name": "Stop joins cancelled acquisition before proving its final checkpoint",
+          "passed": true
+        },
+        {
+          "name": "The final catalog retains the writer and excludes cancelled work",
+          "passed": true
+        },
+        {
+          "name": "A stopped manager rejects new retained acquisitions",
+          "passed": true
+        },
+        {
+          "name": "Stop before thread launch retires the registered owner atomically",
+          "passed": true
+        },
+        {
+          "name": "The retained callback is running before Stop",
+          "passed": true
+        },
+        {
+          "name": "Stop never holds its registry mutex while joining callbacks",
+          "passed": true
+        },
+        {
+          "name": "A worker cannot deadlock by stopping its own manager",
+          "passed": true
+        },
+        {
+          "name": "Rejected self shutdown leaves retention available",
+          "passed": true
+        },
+        {
+          "name": "Manager destruction waits for its retained worker instead of freeing its model",
+          "passed": true
+        },
+        {
+          "name": "Destructor cancellation finishes before the final durable state",
+          "passed": true
+        },
+        {
+          "name": "A real final-checkpoint failure interrupts Stop",
+          "passed": true
+        },
+        {
+          "name": "Failed shutdown reopens model-work retention for retry",
+          "passed": true
+        },
+        {
+          "name": "Retry persists the latest state after retained work drains",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "MainExitLayoutTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 19,
+      "binarySha256": "22E59EB04A9678EC00B2662485E21F6B0B54343DAB8F0CD80E52200CD940F2CB",
+      "result": "$REPOSITORY\\.media-cache\\owned-command-dispatch-9.48-D-MainExitLayoutTaskTests\\results.json",
+      "assertions": [
+        {
+          "name": "The retained worker merges its captured layout",
+          "passed": true
+        },
+        {
+          "name": "Taking the result joins and releases its Manager ownership",
+          "passed": true
+        },
+        {
+          "name": "Preparation leaves the canonical disk checkpoint unchanged",
+          "passed": true
+        },
+        {
+          "name": "A failed merge retains the old layout and releases its joined work for retry",
+          "passed": true
+        },
+        {
+          "name": "Retry publishes after releasing Manager and survives a notification failure",
+          "passed": true
+        },
+        {
+          "name": "Cancellation after acceptance never describes an applied layout as discarded",
+          "passed": true
+        },
+        {
+          "name": "Invalid input cannot replace the last accepted layout",
+          "passed": true
+        },
+        {
+          "name": "Failure cancellation and retry add no intermediate catalog writes",
+          "passed": true
+        },
+        {
+          "name": "The existing canonical save persists the accepted layout",
+          "passed": true
+        },
+        {
+          "name": "Repeated cleanup after acknowledgement leaves no retained workers",
+          "passed": true
+        },
+        {
+          "name": "Normal lock acquisition waits on the worker while the caller remains free",
+          "passed": true
+        },
+        {
+          "name": "The Manager retains acquisition before it waits for the model",
+          "passed": true
+        },
+        {
+          "name": "A pending Exit owner rejects duplicate starts",
+          "passed": true
+        },
+        {
+          "name": "Releasing a cancelled window returns while Manager retains its blocked worker",
+          "passed": true
+        },
+        {
+          "name": "Manager stop joins cancelled acquisition before its checkpoint without applying the layout",
+          "passed": true
+        },
+        {
+          "name": "Cancellation retains a different writer's settings in the final checkpoint",
+          "passed": true
+        },
+        {
+          "name": "An accepted File Info decision still defers the merge",
+          "passed": true
+        },
+        {
+          "name": "Releasing Exit ownership never clears another command's decision flag",
+          "passed": true
+        },
+        {
+          "name": "Manager shutdown drains deferred cancelled work before final save",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "MainClosePolicyTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "E0F540CF5343400DD04BCB50CA43F88C128FE988B376A11322802739ABB66ACB",
+      "result": "$REPOSITORY\\.media-cache\\owned-command-dispatch-9.48-D-MainClosePolicyTests\\results.json",
+      "assertions": [
+        {
+          "name": "Close policy captures the current tray setting",
+          "passed": true
+        },
+        {
+          "name": "A new close reads current policy without changing its older snapshot",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the close reader",
+          "passed": true
+        },
+        {
+          "name": "Close policy acquisition returns to its caller under a held writer",
+          "passed": true
+        },
+        {
+          "name": "One close owner coalesces duplicate starts",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the close reader settles before its catalog writer releases",
+          "passed": true
+        },
+        {
+          "name": "An accepted download decision defers close policy capture",
+          "passed": true
+        },
+        {
+          "name": "Closing a reader never clears another command's ownership",
+          "passed": true
+        },
+        {
+          "name": "A close read failure is consumed as an owned result",
+          "passed": true
+        },
+        {
+          "name": "The close owner can retry after policy failure",
+          "passed": true
+        },
+        {
+          "name": "Close result publication occurs after releasing Manager",
+          "passed": true
+        },
+        {
+          "name": "Notification failure cannot undo the captured close result",
+          "passed": true
+        },
+        {
+          "name": "Repeated close reader cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Policy acquisition never changes settings jobs layout or catalog files",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadMenuTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 16,
+      "binarySha256": "2866CA9AEBC9F4ACB29C2B65193FC9ABFD24491E67BD942E46E7497348B1521B",
+      "result": "$REPOSITORY\\.media-cache\\owned-command-dispatch-9.48-D-DownloadMenuTaskTests\\results.json",
+      "assertions": [
+        {
+          "name": "The owned menu reader publishes its model cohort",
+          "passed": true
+        },
+        {
+          "name": "Menu preparation reads on its owned worker rather than the caller",
+          "passed": true
+        },
+        {
+          "name": "The same owner can prepare another menu",
+          "passed": true
+        },
+        {
+          "name": "New settings do not mutate a previously captured menu cohort",
+          "passed": true
+        },
+        {
+          "name": "A separate catalog writer owns the model before menu preparation",
+          "passed": true
+        },
+        {
+          "name": "Menu start returns while its catalog acquisition is pending",
+          "passed": true
+        },
+        {
+          "name": "A pending menu owner rejects a duplicate start",
+          "passed": true
+        },
+        {
+          "name": "Menu cancellation settles without releasing another thread's catalog lock",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins a waiting menu reader without acquiring Manager",
+          "passed": true
+        },
+        {
+          "name": "Accepted File Info work defers menu capture",
+          "passed": true
+        },
+        {
+          "name": "Menu cleanup never clears another command's decision ownership",
+          "passed": true
+        },
+        {
+          "name": "Menu read failure is an owned consumable result",
+          "passed": true
+        },
+        {
+          "name": "The menu owner can retry after a capture failure",
+          "passed": true
+        },
+        {
+          "name": "Notification runs after releasing Manager and cannot undo its result",
+          "passed": true
+        },
+        {
+          "name": "Repeated menu cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Menu reads do not change settings jobs queues or catalog files",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

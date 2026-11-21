@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "sources": [
+    {
+      "path": "benchmarks\\speed\\finish_scheduling_lifetime.cpp",
+      "sha256": "26093E2B1E2E83DCFDDA8B7E76199A35280F9577841B5DFEF79CF69E663FCD7E"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_realtime_lifetime.cpp",
+      "sha256": "41C12646ACA5F8E77AC643E3EA74981DB81682E1E7D123FB843893B9BF27063E"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_etl_reader.cpp",
+      "sha256": "BA7BCDC795152BBB6E2EC911B48B1C5CABBC56A40ACBC7AAE2D5795FD792A9D2"
+    },
+    {
+      "path": "benchmarks\\speed\\validate_scheduling_lifetime.py",
+      "sha256": "F78E317263EF15735514F8D8579ABE5204A764DF8924F0A0C3A1E714229BEFA7"
+    },
+    {
+      "path": "benchmarks\\speed\\validate_realtime_lifetime.py",
+      "sha256": "BDEB32BDE830D9564B8018C626AD147CE9046459BE8865443B94B7EC1DA7BC2C"
+    }
+  ],
+  "policyChecks": [
+    {
+      "validator": "validate_scheduling_lifetime.py",
+      "passed": true,
+      "policyChecks": 26,
+      "liveCoverageProven": false
+    },
+    {
+      "validator": "validate_realtime_lifetime.py",
+      "passed": true,
+      "policyChecks": 34,
+      "liveCoverageProven": false
+    }
+  ],
+  "newElevationRequested": true,
+  "liveCoverageProven": false,
+  "kernelCauseVerified": false,
+  "outputs": [
+    {
+      "name": "finish_scheduling_lifetime",
+      "binarySha256": "B5D8C7A4A92E2B9CEF0536BB6A0239A993FEAE1D0A27B0B4EED803C2F3C8BBFF",
+      "objectSha256": "2CF3B24AF5E317256AA55081887FCBEA6D721E66EFCAAB2EAEF799F59DB74D52",
+      "unelevatedNoArgumentsExit": 77
+    },
+    {
+      "name": "finish_realtime_lifetime",
+      "binarySha256": "296CB74B9B3F90CA079E0DB6895D9C73CACFC40C0D5D21BEC3EA6569E1A1A876",
+      "objectSha256": "2449C7C6689E583738A38573681E267196D7723B547A16FB2E675FEE91159160",
+      "unelevatedNoArgumentsExit": 77
+    }
+  ],
+  "fixtureBuild": {
+    "passed": true,
+    "source": "benchmarks\\speed\\finish_normal_workload.cpp",
+    "sourceSha256": "E0257323938F6B3AD7EC009597BCF1693BD57B9CCA61383CADF22E597BB03BFD",
+    "binarySha256": "75528BFBAD25B9E2CF398D1E03B96B7CE34C173A1965876D153A23AC94737330",
+    "objectSha256": "AB2C9E818FD7D04D3704167C56B1CAF8DE35AC5F532D3532A4DA49602D37A398",
+    "noArgumentsExit": 77,
+    "liveTraceStarted": false
+  },
+  "workerRequest": {
+    "sessionMinutes": 480,
+    "maxTraceRequests": 20,
+    "scope": "hash-pinned scheduling diagnostic collector only",
+    "collectorSha256": "B5D8C7A4A92E2B9CEF0536BB6A0239A993FEAE1D0A27B0B4EED803C2F3C8BBFF",
+    "scriptSha256": "A3469C0A1661569048F40C55A37521A9BDC9554D5A97EF8BA0FD534D260FFF7F",
+    "noService": true,
+    "noScheduledTask": true,
+    "noUacPolicyChanges": true,
+    "readyRecordPresent": true,
+    "launchOutcomeRecorded": true,
+    "duplicatePromptOpened": false
+  }
+}

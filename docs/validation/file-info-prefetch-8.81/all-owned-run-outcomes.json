@@ -1,0 +1,3685 @@
+{
+  "scope": "Investigation/failed and partial qualification; not a successful full-suite gate",
+  "runs": [
+    {
+      "scope": "owned-data-writeback-8.81-C-DuplicateDecisionTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "The real duplicate offer produces a complete immutable replacement view",
+            "passed": true
+          },
+          {
+            "name": "A current duplicate view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "The actual replacement decision returns while its worker owns Manager before hashing and saving",
+            "passed": true
+          },
+          {
+            "name": "Advisory duplicate observation does not wait for the held decision",
+            "passed": true
+          },
+          {
+            "name": "Repeated duplicate submission cannot replace the command or release its guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon replacement work",
+            "passed": true
+          },
+          {
+            "name": "Completed duplicate work retains the guard until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "The replacement result joins and acknowledges exactly once with its actual presentation and remembered policy",
+            "passed": true
+          },
+          {
+            "name": "Replacement preparation verifies the actual file while preserving its original bytes",
+            "passed": true
+          },
+          {
+            "name": "The chosen replacement publishes the complete new file and preserves the exact previous file",
+            "passed": true
+          },
+          {
+            "name": "Pin the real catalog to fail duplicate-choice persistence",
+            "passed": true
+          },
+          {
+            "name": "Duplicate persistence failure settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "A failed choice save rolls back candidate and remembered policy and preserves the existing file",
+            "passed": true
+          },
+          {
+            "name": "The unchanged displayed choice can be retried after storage recovery",
+            "passed": true
+          },
+          {
+            "name": "Numbered recovery saves the real choice without modifying the original file",
+            "passed": true
+          },
+          {
+            "name": "Cancel uses the same owned durable command",
+            "passed": true
+          },
+          {
+            "name": "Cancel removes only its unchanged candidate and cannot remember a Cancel policy",
+            "passed": true
+          },
+          {
+            "name": "A changed displayed candidate settles on its decision worker",
+            "passed": true
+          },
+          {
+            "name": "A stale duplicate cannot replace a different request",
+            "passed": true
+          },
+          {
+            "name": "Cancel can dismiss an obsolete view without deleting the changed download",
+            "passed": true
+          },
+          {
+            "name": "Use-existing handles current progress state on the worker",
+            "passed": true
+          },
+          {
+            "name": "A benign existing-status change does not prevent the selected existing retry",
+            "passed": true
+          },
+          {
+            "name": "Use-existing resumes and publishes the complete exact owned file",
+            "passed": true
+          },
+          {
+            "name": "A retargeted existing request returns an asynchronous result",
+            "passed": true
+          },
+          {
+            "name": "Use-existing cannot remove a candidate in favor of a different destination identity",
+            "passed": true
+          },
+          {
+            "name": "Numbered remains available when the original was independently removed",
+            "passed": true
+          },
+          {
+            "name": "A post-commit presentation failure settles without replaying the duplicate choice",
+            "passed": true
+          },
+          {
+            "name": "The result distinguishes committed candidate removal from a failed next action",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown starts with an actual held Cancel command",
+            "passed": true
+          },
+          {
+            "name": "Duplicate owner teardown joins accepted work before releasing its decision guard",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown settles the durable Cancel and cannot expose a discarded result",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-FileInfoDisplayTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "A display snapshot identifies a current member and draft context",
+            "passed": true
+          },
+          {
+            "name": "Size and server filename are captured coherently",
+            "passed": true
+          },
+          {
+            "name": "Snapshot preview and refresh eligibility match authoritative helpers",
+            "passed": true
+          },
+          {
+            "name": "The minimal ZIP projection preserves ordinary preview eligibility",
+            "passed": true
+          },
+          {
+            "name": "Display data excludes protected bodies and transfer journals",
+            "passed": true
+          },
+          {
+            "name": "ZIP eligibility carries only protected-request presence",
+            "passed": true
+          },
+          {
+            "name": "Each protected/media/duplicate marker preserves ZIP exclusion",
+            "passed": true
+          },
+          {
+            "name": "Each protected/media/duplicate marker preserves ZIP exclusion",
+            "passed": true
+          },
+          {
+            "name": "Each protected/media/duplicate marker preserves ZIP exclusion",
+            "passed": true
+          },
+          {
+            "name": "Even an empty offline-project value preserves presence-based exclusion",
+            "passed": true
+          },
+          {
+            "name": "Each browser/request capture requirement excludes ZIP preview",
+            "passed": true
+          },
+          {
+            "name": "Each browser/request capture requirement excludes ZIP preview",
+            "passed": true
+          },
+          {
+            "name": "Each browser/request capture requirement excludes ZIP preview",
+            "passed": true
+          },
+          {
+            "name": "A replacement awaiting its response cannot reuse preview eligibility",
+            "passed": true
+          },
+          {
+            "name": "The owner can request a display read on a lazy worker",
+            "passed": true
+          },
+          {
+            "name": "The result arrives without reading the model on the requesting thread",
+            "passed": true
+          },
+          {
+            "name": "A real writer owns the model before the next display request",
+            "passed": true
+          },
+          {
+            "name": "Requests and result observation return the immutable previous display while the model is held",
+            "passed": true
+          },
+          {
+            "name": "The coalesced read converges after the writer releases the model",
+            "passed": true
+          },
+          {
+            "name": "Fresh metadata is coherent and does not mutate the older display",
+            "passed": true
+          },
+          {
+            "name": "Completed work cannot schedule itself or replay a request storm",
+            "passed": true
+          },
+          {
+            "name": "An injected read failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "A failed read reports its error while retaining the last good display",
+            "passed": true
+          },
+          {
+            "name": "An accepted decision defers advisory collection without blocking observation",
+            "passed": true
+          },
+          {
+            "name": "Decision deferral retains the previous draft's identified view",
+            "passed": true
+          },
+          {
+            "name": "A later request captures the changed draft context",
+            "passed": true
+          },
+          {
+            "name": "A removed job produces an explicit unavailable view without resurrecting it",
+            "passed": true
+          },
+          {
+            "name": "A joined display owner refuses subsequent requests",
+            "passed": true
+          },
+          {
+            "name": "Teardown begins with a real in-flight display read",
+            "passed": true
+          },
+          {
+            "name": "Owner teardown joins the read before model lifetime can end",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown leaves no callback or accepted request behind",
+            "passed": true
+          },
+          {
+            "name": "No File Info presentation guard is leaked initially",
+            "passed": true
+          },
+          {
+            "name": "Nested File Info owners keep shutdown guarded",
+            "passed": true
+          },
+          {
+            "name": "Closing a nested owner retains the outer presentation guard",
+            "passed": true
+          },
+          {
+            "name": "The final File Info owner releases its presentation guard",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-FileInfoPrefetchTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Prefetch admission runs to readiness on an owned worker",
+            "passed": true
+          },
+          {
+            "name": "A second request cannot replay an unacknowledged admission",
+            "passed": true
+          },
+          {
+            "name": "Acknowledgement joins the admission worker and reports Started",
+            "passed": true
+          },
+          {
+            "name": "The owned HTTP file downloads completely before Start is accepted",
+            "passed": false
+          }
+        ],
+        "error": "The owned HTTP file downloads completely before Start is accepted",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-MonitorReconnectTests",
+      "result": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "Lost Capture acknowledgement is reported without replaying the command",
+            "passed": true
+          },
+          {
+            "name": "Periodic Watch/Capture/Snapshot reconnects to the same helper after Capture reply loss",
+            "passed": true
+          },
+          {
+            "name": "Only the next explicit Capture is sent; recovery does not replay the uncertain command",
+            "passed": true
+          },
+          {
+            "name": "Reconnect without an existing helper does not launch or elevate",
+            "passed": true
+          },
+          {
+            "name": "Reconnect leaves a healthy helper running",
+            "passed": true
+          },
+          {
+            "name": "Lost mutation reply leaves a disconnected but recoverable helper",
+            "passed": true
+          },
+          {
+            "name": "Explicit Start recovery reconnects without stopping the existing helper",
+            "passed": true
+          },
+          {
+            "name": "Start recovery preserves the helper PID and does not replay Capture",
+            "passed": true
+          },
+          {
+            "name": "Start recovery retains capture generation",
+            "passed": true
+          },
+          {
+            "name": "Actual Monitor snapshot reconnects to the same helper process after a lost reply",
+            "passed": true
+          },
+          {
+            "name": "Read-only Snapshot is retried exactly once",
+            "passed": true
+          },
+          {
+            "name": "Subsequent polling reuses the helper without another launch",
+            "passed": true
+          },
+          {
+            "name": "Explicit stop closes the recovered monitor session",
+            "passed": true
+          },
+          {
+            "name": "Partial reply times out and reconnects after the old client releases its pipe handle",
+            "passed": true
+          },
+          {
+            "name": "Actual Monitor snapshot reconnects to the same helper process after a lost reply",
+            "passed": true
+          },
+          {
+            "name": "Read-only Snapshot is retried exactly once",
+            "passed": true
+          },
+          {
+            "name": "Subsequent polling reuses the helper without another launch",
+            "passed": true
+          },
+          {
+            "name": "Explicit stop closes the recovered monitor session",
+            "passed": true
+          },
+          {
+            "name": "Lost admission acknowledgement reports an unknown outcome instead of replaying the admission",
+            "passed": true
+          },
+          {
+            "name": "Next poll reconnects while preserving a single admission in the original helper",
+            "passed": true
+          },
+          {
+            "name": "Capture generation survives monitor reconnection",
+            "passed": true
+          },
+          {
+            "name": "Lost acknowledgement leaves the real file admission outcome unknown",
+            "passed": true
+          },
+          {
+            "name": "Catalog recovery does not steal files held by the reconnected writer",
+            "passed": true
+          },
+          {
+            "name": "Durable response continues in the same helper with exactly one admission",
+            "passed": true
+          },
+          {
+            "name": "Durable receipt reports exact completion or interruption after reconnect",
+            "passed": true
+          },
+          {
+            "name": "Response file retains exact bytes across the pipe break",
+            "passed": true
+          },
+          {
+            "name": "Recovered complete response publishes one byte-identical download",
+            "passed": true
+          },
+          {
+            "name": "Lost acknowledgement leaves the real file admission outcome unknown",
+            "passed": true
+          },
+          {
+            "name": "Catalog recovery does not steal files held by the reconnected writer",
+            "passed": true
+          },
+          {
+            "name": "Durable response continues in the same helper with exactly one admission",
+            "passed": true
+          },
+          {
+            "name": "Durable receipt reports exact completion or interruption after reconnect",
+            "passed": true
+          },
+          {
+            "name": "Response file retains exact bytes across the pipe break",
+            "passed": true
+          },
+          {
+            "name": "Incomplete response stays paused with no published partial output",
+            "passed": true
+          },
+          {
+            "name": "Automatic controller preserves one reserved job after a lost admission reply",
+            "passed": true
+          },
+          {
+            "name": "Controlled writer receives no bytes before a recovered credit grant",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Stale, mismatched or ambiguous progress cannot adopt the reserved response",
+            "passed": true
+          },
+          {
+            "name": "Automatic controller reconciles unknown admission and completes the credit-controlled response",
+            "passed": true
+          },
+          {
+            "name": "Reconciled response has one admission and exact quota accounting",
+            "passed": true
+          },
+          {
+            "name": "Pause intent is saved even when response admission acknowledgement is unknown",
+            "passed": true
+          },
+          {
+            "name": "Unknown response ownership blocks removing the still-owned download",
+            "passed": true
+          },
+          {
+            "name": "Recovered paused admission cancels once without granting any response bytes",
+            "passed": true
+          },
+          {
+            "name": "Cancellation recovers an inactive partial record without publishing output",
+            "passed": true
+          },
+          {
+            "name": "The canceled response can be removed after writer ownership ends",
+            "passed": true
+          },
+          {
+            "name": "Stopping the monitor reconnects and persists cancellation for unknown admission",
+            "passed": true
+          },
+          {
+            "name": "Monitor shutdown releases uncertain writer ownership and recovers its receipt",
+            "passed": true
+          },
+          {
+            "name": "Stopping unknown controlled admission sends no data allowance and publishes no file",
+            "passed": true
+          },
+          {
+            "name": "Legacy disconnect or invalid reply fails closed without automatic reconnection",
+            "passed": true
+          },
+          {
+            "name": "Legacy disconnect or invalid reply fails closed without automatic reconnection",
+            "passed": true
+          },
+          {
+            "name": "The asynchronous session accepts an owned real-monitor poll",
+            "passed": true
+          },
+          {
+            "name": "Lost Capture acknowledgement reaches the cached view without launching or replaying a mutation",
+            "passed": true
+          },
+          {
+            "name": "The next explicit asynchronous poll can recover the retained helper",
+            "passed": true
+          },
+          {
+            "name": "Asynchronous polling reconnects the real Monitor and publishes its observed active state",
+            "passed": true
+          },
+          {
+            "name": "The asynchronous session keeps the original helper and sends only the two explicit periodic Captures",
+            "passed": true
+          },
+          {
+            "name": "Asynchronous session shutdown joins its real helper stop before Manager shutdown",
+            "passed": true
+          },
+          {
+            "name": "A desktop records its live helper for a later process",
+            "passed": true
+          },
+          {
+            "name": "An active helper outlives its exited desktop process",
+            "passed": true
+          },
+          {
+            "name": "A new desktop process adopts the surviving helper from its record",
+            "passed": true
+          },
+          {
+            "name": "Adoption resumes the helper's capture generation without replaying Watch or Capture",
+            "passed": true
+          },
+          {
+            "name": "Polling the resumed roots sends no Watch",
+            "passed": true
+          },
+          {
+            "name": "Changed roots after adoption are sent once",
+            "passed": true
+          },
+          {
+            "name": "Admission after adoption duplicates response files from the new desktop process",
+            "passed": true
+          },
+          {
+            "name": "A helper already owned by this process is not adopted a second time",
+            "passed": true
+          },
+          {
+            "name": "Stopping the adopted helper ends it and clears the record",
+            "passed": true
+          },
+          {
+            "name": "Without a record no helper is adopted and nothing is launched",
+            "passed": true
+          },
+          {
+            "name": "A record whose process identity does not match is discarded without adoption",
+            "passed": true
+          },
+          {
+            "name": "An unreadable record is discarded",
+            "passed": true
+          },
+          {
+            "name": "Polling without an adoptable helper still reports the stopped helper",
+            "passed": true
+          },
+          {
+            "name": "An orphaned helper exits after its grace period when no desktop returns",
+            "passed": true
+          },
+          {
+            "name": "A record naming an exited helper is discarded",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "fixture": "actual Monitor with owned pipe peers; no live driver"
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-NetworkCaptureSessionTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Idle background polling does not enumerate endpoints or start a worker without a monitor",
+            "passed": true
+          },
+          {
+            "name": "An explicit endpoint view accepts one owned poll",
+            "passed": true
+          },
+          {
+            "name": "Poll returns while its actual model work is held on a different thread",
+            "passed": true
+          },
+          {
+            "name": "UI observation retains its prior immutable view without waiting for Manager",
+            "passed": true
+          },
+          {
+            "name": "Repeated busy polling cannot accumulate another hundred operations",
+            "passed": true
+          },
+          {
+            "name": "An overlapping control request is rejected rather than queued or replayed",
+            "passed": true
+          },
+          {
+            "name": "The owned poll settles after its held work is released",
+            "passed": true
+          },
+          {
+            "name": "A completed endpoint snapshot is published on acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "The owner and requesting view each receive exactly one completion wake",
+            "passed": true
+          },
+          {
+            "name": "Publishing a newer result cannot mutate a retained earlier snapshot",
+            "passed": true
+          },
+          {
+            "name": "Start is accepted after the preceding result is acknowledged",
+            "passed": true
+          },
+          {
+            "name": "Start publishes observed monitor state after one accepted mutation",
+            "passed": true
+          },
+          {
+            "name": "An uncertain capture mutation settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "A lost acknowledgement reports the observed changed state without replaying Capture",
+            "passed": true
+          },
+          {
+            "name": "Repeated result observation cannot replay an uncertain mutation",
+            "passed": true
+          },
+          {
+            "name": "The next explicit periodic poll remains available after a control error",
+            "passed": true
+          },
+          {
+            "name": "A successful poll refreshes state without resubmitting the failed control",
+            "passed": true
+          },
+          {
+            "name": "A new explicit Capture can be accepted after recovery",
+            "passed": true
+          },
+          {
+            "name": "Only the second explicit request produces the second capture mutation",
+            "passed": true
+          },
+          {
+            "name": "Pin the real owned catalog before a durable network-stop failure",
+            "passed": true
+          },
+          {
+            "name": "UI Stop returns a settled asynchronous failure",
+            "passed": true
+          },
+          {
+            "name": "Failed durable Stop retains the live session for a later explicit recovery",
+            "passed": true
+          },
+          {
+            "name": "Lifecycle Stop retries explicitly, joins its operation and commits the real owned stop",
+            "passed": true
+          },
+          {
+            "name": "A second settled lifecycle Stop does not repeat backend work",
+            "passed": true
+          },
+          {
+            "name": "Teardown starts with a real in-flight owned operation",
+            "passed": true
+          },
+          {
+            "name": "Shutdown cannot detach its held network operation",
+            "passed": true
+          },
+          {
+            "name": "Shutdown joins the operation and its final stop before returning",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-rerun-FileInfoPrefetchTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "Prefetch admission runs to readiness on an owned worker",
+            "passed": true
+          },
+          {
+            "name": "A second request cannot replay an unacknowledged admission",
+            "passed": true
+          },
+          {
+            "name": "Acknowledgement joins the admission worker and reports Started",
+            "passed": true
+          },
+          {
+            "name": "The owned HTTP file downloads completely before Start is accepted",
+            "passed": true
+          },
+          {
+            "name": "Complete prefetch waits for confirmation without publishing the destination",
+            "passed": true
+          },
+          {
+            "name": "Prefetch uses one authorized GET without a second metadata request",
+            "passed": true
+          },
+          {
+            "name": "Start applies after admission on the existing owned decision worker",
+            "passed": true
+          },
+          {
+            "name": "Start publishes the complete exact prefetched file",
+            "passed": true
+          },
+          {
+            "name": "Confirmation reuses the complete response without another GET",
+            "passed": true
+          },
+          {
+            "name": "A second complete prefetch is available for Download Later",
+            "passed": true
+          },
+          {
+            "name": "Download Later joins the stopped prefetched transfer",
+            "passed": true
+          },
+          {
+            "name": "Download Later preserves the paused unpublished download",
+            "passed": true
+          },
+          {
+            "name": "A later Start publishes the retained complete body correctly",
+            "passed": true
+          },
+          {
+            "name": "Cancel fixture holds actual pending admission before its model transaction",
+            "passed": true
+          },
+          {
+            "name": "Cancellation owns a command and joins pending admission without blocking its requester",
+            "passed": true
+          },
+          {
+            "name": "The joined Cancel settles after admission is released",
+            "passed": true
+          },
+          {
+            "name": "A queued cancellation prevents a late admission from starting a request",
+            "passed": true
+          },
+          {
+            "name": "A real admitted transfer can finish while its admission acknowledgement is delayed",
+            "passed": true
+          },
+          {
+            "name": "Cancel does not race a still-owned admitted transfer",
+            "passed": true
+          },
+          {
+            "name": "Cancel joins admission and the running transfer before acknowledging",
+            "passed": true
+          },
+          {
+            "name": "Acknowledged cancellation leaves no active or published background download",
+            "passed": true
+          },
+          {
+            "name": "The real model is held before admission is requested",
+            "passed": true
+          },
+          {
+            "name": "Request and readiness checks return while admission waits for a held catalog",
+            "passed": true
+          },
+          {
+            "name": "Admission proceeds exactly once after model release",
+            "passed": true
+          },
+          {
+            "name": "One real prefetched response occupies the configured transfer slot",
+            "passed": true
+          },
+          {
+            "name": "An occupied slot returns capacity without a second transfer",
+            "passed": true
+          },
+          {
+            "name": "Capacity acknowledgement cannot create or replay a request",
+            "passed": true
+          },
+          {
+            "name": "An explicit cadence-style retry can use a newly available slot",
+            "passed": true
+          },
+          {
+            "name": "An uncertain admission acknowledgement settles its future",
+            "passed": true
+          },
+          {
+            "name": "An acknowledgement failure does not pretend an already admitted transfer was undone",
+            "passed": true
+          },
+          {
+            "name": "Cancel observes current state and stops an uncertain admitted transfer without replay",
+            "passed": true
+          },
+          {
+            "name": "Another accepted decision defers admission rather than reporting unsupported prefetch",
+            "passed": true
+          },
+          {
+            "name": "A removed job cannot be admitted or resurrected",
+            "passed": true
+          },
+          {
+            "name": "A missing job is rejected before dereferencing live state",
+            "passed": true
+          },
+          {
+            "name": "Pin the real catalog to reject the admission checkpoint",
+            "passed": true
+          },
+          {
+            "name": "A failed durable admission settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "Admission save failure preserves the draft and sends no HTTP request",
+            "passed": true
+          },
+          {
+            "name": "A failed mutation is not implicitly retried",
+            "passed": true
+          },
+          {
+            "name": "An explicit retry remains possible after the storage lock is released",
+            "passed": true
+          },
+          {
+            "name": "Teardown owns a real in-flight admission callback",
+            "passed": true
+          },
+          {
+            "name": "Teardown joins admission before allowing Manager lifetime to end",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown consumes the outstanding acknowledgement without detaching work",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-rerun-ResumeSelectionTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": true
+          },
+          {
+            "name": "A per-item selection error does not leave the command in flight",
+            "passed": true
+          },
+          {
+            "name": "A failed item remains unchanged while a later selected retry completes its exact file",
+            "passed": false
+          }
+        ],
+        "error": "A failed item remains unchanged while a later selected retry completes its exact file",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-1-fresh",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": true
+          },
+          {
+            "name": "A per-item selection error does not leave the command in flight",
+            "passed": true
+          },
+          {
+            "name": "A failed item remains unchanged while a later selected retry completes its exact file",
+            "passed": true
+          },
+          {
+            "name": "A selected request pauses before the guarded authoritative resume",
+            "passed": true
+          },
+          {
+            "name": "A concurrently removed selection settles normally",
+            "passed": true
+          },
+          {
+            "name": "Guarded resume does not resurrect a removed selected download",
+            "passed": true
+          },
+          {
+            "name": "Teardown starts with a real selected Resume held on its worker",
+            "passed": true
+          },
+          {
+            "name": "Teardown joins accepted Resume work before releasing its guard",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown leaves the accepted retry valid and publishes the complete file",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-1-original",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": false
+          }
+        ],
+        "error": "The owned selected Resume publishes the complete exact file",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-2-fresh",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": true
+          },
+          {
+            "name": "A per-item selection error does not leave the command in flight",
+            "passed": true
+          },
+          {
+            "name": "A failed item remains unchanged while a later selected retry completes its exact file",
+            "passed": false
+          }
+        ],
+        "error": "A failed item remains unchanged while a later selected retry completes its exact file",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeCoreControl-2-original",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": false
+          }
+        ],
+        "error": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnostic",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": false
+          }
+        ],
+        "error": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnosticFreshCore",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": true
+          },
+          {
+            "name": "A per-item selection error does not leave the command in flight",
+            "passed": true
+          },
+          {
+            "name": "A failed item remains unchanged while a later selected retry completes its exact file",
+            "passed": true
+          },
+          {
+            "name": "A selected request pauses before the guarded authoritative resume",
+            "passed": true
+          },
+          {
+            "name": "A concurrently removed selection settles normally",
+            "passed": true
+          },
+          {
+            "name": "Guarded resume does not resurrect a removed selected download",
+            "passed": true
+          },
+          {
+            "name": "Teardown starts with a real selected Resume held on its worker",
+            "passed": true
+          },
+          {
+            "name": "Teardown joins accepted Resume work before releasing its guard",
+            "passed": true
+          },
+          {
+            "name": "Joined teardown leaves the accepted retry valid and publishes the complete file",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeDiagnosticTracedCore",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": false
+          }
+        ],
+        "error": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-data-writeback-8.81-C-ResumeSelectionTaskTests",
+      "result": {
+        "checks": [
+          {
+            "name": "An independent writer holds Manager before actual Resume selection",
+            "passed": true
+          },
+          {
+            "name": "Starting a selected Resume returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A repeated task cannot replace its in-flight selection or release the guard",
+            "passed": true
+          },
+          {
+            "name": "An early result read cannot abandon accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The completed selected Resume stays guarded until UI acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Duplicate identities produce one queued retry and one acknowledged decision",
+            "passed": true
+          },
+          {
+            "name": "The owned selected Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The duplicate selection causes one accepted body request rather than an extra download",
+            "passed": true
+          },
+          {
+            "name": "Mixed selected downloads classify on the worker",
+            "passed": true
+          },
+          {
+            "name": "Follow-up priority preserves duplicate/login/content order and defers address refreshes",
+            "passed": true
+          },
+          {
+            "name": "Classification alone neither starts a body request nor rewrites state",
+            "passed": true
+          },
+          {
+            "name": "A coherent content view is ready for presentation",
+            "passed": true
+          },
+          {
+            "name": "Another decision retains the content view for later observation",
+            "passed": true
+          },
+          {
+            "name": "Changed request identity invalidates the displayed content warning",
+            "passed": true
+          },
+          {
+            "name": "A stale content decision settles asynchronously",
+            "passed": true
+          },
+          {
+            "name": "An obsolete warning cannot persist choices or resume a replacement request",
+            "passed": true
+          },
+          {
+            "name": "The real owned catalog is pinned against the Resume save",
+            "passed": true
+          },
+          {
+            "name": "A failed queue-save produces a settled worker result",
+            "passed": true
+          },
+          {
+            "name": "A failed queue save preserves complete job state and releases only the acknowledged guard",
+            "passed": true
+          },
+          {
+            "name": "A normal Resume succeeds and publishes exact bytes after catalog recovery",
+            "passed": true
+          },
+          {
+            "name": "A real content-choice save failure settles on the worker",
+            "passed": true
+          },
+          {
+            "name": "Failed content persistence rolls back all choices together",
+            "passed": true
+          },
+          {
+            "name": "A retry failure after a successful choice save returns a distinct result",
+            "passed": true
+          },
+          {
+            "name": "The saved-choice outcome distinguishes commitment from retry failure and replaces opposite old choices",
+            "passed": true
+          },
+          {
+            "name": "Complete content choices are actually durable before retry preparation",
+            "passed": true
+          },
+          {
+            "name": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+            "passed": false
+          }
+        ],
+        "error": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-modal-ui-8.81",
+      "result": {
+        "checks": [
+          {
+            "name": "Owned main window contains the test download",
+            "passed": true
+          },
+          {
+            "name": "The actual modal-size path has a visible viewport",
+            "passed": true
+          },
+          {
+            "name": "Initial control and displayed model size agree",
+            "passed": true
+          },
+          {
+            "name": "The catalog writer holds the model before the nested refresh",
+            "passed": true
+          },
+          {
+            "name": "The production nested-refresh path returns while the writer remains held",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh preserves the real control and its text cache",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh preserves unrelated cells and selection",
+            "passed": true
+          },
+          {
+            "name": "The next production refresh updates both the real size cell and cache",
+            "passed": true
+          },
+          {
+            "name": "Successful refresh retains unrelated presentation and selection",
+            "passed": true
+          },
+          {
+            "name": "Subsequent refresh converges without reverting the new value",
+            "passed": true
+          },
+          {
+            "name": "Main-list tooltip comes from the displayed row snapshot",
+            "passed": true
+          },
+          {
+            "name": "A model writer holds changed live data during advisory UI reads",
+            "passed": true
+          },
+          {
+            "name": "The actual tooltip notification returns cached text while live data is locked",
+            "passed": true
+          },
+          {
+            "name": "Advisory command-state reads report busy instead of waiting",
+            "passed": true
+          },
+          {
+            "name": "Busy toolbar refresh preserves the real existing button state",
+            "passed": true
+          },
+          {
+            "name": "Selection file-status refresh also returns during a catalog hold",
+            "passed": true
+          },
+          {
+            "name": "Fresh rows and unchanged-structure navigation refresh update the tooltip",
+            "passed": true
+          },
+          {
+            "name": "Advisory command reads become available after release",
+            "passed": true
+          },
+          {
+            "name": "Ordinary command validation uses current model state rather than retained toolbar state",
+            "passed": true
+          },
+          {
+            "name": "Out-of-range tooltip notifications cannot access a live job",
+            "passed": true
+          },
+          {
+            "name": "A programmatic project filter captures the matching cohort",
+            "passed": true
+          },
+          {
+            "name": "The catalog writer changes both navigation and a row during a full refresh",
+            "passed": true
+          },
+          {
+            "name": "Full production refresh returns busy and restores its reentrancy flag",
+            "passed": true
+          },
+          {
+            "name": "A busy full refresh retains coherent tree, rows, cache and selection",
+            "passed": true
+          },
+          {
+            "name": "Advisory selection skips deferred-history validation while the model is held",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh retries do not enqueue an immediate history message loop",
+            "passed": true
+          },
+          {
+            "name": "After release a removed project resolves to its surviving Grabber parent",
+            "passed": true
+          },
+          {
+            "name": "The next full refresh updates the matching row and retains its selection",
+            "passed": true
+          },
+          {
+            "name": "An existing category filter applies its captured empty cohort",
+            "passed": true
+          },
+          {
+            "name": "Hidden refresh observes status without rebuilding retained history controls",
+            "passed": true
+          },
+          {
+            "name": "A visible refresh catches up after hidden-history deferral",
+            "passed": true
+          },
+          {
+            "name": "A custom category filter applies the captured unfinished cohort",
+            "passed": true
+          },
+          {
+            "name": "Removing a selected category applies its surviving ancestor and matching rows together",
+            "passed": true
+          },
+          {
+            "name": "A new queue filter applies its matching captured row",
+            "passed": true
+          },
+          {
+            "name": "Removing a selected queue falls back to All Downloads coherently",
+            "passed": true
+          },
+          {
+            "name": "Authoritative selection still rejects a deleted job retained in deferred hidden controls",
+            "passed": true
+          },
+          {
+            "name": "Returning to a visible window removes the deleted retained history row",
+            "passed": true
+          },
+          {
+            "name": "Timer maintenance fixture starts with its owned paused download",
+            "passed": true
+          },
+          {
+            "name": "An independent catalog writer holds the model before the real window timer",
+            "passed": true
+          },
+          {
+            "name": "The production timer returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A busy timer retains the old history presentation",
+            "passed": true
+          },
+          {
+            "name": "The real queue-dispatch window handler schedules work without waiting for Manager",
+            "passed": true
+          },
+          {
+            "name": "The Options model pulse also schedules maintenance without waiting",
+            "passed": true
+          },
+          {
+            "name": "The owned background callback is blocked on Manager while UI handlers have returned",
+            "passed": true
+          },
+          {
+            "name": "Both real Manager tick and dispatch complete after the catalog is released",
+            "passed": true
+          },
+          {
+            "name": "Busy timer layout persistence leaves the existing model value untouched",
+            "passed": true
+          },
+          {
+            "name": "The next available layout refresh catches up with thread-owned controls",
+            "passed": true
+          },
+          {
+            "name": "Maintenance completions post only the live window's owned integer identity",
+            "passed": true
+          },
+          {
+            "name": "A stale maintenance identity cannot refresh the window",
+            "passed": true
+          },
+          {
+            "name": "A valid maintenance wake updates history without waiting for another timer interval",
+            "passed": true
+          },
+          {
+            "name": "The actual window's maintenance owner can restart after a joined stop",
+            "passed": true
+          },
+          {
+            "name": "Already-queued maintenance honors the File Info decision acknowledgement guard",
+            "passed": true
+          },
+          {
+            "name": "After File Info acknowledgement a later maintenance tick advances the real Manager",
+            "passed": true
+          },
+          {
+            "name": "The final guarded worker remains restartable for normal window shutdown",
+            "passed": true
+          },
+          {
+            "name": "A failed confirmation presenter retains its owned window reservation",
+            "passed": true
+          },
+          {
+            "name": "Failed presentation rolls back the seen marker without returning ownership to an untracked local list",
+            "passed": true
+          },
+          {
+            "name": "The automatic-discovery fixture holds the catalog with new pending work",
+            "passed": true
+          },
+          {
+            "name": "Busy production prompt discovery retains the reservation and unhandled marker",
+            "passed": true
+          },
+          {
+            "name": "Busy discovery does not consume the review-recovery request",
+            "passed": true
+          },
+          {
+            "name": "The actual browser-batch discovery method returns while the model is held",
+            "passed": true
+          },
+          {
+            "name": "After release duplicate reserved/new legacy offers present once and are acknowledged",
+            "passed": true
+          },
+          {
+            "name": "An acknowledged automatic confirmation does not open again",
+            "passed": true
+          },
+          {
+            "name": "Failure of a new explicit legacy request preserves an older successful seen marker",
+            "passed": true
+          },
+          {
+            "name": "A failed explicit legacy request is retried despite its existing seen marker",
+            "passed": true
+          },
+          {
+            "name": "The actual prompt path discards a removed stale reservation without presenting it",
+            "passed": true
+          },
+          {
+            "name": "The review presenter receives the captured ready token",
+            "passed": true
+          },
+          {
+            "name": "Failed review presentation rolls back its marker after recovery reset",
+            "passed": true
+          },
+          {
+            "name": "The review presenter receives the captured ready token",
+            "passed": true
+          },
+          {
+            "name": "A ready review retries after failure and is not repeated after success",
+            "passed": true
+          },
+          {
+            "name": "Failed browser-batch presentation retains its complete owned cohort",
+            "passed": true
+          },
+          {
+            "name": "A batch retry finishes its existing reservation before consuming a later browser batch",
+            "passed": true
+          },
+          {
+            "name": "The next browser batch is presented in FIFO order after the retry",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "The asynchronous discovery path presents an eligible authentication request once",
+            "passed": true
+          },
+          {
+            "name": "Queue-origin authentication remains pending for its progress workflow",
+            "passed": true
+          },
+          {
+            "name": "Current authentication suppression does not consume the pending challenge",
+            "passed": true
+          },
+          {
+            "name": "Asynchronous authentication save failure preserves its challenge and does not lose an independent confirmation",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "After storage recovery authentication and the retained confirmation both finish normally",
+            "passed": true
+          },
+          {
+            "name": "The production discovery method returns while authentication saving is held on its worker",
+            "passed": true
+          },
+          {
+            "name": "The real window timer dispatches while the owned authentication command holds Manager",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "A completion pulse presents the login after its owned save finishes",
+            "passed": true
+          },
+          {
+            "name": "The busy-validation fixture has a completely prepared authentication view",
+            "passed": true
+          },
+          {
+            "name": "The model is held independently before ready-view validation",
+            "passed": true
+          },
+          {
+            "name": "Ready-view validation returns busy and retains ownership without displaying stale data",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "A later ready-view validation presents and acknowledges the retained request",
+            "passed": true
+          },
+          {
+            "name": "Failed login creation retains the claimed view until asynchronous restoration finishes",
+            "passed": true
+          },
+          {
+            "name": "The failed login request is durably rearmed rather than silently acknowledged",
+            "passed": true
+          },
+          {
+            "name": "A later login presentation can handle the restored request normally",
+            "passed": true
+          },
+          {
+            "name": "The actual window's shutdown task restores an unpresented claimed request",
+            "passed": true
+          },
+          {
+            "name": "The real login dialog receives its worker-prepared credential view",
+            "passed": true
+          },
+          {
+            "name": "An independent writer owns Manager before actual login control construction",
+            "passed": true
+          },
+          {
+            "name": "Actual login controls display prepared credentials while Manager remains held",
+            "passed": true
+          },
+          {
+            "name": "The real prepared login dialog cancels normally without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A close request cannot destroy the owner during an authentication presentation",
+            "passed": true
+          },
+          {
+            "name": "Actual main-list Resume returns while queue login credential preparation is held on its worker",
+            "passed": true
+          },
+          {
+            "name": "Repeated main-list Resume coalesces the same owned queue login request",
+            "passed": true
+          },
+          {
+            "name": "A queue challenge changed during preparation is discarded without presenting or clearing its pending request",
+            "passed": true
+          },
+          {
+            "name": "A valid main-list queue request reaches a ready view without constructing controls on its worker",
+            "passed": true
+          },
+          {
+            "name": "Main-list presentation receives the queue view's pending expectation and prepared credentials",
+            "passed": true
+          },
+          {
+            "name": "An independent writer holds Manager before actual queue login construction",
+            "passed": true
+          },
+          {
+            "name": "The real queue login dialog constructs from its prepared view while Manager remains held",
+            "passed": true
+          },
+          {
+            "name": "Main-window Close cannot destroy a requested login presentation before Sign in",
+            "passed": true
+          },
+          {
+            "name": "Cancel from the actual main-list queue login closes normally and preserves the original pending challenge",
+            "passed": true
+          },
+          {
+            "name": "Create the actual failed-queue progress window",
+            "passed": true
+          },
+          {
+            "name": "An independent writer holds Manager before actual progress Start",
+            "passed": true
+          },
+          {
+            "name": "Progress Start returns with an owned worker rather than reading or decrypting login state on the window thread",
+            "passed": true
+          },
+          {
+            "name": "The progress command publishes its complete prepared login view",
+            "passed": true
+          },
+          {
+            "name": "Progress retains its requested view after acknowledging the joined command result",
+            "passed": true
+          },
+          {
+            "name": "A new unrelated decision defers progress login presentation without dropping its view",
+            "passed": true
+          },
+          {
+            "name": "Cancel from the actual progress login leaves the queue request pending and releases presentation ownership",
+            "passed": true
+          },
+          {
+            "name": "The real main-list offer creates a pending duplicate candidate",
+            "passed": true
+          },
+          {
+            "name": "The actual main list exposes the duplicate candidate for Resume",
+            "passed": true
+          },
+          {
+            "name": "The actual duplicate prompt renders from Resume's prepared view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate Cancel returns while its owned save waits and disables repeat actions",
+            "passed": true
+          },
+          {
+            "name": "Dialog and main-window Close cannot abandon an in-flight duplicate decision",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume Cancel joins the durable decision, removes only its candidate and preserves the existing bytes",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The real Numbered choice retains a distinct destination",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The real Replace choice completes verification on its worker before returning",
+            "passed": true
+          },
+          {
+            "name": "Seed the owned network view without opening the real monitor",
+            "passed": true
+          },
+          {
+            "name": "The actual network dialog retains its cached rows while polling owns Manager on a worker",
+            "passed": true
+          },
+          {
+            "name": "Main and Options timers dispatch and main Close defers while a real network view owns a held operation",
+            "passed": true
+          },
+          {
+            "name": "Closing the real shared network window leaves its accepted poll owned by the main session",
+            "passed": true
+          },
+          {
+            "name": "A closed view's weak notification cannot prevent normal main-session acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Actual Start and Capture controls run their operations on a worker and disable overlapping mutations",
+            "passed": true
+          },
+          {
+            "name": "A forged repeat Capture cannot replay a held mutation",
+            "passed": true
+          },
+          {
+            "name": "The actual main timer dispatches while Capture holds the catalog",
+            "passed": true
+          },
+          {
+            "name": "Local network Close waits asynchronously for its accepted operation",
+            "passed": true
+          },
+          {
+            "name": "Local network Close keeps its window alive until the final durable Stop settles",
+            "passed": true
+          },
+          {
+            "name": "Real network controls and local Close acknowledge each accepted mutation once and finish the actual owned stop save",
+            "passed": true
+          },
+          {
+            "name": "The actual main list contains the owned paused Resume selection",
+            "passed": true
+          },
+          {
+            "name": "An independent writer owns Manager before the actual main Resume command",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume bypasses synchronous availability and deferred-selection reads while Manager is held",
+            "passed": true
+          },
+          {
+            "name": "Repeated actual main Resume coalesces an already-owned selected download",
+            "passed": true
+          },
+          {
+            "name": "Transfer-event dispatch and direct presentation retain notifications without entering Manager during accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The main timer and Close dispatch while the Resume worker waits for the held catalog",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume joins its command and publishes the complete exact owned file",
+            "passed": true
+          },
+          {
+            "name": "The owned content-warning request is selectable in the actual main list",
+            "passed": true
+          },
+          {
+            "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+            "passed": true
+          },
+          {
+            "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+            "passed": true
+          },
+          {
+            "name": "Cancel at the second real content warning leaves both choices and the complete job unchanged",
+            "passed": true
+          },
+          {
+            "name": "Real No/Yes content choices are saved on the worker and Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The real login command dialog starts from an owned HTTP authentication challenge",
+            "passed": true
+          },
+          {
+            "name": "The owned HTTP challenge has a durable prepared login view",
+            "passed": true
+          },
+          {
+            "name": "The real login dialog disables repeat submit and Cancel while the decision worker holds Manager",
+            "passed": true
+          },
+          {
+            "name": "Timer and main-window close dispatch without abandoning the held login decision",
+            "passed": true
+          },
+          {
+            "name": "Close and repeated Enter-style submit cannot dismiss or duplicate in-flight login work",
+            "passed": true
+          },
+          {
+            "name": "The actual Sign in dialog settles its owned command and closes normally",
+            "passed": true
+          },
+          {
+            "name": "Clicking Sign in and retry in the real dialog downloads the complete exact owned HTTP file",
+            "passed": true
+          },
+          {
+            "name": "The owned Digest origin produces a real queue-retry login challenge",
+            "passed": true
+          },
+          {
+            "name": "Create progress for the real authenticated queue retry",
+            "passed": true
+          },
+          {
+            "name": "The real progress retry prepares its Digest login view on the command worker",
+            "passed": true
+          },
+          {
+            "name": "Sign in from the real queue progress dialog accepts the prepared pending and queue-ownership contract",
+            "passed": true
+          },
+          {
+            "name": "The real progress Sign in path downloads and publishes the complete exact Digest file",
+            "passed": true
+          },
+          {
+            "name": "Actual File Info renders its initial worker snapshot",
+            "passed": true
+          },
+          {
+            "name": "A real catalog writer holds changed File Info metadata",
+            "passed": true
+          },
+          {
+            "name": "The production File Info timer returns while the catalog writer remains held",
+            "passed": true
+          },
+          {
+            "name": "Busy File Info retains all real static labels and the last coherent size",
+            "passed": true
+          },
+          {
+            "name": "The retained controls include the original server filename",
+            "passed": true
+          },
+          {
+            "name": "An actual File Info presentation owns its shutdown guard",
+            "passed": true
+          },
+          {
+            "name": "Main Close is refused before acquiring the model while File Info owns reads",
+            "passed": true
+          },
+          {
+            "name": "The actual dialog paints during an outstanding worker read",
+            "passed": true
+          },
+          {
+            "name": "After release File Info applies matching fresh size and filename together",
+            "passed": true
+          },
+          {
+            "name": "The real filename control converges to the worker result",
+            "passed": true
+          },
+          {
+            "name": "Worker completion wakes do not schedule further reads after cadence is stopped",
+            "passed": true
+          },
+          {
+            "name": "Cancel closes the actual File Info dialog and joins its reader without a leaked owner",
+            "passed": true
+          },
+          {
+            "name": "Advisory display and Cancel do not rewrite the current metadata",
+            "passed": true
+          },
+          {
+            "name": "The actual queued decision settles once and joins its owners before File Info exits",
+            "passed": false
+          }
+        ],
+        "error": "The actual queued decision settles once and joins its owners before File Info exits",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-modal-ui-8.81-rerun",
+      "result": {
+        "checks": [
+          {
+            "name": "Owned main window contains the test download",
+            "passed": true
+          },
+          {
+            "name": "The actual modal-size path has a visible viewport",
+            "passed": true
+          },
+          {
+            "name": "Initial control and displayed model size agree",
+            "passed": true
+          },
+          {
+            "name": "The catalog writer holds the model before the nested refresh",
+            "passed": true
+          },
+          {
+            "name": "The production nested-refresh path returns while the writer remains held",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh preserves the real control and its text cache",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh preserves unrelated cells and selection",
+            "passed": true
+          },
+          {
+            "name": "The next production refresh updates both the real size cell and cache",
+            "passed": true
+          },
+          {
+            "name": "Successful refresh retains unrelated presentation and selection",
+            "passed": true
+          },
+          {
+            "name": "Subsequent refresh converges without reverting the new value",
+            "passed": true
+          },
+          {
+            "name": "Main-list tooltip comes from the displayed row snapshot",
+            "passed": true
+          },
+          {
+            "name": "A model writer holds changed live data during advisory UI reads",
+            "passed": true
+          },
+          {
+            "name": "The actual tooltip notification returns cached text while live data is locked",
+            "passed": true
+          },
+          {
+            "name": "Advisory command-state reads report busy instead of waiting",
+            "passed": true
+          },
+          {
+            "name": "Busy toolbar refresh preserves the real existing button state",
+            "passed": true
+          },
+          {
+            "name": "Selection file-status refresh also returns during a catalog hold",
+            "passed": true
+          },
+          {
+            "name": "Fresh rows and unchanged-structure navigation refresh update the tooltip",
+            "passed": true
+          },
+          {
+            "name": "Advisory command reads become available after release",
+            "passed": true
+          },
+          {
+            "name": "Ordinary command validation uses current model state rather than retained toolbar state",
+            "passed": true
+          },
+          {
+            "name": "Out-of-range tooltip notifications cannot access a live job",
+            "passed": true
+          },
+          {
+            "name": "A programmatic project filter captures the matching cohort",
+            "passed": true
+          },
+          {
+            "name": "The catalog writer changes both navigation and a row during a full refresh",
+            "passed": true
+          },
+          {
+            "name": "Full production refresh returns busy and restores its reentrancy flag",
+            "passed": true
+          },
+          {
+            "name": "A busy full refresh retains coherent tree, rows, cache and selection",
+            "passed": true
+          },
+          {
+            "name": "Advisory selection skips deferred-history validation while the model is held",
+            "passed": true
+          },
+          {
+            "name": "Busy refresh retries do not enqueue an immediate history message loop",
+            "passed": true
+          },
+          {
+            "name": "After release a removed project resolves to its surviving Grabber parent",
+            "passed": true
+          },
+          {
+            "name": "The next full refresh updates the matching row and retains its selection",
+            "passed": true
+          },
+          {
+            "name": "An existing category filter applies its captured empty cohort",
+            "passed": true
+          },
+          {
+            "name": "Hidden refresh observes status without rebuilding retained history controls",
+            "passed": true
+          },
+          {
+            "name": "A visible refresh catches up after hidden-history deferral",
+            "passed": true
+          },
+          {
+            "name": "A custom category filter applies the captured unfinished cohort",
+            "passed": true
+          },
+          {
+            "name": "Removing a selected category applies its surviving ancestor and matching rows together",
+            "passed": true
+          },
+          {
+            "name": "A new queue filter applies its matching captured row",
+            "passed": true
+          },
+          {
+            "name": "Removing a selected queue falls back to All Downloads coherently",
+            "passed": true
+          },
+          {
+            "name": "Authoritative selection still rejects a deleted job retained in deferred hidden controls",
+            "passed": true
+          },
+          {
+            "name": "Returning to a visible window removes the deleted retained history row",
+            "passed": true
+          },
+          {
+            "name": "Timer maintenance fixture starts with its owned paused download",
+            "passed": true
+          },
+          {
+            "name": "An independent catalog writer holds the model before the real window timer",
+            "passed": true
+          },
+          {
+            "name": "The production timer returns without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A busy timer retains the old history presentation",
+            "passed": true
+          },
+          {
+            "name": "The real queue-dispatch window handler schedules work without waiting for Manager",
+            "passed": true
+          },
+          {
+            "name": "The Options model pulse also schedules maintenance without waiting",
+            "passed": true
+          },
+          {
+            "name": "The owned background callback is blocked on Manager while UI handlers have returned",
+            "passed": true
+          },
+          {
+            "name": "Both real Manager tick and dispatch complete after the catalog is released",
+            "passed": true
+          },
+          {
+            "name": "Busy timer layout persistence leaves the existing model value untouched",
+            "passed": true
+          },
+          {
+            "name": "The next available layout refresh catches up with thread-owned controls",
+            "passed": true
+          },
+          {
+            "name": "Maintenance completions post only the live window's owned integer identity",
+            "passed": true
+          },
+          {
+            "name": "A stale maintenance identity cannot refresh the window",
+            "passed": true
+          },
+          {
+            "name": "A valid maintenance wake updates history without waiting for another timer interval",
+            "passed": true
+          },
+          {
+            "name": "The actual window's maintenance owner can restart after a joined stop",
+            "passed": true
+          },
+          {
+            "name": "Already-queued maintenance honors the File Info decision acknowledgement guard",
+            "passed": true
+          },
+          {
+            "name": "After File Info acknowledgement a later maintenance tick advances the real Manager",
+            "passed": true
+          },
+          {
+            "name": "The final guarded worker remains restartable for normal window shutdown",
+            "passed": true
+          },
+          {
+            "name": "A failed confirmation presenter retains its owned window reservation",
+            "passed": true
+          },
+          {
+            "name": "Failed presentation rolls back the seen marker without returning ownership to an untracked local list",
+            "passed": true
+          },
+          {
+            "name": "The automatic-discovery fixture holds the catalog with new pending work",
+            "passed": true
+          },
+          {
+            "name": "Busy production prompt discovery retains the reservation and unhandled marker",
+            "passed": true
+          },
+          {
+            "name": "Busy discovery does not consume the review-recovery request",
+            "passed": true
+          },
+          {
+            "name": "The actual browser-batch discovery method returns while the model is held",
+            "passed": true
+          },
+          {
+            "name": "After release duplicate reserved/new legacy offers present once and are acknowledged",
+            "passed": true
+          },
+          {
+            "name": "An acknowledged automatic confirmation does not open again",
+            "passed": true
+          },
+          {
+            "name": "Failure of a new explicit legacy request preserves an older successful seen marker",
+            "passed": true
+          },
+          {
+            "name": "A failed explicit legacy request is retried despite its existing seen marker",
+            "passed": true
+          },
+          {
+            "name": "The actual prompt path discards a removed stale reservation without presenting it",
+            "passed": true
+          },
+          {
+            "name": "The review presenter receives the captured ready token",
+            "passed": true
+          },
+          {
+            "name": "Failed review presentation rolls back its marker after recovery reset",
+            "passed": true
+          },
+          {
+            "name": "The review presenter receives the captured ready token",
+            "passed": true
+          },
+          {
+            "name": "A ready review retries after failure and is not repeated after success",
+            "passed": true
+          },
+          {
+            "name": "Failed browser-batch presentation retains its complete owned cohort",
+            "passed": true
+          },
+          {
+            "name": "A batch retry finishes its existing reservation before consuming a later browser batch",
+            "passed": true
+          },
+          {
+            "name": "The next browser batch is presented in FIFO order after the retry",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "The asynchronous discovery path presents an eligible authentication request once",
+            "passed": true
+          },
+          {
+            "name": "Queue-origin authentication remains pending for its progress workflow",
+            "passed": true
+          },
+          {
+            "name": "Current authentication suppression does not consume the pending challenge",
+            "passed": true
+          },
+          {
+            "name": "Asynchronous authentication save failure preserves its challenge and does not lose an independent confirmation",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "After storage recovery authentication and the retained confirmation both finish normally",
+            "passed": true
+          },
+          {
+            "name": "The production discovery method returns while authentication saving is held on its worker",
+            "passed": true
+          },
+          {
+            "name": "The real window timer dispatches while the owned authentication command holds Manager",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "A completion pulse presents the login after its owned save finishes",
+            "passed": true
+          },
+          {
+            "name": "The busy-validation fixture has a completely prepared authentication view",
+            "passed": true
+          },
+          {
+            "name": "The model is held independently before ready-view validation",
+            "passed": true
+          },
+          {
+            "name": "Ready-view validation returns busy and retains ownership without displaying stale data",
+            "passed": true
+          },
+          {
+            "name": "Authentication presentation follows the successful durable pending-flag claim",
+            "passed": true
+          },
+          {
+            "name": "A later ready-view validation presents and acknowledges the retained request",
+            "passed": true
+          },
+          {
+            "name": "Failed login creation retains the claimed view until asynchronous restoration finishes",
+            "passed": true
+          },
+          {
+            "name": "The failed login request is durably rearmed rather than silently acknowledged",
+            "passed": true
+          },
+          {
+            "name": "A later login presentation can handle the restored request normally",
+            "passed": true
+          },
+          {
+            "name": "The actual window's shutdown task restores an unpresented claimed request",
+            "passed": true
+          },
+          {
+            "name": "The real login dialog receives its worker-prepared credential view",
+            "passed": true
+          },
+          {
+            "name": "An independent writer owns Manager before actual login control construction",
+            "passed": true
+          },
+          {
+            "name": "Actual login controls display prepared credentials while Manager remains held",
+            "passed": true
+          },
+          {
+            "name": "The real prepared login dialog cancels normally without waiting for the held model",
+            "passed": true
+          },
+          {
+            "name": "A close request cannot destroy the owner during an authentication presentation",
+            "passed": true
+          },
+          {
+            "name": "Actual main-list Resume returns while queue login credential preparation is held on its worker",
+            "passed": true
+          },
+          {
+            "name": "Repeated main-list Resume coalesces the same owned queue login request",
+            "passed": true
+          },
+          {
+            "name": "A queue challenge changed during preparation is discarded without presenting or clearing its pending request",
+            "passed": true
+          },
+          {
+            "name": "A valid main-list queue request reaches a ready view without constructing controls on its worker",
+            "passed": true
+          },
+          {
+            "name": "Main-list presentation receives the queue view's pending expectation and prepared credentials",
+            "passed": true
+          },
+          {
+            "name": "An independent writer holds Manager before actual queue login construction",
+            "passed": true
+          },
+          {
+            "name": "The real queue login dialog constructs from its prepared view while Manager remains held",
+            "passed": true
+          },
+          {
+            "name": "Main-window Close cannot destroy a requested login presentation before Sign in",
+            "passed": true
+          },
+          {
+            "name": "Cancel from the actual main-list queue login closes normally and preserves the original pending challenge",
+            "passed": true
+          },
+          {
+            "name": "Create the actual failed-queue progress window",
+            "passed": true
+          },
+          {
+            "name": "An independent writer holds Manager before actual progress Start",
+            "passed": true
+          },
+          {
+            "name": "Progress Start returns with an owned worker rather than reading or decrypting login state on the window thread",
+            "passed": true
+          },
+          {
+            "name": "The progress command publishes its complete prepared login view",
+            "passed": true
+          },
+          {
+            "name": "Progress retains its requested view after acknowledging the joined command result",
+            "passed": true
+          },
+          {
+            "name": "A new unrelated decision defers progress login presentation without dropping its view",
+            "passed": true
+          },
+          {
+            "name": "Cancel from the actual progress login leaves the queue request pending and releases presentation ownership",
+            "passed": true
+          },
+          {
+            "name": "The real main-list offer creates a pending duplicate candidate",
+            "passed": true
+          },
+          {
+            "name": "The actual main list exposes the duplicate candidate for Resume",
+            "passed": true
+          },
+          {
+            "name": "The actual duplicate prompt renders from Resume's prepared view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate Cancel returns while its owned save waits and disables repeat actions",
+            "passed": true
+          },
+          {
+            "name": "Dialog and main-window Close cannot abandon an in-flight duplicate decision",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume Cancel joins the durable decision, removes only its candidate and preserves the existing bytes",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The real Numbered choice retains a distinct destination",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The direct duplicate presentation owns its close protection before a backend decision starts",
+            "passed": true
+          },
+          {
+            "name": "Main Close cannot destroy a direct duplicate dialog before submission",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate radio and OK controls produce the correct acknowledged worker result",
+            "passed": true
+          },
+          {
+            "name": "Actual duplicate selection preserves existing bytes before any replacement transfer starts",
+            "passed": true
+          },
+          {
+            "name": "The real Replace choice completes verification on its worker before returning",
+            "passed": true
+          },
+          {
+            "name": "Seed the owned network view without opening the real monitor",
+            "passed": true
+          },
+          {
+            "name": "The actual network dialog retains its cached rows while polling owns Manager on a worker",
+            "passed": true
+          },
+          {
+            "name": "Main and Options timers dispatch and main Close defers while a real network view owns a held operation",
+            "passed": true
+          },
+          {
+            "name": "Closing the real shared network window leaves its accepted poll owned by the main session",
+            "passed": true
+          },
+          {
+            "name": "A closed view's weak notification cannot prevent normal main-session acknowledgement",
+            "passed": true
+          },
+          {
+            "name": "Actual Start and Capture controls run their operations on a worker and disable overlapping mutations",
+            "passed": true
+          },
+          {
+            "name": "A forged repeat Capture cannot replay a held mutation",
+            "passed": true
+          },
+          {
+            "name": "The actual main timer dispatches while Capture holds the catalog",
+            "passed": true
+          },
+          {
+            "name": "Local network Close waits asynchronously for its accepted operation",
+            "passed": true
+          },
+          {
+            "name": "Local network Close keeps its window alive until the final durable Stop settles",
+            "passed": true
+          },
+          {
+            "name": "Real network controls and local Close acknowledge each accepted mutation once and finish the actual owned stop save",
+            "passed": true
+          },
+          {
+            "name": "The actual main list contains the owned paused Resume selection",
+            "passed": true
+          },
+          {
+            "name": "An independent writer owns Manager before the actual main Resume command",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume bypasses synchronous availability and deferred-selection reads while Manager is held",
+            "passed": true
+          },
+          {
+            "name": "Repeated actual main Resume coalesces an already-owned selected download",
+            "passed": true
+          },
+          {
+            "name": "Transfer-event dispatch and direct presentation retain notifications without entering Manager during accepted Resume work",
+            "passed": true
+          },
+          {
+            "name": "The main timer and Close dispatch while the Resume worker waits for the held catalog",
+            "passed": true
+          },
+          {
+            "name": "Actual main Resume joins its command and publishes the complete exact owned file",
+            "passed": true
+          },
+          {
+            "name": "The owned content-warning request is selectable in the actual main list",
+            "passed": true
+          },
+          {
+            "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+            "passed": true
+          },
+          {
+            "name": "Actual content confirmation renders from its view while an independent writer owns Manager",
+            "passed": true
+          },
+          {
+            "name": "Close cannot destroy the owner during an actual Resume content confirmation",
+            "passed": true
+          },
+          {
+            "name": "Cancel at the second real content warning leaves both choices and the complete job unchanged",
+            "passed": true
+          },
+          {
+            "name": "Real No/Yes content choices are saved on the worker and Resume publishes the complete exact file",
+            "passed": true
+          },
+          {
+            "name": "The real login command dialog starts from an owned HTTP authentication challenge",
+            "passed": true
+          },
+          {
+            "name": "The owned HTTP challenge has a durable prepared login view",
+            "passed": true
+          },
+          {
+            "name": "The real login dialog disables repeat submit and Cancel while the decision worker holds Manager",
+            "passed": true
+          },
+          {
+            "name": "Timer and main-window close dispatch without abandoning the held login decision",
+            "passed": true
+          },
+          {
+            "name": "Close and repeated Enter-style submit cannot dismiss or duplicate in-flight login work",
+            "passed": true
+          },
+          {
+            "name": "The actual Sign in dialog settles its owned command and closes normally",
+            "passed": true
+          },
+          {
+            "name": "Clicking Sign in and retry in the real dialog downloads the complete exact owned HTTP file",
+            "passed": false
+          }
+        ],
+        "error": "Clicking Sign in and retry in the real dialog downloads the complete exact owned HTTP file",
+        "passed": false
+      }
+    },
+    {
+      "scope": "owned-progress-menu-ui-8.81",
+      "result": {
+        "checks": [
+          {
+            "name": "Create isolated popup owner",
+            "passed": true
+          },
+          {
+            "name": "Create actual progress popup owner",
+            "passed": true
+          },
+          {
+            "name": "A competing backend holds current state beyond the displayed snapshot",
+            "passed": true
+          },
+          {
+            "name": "Actual popup opens from the displayed snapshot without waiting for the model",
+            "passed": true
+          },
+          {
+            "name": "Next refreshed popup catches up with completion/open eligibility",
+            "passed": true
+          },
+          {
+            "name": "Create a progress popup receiving completion-close requests",
+            "passed": true
+          },
+          {
+            "name": "Completion-close request and nested pulse retain the owner throughout popup tracking",
+            "passed": true
+          },
+          {
+            "name": "The normal pulse closes the retained view after popup tracking ends",
+            "passed": true
+          },
+          {
+            "name": "Create a progress popup receiving completion-close requests",
+            "passed": true
+          },
+          {
+            "name": "Completion-close request and nested pulse retain the owner throughout popup tracking",
+            "passed": true
+          },
+          {
+            "name": "Popup deferral preserves the existing opening-rate display grace",
+            "passed": true
+          },
+          {
+            "name": "Ordinary timer closes after the retained opening-rate grace expires",
+            "passed": true
+          },
+          {
+            "name": "Create independent progress views for one shared decision",
+            "passed": true
+          },
+          {
+            "name": "Idle popup enables its current model and presentation commands",
+            "passed": true
+          },
+          {
+            "name": "Another window holds real publication under the shared decision guard",
+            "passed": true
+          },
+          {
+            "name": "An unrelated progress popup remains available with Hide and Information during a shared save",
+            "passed": true
+          },
+          {
+            "name": "Shared persistence visibly disables model-dependent popup commands",
+            "passed": true
+          },
+          {
+            "name": "Actual read-only Information opens and closes while another publication remains held",
+            "passed": true
+          },
+          {
+            "name": "Stale selections are rechecked after popup closure without dispatching or opening model dialogs",
+            "passed": true
+          },
+          {
+            "name": "The saving window retains its existing popup deferral to protect accepted work lifetime",
+            "passed": true
+          },
+          {
+            "name": "Synthetic Hide/Information cannot reenter or destroy the window owning an accepted command",
+            "passed": true
+          },
+          {
+            "name": "Hide dismisses the unrelated view without waiting for or releasing another window's task",
+            "passed": true
+          },
+          {
+            "name": "Shared popup availability does not alter success/error acknowledgement of the saving window",
+            "passed": true
+          },
+          {
+            "name": "Presentation choices leave the unrelated job unchanged and preserve the saved outcome",
+            "passed": true
+          },
+          {
+            "name": "Create a fresh view after the shared task drains",
+            "passed": true
+          },
+          {
+            "name": "Model-dependent choices are available again after the shared save or acknowledged error",
+            "passed": true
+          },
+          {
+            "name": "Create independent progress views for one shared decision",
+            "passed": true
+          },
+          {
+            "name": "Idle popup enables its current model and presentation commands",
+            "passed": true
+          },
+          {
+            "name": "Another window holds real publication under the shared decision guard",
+            "passed": true
+          },
+          {
+            "name": "An unrelated progress popup remains available with Hide and Information during a shared save",
+            "passed": true
+          },
+          {
+            "name": "Shared persistence visibly disables model-dependent popup commands",
+            "passed": true
+          },
+          {
+            "name": "Actual read-only Information opens and closes while another publication remains held",
+            "passed": true
+          },
+          {
+            "name": "Stale selections are rechecked after popup closure without dispatching or opening model dialogs",
+            "passed": true
+          },
+          {
+            "name": "The saving window retains its existing popup deferral to protect accepted work lifetime",
+            "passed": true
+          },
+          {
+            "name": "Synthetic Hide/Information cannot reenter or destroy the window owning an accepted command",
+            "passed": true
+          },
+          {
+            "name": "Hide dismisses the unrelated view without waiting for or releasing another window's task",
+            "passed": true
+          },
+          {
+            "name": "Shared popup availability does not alter success/error acknowledgement of the saving window",
+            "passed": true
+          },
+          {
+            "name": "Presentation choices leave the unrelated job unchanged and preserve the saved outcome",
+            "passed": true
+          },
+          {
+            "name": "Create a fresh view after the shared task drains",
+            "passed": true
+          },
+          {
+            "name": "Model-dependent choices are available again after the shared save or acknowledged error",
+            "passed": true
+          },
+          {
+            "name": "Create progress window for a recording menu command",
+            "passed": true
+          },
+          {
+            "name": "Actual popup displays the current recording command",
+            "passed": true
+          },
+          {
+            "name": "Inspecting the popup does not dispatch a recording command",
+            "passed": true
+          },
+          {
+            "name": "Menu dispatch returns while a real catalog write is held on the worker",
+            "passed": true
+          },
+          {
+            "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+            "passed": true
+          },
+          {
+            "name": "Explicit recording command publishes once, or retries once after rollback",
+            "passed": true
+          },
+          {
+            "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+            "passed": true
+          },
+          {
+            "name": "Create progress window for a recording menu command",
+            "passed": true
+          },
+          {
+            "name": "Actual popup displays the current recording command",
+            "passed": true
+          },
+          {
+            "name": "Inspecting the popup does not dispatch a recording command",
+            "passed": true
+          },
+          {
+            "name": "Menu dispatch returns while a real catalog write is held on the worker",
+            "passed": true
+          },
+          {
+            "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+            "passed": true
+          },
+          {
+            "name": "Failure reports the original error and rolls back before cancellation is signalled",
+            "passed": true
+          },
+          {
+            "name": "Explicit recording command publishes once, or retries once after rollback",
+            "passed": true
+          },
+          {
+            "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+            "passed": true
+          },
+          {
+            "name": "Create progress window for a recording menu command",
+            "passed": true
+          },
+          {
+            "name": "Actual popup displays the current recording command",
+            "passed": true
+          },
+          {
+            "name": "Inspecting the popup does not dispatch a recording command",
+            "passed": true
+          },
+          {
+            "name": "Menu dispatch returns while a real catalog write is held on the worker",
+            "passed": true
+          },
+          {
+            "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+            "passed": true
+          },
+          {
+            "name": "Explicit recording command publishes once, or retries once after rollback",
+            "passed": true
+          },
+          {
+            "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+            "passed": true
+          },
+          {
+            "name": "Create progress window for a recording menu command",
+            "passed": true
+          },
+          {
+            "name": "Actual popup displays the current recording command",
+            "passed": true
+          },
+          {
+            "name": "Inspecting the popup does not dispatch a recording command",
+            "passed": true
+          },
+          {
+            "name": "Menu dispatch returns while a real catalog write is held on the worker",
+            "passed": true
+          },
+          {
+            "name": "Pending recording command keeps graph painting available and rejects duplicates/close",
+            "passed": true
+          },
+          {
+            "name": "Failure reports the original error and rolls back before cancellation is signalled",
+            "passed": true
+          },
+          {
+            "name": "Explicit recording command publishes once, or retries once after rollback",
+            "passed": true
+          },
+          {
+            "name": "Recording Resume refreshes the limiter after clearing its temporary override",
+            "passed": true
+          },
+          {
+            "name": "Copy resolves current address on the worker without touching the clipboard",
+            "passed": true
+          },
+          {
+            "name": "Folder command resolves current destination without opening Explorer",
+            "passed": true
+          },
+          {
+            "name": "A stale Open-with choice cannot open an unfinished file",
+            "passed": true
+          },
+          {
+            "name": "Open-with uses the current completed target without launching an application",
+            "passed": true
+          },
+          {
+            "name": "Pending scanner policy still prevents Open-with",
+            "passed": true
+          },
+          {
+            "name": "A stale recording choice cannot restart a completed download",
+            "passed": true
+          },
+          {
+            "name": "A displayed Pause cannot become Resume after activity changes",
+            "passed": true
+          },
+          {
+            "name": "A queued live save cannot be resumed again from a stale Retry-save choice",
+            "passed": true
+          },
+          {
+            "name": "Detached membership prevents selected menu followups and mutation",
+            "passed": true
+          },
+          {
+            "name": "Initial refresh-menu eligibility matches the existing backend",
+            "passed": true
+          },
+          {
+            "name": "A changed encrypted live plan invalidates refresh eligibility",
+            "passed": true
+          },
+          {
+            "name": "A changed recorded plan restores refresh eligibility",
+            "passed": true
+          },
+          {
+            "name": "Capture/live policy changes invalidate cached refresh eligibility",
+            "passed": true
+          },
+          {
+            "name": "Cleared capture/live policy catches up in the next snapshot",
+            "passed": true
+          },
+          {
+            "name": "Capture/live policy changes invalidate cached refresh eligibility",
+            "passed": true
+          },
+          {
+            "name": "Cleared capture/live policy catches up in the next snapshot",
+            "passed": true
+          },
+          {
+            "name": "Protected request presence invalidates refresh eligibility",
+            "passed": true
+          },
+          {
+            "name": "Unsupported current URL invalidates refresh eligibility",
+            "passed": true
+          }
+        ],
+        "darkMode": false,
+        "error": "",
+        "passed": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "prototypeVersion": "8.94",
+  "qualified": false,
+  "reason": "Source audit found that a capacity or decision retry could discard the selected restoration guard. Stop the incomplete build, retain the guard per job until an explicit address change, add default-retry rejection and the complete positive stop/preview/restoration path, increment both versions and freeze fresh inputs.",
+  "primaryCountsExcludePrototype": true,
+  "sourceChanges": [
+    {
+      "path": "native/FileInfoPrefetchTask.hpp",
+      "beforeSha256": "2308A0C992A832ECDDA72F09191AA3493C58BDF79EE8930FBA31B1982E09B900",
+      "afterSha256": "FA116F01A7292BB937D22D530297FEC051F8E63823E2A9460314B60A9FFF1ADC"
+    },
+    {
+      "path": "native/DownloadInfoUi.hpp",
+      "beforeSha256": "D436A128E7B9C7C9D742AC7915615D362D35B86EBBA7C3B0D06B948859390178",
+      "afterSha256": "76216A97BBA3E3CDFFFED931BE8A0F758922EEB3985CF591C7E18C4AE80D0390"
+    },
+    {
+      "path": "native/FileInfoZipTaskTests.cpp",
+      "beforeSha256": "66CE1CA81E08979E1BD9AB2C6773EC91BC683D579A9C020FF1EF201D183E1367",
+      "afterSha256": "09FE0D0A4525F70D9141FFF1B3726E899A3C6CE9A501516CF1207DADD4A53784"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeSha256": "02A23AE288C8496EF467857AE5C230F72B6E4F99BE7D19C73D4AF7F88EB6F882",
+      "afterSha256": "DE6171CB1B2C5482127F0B6D3EB7DC3304226C46D12DA367E212EC80D9F2C9EB"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeSha256": "5C292D16776A474DFFE5F30B61A832EE373B3EFEDE15B7F4DD6A6EE61A3D8BB1",
+      "afterSha256": "B1C6E697CDF44EB2D09A56D39DB2A1F79FD154D09CA88214DD62CFEB7918C829"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeSha256": "6D8739BEAEF7D85300C7101DD7F132525182A48A3CF4076374536DBFE52C5391",
+      "afterSha256": "71D4C79DBDE9BFBBCF89E238E97C8CB9FD9238B23EDCFE601A6AF1A9C05EF2E5"
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "checks": [
+    {
+      "name": "Data writeback is not requested before its in-flight threshold",
+      "passed": true
+    },
+    {
+      "name": "A completed body prefix schedules actual background writeback",
+      "passed": true
+    },
+    {
+      "name": "Credited transfer progress does not wait for a held disk flush",
+      "passed": true
+    },
+    {
+      "name": "Shutdown joins an already running writeback before its file handle can close",
+      "passed": true
+    },
+    {
+      "name": "Threshold requests are bounded/coalesced and successful flush statistics remain accurate",
+      "passed": true
+    },
+    {
+      "name": "Finished writeback cannot schedule another operation",
+      "passed": true
+    },
+    {
+      "name": "The optional background failure is exercised by the worker",
+      "passed": true
+    },
+    {
+      "name": "An optional early-flush exception is recorded without replacing the required final flush",
+      "passed": true
+    },
+    {
+      "name": "Owned real-file fixture opens the data writeback handle",
+      "passed": true
+    },
+    {
+      "name": "Background operation performs real FlushFileBuffers on the owned data file",
+      "passed": true
+    },
+    {
+      "name": "Successful prefinish writeback preserves exact bytes and joins before releasing the handle",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    },
+    {
+      "name": "The adaptive fixture reaches its held first real worker operation",
+      "passed": true
+    },
+    {
+      "name": "A measured slow first flush advances the second operation before the old final-2-MiB threshold",
+      "passed": true
+    },
+    {
+      "name": "Adaptive runway is bounded to half-body and retains exactly two successful operations",
+      "passed": true
+    },
+    {
+      "name": "Adaptive completion cannot admit another late operation",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing starts at quarter body",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing flushes the half-body prefix",
+      "passed": true
+    },
+    {
+      "name": "The final paced milestone cannot be consumed before its four-MiB runway",
+      "passed": true
+    },
+    {
+      "name": "The third sequential flush starts with four MiB remaining",
+      "passed": true
+    },
+    {
+      "name": "Medium sequential pacing is bounded to three operations and cannot restart after joining",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing starts at quarter body",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing flushes the half-body prefix",
+      "passed": true
+    },
+    {
+      "name": "The final paced milestone cannot be consumed before its four-MiB runway",
+      "passed": true
+    },
+    {
+      "name": "The third sequential flush starts with four MiB remaining",
+      "passed": true
+    },
+    {
+      "name": "Medium sequential pacing is bounded to three operations and cannot restart after joining",
+      "passed": true
+    },
+    {
+      "name": "Paced cancellation fixture holds an actual in-flight operation",
+      "passed": true
+    },
+    {
+      "name": "Paced progress coalesces later milestones without waiting for held IO",
+      "passed": true
+    },
+    {
+      "name": "Paced teardown waits for in-flight IO before a caller releases its handle",
+      "passed": true
+    },
+    {
+      "name": "Paced stop drops unstarted optional work and records failure without scheduling another flush",
+      "passed": true
+    },
+    {
+      "name": "Bounded split writeback waits for its one-eighth-body milestone",
+      "passed": true
+    },
+    {
+      "name": "Two- and eight-connection split transfers each admit one early operation",
+      "passed": true
+    },
+    {
+      "name": "Split pacing never admits another flush after later ranges finish",
+      "passed": true
+    },
+    {
+      "name": "Bounded split writeback waits for its one-eighth-body milestone",
+      "passed": true
+    },
+    {
+      "name": "Two- and eight-connection split transfers each admit one early operation",
+      "passed": true
+    },
+    {
+      "name": "Split pacing never admits another flush after later ranges finish",
+      "passed": true
+    },
+    {
+      "name": "Held split writeback enters its only operation",
+      "passed": true
+    },
+    {
+      "name": "Other split progress remains nonblocking while writeback is held",
+      "passed": true
+    },
+    {
+      "name": "Split teardown joins held writeback before its file handle can close",
+      "passed": true
+    },
+    {
+      "name": "Split writeback failure is advisory, counted once and cannot restart",
+      "passed": true
+    },
+    {
+      "name": "Out-of-scope size or connection count cannot enable split pacing",
+      "passed": true
+    },
+    {
+      "name": "Out-of-scope scheduler retains the legacy half-body operation",
+      "passed": true
+    },
+    {
+      "name": "Out-of-scope size or connection count cannot enable split pacing",
+      "passed": true
+    },
+    {
+      "name": "Out-of-scope scheduler retains the legacy half-body operation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

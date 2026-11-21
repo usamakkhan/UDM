@@ -1,0 +1,131 @@
+{
+  "passed": true,
+  "transfers": 36,
+  "summary": [
+    {
+      "drive": "C",
+      "case": "single-4m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 283.94795000008344,
+          "durableTailSeconds": 310.78329999991183,
+          "processExitWallSeconds": 1875.4594500001076,
+          "durableWallSeconds": 1917.0067000000017
+        },
+        "ordered": {
+          "processExitTailSeconds": 170.96049999986462,
+          "durableTailSeconds": 186.3439000001108,
+          "processExitWallSeconds": 1584.3272999998135,
+          "durableWallSeconds": 1599.7107000000597
+        }
+      },
+      "orderedNotSlowerExitMedian": true,
+      "orderedNotSlowerDurableMedian": true
+    },
+    {
+      "drive": "C",
+      "case": "single-64m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 345.0982000001659,
+          "durableTailSeconds": 410.03999999998086,
+          "processExitWallSeconds": 9187.32520000026,
+          "durableWallSeconds": 9252.267000000074
+        },
+        "ordered": {
+          "processExitTailSeconds": 114.17169999981525,
+          "durableTailSeconds": 135.66880000007586,
+          "processExitWallSeconds": 9615.778299999874,
+          "durableWallSeconds": 9637.275400000135
+        }
+      },
+      "orderedNotSlowerExitMedian": true,
+      "orderedNotSlowerDurableMedian": true
+    },
+    {
+      "drive": "C",
+      "case": "split-64m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 417.8973999999016,
+          "durableTailSeconds": 438.2429999998294,
+          "processExitWallSeconds": 3069.035549999853,
+          "durableWallSeconds": 3136.267299999872
+        },
+        "ordered": {
+          "processExitTailSeconds": 600.7494499999666,
+          "durableTailSeconds": 615.0164000000586,
+          "processExitWallSeconds": 2686.598849999882,
+          "durableWallSeconds": 2700.865799999974
+        }
+      },
+      "orderedNotSlowerExitMedian": false,
+      "orderedNotSlowerDurableMedian": false
+    },
+    {
+      "drive": "D",
+      "case": "single-4m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 156.11115000024256,
+          "durableTailSeconds": 213.49390000000312,
+          "processExitWallSeconds": 1067.8855999999541,
+          "durableWallSeconds": 1113.9972000000853
+        },
+        "ordered": {
+          "processExitTailSeconds": 192.61485000015455,
+          "durableTailSeconds": 217.68410000004224,
+          "processExitWallSeconds": 1035.318750000215,
+          "durableWallSeconds": 1060.3880000001027
+        }
+      },
+      "orderedNotSlowerExitMedian": false,
+      "orderedNotSlowerDurableMedian": false
+    },
+    {
+      "drive": "D",
+      "case": "single-64m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 192.48010000023896,
+          "durableTailSeconds": 211.0255000000052,
+          "processExitWallSeconds": 8912.086800000225,
+          "durableWallSeconds": 8933.4202
+        },
+        "ordered": {
+          "processExitTailSeconds": 257.75495000016235,
+          "durableTailSeconds": 280.6276000001162,
+          "processExitWallSeconds": 8957.424550000269,
+          "durableWallSeconds": 8980.297200000223
+        }
+      },
+      "orderedNotSlowerExitMedian": false,
+      "orderedNotSlowerDurableMedian": false
+    },
+    {
+      "drive": "D",
+      "case": "split-64m",
+      "medianMilliseconds": {
+        "normal": {
+          "processExitTailSeconds": 698.2491000001119,
+          "durableTailSeconds": 725.7305000000542,
+          "processExitWallSeconds": 2616.471600000068,
+          "durableWallSeconds": 2641.4557000000514
+        },
+        "ordered": {
+          "processExitTailSeconds": 692.6248500001293,
+          "durableTailSeconds": 710.7882000000245,
+          "processExitWallSeconds": 2343.4840499999154,
+          "durableWallSeconds": 2354.691199999934
+        }
+      },
+      "orderedNotSlowerExitMedian": true,
+      "orderedNotSlowerDurableMedian": true
+    }
+  ],
+  "allPayloadsRemoved": true,
+  "pairedIdmComparison": false,
+  "installedAppChanged": false,
+  "orderedWritesDefaultEnabled": false,
+  "scope": "Normal versus gated ordered UDM builds; actual exit includes application threads, not unrelated system services."
+}

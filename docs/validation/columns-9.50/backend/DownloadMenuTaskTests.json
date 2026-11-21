@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "name": "The owned menu reader publishes its model cohort",
+      "passed": true
+    },
+    {
+      "name": "Menu preparation reads on its owned worker rather than the caller",
+      "passed": true
+    },
+    {
+      "name": "The same owner can prepare another menu",
+      "passed": true
+    },
+    {
+      "name": "New settings do not mutate a previously captured menu cohort",
+      "passed": true
+    },
+    {
+      "name": "A separate catalog writer owns the model before menu preparation",
+      "passed": true
+    },
+    {
+      "name": "Menu start returns while its catalog acquisition is pending",
+      "passed": true
+    },
+    {
+      "name": "A pending menu owner rejects a duplicate start",
+      "passed": true
+    },
+    {
+      "name": "Menu cancellation settles without releasing another thread's catalog lock",
+      "passed": true
+    },
+    {
+      "name": "Shutdown joins a waiting menu reader without acquiring Manager",
+      "passed": true
+    },
+    {
+      "name": "Accepted File Info work defers menu capture",
+      "passed": true
+    },
+    {
+      "name": "Menu cleanup never clears another command's decision ownership",
+      "passed": true
+    },
+    {
+      "name": "Menu read failure is an owned consumable result",
+      "passed": true
+    },
+    {
+      "name": "The menu owner can retry after a capture failure",
+      "passed": true
+    },
+    {
+      "name": "Notification runs after releasing Manager and cannot undo its result",
+      "passed": true
+    },
+    {
+      "name": "Repeated menu cleanup is safe",
+      "passed": true
+    },
+    {
+      "name": "Menu reads do not change settings jobs queues or catalog files",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

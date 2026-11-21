@@ -1,0 +1,71 @@
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -13,6 +13,7 @@
+ #include "MediaPublication.hpp"
+ #include "StreamCache.hpp"
+ #include "Core.hpp"
++#include "DiagnosticOperation.hpp"
+ #ifdef UDM_FINISH_TIMING_TEST
+ #include "ProductionUiTiming.hpp"
+ #define UDM_FINISH_POINT(stage) nativeUiTraceRecord(stage)
+@@ -1771,8 +1772,8 @@
+   try{for(int w=0;w<connections;++w)workers.emplace_back(workerBody,w);}catch(...){
+    group->stop=true;rangeWorkChanged.notify_all();for(auto& worker:workers)worker.join();throw;
+   }
+-  const auto receiverJoinBegan=std::chrono::steady_clock::now();
+-  for(auto& worker:workers)worker.join();
++  UDM_FINISH_POINT("receivers-join-begin");const auto receiverJoinBegan=std::chrono::steady_clock::now();
++  for(auto& worker:workers)worker.join();UDM_FINISH_POINT("receivers-join-end");
+   const auto receiverJoinSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-receiverJoinBegan).count();
+   const auto workersJoined=GetTickCount64();
+   double orderedSettlementSeconds=0;
+@@ -1785,10 +1786,10 @@
+    {Lock lock(m.mutex);job->data["OrderedBodyWrites"]={{"Used",true},{"AcceptedBytes",result.acceptedBytes},{"WrittenBytes",result.writtenBytes},{"Complete",result.complete},{"Paused",result.paused},{"Failed",bool(result.failure)}};}
+    orderedSettlementSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+   }
+-  PrefinishWriteback::Stats writeback;if(dataWriteback)writeback=dataWriteback->finish();else if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
+-  {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Mode",dataWriteback?"data-only":"full"},{ "WakeNotifications",writeback.notifications},{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes},{"LongestFlushSeconds",writeback.longestFlushSeconds},{"FinishWaitSeconds",writeback.finishWaitSeconds},{"InFlightAtFinish",writeback.inFlightAtFinish},{"DiscardedPending",writeback.discardedPending}};}
+-  const auto hashJoinBegan=std::chrono::steady_clock::now();
+-  joinHasher.stop();
++  UDM_FINISH_POINT("prefinish-stop-begin");PrefinishWriteback::Stats writeback;if(dataWriteback)writeback=dataWriteback->finish();else if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
++  UDM_FINISH_POINT("prefinish-stop-end");{Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Mode",dataWriteback?"data-only":"full"},{ "WakeNotifications",writeback.notifications},{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes},{"LongestFlushSeconds",writeback.longestFlushSeconds},{"FinishWaitSeconds",writeback.finishWaitSeconds},{"InFlightAtFinish",writeback.inFlightAtFinish},{"DiscardedPending",writeback.discardedPending}};}
++  UDM_FINISH_POINT("prefix-stop-begin");const auto hashJoinBegan=std::chrono::steady_clock::now();
++  joinHasher.stop();UDM_FINISH_POINT("prefix-stop-end");
+   const auto prefixHasherSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-hashJoinBegan).count();
+   {Lock lock(m.mutex);job->data["HttpJoinWaits"]={{"ReceiverThreadsSeconds",receiverJoinSeconds},{"OrderedSettlementSeconds",orderedSettlementSeconds},{"PrefinishFinishSeconds",writeback.finishWaitSeconds},{"PrefixHasherSeconds",prefixHasherSeconds}};}
+   cancel->check();
+@@ -2377,7 +2378,7 @@
+    }
+    rememberPrefetch=true;
+   }
+- networkEnd=std::chrono::steady_clock::now();
++ UDM_FINISH_POINT("body-settled");networkEnd=std::chrono::steady_clock::now();
+  networkFinished=true;
+  {
+   Lock lock(m.mutex);
+@@ -2574,6 +2575,7 @@
+  struct JoinFinalWriteback {PreparedTransferCommit* owner;bool& handedOff;~JoinFinalWriteback(){if(owner&&!handedOff)owner->joinWriteback();}} joinFinalWriteback{finalCommit,stageHandedOff};
+  const bool prepareFinal=finalCommit&&ownsConnection&&single&&stripped<=0&&!copiedAcrossVolumes&&!post&&!ftp&&!yes(j,"SparseDataFile",true)&&num(j,"Size")>0&&num(j,"Size")<=64*1048576&&str(j,"ReplacementOf").empty()&&fixedVolume(data);
+ 
++ nativeUiTraceRecord("owned-final-body");
+  struct AdvisoryHashResult {std::string digest;double seconds=0;};std::shared_ptr<Cancel> advisoryCancel;std::future<AdvisoryHashResult> advisoryHash;
+  struct StopAdvisory {std::shared_ptr<Cancel>& token;~StopAdvisory(){if(token)token->stop=true;}} stopAdvisory{advisoryCancel};
+  phases["AdvisoryHashOverlap"]=false;
+@@ -2606,7 +2608,7 @@
+  if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+  else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+  {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+- const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
++ UDM_FINISH_POINT("metadata-begin");const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+  // The file and its catalog entry are published. Let the UI present completion
+  // before NTFS normalization and advisory hashing. The worker remains active,
+  // so opening the file, scans and completion actions keep their existing gates.
+@@ -2618,7 +2620,7 @@
+  }
+  if(announcePublication&&m.filePublished)
+   try{m.filePublished(job);}catch(...){/* The file has already been committed. */}
+- const auto metadataFinished=std::chrono::steady_clock::now();phases[prepareFinal?"PrePublicationMetadata":"PostPublicationMetadata"]=std::chrono::duration<double>(metadataFinished-mark).count();mark=metadataFinished;
++ UDM_FINISH_POINT("metadata-end");const auto metadataFinished=std::chrono::steady_clock::now();phases[prepareFinal?"PrePublicationMetadata":"PostPublicationMetadata"]=std::chrono::duration<double>(metadataFinished-mark).count();mark=metadataFinished;
+  if(single&&stripped<=0){
+   // Flush needs write access only. Requesting read access here reopens the
+   // completed body unnecessarily and may invoke extra filesystem/filter work.

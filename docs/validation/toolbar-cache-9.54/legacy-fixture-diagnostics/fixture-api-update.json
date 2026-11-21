@@ -1,0 +1,8 @@
+{
+  "path": "native/ToolbarUiTests.cpp",
+  "oldSha256": "ECC2FFE54ACC3D3C0EE9964A7A35FECB1B49E5118A911AADD72D549EF580A58B",
+  "newSha256": "C414601223CF38914FA2C2D1390B8EF06E1922660929DC5CD50EA63FE1DF5A9D",
+  "reason": "The old single-argument compatibility overload is only available in the presentation fixture. Capture UI selection first, capture a menu view under Manager, then render after unlocking.",
+  "assertionsUnchanged": true,
+  "productionCodeChanged": false
+}

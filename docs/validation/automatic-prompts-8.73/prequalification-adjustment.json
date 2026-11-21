@@ -1,0 +1,10 @@
+{
+  "stage": "Prequalification idle-history review",
+  "changedSource": "native/AutomaticPromptSnapshot.hpp",
+  "beforeSha256": "16CC86F8C1880C2C8A60E91A6C50351938CD4D9789FBFFCC4886510582D6EC51",
+  "afterSha256": "F5A8748A83BAB7216AD459C19DAD1B2E7849FA72EBBEC3D14BAD0483181F20A4",
+  "reason": "Avoid building a history-sized membership set on every idle read; skip ID copies for non-candidate history rows. Use direct membership validation for small reservation cohorts and index only larger cohorts. Recompile App and AutomaticPromptSnapshotTests before final qualification. Check the necessary authentication-pending flag before an active-job lookup for unrelated history rows. Add large-cohort FIFO, deduplication and removed-job checks for the indexed path.",
+  "installedAppChanged": false,
+  "extraQualifiedSource": "native/AutomaticPromptSnapshotTests.cpp",
+  "extraQualifiedSha256": "7BE940A7F59FB580D1ABB9F6638B72A1EC191EE35A5E6DB53D24E30D8AB846E2"
+}

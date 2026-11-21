@@ -1,0 +1,162 @@
+{
+  "checks": [
+    {
+      "name": "New confirmation is recorded with accepted browser admission",
+      "passed": true
+    },
+    {
+      "name": "Saved presentation contains no download URL or request credentials",
+      "passed": true
+    },
+    {
+      "name": "Restart restores the paused download's File Info presentation",
+      "passed": true
+    },
+    {
+      "name": "Cancel or manual pause consumes the saved presentation with its catalog write",
+      "passed": true
+    },
+    {
+      "name": "Canceled File Info does not reopen or create another download after restart",
+      "passed": true
+    },
+    {
+      "name": "Download later does not introduce an unwanted File Info prompt",
+      "passed": true
+    },
+    {
+      "name": "Skip File Info keeps ordinary queued downloads free of a forced prompt",
+      "passed": true
+    },
+    {
+      "name": "An existing-download offer is durable",
+      "passed": true
+    },
+    {
+      "name": "Restored existing offer retains Resume versus Download complete behavior",
+      "passed": true
+    },
+    {
+      "name": "Existing presentation completes without creating another history row",
+      "passed": true
+    },
+    {
+      "name": "An existing-download offer is durable",
+      "passed": true
+    },
+    {
+      "name": "Restored existing offer retains Resume versus Download complete behavior",
+      "passed": true
+    },
+    {
+      "name": "Existing presentation completes without creating another history row",
+      "passed": true
+    },
+    {
+      "name": "Duplicate choice retains exactly its pending presentation",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision retargets the durable presentation to its actual record",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision resumes with the correct dialog after restart",
+      "passed": true
+    },
+    {
+      "name": "Duplicate choice retains exactly its pending presentation",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision retargets the durable presentation to its actual record",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision resumes with the correct dialog after restart",
+      "passed": true
+    },
+    {
+      "name": "Duplicate choice retains exactly its pending presentation",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision retargets the durable presentation to its actual record",
+      "passed": true
+    },
+    {
+      "name": "Duplicate decision resumes with the correct dialog after restart",
+      "passed": true
+    },
+    {
+      "name": "Duplicate choice retains exactly its pending presentation",
+      "passed": true
+    },
+    {
+      "name": "Canceled duplicate has no orphan presentation after restart",
+      "passed": true
+    },
+    {
+      "name": "Repeated offers for one record are combined into one pending dialog",
+      "passed": true
+    },
+    {
+      "name": "A stale UI snapshot cannot dispatch over a newer capture",
+      "passed": true
+    },
+    {
+      "name": "An older dialog acknowledgement leaves a later capture pending",
+      "passed": true
+    },
+    {
+      "name": "Presentation acknowledgement requires a durable catalog write",
+      "passed": true
+    },
+    {
+      "name": "Failed acknowledgement preserves the exact pending presentation",
+      "passed": true
+    },
+    {
+      "name": "A storage failure rejects resume and presentation consumption together",
+      "passed": true
+    },
+    {
+      "name": "Failed resume restores job state and its presentation",
+      "passed": true
+    },
+    {
+      "name": "Removing a record removes its presentation without revoking the accepted receipt",
+      "passed": true
+    },
+    {
+      "name": "Removing a presented download cannot permit automatic replay",
+      "passed": true
+    },
+    {
+      "name": "Receipt aging preserves an unhandled presentation",
+      "passed": true
+    },
+    {
+      "name": "Acknowledged presentations no longer prevent receipt aging",
+      "passed": true
+    },
+    {
+      "name": "Captured replacement address saves its refresh presentation",
+      "passed": true
+    },
+    {
+      "name": "Saving a recovered refresh address consumes its prompt atomically",
+      "passed": true
+    },
+    {
+      "name": "A failed duplicate choice cannot consume or retarget a prompt",
+      "passed": true
+    },
+    {
+      "name": "Failed duplicate retarget restores both history and presentation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

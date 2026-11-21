@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "name": "The owned reader adopts the advertised filename and IDM-style automatic category folder",
+      "passed": true
+    },
+    {
+      "name": "An inferred category change returns its own remember-path preference",
+      "passed": true
+    },
+    {
+      "name": "Name preparation neither mutates the download/catalog nor owns a global save guard",
+      "passed": true
+    },
+    {
+      "name": "An explicit destination folder survives automatic category inference",
+      "passed": true
+    },
+    {
+      "name": "A manually chosen category is not replaced by a server filename",
+      "passed": true
+    },
+    {
+      "name": "A saved explicit category is retained",
+      "passed": true
+    },
+    {
+      "name": "An inferred category absent from the displayed cohort cannot be selected",
+      "passed": true
+    },
+    {
+      "name": "A matching active response filename takes precedence over the browser fallback",
+      "passed": true
+    },
+    {
+      "name": "A reviewed preview host participates in the existing site-restricted category policy",
+      "passed": false
+    }
+  ],
+  "error": "A reviewed preview host participates in the existing site-restricted category policy",
+  "passed": false
+}

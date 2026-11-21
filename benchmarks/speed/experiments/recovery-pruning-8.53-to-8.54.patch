@@ -1,0 +1,590 @@
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -1,55 +1,216 @@
+ [
+-  {"source": "AsyncDialLookupTests", "timeoutSeconds": 45},
+-  {"source": "FileInfoDecisionTests", "timeoutSeconds": 60},
+-  {"source": "UiTaskSignalTests", "timeoutSeconds": 30},
+-  {"source": "PendingFileInfoRetryTests", "timeoutSeconds": 120},
+-  {"source": "PendingFileInfoConcurrentRetryTests", "timeoutSeconds": 90, "requiresMediaHelpers": true},
+-  {"source": "PendingFileInfoCancellationTests", "timeoutSeconds": 120, "requiresMediaHelpers": true},
+-  {"source": "DetachedMediaAdmissionTests", "timeoutSeconds": 120},
+-  {"source": "CatalogAdmissionRegistryTests", "timeoutSeconds": 60},
+-  {"source": "CatalogAdmissionReservationTests", "timeoutSeconds": 180},
+-  {"source": "CatalogCommitCoordinatorTests", "timeoutSeconds": 60},
+-  {"source": "CatalogCheckpointTests", "timeoutSeconds": 60},
+-  {"source": "CompletedCheckpointTests", "timeoutSeconds": 120},
+-  {"source": "WrittenBodyCacheTests", "timeoutSeconds": 30},
+-  {"source": "WrittenPrefixTests", "timeoutSeconds": 30},
+-  {"source": "PrefinishWritebackTests", "timeoutSeconds": 30},
+-  {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+-  {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
+-  {"source": "RecoveryJournalTests", "timeoutSeconds": 120},
+-  {"source": "RecoveryCatalogTests", "timeoutSeconds": 180},
+-  {"source": "RecoveryCommandTests", "timeoutSeconds": 180},
+-  {"source": "RecoveryByteIoTests", "timeoutSeconds": 240},
+-  {"source": "ReplacementMetadataRecoveryTests", "timeoutSeconds": 240},
+-  {"source": "RecoveryDiscoveryTests", "timeoutSeconds": 240},
+-  {"source": "RecoveryCleanupTests", "timeoutSeconds": 360},
+-  {"source": "CapturePresentationModelTests", "timeoutSeconds": 120},
+-  {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+-  {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+-  {"source": "PublicationOwnershipTests", "timeoutSeconds": 120},
+-  {"source": "HttpGzipDecoderTests", "timeoutSeconds": 30},
+-  {"source": "ContentSniffNamingTests", "timeoutSeconds": 30},
+-  {"source": "ContentSniffNoticeTests", "timeoutSeconds": 30},
+-  {"source": "ProgressRecordViewTests", "timeoutSeconds": 90},
+-  {"source": "FindFilterCacheTests", "timeoutSeconds": 60},
+-  {"source": "FindAddressTests", "timeoutSeconds": 30},
+-  {"source": "PropertiesRequestDraftTests", "timeoutSeconds": 30},
+-  {"source": "PropertiesDecisionTests", "timeoutSeconds": 90},
+-  {"source": "ProgressRateHistoryTests", "timeoutSeconds": 30},
+-  {"source": "HttpAdmissionTests", "timeoutSeconds": 30},
+-  {"source": "Id3v2Tests", "timeoutSeconds": 30},
+-  {"source": "AudioMetadataTests", "timeoutSeconds": 30},
+-  {"source": "GrabberExploreSignatureTests", "timeoutSeconds": 30, "omitDataArgument": true},
+-  {"source": "GrabberRenderedTests", "timeoutSeconds": 30},
+-  {"source": "QuotaDraftTests", "timeoutSeconds": 30},
+-  {"source": "DateParsingTests", "timeoutSeconds": 30},
+-  {"source": "SortKeyCacheTests", "timeoutSeconds": 30},
+-  {"source": "SchedulerNumberTests", "timeoutSeconds": 30, "omitDataArgument": true},
+-  {"source": "PresentationLookupTests", "timeoutSeconds": 30},
+-  {"source": "AutomationTests", "timeoutSeconds": 180},
+-  {"name": "AutomationRunningServer", "source": "AutomationTests", "arguments": ["--running-server"], "timeoutSeconds": 180},
+-  {"source": "MediaSizeTests", "timeoutSeconds": 30},
+-  {"source": "ClipboardSnapshotTests", "timeoutSeconds": 30},
++  {
++    "source": "AsyncDialLookupTests",
++    "timeoutSeconds": 45
++  },
++  {
++    "source": "FileInfoDecisionTests",
++    "timeoutSeconds": 60
++  },
++  {
++    "source": "UiTaskSignalTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "PendingFileInfoRetryTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "PendingFileInfoConcurrentRetryTests",
++    "timeoutSeconds": 90,
++    "requiresMediaHelpers": true
++  },
++  {
++    "source": "PendingFileInfoCancellationTests",
++    "timeoutSeconds": 120,
++    "requiresMediaHelpers": true
++  },
++  {
++    "source": "DetachedMediaAdmissionTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "CatalogAdmissionRegistryTests",
++    "timeoutSeconds": 60
++  },
++  {
++    "source": "CatalogAdmissionReservationTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "CatalogCommitCoordinatorTests",
++    "timeoutSeconds": 60
++  },
++  {
++    "source": "CatalogCheckpointTests",
++    "timeoutSeconds": 60
++  },
++  {
++    "source": "CompletedCheckpointTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "WrittenBodyCacheTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "WrittenPrefixTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "PrefinishWritebackTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "PublicationPreparationTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "EarlyPublicationRecoveryTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "RecoveryJournalTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "RecoveryCatalogTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "RecoveryCommandTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "RecoveryByteIoTests",
++    "timeoutSeconds": 240
++  },
++  {
++    "source": "ReplacementMetadataRecoveryTests",
++    "timeoutSeconds": 240
++  },
++  {
++    "source": "RecoveryDiscoveryTests",
++    "timeoutSeconds": 240
++  },
++  {
++    "source": "RecoveryCleanupTests",
++    "timeoutSeconds": 360
++  },
++  {
++    "source": "CapturePresentationModelTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "PublicationCommitTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "ReplacementCommitTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "PublicationOwnershipTests",
++    "timeoutSeconds": 120
++  },
++  {
++    "source": "HttpGzipDecoderTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "ContentSniffNamingTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "ContentSniffNoticeTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "ProgressRecordViewTests",
++    "timeoutSeconds": 90
++  },
++  {
++    "source": "FindFilterCacheTests",
++    "timeoutSeconds": 60
++  },
++  {
++    "source": "FindAddressTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "PropertiesRequestDraftTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "PropertiesDecisionTests",
++    "timeoutSeconds": 90
++  },
++  {
++    "source": "ProgressRateHistoryTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "HttpAdmissionTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "Id3v2Tests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "AudioMetadataTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "GrabberExploreSignatureTests",
++    "timeoutSeconds": 30,
++    "omitDataArgument": true
++  },
++  {
++    "source": "GrabberRenderedTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "QuotaDraftTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "DateParsingTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "SortKeyCacheTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "SchedulerNumberTests",
++    "timeoutSeconds": 30,
++    "omitDataArgument": true
++  },
++  {
++    "source": "PresentationLookupTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "AutomationTests",
++    "timeoutSeconds": 180
++  },
++  {
++    "name": "AutomationRunningServer",
++    "source": "AutomationTests",
++    "arguments": [
++      "--running-server"
++    ],
++    "timeoutSeconds": 180
++  },
++  {
++    "source": "MediaSizeTests",
++    "timeoutSeconds": 30
++  },
++  {
++    "source": "ClipboardSnapshotTests",
++    "timeoutSeconds": 30
++  },
+   {
+     "source": "PlayerAdTests",
+     "timeoutSeconds": 30
+@@ -196,5 +357,9 @@
+   {
+     "source": "FileHashTests",
+     "timeoutSeconds": 30
++  },
++  {
++    "source": "RecoveryPruningTests",
++    "timeoutSeconds": 120
+   }
+ ]
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -206,7 +206,7 @@
+  }
+  {Lock lock(mutex);
+   if(stopping||catalogTransaction||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed while preparing publication. Its files were preserved.");
+-  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target};
++  std::vector<JobPtr> owned{job};std::vector<fs::path> destinations{target,root/L"publications"/(wide(job->id())+L".json"),root/L"replacements"/(wide(job->id())+L".json")};
+   if(!originalId.empty()){
+    if(std::find(jobs.begin(),jobs.end(),leasedOriginal)==jobs.end()||isActive(leasedOriginal)||str(leasedOriginal->data,"Status")!="Complete"||leasedOriginal->target().lexically_normal()!=target.lexically_normal())throw std::runtime_error("Recovery changed the original download. Review the destination before replacing it.");
+    owned.push_back(leasedOriginal);destinations.push_back(leasedOriginal->target());destinations.emplace_back(wide(previousPath));
+@@ -453,7 +453,8 @@
+  // Every unlocked checkpoint retains its affected job tree, destination paths,
+  // journal and verified bytes. Verification IO and catalog checkpoints leave
+  // this lease separately. Discovery has a lifetime lease and scoped guards;
+- // accepted cleanup releases verified handles; receipt-only pruning remains.
++ // accepted cleanup releases verified handles; receipt retirement has its own
++ // immutable inventory, path lease and snapshot-bound absence proof.
+  auto modelJob=[&](const std::string& id)->JobPtr{auto pending=jobs;std::unordered_set<const Job*> seen;JobPtr result;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;if(item->id()==id){if(result&&result!=item)throw std::runtime_error("Recovery found ambiguous catalog membership.");result=item;}if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}return result;};
+  auto recoveryPaths=[&](const std::vector<JobPtr>& owners,std::vector<fs::path> paths){auto pending=owners;std::unordered_set<const Job*> seen;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;paths.push_back(item->target());auto previous=str(item->data,"PreviousPath");if(!previous.empty())paths.emplace_back(wide(previous));if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}paths.erase(std::remove_if(paths.begin(),paths.end(),[](const fs::path& path){return path.empty();}),paths.end());return paths;};
+  // File IO consumes only immutable copies; no live JSON iterator/reference
+@@ -584,7 +585,7 @@
+   if(!scope&&isActive(job)){discardDiscovery(discovered);continue;}
+   if(!scope&&PublicationOwnership::reserved(*this,target,job)){discardDiscovery(discovered);continue;}
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+-  PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging,retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
++  PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging,journalPath,retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
+   const auto prepared=captureIo({job});auto journal=claimDiscovery(journalPath,discovered,prepared,owner);const auto input=job->data;
+   std::optional<RecoveredPublicationBytes> published;RecoveryByteExit releaseBytes{[&]{releaseRecoveryBytes(published);}};
+   detachedIo(prepared,owner,[&](const auto& checkpoint){
+@@ -633,7 +634,53 @@
+  }
+  // A completed anonymous internal file never becomes a visible download row.
+  // Its private receipt may outlive unlink until the next checkpoint or restart.
+- if(!scope&&!catalogTransaction){auto rows=state.find("PublicationReceipts");if(rows!=state.end()){if(!rows->is_object())throw std::runtime_error("Invalid private publication receipt store.");auto retained=*rows;bool changed=false;for(auto it=rows->begin();it!=rows->end();++it){const auto descriptor=PublicationCatalogProof::binding(it.value());if(it.key()!=str(descriptor,"PublicationCommitId"))throw std::runtime_error("Private publication receipt identity changed.");auto target=fs::path(wide(str(descriptor,"Folder")))/wide(str(descriptor,"FileName"));if(!fs::exists(publications/(wide(str(descriptor,"Id"))+L".json"))&&!fs::exists(root/L"replacements"/(wide(str(descriptor,"Id"))+L".json"))&&!PublicationOwnership::reserved(*this,target)){retained.erase(it.key());changed=true;}}if(changed){auto previous=*rows;if(retained.empty())state.erase(rows);else rows->swap(retained);try{save();}catch(...){state["PublicationReceipts"]=std::move(previous);throw;}}}}
++ if(!scope&&!catalogTransaction){
++  Json receiptInventory;
++  {auto store=state.find("PublicationReceipts");if(store!=state.end()){if(!store->is_object())throw std::runtime_error("Invalid private publication receipt store.");receiptInventory=*store;}}
++  if(!receiptInventory.is_null()){
++   struct ReceiptCandidate {Json receipt;JobPtr job;fs::path publication,replacement;bool absent=false;};
++   std::vector<ReceiptCandidate> candidates;std::vector<JobPtr> owners;std::vector<fs::path> paths;
++   const auto capturedRoot=root;
++   for(auto it=receiptInventory.begin();it!=receiptInventory.end();++it){
++    const auto descriptor=PublicationCatalogProof::binding(it.value());
++    if(descriptor!=it.value()||it.key()!=str(descriptor,"PublicationCommitId"))throw std::runtime_error("Private publication receipt identity changed.");
++    const auto target=fs::path(wide(str(descriptor,"Folder")))/wide(str(descriptor,"FileName"));
++    auto job=modelJob(str(descriptor,"Id"));
++    if(PublicationOwnership::reserved(*this,target)||(job&&isActive(job)))continue;
++    const auto publication=publications/(wide(str(descriptor,"Id"))+L".json"),replacement=root/L"replacements"/(wide(str(descriptor,"Id"))+L".json");
++    candidates.push_back({descriptor,job,publication,replacement});if(job)owners.push_back(job);
++    paths.push_back(target);paths.push_back(publication);paths.push_back(replacement);
++   }
++   if(!candidates.empty()){
++    auto owner=PublicationOwnership::receiptRetirement(*this,owners,recoveryPaths(owners,std::move(paths)));owner.beginCommit();
++    const auto inputs=captureIo(owners);const auto observation=catalogCheckpoint;
++    const auto validate=[&]{
++     validateIo(inputs,owner);if(root!=capturedRoot)throw std::runtime_error("The receipt cleanup catalog changed.");
++     auto current=state.find("PublicationReceipts");if(current==state.end()||!current->is_object())throw std::runtime_error("The private receipt store changed during cleanup.");
++     for(const auto& item:candidates){auto found=current->find(str(item.receipt,"PublicationCommitId"));if(found==current->end()||*found!=item.receipt||modelJob(str(item.receipt,"Id"))!=item.job)throw std::runtime_error("A private publication receipt changed during cleanup.");}
++    };
++    // Only immutable descriptors and paths cross this IO interval. The path
++    // lease excludes in-process publishers and remains enrolled through save.
++    recoveryLock.unlock();
++    try{if(observation)observation("receipt-prune-inventory");for(auto& item:candidates)item.absent=!fs::exists(item.publication)&&!fs::exists(item.replacement);}
++    catch(...){recoveryLock.lock();clearIndexes();throw;}
++    recoveryLock.lock();clearIndexes();validate();
++    Json retired=Json::object();for(const auto& item:candidates)if(item.absent)retired[str(item.receipt,"PublicationCommitId")]=item.receipt;
++    if(!retired.empty()){
++     // Roll back only our missing exact keys. Never replace a later receipt or
++     // the whole store, and never roll back an accepted durable retirement.
++     const auto rollback=[&]{auto current=state.find("PublicationReceipts");if(current==state.end())current=state.emplace("PublicationReceipts",Json::object()).first;if(current->is_object())for(auto it=retired.begin();it!=retired.end();++it)if(!current->contains(it.key()))(*current)[it.key()]=it.value();};
++     for(auto it=retired.begin();it!=retired.end();++it)PublicationCatalogProof::eraseReceipt(*this,it.value());
++     PublicationCatalogProof::Lease proof;
++     try{proof=PublicationCatalogProof::prepareReceiptRetirement(*this,retired);}catch(...){rollback();throw;}
++     recoveryLock.unlock();std::exception_ptr failure;
++     try{if(observation)observation("receipt-prune-catalog-prepared");save();}catch(...){failure=std::current_exception();}
++     const bool accepted=proof.resolve();recoveryLock.lock();clearIndexes();
++     if(!accepted){proof.release();rollback();if(failure)std::rethrow_exception(failure);throw std::runtime_error("Receipt cleanup has not been durably recorded. Its receipts were preserved.");}
++    }
++   }
++  }
++ }
+  auto folder=root/L"replacements";
+  for(const auto& journalPath:enumerateJournals(folder)){
+   if(stopping)throw std::runtime_error("UDM is closing.");
+@@ -658,7 +705,7 @@
+   if(!samePath(job->target(),target)||(!samePath(original->target(),target)&&!samePath(original->target(),previous))||(!str(job->data,"PreviousPath").empty()&&!samePath(fs::path(wide(str(job->data,"PreviousPath"))),previous))||(!str(job->data,"ReplacementOf").empty()&&str(job->data,"ReplacementOf")!=original->id())||(!str(job->data,"ReplacementHash").empty()&&str(job->data,"ReplacementHash")!=str(op,"OldHash")))throw std::runtime_error("Replacement recovery destinations changed. Keep both files and the recovery journal.");
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+   if(modelJob(original->id())!=original)throw std::runtime_error("The recovered original history changed.");
+-  PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,fs::path(wide(str(op,"Staging"))),retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
++  PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,journalPath,fs::path(wide(str(op,"Staging"))),retainedCleanupPath(op.at("Before"))}));owner.beginCommit();
+   const auto prepared=captureIo({job,original});auto journal=claimDiscovery(journalPath,discovered,prepared,owner);
+   std::optional<RecoveredPublicationBytes> newBytes,previousBytes,originalBytes;RecoveryByteExit releaseBytes{[&]{releaseRecoveryBytes(newBytes,previousBytes,originalBytes);}};enum class FileOutcome {Complete,Original};FileOutcome outcome=FileOutcome::Original;
+   detachedIo(prepared,owner,[&](const auto& checkpoint){
+--- a/native/PublicationCatalogProof.hpp
++++ b/native/PublicationCatalogProof.hpp
+@@ -24,7 +24,9 @@
+   while(!pending.empty()){const auto& row=*pending.back();pending.pop_back();if(!row.is_object())continue;if(str(row,"Id")==expected.id){++count;matches=recoveryRowMatches(expected,row);}for(const char* key:{"Video","Audio"})if(row.contains(key)&&row.at(key).is_object())pending.push_back(&row.at(key));}
+   return expected.inCatalog?count==1&&matches:count==0;
+  }
+- struct Entry {std::vector<RecoveryBinding> recovery;Json recoveryReceipt;Json expected,related;std::string id,job,relatedJob;std::atomic<unsigned long long> durable{0};size_t captures=0;bool owner=true,resolving=false,receipt=false;explicit Entry(Json row,bool privateReceipt):expected(std::move(row)),id(str(expected,"PublicationCommitId")),job(str(expected,"Id")),receipt(privateReceipt){};};
++ struct Entry {std::vector<RecoveryBinding> recovery;Json recoveryReceipt;Json retiredReceipts;Json expected,related;std::string id,job,relatedJob;std::set<std::string> retirementJobs;std::atomic<unsigned long long> durable{0};size_t captures=0;bool owner=true,resolving=false,receipt=false;explicit Entry(Json row,bool privateReceipt):expected(std::move(row)),id(str(expected,"PublicationCommitId")),job(str(expected,"Id")),receipt(privateReceipt){};};
++ static bool references(const Entry& entry,const std::string& job){return !job.empty()&&(entry.job==job||entry.relatedJob==job||entry.retirementJobs.count(job));}
++ static bool overlaps(const Entry& left,const Entry& right){if(references(left,right.job)||references(left,right.relatedJob))return true;for(const auto& job:right.retirementJobs)if(references(left,job))return true;return false;}
+  struct State {std::mutex mutex;std::condition_variable changed;std::map<const Manager*,std::map<std::string,std::shared_ptr<Entry>>> entries;};
+  static State& state(){static auto* value=new State;return *value;}
+  static void retire(State& state,const Manager* manager,const std::shared_ptr<Entry>& entry){if(entry->owner||entry->captures)return;auto found=state.entries.find(manager);if(found==state.entries.end())return;auto item=found->second.find(entry->id);if(item!=found->second.end()&&item->second==entry)found->second.erase(item);if(found->second.empty())state.entries.erase(found);}
+@@ -33,6 +35,11 @@
+   while(!pending.empty()){const auto& row=*pending.back();pending.pop_back();if(!row.is_object())continue;if(str(row,"Id")==str(expected,"Id")){++matches;for(auto it=expected.begin();it!=expected.end();++it)if(!row.contains(it.key())||row.at(it.key())!=it.value())return false;}for(const char* child:{"Video","Audio"})if(row.contains(child)&&row.at(child).is_object())pending.push_back(&row.at(child));}return matches==1;
+  }
+  static bool contains(const Json& catalog,const Entry& entry){
++  if(!entry.retiredReceipts.is_null()){
++   const auto receipts=catalog.find("PublicationReceipts");if(receipts==catalog.end())return true;if(!receipts->is_object())return false;
++   for(auto it=entry.retiredReceipts.begin();it!=entry.retiredReceipts.end();++it)if(receipts->contains(it.key()))return false;
++   return true;
++  }
+   if(!entry.recovery.empty()){for(const auto& row:entry.recovery)if(!containsRecoveryRow(catalog,row))return false;if(!entry.recoveryReceipt.is_null()){auto receipts=catalog.find("PublicationReceipts");if(receipts==catalog.end()||!receipts->is_object())return false;auto found=receipts->find(str(entry.recoveryReceipt,"PublicationCommitId"));if(found==receipts->end()||*found!=entry.recoveryReceipt)return false;}return true;}
+   if(!entry.related.is_null()&&!containsRow(catalog,entry.related))return false;
+   if(!entry.receipt)return containsRow(catalog,entry.expected);
+@@ -78,7 +85,7 @@
+  static bool eraseReceipt(Manager& manager,const Json& descriptor){auto found=manager.state.find("PublicationReceipts");if(found==manager.state.end()||!found->is_object())return false;auto item=found->find(str(descriptor,"PublicationCommitId"));if(item==found->end()||*item!=descriptor)return false;found->erase(item);if(found->empty())manager.state.erase(found);return true;}
+  static Lease prepare(const Manager& manager,const Json& row,bool privateReceipt=false,const Json* related=nullptr){
+   auto entry=std::make_shared<Entry>(binding(row),privateReceipt);if(related){entry->related=binding(*related);entry->relatedJob=str(entry->related,"Id");if(entry->relatedJob==entry->job||str(entry->related,"PublicationCommitId")!=entry->id)throw std::runtime_error("Invalid paired publication binding.");}auto& shared=state();std::lock_guard<std::mutex> lock(shared.mutex);auto found=shared.entries.find(&manager);
+-  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&(item.second->job==entry->job||item.second->relatedJob==entry->job||(!entry->relatedJob.empty()&&(item.second->job==entry->relatedJob||item.second->relatedJob==entry->relatedJob)))))throw std::runtime_error("Another catalog publication owns this completion.");
++  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&overlaps(*item.second,*entry)))throw std::runtime_error("Another catalog publication owns this completion.");
+   if(found==shared.entries.end()){std::map<std::string,std::shared_ptr<Entry>> entries;entries.emplace(entry->id,entry);shared.entries.emplace(&manager,std::move(entries));}else found->second.emplace(entry->id,entry);return Lease(manager,std::move(entry));
+  }
+  // Recovery binds the owned row delta (including removed fields), identity
+@@ -91,7 +98,16 @@
+   if(rows.size()==2){entry->relatedJob=str(rows.back().after,"Id");if(entry->relatedJob==entry->job)throw std::runtime_error("Duplicate recovery catalog row.");}
+   if(!receipt.is_null()){if(binding(receipt)!=receipt)throw std::runtime_error("Invalid private recovery receipt.");entry->recoveryReceipt=receipt;}
+   auto& shared=state();std::lock_guard<std::mutex> lock(shared.mutex);auto found=shared.entries.find(&manager);
+-  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&(item.second->job==entry->job||item.second->relatedJob==entry->job||(!entry->relatedJob.empty()&&(item.second->job==entry->relatedJob||item.second->relatedJob==entry->relatedJob)))))throw std::runtime_error("Another catalog publication owns this recovery.");
++  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&overlaps(*item.second,*entry)))throw std::runtime_error("Another catalog publication owns this recovery.");
++  if(found==shared.entries.end()){std::map<std::string,std::shared_ptr<Entry>> entries;entries.emplace(entry->id,entry);shared.entries.emplace(&manager,std::move(entries));}else found->second.emplace(entry->id,entry);return Lease(manager,std::move(entry));
++ }
++ // Receipt absence is a distinct durable outcome, not a completed row binding.
++ static Lease prepareReceiptRetirement(const Manager& manager,const Json& receipts){
++  if(!receipts.is_object()||receipts.empty())throw std::runtime_error("Missing receipt retirement bindings.");
++  auto entry=std::make_shared<Entry>(Json{{"Id",""},{"PublicationCommitId",guid()}},false);entry->retiredReceipts=receipts;
++  for(auto it=receipts.begin();it!=receipts.end();++it){if(binding(it.value())!=it.value()||it.key()!=str(it.value(),"PublicationCommitId"))throw std::runtime_error("Invalid receipt retirement binding.");entry->retirementJobs.insert(str(it.value(),"Id"));}
++  auto& shared=state();std::lock_guard<std::mutex> lock(shared.mutex);auto found=shared.entries.find(&manager);
++  if(found!=shared.entries.end())for(const auto& item:found->second)if(item.first==entry->id||(item.second->owner&&overlaps(*item.second,*entry)))throw std::runtime_error("Another catalog publication owns this receipt retirement.");
+   if(found==shared.entries.end()){std::map<std::string,std::shared_ptr<Entry>> entries;entries.emplace(entry->id,entry);shared.entries.emplace(&manager,std::move(entries));}else found->second.emplace(entry->id,entry);return Lease(manager,std::move(entry));
+  }
+  static bool recoveryMatches(const Json& before,const Json& applied,const Json& current){return recoveryRowMatches(recoveryBinding(RecoveryRow{before,applied,true}),current);}
+--- a/native/PublicationOwnership.hpp
++++ b/native/PublicationOwnership.hpp
+@@ -36,8 +36,13 @@
+  // Enrol while holding Manager::mutex after checking shutdown. Discovery owns
+  // work lifetime only; selected jobs can still change and must be revalidated.
+  static PublicationOwnership discovery(const Manager& owner){return PublicationOwnership(owner,Discovery{});}
+- PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations):manager(&owner),jobs(std::move(ownedJobs)){
+-  if(jobs.empty()||std::any_of(jobs.begin(),jobs.end(),[](const JobPtr& j){return !j;}))throw std::runtime_error("Missing publication owner.");
++ PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations):PublicationOwnership(owner,std::move(ownedJobs),destinations,false){}
++ // Private receipts can outlive every visible job. Reserve destination and
++ // journal names without inventing a job or weakening normal publication owners.
++ static PublicationOwnership receiptRetirement(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& paths){return PublicationOwnership(owner,std::move(ownedJobs),paths,true);}
++private:
++ PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations,bool receiptOnly):manager(&owner),jobs(std::move(ownedJobs)){
++  if((jobs.empty()&&!receiptOnly)||std::any_of(jobs.begin(),jobs.end(),[](const JobPtr& j){return !j;}))throw std::runtime_error("Missing publication owner.");
+   // Retain and exclude the captured descendant graph. Sibling-only leases do
+   // not overlap, while a parent and any child cannot publish independently.
+   {auto pending=std::move(jobs);jobs.clear();std::unordered_set<const Job*> seen;while(!pending.empty()){auto value=pending.back();pending.pop_back();if(!value||!seen.insert(value.get()).second)continue;jobs.push_back(value);if(value->video)pending.push_back(value->video);if(value->audio)pending.push_back(value->audio);}}
+@@ -51,6 +56,7 @@
+   for(const auto& job:jobs)next.jobs[job.get()]=id;for(const auto& path:paths)next.paths[path]=id;
+   if(found==state.managers.end())state.managers.emplace(manager,std::move(next));else found->second=std::move(next);token=id;
+  }
++public:
+  PublicationOwnership(const PublicationOwnership&)=delete;PublicationOwnership& operator=(const PublicationOwnership&)=delete;
+  ~PublicationOwnership(){release();}
+  void release()noexcept{
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,53,0,0
+-#define UDM_VERSION_STRING "8.53"
+-#define UDM_VERSION_WSTRING L"8.53"
++#define UDM_VERSION_TUPLE 8,54,0,0
++#define UDM_VERSION_STRING "8.54"
++#define UDM_VERSION_WSTRING L"8.54"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.17",
++  "version": "0.72.18",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.17",
++  "version": "0.72.18",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/RecoveryPruningTests.cpp
++++ b/native/RecoveryPruningTests.cpp
+@@ -0,0 +1,103 @@
++#include "Core.hpp"
++#include "PublicationCatalogProof.hpp"
++#include "PublicationOwnership.hpp"
++#include <future>
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void observe(Manager& m,std::function<void(const char*)> fn){Lock lock(m.mutex);m.catalogCheckpoint=std::move(fn);}
++ static void batch(Manager& m,bool value){Lock lock(m.mutex);m.catalogTransaction=value;}
++ static bool closing(Manager& m){Lock lock(m.mutex);return m.stopping;}
++};}
++using namespace udm;
++struct PruningGate {
++ std::string phase;std::promise<void> entered,released;std::shared_future<void> ready=entered.get_future().share(),wait=released.get_future().share();std::atomic_bool first=false,done=false,expired=false;
++ explicit PruningGate(std::string point):phase(std::move(point)){}
++ bool observe(const char* point){if(phase==point&&!first.exchange(true)){entered.set_value();if(wait.wait_for(std::chrono::seconds(10))!=std::future_status::ready){expired=true;throw std::runtime_error("Pruning gate expired");}return true;}return false;}
++ void release(){if(!done.exchange(true))released.set_value();}~PruningGate(){release();}
++};
++static Json privateReceipt(const fs::path& files){return PublicationCatalogProof::binding(Json{{"Id",guid()},{"PublicationCommitId",guid()},{"Folder",utf8(files.wstring())},{"FileName","output-"+guid()+".bin"},{"Status","Complete"},{"Size",14},{"Received",14},{"Sha256",std::string(64,'a')},{"Finished",date()}});}
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
++ Json checks=Json::array(),cases=Json::array();std::string error,active;
++ const auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
++ try{
++  const std::vector<std::pair<std::string,std::string>> scenarios={
++   {"receipt-prune-inventory","none"},{"receipt-prune-inventory","journal-owner"},{"receipt-prune-inventory","unrelated-publisher"},{"receipt-prune-inventory","multiple"},{"receipt-prune-inventory","inventory-failure"},{"receipt-prune-inventory","known-description"},{"receipt-prune-inventory","known-destination"},{"receipt-prune-inventory","new-receipt"},{"receipt-prune-inventory","successor"},{"receipt-prune-inventory","removed"},{"receipt-prune-inventory","journal"},{"receipt-prune-inventory","batch"},{"receipt-prune-inventory","shutdown"},
++   {"receipt-prune-catalog-prepared","none"},{"receipt-prune-catalog-prepared","shutdown"},{"receipt-prune-catalog-prepared","new-receipt"},{"receipt-prune-catalog-prepared","successor"},{"receipt-prune-catalog-prepared","deferred"},
++   {"temporary-flushed","none"},{"temporary-flushed","multiple"},{"temporary-flushed","new-receipt"},{"temporary-flushed","failure"},{"temporary-flushed","failure-successor"},{"temporary-flushed","shutdown"},
++   {"snapshot-prepared","later-containing"},{"publication-catalog-written","lost-ack"}
++  };
++  for(size_t index=0;index<scenarios.size();++index){
++   const auto& [phase,fault]=scenarios[index];active=phase+"/"+fault;const auto folder=root/std::to_wstring(index);Manager m(folder/L"catalog");const auto files=folder/L"files";fs::create_directories(files);
++   auto receipt=privateReceipt(files);const auto target=files/wide(str(receipt,"FileName"));atomicText(target,"verified bytes",false);receipt["Sha256"]=fileHash(target);const auto originalHash=str(receipt,"Sha256"),id=str(receipt,"PublicationCommitId");
++   std::vector<std::pair<fs::path,std::string>> completed{{target,originalHash}};JobPtr known;
++   {Lock lock(m.mutex);PublicationCatalogProof::installReceipt(m,receipt);
++    if(fault=="multiple")for(unsigned i=1;i<16;++i){auto row=privateReceipt(files);const auto file=files/wide(str(row,"FileName"));atomicText(file,"verified bytes",false);row["Sha256"]=fileHash(file);completed.push_back({file,str(row,"Sha256")});PublicationCatalogProof::installReceipt(m,row);}
++    if(fault=="known-description"||fault=="known-destination"){known=std::make_shared<Job>(receipt);m.jobs.push_back(known);}
++   }m.save();
++   auto gate=std::make_shared<PruningGate>(phase);
++   CatalogCheckpointTestAccess::observe(m,[&](const char* point){const bool held=gate->observe(point);if(((fault=="failure"||fault=="failure-successor")&&std::string_view(point)=="temporary-flushed")||(fault=="lost-ack"&&std::string_view(point)=="publication-catalog-written")||(fault=="later-containing"&&held)||(fault=="inventory-failure"&&held))throw std::runtime_error("Owned pruning save failure");});
++   auto work=std::async(std::launch::async,[&]{m.recoverReplacements();});struct Release {std::shared_ptr<PruningGate> gate;~Release(){gate->release();}}release{gate};
++   check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Pruning reaches its actual inventory or persistence boundary");
++   Json extra,successor;fs::path journal;std::future<void> stopper;
++   {std::unique_lock<std::recursive_mutex> lock(m.mutex,std::try_to_lock);check(lock.owns_lock(),"Receipt inventory and catalog IO leave Model available");m.snapshot();check(m.downloadDestinationReserved(target),"The private target stays reserved without a visible job");
++    bool refused=false;try{auto other=PublicationOwnership::receiptRetirement(m,{}, {target});}catch(...){refused=true;}check(refused,"A second publisher cannot take the retained private destination");
++    if(fault=="new-receipt"){extra=privateReceipt(files);PublicationCatalogProof::installReceipt(m,extra);}
++    if(fault=="successor"||fault=="failure-successor"){successor=receipt;successor["Sha256"]=std::string(64,'b');m.state["PublicationReceipts"][id]=successor;}
++    if(fault=="removed")m.state.erase("PublicationReceipts");
++    if(fault=="known-description")known->data["Description"]="independent current metadata";
++    if(fault=="known-destination")known->data["FileName"]="changed.bin";
++   }
++   if(fault=="unrelated-publisher"){
++    const auto otherFolder=folder/L"unrelated";fs::create_directories(otherFolder);auto data=privateReceipt(otherFolder);auto other=std::make_shared<Job>(data);const auto stage=otherFolder/L"stage.part";atomicText(stage,"verified bytes",false);
++    m.publishFile(other,stage,originalHash);check(fileHash(other->target())==originalHash&&!fs::exists(stage),"An unrelated real publication can complete while private receipt inventory is held");completed.push_back({other->target(),originalHash});
++   }
++   if(fault=="journal-owner"){
++    const auto otherFolder=folder/L"other";fs::create_directories(otherFolder);auto data=receipt;data["Folder"]=utf8(otherFolder.wstring());auto competing=std::make_shared<Job>(data);const auto stage=otherFolder/L"stage.part";atomicText(stage,"verified bytes",false);
++    bool rejected=false;try{m.publishFile(competing,stage,originalHash);}catch(...){rejected=true;}
++    check(rejected&&fs::exists(stage)&&!fs::exists(competing->target())&&!fs::exists(m.root/L"publications"/(wide(str(receipt,"Id"))+L".json")),"The real publisher cannot reuse a reserved journal ID through another destination");
++   }
++   if(fault=="journal"){journal=m.root/L"publications"/(wide(str(receipt,"Id"))+L".json");atomicText(journal,"{}",false);}
++   if(fault=="batch"||fault=="deferred")CatalogCheckpointTestAccess::batch(m,true);
++   if(fault=="new-receipt"&&phase!="temporary-flushed")m.save();
++   if(fault=="later-containing"){
++    // The first save has captured the exact absence but has not acquired the
++    // writer mutex. A newer containing snapshot publishes before it fails.
++    {Lock lock(m.mutex);m.state["Settings"]["PruningLaterWriter"]="accepted";}m.save();
++   }
++   if(fault=="shutdown"){stopper=std::async(std::launch::async,[&]{m.stop();});const auto until=GetTickCount64()+3000;while(!CatalogCheckpointTestAccess::closing(m)&&GetTickCount64()<until)Sleep(1);check(CatalogCheckpointTestAccess::closing(m)&&stopper.wait_for(std::chrono::milliseconds(10))!=std::future_status::ready,"Shutdown waits for owned pruning IO and acceptance");}
++   gate->release();std::string failure;try{work.get();}catch(const std::exception& e){failure=e.what();}CatalogCheckpointTestAccess::observe(m,{});CatalogCheckpointTestAccess::batch(m,false);if(stopper.valid())stopper.get();
++   const bool refused=fault=="inventory-failure"||fault=="known-destination"||fault=="failure"||fault=="failure-successor"||fault=="lost-ack"||fault=="deferred"||fault=="batch"||fault=="removed"||(fault=="successor"&&phase!="temporary-flushed")||(fault=="shutdown"&&phase=="receipt-prune-inventory");
++   check(refused?!failure.empty():(failure.empty()||(fault=="shutdown"&&failure=="UDM is closing.")),"Failed, stale, deferred and accepted pruning outcomes are distinguished");check(!gate->expired,"The owned IO hold was released explicitly");check(!PublicationOwnership::reserved(m,target),"Pruning releases every reserved destination on success and refusal");bool exact=true;for(const auto& output:completed)exact=exact&&fileHash(output.first)==output.second;check(exact,"Pruning never changes completed file bytes");
++   {Lock lock(m.mutex);
++    const auto store=m.state.find("PublicationReceipts");const auto current=[&](const std::string& key)->Json{return store!=m.state.end()&&store->is_object()&&store->contains(key)?store->at(key):Json();};
++    if(!extra.is_null())check(current(str(extra,"PublicationCommitId"))==extra,"Pruning preserves a concurrently added unrelated receipt");
++    if(!successor.is_null())check(current(id)==successor,"Neither rollback nor acceptance overwrites a later receipt");
++    else if(fault=="removed")check(current(id).is_null(),"A concurrently removed receipt is not resurrected before mutation");
++    else check(current(id).is_null()==(!refused&&fault!="journal"),"Only an accepted journal-free receipt is retired");
++   }
++   if(fault=="journal"){check(fs::exists(journal),"An observed new journal prevents receipt retirement");fs::remove(journal);}
++   const auto saved=Json::parse(readText(m.root/L"state.json"));if(!refused&&fault!="journal")check(!saved.contains("PublicationReceipts")||!saved.at("PublicationReceipts").contains(id),"Actual persisted acceptance contains the exact receipt absence");
++   if(fault=="later-containing")check(str(saved["Settings"],"PruningLaterWriter")=="accepted","A newer exact snapshot can prove retirement after the older save fails");
++   if(fault=="multiple")check(!saved.contains("PublicationReceipts"),"All sixteen journal-free private receipts are durably retired together");
++   if(fault=="known-description")check(str(known->data,"Description")=="independent current metadata","Pruning preserves independent visible-job metadata");
++   cases.push_back({{"phase",phase},{"fault",fault},{"modelAvailable",true},{"error",failure}});m.stop();
++  }
++  {
++   active="reserved-target-skip";Manager m(root/L"reserved/catalog");const auto files=root/L"reserved/files";fs::create_directories(files);const auto receipt=privateReceipt(files);const auto target=files/wide(str(receipt,"FileName"));
++   {Lock lock(m.mutex);PublicationCatalogProof::installReceipt(m,receipt);}m.save();
++   {auto owner=PublicationOwnership::receiptRetirement(m,{}, {target});owner.beginCommit();m.recoverReplacements();check(m.state.at("PublicationReceipts").at(str(receipt,"PublicationCommitId"))==receipt,"An already reserved target keeps its receipt without blocking unrelated recovery");}
++   m.recoverReplacements();check(!m.state.contains("PublicationReceipts"),"Released private ownership allows a later explicit retirement");m.stop();
++  }
++  {
++   active="absence-proof-contract";Manager m(root/L"proof/catalog");const auto files=root/L"proof/files";fs::create_directories(files);auto a=privateReceipt(files),b=privateReceipt(files);const Json receipts={{str(a,"PublicationCommitId"),a},{str(b,"PublicationCommitId"),b}};
++   {Lock lock(m.mutex);PublicationCatalogProof::installReceipt(m,a);PublicationCatalogProof::installReceipt(m,b);}m.save();
++   auto proof=PublicationCatalogProof::prepareReceiptRetirement(m,receipts);bool refused=false;try{m.save();}catch(...){refused=true;}check(refused&&!proof.resolve(),"A snapshot containing any retired receipt cannot acknowledge absence");proof.release();
++   {Lock lock(m.mutex);PublicationCatalogProof::eraseReceipt(m,a);PublicationCatalogProof::eraseReceipt(m,b);proof=PublicationCatalogProof::prepareReceiptRetirement(m,receipts);}
++   refused=false;try{auto completion=PublicationCatalogProof::prepare(m,b,true);}catch(...){refused=true;}check(refused,"Receipt retirement excludes completion proof for every affected job");m.save();check(proof.resolve(),"An exact persisted absence proves all selected retirements");proof.release();
++   auto completion=PublicationCatalogProof::prepare(m,b,true);refused=false;try{auto retirement=PublicationCatalogProof::prepareReceiptRetirement(m,receipts);}catch(...){refused=true;}check(refused,"An existing completion proof excludes overlapping receipt retirement");completion.release();m.stop();
++  }
++ }catch(const std::exception& failure){error=failure.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"case",active},{"checks",checks},{"cases",cases}}.dump(2),false);
++ std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}

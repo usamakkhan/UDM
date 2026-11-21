@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "proofs": 120,
+  "summary": [
+    {
+      "drive": "C",
+      "records": 128,
+      "bytes": 25978,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 1.0042499999999999,
+          "threadCycles": 3409130.0
+        },
+        "pinned": {
+          "wallMs": 0.7036,
+          "threadCycles": 2388985.0
+        }
+      }
+    },
+    {
+      "drive": "C",
+      "records": 7500,
+      "bytes": 1556738,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 71.73335,
+          "threadCycles": 237958293.0
+        },
+        "pinned": {
+          "wallMs": 70.59884999999998,
+          "threadCycles": 221212848.0
+        }
+      }
+    },
+    {
+      "drive": "C",
+      "records": 30000,
+      "bytes": 6296738,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 231.50985000000003,
+          "threadCycles": 774106473.0
+        },
+        "pinned": {
+          "wallMs": 188.2937,
+          "threadCycles": 632913967.0
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 128,
+      "bytes": 25978,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 1.12655,
+          "threadCycles": 3800226.5
+        },
+        "pinned": {
+          "wallMs": 0.69765,
+          "threadCycles": 2363545.5
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 7500,
+      "bytes": 1556738,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 60.5475,
+          "threadCycles": 202672505.0
+        },
+        "pinned": {
+          "wallMs": 47.22565,
+          "threadCycles": 158038706.0
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 30000,
+      "bytes": 6296738,
+      "medians": {
+        "path-reopen": {
+          "wallMs": 241.3431,
+          "threadCycles": 804697723.0
+        },
+        "pinned": {
+          "wallMs": 205.13729999999998,
+          "threadCycles": 670295494.5
+        }
+      }
+    }
+  ],
+  "completeApplicationTiming": false,
+  "pairedIdmComparison": false,
+  "slowerPinnedWallPairs": 7,
+  "allSamplesRetained": true
+}

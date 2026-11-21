@@ -1,0 +1,21 @@
+{
+  "controls": [
+    {
+      "label": "exploratory-component",
+      "error": "Publication exceptions cannot escape to the caller while body IO is pending",
+      "fixtureSha256": "BFDBD73D818B54838DA816186AF3BE1F73EFFF0B60BDF95560707CE3FAB694C3"
+    },
+    {
+      "label": "rejected-event-observer",
+      "error": "Actual HTTP failure drains the owned result task and reports its failure after release",
+      "fixtureSha256": "6E9EFCE125FB312E676EA58584A7CB0B4C48869C9B47C6455D82F7E9EA509D9F"
+    },
+    {
+      "label": "accepted-real-worker-control",
+      "error": "Manager cannot retire ownership or report failure while its owned body task is pending",
+      "fixtureSha256": "A6EB8FC5F321A8E6E7FFAA3F459BB35FEEE66E3391B9EAEA2A6BDC63C13DF4F4"
+    }
+  ],
+  "firstProbe": "Component exception timing alone is not the real worker retirement oracle.",
+  "observerCorrection": "Ordinary failed transfers do not emit the final completion event; poll active ownership and failed status directly instead. The rejected event-observer run is retained, not counted as a valid negative control."
+}

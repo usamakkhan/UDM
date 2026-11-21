@@ -1,0 +1,19 @@
+{
+  "scope": "Selected private-source qualification, not installed or IDM timing acceptance.",
+  "retainedFailures": [
+    {
+      "result": "qualified-RecoveryDiscoveryTests-1/results.json",
+      "cause": "Fixture tried to verify the deliberately changed destination instead of the original published file. Fixed by capturing the published target before mutation."
+    },
+    {
+      "result": "qualified-RecoveryDiscoveryTests-3/results.json",
+      "cause": "Low-level fixture compared BOM bytes against readText, which strips the BOM; the hard-link alias retained the exact raw bytes. Corrected the assertion."
+    },
+    {
+      "result": "qualified-final-SyncReplacementRecoveryTests/results.json",
+      "cause": "The first related-active guard rejected an incoming synchronization worker discovering its original predecessor before publication. Discovery now captures/revalidates read-only scope inputs without reserving that predecessor when a related worker is already active. Actual journal reconciliation still requires full operation ownership."
+    }
+  ],
+  "sourceFreezeRejection": "After correcting a UTF-8 BOM literal in RecoveryJournal.hpp, the source freeze rejected the stale build. Duplicates was recompiled from the corrected header and the fixture was relinked; the other four new core objects do not include this header. Final full source/object hashes are checked again before qualification.",
+  "unchanged": "Ordinary transfer durability protocol and original unresolved IDM sequential/split finishing comparison."
+}

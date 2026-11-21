@@ -1,0 +1,596 @@
+{
+  "checks": [
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "One canonical offer owns each accepted attempt without a second queue-cohort read",
+      "passed": true
+    },
+    {
+      "name": "Both admitted rows are durable before the batch closes",
+      "passed": true
+    },
+    {
+      "name": "Browser batch acceptance preserves route, website session, source page and selected link description",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "The two completed selected rows issue exactly one authenticated transfer each",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "The batch queue selector opens from its prepared cohort under a later writer without a second read",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "One canonical offer owns each accepted attempt without a second queue-cohort read",
+      "passed": true
+    },
+    {
+      "name": "Both admitted rows are durable before the batch closes",
+      "passed": true
+    },
+    {
+      "name": "The queue selector's remember option commits with its batch",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "The two completed selected rows issue exactly one authenticated transfer each",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "One canonical offer owns each accepted attempt without a second queue-cohort read",
+      "passed": true
+    },
+    {
+      "name": "Both admitted rows are durable before the batch closes",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "The two completed selected rows issue exactly one authenticated transfer each",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Cancelling the pending batch returns before its catalog writer releases",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Preparation failure restores the draft inline without admitting downloads",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "One canonical offer owns each accepted attempt without a second queue-cohort read",
+      "passed": true
+    },
+    {
+      "name": "Both admitted rows are durable before the batch closes",
+      "passed": true
+    },
+    {
+      "name": "A failed preparation or save retries once from the unchanged user draft",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "The two completed selected rows issue exactly one authenticated transfer each",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "The batch queue selector opens from its prepared cohort under a later writer without a second read",
+      "passed": true
+    },
+    {
+      "name": "Cancelling queue selection restores the batch draft without starting a save",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "Canonical failure restores the original selected rows and controls without partial admission",
+      "passed": true
+    },
+    {
+      "name": "Canonical rejection or persistence failure leaves the original published catalog intact",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "Create the owned batch acceptance timer",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the actual batch OK click",
+      "passed": true
+    },
+    {
+      "name": "Batch OK returns before policy acquisition with frozen inputs and available Cancel",
+      "passed": true
+    },
+    {
+      "name": "Queued selection commands cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Queued checkbox notifications cannot change a preparing batch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Enter, pulse and paint remain advisory while the policy writer is held",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "Canonical failure restores the original selected rows and controls without partial admission",
+      "passed": true
+    },
+    {
+      "name": "Canonical rejection or persistence failure leaves the original published catalog intact",
+      "passed": true
+    },
+    {
+      "name": "Accepted batch save stays owned and keeps all inputs frozen while Manager is held",
+      "passed": true
+    },
+    {
+      "name": "Originless queued selection cannot change an accepted save",
+      "passed": true
+    },
+    {
+      "name": "Duplicate submit and Close cannot abandon the accepted save, and its pulse and paint still return",
+      "passed": true
+    },
+    {
+      "name": "The batch closes with all readers and accepted command ownership settled",
+      "passed": true
+    },
+    {
+      "name": "Only a successfully accepted batch admits its two selected downloads",
+      "passed": true
+    },
+    {
+      "name": "Preparation, selection and Download Later introduce no additional transfer requests",
+      "passed": true
+    },
+    {
+      "name": "One canonical offer owns each accepted attempt without a second queue-cohort read",
+      "passed": true
+    },
+    {
+      "name": "Both admitted rows are durable before the batch closes",
+      "passed": true
+    },
+    {
+      "name": "A failed preparation or save retries once from the unchanged user draft",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "Each accepted row subsequently downloads the complete authenticated fixture",
+      "passed": true
+    },
+    {
+      "name": "The two completed selected rows issue exactly one authenticated transfer each",
+      "passed": true
+    }
+  ],
+  "diagnostics": {
+    "browser": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 1,
+      "phase": 4,
+      "reads": 1,
+      "retries": 0
+    },
+    "import": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 1,
+      "phase": 4,
+      "reads": 1,
+      "retries": 0
+    },
+    "prepare-cancel": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 0,
+      "phase": 9,
+      "reads": 0,
+      "retries": 0
+    },
+    "prepare-retry": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 1,
+      "phase": 4,
+      "reads": 2,
+      "retries": 1
+    },
+    "quiet": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 1,
+      "phase": 4,
+      "reads": 1,
+      "retries": 0
+    },
+    "reject": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 1,
+      "phase": 9,
+      "reads": 1,
+      "retries": 0
+    },
+    "save-retry": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 2,
+      "phase": 4,
+      "reads": 2,
+      "retries": 1
+    },
+    "selector-cancel": {
+      "error": "",
+      "extraQueueReads": 0,
+      "offers": 0,
+      "phase": 9,
+      "reads": 1,
+      "retries": 0
+    }
+  },
+  "error": "",
+  "passed": true
+}

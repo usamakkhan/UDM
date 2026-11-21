@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "nativeSourceVersion": "8.44",
+  "installedVersion": "8.32",
+  "applicationCodeChanged": false,
+  "target": "IDMan.exe",
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "architecture": "ia32",
+  "workload": {
+    "bytes": 9437184,
+    "originRateBytesPerSecond": 200000,
+    "originRequests": 1,
+    "originBytes": 9437184,
+    "originOutcome": "complete",
+    "firstToLastOriginBodySeconds": 45.87555860000066
+  },
+  "fileHashMatched": true,
+  "sha256": "7C17CF266EB14E89BF198E4C5A21513A9A2DE55CF11A2D1668460C041B031C9D",
+  "apiCounts": {
+    "CloseHandle": 14,
+    "CreateFileW": 14,
+    "NtWriteFile": 895,
+    "NtFlushBuffersFile": 1,
+    "FlushFileBuffers": 1,
+    "WriteFile": 896
+  },
+  "body": {
+    "nativeWrites": 828,
+    "completedBytes": 9437184,
+    "firstToLastWriteSeconds": 45.886939,
+    "implicitOffsetWrites": 828
+  },
+  "bodyFlush": {
+    "nativeCalls": 1,
+    "win32Calls": 1,
+    "sameNestedOperation": true,
+    "nativeStatus": 0,
+    "nativeSeconds": 0.0007456,
+    "win32Seconds": 0.0009593,
+    "afterFirstBodyWriteSeconds": 39.3246834,
+    "bodyContinuedAfterNativeFlushSeconds": 6.5613131
+  },
+  "dropped": 0,
+  "nativeMetrics": {
+    "calls": 1021,
+    "pathsResolved": 899,
+    "pathsMatched": 896,
+    "pathFailures": 122
+  },
+  "openFilesRemaining": 0,
+  "protectedUdmFilesUnchanged": true,
+  "ownedPayloadRemoved": true,
+  "removedPayloadBytes": 9437184,
+  "observerDetached": true,
+  "originStopped": true,
+  "performanceParityVerified": false,
+  "allBackgroundWorkMeasured": false,
+  "completeWriterCoverageEstablished": false,
+  "flushAbsenceEstablished": false,
+  "limitations": [
+    "Existing IDM instance retained; no process lifetime or shutdown comparison.",
+    "Instrumentation changes execution cost; no speed parity claim.",
+    "The elapsed guard starts before the first recorded body write; 39.325 seconds after that write is not an independent measurement of its counter.",
+    "One matched body flush is positive evidence; unmatched paths, unresolved handles, indirect calls and work outside the observation remain uncovered.",
+    "All 828 body writes used implicit offsets; matching byte totals and final SHA do not establish per-write interval coverage.",
+    "The new completion dialog could not be closed by automation: GetCursorPos Access denied; user closure requested before the next case."
+  ],
+  "evidenceHashes": {
+    "agent": "A6B8CEE163A04650F20AEAE3103F27765B9536C2691B632861EC5CBA7D894DD5",
+    "controller": "6998362F91F696CEF29C2B8E5D4CA3DEB6B999A0FDEC004478F50DD6BD53C34E",
+    "privateRawSnapshot": "EA17B4BC796A00D45B70128DC13B9292BF8ED26F8754A1D29A794638F8B42DB5",
+    "privateResult": "158F203F62D6FE42605EC3B63A234ACBD78B9C2D4780848031E8705FD8345175"
+  }
+}

@@ -1,0 +1,11 @@
+--- a/native/App.cpp
++++ b/native/App.cpp
+@@ -1222,7 +1222,7 @@
+   }
+ 
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+-  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){nativeUiTraceRecord("initial-refresh-entry");refresh();reviewAutomationBatches();nativeUiTraceRecord("initial-refresh-returned");return 0;}
++  afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){nativeUiTraceRecord("initial-refresh-entry");refresh();reviewAutomationBatches();nativeUiTraceRecord("initial-refresh-returned");if(nativeUiTraceSink.view)PostMessage(WM_CLOSE);return 0;}
+ #else
+   afx_msg LRESULT OnInitialRefresh(WPARAM,LPARAM){refresh();reviewAutomationBatches();return 0;}
+ #endif

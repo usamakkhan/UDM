@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "actualRejectedArtifacts": [
+    {
+      "fixture": "private-01",
+      "reportSha256": "696A0A856700A4C0227F19FFF7B67D0EFAA6810253FCE6864A761787BAF793B0",
+      "exitCode": 1,
+      "result": {
+        "accepted": false,
+        "error": "Probe run did not pass",
+        "kernelCauseVerified": false
+      }
+    },
+    {
+      "fixture": "unelevated-refusal-01",
+      "reportSha256": "EE0212B01928197A78D390F8D8A75158499E8C5628A8F73F0D22519A1CF13C4C",
+      "exitCode": 1,
+      "result": {
+        "accepted": false,
+        "error": "Probe run did not pass",
+        "kernelCauseVerified": false
+      }
+    }
+  ],
+  "liveKernelTraceAccepted": false
+}

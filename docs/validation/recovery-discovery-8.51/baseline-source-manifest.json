@@ -1,0 +1,21 @@
+{
+  "instrumentationPatch": "benchmarks/speed/experiments/recovery-discovery-8.50-control.patch",
+  "sha256": "331C52992587A5977C71D24229A8BDFE06D74288071ECBDAEA2A881E3EF2CBEC",
+  "sources": [
+    {
+      "beforePath": "native/RecoveryJournal.hpp",
+      "afterPath": "BaselineRecoveryJournal.hpp",
+      "beforeSha256": "03A914BB7A47480B5261F582560D4F94CC4B9400F6440D9B50C1B4FAE2429836",
+      "afterSha256": "320854F77F31C9BFEE18195299326407CA8241476EFCFD5A39EE42B493D9EFE0"
+    },
+    {
+      "beforePath": "native/Duplicates.cpp",
+      "afterPath": "baseline-Duplicates.cpp",
+      "beforeSha256": "C44C31A8CD1812139D237C2B54D63006B3B845189985736C5A94945AB758B9B0",
+      "afterSha256": "BB7250854260352738C394897436B05D127E713797349C36A925EE7CA83AE77E"
+    }
+  ],
+  "controlSource": "benchmarks/speed/recovery_discovery_control.cpp",
+  "controlSourceSha256": "84D882BB18E52A4030908B167030C22180A3FA2FD6C180835E66442A0EE04AD7",
+  "scope": "Add a bounded hook inside the actual held content-read loop; no production behavior altered beyond this observation."
+}

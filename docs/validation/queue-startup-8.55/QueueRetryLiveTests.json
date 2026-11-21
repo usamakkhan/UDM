@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "name": "Next healthy file finishes while failed item waits",
+      "passed": true
+    },
+    {
+      "name": "Failed file moves behind other queue files",
+      "passed": true
+    },
+    {
+      "name": "Default retry delay is thirty seconds",
+      "passed": true
+    },
+    {
+      "name": "HTTP rejection recovers on queued retry",
+      "passed": true
+    },
+    {
+      "name": "Retried file matches successfully downloaded content",
+      "passed": true
+    },
+    {
+      "name": "Actual retry obeys real elapsed delay",
+      "passed": true
+    },
+    {
+      "name": "Bounded HTTP rejection stops after configured retry",
+      "passed": true
+    },
+    {
+      "name": "Unlimited retries continue beyond prior limit",
+      "passed": true
+    },
+    {
+      "name": "Stop prevents further queued retry requests",
+      "passed": true
+    },
+    {
+      "name": "Failed and stopped queues emit no successful completion action",
+      "passed": true
+    }
+  ],
+  "clockAdvanced": false,
+  "error": "",
+  "passed": true,
+  "timing": {
+    "retryCompletedMs": 30084
+  }
+}

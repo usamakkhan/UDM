@@ -1,0 +1,21 @@
+{
+  "args": [
+    "python",
+    "$REPOSITORY\\benchmarks\\speed\\compare-completion.py",
+    "--output-root",
+    "$REPOSITORY\\.media-cache\\owned-idm-comparison-9.58",
+    "--udm",
+    "$REPOSITORY\\.media-cache\\owned-browser-integration-build-9.58\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "013638E7A4C7844879E77AC44875993FB7BB9AF6572BCDCE41B9477AA4E4DF73",
+    "--label",
+    "UDM 9.58 versus IDM; actual application exit and symmetric output durability",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "version": "9.58",
+  "status": "launching",
+  "compilerQuiet": true
+}

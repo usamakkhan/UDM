@@ -1,0 +1,26 @@
+--- native/PublicationSourcePin.hpp
++++ diagnostic/PublicationSourcePin.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "FileIdentity.hpp"
++#include "DiagnosticOperation.hpp"
+ #include <limits>
+ namespace udm {
+ // Metadata is captured on this same writer-excluding object before its flush
+@@ -10,13 +11,13 @@
+  PublicationSourcePin()=default;
+ public:
+  PublicationSourcePin(const PublicationSourcePin&)=delete;
+- static std::unique_ptr<PublicationSourcePin> open(const fs::path& path){
++ static std::unique_ptr<PublicationSourcePin> open(const fs::path& path){DiagnosticOperation operation("preflush-source-capture",0);
+   auto pin=std::unique_ptr<PublicationSourcePin>(new PublicationSourcePin);
+   pin->file.h=CreateFileW(path.c_str(),GENERIC_WRITE|FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);
+-  if(!pin->file||!GetFileInformationByHandle(pin->file.h,&pin->information)||(pin->information.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return {};
++  if(!pin->file||![&]{DiagnosticOperation query("capture-info-query",0);return GetFileInformationByHandle(pin->file.h,&pin->information);}()||(pin->information.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return {};
+   const auto size=(static_cast<uint64_t>(pin->information.nFileSizeHigh)<<32)|pin->information.nFileSizeLow;
+   if(size>static_cast<uint64_t>(std::numeric_limits<i64>::max()))return {};
+-  pin->stable=stableFileIdentity(pin->file.h);
++  pin->stable=[&]{DiagnosticOperation query("capture-stable-identity",0);return stableFileIdentity(pin->file.h);}();
+   if(pin->stable.is_null()||num(pin->stable,"Size",-1)!=static_cast<i64>(size))return {};
+   return pin;
+  }

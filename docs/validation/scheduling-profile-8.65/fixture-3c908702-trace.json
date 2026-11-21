@@ -1,0 +1,648 @@
+{
+  "actualBuffers": 32,
+  "ambiguous": false,
+  "bufferSizeKiB": 64,
+  "buffersLost": 0,
+  "callbackFailed": false,
+  "closeTraceStatus": 7007,
+  "counterFrequency": 10000000,
+  "elapsedMs": 4062,
+  "enabledFlags": 268438803,
+  "eventsLost": 0,
+  "fileOperationAttributionSupported": false,
+  "kernelCauseVerified": false,
+  "limit": false,
+  "normalWorkloadLaunchedByCollector": false,
+  "postStopQueryStatus": 4201,
+  "processTraceStatus": 0,
+  "processedEvents": 143719,
+  "reason": "owner-complete",
+  "sessionAbsent": true,
+  "started": true,
+  "stopStatus": 0,
+  "targets": [
+    {
+      "ambiguous": false,
+      "beginCounter": 321443275808,
+      "callbackFailed": false,
+      "diskEvents": [
+        {
+          "counter": 321443786690,
+          "issuingThread": 22852,
+          "opcode": "readinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-1"
+        },
+        {
+          "ByteOffset": 179467419648,
+          "DiskNumber": 0,
+          "HighResResponseTime": 2689,
+          "TransferSize": 36864,
+          "counter": 321443789382,
+          "issuingThread": 22852,
+          "opcode": "read",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-1"
+        },
+        {
+          "counter": 321444183716,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-2"
+        },
+        {
+          "ByteOffset": 44607733760,
+          "DiskNumber": 1,
+          "HighResResponseTime": 4987,
+          "TransferSize": 131072,
+          "counter": 321444188704,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-2"
+        },
+        {
+          "counter": 321444191856,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-3"
+        },
+        {
+          "ByteOffset": 110236438528,
+          "DiskNumber": 1,
+          "HighResResponseTime": 2004,
+          "TransferSize": 16384,
+          "counter": 321444193861,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-3"
+        },
+        {
+          "counter": 321444194154,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-2"
+        },
+        {
+          "ByteOffset": 44607864832,
+          "DiskNumber": 1,
+          "HighResResponseTime": 1614,
+          "TransferSize": 4096,
+          "counter": 321444195771,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-2"
+        },
+        {
+          "counter": 321444199539,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-2"
+        },
+        {
+          "ByteOffset": 110289833984,
+          "DiskNumber": 1,
+          "HighResResponseTime": 2554,
+          "TransferSize": 45056,
+          "counter": 321444202091,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-2"
+        },
+        {
+          "counter": 321444202472,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-4"
+        },
+        {
+          "ByteOffset": 110236475392,
+          "DiskNumber": 1,
+          "HighResResponseTime": 2307,
+          "TransferSize": 4096,
+          "counter": 321444204779,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-4"
+        },
+        {
+          "counter": 321444205063,
+          "issuingThread": 4294967295,
+          "opcode": "flushinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-5"
+        },
+        {
+          "counter": 321444510933,
+          "issuingThread": 4294967295,
+          "opcode": "flushinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-5"
+        },
+        {
+          "counter": 321444514404,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-6"
+        },
+        {
+          "ByteOffset": 44607868928,
+          "DiskNumber": 1,
+          "HighResResponseTime": 1726,
+          "TransferSize": 4096,
+          "counter": 321444516129,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-6"
+        },
+        {
+          "counter": 321444516921,
+          "issuingThread": 22852,
+          "opcode": "writeinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-4"
+        },
+        {
+          "ByteOffset": 110236409856,
+          "DiskNumber": 1,
+          "HighResResponseTime": 1934,
+          "TransferSize": 4096,
+          "counter": 321444518856,
+          "issuingThread": 22852,
+          "opcode": "write",
+          "relativePath": "",
+          "thread": 4294967295,
+          "irpToken": "irp-4"
+        },
+        {
+          "counter": 321444519132,
+          "issuingThread": 4294967295,
+          "opcode": "flushinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-7"
+        },
+        {
+          "counter": 321444751378,
+          "issuingThread": 4294967295,
+          "opcode": "flushinit",
+          "relativePath": "",
+          "thread": 22852,
+          "irpToken": "irp-8"
+        }
+      ],
+      "endCounter": 321444800384,
+      "ends": 1,
+      "flushPairs": [],
+      "image": "u3c908702f.exe",
+      "imageMatches": true,
+      "lifecycle": [
+        {
+          "counter": 321443275808,
+          "opcode": "start"
+        },
+        {
+          "counter": 321444775840,
+          "opcode": "terminate"
+        },
+        {
+          "counter": 321444800384,
+          "opcode": "end"
+        },
+        {
+          "counter": 321452573111,
+          "opcode": "defunct"
+        }
+      ],
+      "limit": false,
+      "pendingFlushes": 0,
+      "pid": 26180,
+      "starts": 1,
+      "targetSchemaErrors": 0,
+      "targetSchemaFailureInventory": {},
+      "targetTasks": {
+        "diskio/flushinit": 4,
+        "diskio/readinit": 1,
+        "diskio/writeinit": 7,
+        "process/end": 1,
+        "process/start": 1,
+        "thread/end": 4,
+        "thread/start": 4
+      },
+      "threadScheduling": [
+        {
+          "counter": 321443328592,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443500533,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443530689,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443573012,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443735363,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443736169,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443789405,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443808347,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 34460
+        },
+        {
+          "counter": 321443820685,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 27320
+        },
+        {
+          "counter": 321443827506,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 29980
+        },
+        {
+          "counter": 321443827965,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443828806,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443829100,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443829377,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443831334,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443831590,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443843957,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321443887793,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 29980
+        },
+        {
+          "counter": 321443888268,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 34460
+        },
+        {
+          "counter": 321443892391,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 34460
+        },
+        {
+          "counter": 321443893672,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 29980
+        },
+        {
+          "counter": 321443895139,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 27320
+        },
+        {
+          "counter": 321443897032,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444022212,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444177946,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444188748,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444193895,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444195795,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444196932,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444202126,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444204808,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444508019,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444512594,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444516162,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444518874,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444750938,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444753012,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444759673,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444760256,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 22852
+        },
+        {
+          "counter": 321444766939,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 29980
+        },
+        {
+          "counter": 321444766964,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 27320
+        },
+        {
+          "counter": 321444766979,
+          "newThread": 0,
+          "oldState": 0,
+          "oldThread": 0,
+          "oldWaitReason": 0,
+          "opcode": "readythread",
+          "readyThread": 34460
+        }
+      ]
+    }
+  ],
+  "traceProfile": "disk-scheduling-no-fileio-v1",
+  "unknownMetadataEvents": 86672,
+  "redaction": {
+    "kernelIrpAddresses": "stable per-capture opaque tokens",
+    "privateTraceSha256": "8F767B83C34E988C86FC8E4C86F2B23F118F489A3A4E704E8F8BD860C64C9998"
+  }
+}

@@ -25,7 +25,9 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
    throw std::runtime_error("Direct audio receipts require an M4A download.");
  }
  auto request=message;request.erase("mediaToken");request.erase("requestId");auto fingerprint=mediaAdmissionDigest(request);
- std::unique_lock<std::recursive_mutex> lock(mutex);const auto now=epoch();const auto& savedRows=captureStoreView(*this);
+ std::unique_lock<std::recursive_mutex> lock(mutex);
+ for(;;){
+ const auto& savedRows=captureStoreView(*this);
  if(const auto found=savedRows.find(token);found!=savedRows.end()){
   const auto& row=*found;
   if(num(row,"protocol")!=3||str(row,"status")!="accepted")throw std::runtime_error("This media operation was released or belongs to another request. Check its receipt.");
@@ -33,6 +35,16 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
   for(auto job:jobs)if(job->id()==str(row,"id"))return job;
   throw std::runtime_error("This media download was already accepted and its history record was later removed.");
  }
+ if(!joinBrowserAdmissionAllowed||!detachedBrowserAdmissionAllowed)break;
+ if(stopping)throw std::runtime_error("UDM is closing. Check download history before trying again.");
+ auto observation=admissionRegistry->observe(token,fingerprint);if(!observation)break;
+ // The retry worker owns no outer Manager lock. Do not turn a busy exception
+ // into retry permission: observe this exact fingerprint through handoff or
+ // terminal failure, then revalidate the durable receipt under Manager's lock.
+ lock.unlock();if(checkpoint)checkpoint("join-waiting");const bool published=observation.wait();lock.lock();
+ if(published&&!captureStoreView(*this).contains(token))throw std::runtime_error("Media acceptance was published but could not be reconciled. Check download history.");
+ }
+ const auto now=epoch();const auto& savedRows=captureStoreView(*this);
  if(created<now-600000||created>now+60000)throw std::runtime_error("Media operation token has expired.");
  auto rows=savedRows;
  captureSpace(rows,now);
@@ -94,7 +106,7 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
    std::equal(previousJobs.begin(),previousJobs.end(),jobs.begin())&&pendingOffers==previousOffers&&existingOffers==previousExisting&&
    refreshId==oldRefresh&&refreshUntil==oldRefreshUntil&&str(admitted->data,"DuplicateOf").empty();
   if(newOnly){
-   const auto initialView=preparedBrowserFileInfo&&str(state.at("BrowserCaptures").at(token).value("presentation",Json::object()),"kind")=="download"?captureFileInfoInitialView(*this,*admitted):nullptr;
+   const auto initialView=preparedBrowserFileInfo&&str(state.at("BrowserCaptures").at(token).value("presentation",Json::object()),"kind")=="download"?captureFileInfoInitialView(*this,*admitted,fingerprint):nullptr;
    preparedReceipt=state.at("BrowserCaptures").at(token);jobs.pop_back();
    if(hadReceipts)state.at("BrowserCaptures").swap(rows);else state.erase("BrowserCaptures");
    swappedReceipts=false;catalogTransaction=false;catalogCheckpoint={};detached=true;
@@ -142,6 +154,41 @@ JobPtr Manager::receiveBrowserMedia(const Json& message,const std::function<void
  if(checkpoint)checkpoint("committed");
  if(directAudio)recoverRestarts();
  return admitted;
+}
+
+void Manager::cancelBrowserMediaPresentation(const std::string& token,const std::string& fingerprint,const std::function<void(const char*)>& checkpoint){
+ const auto created=captureTime(token);
+ if(fingerprint.size()!=64||fingerprint.find_first_not_of("0123456789abcdef")!=std::string::npos)throw std::runtime_error("Missing or invalid media cancellation identity.");
+ std::unique_lock<std::recursive_mutex> lock(mutex);JobPtr job;
+ for(;;){
+  const auto& rows=captureStoreView(*this);auto found=rows.find(token);
+  if(found!=rows.end()){
+   const auto& row=*found;if(num(row,"protocol")!=3)throw std::runtime_error("This cancellation belongs to another browser operation.");
+   const auto status=str(row,"status");if(status=="released")return;
+   if(status!="accepted"||str(row,"id").empty()||reveal(str(row,"fingerprint"))!=fingerprint)throw std::runtime_error("The accepted media selection differs from this cancellation. Download history was preserved.");
+   for(const auto& candidate:jobs)if(candidate->id()==str(row,"id"))job=candidate;
+   if(!job){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
+   if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
+   if(str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart")){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
+   break;
+  }
+  auto observation=admissionRegistry->observe(token,fingerprint);
+  if(observation){lock.unlock();if(checkpoint)checkpoint("cancel-owner-waiting");const bool published=observation.wait();lock.lock();if(published&&!captureStoreView(*this).contains(token))throw std::runtime_error("Published media cancellation could not be reconciled. Check download history.");continue;}
+  if(catalogTransaction)throw std::runtime_error("Another catalog operation is in progress. Cancellation has not been saved.");
+  const auto now=epoch();if(created>now+60000)throw std::runtime_error("Invalid browser cancellation time.");auto released=captureStore(*this);captureSpace(released,now);released[token]={{"created",created},{"protocol",3},{"status","released"},{"cancelled",true}};
+  if(checkpoint)checkpoint("before-cancel-barrier");saveCaptureStore(*this,released);return;
+ }
+ // End prefetch outside Manager's lock, then recheck the live job. A user's
+ // Start/Later or removal wins over a stale pending-window cancellation.
+ lock.unlock();endPrefetch(job,false);lock.lock();
+ if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
+ if(std::find(jobs.begin(),jobs.end(),job)==jobs.end()||str(job->data,"Status")!="Awaiting confirmation"||yes(job->data,"IndividualStart")){finishBrowserPresentation(Json{{"tokens",Json::array({token})}});return;}
+ lock.unlock();const bool removed=cancelUnconfirmedOffer(job,OfferCancellation::AwaitingOnly,[&]{
+  const auto& rows=captureStoreView(*this);auto found=rows.find(token);
+  if(found==rows.end()||num(*found,"protocol")!=3||str(*found,"status")!="accepted"||str(*found,"id")!=job->id()||reveal(str(*found,"fingerprint"))!=fingerprint)throw std::runtime_error("The browser cancellation changed. Download history was preserved.");
+  if(PublicationOwnership::treeOwned(*this,job))throw std::runtime_error("Wait for the pending file publication before cancelling this download.");
+  return true;
+ });lock.lock();if(!removed&&std::find(jobs.begin(),jobs.end(),job)!=jobs.end()&&str(job->data,"Status")=="Awaiting confirmation"&&!yes(job->data,"IndividualStart"))throw std::runtime_error("The pending download is still busy. Retry cancellation after it stops.");finishBrowserPresentation(Json{{"tokens",Json::array({token})}});
 }
 
 static Json browserPresentationOffers(const Json& rows,const std::string* onlyId=nullptr){

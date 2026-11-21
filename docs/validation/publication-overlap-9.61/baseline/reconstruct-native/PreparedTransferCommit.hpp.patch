@@ -1,0 +1,61 @@
+--- native/PreparedTransferCommit.hpp@9.61
++++ native/PreparedTransferCommit.hpp@9.60
+@@ -1,18 +1,14 @@
+ #pragma once
+ #include "Core.hpp"
+ #include "PublicationRecovery.hpp"
+-#include "PublishedWriteback.hpp"
+-#include <future>
+ namespace udm {
+ // Same-thread handoff from an ordinary transfer to its owning Manager worker.
+-// The owning worker joins final body writeback before publication. No detached
+-// work or persisted acceptance token; publishFile owns the durable transaction.
++// No Manager/Job layout change, background thread, persisted acceptance token,
++// or cross-thread registry. Existing publishFile owns the durable transaction.
+ class PreparedTransferCommit {
+- friend struct CatalogCheckpointTestAccess;
+  inline static thread_local PreparedTransferCommit* current=nullptr;
+  PreparedTransferCommit* previous;Manager& manager;JobPtr job;std::shared_ptr<Cancel> cancel;bool allowed;
+  bool ready=false,inCommit=false,accepted=false,keepParts=false;
+- std::future<PublishedWritebackResult> writeback;
+  fs::path staging,parts,target;Json destination;std::string digest;
+  struct Finalizing {std::mutex mutex;std::map<const Manager*,std::set<const Cancel*>> owners;std::map<const Manager*,std::map<const Cancel*,std::pair<const Job*,const PreparedTransferCommit*>>> independent;};
+  static Finalizing& finalizing(){static auto* value=new Finalizing;return *value;}
+@@ -24,29 +20,6 @@
+  PreparedTransferCommit(const PreparedTransferCommit&)=delete;
+  static PreparedTransferCommit* available(Manager& m,const JobPtr& j,const std::shared_ptr<Cancel>& c){auto p=current;return p&&p->allowed&&!p->ready&&!p->accepted&&!p->inCommit&& &p->manager==&m&&p->job==j&&p->cancel==c?p:nullptr;}
+  static PreparedTransferCommit* publishing(Manager& m,const JobPtr& j,const Cancel* c){auto p=current;return p&&p->inCommit&& &p->manager==&m&&p->job==j&&p->cancel.get()==c?p:nullptr;}
+- // Launch failure leaves the caller on its existing synchronous path.
+- bool startWriteback(const fs::path& path,bool normalize){
+-  if(!allowed||ready||writeback.valid())return false;
+-  try{writeback=std::async(std::launch::async,[path,normalize]{return publishedWriteback(path,normalize);});return true;}catch(...){return false;}
+- }
+- bool pendingWriteback()const noexcept{return writeback.valid();}
+- void joinWriteback()noexcept{if(writeback.valid())try{writeback.wait();}catch(...){}}
+- void finishWriteback(){
+-  if(!writeback.valid())return;
+-  const auto began=std::chrono::steady_clock::now();const auto result=writeback.get();
+-  {Lock lock(manager.mutex);auto& phases=job->data["FinishPhases"];
+-   phases["PublishedFileOpen"]=result.openSeconds;phases["PublishedSparseNormalize"]=result.normalizeSeconds;
+-   phases["PublishedFileFlush"]=result.flushSeconds;phases["PublishedFileClose"]=result.closeSeconds;
+-   phases["PublishedOpenError"]=result.openError;phases["PublishedNormalizeError"]=result.normalizeError;
+-   phases["PublishedFlushError"]=result.flushError;phases["PublishedCloseError"]=result.closeError;
+-   phases["PublishedWriteAccess"]="write-only";phases["PublishedWritebackOverlap"]=true;
+-   phases["PublishedWritebackJoin"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+-   phases["FlushPublished"]=result.openSeconds+result.normalizeSeconds+result.flushSeconds+result.closeSeconds;
+-   phases["SparseNormalization"]="not-needed";phases["Unsparse"]=0.0;
+-   if(!result.confirmed)job->data["FinishWarning"]="Final body writeback failed; the downloaded data and any publication recovery record were kept.";
+-  }
+-  if(!result.confirmed)throw std::runtime_error("Final download writeback could not be confirmed. Keep its files and recovery record.");
+- }
+  bool prepared()const noexcept{return ready;}
+  bool committed()const noexcept{return accepted;}
+  // Caller holds Manager::mutex. The persistent flag can be retired for the
+@@ -88,7 +61,6 @@
+   if(manager.filePublished)try{manager.filePublished(job);}catch(...){/* Accepted output must not fail due to a UI callback. */}
+  }
+  ~PreparedTransferCommit(){
+-  joinWriteback(); // Never delete staging or retire ownership while IO is live.
+   endFinalization();
+   if(ready&&!accepted)try{if(!publicationNeedsRecovery(manager,job)){std::error_code error;fs::remove(staging,error);}}catch(...){/* Unknown recovery state retains the staged file. */}
+   current=previous;

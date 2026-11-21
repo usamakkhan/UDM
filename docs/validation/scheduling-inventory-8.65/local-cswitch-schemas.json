@@ -1,0 +1,1022 @@
+[
+  {
+    "Name": "Thread_V2",
+    "SuperClass": "MSNT_SystemTrace",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 2,
+        "Name": "EventVersion"
+      },
+      {
+        "Value": "{3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c}",
+        "Name": "Guid"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      }
+    ]
+  },
+  {
+    "Name": "Thread_V3",
+    "SuperClass": "MSNT_SystemTrace",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 3,
+        "Name": "EventVersion"
+      },
+      {
+        "Value": "{3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c}",
+        "Name": "Guid"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      }
+    ]
+  },
+  {
+    "Name": "Thread_V4",
+    "SuperClass": "MSNT_SystemTrace",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 4,
+        "Name": "EventVersion"
+      },
+      {
+        "Value": "{3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c}",
+        "Name": "Guid"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      }
+    ]
+  },
+  {
+    "Name": "CSwitch_V2",
+    "SuperClass": "Thread_V2",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 36,
+        "Name": "EventType"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 1,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 3,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "NewThreadWaitTime",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 11,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 2,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 4,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 9,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitIdealProcessor",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 10,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitMode",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 8,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitReason",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 7,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "PreviousCState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 5,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt8"
+      },
+      {
+        "Name": "Reserved",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 12,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "SpareByte",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 6,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      }
+    ]
+  },
+  {
+    "Name": "CSwitch_V3",
+    "SuperClass": "Thread_V3",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 36,
+        "Name": "EventType"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 1,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 3,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "NewThreadWaitTime",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 11,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 2,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 4,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 9,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitIdealProcessor",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 10,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitReason",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 7,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "PreviousCState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 5,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt8"
+      },
+      {
+        "Name": "Reserved",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 12,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "SpareByte",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 6,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "ThreadFlags",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 8,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      }
+    ]
+  },
+  {
+    "Name": "CSwitch_V4",
+    "SuperClass": "Thread_V4",
+    "Qualifiers": [
+      {
+        "Value": true,
+        "Name": "dynamic"
+      },
+      {
+        "Value": 36,
+        "Name": "EventType"
+      }
+    ],
+    "Fields": [
+      {
+        "Name": "Flags",
+        "Qualifiers": [
+          {
+            "Value": [
+              "0x00000001",
+              "0x00000002",
+              "0x00000004",
+              "0x00000008",
+              "0x00000010",
+              "0x00000020",
+              "0x00000040",
+              "0x00000080",
+              "0x00000100",
+              "0x00000200",
+              "0x00000400",
+              "0x00000800",
+              "0x00001000",
+              "0x00002000",
+              "0x00004000",
+              "0x00010000",
+              "0x00020000",
+              "0x00100000",
+              "0x00200000",
+              "0x00800000",
+              "0x01000000",
+              "0x02000000",
+              "0x04000000"
+            ],
+            "Name": "ValueMap"
+          },
+          {
+            "Value": [
+              "process",
+              "thread",
+              "img",
+              "proccntr",
+              "cswitch",
+              "dpc",
+              "isr",
+              "syscall",
+              "disk",
+              "file",
+              "diskinit",
+              "dispatcher",
+              "pf",
+              "hf",
+              "virtalloc",
+              "net",
+              "registry",
+              "alpc",
+              "splitio",
+              "driver",
+              "profile",
+              "fileiocompletion",
+              "fileio"
+            ],
+            "Name": "Values"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 1,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "NewThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 3,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "NewThreadWaitTime",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 11,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadId",
+        "Qualifiers": [
+          {
+            "Value": "x",
+            "Name": "format"
+          },
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 2,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "OldThreadPriority",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 4,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 9,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitIdealProcessor",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 10,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "OldThreadWaitReason",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 7,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "PreviousCState",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 5,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt8"
+      },
+      {
+        "Name": "Reserved",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 12,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "UInt32"
+      },
+      {
+        "Name": "SpareByte",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 6,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      },
+      {
+        "Name": "ThreadFlags",
+        "Qualifiers": [
+          {
+            "Value": true,
+            "Name": "read"
+          },
+          {
+            "Value": 8,
+            "Name": "WmiDataId"
+          }
+        ],
+        "Type": "SInt8"
+      }
+    ]
+  }
+]

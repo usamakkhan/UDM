@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "field": "extensionVersion",
+  "before": "0.72.70",
+  "after": "0.72.73",
+  "reason": "Copied private build-driver label was stale; both actual source manifests were already frozen and compiled as 0.72.73. No source, core, native binary or test outcome changed.",
+  "beforeRecordSha256": "1BDB33A4F0FE520D38323B060DB67DE123B92C22AB6AB2495651D777D12AEC1F",
+  "afterRecordSha256": "D34915043078086E93E641D30A9B50FF17C7F6ED0427126A876571734ADA8548",
+  "frozenManifestEvidence": [
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "0BCCF7D1B92013FD82AFF896FA69AEC9A5D7C19958D1A0551D0BBAB44C6E5961",
+      "version": "0.72.73"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "5B2ABB0BBCFB0574C4C998183851F579B3974DE26D1F078ECC30869374499615",
+      "version": "0.72.73"
+    }
+  ]
+}

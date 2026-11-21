@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "name": "A fresh file receives the full Internet-zone marker",
+      "passed": true
+    },
+    {
+      "name": "Zone creation preserves the body and writes exactly ZoneId 3",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds an existing correct stream with writes excluded",
+      "passed": true
+    },
+    {
+      "name": "Correct metadata is accepted without requesting a rewrite",
+      "passed": true
+    },
+    {
+      "name": "The legacy best-effort markZone entry leaves a read-held correct marker and body intact",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Absent, truncated, foreign, extended and differently encoded markers cannot bypass the write",
+      "passed": true
+    },
+    {
+      "name": "Repair truncates invalid metadata to the complete marker without changing bytes",
+      "passed": true
+    },
+    {
+      "name": "Fixture holds invalid metadata against writes",
+      "passed": true
+    },
+    {
+      "name": "A refused marker repair is not reported as preserved or written",
+      "passed": true
+    },
+    {
+      "name": "A best-effort metadata failure preserves the existing body and stream",
+      "passed": true
+    },
+    {
+      "name": "Final verification repairs a changed marker after the refusal is released",
+      "passed": true
+    },
+    {
+      "name": "Fixture removes the early marker before final verification",
+      "passed": true
+    },
+    {
+      "name": "Final verification restores a missing early marker",
+      "passed": true
+    },
+    {
+      "name": "Fixture creates the normal same-volume staging hard link",
+      "passed": true
+    },
+    {
+      "name": "Prepared metadata follows the actual body through its staging alias",
+      "passed": true
+    },
+    {
+      "name": "Fixture publishes the staged hard link",
+      "passed": true
+    },
+    {
+      "name": "Publication retains the correct marker without a second metadata write",
+      "passed": true
+    },
+    {
+      "name": "A body-only copy still gets its own final Internet-zone marker",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

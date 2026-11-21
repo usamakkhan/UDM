@@ -1,0 +1,406 @@
+{
+  "passed": true,
+  "ownedRoots": [
+    {
+      "scope": "owned-data-writeback-9.21-C-FileInfoNameTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8255
+    },
+    {
+      "scope": "owned-name-preflight-9.21",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8159
+    },
+    {
+      "scope": "owned-name-preflight-9.22",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 11464
+    },
+    {
+      "scope": "owned-ui-compiler-9.22",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 148616311
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-FileInfoNameTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 11536
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-ImmediateOptionsCommitTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 9507
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-CategoryPropertiesTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 5468
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-FileInfoCategoryTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 5689
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-FileInfoDecisionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10200
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-FileInfoPrefetchTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4250996
+    },
+    {
+      "scope": "owned-data-writeback-9.22-C-DownloadRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 31649
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-FileInfoNameTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 11374
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-ImmediateOptionsCommitTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 9183
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-CategoryPropertiesTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 5360
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-FileInfoCategoryTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 5635
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-FileInfoDecisionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 9768
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-FileInfoPrefetchTaskTests",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 4250444
+    },
+    {
+      "scope": "owned-data-writeback-9.22-D-DownloadRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 30461
+    },
+    {
+      "scope": "owned-modal-ui-9.22",
+      "filesRemoved": 34,
+      "logicalBytesRemoved": 8679835
+    },
+    {
+      "scope": "owned-pending-ui-9.22",
+      "filesRemoved": 46,
+      "logicalBytesRemoved": 242356
+    },
+    {
+      "scope": "owned-presentation-ui-9.22",
+      "filesRemoved": 42,
+      "logicalBytesRemoved": 1765009
+    },
+    {
+      "scope": "owned-first-paint-ui-9.22",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8663
+    }
+  ],
+  "temporaryBuildFiles": [
+    {
+      "name": "App.obj",
+      "bytes": 60946173,
+      "sha256": "FE47149FBFB4569ED57BCF019D8215913DB4953908F051BA494D42F98F64F401",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "AutomationMain.obj",
+      "bytes": 3135001,
+      "sha256": "E17C8A4D9D2B5F7B2073D7F12E5CD3FE5C5A8E355B9046ACCB2AFDFC49EF8A78",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Bridge.obj",
+      "bytes": 11876280,
+      "sha256": "16870DD7DF32EBC96BCCEDC67D838AEC1520E39783A0B09D9D68DF6B1B7110AE",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "CategoryPropertiesTaskTests.obj",
+      "bytes": 2856024,
+      "sha256": "CB062D694396DA57D17D8214ECF3938F71CA41FBB75E4355D913DDF922B1F0E1",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "DownloadRefreshTaskTests.obj",
+      "bytes": 4106031,
+      "sha256": "B5D5B2CC77838A84BA9ADE9B0678D4C047C5FA80AD4AEE72DA2473C7F10E9C3C",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoCategoryTaskTests.obj",
+      "bytes": 2954930,
+      "sha256": "B356E93CCDCD8CB8654AD9C23AA76BE7EA40CDC2E34BFC2C4D183B14BBC99C57",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoDecisionTests.obj",
+      "bytes": 2789658,
+      "sha256": "372B54144F8F7DCA1CB2C37176B3D732C969AD804C1E1634A80BB900099410CA",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoNameTaskTests.obj",
+      "bytes": 4010191,
+      "sha256": "5605E9036A9F81122515E4A79ACD7C6C2055313F13B6733AC29642E17FDC3F76",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoPrefetchTaskTests.obj",
+      "bytes": 4745717,
+      "sha256": "D05BB2A85DCE503467A87FD8488B17C512DB9A93952418A04506D9277102D870",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "HostMain.obj",
+      "bytes": 1615,
+      "sha256": "9BE0D53411F39A781B98C1C74DC0A51DF6146EEA8BDD9A0BF7A40F25979B32C7",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "ImmediateOptionsCommitTests.obj",
+      "bytes": 3085519,
+      "sha256": "3CE95D54C8278F554D81A96E182475546F47873C0A7446BF60E4034E7EBAEE22",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "MonitorMain.obj",
+      "bytes": 6742920,
+      "sha256": "4CA35B545442792117ED8C80B51BAFE894A3100CEDF726C59F02F895E5469B03",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "SetupMain.obj",
+      "bytes": 4589855,
+      "sha256": "338278E00DE86FC00A987A1BD2161B5E906B40DA5D7AF13B0A6A5C8AB3EBE868",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "bytes": 1341952,
+      "sha256": "E4A02A38E8E53DEF6957FFEA752B7F7C41526CA6878F7537A8BF2F13A857C5BE",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.CategoryPropertiesTaskTests.exe",
+      "bytes": 2048512,
+      "sha256": "513205479AE8AF3C63D39E2C68DAA6EB8A7A002E3E09B4C10333CECEDC62D347",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "UDM.exe",
+      "bytes": 12540416,
+      "sha256": "AEE4D5B160E6955B0CAC6CCD32E3040B66441284F8CFB47F428A539922A0AAEC",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.FileInfoCategoryTaskTests.exe",
+      "bytes": 2023424,
+      "sha256": "3A6F570D3BA0EC8C9492297075373A5509725CFF702DEF47C0D0CB89B4E2BE36",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "bytes": 5186048,
+      "sha256": "4871B48154B204FB185E050A25B0E9BFE56AA6DFF7B1DF3DB322BC61790C9358",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.FileInfoNameTaskTests.exe",
+      "bytes": 2316288,
+      "sha256": "7B60831F0475688C2D2EFDC9B605A9CC87CC9CB666BD636F71F93EA3306B2FB5",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.FileInfoPrefetchTaskTests.exe",
+      "bytes": 5324800,
+      "sha256": "06013C01938FA264039DA8DC42855DE4581B40D718CCEEA9A45CECF5674F615C",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.ImmediateOptionsCommitTests.exe",
+      "bytes": 2129408,
+      "sha256": "68267C913F7B3824739B09BDBAD45B65FF61E4C7665C39561126C30737DEC8C8",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "bytes": 2544128,
+      "sha256": "05C0FD1629A1A094A20374ADE21095BBF81E9865F6E49E29D59821A8699D2899",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "bytes": 1977344,
+      "sha256": "5347F67A660CF3CE09EADE4F4761F673F8505CEC3D0925297D784419F1BD8ED1",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "bytes": 1303552,
+      "sha256": "C37F7B41D8FC248FF612B6B517B99A549E0FD84BF146D9A43F0755B6D2FA282D",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "App.obj",
+      "bytes": 60946173,
+      "sha256": "2458258DB63A4A8347E9F42AC8D5059F32B4A05B33E817BF4CC7CFA0DEB92A48",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "AutomationMain.obj",
+      "bytes": 3135001,
+      "sha256": "13BAA8C73B53ADF9CBD545DF476B4CE58E1A346A97C02CB0EC5EC322C75E6A8E",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "CategoryPropertiesTaskTests.obj",
+      "bytes": 2856024,
+      "sha256": "C933938767DD03AE0C96BEA335DCFEAECBCDE04E1B1BD25185DE39054B303DFD",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "DownloadRefreshTaskTests.obj",
+      "bytes": 4106031,
+      "sha256": "63E84414B4AA0688EDB10834E4E8E8815600B947CFDBF1D9A62EDFABC15DDB4F",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoCategoryTaskTests.obj",
+      "bytes": 2954930,
+      "sha256": "C7B351BBAEBDC67836450E2BB64175BD5867A7F183885355E7D52B4FDDEE7423",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoDecisionTests.obj",
+      "bytes": 2789658,
+      "sha256": "0E75DA3D64290DE52E8D98F54B33293E94C638BFBC115EC09D0C5010A856776A",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoNameTaskTests.obj",
+      "bytes": 4028530,
+      "sha256": "B3CE65CA2CCF4623CBB60F093AB3BA938E9FE2BBC3B7658ABC13F75C4725796B",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "FileInfoPrefetchTaskTests.obj",
+      "bytes": 4745717,
+      "sha256": "343F4AB0B0E24E6CD9B40F9B3BAA0D0C83AB6A9A7FB8F3B2EF6ADDA232211F6A",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "HostMain.obj",
+      "bytes": 1615,
+      "sha256": "5B43AF7BDF22B3833526AE0B19F967548A31A1412AF1FF34A5015D133645C8F7",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "ImmediateOptionsCommitTests.obj",
+      "bytes": 3085519,
+      "sha256": "A92C5778B594A1BB47D0D54D4DE50B1D497D9F8E3DD96BFB125D3FF3C8B6175B",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "MonitorMain.obj",
+      "bytes": 6742920,
+      "sha256": "ABA3F1E245EC1F6CB33C6687DCA22AF9D016F6CE38DC1332A89CA7AAA2D4D9EA",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "SetupMain.obj",
+      "bytes": 4589855,
+      "sha256": "CFA2CE3FD2D2C4F59B109DEB972490A7C483678002319DECBCFF572A420233DE",
+      "removedBeforeRetry": true
+    },
+    {
+      "name": "Udm.ModalSizeUiTests.exe",
+      "bytes": 12570624,
+      "sha256": "B93037E2A1C279F4E4CE474DB2C28CDA6C88465E8E6008F31D40851FF4190C4A"
+    },
+    {
+      "name": "Udm.PendingFileInfoUiTests-9.22.exe",
+      "bytes": 9154048,
+      "sha256": "A42AB2C31957868DB3236091A1B25846EC210FD2C3F22F7BAA4ECEA263B7D4B7"
+    },
+    {
+      "name": "Udm.CapturePresentationUiTests-9.22.exe",
+      "bytes": 12565504,
+      "sha256": "77C8480A3939E7440F7563EFC3ABE827750CD0E975C314CC54402519AF4E1E95"
+    },
+    {
+      "name": "Udm.CategoryPropertiesTaskTests.exe",
+      "bytes": 2048512,
+      "sha256": "16B7AC790F5F488C95ECDBD405AF75B418505DE97177468D2EA2F77A70F4CFDE"
+    },
+    {
+      "name": "Udm.FileInfoCategoryTaskTests.exe",
+      "bytes": 2023424,
+      "sha256": "270C14A817A01F00E350244783BC311C837D6D4B137F136E813E97A4D47FABAC"
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "bytes": 5186048,
+      "sha256": "036A19BF881D8BD2F18081DF222D124F8786C1F2D9A9FA6BB0E718542C63C9C0"
+    },
+    {
+      "name": "Udm.FileInfoNameTaskTests.exe",
+      "bytes": 2316288,
+      "sha256": "0717EC3F159639BBE74E8CC171EAE836E6ED8EF4F03C1792B5C318DEABC1E122"
+    },
+    {
+      "name": "Udm.FileInfoPrefetchTaskTests.exe",
+      "bytes": 5324800,
+      "sha256": "ECD0998735E628EA2D33A4C46C9A6D959FAA9B16EAC115107B80256EAE87882D"
+    },
+    {
+      "name": "Udm.ImmediateOptionsCommitTests.exe",
+      "bytes": 2129408,
+      "sha256": "1C4F79EFC093F03F2A9BB6677870569070D2C0554E099120732302A3BC5FC741"
+    },
+    {
+      "name": "App.res",
+      "bytes": 34052,
+      "sha256": "48897085252A3460FD0ED471C014510E8F16ED735781B7CBF102E06A5C003901"
+    },
+    {
+      "name": "App.res",
+      "bytes": 34052,
+      "sha256": "4E2EF10256E9BB6C394F1B48222AB961CF0A455875FAD3A268DD90D15CFD9B5A"
+    },
+    {
+      "name": "Udm.DownloadRefreshTaskTests-9.22.exe",
+      "bytes": 2722304,
+      "sha256": "BDF27539E1BCF451AD5A965404BC2AEA87097654ABA8F13417A754B5A7FB8B1E"
+    },
+    {
+      "name": "Udm.DownloadRefreshTaskTests-9.21.exe",
+      "bytes": 2722304,
+      "sha256": "D1D7DD51190F54F8A4BAD087C175A6782996CD8EFF326118A4B17E41CDCBF925"
+    },
+    {
+      "name": "Bridge.obj",
+      "bytes": 11876280,
+      "sha256": "280BA14B9D3716DCBE012FC59FA18DF88148E5FD95DD1E26D036564C278CB464"
+    }
+  ],
+  "ownedRootCount": 22,
+  "temporaryBuildFileCount": 50,
+  "logicalBytesRemoved": 489252729
+}

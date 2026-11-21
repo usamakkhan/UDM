@@ -1,0 +1,11 @@
+{
+  "passed": false,
+  "failures": [
+    "unknownMetadataEvents",
+    "context switch evidence",
+    "native flush thread scheduling overlap"
+  ],
+  "kernelCauseVerified": false,
+  "fileOperationAttributionSupported": false,
+  "scope": "fresh normal-token fixture lifetime, decoded disk and scheduling events; no file-operation or cause attribution"
+}

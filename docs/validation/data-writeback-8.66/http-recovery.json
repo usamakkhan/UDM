@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "drive": "C",
+      "mode": "pause",
+      "passed": true,
+      "normalStopJoined": true,
+      "received": 12585286,
+      "size": 33554432,
+      "status": "Paused",
+      "writeback": {
+        "Adjustments": 0,
+        "DiscardedPending": false,
+        "Errors": 0,
+        "FinishWaitSeconds": 0.000122,
+        "Flushes": 1,
+        "InFlightAtFinish": false,
+        "LeadBytes": 0,
+        "LongestFlushSeconds": 0.0419189,
+        "Mode": "data-only",
+        "Seconds": 0.0419189
+      },
+      "fileBytes": null,
+      "fileSha256": null
+    },
+    {
+      "drive": "C",
+      "mode": "resume",
+      "passed": true,
+      "normalStopJoined": true,
+      "received": 33554432,
+      "size": 33554432,
+      "status": "Complete",
+      "writeback": {
+        "Adjustments": 0,
+        "DiscardedPending": false,
+        "Errors": 0,
+        "FinishWaitSeconds": 9.32e-05,
+        "Flushes": 3,
+        "InFlightAtFinish": false,
+        "LeadBytes": 0,
+        "LongestFlushSeconds": 0.0214843,
+        "Mode": "data-only",
+        "Seconds": 0.0496114
+      },
+      "fileBytes": 33554432,
+      "fileSha256": "5dc77fe59828279455480a9a2d0ded6154f5054d6569e5d349c2ab1afc252436"
+    },
+    {
+      "drive": "D",
+      "mode": "pause",
+      "passed": true,
+      "normalStopJoined": true,
+      "received": 12788567,
+      "size": 33554432,
+      "status": "Paused",
+      "writeback": {
+        "Adjustments": 0,
+        "DiscardedPending": false,
+        "Errors": 0,
+        "FinishWaitSeconds": 8.8e-05,
+        "Flushes": 1,
+        "InFlightAtFinish": false,
+        "LeadBytes": 0,
+        "LongestFlushSeconds": 0.0906853,
+        "Mode": "data-only",
+        "Seconds": 0.0906853
+      },
+      "fileBytes": null,
+      "fileSha256": null
+    },
+    {
+      "drive": "D",
+      "mode": "resume",
+      "passed": true,
+      "normalStopJoined": true,
+      "received": 33554432,
+      "size": 33554432,
+      "status": "Complete",
+      "writeback": {
+        "Adjustments": 0,
+        "DiscardedPending": false,
+        "Errors": 0,
+        "FinishWaitSeconds": 7.85e-05,
+        "Flushes": 3,
+        "InFlightAtFinish": false,
+        "LeadBytes": 0,
+        "LongestFlushSeconds": 0.0816155,
+        "Mode": "data-only",
+        "Seconds": 0.13693329999999998
+      },
+      "fileBytes": 33554432,
+      "fileSha256": "5dc77fe59828279455480a9a2d0ded6154f5054d6569e5d349c2ab1afc252436"
+    }
+  ],
+  "sourceSha256": "C00613401461B1E1CCE63ADE1BC322607A3C5F23BCB90EE2B22410B5E25E2D6B",
+  "binarySha256": "61A0A387D743C1027578D3759807717EDE1106B41D16B787BD588C74BAFC9F04"
+}

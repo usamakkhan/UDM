@@ -1,0 +1,203 @@
+{
+  "version": "8.42",
+  "case": "single-64m",
+  "volume": "D:",
+  "bytes": 67108864,
+  "hashMatches": true,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "originRequests": 1,
+  "originBytes": 67108864,
+  "instrumentedProcessExitTailMs": 196.4833500005625,
+  "instrumentedWallSeconds": 9.057708050000656,
+  "apiCounts": {
+    "CloseHandle": 26,
+    "CreateFileW": 27,
+    "FlushFileBuffers": 12,
+    "NtFlushBuffersFile": 12,
+    "NtWriteFile": 265,
+    "WriteFile": 265
+  },
+  "finishPhases": {
+    "AdvisoryHashOverlap": false,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 5.1e-06,
+    "Content": 0.0002885,
+    "DirectSize": 5.13e-05,
+    "FlushPublished": 0.0572325,
+    "Hash": 5.33e-05,
+    "HashMode": "inline",
+    "PrePublicationMetadata": 0.0129173,
+    "PrefetchReceipt": 2e-06,
+    "PreparedTransferFinalizeSeconds": 0.07151650000000001,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 0.000143,
+    "PublishedFileFlush": 0.0567876,
+    "PublishedFileOpen": 0.0002191,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0008975,
+    "SettleDestination": 0.0006461,
+    "SettleLengthQuery": 0.0001044,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.0001176,
+    "SettleSnapshot": 1.24e-05,
+    "SettleValidateFolder": 5e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0007791,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "publicationPhases": {
+    "IntentOperations": {
+      "bytes-written": 0.0003737,
+      "directories-ready": 0.0007858,
+      "publish": 0.0011201,
+      "temporary-flushed": 0.0214452,
+      "temporary-opened": 0.0002835
+    },
+    "PrepareIntent": 0.0008895,
+    "PrepareSource": 0.0002838,
+    "Rename": 0.0016997,
+    "TimingScope": "through-rename-before-final-catalog-save",
+    "VerifyIdentity": 1.6e-06,
+    "WriteIntent": 0.0240142
+  },
+  "prefinishWriteback": {
+    "Adjustments": 1,
+    "Errors": 0,
+    "Flushes": 3,
+    "LeadBytes": 5337756,
+    "Seconds": 0.201013
+  },
+  "protectedFilesUnchanged": true,
+  "processExitedNormally": true,
+  "instrumentedAttributionOnly": true,
+  "performanceParityVerified": false,
+  "rootCauseVerified": false,
+  "terminalSnapshotReceived": false,
+  "observedStreamedEvents": 607,
+  "completeOperationCoverageVerified": false,
+  "limitations": [
+    "Streamed operation observations cannot prove complete operation coverage without an exit snapshot.",
+    "Instrumentation adds overhead; these are not uninstrumented comparison timings.",
+    "Win32/native nested flush events represent the same operation and must be paired rather than added.",
+    "Application process exit includes its workers; operating-system services/device writeback are not measured."
+  ],
+  "nativeFlushOperations": [
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -8616.774849999274,
+      "endAfterLastOriginByteMs": -8570.08445000065,
+      "durationMs": 46.6904,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -7011.9696500005375,
+      "endAfterLastOriginByteMs": -6902.587950000452,
+      "durationMs": 109.3817,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "body",
+      "beginAfterLastOriginByteMs": -6257.239050000862,
+      "endAfterLastOriginByteMs": -6184.8700499995175,
+      "durationMs": 72.369,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -5379.760850000821,
+      "endAfterLastOriginByteMs": -5331.4233500004775,
+      "durationMs": 48.3375,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "body",
+      "beginAfterLastOriginByteMs": -4160.225249999712,
+      "endAfterLastOriginByteMs": -4135.399150000012,
+      "durationMs": 24.8261,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -3812.1412500004226,
+      "endAfterLastOriginByteMs": -3784.8729500001355,
+      "durationMs": 27.2683,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -2262.317549999352,
+      "endAfterLastOriginByteMs": -2235.0940500000434,
+      "durationMs": 27.2235,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": -708.6443499993038,
+      "endAfterLastOriginByteMs": -684.1480500006583,
+      "durationMs": 24.496299999999998,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "body",
+      "beginAfterLastOriginByteMs": -621.0481500002061,
+      "endAfterLastOriginByteMs": -517.9495499996847,
+      "durationMs": 103.0986,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "body",
+      "beginAfterLastOriginByteMs": 19.728749999558204,
+      "endAfterLastOriginByteMs": 76.00574999923992,
+      "durationMs": 56.277,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "intent",
+      "beginAfterLastOriginByteMs": 79.46685000024445,
+      "endAfterLastOriginByteMs": 100.2949499998067,
+      "durationMs": 20.8281,
+      "ok": true
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "role": "catalog",
+      "beginAfterLastOriginByteMs": 105.75414999948407,
+      "endAfterLastOriginByteMs": 123.53355000050215,
+      "durationMs": 17.779400000000003,
+      "ok": true
+    }
+  ],
+  "nestedWrapperPairs": 12,
+  "postLastOriginByteFlushCount": 3,
+  "postLastOriginByteNativeFlushMs": 94.8845,
+  "lastObservedNativeFlushToProcessExitMs": 72.94980000006035,
+  "bodyNativeWrites": 256,
+  "bodyNativeCompletedBytes": 67108864,
+  "writerCoveragePassed": false,
+  "writerCoverageLimitation": "Completed-byte sum is diagnostic; no interval/file-identity coverage proof.",
+  "qpcToPerfCounterMappingBoundSeconds": null,
+  "qpcBoundLimitation": "Private controller reused anchor variables before recording the bound; numerical bound discarded.",
+  "observerBaseSha256": "A6B8CEE163A04650F20AEAE3103F27765B9536C2691B632861EC5CBA7D894DD5",
+  "privateDerivedObserverSha256": "7049B223B41A295BD3A2CD2A44A8AF3D884DB7A1A4E15AE70A4955595F61FE97",
+  "finalPayloadRemoved": true
+}

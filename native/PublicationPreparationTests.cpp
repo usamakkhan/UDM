@@ -14,8 +14,8 @@ int wmain(int argc,wchar_t** argv){
  if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string failure,activeCase;bool passed=false;
  auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
  try{
-  for(const std::string mode:{"begin","ready","unknown-hash","zero","gzip","child","cancel","changed-folder","changed-root","changed-source","project","missing-project","busy-source","missing-source","directory-source"}){
-   activeCase=mode;const auto folder=root/wide(mode);Manager manager(folder/L"state");auto files=folder/L"files";const bool project=mode=="project"||mode=="changed-root"||mode=="missing-project";if(project)files/=L"nested";
+  for(const std::string mode:{"begin","ready","directories-ready","directories-changed-folder","unknown-hash","zero","gzip","child","cancel","changed-folder","changed-root","changed-source","project","missing-project","busy-source","missing-source","directory-source"}){
+   activeCase=mode;const auto folder=root/wide(mode);Manager manager(folder/L"state");auto files=folder/L"files";const bool project=mode=="directories-ready"||mode=="directories-changed-folder"||mode=="project"||mode=="changed-root"||mode=="missing-project";if(project)files/=L"nested";
    if(mode!="missing-project")fs::create_directories(files);else fs::create_directories(folder/L"files");
    auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8(files.wstring());prefs["CategoryFolders"]=false;manager.setSettings(prefs);
    auto job=manager.add("https://example.invalid/owned.bin","",mode=="ready"?utf8(L"output-\u2603.bin"):"output.bin","Main queue",true);
@@ -26,8 +26,8 @@ int wmain(int argc,wchar_t** argv){
    const auto before=job->data;auto staging=folder/L"staged-\u2603.part";if(mode=="directory-source")fs::create_directories(staging);else if(mode!="missing-source")atomicText(staging,mode=="zero"?"":"verified bytes",false);
    const auto hash=mode=="directory-source"||mode=="missing-source"?std::string("unavailable"):fileHash(staging);const auto journal=manager.root/L"publications"/(wide(job->id())+L".json");auto cancel=std::make_shared<Cancel>();
    std::unique_ptr<Handle> writer;if(mode=="busy-source"){writer=std::make_unique<Handle>(CreateFileW(staging.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(bool(*writer),"Owned writer opens before publication preparation to test source sharing rejection");}
-   const bool hold=mode=="begin"||mode=="ready"||mode=="cancel"||mode=="changed-folder"||mode=="changed-root"||mode=="changed-source"||mode=="project";
-   auto gate=std::make_shared<PreparationGate>(mode=="begin"?"publication-preflight-begin":"publication-preflight-ready");if(hold)CatalogCheckpointTestAccess::observe(manager,[gate](const char* stage){gate->observe(stage);});
+   const bool hold=mode=="directories-ready"||mode=="directories-changed-folder"||mode=="begin"||mode=="ready"||mode=="cancel"||mode=="changed-folder"||mode=="changed-root"||mode=="changed-source"||mode=="project";
+   auto gate=std::make_shared<PreparationGate>(mode=="begin"?"publication-preflight-begin":mode=="directories-ready"||mode=="directories-changed-folder"?"publication-directories-validated":"publication-preflight-ready");if(hold)CatalogCheckpointTestAccess::observe(manager,[gate](const char* stage){gate->observe(stage);});
    std::future<void> work;struct Release {std::shared_ptr<PreparationGate> gate;~Release(){gate->release();}} release{gate};std::string error;
    auto publish=[&]{manager.publishFile(job,staging,mode=="unknown-hash"?"":hash,cancel.get());};
    if(hold){
@@ -37,13 +37,13 @@ int wmain(int argc,wchar_t** argv){
     if(mode=="ready"||mode=="project"){Handle contender(CreateFileW(staging.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!contender,"A measured staging file rejects writers while prepared input is held");}
     if(mode=="project"){auto moved=folder/L"moved";check(!MoveFileExW(files.c_str(),moved.c_str(),0)&&fs::exists(files),"Protected website subfolders cannot be renamed while their validated directory handles are held");}
     if(mode=="cancel")cancel->stop=true;
-    if(mode=="changed-folder"){auto next=folder/L"different";fs::create_directories(next);job->data["Folder"]=utf8(next.wstring());}
+    if(mode=="changed-folder"||mode=="directories-changed-folder"){auto next=folder/L"different";fs::create_directories(next);job->data["Folder"]=utf8(next.wstring());}
     if(mode=="changed-root")job->data["ProjectDestinationRoot"]=utf8(folder.wstring());
     if(mode=="changed-source"){auto retained=folder/L"retained.part";check(MoveFileExW(staging.c_str(),retained.c_str(),MOVEFILE_WRITE_THROUGH)!=FALSE,"Owned source rename exercises allowed delete sharing without modifying the held measured object");atomicText(staging,"replaced bytes",false);}
     lease.unlock();gate->release();try{work.get();}catch(const std::exception& e){error=e.what();}
    }else try{publish();}catch(const std::exception& e){error=e.what();}
    CatalogCheckpointTestAccess::observe(manager,{});writer.reset();
-   const bool accepted=mode=="begin"||mode=="ready"||mode=="unknown-hash"||mode=="zero"||mode=="gzip"||mode=="child"||mode=="project";
+   const bool accepted=mode=="directories-ready"||mode=="begin"||mode=="ready"||mode=="unknown-hash"||mode=="zero"||mode=="gzip"||mode=="child"||mode=="project";
    if(accepted){
     check(error.empty()&&str(job->data,"Status")=="Complete"&&fs::exists(job->target())&&!fs::exists(staging)&&!fs::exists(journal),"Accepted prepared files publish through the existing rename and durable catalog transaction");
     check(fs::file_size(job->target())==(mode=="zero"?0:14)&&fileHash(job->target())==hash&&num(job->data,"Size")==num(job->data,"Received")&&num(job->data,"Size")==static_cast<i64>(fs::file_size(job->target())),"Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output");
@@ -54,12 +54,21 @@ int wmain(int argc,wchar_t** argv){
    }else{
     check(!error.empty()&&str(job->data,"Status")!="Complete"&&!fs::exists(journal)&&!fs::exists(job->target()),"Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent");
     if(mode=="cancel")check(error=="Download paused.","Cancellation after preparation retains the original cancellation message");
-    if(mode=="changed-folder"||mode=="changed-root")check(error=="The download changed before publication. Its file was not replaced.","Changing only the folder or its saved project-root policy invalidates prepared publication inputs");
+    if(mode=="changed-folder"||mode=="directories-changed-folder"||mode=="changed-root")check(error=="The download changed before publication. Its file was not replaced.","Changing only the folder or its saved project-root policy invalidates prepared publication inputs");
     if(mode=="changed-source")check(readText(staging)=="replaced bytes"&&readText(folder/L"retained.part")=="verified bytes"&&error.find("completed file changed")!=std::string::npos,"A replaced staging name is rejected without overwriting either the measured file or replacement bytes");
     else if(mode!="missing-source"&&mode!="directory-source")check(readText(staging)=="verified bytes","Rejected preparation retains the complete staged source for review or retry");
    }
    if(mode=="project"){auto moved=folder/L"moved";check(MoveFileExW(files.c_str(),moved.c_str(),0)!=FALSE,"Protected directory handles release after publication so later folder operations remain available");}
    manager.stop();
+  }
+  {
+   const auto folder=root/L"pinned-source-reuse";fs::create_directories(folder);const auto source=folder/L"bytes.part",renamed=folder/L"renamed.part";atomicText(source,"pinned identity and hash",false);
+   PublicationPreparation prepared(source,Json::object());const auto identity=prepared.sourceIdentity();
+   check(!identity.is_null()&&prepared.size==24,"Preparation exposes the identity and measured size of its existing pinned source");
+   Handle writer(CreateFileW(source.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!writer,"Reusing the pinned source preserves exclusion of concurrent writers");
+   const auto expected=fileHash(source);check(prepared.sourceHash()==expected,"Fallback hash reads the already pinned bytes correctly");
+   check(MoveFileExW(source.c_str(),renamed.c_str(),0)!=FALSE&&prepared.sourceIdentity()==identity&&prepared.sourceHash()==expected,"Pinned identity and fallback hash survive a source-name move without a second path open");
+   bool rejected=false;try{prepared.validateSourceName(source);}catch(...){rejected=true;}check(rejected,"Reusing the handle does not bypass validation of the actual staging name");
   }
   passed=true;
  }catch(const std::exception& e){failure=e.what();}

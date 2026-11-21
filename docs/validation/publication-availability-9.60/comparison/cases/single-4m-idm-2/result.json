@@ -1,0 +1,32 @@
+{
+  "label": "9.60 acceptance-boundary file-pin release versus frozen 9.59 and IDM",
+  "trial": 2,
+  "case": "single-4m",
+  "client": "idm",
+  "bytes": 4194304,
+  "configuredConnections": 1,
+  "firstAvailabilityTailSeconds": 0.03708799999913026,
+  "processExitTailSeconds": 0.39932410000074015,
+  "processExitWallSeconds": 2.087811800001873,
+  "firstAvailabilityWallSeconds": 1.7255757000002632,
+  "exitAfterFirstAvailabilitySeconds": 0.3622361000016099,
+  "clockMappingErrorBoundSeconds": 7.699999514443334e-06,
+  "clockDriftSeconds": 3.549999034291318e-06,
+  "trackedProcesses": 1,
+  "requests": 1,
+  "originConnections": 1,
+  "peakConcurrent": 1,
+  "originBytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 0.48738719999892055,
+  "durableWallSeconds": 2.1758749000000535,
+  "postExitToDurableSeconds": 0.0880630999981804,
+  "postExitOperations": {
+    "openSeconds": 8.520000119460747e-05,
+    "flushSeconds": 0.06736610000007204,
+    "closeSeconds": 7.359999835898634e-05
+  }
+}

@@ -1,0 +1,35 @@
+--- native/BrowserSettingsUi.hpp@9.58
++++ native/BrowserSettingsUi.hpp@9.57
+@@ -1,6 +1,5 @@
+ #pragma once
+ #include "BrowserCustomizationUi.hpp"
+-#include "BrowserIntegrationTask.hpp"
+ namespace udm {
+ inline bool browserIntegration(CWnd* owner,Json& prefs){
+  Form d("Browser integration",300,179,owner);d.dialogUnits=true;Json draft=prefs;
+@@ -11,25 +10,4 @@
+  d.accept=[&,enabled,exceptions]{draft["BrowserCaptureEnabled"]=d.checked(enabled);draft["CaptureExcludedUrls"]=text(exceptions);validateBrowserSettings(draft);prefs=draft;d.close();};d.defaultButton(d.button("OK",176,158,50,d.accept));d.button("Cancel",238,158,50,[&]{d.close(IDCANCEL);});
+  };return d.DoModal()==IDOK;
+ }
+-// Standalone command owns preparation and persistence. The Json overload above
+-// remains a draft-only child of Options, whose Cancel must discard nested edits.
+-inline void browserIntegration(CWnd* owner,Manager& manager,std::function<void(const char*)> observe={}){
+- BrowserIntegrationTask task;Form d("Browser integration",300,179,owner);d.dialogUnits=true;d.pulsePeriod=40;bool loaded=false;Json base,draft;std::function<void()> read;CWnd* retry=nullptr;
+- d.init=[&]{auto enabled=d.check("Allow browser download capture",false,12,12,276,10);auto message=d.label("Reading browser preferences...",12,28,276,22);
+-  auto keys=d.button("Keys...",12,58,84,[&]{browserKeysDialog(&d,draft);});auto menus=d.button("Browser menus...",105,58,87,[&]{browserMenusDialog(&d,draft);});auto panels=d.button("Video panels...",201,58,87,[&]{browserPanelsDialog(&d,draft);});
+-  d.label("Address exceptions (one HTTP/HTTPS pattern per line):",12,83,276,10);auto exceptions=d.edit("",12,98,276,49,false,true);auto ok=d.button("OK",176,158,50,[]{});d.defaultButton(ok);
+-  d.cancel=[&]{if(task.saving())return;task.cancelRead();d.close(IDCANCEL);};auto cancel=d.button("Cancel",238,158,50,d.cancel);
+-  const auto working=[&,enabled,keys,menus,panels,exceptions,ok,cancel](bool busy){for(auto control:{enabled,keys,menus,panels,exceptions,ok})control->EnableWindow(loaded&&!busy);cancel->EnableWindow(!task.saving());};
+-  const auto start=[&](std::optional<BrowserIntegrationDraft> edit){task.start(manager,std::move(edit),d.taskNotifier(),observe);};
+-  d.accept=[&,enabled,exceptions,message,working,start]{if(!loaded||task.valid())return;draft["BrowserCaptureEnabled"]=d.checked(enabled);draft["CaptureExcludedUrls"]=text(exceptions);
+-   try{start(BrowserIntegrationDraft{base,draft});message->SetWindowText(L"Saving browser preferences...");working(true);}catch(const std::exception&){message->SetWindowText(L"Could not save preferences. Your edits are kept; try OK again.");working(false);}
+-  };d.bind(ok,d.accept);
+-  read=[&,message,working,start]{retry->ShowWindow(SW_HIDE);message->SetWindowText(L"Reading browser preferences...");try{start({});working(true);}catch(const std::exception&){message->SetWindowText(L"Preferences unavailable. Please retry.");working(false);retry->ShowWindow(SW_SHOW);}};
+-  retry=d.button("Retry",12,158,60,[&]{if(!loaded&&!task.valid())read();});retry->ShowWindow(SW_HIDE);
+-  d.pulse=[&,enabled,exceptions,message,working]{if(!task.ready())return;auto result=task.take();if(result.saved||result.unchanged){d.close();return;}if(result.cancelled){d.cancel();return;}if(!result.error.empty()){working(false);message->SetWindowText(loaded?cs("Could not save: "+result.error):CString(L"Preferences unavailable. Please retry."));if(!loaded)retry->ShowWindow(SW_SHOW);return;}
+-   base=std::move(result.settings);draft=base;enabled->SendMessage(BM_SETCHECK,yes(draft,"BrowserCaptureEnabled",true)?BST_CHECKED:BST_UNCHECKED);exceptions->SetWindowText(cs(str(draft,"CaptureExcludedUrls")));loaded=true;message->SetWindowText(L"Automatic capture also needs to be enabled in the browser extension.");working(false);
+-  };working(true);read();
+- };d.DoModal();task.finish();
+ }
+-
+-}

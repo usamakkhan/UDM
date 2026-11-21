@@ -1,0 +1,51 @@
+{
+  "purpose": "Read-only current storage topology; not causal attribution of historical stalls",
+  "disks": [
+    {
+      "Index": 1,
+      "Model": "WDC WD2500AAKX-753CA1",
+      "Size": 250056737280
+    },
+    {
+      "Index": 0,
+      "Model": "KINGSTON SKC600/256G",
+      "Size": 256052966400
+    }
+  ],
+  "volumes": [
+    {
+      "DriveLetter": "D",
+      "FileSystem": "NTFS",
+      "AllocationUnitSize": 131072,
+      "Size": 249912229888,
+      "SizeRemaining": 36269719552
+    },
+    {
+      "DriveLetter": "C",
+      "FileSystem": "NTFS",
+      "AllocationUnitSize": 4096,
+      "Size": 242541916160,
+      "SizeRemaining": 5741416448
+    }
+  ],
+  "dPartitions": [
+    {
+      "DiskIndex": 1,
+      "Index": 1,
+      "Type": "GPT: Logical Disk Manager Data",
+      "Size": 249925097984
+    }
+  ],
+  "cPartitions": [
+    {
+      "DiskNumber": 0,
+      "PartitionNumber": 3,
+      "Size": 242541920256
+    }
+  ],
+  "limits": [
+    "C: free space is a point-in-time observation, not proof of SSD garbage collection or a historical disk fault.",
+    "Get-Partition did not enumerate dynamic D:; Win32 association resolved D: to disk 1.",
+    "Different disk identities do not isolate other background IO or shared controller effects."
+  ]
+}

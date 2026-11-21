@@ -1,0 +1,28 @@
+--- native/MainFeatures.hpp@9.52
++++ native/MainFeatures.hpp@9.51
+@@ -82,25 +82,6 @@
+   };d.DoModal();auto remaining=task.finish();if(remaining.saved&&GetSafeHwnd())applyListLayout(remaining.layout);
+  }
+ 
+- void startGlobalLimitCommand(bool enabled){
+-  std::vector<BOOL> buttons;buttons.reserve(ToolbarCommandCount);for(int i=0;i<ToolbarCommandCount;++i)buttons.push_back(toolbar.IsButtonEnabled(toolbarCommand(i)));
+-#ifdef UDM_TOOLBAR_COMPONENT_TEST
+-  globalLimitCommandTask.startToggle(manager,enabled,maintenanceSignal->notifier(),globalLimitCommandObserver);
+-#else
+-  globalLimitCommandTask.startToggle(manager,enabled,maintenanceSignal->notifier());
+-#endif
+-  globalLimitToolbarState=std::move(buttons);showStatus("Saving Speed Limiter settings...");updateToolbarCommands();
+- }
+- bool pollGlobalLimitCommand(){
+-  if(!globalLimitCommandTask.valid()){if(globalLimitClosePending){globalLimitClosePending=false;OnClose();return true;}return false;}if(!globalLimitCommandTask.ready())return true;
+-  auto result=globalLimitCommandTask.take();const bool close=globalLimitClosePending;globalLimitClosePending=false;
+-  for(int i=0;i<ToolbarCommandCount&&i<(int)globalLimitToolbarState.size();++i)toolbar.EnableButton(toolbarCommand(i),globalLimitToolbarState[i]);globalLimitToolbarState.clear();
+-  if(!result.saved){quitting=false;recoveryOnClose=false;showStatus("Could not change Speed Limiter settings. Please try On or Off again.");return true;}
+-  // This acknowledged result is sufficient to update the existing native menu;
+-  // acquiring Manager again would reintroduce a delay after a successful save.
+-  if(auto tasks=menu.GetSubMenu(2))if(auto limiter=tasks->GetSubMenu(12))limiter->CheckMenuRadioItem(CMD_LIMIT_ON,CMD_LIMIT_OFF,num(result.settings,"LimitKbps")>0?CMD_LIMIT_ON:CMD_LIMIT_OFF,MF_BYCOMMAND);
+-  showStatus("");if(close){globalLimitClosePending=true;try{maintenanceSignal->notifier()();}catch(...){/* The main timer retries an undelivered close decision. */}}return true;
+- }
+  void globalLimitSettingsDialog(){
+   GlobalLimitSettingsTask task;Form d("Speed Limiter settings",302,89,this);d.dialogUnits=true;d.pulsePeriod=40;bool loaded=false;std::function<void()> read;CWnd* retry=nullptr;
+   d.init=[&]{

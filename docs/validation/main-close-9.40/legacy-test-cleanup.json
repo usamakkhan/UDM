@@ -1,0 +1,940 @@
+{
+  "passed": true,
+  "scope": "Only unused historical native test executables and test compiler objects; no product binaries or core caches",
+  "protectedHistoricalCorePaths": 336,
+  "protectedCoreBasenames": [
+    "Adaptive.obj",
+    "Bridge.obj",
+    "CaptureAdmission.obj",
+    "CaptureExclusions.obj",
+    "Core.obj",
+    "DashManifest.obj",
+    "DialUp.obj",
+    "DownloadPreview.obj",
+    "Duplicates.obj",
+    "FileWorkflows.obj",
+    "Ftp.obj",
+    "Grabber.obj",
+    "GrabberLinks.obj",
+    "Network.obj",
+    "OfflineSite.obj",
+    "PacProxy.obj",
+    "Queue.obj",
+    "QueueWake.obj",
+    "Scanner.obj",
+    "SocksProxy.obj",
+    "Streaming.obj",
+    "Transfer.obj",
+    "UDM.exe",
+    "Udm.Automation.exe",
+    "Udm.Monitor.exe",
+    "Udm.NativeHost.exe",
+    "Udm.SetupHelper.exe",
+    "YouTubePlayer.obj",
+    "ZipPreview.obj",
+    "brotli-common-constants.obj",
+    "brotli-common-context.obj",
+    "brotli-common-dictionary.obj",
+    "brotli-common-platform.obj",
+    "brotli-common-shared_dictionary.obj",
+    "brotli-common-transform.obj",
+    "brotli-dec-bit_reader.obj",
+    "brotli-dec-decode.obj",
+    "brotli-dec-huffman.obj",
+    "brotli-dec-prefix.obj",
+    "brotli-dec-state.obj",
+    "brotli-dec-static_init.obj",
+    "ffmpeg.exe",
+    "ffprobe.exe",
+    "manifest.json",
+    "state.json",
+    "zlib-adler32.obj",
+    "zlib-crc32.obj",
+    "zlib-inffast.obj",
+    "zlib-inflate.obj",
+    "zlib-inftrees.obj",
+    "zlib-zutil.obj"
+  ],
+  "historicalBuildManifestsChecked": 102,
+  "files": [
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1309184,
+      "sha256": "03B0C6528DDE516961ED4E6D29837D5A2CA0F7444A06124BD58F94207DEE6AFE",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2558464,
+      "sha256": "86C006DA52078102E7F6E14B3C9B6E595886195A7762CE6300FB8A7736FBBA3F",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1809408,
+      "sha256": "E9598F9756D8FA48CC2F7C6C533C7364C5009DACC651259CF7DB22DED74CF1FA",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1881600,
+      "sha256": "58C8076EDB0D670384DCE916E7C915A05EA07C6E2865BAE7A4BA436BE92E440C",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4738048,
+      "sha256": "58DC688B4D021C636EEEC7D1C7F89DB4023E90D2F9D4C4C94F0E1A928CC4538D",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "bytes": 11410944,
+      "sha256": "323EF66DC831774B59F17BBD7546CA7D83D9AF40939CD5888DB46625D4ADC2D3",
+      "testSource": "native/CompletionDialogUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2759680,
+      "sha256": "F24AE5BA34045399796150D1732D52D175E3D6F849AE44608B76F7D8A4B86186",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4938752,
+      "sha256": "C462C1581DB146FC627320FA0BD0978524EE0C598A665A3B4D3899313FC6B70B",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.HttpGzipTransferTests.exe",
+      "bytes": 5049856,
+      "sha256": "01D6E675DD7521BAE1EDEAAB4F7C0642DC13E6294C5FC62606E9F126FB5B124E",
+      "testSource": "native/HttpGzipTransferTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.PrefinishWritebackTests.exe",
+      "bytes": 1211904,
+      "sha256": "782A5B64F59985DCE5BBE22EEE75943B80980ECE84CB5CC63955576C8814B044",
+      "testSource": "native/PrefinishWritebackTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2353664,
+      "sha256": "3B594FF29A34DC7BF3759F723488A850FFB9E48966D1A8F409BCFE91D5624558",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2392064,
+      "sha256": "EA38388EC792D49D92082F6E1D0E37515AA0646E3CA0B1413F43694E0E6E6D87",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2147328,
+      "sha256": "E6E08F24927552CACB22A3F475FD3B109B49A41D3BFA2002732FBE83D9EFF682",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2181632,
+      "sha256": "D3BC978D1DCFD843698B20CAEA8174E1A33F176EB4E64F4C99B533C4A3806234",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.QueueCompletionCycleTests.exe",
+      "bytes": 5023744,
+      "sha256": "BDB16CA1E51901A7F08C6EAF06D91BE65AED551269C3CB3D85B990F6591E1B4B",
+      "testSource": "native/QueueCompletionCycleTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2248704,
+      "sha256": "12B03D1CCE88C74FE2BC284B71B935DD53DD1E80387CEE62C8F950C6D16B8A39",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 4999680,
+      "sha256": "195E567978D183686AE423359971E8A0BA85E6195476B36D353FD029E212223D",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "104F1567DAA692957192728FF64A4D994F137817255494E38C82D5D190B90D06",
+      "testSource": "native/UiTaskSignalTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.20\\release-native\\Udm.WrittenPrefixTests.exe",
+      "bytes": 1217536,
+      "sha256": "C4A83AD3F80B4CABC35ACA00FA3A7002352926094DF8D2AFC721BD56172CF5DA",
+      "testSource": "native/WrittenPrefixTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1309696,
+      "sha256": "4594DD214B64A7C121FF6F285B954ED9ADBE696207DA19C2238C3601C198D001",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2562560,
+      "sha256": "2EDB812CDC69DCB4D31D0ECD9E79C8BA22B7731866AFD3DF57C0579EC93AAB7C",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1843200,
+      "sha256": "179E2A5853F55F54E41F7F04A6B476736212A07E321A6B2EA6563BB62624576A",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1885184,
+      "sha256": "988697A920C942D7BAF7D7410B2894D1AB976880033686000BFE4F155205912E",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4794368,
+      "sha256": "5EF4A83EEB7A5FA1987BCF7BBCE4994651A580DB05B94DAA9EC5B3940B9E90B2",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "bytes": 11446784,
+      "sha256": "05248DB5E40DB9551716D770D1403664CDAF91E7E24BA0D44750F12471CCCD3E",
+      "testSource": "native/CompletionDialogUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2765824,
+      "sha256": "AD50ABCF7BDF9A6E40E7AE6AC844F7AD94B75F0D2FA354F02B4EAEA91F9594CF",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4969984,
+      "sha256": "0A9891011054BE67AE3451D825A4012254EF4B757832AAF391E237521CD4AACF",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.HttpGzipTransferTests.exe",
+      "bytes": 5080576,
+      "sha256": "71EC545B794A0E941FDF268923B51FF3919EFEE0450B084B8D52FDC4BBC449D1",
+      "testSource": "native/HttpGzipTransferTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.PrefinishWritebackTests.exe",
+      "bytes": 1219584,
+      "sha256": "CC80D4E941C016D71D424F8BAF8FA1659CA98CAEE7C27CDDA748559B9607345E",
+      "testSource": "native/PrefinishWritebackTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2360320,
+      "sha256": "B6A5182AA73FBB196F4900C0E63739DCD6FE73387C14BC024DDE8B0CEBF01C89",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2398720,
+      "sha256": "D503B610D47E2EBAAFFFA27A03C7CF96EDD8765D5AB7B893938350407B6A0998",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2160128,
+      "sha256": "E807B59221F2B326D5757DB9688774ED3EEEED3F80783CE9E157066F46794DDD",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2188288,
+      "sha256": "566761EA3186693900CA09D699EB33042B725079CFD63A125FB1C27229F4D623",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.QueueCompletionCycleTests.exe",
+      "bytes": 5054464,
+      "sha256": "B89AB4480498A13D41FF4C020A6D39FD4C1D4BAB3A7B519D89B3FDF5198D3AF9",
+      "testSource": "native/QueueCompletionCycleTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2256384,
+      "sha256": "D8B941483C20875F791AE2703FAC702F627B23B27839D9ECB7694C747D00E665",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5030400,
+      "sha256": "42D1C0463406F6C0AF4013BEE89ADD22FA987C77D947775B31E941032659FD1A",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "3B109ABDB0B2AB758A39FC1E954D0C432BCE860709C25FED4488ECD67BD2CA91",
+      "testSource": "native/UiTaskSignalTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1145344,
+      "sha256": "12D875B24F1C995D14999A7A195E27FC7BB33122A62E9020A1E0515BE258F5E8",
+      "testSource": "native/WrittenBodyCacheTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.29\\release-native\\Udm.WrittenPrefixTests.exe",
+      "bytes": 1217536,
+      "sha256": "EA0AE9A7F8492898F6FF7A004EDD5EE9A13D1657A1E330A39F10642A9AADC4ED",
+      "testSource": "native/WrittenPrefixTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1309696,
+      "sha256": "F15AF1B61EFECAB9E1BB09EE2359362FD2025311A1E585F8A1780FB3199DBC32",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2561536,
+      "sha256": "0151825F9A07695FA23D46B8EDD595D20C5AF90D1C3187E8111EFC8C23C87432",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1842688,
+      "sha256": "D19FFE5F4EDD9B6BA715122DB70F2F57BF3C2CEA16093F817C1D36A0615F435E",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1885184,
+      "sha256": "262289227847685F36CF0AD6A5EAA438AF15FC22A82C14F2E5B840A667E4E926",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4818432,
+      "sha256": "2C7414B92527B9D472F8BA74A1D0F7634EFF6B97A4AB499B8657D34E4D1C4EF6",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "bytes": 11459584,
+      "sha256": "767A101F8030CAF1D4D1F7F2A72A0F274245D02C00C0C5AB9EA36B528C5E3ED7",
+      "testSource": "native/CompletionDialogUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2766848,
+      "sha256": "FDF3C4B49C985CC736AC2B18CE437738AC67B1A1DAA9E7E7CF41547A88A61B27",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4982272,
+      "sha256": "920B4D16FC14D593A2B54F5DAF7163F8AA3EA94ACC65A6845054F0B7D443CAF7",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.HttpGzipTransferTests.exe",
+      "bytes": 5092864,
+      "sha256": "0F4037263BFCA8F2E2F7C142F7130264B67D5FFCF31221A71C29AEB4EB1D506C",
+      "testSource": "native/HttpGzipTransferTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.PrefinishWritebackTests.exe",
+      "bytes": 1246720,
+      "sha256": "BE6BEAADFD246A2E06D274B2E832EDAD4B3B9489889BEBECB6E9CCCF32B7179B",
+      "testSource": "native/PrefinishWritebackTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2361344,
+      "sha256": "C25E0CD4A403A03AD6B979D2DD6E5401946A7A041C0D55F49617C751945AD32E",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2399232,
+      "sha256": "84DA2FE5F7309A7A7C01CB9F934217BC1E14B8C15AAC5316ACD92B89B99FD6B0",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2160640,
+      "sha256": "219BAB8347A0171E87CB3096A4F0C13F1E6740F6E386C0FB5B572F4356B8AB70",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2188800,
+      "sha256": "4B0DC6B6897C38C6BD698323605B0A44AB92B5C7FD8FAD51991929DBF984C194",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.QueueCompletionCycleTests.exe",
+      "bytes": 5067264,
+      "sha256": "77A06C9DC6244A14ADE370B57E14E5E673C06CF1ADAB254792AACA474E1F5024",
+      "testSource": "native/QueueCompletionCycleTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2257408,
+      "sha256": "5F2B3359C294F690D8179A8FE46D5B5920F05C3CABA59D585D2A557A2BDF226C",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5043200,
+      "sha256": "4EEEA3D45A7CC41654ECE95E31054E304C03CC443CD5AAB86449120FCC60F212",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "A987037C71CEA5541617E0F4C0610F761A42D24597CC5F05854B816DBDD94928",
+      "testSource": "native/UiTaskSignalTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1145344,
+      "sha256": "84347093EF37BF7F6AF2C8B7625E2871005A2566504B7EE9CB49A832C1A72A22",
+      "testSource": "native/WrittenBodyCacheTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.32\\release-native\\Udm.WrittenPrefixTests.exe",
+      "bytes": 1217536,
+      "sha256": "FD7F14D08073BA0D75D5DCE9CAD3BC4D8A4939EECC61F77F957AED6B92DD0D4E",
+      "testSource": "native/WrittenPrefixTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1309696,
+      "sha256": "A5362CD490F11FA33EE2F2DB072F1996C55EE80D828D62BBAE58E8D005CCA9B8",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2563584,
+      "sha256": "FF4B9DA0544DA6523EB0DF621BC2A087A194C7E2EB688641430FCE4691FEA2CA",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1843712,
+      "sha256": "BB2CE3DA93BDEE7E197AC15E068B090E60DA63F5F7DF595EC64F5958A8E2F5AB",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1886208,
+      "sha256": "74E8E762BC74EDFD1F66F93609B18C3E5F0087739E32A480D97F38EBB761A5F2",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4849664,
+      "sha256": "100AEA778DA857724B77E1C4BE4C7B0160FF0D7FD5A77CEA8D738B2C71F836DC",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "bytes": 11463680,
+      "sha256": "EE153DE47788B254F63D677B4F3D56BC18BB885A1ABD9E2EE658C3A795CF9FC1",
+      "testSource": "native/CompletionDialogUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2768384,
+      "sha256": "48533F6583F345B50866ECC525942B9ED5AD9757D52BF35EFD4D2E3048A6BF9F",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4985856,
+      "sha256": "3B5B1798A25F2F801EDC0B011E76A9A8D0EBF2E893F9AB1DE61FAFECC37E78B4",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.HttpGzipTransferTests.exe",
+      "bytes": 5096448,
+      "sha256": "3E6FA57E670F5E8DE92650E331442361F371FEA68E29EF985673BC9E36256C51",
+      "testSource": "native/HttpGzipTransferTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.PrefinishWritebackTests.exe",
+      "bytes": 1246720,
+      "sha256": "F876CCE1D8824BBE81B915B95169EA48A57D5302C2F18087FED8FF9BE0BF0D3E",
+      "testSource": "native/PrefinishWritebackTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2362880,
+      "sha256": "EE34449FEA4B6E827658E814512021632B8F53A54BF3829162281AE1931F25E8",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2400768,
+      "sha256": "9A3AB81BAC4BAFA8504B8C06C428A9A2B6DE4E5C6877C05EAEAD942DA7E6B39D",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2162176,
+      "sha256": "5B5B35C82DDCB97F63CFE66D2E30F73A0F16309E6CF6BFA89A69614C3810FE0C",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2190848,
+      "sha256": "0BC6A188D5D4193B3F954E15B0AD2D3504F14A4FE8F6B8E2166DC5DD6B572A66",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.QueueCompletionCycleTests.exe",
+      "bytes": 5070848,
+      "sha256": "6E25C8B2093629B924F12A1618F14C93CE8A6EF820ACD65BE9911DC4B3430D02",
+      "testSource": "native/QueueCompletionCycleTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2258944,
+      "sha256": "6EC53DCB186AB29F8622E95FB83631A6E8E33BFBEEC1569F910E49B70FEF07D0",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5046272,
+      "sha256": "0E91AFF94F1071007489CA06A99AEC8B646CF8A1DC6B99BE31ECD9DCFFC39CA5",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "D590DAD91039C81F4080729B5B39FC72F552FE76E6986F652DD60515AAF802B4",
+      "testSource": "native/UiTaskSignalTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1145344,
+      "sha256": "B176A2EC99DCCEE012D4D7FEC496515270CB45D07140EBCD20B36ACF1D187E42",
+      "testSource": "native/WrittenBodyCacheTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.33\\release-native\\Udm.WrittenPrefixTests.exe",
+      "bytes": 1217536,
+      "sha256": "88BC5A984A4C5E25270D83980523F5FFC8872FA5BC0BD3720A360A01C9C4237C",
+      "testSource": "native/WrittenPrefixTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1309696,
+      "sha256": "70ADFDD400A9BC8E8E868D3555503C8FC6096C18AD43B13CC86350C96B96B178",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2563584,
+      "sha256": "794EC43C01E806D439F1300814288C4143416C31D625850BABB0EF78F0E76468",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1843712,
+      "sha256": "D5019E2910EB9CAF3F09BC0F3B203C526BBACE9B0AB4F930736597121C7BADCA",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1886208,
+      "sha256": "B5116338B3C2FC0777D40804879B44D7F1DFB10117F4A01141FD40ED7E7A8F69",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4849664,
+      "sha256": "92DC3F4D29D8BB123F590AB622353920921F49757A8659EB1A3AC310EE6E0970",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "bytes": 11463680,
+      "sha256": "60C45C321A3786AFBC8C96A3D9DC537A1B69283656C6203221ED519042E453C3",
+      "testSource": "native/CompletionDialogUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2768384,
+      "sha256": "DA7F31093BFEA181EE3500B2BB1BCA92AAC7EFC6E88B97A01E08FC18505AF46D",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4985856,
+      "sha256": "72779D7BC5A73F2A464A97B87B43B816DDBFBAB147894AEF549A83F595E655BD",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.HttpGzipTransferTests.exe",
+      "bytes": 5096448,
+      "sha256": "E14AA2CFF0B75059FA337DC86452D391493ABF0ED82EB80F2EEEA31435C95828",
+      "testSource": "native/HttpGzipTransferTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.HttpSequentialHashTests.exe",
+      "bytes": 3116544,
+      "sha256": "1DE556A5389135C02D9C5E230F34BBA47467749091B2FBA830DCA70BC7E1D157",
+      "testSource": "native/HttpSequentialHashTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.PrefinishWritebackTests.exe",
+      "bytes": 1246720,
+      "sha256": "14833E9E2AC04F60A4384705D996E7C2463D46502E2E3311A14B90DCA58E2E2D",
+      "testSource": "native/PrefinishWritebackTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2362880,
+      "sha256": "D6B113C3AFD23760D32D344146F77CF4859B73F05EF05CE893CF68166D8C86B8",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2400768,
+      "sha256": "7BBED7D3EE3C7DDD84223B024DF28521290BF59464EA11277032B9720E52DC38",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2162176,
+      "sha256": "371496CF4352950C7ABC08C016D4B2C25A7E05D18C2DC646CB866866D5603FF8",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2190848,
+      "sha256": "2436A704DF75874308C23E7564B52AC12EA307C76CCA321A9E95E54A25E838C9",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.QueueCompletionCycleTests.exe",
+      "bytes": 5070848,
+      "sha256": "AEAE1008BFF1380461A21FB12CA9C8F43D9D467CDEC1DD442CB40C74BD585ABF",
+      "testSource": "native/QueueCompletionCycleTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2258944,
+      "sha256": "A4B2F70E7BAFF50D851F0BE8998D22CD0E050777CDB21D62FB8897C4E699452E",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5046272,
+      "sha256": "3D404B32E32610D8B7ACA41DA93E3D8ED7BD4057A1088BCC92C335CD081AA1C7",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "528B7EFD39032E23BBF3C97951ED951BFEDBB5E4A2503D878867C5735FDBEFDB",
+      "testSource": "native/UiTaskSignalTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1145344,
+      "sha256": "EFE8370471EE9F9918E2E87CCED095F315C044E7C35F1FA49640AA49235DBF11",
+      "testSource": "native/WrittenBodyCacheTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.34\\release-native\\Udm.WrittenPrefixTests.exe",
+      "bytes": 1217536,
+      "sha256": "A7B532BBE3C10B82F922BF1D29AE966029DFD36F5FD5C5070066D1EDE37391D5",
+      "testSource": "native/WrittenPrefixTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.CatalogAdmissionRegistryTests.exe",
+      "bytes": 1323520,
+      "sha256": "439E24099732CB97F63B9AA2243D9EB192DF809B11967C48AF50E85EC3CD019E",
+      "testSource": "native/CatalogAdmissionRegistryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.CatalogAdmissionReservationTests.exe",
+      "bytes": 2563584,
+      "sha256": "787A71F93314D3DF8B0F4470AF640B820760847AAF4E35B6CFBA288AA38A5B78",
+      "testSource": "native/CatalogAdmissionReservationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1843712,
+      "sha256": "64648FAAC376782E89DC5A546CFC0927CBBB84A3C4DC68E2EB0D62A669D5B0EC",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1886208,
+      "sha256": "AB0E51A74303A322FD805723FA9C60F38478149B7E2CC9F31BD5114D760FE9A1",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4849664,
+      "sha256": "2F443D969F8CD91AFD5158FCBC2CF28C74E7741F4C496D78D4D77143C3D244E7",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.DetachedMediaAdmissionTests.exe",
+      "bytes": 2775552,
+      "sha256": "CCE71DDBF9987A890DF34DF8FB6617010E186EB39D279CABA68826D4FA068AED",
+      "testSource": "native/DetachedMediaAdmissionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.FileInfoDecisionTests.exe",
+      "bytes": 4985856,
+      "sha256": "5760A725E7EF2B320189AEBC6CD92899C22A295D8FA6AED5BB58187B64BF2FD3",
+      "testSource": "native/FileInfoDecisionTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PendingFileInfoCancellationTests.exe",
+      "bytes": 2622976,
+      "sha256": "FD04242914635595935F9682CED90D5843749570043DD2921931D52A242D283E",
+      "testSource": "native/PendingFileInfoCancellationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PendingFileInfoConcurrentRetryTests.exe",
+      "bytes": 2602496,
+      "sha256": "EC5C6E907E056DA72D8A5DE3005B42E9F4BC9F558373772A08751C8DD734C9F0",
+      "testSource": "native/PendingFileInfoConcurrentRetryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PendingFileInfoRetryTests.exe",
+      "bytes": 2562560,
+      "sha256": "62F944706580F91C60DCD2565D47D720C8F69AAAA4CD4AE174E7B7C2F36879B1",
+      "testSource": "native/PendingFileInfoRetryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PendingFileInfoUiTests.exe",
+      "bytes": 8678912,
+      "sha256": "1CC47D8CD7CF9C9859CBF997BACAD5DD37F39C20AD2503BD870FF2CEBE252FC4",
+      "testSource": "native/PendingFileInfoUiTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2362880,
+      "sha256": "EFDD3403BC39C90AC829841FADD9250C9E5F74E15CCED94ECF27F1441565C9B6",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2400768,
+      "sha256": "485B486023B70FF01FE10FA2946031D01A719C444290BADB17E63C1BAFBE901A",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2162176,
+      "sha256": "A445C6CC823F3932BFDFE3149A4DA997233EB6F80A2F3191412C8EF751F36DC9",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.39\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2190848,
+      "sha256": "D3F19534F6AF38AD47A99A330A0A705519B850A1D685EA571FC698162FF1FD85",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.40\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4850688,
+      "sha256": "2B8FB8570B782B4150157534A1F7512109D56E943AA004FAFB17D46C8BC4EFC2",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.40\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2363392,
+      "sha256": "70DB89C0E53C98893D1873A0E9C1999185908DE42330A9B082EC2E1AE54E5217",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.40\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2401280,
+      "sha256": "5CAC851893420D084FB6903DE70F1E90812015384F4C1C5FC5D660959114D8ED",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.40\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2161152,
+      "sha256": "3F666C5CE31D9AD459100A24C7C9E6C6F6BFCC2F6B46C68831CDC5377DB90870",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.40\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2191360,
+      "sha256": "0AC7C218D270183544C6F6C9F12505217280D7F5235838FF8DE87449B6125978",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.41\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4852736,
+      "sha256": "78D4E340CE9BF1FB4D2EBA9C54B8A405376B97E09D41FA151629C86829DDE9B1",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.41\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2364928,
+      "sha256": "CE2BCB01BA6FDDCC1EADC369F7B22044028AC8F5F3457C0E14E98BF27F924C24",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.41\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2402304,
+      "sha256": "B6818776CC9EE78089BF852CCD77015AB03D8FDF941C25C3E08DE3AECD33D618",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.41\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2162176,
+      "sha256": "70FBC162F71B61705132365A41495DAB7939B83C9C71A167C641A64046F7D45B",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.41\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2226176,
+      "sha256": "0A3D0DA903C1686345DD992400B07219F74C82091485E2003F6161A065DC21D5",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4853248,
+      "sha256": "DCCF74AA32A1818BA532C32A4978395541019142A927B46CFE74A156B0E3576E",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2365440,
+      "sha256": "53EA406182F15AB0379EB7B0CD3EE10D891A52BAF0D7ED6539E7B09EF9E65079",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2403840,
+      "sha256": "B8F37FAA6C0BE1EE943771D6608D6EF7C3C50AA8078390F503CD3058FC9195B0",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2163712,
+      "sha256": "D3DF42190D32A382BE29268A33A584FE50E32FE59A59ED5922A844790DF041BF",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2244096,
+      "sha256": "E58747470831EC472E9FCD576D0821E47EC8F12686CBBE8E4E57E945A684437B",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2262528,
+      "sha256": "D0EB70D1D6EA75805F311CD3ADCE435183586E7F460B04DCDCFEB3C22EB3433B",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.42\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5049344,
+      "sha256": "2A9E2F5F5701E589112445669CC211433DEB383DA690805F76FD315BF137BC73",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.CatalogCheckpointTests.exe",
+      "bytes": 1848320,
+      "sha256": "12E65BA2B069AFA20D7550CBA9CD62B3254E97F2E36D08166D5F00DFD4E23E1A",
+      "testSource": "native/CatalogCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.CatalogCommitCoordinatorTests.exe",
+      "bytes": 1890816,
+      "sha256": "1DA0426EC3277600DAD6FD62ED50A58A40E28604B3F832EB1719EB4B098980B9",
+      "testSource": "native/CatalogCommitCoordinatorTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.CompletedCheckpointTests.exe",
+      "bytes": 4856320,
+      "sha256": "2E552A4C6F8ADE20163C5916B11627363B19B330ADBFA53A59D92AF381DD0E10",
+      "testSource": "native/CompletedCheckpointTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.EarlyPublicationRecoveryTests.exe",
+      "bytes": 2173952,
+      "sha256": "E74DF499BB65C2B720D2DCE5875A2130945D1360028341F79BE6994F0B3CBADB",
+      "testSource": "native/EarlyPublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.PublicationCommitTests.exe",
+      "bytes": 2368512,
+      "sha256": "B4B632D88CF4C297B8F4EE249DEC44BB14FEE9C0D43F8EF0219B1A17E3E5C7B9",
+      "testSource": "native/PublicationCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.PublicationOwnershipTests.exe",
+      "bytes": 2405888,
+      "sha256": "8B28379F630F0257627FA1AA01E1B663F86E0DCC1D95A1EA0506E5BE8818642A",
+      "testSource": "native/PublicationOwnershipTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.PublicationPreparationTests.exe",
+      "bytes": 2166272,
+      "sha256": "F8C92A031F05EE574886D7077BB1DF8E9471CD24183FBFBCDD3D272B5C61D373",
+      "testSource": "native/PublicationPreparationTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.PublicationRecoveryTests.exe",
+      "bytes": 2246656,
+      "sha256": "AF86D903B5D3299A2490AFE0CD0B37F40EB7B3CCE68EF591501178567D710531",
+      "testSource": "native/PublicationRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.ReplacementCommitTests.exe",
+      "bytes": 2264576,
+      "sha256": "71D8DA071E4568283F92AFEA1558C19FA3FA669E91413143F81F64EA2C14E447",
+      "testSource": "native/ReplacementCommitTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.44\\release-native\\Udm.SyncReplacementRecoveryTests.exe",
+      "bytes": 5051904,
+      "sha256": "C7B30C4567F292FC7435A207E9333B0DA52E45DC482FAD4C075CA15DC6298548",
+      "testSource": "native/SyncReplacementRecoveryTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.83\\release-native\\Udm.DownloadRefreshTaskTests-9.12.exe",
+      "bytes": 2722304,
+      "sha256": "767D627DCFA75BF97326C56749122E03AF02AD4BB0E07C5DC9879F7471AFC532",
+      "testSource": "native/DownloadRefreshTaskTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.83\\release-native\\Udm.DownloadRefreshTaskTests-9.13.exe",
+      "bytes": 2722304,
+      "sha256": "41D40968167841F1386611F6A198F37BF4B0A68CCEE16C140163D8F5A6C84995",
+      "testSource": "native/DownloadRefreshTaskTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.83\\release-native\\Udm.DownloadRefreshTaskTests-9.17.exe",
+      "bytes": 2722304,
+      "sha256": "2A9636CF005A00301EFC46E1BD12FA9464CAAD8FAB5ED4701838D90BD05451C6",
+      "testSource": "native/DownloadRefreshTaskTests.cpp"
+    },
+    {
+      "path": "$UDM_DEVELOPMENT\\finishing-8.83\\release-native\\Udm.DownloadRefreshTaskTests-9.20.exe",
+      "bytes": 2722304,
+      "sha256": "F28710C698EE0F871F53FAF195E9D1E527E2420D0E946E711B8B27283D625144",
+      "testSource": "native/DownloadRefreshTaskTests.cpp"
+    }
+  ],
+  "logicalBytesRemoved": 449603072,
+  "freeBytesCBefore": 191504384,
+  "freeBytesCAfter": 641290240
+}

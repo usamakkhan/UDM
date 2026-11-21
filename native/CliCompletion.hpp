@@ -10,8 +10,8 @@ inline void armCliHangup(Manager& manager,JobPtr job){
  Lock lock(manager.mutex);
  if(job&&str(job->data,"Status")!="Complete"&&std::find(manager.cliHangups.begin(),manager.cliHangups.end(),job)==manager.cliHangups.end())manager.cliHangups.push_back(job);
 }
-inline JobPtr takeCliHangup(Manager& manager){
- Lock lock(manager.mutex);
+inline JobPtr takeCliHangup(Manager& manager,bool wait=true){
+ std::unique_lock lock(manager.mutex,std::defer_lock);if(wait)lock.lock();else if(!lock.try_lock())return {};
  for(auto it=manager.cliHangups.begin();it!=manager.cliHangups.end();){
   auto job=*it;
   if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()){it=manager.cliHangups.erase(it);continue;}

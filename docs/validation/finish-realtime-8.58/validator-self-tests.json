@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "A complete synthetic feasibility record is accepted without a root-cause claim",
+      "passed": true
+    },
+    {
+      "name": "Failed run is rejected",
+      "passed": true
+    },
+    {
+      "name": "Unproven root-cause claim is rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing kernel phase is rejected",
+      "passed": true
+    },
+    {
+      "name": "Reversed phase order is rejected",
+      "passed": true
+    },
+    {
+      "name": "Duplicate delivery sequence is rejected",
+      "passed": true
+    },
+    {
+      "name": "Wrong delivery sentinel is rejected",
+      "passed": true
+    },
+    {
+      "name": "Boolean masquerading as a sequence is rejected",
+      "passed": true
+    },
+    {
+      "name": "Different target PID is rejected",
+      "passed": true
+    },
+    {
+      "name": "Lost events is rejected",
+      "passed": true
+    },
+    {
+      "name": "Boolean masquerading as zero error count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Lost realtime buffer is rejected",
+      "passed": true
+    },
+    {
+      "name": "Target schema failure is rejected",
+      "passed": true
+    },
+    {
+      "name": "Callback failure is rejected",
+      "passed": true
+    },
+    {
+      "name": "Session still present is rejected",
+      "passed": true
+    },
+    {
+      "name": "Stop refused is rejected",
+      "passed": true
+    },
+    {
+      "name": "Consumer close refused is rejected",
+      "passed": true
+    },
+    {
+      "name": "Consumer failed is rejected",
+      "passed": true
+    },
+    {
+      "name": "Deadline exceeded is rejected",
+      "passed": true
+    },
+    {
+      "name": "Actual buffer cap exceeded is rejected",
+      "passed": true
+    },
+    {
+      "name": "Floating point buffer size is rejected",
+      "passed": true
+    },
+    {
+      "name": "Unknown timestamp frequency is rejected",
+      "passed": true
+    },
+    {
+      "name": "Out-of-range frequency is rejected",
+      "passed": true
+    },
+    {
+      "name": "Out-of-range timestamp is rejected",
+      "passed": true
+    },
+    {
+      "name": "Unproven full lifetime is rejected",
+      "passed": true
+    },
+    {
+      "name": "Different writer privilege scope is rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing native flush is rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing file-flush pair is rejected",
+      "passed": true
+    },
+    {
+      "name": "Native flush failed is rejected",
+      "passed": true
+    },
+    {
+      "name": "File event occurs after API returned is rejected",
+      "passed": true
+    },
+    {
+      "name": "File event predates API call is rejected",
+      "passed": true
+    },
+    {
+      "name": "Reversed event interval is rejected",
+      "passed": true
+    },
+    {
+      "name": "Foreign file path is rejected",
+      "passed": true
+    },
+    {
+      "name": "Failed file operation is rejected",
+      "passed": true
+    },
+    {
+      "name": "Different issuing threads is rejected",
+      "passed": true
+    },
+    {
+      "name": "Overlapping native calls is rejected",
+      "passed": true
+    },
+    {
+      "name": "The exact deterministic payload passes",
+      "passed": true
+    },
+    {
+      "name": "Short payload is rejected",
+      "passed": true
+    },
+    {
+      "name": "Oversized payload is rejected",
+      "passed": true
+    },
+    {
+      "name": "Wrong same-length payload is rejected",
+      "passed": true
+    },
+    {
+      "name": "Bounded report parsing retains the exact record",
+      "passed": true
+    },
+    {
+      "name": "Oversized actual report bytes are rejected before parsing",
+      "passed": true
+    }
+  ],
+  "realTraceConsumed": false,
+  "method": "Synthetic acceptance-policy and in-memory payload checks; no kernel-decoder or runtime validation"
+}

@@ -1,0 +1,11 @@
+from pathlib import Path
+import os,json,subprocess
+base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development';parentArea=Path('<repo>/.media-cache/owned-intent-write-through-app-9.64');area=parentArea/'reuse-probe';area.mkdir(exist_ok=False);(area/'temp').mkdir();scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')];env={**env,'TEMP':str(area/'temp'),'TMP':str(area/'temp')};source=root/'benchmarks/speed/catalog_padding_reuse_probe.cpp';sourceHash=sha(source);rows=[]
+for epoch,label in [('catalog-epoch2','before'),('catalog-epoch3','after')]:
+ b=json.loads((parentArea/epoch/'build.json').read_text(encoding='utf-8'));objects=[Path(r['path']) for r in b['coreObjects']];assert all(sha(p)==r['sha256'] for p,r in zip(objects,b['coreObjects']));exe=release/(label+'.exe')
+ with (area/(label+'-compile.log')).open('w',encoding='utf-8') as log:p=subprocess.run([str(compiler),*common,str(source),*map(str,objects),'/Fo'+str(out/(label+'.obj')),'/Fe'+str(exe),'/link',*system,'/SUBSYSTEM:CONSOLE','/DYNAMICBASE','/NXCOMPAT','/INCREMENTAL:NO'],cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+ if p.returncode:print((area/(label+'-compile.log')).read_text(encoding='utf-8',errors='replace')[-4000:])
+ assert p.returncode==0
+ for mode in ['0','3']:
+  folder=area/('owned-'+label+'-'+mode);p=subprocess.run([str(exe),str(folder)],cwd=root,env={**env,'UDM_TEST_WRITE_THROUGH_INTENT':mode},capture_output=True,text=True,timeout=30);d=json.loads((folder/'results.json').read_text(encoding='utf-8-sig'));row=dict(epoch=label,mode=mode,passed=d['passed'],expectedFailure=label=='before' and mode=='3',result=d,fixtureSha256=sourceHash,binarySha256=sha(exe));rows.append(row);(area/'results.json').write_text(json.dumps(dict(rows=rows),indent=2),encoding='utf-8');print(json.dumps(row),flush=True);assert d['passed']==(not row['expectedFailure'])
+assert sha(source)==sourceHash;(area/'terminal.json').write_text(json.dumps(dict(passed=True,sameFixture=True,isolatedExactPhysicalTextMismatchAndCorrection=True),indent=2),encoding='utf-8')

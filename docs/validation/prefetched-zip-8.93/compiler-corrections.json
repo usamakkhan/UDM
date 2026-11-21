@@ -1,0 +1,46 @@
+{
+  "corrections": [
+    {
+      "supersededVersion": "8.91",
+      "qualified": false,
+      "reason": "Version and manifest update wrote a UTF-8 marker as text. Restore original encoding, parse both JSON manifests, increment and rebuild.",
+      "diagnostic": "Bridge.cpp\n$REPOSITORY\\native\\Version.hpp(1): error C3872: '0xbb': this character is not allowed in an identifier\n$REPOSITORY\\native\\Version.hpp(1): error C3872: '0xbf': this character is not allowed in an identifier\n$REPOSITORY\\native\\Version.hpp(1): error C2014: preprocessor command must start as first nonwhite space\n$REPOSITORY\\native\\RecoveryAvailability.hpp(3): error C2143: syntax error: missing ';' before 'namespace'\n$REPOSITORY\\native\\Version.hpp(1): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(41): warning C4458: declaration of 'result' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(19): note: see declaration of 'udm::PendingFileInfoInbox::Operation::result'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(178): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(179): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(180): warning C4458: declaration of 'state' hides class member\n$REPOSITORY\\native\\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'\n",
+      "sourceChanges": [
+        {
+          "path": "native/Version.hpp",
+          "beforeSha256": "FE5AD3832559C5D49B5AAF6A5782F966DD08720535B3AE16D4C55BD43A7E2D0C",
+          "afterSha256": "D7111ADF007E16ADFCD052D00383E939A9DC58AC61E36B2C50982574B54950C9"
+        },
+        {
+          "path": "browser/chromium/manifest.json",
+          "beforeSha256": "BAB485B3F1107697AF6D3BE55471F84D15359770B85866718F413814721EAC8D",
+          "afterSha256": "4E8A069A98108286752705785DE245CE3D09A940F6E2B2AC6B211F440A7F1194"
+        },
+        {
+          "path": "browser/firefox/manifest.json",
+          "beforeSha256": "190525CD41641148D1A145A8B6656C82C95DD50C0D8B522836C3F70153C883D6",
+          "afterSha256": "9728D06CD13A3CB888291486405DA39655D2EB1FB57FCECDE1E9E701919674B9"
+        }
+      ]
+    },
+    {
+      "supersededVersion": "8.92",
+      "qualified": false,
+      "reason": "The new fixtures attempted private Manager active-map access. Use the existing public reserved-response activity state; no Manager visibility or production activity semantics changed. Increment, freeze and rebuild.",
+      "diagnostic": "PrefetchedZipReadTaskTests.cpp\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(11): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(13): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(21): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(23): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(26): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n$REPOSITORY\\native\\PrefetchedZipReadTaskTests.cpp(36): error C2248: 'udm::Manager::active': cannot access private member declared in class 'udm::Manager'\n$REPOSITORY\\native\\Core.hpp(213): note: see declaration of 'udm::Manager::active'\n$REPOSITORY\\native\\Core.hpp(201): note: see declaration of 'udm::Manager'\n",
+      "sourceChanges": [
+        {
+          "path": "native/PrefetchedZipReadTaskTests.cpp",
+          "beforeSha256": "4877684BA5ED77132F32951C1C9890203AF97E26ACED78423772EC732188AAED",
+          "afterSha256": "474E84991620B4B3223F9BAB88CEDAB07E3D5211ED6B4E4BB52A902FA2837CCF"
+        },
+        {
+          "path": "native/ModalSizeUiTests.cpp",
+          "beforeSha256": "BC2D529DC1255F4CFA0BCD9A8A9D81168843A747FB89149BC92BDD4DCDD5AA6F",
+          "afterSha256": "3D1585893A6CD7A11F110113C6D5EAC98ACFDECF6B9292DF7BA0D1B7AD26698B"
+        }
+      ]
+    }
+  ],
+  "excludedFromPrimaryCounts": true
+}

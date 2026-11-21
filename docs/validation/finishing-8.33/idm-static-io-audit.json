@@ -1,0 +1,182 @@
+{
+  "target": "IDMan.exe",
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "method": "Existing Microsoft DUMPBIN /DISASM:NOBYTES plus named PE32 import slots and direct-call encoding cross-checks against original executable bytes. Target never executed or changed.",
+  "preferredImageBase": "0x400000",
+  "apiReferences": [
+    {
+      "api": "FlushFileBuffers",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x6943a8",
+      "byteVerifiedDirectImportCalls": [
+        "0x456025",
+        "0x570294",
+        "0x61e784",
+        "0x655132"
+      ],
+      "otherListingReferences": []
+    },
+    {
+      "api": "RegFlushKey",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x69405c",
+      "byteVerifiedDirectImportCalls": [
+        "0x4179b0",
+        "0x44d752",
+        "0x44df23",
+        "0x46747c",
+        "0x4a1903",
+        "0x562261",
+        "0x5639b9"
+      ],
+      "otherListingReferences": []
+    },
+    {
+      "api": "WriteFile",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x694428",
+      "byteVerifiedDirectImportCalls": [
+        "0x41711c",
+        "0x540ee9",
+        "0x5501e2",
+        "0x55a86b",
+        "0x55a8c2",
+        "0x55a981",
+        "0x55dd9e",
+        "0x56f48e",
+        "0x56f7c5",
+        "0x56f987",
+        "0x570123",
+        "0x57022d",
+        "0x57026d",
+        "0x5aad65",
+        "0x5abb9a",
+        "0x5abd51",
+        "0x5ac143",
+        "0x5ac192",
+        "0x5ac1da",
+        "0x5ac228",
+        "0x5ac25c",
+        "0x5ac53d",
+        "0x5ac5bd",
+        "0x5ac615",
+        "0x5ac671",
+        "0x5acf02",
+        "0x5ad25b",
+        "0x5ad417",
+        "0x5ad781",
+        "0x5d0e43",
+        "0x5d18b9",
+        "0x5ff2d9",
+        "0x5ff898",
+        "0x5ffb0b",
+        "0x604119",
+        "0x604281",
+        "0x61e6a7",
+        "0x65031f",
+        "0x650949",
+        "0x6509a2",
+        "0x650b30",
+        "0x650c10",
+        "0x650d0a",
+        "0x650d61"
+      ],
+      "otherListingReferences": [
+        "0x4cfe27",
+        "0x4fb1d1",
+        "0x52703c",
+        "0x54f9b5",
+        "0x552f92",
+        "0x553622",
+        "0x5aaca2",
+        "0x60e506"
+      ]
+    },
+    {
+      "api": "CreateFileMappingA",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x694440",
+      "byteVerifiedDirectImportCalls": [
+        "0x413d02",
+        "0x41c1ae",
+        "0x455da9",
+        "0x45639a",
+        "0x463514",
+        "0x46be86",
+        "0x46c2ae",
+        "0x46e56c",
+        "0x485829",
+        "0x55a1a8",
+        "0x55a342",
+        "0x55c3b5",
+        "0x56cef8",
+        "0x59d165",
+        "0x5a8690",
+        "0x5ad4f8"
+      ],
+      "otherListingReferences": []
+    },
+    {
+      "api": "MapViewOfFile",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x694444",
+      "byteVerifiedDirectImportCalls": [
+        "0x413d18",
+        "0x41c1cb",
+        "0x455dc6",
+        "0x4563b4",
+        "0x46352e",
+        "0x46be9d",
+        "0x46c2c5",
+        "0x46e583",
+        "0x485845",
+        "0x55a1c3",
+        "0x55a37b",
+        "0x55c3cf",
+        "0x56cf16",
+        "0x59d181",
+        "0x5a86c3",
+        "0x5ad5a2"
+      ],
+      "otherListingReferences": []
+    },
+    {
+      "api": "FlushViewOfFile",
+      "normalImportPresent": false,
+      "iatPreferredVa": null,
+      "byteVerifiedDirectImportCalls": [],
+      "otherListingReferences": []
+    },
+    {
+      "api": "MoveFileExW",
+      "normalImportPresent": true,
+      "iatPreferredVa": "0x694484",
+      "byteVerifiedDirectImportCalls": [
+        "0x4108cc"
+      ],
+      "otherListingReferences": []
+    }
+  ],
+  "selectedDirectEdges": [
+    {
+      "callPreferredVa": "0x55ac6f",
+      "targetPreferredVa": "0x570290",
+      "relativeCallEncodingVerified": true
+    },
+    {
+      "callPreferredVa": "0x5bb4a2",
+      "targetPreferredVa": "0x55ac20",
+      "relativeCallEncodingVerified": true
+    }
+  ],
+  "runtimeOrderVerified": false,
+  "runtimeFrequencyVerified": false,
+  "downloadPathReachabilityVerified": false,
+  "notes": [
+    "Static direct import references are not a count of calls during a download. Register-loaded, dynamically resolved and indirect/vtable calls are not exhausted.",
+    "One byte-verified direct chain leads through a wrapper to a file flush; the caller is conditional. The controlling field has no verified meaning.",
+    "No normal FlushViewOfFile import was found. This does not rule out dynamic resolution or dependencies.",
+    "No proprietary implementation is copied into UDM; this record contains API facts and addresses only.",
+    "Raw disassembly is private and the large temporary listing is removed after compact evidence is retained."
+  ]
+}

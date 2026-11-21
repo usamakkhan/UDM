@@ -1,0 +1,43 @@
+# Target-thread scheduling capture, 8.65
+
+The unfiltered inventory retained 6,883 system context-switch records in a 189 ms fixture lifetime. Its 16,384-record cap would be unsuitable for a longer download under similar activity. This diagnostic update filters retained raw records using only the independently checked new/old thread-ID prefix; it does not raise the cap, guess remaining fields or change product IO behavior.
+
+The separate `finish_thread_filtered_lifetime.cpp` entry selects `disk-scheduling-target-threads-v3`. Its callback retains a version-5/flags-848/28-byte record only when either selected ID belongs to a currently known target thread. Thread ownership comes from separately TDH-decoded target Thread Start/End events; those lifecycle events are now reported for independent validation. Other missing schemas are still inventoried. Unsupported forms and all resource/metadata/capture limits remain explicit failures.
+
+The inventory separately counts all context-switch candidates during observed target lifetimes, retained target-thread records, unmatched candidates and unsupported forms. Candidate counts must equal those classifications; retained counts must equal stored records unless an explicit cap failure is present. Only the two ID fields are read for filtering, and full payload decoding is explicitly false. Neither state/reason fields nor extension bytes are interpreted by the collector.
+
+Twenty-one native controls cover legacy retention, either-ID matching, unrelated-thread exclusion, out-of-window exclusion, unsupported forms, exact accounting, candidate loads above the retained-record cap, and caps on matching records. Replaying all 6,883 previously captured records for the known fixture thread retains exactly 308 records and excludes 6,575 unrelated ones. The retained records exactly match an independent Python selection. [Build/replay identities](validation/scheduling-filter-8.65/build-and-replay.json).
+
+The selected-prefix analyser accepts this explicitly named profile only with additional filter-accounting and decoded thread-lifecycle checks. Each retained record must involve a known thread in its recorded lifetime, and each measured native call must fall inside that thread's lifetime. Its original version-2 path and the separate failed full-schema validators remain available; no full-schema or flush-cause pass is manufactured.
+
+Next run the same fresh normal-token 8 KiB fixture against this fixed collector and apply the selected-prefix analysis before a larger App capture. A changed collector requires replacing the previous idle fixed-tool worker through a fresh Windows elevation request; no active worker may silently adopt a different binary. Product/native and browser versions remain 8.65 / 0.72.29; source changes are diagnostic only, and there is no installer or deployment.
+
+## Disk-completion capture correction
+
+The retained small capture contains four flush-init records and no flush completions. That alone does not prove the producer emitted completion events. Source inspection nevertheless identifies a real coverage gap: the old reader discarded disk events with neither an owned file mapping nor a target process/issuing-thread identity, even if their IRP matched a target initiation.
+
+`TraceDiskIo.hpp` now retains read/write/flush completions through matching target-init IRPs, checks opcode/time consistency, rejects duplicate outstanding pointers, bounds pending operations and permits pointer reuse only after completion. Rows retain their target-init counter/thread/opcode provenance, and reports expose pending/unmatched operations. This does not invent a file mapping or classify unrelated background IO as target IO.
+
+Twenty-five normal-token controls pass, including TDH-decoded synthetic DiskIo version-2 and version-3 init/completion pairs. Their completion headers use invalid process/thread IDs; version 2 omits the issuer property and version 3 supplies an invalid issuer. The corrected reader retains both via the genuine initiation link. These are controlled schema/reader tests, not newly captured physical disk activity. The 21 filter controls and unchanged 6,883-to-308 replay also pass after rebuilding. [Updated build and controls](validation/scheduling-filter-8.65/build-with-disk-links.json).
+
+Microsoft documents the [IRP correlation field](https://learn.microsoft.com/en-us/windows/win32/etw/diskio-typegroup1) and [flush-event schema](https://learn.microsoft.com/en-us/windows/win32/etw/diskio-typegroup3). A new live capture must still establish whether this fix recovers the missing completions in the actual fixture/App case and whether those intervals explain the long flush. No product speed improvement or kernel cause is claimed.
+
+## Elevation outcome and launcher correction
+
+Windows canceled the filtered-worker request before it started. The legacy inline PowerShell command returned exit code zero despite a Start-Process cancellation error and empty stdout, and its Python wrapper incorrectly printed a launch-success message with no PID. The original receipt is preserved; its terminal cancellation is explicitly [recorded](validation/scheduling-filter-8.65/elevation-outcome.json). There is no active filtered worker and no live filtered-profile qualification yet.
+
+The new tracked `launch-diagnostic-session.ps1` uses terminating errors, requires a positive PID and writes a structured elevation outcome. It distinguishes a canceled request from an indeterminate failure and says only that a process was created, not that readiness was observed. The current Python launcher additionally requires valid PID output and refuses to replace a pending/indeterminate request; a confirmed canceled request can be retried in a new queue.
+
+Four [mock-only launch controls](validation/scheduling-filter-8.65/launcher-controls.json) pass for success, cancellation, a nonterminating platform error and missing PID. They start no process and open no administrator prompt. The selected-prefix analyser additionally passes 52 policy checks including filtered-record accounting and known thread-lifetime restrictions. [Source identities](validation/scheduling-filter-8.65/launcher-analysis-source-identities.json). No replacement prompt has been opened after this cancellation. A fresh approved launch is still needed before live qualification.
+
+Desktop-control access to the installed IDM main window was separately restored in this follow-up; no download, personal-history deletion, setting change or IDM shutdown was performed during that read-only inspection.
+
+The finished native filter/disk-control executable/object pairs and three mock-launch output trees were [removed](validation/scheduling-filter-8.65/finished-controls-cleanup.json), reclaiming 11,811,155 native-control bytes plus the mock metadata. The staged collector, source, compact evidence and failed real-launch records remain. No download payload was written in this preparation step, and product build directories were untouched.
+
+A subsequent [headless App capture runner](headless-app-capture-8.65.md) adds independent live-fixture admission, process-aware waits and owned payload cleanup. Its guard/abort/cleanup controls pass, but the live capture remains unavailable until a fresh approved worker and the filtered fixture pass their gates. Desktop control remains stopped after the user interrupted the separate UI comparison attempt.
+
+## Subsequent approval and live capture
+
+The user's fresh approval successfully started the temporary fixed-collector worker. One 8 KiB fixture and two real 64 MiB App captures completed through that same session, without another approval. [Session receipt](validation/scheduling-filter-8.65/approved-session.json), [App capture and cleanup receipts](validation/scheduling-filter-8.65/live-app-captures.json). The fixture recovered four disk-flush completions through matching initiations; all pending target disk operations settled, and its logger stopped without event/buffer losses. The native/full-schema validator still rejects the missing version-5 schema; selected-prefix qualification is reported separately.
+
+The [live phase analysis](app-finishing-phase-analysis-8.65.md) now includes the observed write requests preceding the final device-flush commands, rather than treating that period as unexplained inactivity. Both App captures pass the scoped native/disk/scheduling join after explicit TDH lifetime-boundary corrections. These results narrow the writeback investigation; they are not a product change, installed IDM comparison or proof of complete kernel causality. The worker remains temporary, hash-pinned and bounded by its original expiry/request limit.

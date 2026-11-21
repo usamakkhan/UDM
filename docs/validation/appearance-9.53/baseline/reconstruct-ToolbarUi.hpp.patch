@@ -1,0 +1,38 @@
+--- native/ToolbarUi.hpp@9.53
++++ native/ToolbarUi.hpp@9.52
+@@ -6,7 +6,7 @@
+  bool toolbarBuilding=false,toolbarAdjusting=false;std::vector<int> toolbarBefore;std::vector<fs::path> toolbarSkins;std::string toolbarSkinError,toolbarSkinName;int toolbarButtonHeight=60,toolbarButtonWidth=67;
+  TBBUTTON toolbarDefinition(int index) {
+   TBBUTTON button{};if(index<0){button.iBitmap=px(8);button.fsStyle=BTNS_SEP;return button;}
+-  auto p=appearancePreferences();button.idCommand=toolbarCommand(index);button.iBitmap=str(p,"ToolbarStyle","Icons and text")=="Text only"?I_IMAGENONE:index;button.fsState=TBSTATE_ENABLED;
++  auto p=preferences();button.idCommand=toolbarCommand(index);button.iBitmap=str(p,"ToolbarStyle","Icons and text")=="Text only"?I_IMAGENONE:index;button.fsState=TBSTATE_ENABLED;
+   button.fsStyle=BTNS_BUTTON|BTNS_SHOWTEXT|((index==8||index==9)?BTNS_DROPDOWN:0);button.dwData=(DWORD_PTR)index;button.iString=(INT_PTR)toolbarLabel(index);return button;
+  }
+  std::vector<int> currentToolbarLayout(){
+@@ -16,7 +16,7 @@
+  void setToolbarButtons(const std::vector<int>& items){
+   bool prior=toolbarBuilding;toolbarBuilding=true;while(toolbar.GetButtonCount()>0)toolbar.DeleteButton(0);
+   for(int i:items){auto button=toolbarDefinition(i);if(!toolbar.SendMessage(TB_ADDBUTTONSW,1,(LPARAM)&button)){toolbarBuilding=prior;throw std::runtime_error("Cannot create toolbar buttons.");}}
+-  toolbar.SetMaxTextRows(str(appearancePreferences(),"ToolbarStyle","Icons and text")=="Icons only"?0:1);toolbar.SetButtonWidth(toolbarButtonWidth,toolbarButtonWidth);toolbar.SetButtonSize(CSize(toolbarButtonWidth,toolbarButtonHeight));
++  toolbar.SetMaxTextRows(str(preferences(),"ToolbarStyle","Icons and text")=="Icons only"?0:1);toolbar.SetButtonWidth(toolbarButtonWidth,toolbarButtonWidth);toolbar.SetButtonSize(CSize(toolbarButtonWidth,toolbarButtonHeight));
+   toolbarBuilding=prior;updateToolbarCommands();
+  }
+  void saveToolbarButtons(){
+@@ -25,7 +25,7 @@
+   CRect area;GetClientRect(&area);layout(area.Width(),area.Height());
+  }
+  void loadToolbarImages(){
+-  auto prefs=appearancePreferences();auto size=str(prefs,"ToolbarSize","Large");int dpi=windowDpi(),w=MulDiv(size=="Small"?16:size=="Medium"?24:32,dpi,96),h=w;
++  auto prefs=preferences();auto size=str(prefs,"ToolbarSize","Large");int dpi=windowDpi(),w=MulDiv(size=="Small"?16:size=="Medium"?24:32,dpi,96),h=w;
+   std::optional<ToolbarSkin> skin;std::string group;toolbarSkinError.clear();toolbarSkinName.clear();
+   if(!str(prefs,"ToolbarSkin").empty())try{skin=loadToolbarSkin(fs::path(wide(str(prefs,"ToolbarSkin"))));toolbarSkinName=skin->name;group=toolbarSkinGroup(*skin,size,dpi);
+    if(!group.empty()){
+@@ -56,7 +56,7 @@
+  }
+  void rebuildToolbar(){
+   if(!toolbar.GetSafeHwnd())return;toolbarBuilding=true;
+-  try{themeTooltip((HWND)toolbar.SendMessage(TB_GETTOOLTIPS));toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(appearancePreferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
++  try{themeTooltip((HWND)toolbar.SendMessage(TB_GETTOOLTIPS));toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(preferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
+  }
+  int layoutToolbar(int width,const Json& settings){
+   if(!toolbar.GetSafeHwnd())return 0;const bool shown=!yes(settings,"HideToolbar")&&toolbar.GetButtonCount()>0;::ShowWindow(toolbar.GetSafeHwnd(),shown?SW_SHOW:SW_HIDE);

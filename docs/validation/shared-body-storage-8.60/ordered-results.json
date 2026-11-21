@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "checks": 94,
+  "runs": [
+    {
+      "drive": "C",
+      "checks": 47,
+      "passed": true,
+      "binarySha256": "0909571FE887868CAA32AA8A0E1EAFC7FC759C071350A78A116EDD7AB955DFC6",
+      "payloads": [
+        {
+          "name": "ordered-file.bin",
+          "bytes": 262144,
+          "sha256": "31A1F9DEA0169551092D05E8BF4A446228C8C3EB4C9B713C66ADCB7FD53C89BE"
+        },
+        {
+          "name": "paused-file.bin",
+          "bytes": 8192,
+          "sha256": "89C152EAFCEF9BEF9C261F780939B420AF64306FC23E1A754269CAF6C050C63E"
+        }
+      ]
+    },
+    {
+      "drive": "D",
+      "checks": 47,
+      "passed": true,
+      "binarySha256": "0909571FE887868CAA32AA8A0E1EAFC7FC759C071350A78A116EDD7AB955DFC6",
+      "payloads": [
+        {
+          "name": "ordered-file.bin",
+          "bytes": 262144,
+          "sha256": "31A1F9DEA0169551092D05E8BF4A446228C8C3EB4C9B713C66ADCB7FD53C89BE"
+        },
+        {
+          "name": "paused-file.bin",
+          "bytes": 8192,
+          "sha256": "89C152EAFCEF9BEF9C261F780939B420AF64306FC23E1A754269CAF6C050C63E"
+        }
+      ]
+    }
+  ],
+  "sharedStorageIntegrated": true,
+  "orderedNetworkWriterActivated": false,
+  "durabilityBarrierInComponent": false,
+  "performanceCompared": false
+}

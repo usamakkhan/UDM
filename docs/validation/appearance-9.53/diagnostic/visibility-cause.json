@@ -1,0 +1,12 @@
+{
+  "source": "CToolBarCtrl::GetStyle",
+  "sdkHeader": ".media-cache/driver-toolchain/Microsoft.VC.14.44.17.14.MFC.Headers.base/Contents/VC/Tools/MSVC/14.44.35207/atlmfc/include/afxcmn2.inl",
+  "sdkHeaderSha256": "4B6BB5F90C984C5044DC560F15E9101BA63D13E317F1D1D330106368437093E7",
+  "sdkLines": [
+    55,
+    56
+  ],
+  "meaning": "Sends TB_GETSTYLE, not GetWindowLong(GWL_STYLE). The former retained the creation-time visible bit after actual hiding. Use the real window style for visibility.",
+  "productionFix": "native/App.cpp layout fallback",
+  "diagnosticFailureWasIncorrectVisibilityReader": true
+}

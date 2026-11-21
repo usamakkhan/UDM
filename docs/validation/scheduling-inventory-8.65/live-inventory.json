@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "recordedUtc": "2026-11-18T19:07:07.734273+00:00",
+  "inventoryAcquisitionPassed": true,
+  "fullSchedulingQualificationPassed": false,
+  "kernelCauseVerified": false,
+  "oldWorkerStoppedNormally": true,
+  "oldWorkerRequests": 1,
+  "updatedWorkerStarted": true,
+  "workerPid": 21548,
+  "expiresUtc": "2026-11-19T03:02:03.6110603Z",
+  "profile": "disk-scheduling-no-fileio-v2-inventory",
+  "unknownMetadataEvents": 89763,
+  "schemaInventory": {
+    "3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c:0:36:5:848:28": {
+      "count": 89763,
+      "eventId": 0,
+      "headerFlags": 848,
+      "metadataBytes": 0,
+      "opcode": 36,
+      "payloadBytes": 28,
+      "provider": "3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c",
+      "requeryStatus": 1168,
+      "version": 5
+    }
+  },
+  "retainedTargetWindowRecords": 6883,
+  "capsReached": false,
+  "normalTokenFixtureBytes": 8192,
+  "payloadIntegrityPassed": true,
+  "payloadDeleted": true,
+  "fixtureCopyDeleted": true,
+  "sessionAbsent": true,
+  "collectorExit": 0,
+  "rawRecordsRetainedPrivately": true,
+  "largerAppWorkloadStarted": false,
+  "productSourceChanged": false,
+  "nextAction": "Analyse the actual version-5/28-byte records offline against authoritative prefix field definitions and independent native/TDH controls; retain failed full-schema gates."
+}

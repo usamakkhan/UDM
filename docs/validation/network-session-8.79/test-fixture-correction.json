@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "reason": "The pipe peer omitted the PendingResponses array required by the original-response controller; align it with the real broker packet",
+  "changedSources": [
+    "native/MonitorReconnectTests.cpp"
+  ],
+  "oldFixtureSha256": "3B2F8766A3D90EB5DD7D5858495177008B4F9427590F309F154EAE6D935A4224",
+  "newFixtureSha256": "45BADE706D42B4B1595D1F05DAF2114E6454632100A8FDFE7B71F6F8A95F9155",
+  "productionAndUiDependencyClosuresUnchanged": true,
+  "failedRun": {
+    "suite": "MonitorReconnectTests",
+    "drive": "C",
+    "checks": 56,
+    "error": "Asynchronous polling reconnects the real Monitor and publishes its observed active state"
+  },
+  "failedRunIncludedInPassingCounts": false,
+  "uiUnusedDeclaredInventoryChanges": [
+    "native/MonitorReconnectTests.cpp"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "changedInputs": [
+    "native/BatchOpeningUiTests.cpp"
+  ],
+  "productionCodeUnchanged": true,
+  "reason": "The policy fixture used HTML plus an explicit unchecked second row but expected enabled OK; use a normal file there and retain separate delayed-HTML cases."
+}

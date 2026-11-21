@@ -1,0 +1,699 @@
+{
+  "epochs": [
+    {
+      "epoch": "intent-only",
+      "transfers": 12,
+      "allOutputHashesMatch": true,
+      "pairs": [
+        {
+          "trial": 1,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 151.89900000041234,
+              "candidate": 137.42110000021057,
+              "deltaMs": -14.477900000201771,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 1221.5413000012632,
+              "candidate": 952.6398000016343,
+              "deltaMs": -268.90149999962887,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 125.47520000225632,
+              "candidate": 111.69449999943026,
+              "deltaMs": -13.780700002826052,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 178.71179999929154,
+              "candidate": 163.45149999688147,
+              "deltaMs": -15.260300002410077,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 1248.3541000001424,
+              "candidate": 978.6701999983052,
+              "deltaMs": -269.6839000018372,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 223.25165000074776,
+              "candidate": 163.2395499982522,
+              "deltaMs": -60.01210000249557,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 8913.784150001447,
+              "candidate": 8830.274949999875,
+              "deltaMs": -83.50920000157203,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 195.50650000019232,
+              "candidate": 135.5820999997377,
+              "deltaMs": -59.924400000454625,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 241.23509999844828,
+              "candidate": 185.35619999966002,
+              "deltaMs": -55.878899998788256,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 8931.767599999148,
+              "candidate": 8852.391600001283,
+              "deltaMs": -79.37599999786471,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 287.47800000201096,
+              "candidate": 373.61704999784706,
+              "deltaMs": 86.1390499958361,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 2488.0245000022114,
+              "candidate": 2914.110449997679,
+              "deltaMs": 426.0859499954677,
+              "candidateFaster": false
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 260.6812000012724,
+              "candidate": 346.72860000137007,
+              "deltaMs": 86.0474000000977,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 311.97790000078385,
+              "candidate": 405.25889999844367,
+              "deltaMs": 93.28099999765982,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 2512.5244000009843,
+              "candidate": 2945.7522999982757,
+              "deltaMs": 433.2278999972914,
+              "candidateFaster": false
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 114.28094999791938,
+              "candidate": 142.64239999829442,
+              "deltaMs": 28.361450000375044,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 927.6238499987812,
+              "candidate": 949.2246999980125,
+              "deltaMs": 21.600849999231286,
+              "candidateFaster": false
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 86.61120000033407,
+              "candidate": 116.53649999789195,
+              "deltaMs": 29.925299997557886,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 169.61319999973057,
+              "candidate": 162.47479999947245,
+              "deltaMs": -7.138400000258116,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 982.9561000005924,
+              "candidate": 969.0570999991905,
+              "deltaMs": -13.899000001401873,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 184.68570000186446,
+              "candidate": 188.70925000010175,
+              "deltaMs": 4.023549998237286,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 8875.513400002092,
+              "candidate": 8861.67144999854,
+              "deltaMs": -13.841950003552483,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 157.94539999842527,
+              "candidate": 161.48980000070878,
+              "deltaMs": 3.54440000228351,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 213.93689999968046,
+              "candidate": 213.36819999851286,
+              "deltaMs": -0.5687000011675991,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 8904.764599999908,
+              "candidate": 8886.33039999695,
+              "deltaMs": -18.43420000295737,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 298.2244500017259,
+              "candidate": 260.9788500012655,
+              "deltaMs": -37.2456000004604,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 2345.655950000946,
+              "candidate": 2335.609950001526,
+              "deltaMs": -10.045999999420019,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 270.63560000169673,
+              "candidate": 233.47590000048513,
+              "deltaMs": -37.159700001211604,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 313.54770000325516,
+              "candidate": 295.9947999988799,
+              "deltaMs": -17.55290000437526,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 2360.9792000024754,
+              "candidate": 2370.6258999991405,
+              "deltaMs": 9.64669999666512,
+              "candidateFaster": false
+            }
+          }
+        }
+      ],
+      "wins": {
+        "processExitTailMs": 3,
+        "processExitWallMs": 4,
+        "firstAvailabilityTailMs": 3,
+        "durableTailMs": 5,
+        "durableWallMs": 4
+      },
+      "qualified": false
+    },
+    {
+      "epoch": "combined-before-cache-fix",
+      "transfers": 12,
+      "allOutputHashesMatch": true,
+      "pairs": [
+        {
+          "trial": 1,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 133.66264999785926,
+              "candidate": 195.7777999996324,
+              "deltaMs": 62.115150001773145,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 1206.774949998362,
+              "candidate": 988.2123000024876,
+              "deltaMs": -218.56264999587438,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 107.33930000060354,
+              "candidate": 130.41839999641525,
+              "deltaMs": 23.079099995811703,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 156.45450000010896,
+              "candidate": 220.16139999686857,
+              "deltaMs": 63.7068999967596,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 1229.5668000006117,
+              "candidate": 1012.5958999997238,
+              "deltaMs": -216.97090000088792,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 409.69084999960614,
+              "candidate": 189.35609999971348,
+              "deltaMs": -220.33474999989267,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 9088.166349996754,
+              "candidate": 8845.159600001352,
+              "deltaMs": -243.00674999540206,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 383.67570000264095,
+              "candidate": 114.4641999999294,
+              "deltaMs": -269.21150000271155,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 427.0704000009573,
+              "candidate": 229.82019999835757,
+              "deltaMs": -197.25020000259974,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 9105.545899998106,
+              "candidate": 8885.623699999996,
+              "deltaMs": -219.92219999810914,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 176.8618999994942,
+              "candidate": 398.0301000010513,
+              "deltaMs": 221.16820000155712,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 2301.6629999983707,
+              "candidate": 2305.615900000703,
+              "deltaMs": 3.9529000023321714,
+              "candidateFaster": false
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 148.12639999945532,
+              "candidate": 317.3820000010892,
+              "deltaMs": 169.25560000163387,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 201.39760000165552,
+              "candidate": 428.91319999762345,
+              "deltaMs": 227.51559999596793,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 2326.198700000532,
+              "candidate": 2336.498999997275,
+              "deltaMs": 10.300299996742979,
+              "candidateFaster": false
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 134.90689999889582,
+              "candidate": 139.26675000038813,
+              "deltaMs": 4.359850001492305,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 1108.7039999983972,
+              "candidate": 925.5575499992119,
+              "deltaMs": -183.14644999918528,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 108.32719999962137,
+              "candidate": 95.57950000089477,
+              "deltaMs": -12.747699998726603,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 156.98770000017248,
+              "candidate": 175.78670000148122,
+              "deltaMs": 18.79900000130874,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 1130.7847999996739,
+              "candidate": 962.077500000305,
+              "deltaMs": -168.70729999936884,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 193.89754999792785,
+              "candidate": 134.42144999862649,
+              "deltaMs": -59.47609999930137,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 8867.518949999067,
+              "candidate": 8789.665549997153,
+              "deltaMs": -77.85340000191354,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 163.78189999886672,
+              "candidate": 79.71600000018952,
+              "deltaMs": -84.0658999986772,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 211.17579999918235,
+              "candidate": 175.86239999945974,
+              "deltaMs": -35.313399999722606,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 8884.797200000321,
+              "candidate": 8831.106499997986,
+              "deltaMs": -53.69070000233478,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 275.71085000090534,
+              "candidate": 380.2954500024498,
+              "deltaMs": 104.58460000154446,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 2289.140450000559,
+              "candidate": 2277.458150001621,
+              "deltaMs": -11.682299998938106,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 247.4536999980046,
+              "candidate": 290.3660000010859,
+              "deltaMs": 42.91230000308133,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 300.68829999800073,
+              "candidate": 417.59190000084345,
+              "deltaMs": 116.90360000284272,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 2314.1178999976546,
+              "candidate": 2314.7546000000148,
+              "deltaMs": 0.6367000023601577,
+              "candidateFaster": false
+            }
+          }
+        }
+      ],
+      "wins": {
+        "processExitTailMs": 2,
+        "processExitWallMs": 5,
+        "firstAvailabilityTailMs": 3,
+        "durableTailMs": 2,
+        "durableWallMs": 4
+      },
+      "qualified": false
+    },
+    {
+      "epoch": "combined-after-cache-fix",
+      "transfers": 12,
+      "allOutputHashesMatch": true,
+      "pairs": [
+        {
+          "trial": 1,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 143.81765000143787,
+              "candidate": 104.7926000028383,
+              "deltaMs": -39.02504999859957,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 1205.347349998192,
+              "candidate": 890.1104000033229,
+              "deltaMs": -315.23694999486906,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 114.88630000167177,
+              "candidate": 77.14990000022226,
+              "deltaMs": -37.73640000144951,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 159.55030000259285,
+              "candidate": 132.9399000023841,
+              "deltaMs": -26.610400000208756,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 1221.079999999347,
+              "candidate": 918.2577000028687,
+              "deltaMs": -302.82229999647825,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 199.65995000166004,
+              "candidate": 161.1740500011365,
+              "deltaMs": -38.48590000052354,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 8885.537049998675,
+              "candidate": 8811.172650002845,
+              "deltaMs": -74.36439999582944,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 172.11650000172085,
+              "candidate": 135.13400000010733,
+              "deltaMs": -36.982500001613516,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 225.10820000024978,
+              "candidate": 187.3870999988867,
+              "deltaMs": -37.721100001363084,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 8910.985299997265,
+              "candidate": 8837.385700000596,
+              "deltaMs": -73.59959999666899,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 1,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 224.6946500017657,
+              "candidate": 294.2562000025646,
+              "deltaMs": 69.56155000079889,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 2211.4635500038275,
+              "candidate": 2260.1186000028974,
+              "deltaMs": 48.65504999906989,
+              "candidateFaster": false
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 198.00309999845922,
+              "candidate": 266.340999998647,
+              "deltaMs": 68.3379000001878,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 242.54839999775868,
+              "candidate": 312.42769999880693,
+              "deltaMs": 69.87930000104825,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 2229.3172999998205,
+              "candidate": 2278.29009999914,
+              "deltaMs": 48.97279999931925,
+              "candidateFaster": false
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-4m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 140.88099999935366,
+              "candidate": 91.66054999877815,
+              "deltaMs": -49.22045000057551,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 962.5243999980739,
+              "candidate": 873.9432500005933,
+              "deltaMs": -88.58114999748068,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 114.72289999801433,
+              "candidate": 65.44080000094255,
+              "deltaMs": -49.28209999707178,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 159.88440000000992,
+              "candidate": 112.67379999844707,
+              "deltaMs": -47.21060000156285,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 981.5277999987302,
+              "candidate": 894.9565000002622,
+              "deltaMs": -86.57129999846802,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "single-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 214.9325999962457,
+              "candidate": 216.76160000060918,
+              "deltaMs": 1.829000004363479,
+              "candidateFaster": false
+            },
+            "processExitWallMs": {
+              "baseline": 8884.90809999712,
+              "candidate": 8867.260499999247,
+              "deltaMs": -17.64759999787202,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 187.7767000005406,
+              "candidate": 191.2622999989253,
+              "deltaMs": 3.485599998384714,
+              "candidateFaster": false
+            },
+            "durableTailMs": {
+              "baseline": 240.9775999985868,
+              "candidate": 245.8440000009432,
+              "deltaMs": 4.866400002356386,
+              "candidateFaster": false
+            },
+            "durableWallMs": {
+              "baseline": 8910.95309999946,
+              "candidate": 8896.342899999581,
+              "deltaMs": -14.610199999879114,
+              "candidateFaster": true
+            }
+          }
+        },
+        {
+          "trial": 2,
+          "case": "split-64m",
+          "metrics": {
+            "processExitTailMs": {
+              "baseline": 263.32019999972545,
+              "candidate": 198.17814999987604,
+              "deltaMs": -65.1420499998494,
+              "candidateFaster": true
+            },
+            "processExitWallMs": {
+              "baseline": 2300.7238999998663,
+              "candidate": 2189.8229500002344,
+              "deltaMs": -110.90094999963185,
+              "candidateFaster": true
+            },
+            "firstAvailabilityTailMs": {
+              "baseline": 236.7175999970641,
+              "candidate": 170.89470000064466,
+              "deltaMs": -65.82289999641944,
+              "candidateFaster": true
+            },
+            "durableTailMs": {
+              "baseline": 280.80389999740873,
+              "candidate": 215.2593999999226,
+              "deltaMs": -65.54449999748613,
+              "candidateFaster": true
+            },
+            "durableWallMs": {
+              "baseline": 2318.2075999975496,
+              "candidate": 2206.904200000281,
+              "deltaMs": -111.30339999726857,
+              "candidateFaster": true
+            }
+          }
+        }
+      ],
+      "wins": {
+        "processExitTailMs": 4,
+        "processExitWallMs": 5,
+        "firstAvailabilityTailMs": 4,
+        "durableTailMs": 4,
+        "durableWallMs": 5
+      },
+      "qualified": false
+    }
+  ],
+  "noIdmComparison": true,
+  "noProductionAdmission": true
+}

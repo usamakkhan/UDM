@@ -4,16 +4,11 @@
  std::optional<std::map<UINT,bool>> optionsAppearanceCommands;
  std::function<void(Options&)> configureOptionsDialog;
  void dispatchOptionsQueue(){
-  std::unique_lock<std::recursive_mutex> lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return;
-  manager.dispatchQueueWork();optionsQueueDispatchPending=false;
+  if(modelMaintenance.requestDispatch())optionsQueueDispatchPending=false;
  }
  void tickOptionsModel(){
-  std::string monitorFailure,tickFailure;
-  {std::unique_lock<std::recursive_mutex> lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return;
-   try{if(networkCapture)networkCapture->poll();}catch(const std::exception& e){monitorFailure=e.what();}
-   try{if(optionsQueueDispatchPending){manager.dispatchQueueWork();optionsQueueDispatchPending=false;}manager.tick();}catch(const std::exception& e){tickFailure=e.what();}
-  }
-  if(!monitorFailure.empty())showStatus(monitorFailure);if(!tickFailure.empty())showStatus(tickFailure);
+  try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}
+  try{if(optionsQueueDispatchPending)dispatchOptionsQueue();requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}
  }
  bool finishOptionsAppearance(){
   if(!optionsRefreshPending)return true;if(optionsUiActive||optionsAppearanceSnapshot)return false;
@@ -33,7 +28,7 @@
   if(optionsUiActive||optionsAppearanceSnapshot)return;optionsUiActive=true;
   try{
    Options dialog(manager,this);if(configureOptionsDialog)configureOptionsDialog(dialog);
-   dialog.help=[this]{showHelpTopic(0);};dialog.networkIntegration=[this](CWnd* owner){if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager);NetworkDialog network(owner,&manager,networkCapture.get());network.DoModal();};dialog.DoModal();
+   dialog.help=[this]{showHelpTopic(0);};dialog.networkIntegration=[this](CWnd* owner){if(!networkCapture)networkCapture=std::make_unique<NetworkCaptureSession>(&manager,maintenanceSignal->notifier());NetworkDialog network(owner,&manager,networkCapture.get());network.DoModal();};dialog.DoModal();
   }catch(...){optionsUiActive=false;optionsRefreshPending=true;throw;}
   optionsUiActive=false;optionsRefreshPending=true;finishOptionsAppearance();
  }

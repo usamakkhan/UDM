@@ -32,22 +32,12 @@ inline void Options::savePage(){
    else{prefs.erase(key);original.erase(key);}
   }
  };
- auto commit=[this,sync](std::initializer_list<const char*> fields,const auto& change){
-  Lock lock(manager.mutex);
-  auto next=manager.state["Settings"];
-  change(next);
-  manager.setSettings(next);
-  sync(manager.state["Settings"],fields);
- };
  auto editCategory=[this,selected,sync](const std::string& category){
-  Json live;
-  {Lock lock(manager.mutex);live=manager.state["Settings"];}
-  const auto accepted=showCategoryProperties(this,manager,live,category);
+  CategoryPropertiesResult saved;
+  const auto accepted=showCategoryProperties(this,manager,category,&saved);
   if(!accepted)return;
-  {Lock lock(manager.mutex);
-   sync(manager.state["Settings"],{"CustomCategories","HiddenBuiltinCategories","CategoryRules",
-    "CategoryTypeOverrides","CategoryPaths","CategoryRememberLast"});
-  }
+  sync(saved.settings,{"CustomCategories","HiddenBuiltinCategories","CategoryRules",
+   "CategoryTypeOverrides","CategoryPaths","CategoryRememberLast"});
   *selected=*accepted;
   reloadCategory();
  };
@@ -68,30 +58,14 @@ inline void Options::savePage(){
  };
  bindChange(categories,load);
  B("New",233,35,57,[editCategory]{editCategory("");});
- B("Browse",233,118,57,[this,folder,selected,commit,load]{
-  const auto path=chooseFolder(this,wide(text(folder)));
-  if(path.empty())return;
-  if(!fs::path(path).is_absolute())throw std::runtime_error("Choose an absolute category folder.");
-  commit({"CategoryPaths","CategoryRememberLast"},[&](Json& next){
-   auto paths=dictionary(next.value("CategoryPaths",Json::object()));
-   paths[*selected]=utf8(path);
-   next["CategoryPaths"]=legacyDictionary(paths);
-  });
-  load();
+ B("Browse",233,118,57,[this,folder,selected,load]{
+  const auto path=saveToFolderPicker(this,wide(text(folder)));if(path.empty())return;
+  applyImmediateOptionsChange({ImmediateOptionsKind::CategoryFolder,*selected,utf8(path)},load);
  });
- bind(remember,[this,selected,remember,commit,load]{
-  try{
-   commit({"CategoryPaths","CategoryRememberLast"},[&](Json& next){
-    next["CategoryRememberLast"][*selected]=checked(remember);
-   });
-  }catch(...){load();throw;}
-  load();
- });
+ bind(remember,[this,selected,remember,load]{applyImmediateOptionsChange({ImmediateOptionsKind::CategoryRemember,*selected,{},checked(remember)},load);});
  auto date=C("Set file creation date as provided by the server",yes(prefs,"UseServerDate"),17,159,273);
- bind(date,[this,date,commit]{
-  try{commit({"UseServerDate"},[&](Json& next){next["UseServerDate"]=checked(date);});}
-  catch(...){date->SendMessage(BM_SETCHECK,yes(prefs,"UseServerDate")?BST_CHECKED:BST_UNCHECKED);throw;}
- });
+ const auto loadDate=[this,date]{date->SendMessage(BM_SETCHECK,yes(prefs,"UseServerDate")?BST_CHECKED:BST_UNCHECKED);};
+ bind(date,[this,date,loadDate]{applyImmediateOptionsChange({ImmediateOptionsKind::ServerDate,{},{},checked(date)},loadDate);});
  G("Temporary directory",8,173,288,77);
  auto temporary=E("",15,186,213);
  temporary->SendMessage(EM_SETREADONLY,TRUE);
@@ -101,13 +75,10 @@ inline void Options::savePage(){
   temporary->SetWindowText(cs(path.empty()?utf8(manager.root.wstring()):path));
   restore->EnableWindow(!path.empty());
  };
- auto setTemporary=[commit,loadTemporary](const std::string& path){
-  commit({"TemporaryFolder"},[&](Json& next){next["TemporaryFolder"]=path;});
-  loadTemporary();
- };
+ auto setTemporary=[this,loadTemporary](const std::string& path){applyImmediateOptionsChange({ImmediateOptionsKind::TemporaryFolder,{},path},loadTemporary);};
  bind(restore,[setTemporary]{setTemporary("");});
  B("Browse",232,186,57,[this,temporary,setTemporary]{
-  const auto path=chooseFolder(this,wide(text(temporary)));
+  const auto path=saveToFolderPicker(this,wide(text(temporary)));
   if(!path.empty())setTemporary(utf8(path));
  });
  L("Temporary directory stores file parts during download.",15,206,208,34);

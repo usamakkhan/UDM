@@ -50,12 +50,15 @@ inline std::vector<ZipItem> zipContents(const fs::path& path,const Cancel& cance
 inline std::vector<ZipItem> zipContents(const fs::path& path){return zipContents(path,Cancel());}
 ZipListing previewRemoteZip(const Json&,const Json&,const Cancel&,std::function<void(const Json&)> saveBrowserSession={});
 struct ZipPreviewState {std::string status="Checking",message;std::shared_ptr<const ZipListing> listing;};
+// Completion functions are wake-ups only. They run after result publication,
+// outside its mutex, and may run before a terminal constructor returns. They
+// must own their state and must not capture UI controls or an owning task.
 // Local tasks never capture a window, manager, job or owning task pointer.
 // Cancellation/destruction releases the dialog without joining blocked I/O.
 class LocalZipPreviewTask {
  struct Shared;std::shared_ptr<Shared> state;
 public:
- explicit LocalZipPreviewTask(fs::path);
+ explicit LocalZipPreviewTask(fs::path,std::function<void()> onReady={});
  ~LocalZipPreviewTask();void stop()noexcept;ZipPreviewState snapshot()const;
  LocalZipPreviewTask(const LocalZipPreviewTask&)=delete;LocalZipPreviewTask& operator=(const LocalZipPreviewTask&)=delete;
 };
@@ -64,7 +67,7 @@ public:
 class ZipPreviewTask {
  struct Shared;std::shared_ptr<Shared> state;
 public:
- ZipPreviewTask(Json,Json,std::function<void(const Json&)> saveBrowserSession={},int timeoutMs=30000);
+ ZipPreviewTask(Json,Json,std::function<void(const Json&)> saveBrowserSession={},int timeoutMs=30000,std::function<void()> onReady={});
  ~ZipPreviewTask();void stop()noexcept;ZipPreviewState snapshot()const;
  ZipPreviewTask(const ZipPreviewTask&)=delete;ZipPreviewTask& operator=(const ZipPreviewTask&)=delete;
 };

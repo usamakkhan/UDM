@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "Off remembers the live active rate",
+      "passed": true
+    },
+    {
+      "name": "Off preserves startup choice and limiter mode",
+      "passed": true
+    },
+    {
+      "name": "Repeated Off does not replace the remembered rate with zero",
+      "passed": true
+    },
+    {
+      "name": "On restores the remembered rate",
+      "passed": true
+    },
+    {
+      "name": "Repeated On preserves the active rate",
+      "passed": true
+    },
+    {
+      "name": "On merges the latest remembered rate mode and startup choice",
+      "passed": true
+    },
+    {
+      "name": "Toggle acceptance returns while the model is held",
+      "passed": true
+    },
+    {
+      "name": "Duplicate toggle cannot replace accepted work or release its guard",
+      "passed": true
+    },
+    {
+      "name": "Read cancellation cannot abandon an accepted toggle",
+      "passed": true
+    },
+    {
+      "name": "Failed weak notification preserves the committed result until acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement joins the toggle and releases its decision guard",
+      "passed": true
+    },
+    {
+      "name": "Toggle preserves unrelated concurrent settings",
+      "passed": true
+    },
+    {
+      "name": "Toggle result agrees with the durable settings",
+      "passed": true
+    },
+    {
+      "name": "Another accepted decision rejects a toggle without losing its guard",
+      "passed": true
+    },
+    {
+      "name": "Durable toggle failure is returned without acknowledgement as saved",
+      "passed": true
+    },
+    {
+      "name": "Failed toggle rolls back the live settings and preserves the catalog",
+      "passed": true
+    },
+    {
+      "name": "An explicit retry can complete after persistence failure",
+      "passed": true
+    },
+    {
+      "name": "Forced owner cleanup joins the accepted toggle before releasing its guard",
+      "passed": true
+    },
+    {
+      "name": "Toggle publication follows model unlock and survives diagnostic failure",
+      "passed": true
+    },
+    {
+      "name": "Repeated toggle cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "sameFixtureSha256": "A6EB8FC5F321A8E6E7FFAA3F459BB35FEEE66E3391B9EAEA2A6BDC63C13DF4F4",
+  "frozen963": {
+    "checks": [
+      {
+        "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+        "passed": true
+      },
+      {
+        "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+        "passed": false
+      }
+    ],
+    "error": "Manager cannot retire ownership or report failure while its owned body task is pending",
+    "observations": [
+      {
+        "activeOwnershipRetiredWhileTaskHeld": true,
+        "failedStatusVisibleWhileTaskHeld": true,
+        "nativeBodyCompleted": true,
+        "ownedResultWasHeld": true,
+        "point": "publication-preflight-begin",
+        "resultTaskCompleted": true
+      }
+    ],
+    "passed": false
+  },
+  "current964": {
+    "checks": [
+      {
+        "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+        "passed": true
+      },
+      {
+        "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+        "passed": true
+      },
+      {
+        "name": "The failed real transfer never publishes a final output",
+        "passed": true
+      },
+      {
+        "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+        "passed": true
+      },
+      {
+        "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+        "passed": true
+      },
+      {
+        "name": "The failed real transfer never publishes a final output",
+        "passed": true
+      },
+      {
+        "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+        "passed": true
+      },
+      {
+        "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+        "passed": true
+      },
+      {
+        "name": "The failed real transfer never publishes a final output",
+        "passed": true
+      },
+      {
+        "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+        "passed": true
+      },
+      {
+        "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+        "passed": true
+      },
+      {
+        "name": "The failed real transfer never publishes a final output",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "observations": [
+      {
+        "activeOwnershipRetiredWhileTaskHeld": false,
+        "failedStatusVisibleWhileTaskHeld": false,
+        "nativeBodyCompleted": true,
+        "ownedResultWasHeld": true,
+        "point": "publication-preflight-begin",
+        "resultTaskCompleted": true
+      },
+      {
+        "activeOwnershipRetiredWhileTaskHeld": false,
+        "failedStatusVisibleWhileTaskHeld": false,
+        "nativeBodyCompleted": true,
+        "ownedResultWasHeld": true,
+        "point": "publication-preflight-ready",
+        "resultTaskCompleted": true
+      },
+      {
+        "activeOwnershipRetiredWhileTaskHeld": false,
+        "failedStatusVisibleWhileTaskHeld": false,
+        "nativeBodyCompleted": true,
+        "ownedResultWasHeld": true,
+        "point": "publication-intent-temporary-flushed",
+        "resultTaskCompleted": true
+      },
+      {
+        "activeOwnershipRetiredWhileTaskHeld": false,
+        "failedStatusVisibleWhileTaskHeld": false,
+        "nativeBodyCompleted": true,
+        "ownedResultWasHeld": true,
+        "point": "publication-intent-written",
+        "resultTaskCompleted": true
+      }
+    ],
+    "passed": true
+  },
+  "actualManagerWorker": true,
+  "gateHoldsOwnedResultProducerAfterRealWriteback": true,
+  "notAPhysicalFlushLatencyBenchmark": true
+}

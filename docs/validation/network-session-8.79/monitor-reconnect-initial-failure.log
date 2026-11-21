@@ -1,0 +1,57 @@
+PASS Lost Capture acknowledgement is reported without replaying the command
+PASS Periodic Watch/Capture/Snapshot reconnects to the same helper after Capture reply loss
+PASS Only the next explicit Capture is sent; recovery does not replay the uncertain command
+PASS Reconnect without an existing helper does not launch or elevate
+PASS Reconnect leaves a healthy helper running
+PASS Lost mutation reply leaves a disconnected but recoverable helper
+PASS Explicit Start recovery reconnects without stopping the existing helper
+PASS Start recovery preserves the helper PID and does not replay Capture
+PASS Start recovery retains capture generation
+PASS Actual Monitor snapshot reconnects to the same helper process after a lost reply
+PASS Read-only Snapshot is retried exactly once
+PASS Subsequent polling reuses the helper without another launch
+PASS Explicit stop closes the recovered monitor session
+PASS Partial reply times out and reconnects after the old client releases its pipe handle
+PASS Actual Monitor snapshot reconnects to the same helper process after a lost reply
+PASS Read-only Snapshot is retried exactly once
+PASS Subsequent polling reuses the helper without another launch
+PASS Explicit stop closes the recovered monitor session
+PASS Lost admission acknowledgement reports an unknown outcome instead of replaying the admission
+PASS Next poll reconnects while preserving a single admission in the original helper
+PASS Capture generation survives monitor reconnection
+PASS Lost acknowledgement leaves the real file admission outcome unknown
+PASS Catalog recovery does not steal files held by the reconnected writer
+PASS Durable response continues in the same helper with exactly one admission
+PASS Durable receipt reports exact completion or interruption after reconnect
+PASS Response file retains exact bytes across the pipe break
+PASS Recovered complete response publishes one byte-identical download
+PASS Lost acknowledgement leaves the real file admission outcome unknown
+PASS Catalog recovery does not steal files held by the reconnected writer
+PASS Durable response continues in the same helper with exactly one admission
+PASS Durable receipt reports exact completion or interruption after reconnect
+PASS Response file retains exact bytes across the pipe break
+PASS Incomplete response stays paused with no published partial output
+PASS Automatic controller preserves one reserved job after a lost admission reply
+PASS Controlled writer receives no bytes before a recovered credit grant
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Stale, mismatched or ambiguous progress cannot adopt the reserved response
+PASS Automatic controller reconciles unknown admission and completes the credit-controlled response
+PASS Reconciled response has one admission and exact quota accounting
+PASS Pause intent is saved even when response admission acknowledgement is unknown
+PASS Unknown response ownership blocks removing the still-owned download
+PASS Recovered paused admission cancels once without granting any response bytes
+PASS Cancellation recovers an inactive partial record without publishing output
+PASS The canceled response can be removed after writer ownership ends
+PASS Stopping the monitor reconnects and persists cancellation for unknown admission
+PASS Monitor shutdown releases uncertain writer ownership and recovers its receipt
+PASS Stopping unknown controlled admission sends no data allowance and publishes no file
+PASS Legacy disconnect or invalid reply fails closed without automatic reconnection
+PASS Legacy disconnect or invalid reply fails closed without automatic reconnection
+PASS The asynchronous session accepts an owned real-monitor poll
+PASS Lost Capture acknowledgement reaches the cached view without launching or replaying a mutation
+PASS The next explicit asynchronous poll can recover the retained helper
+FAIL Asynchronous polling reconnects the real Monitor and publishes its observed active state

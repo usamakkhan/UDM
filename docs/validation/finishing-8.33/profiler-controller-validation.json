@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "planExitCode": 0,
+  "planDirectoryCreated": false,
+  "recordingStarted": false,
+  "controllerElevated": false,
+  "recorderRefusedWithoutElevation": true,
+  "elevationRequested": false,
+  "case": "split-64m",
+  "budgetSeconds": 45,
+  "workloadUsesSingleCase": true,
+  "sourceHashes": [
+    {
+      "path": "benchmarks/speed/finish_io_trace.py",
+      "sha256": "42593E0D2FE28244028E6B866631A09201AD2F58F5688050002A6B484EC7E93B"
+    },
+    {
+      "path": "benchmarks/speed/test_finish_io_trace.py",
+      "sha256": "91C8E1A1CEAE708134AE67B68B6BE6C386A8E5C700845E56B7FF53F912490329"
+    },
+    {
+      "path": "benchmarks/speed/compare-completion.py",
+      "sha256": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB"
+    },
+    {
+      "path": "benchmarks/speed/finish-io.wprp",
+      "sha256": "D5CDA35C8A2F054E8587CF19FA7FD27F846A9C062A5F06AB7536ABCFAA751B34"
+    }
+  ],
+  "latestEntrypointsRechecked": true,
+  "eventQualityVerified": false,
+  "attributionVerified": false
+}

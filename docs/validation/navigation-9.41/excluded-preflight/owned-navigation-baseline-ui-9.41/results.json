@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "The actual initial list contains the two owned records",
+      "passed": true
+    },
+    {
+      "name": "The real tree selects the newly requested queue",
+      "passed": true
+    },
+    {
+      "name": "The first real new-queue view contains only its member",
+      "passed": false
+    }
+  ],
+  "error": "The first real new-queue view contains only its member",
+  "navigationDiagnostics": {
+    "newQueue": {
+      "caret": "queue:Navigation audit",
+      "filter": "queue:Navigation audit",
+      "firstCell": "member.bin",
+      "rows": 2
+    }
+  },
+  "passed": false
+}

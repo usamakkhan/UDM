@@ -19,10 +19,13 @@ public:
   for(const auto& entry:desired){auto found=original.find(entry.first);if(found==original.end()||found->second.second!=entry.second.second)assigned.emplace(entry);}
   for(const auto& entry:assigned)if(!entry.second.second.empty()&&(entry.first=="authorization"||entry.first=="cookie"||entry.first=="referer"||entry.first=="origin"))sensitiveAssignment=true;
  }
- void apply(Json& edit,const Json& current,std::string(*seal)(const std::string&)=protect)const{
-  if(assigned.empty()&&removed.empty())return;
+ void validateCurrentOrigin(const Json& current)const{
   if(sensitiveAssignment&&!requiredOrigin.empty()&&Url(str(current,"Url")).origin!=requiredOrigin)
    throw std::runtime_error("The download address changed to another site. Reopen Properties before saving request headers. Your edits are still in this dialog.");
+ }
+ void apply(Json& edit,const Json& current,std::string(*seal)(const std::string&)=protect)const{
+  if(assigned.empty()&&removed.empty())return;
+  validateCurrentOrigin(current);
   const auto before=readHeaders(current);auto next=before;const auto available=logical(before);
   for(const auto& name:removed)setHeader(next,name,"");
   for(const auto& entry:assigned){

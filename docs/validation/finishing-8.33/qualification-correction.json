@@ -1,0 +1,9 @@
+{
+  "initialFailure": "New pending-admission fixture needed dirty live state to enter the existing automatic save path; no product admission semantics changed.",
+  "correctedInputs": [
+    "native/CompletedCheckpointTests.cpp",
+    "native/PreparedTransferCommit.hpp"
+  ],
+  "initialManifest": "build-first-candidate.json",
+  "guardFallback": "Optional deferral returns false on observation failure so automatic IO remains the fallback."
+}

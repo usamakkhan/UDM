@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "label": "9.59 valid silent CLI success control; single 4 MiB pair only",
+  "transfers": 2,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 199.317,
+        "idm": 703.195
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          199.317
+        ],
+        "idm": [
+          703.195
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

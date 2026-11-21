@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "stopCalls": 40,
+  "processes": 4,
+  "summary": [
+    {
+      "drive": "C",
+      "label": "old64",
+      "nativeVersion": "8.64",
+      "records": 7500,
+      "catalogBytes": 2820555,
+      "medianStopMs": 123.02505,
+      "medianThreadCycles": 393543916.5,
+      "destructorMs": 230.92499999999998
+    },
+    {
+      "drive": "C",
+      "label": "new65",
+      "nativeVersion": "8.65",
+      "records": 7500,
+      "catalogBytes": 2820555,
+      "medianStopMs": 42.76815,
+      "medianThreadCycles": 143668159.0,
+      "destructorMs": 75.0333
+    },
+    {
+      "drive": "D",
+      "label": "new65",
+      "nativeVersion": "8.65",
+      "records": 7500,
+      "catalogBytes": 2355555,
+      "medianStopMs": 44.6425,
+      "medianThreadCycles": 148549756.0,
+      "destructorMs": 72.5532
+    },
+    {
+      "drive": "D",
+      "label": "old64",
+      "nativeVersion": "8.64",
+      "records": 7500,
+      "catalogBytes": 2355555,
+      "medianStopMs": 119.56654999999999,
+      "medianThreadCycles": 387711361.0,
+      "destructorMs": 159.609
+    }
+  ],
+  "completeApplicationTiming": false,
+  "pairedIdmComparison": false,
+  "orderReversedAcrossDrives": true
+}

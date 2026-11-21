@@ -1,0 +1,23 @@
+{
+  "version": "8.39",
+  "bytes": 4194304,
+  "hashMatched": true,
+  "apiLayerPairingVerified": true,
+  "uniqueNativeFlushOperations": 7,
+  "flushRoles": {
+    "catalog": 3,
+    "body": 3,
+    "publication-intent": 1
+  },
+  "idmMatchedExplicitFlushesInSeparateObservation": 0,
+  "causalSpeedupEstablished": false,
+  "performanceParityVerified": false,
+  "allBackgroundWorkMeasured": false,
+  "isolatedProcessStillRunning": 26868,
+  "desktopCloseFailed": "GetCursorPos failed: Access is denied. (0x80070005)",
+  "limitations": [
+    "Separate instrumented observations; no uninstrumented paired timing or universal behavior claim.",
+    "IDM matched-file capture does not cover all implicit or later storage activity.",
+    "The isolated UDM app has not completed normal shutdown; no shutdown-performance endpoint is claimed."
+  ]
+}

@@ -1,0 +1,18 @@
+--- native/MainFeatures.hpp@9.49
++++ native/MainFeatures.hpp@9.48
+@@ -19,13 +19,11 @@
+  void preference(const char* key,const Json& value){auto p=preferences();p[key]=value;manager.setSettings(p);}
+  Json listLayout(){Json widths=Json::array(),order=Json::array();int indices[columnCount]{};table.GetColumnOrderArray(indices,columnCount);for(int i=0;i<columnCount;++i){widths.push_back(logicalColumnWidth(i,table.GetColumnWidth(i),windowDpi()));order.push_back(indices[i]);}return {{"Widths",widths},{"Order",order},{"SortColumn",sortColumn},{"Ascending",ascending}};}
+  void restoreLayout(){auto p=preferences();auto layout=p.value("ListLayout",Json::object());if(layout.contains("Widths")&&layout["Widths"].is_array()&&layout["Widths"].size()==columnCount)for(int i=0;i<columnCount;++i){int width=std::clamp<int>((int)layout["Widths"][i],0,1200);table.SetColumnWidth(i,scaledColumnWidth(i,width,windowDpi()));}if(layout.contains("Order")&&layout["Order"].is_array()&&layout["Order"].size()==columnCount){int order[columnCount]{};std::set<int> seen;for(int i=0;i<columnCount;++i){order[i]=layout["Order"][i];if(order[i]<0||order[i]>=columnCount||!seen.insert(order[i]).second)return;}table.SetColumnOrderArray(columnCount,order);}sortColumn=(int)std::clamp<i64>(num(layout,"SortColumn",-1),-1,columnCount-1);ascending=yes(layout,"Ascending",true);table.sortIndicator(sortColumn,ascending);}
+- void rememberLayout(){
++ void rememberLayout(bool wait=true){
+   if(!table.GetSafeHwnd())return;
+   // Read thread-owned Windows controls before taking the shared catalog lock.
+   auto next=listLayout();
+-  // The controls retain the newest layout while Manager is busy. Its next
+-  // timer captures it again; Exit owns a separate final-layout merge.
+-  std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return;auto& saved=manager.state["Settings"]["ListLayout"];
++  std::unique_lock lock(manager.mutex,std::defer_lock);if(wait)lock.lock();else if(!lock.try_lock())return;auto& saved=manager.state["Settings"]["ListLayout"];
+   if(saved!=next)saved=std::move(next);
+  }
+  void customizeColumns(){

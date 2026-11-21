@@ -1,0 +1,931 @@
+{
+  "case": "properties-save-failure",
+  "cases": [
+    {
+      "command": "progress-resume",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "recording-resume",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "save-live",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "properties-complete",
+      "error": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location.",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "properties-merge",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "properties-origin",
+      "error": "The download address changed to another site. Reopen Properties before saving request headers. Your edits are still in this dialog.",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-pending-complete",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-pending-paused",
+      "error": "",
+      "modelAvailable": true,
+      "removed": true
+    },
+    {
+      "command": "cancel-file-info-complete",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-file-info-paused",
+      "error": "",
+      "modelAvailable": true,
+      "removed": true
+    },
+    {
+      "command": "cancel-accepted-during-recovery",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-receipt-changed",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-browser-complete",
+      "error": "",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "cancel-browser-paused",
+      "error": "",
+      "modelAvailable": true,
+      "removed": true
+    },
+    {
+      "command": "cancel-browser-fingerprint",
+      "error": "The browser cancellation changed. Download history was preserved.",
+      "modelAvailable": true,
+      "removed": false
+    },
+    {
+      "command": "properties-save-failure",
+      "error": "Owned properties save failure",
+      "modelAvailable": true,
+      "removed": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Properties retains the exact recovered-completion destination warning",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Properties merges typed logical header changes with the current recovered session",
+      "passed": true
+    },
+    {
+      "name": "A successful Properties patch applies typed metadata after recovery",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "Sensitive header assignment revalidates the current origin after recovery",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Cancellation identity is checked before recovery and again inside its final atomic continuation",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "A duplicate browser cancellation cannot acknowledge a provisional recovered row while its publication owner is active",
+      "passed": true
+    },
+    {
+      "name": "Refused overlapping cancellation preserves its durable presentation claim",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "The current completion wins over stale Resume, Save and cancellation actions",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Only the terminal original cancellation releases the browser presentation claim",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "A duplicate browser cancellation cannot acknowledge a provisional recovered row while its publication owner is active",
+      "passed": true
+    },
+    {
+      "name": "Refused overlapping cancellation preserves its durable presentation claim",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "The guarded command completes without an unexpected backend failure",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Only the terminal original cancellation releases the browser presentation claim",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "A receipt fingerprint changed during detached persistence prevents atomic job removal",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "Only the terminal original cancellation releases the browser presentation claim",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "Command begins with a real interrupted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Actual UI/backend command reaches the held recovery catalog flush",
+      "passed": true
+    },
+    {
+      "name": "The migrated command adapter leaves the model available during actual recovery persistence",
+      "passed": true
+    },
+    {
+      "name": "Job and destination ownership remain held during the detached checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An unrelated UI snapshot is available through the same held boundary",
+      "passed": true
+    },
+    {
+      "name": "Every held command is explicitly released before its deadline",
+      "passed": true
+    },
+    {
+      "name": "A failed final Properties save is reported instead of acknowledging the typed patch",
+      "passed": true
+    },
+    {
+      "name": "Unsubmitted or rejected commands preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Failed Properties persistence rolls back typed credentials while preserving the independently refreshed session",
+      "passed": true
+    },
+    {
+      "name": "Only a still-unconfirmed recovered Paused offer is removed; completion and newly accepted work survive",
+      "passed": true
+    },
+    {
+      "name": "A paused or rejected command preserves its complete staged source",
+      "passed": true
+    },
+    {
+      "name": "Accepted recovery retires its journal and releases runtime ownership",
+      "passed": true
+    },
+    {
+      "name": "The durable catalog records exactly the accepted removal or retained job",
+      "passed": true
+    },
+    {
+      "name": "A rejected Resume predicate performs no queue or recovery mutation",
+      "passed": true
+    },
+    {
+      "name": "A detached pending cancellation is a benign no-op",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "headlessActualCommandAdapters": true,
+  "passed": true,
+  "workflowError": "Owned properties save failure"
+}

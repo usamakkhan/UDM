@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "version": "8.62",
+      "trial": 1,
+      "case": "split-8m",
+      "requestedFileName": "default-8m.bin",
+      "normalizedFileName": "default-8m.bin",
+      "normalizedFilenameMatchesExpected": true,
+      "bytes": 8388608,
+      "sha256": "2741257F89DE5A7B22C8303032ADA8590E91AB7E200EEED52B29ACC4CC7E81AA",
+      "hashMatches": true,
+      "processExitTailSeconds": 0.24335210002027452,
+      "processExitWallSeconds": 1.381615900012548,
+      "firstAvailabilityTailSeconds": 0.19874350000463892,
+      "durableTailSeconds": 0.2602931000001263,
+      "postExitToDurableSeconds": 0.016940999979851767,
+      "postExitOperations": {
+        "openSeconds": 0.00010900000052060932,
+        "flushSeconds": 0.0068685000005643815,
+        "closeSeconds": 3.4599986975081265e-05
+      },
+      "clockMappingErrorBoundSeconds": 1.0299998393747956e-05,
+      "clockDriftSeconds": 0.00022899997690140061,
+      "requests": 2,
+      "originBytes": 8650804,
+      "sourceExecutableSha256": "04CADC66CCBC74B393074115507D17A827D61CAB7898886EED329CD5FF888818",
+      "diskCreditCheckpoint": {
+        "ReconciledBytes": 8388608,
+        "Used": true
+      },
+      "finishPhases": {
+        "AdvisoryHashInput": "write-buffer",
+        "AdvisoryHashOverlap": true,
+        "AdvisoryHashSeconds": 0.025365,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 2e-06,
+        "Content": 0.0004364,
+        "DirectSize": 3.87e-05,
+        "FlushPublished": 0.1109505,
+        "Hash": 4.02e-05,
+        "HashMode": "deferred",
+        "LateHash": 4.38e-05,
+        "PrePublicationMetadata": 0.0100508,
+        "PrefetchReceipt": 2.3e-06,
+        "PreparedTransferFinalizeSeconds": 0.122738,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 2.78e-05,
+        "PublishedFileFlush": 0.1106246,
+        "PublishedFileOpen": 0.0002474,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0011448,
+        "SettleDestination": 0.0008616,
+        "SettleLengthQuery": 0.0001196,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.000123,
+        "SettleSnapshot": 1.55e-05,
+        "SettleValidateFolder": 6e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0024846,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 9.98e-05,
+          "directories-ready": 0.0009204,
+          "publish": 0.0008914,
+          "temporary-flushed": 0.0252328,
+          "temporary-opened": 0.0002081
+        },
+        "PrepareIntent": 0.0004883,
+        "PrepareSource": 0.0001613,
+        "Rename": 0.0010073,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.7e-06,
+        "WriteIntent": 0.0273589
+      },
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 0,
+        "LeadBytes": 0,
+        "Seconds": 0.0
+      },
+      "applicationExitedNormally": true,
+      "instrumented": false,
+      "protectedFilesUnchanged": true
+    }
+  ],
+  "summary": {
+    "8.62": {
+      "medianProcessExitTailMs": 243.35210002027452,
+      "medianDurableTailMs": 260.2931000001263,
+      "processExitTailMs": [
+        243.35210002027452
+      ],
+      "durableTailMs": [
+        260.2931000001263
+      ]
+    }
+  },
+  "concurrentCorrectnessQualificationMayBeRunning": false,
+  "pairedIdmComparison": false,
+  "performanceParityVerified": false,
+  "scope": "One ordinary 8 MiB split native-app lifecycle/hash smoke on D: through the normal build with ordered writes disabled; exact full-body write-buffer hashing path verified. App exits normally after its own work, with a separate explicit output flush. Not an IDM comparison or performance claim.",
+  "allFinalPayloadsRemoved": true,
+  "comparisonUtilitySha256": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB"
+}

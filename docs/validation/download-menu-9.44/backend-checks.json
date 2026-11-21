@@ -1,0 +1,374 @@
+{
+  "passed": true,
+  "checks": 84,
+  "suites": [
+    {
+      "suite": "DownloadMenuTaskTests",
+      "passed": true,
+      "checks": 16,
+      "binarySha256": "1C46EA652607439B29B997458E8619612CF75EA5C1DB22F05E98C621EDD74F4F",
+      "assertions": [
+        {
+          "name": "The owned menu reader publishes its model cohort",
+          "passed": true
+        },
+        {
+          "name": "Menu preparation reads on its owned worker rather than the caller",
+          "passed": true
+        },
+        {
+          "name": "The same owner can prepare another menu",
+          "passed": true
+        },
+        {
+          "name": "New settings do not mutate a previously captured menu cohort",
+          "passed": true
+        },
+        {
+          "name": "A separate catalog writer owns the model before menu preparation",
+          "passed": true
+        },
+        {
+          "name": "Menu start returns while its catalog acquisition is pending",
+          "passed": true
+        },
+        {
+          "name": "A pending menu owner rejects a duplicate start",
+          "passed": true
+        },
+        {
+          "name": "Menu cancellation settles without releasing another thread's catalog lock",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins a waiting menu reader without acquiring Manager",
+          "passed": true
+        },
+        {
+          "name": "Accepted File Info work defers menu capture",
+          "passed": true
+        },
+        {
+          "name": "Menu cleanup never clears another command's decision ownership",
+          "passed": true
+        },
+        {
+          "name": "Menu read failure is an owned consumable result",
+          "passed": true
+        },
+        {
+          "name": "The menu owner can retry after a capture failure",
+          "passed": true
+        },
+        {
+          "name": "Notification runs after releasing Manager and cannot undo its result",
+          "passed": true
+        },
+        {
+          "name": "Repeated menu cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Menu reads do not change settings jobs queues or catalog files",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "SelectionCommandSnapshotTests",
+      "passed": true,
+      "checks": 22,
+      "binarySha256": "6BD72C6A59443CE01EF5804521767C5D37DDB6C7A856AA279F2DD1211252184E",
+      "assertions": [
+        {
+          "name": "Activity-only changes replace immutable rows without changing rendered metadata",
+          "passed": true
+        },
+        {
+          "name": "An unchanged activity snapshot retains shared row ownership",
+          "passed": true
+        },
+        {
+          "name": "Prefetch-deferral-only changes cannot reuse a stale activity snapshot",
+          "passed": true
+        },
+        {
+          "name": "An active paused worker offers Stop without offering ordinary Resume",
+          "passed": true
+        },
+        {
+          "name": "A deferring paused prefetch retains its authoritative Resume exception",
+          "passed": true
+        },
+        {
+          "name": "An idle paused record offers Resume rather than Stop",
+          "passed": true
+        },
+        {
+          "name": "A queued record remains stoppable before a worker becomes active",
+          "passed": true
+        },
+        {
+          "name": "An idle completed record permits Remove without Stop or Resume",
+          "passed": true
+        },
+        {
+          "name": "A mixed active and completed selection can Stop but cannot Remove the batch",
+          "passed": true
+        },
+        {
+          "name": "An inactive mixed selection can Resume its unfinished member and Remove the batch",
+          "passed": true
+        },
+        {
+          "name": "Move or rename remains restricted to an entirely completed inactive selection",
+          "passed": true
+        },
+        {
+          "name": "Queue membership and single-record reordering keep their existing constraints",
+          "passed": true
+        },
+        {
+          "name": "Active records and completed nonmembers cannot leave a queue through stale advice",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "Empty or missing row snapshots never inherit another selection's action",
+          "passed": true
+        },
+        {
+          "name": "The model read captures authoritative activity even when status alone says Paused",
+          "passed": true
+        },
+        {
+          "name": "The same model read captures prefetch behavior and invalidates the old row",
+          "passed": true
+        },
+        {
+          "name": "Activity completion cannot mutate a previously displayed snapshot",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "HistoryReadSnapshotTests",
+      "passed": true,
+      "checks": 32,
+      "binarySha256": "3F1325FFC3E5682E316D4E18926D6CC7655D988EF352BF673CA96F7021DF2AD5",
+      "assertions": [
+        {
+          "name": "One successful snapshot captures catalog order for All Downloads",
+          "passed": true
+        },
+        {
+          "name": "Selection and focus identities belong to the same model read",
+          "passed": true
+        },
+        {
+          "name": "Settings and storage warnings are captured with rows",
+          "passed": true
+        },
+        {
+          "name": "Hidden and visible status observers receive immutable values",
+          "passed": true
+        },
+        {
+          "name": "History snapshots exclude transfer journals and private media plans",
+          "passed": true
+        },
+        {
+          "name": "An inactive search does not copy address-search metadata",
+          "passed": true
+        },
+        {
+          "name": "Unchanged compact row records retain shared ownership across ticks",
+          "passed": true
+        },
+        {
+          "name": "Later mutations cannot change an earlier captured row",
+          "passed": true
+        },
+        {
+          "name": "Queue descriptions and rows are replaced by a coherent later read",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "Existing navigation filters retain their history cohort",
+          "passed": true
+        },
+        {
+          "name": "A removed category resolves to its surviving ancestor before rows are filtered",
+          "passed": true
+        },
+        {
+          "name": "A removed project resolves to the Grabber parent",
+          "passed": true
+        },
+        {
+          "name": "A removed queue resolves to the existing queues-root All Downloads view",
+          "passed": true
+        },
+        {
+          "name": "An invalid programmatic filter resolves before history capture",
+          "passed": true
+        },
+        {
+          "name": "Uncached address matching receives owned selected search fields",
+          "passed": true
+        },
+        {
+          "name": "Both positive and negative search decisions reuse unchanged encrypted sources",
+          "passed": true
+        },
+        {
+          "name": "Hidden-window observation avoids building navigation and row snapshots",
+          "passed": true
+        },
+        {
+          "name": "Hidden-window observation does not invalidate the visible search cohort",
+          "passed": true
+        },
+        {
+          "name": "A separate writer owns the catalog before the busy read",
+          "passed": true
+        },
+        {
+          "name": "A full history read returns busy before the writer releases the model",
+          "passed": true
+        },
+        {
+          "name": "A busy history read changes neither retained rows nor the search query/cache",
+          "passed": true
+        },
+        {
+          "name": "Browser-offer observation also returns busy without waiting",
+          "passed": true
+        },
+        {
+          "name": "The next successful history read catches up with the writer",
+          "passed": true
+        },
+        {
+          "name": "An available empty offer snapshot is distinct from a busy model",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "MainClosePolicyTests",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "E4FB98AF2186315EE9A4E3C636D7829E9831256202B1D0C41578895059D1794C",
+      "assertions": [
+        {
+          "name": "Close policy captures the current tray setting",
+          "passed": true
+        },
+        {
+          "name": "A new close reads current policy without changing its older snapshot",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the close reader",
+          "passed": true
+        },
+        {
+          "name": "Close policy acquisition returns to its caller under a held writer",
+          "passed": true
+        },
+        {
+          "name": "One close owner coalesces duplicate starts",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the close reader settles before its catalog writer releases",
+          "passed": true
+        },
+        {
+          "name": "An accepted download decision defers close policy capture",
+          "passed": true
+        },
+        {
+          "name": "Closing a reader never clears another command's ownership",
+          "passed": true
+        },
+        {
+          "name": "A close read failure is consumed as an owned result",
+          "passed": true
+        },
+        {
+          "name": "The close owner can retry after policy failure",
+          "passed": true
+        },
+        {
+          "name": "Close result publication occurs after releasing Manager",
+          "passed": true
+        },
+        {
+          "name": "Notification failure cannot undo the captured close result",
+          "passed": true
+        },
+        {
+          "name": "Repeated close reader cleanup is safe",
+          "passed": true
+        },
+        {
+          "name": "Policy acquisition never changes settings jobs layout or catalog files",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

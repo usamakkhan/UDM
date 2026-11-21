@@ -1,0 +1,25 @@
+{
+  "baselineVersion": "9.44",
+  "currentVersion": "9.45",
+  "sameUiTestBytes": true,
+  "baselineProductionAppAndCoresMatch": true,
+  "baseline": {
+    "dialogCancelled": true,
+    "dialogHandledEscape": false,
+    "mainHandledEscape": true,
+    "ownerDisabled": true,
+    "phase": "modal-escape",
+    "requestPendingAfterKey": false,
+    "requestPendingBeforeKey": true
+  },
+  "current": {
+    "dialogCancelled": true,
+    "dialogHandledEscape": true,
+    "mainHandledEscape": false,
+    "ownerDisabled": true,
+    "phase": "modal-escape",
+    "requestPendingAfterKey": false,
+    "requestPendingBeforeKey": true
+  },
+  "notInstalledIdmTiming": true
+}

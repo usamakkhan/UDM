@@ -1,0 +1,1147 @@
+{
+  "passed": true,
+  "checks": 260,
+  "runs": 10,
+  "suites": [
+    {
+      "suite": "CategoryPropertiesTaskTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 19,
+      "exitCode": 0,
+      "binarySha256": "67894C8F7DAACD9A676CC28C75E2D1135BFC560013F59E7F7B49177808F2D43D",
+      "assertions": [
+        {
+          "name": "An owned fresh settings read settles",
+          "passed": true
+        },
+        {
+          "name": "The editor receives current categories without a mutation",
+          "passed": true
+        },
+        {
+          "name": "Only editor preferences cross the worker boundary, including extension overrides",
+          "passed": true
+        },
+        {
+          "name": "Loading never saves or retargets a download",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the owned read",
+          "passed": true
+        },
+        {
+          "name": "Read acquisition waits off caller thread without owning the decision guard",
+          "passed": true
+        },
+        {
+          "name": "Cancel completes while the catalog writer remains held",
+          "passed": true
+        },
+        {
+          "name": "A real writer holds settings before accepted Save",
+          "passed": true
+        },
+        {
+          "name": "Accepted Save returns while its worker owns the global decision guard and waits for the model",
+          "passed": true
+        },
+        {
+          "name": "A busy editor refuses duplicate commands",
+          "passed": true
+        },
+        {
+          "name": "Read cancellation cannot discard an already accepted Save",
+          "passed": true
+        },
+        {
+          "name": "Save publishes before a throwing weak wake and keeps its guard until UI consumption",
+          "passed": true
+        },
+        {
+          "name": "Save returns the accepted name and category cohort and releases its guard",
+          "passed": true
+        },
+        {
+          "name": "An accepted category save preserves concurrent unrelated preferences and remembers its path",
+          "passed": true
+        },
+        {
+          "name": "A duplicate-category Save settles",
+          "passed": true
+        },
+        {
+          "name": "Failed validation rolls back remember settings and retains all prior state",
+          "passed": true
+        },
+        {
+          "name": "A read waits for another accepted global decision",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the read never releases somebody else's decision guard",
+          "passed": true
+        },
+        {
+          "name": "The owner can retry after a failed save or cancelled read",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoCategoryTaskTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 22,
+      "exitCode": 0,
+      "binarySha256": "54653E28B9AE24F3AB2154D7FDEC9302F9F5448D60836D0AD1F5DD2F7EC656EC",
+      "assertions": [
+        {
+          "name": "The worker derives IDM-style built-in folder mapping and remembered-path preference",
+          "passed": true
+        },
+        {
+          "name": "Category selection preparation never writes the catalog or download state",
+          "passed": true
+        },
+        {
+          "name": "The fallback category retains the configured root with IDM defaults",
+          "passed": true
+        },
+        {
+          "name": "An explicit category folder takes precedence over generated defaults",
+          "passed": true
+        },
+        {
+          "name": "A removed category returns no usable destination",
+          "passed": true
+        },
+        {
+          "name": "An invalid request identity cannot publish a ready category result",
+          "passed": true
+        },
+        {
+          "name": "A relative configured folder is rejected before a draft can be replaced",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before a prepared pending-dialog read",
+          "passed": true
+        },
+        {
+          "name": "Unbound File Info can prepare its category from owned preferences while Manager is held",
+          "passed": true
+        },
+        {
+          "name": "The prepared result uses its owned category snapshot without reading the held model",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before the bound category read",
+          "passed": true
+        },
+        {
+          "name": "The requesting thread stays free while the category worker waits for Manager",
+          "passed": true
+        },
+        {
+          "name": "A busy reader refuses another worker or an unbounded internal request queue",
+          "passed": true
+        },
+        {
+          "name": "Advisory cancellation settles before the held model becomes readable",
+          "passed": true
+        },
+        {
+          "name": "Repeated category choices reuse the same persistent worker",
+          "passed": true
+        },
+        {
+          "name": "Ready state is published before a throwing notification and remains usable",
+          "passed": true
+        },
+        {
+          "name": "A late category reply uses the current filename while applying its selected default folder",
+          "passed": true
+        },
+        {
+          "name": "A later manual destination folder wins and its remembered path follows that folder",
+          "passed": true
+        },
+        {
+          "name": "A later remember-path or rule-folder edit is retained exactly",
+          "passed": true
+        },
+        {
+          "name": "An obsolete revision or category cannot update the current destination draft",
+          "passed": true
+        },
+        {
+          "name": "Cancelled or failed reads cannot merge a partial destination result",
+          "passed": true
+        },
+        {
+          "name": "The joined reader can restart after an exceptional parent cancellation leaves File Info open",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoDecisionTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 13,
+      "exitCode": 0,
+      "binarySha256": "925A5FD09E3F8B43A2D04D37666A815DA0C95BF29D76DFAA3613F65B9273DA3C",
+      "assertions": [
+        {
+          "name": "An empty prepared action cannot claim or leak the Manager guard",
+          "passed": true
+        },
+        {
+          "name": "The owned decision worker reaches completion",
+          "passed": true
+        },
+        {
+          "name": "A completed worker retains the presentation guard until UI acknowledgement",
+          "passed": true
+        },
+        {
+          "name": "Another task cannot claim or clear an outstanding presentation guard",
+          "passed": true
+        },
+        {
+          "name": "An ordinary Download Later produces no spurious queue warning",
+          "passed": true
+        },
+        {
+          "name": "The worker applies one owned draft and leaves Download Later paused",
+          "passed": true
+        },
+        {
+          "name": "UI acknowledgement joins the worker and clears its guard",
+          "passed": true
+        },
+        {
+          "name": "Validation failure completes its future without blocking the caller",
+          "passed": true
+        },
+        {
+          "name": "The original backend validation error is delivered while the UI guard remains held",
+          "passed": true
+        },
+        {
+          "name": "A rejected command preserves both downloads without applying a mixed draft",
+          "passed": true
+        },
+        {
+          "name": "Failure acknowledgement also joins and releases the task",
+          "passed": true
+        },
+        {
+          "name": "Direct command execution reuses the same decision semantics without claiming a UI task",
+          "passed": true
+        },
+        {
+          "name": "Destroying an unconsumed task joins its owned worker before releasing the Manager guard",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoPrefetchTaskTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 42,
+      "exitCode": 0,
+      "binarySha256": "EA22F4BF2BDF2A8009854D22CD90FA7E8213F5B59F63CE0EC73D788E6E103D22",
+      "assertions": [
+        {
+          "name": "Prefetch admission runs to readiness on an owned worker",
+          "passed": true
+        },
+        {
+          "name": "A second request cannot replay an unacknowledged admission",
+          "passed": true
+        },
+        {
+          "name": "Acknowledgement joins the admission worker and reports Started",
+          "passed": true
+        },
+        {
+          "name": "The owned HTTP file downloads completely before Start is accepted",
+          "passed": true
+        },
+        {
+          "name": "Complete prefetch waits for confirmation without publishing the destination",
+          "passed": true
+        },
+        {
+          "name": "Prefetch uses one authorized GET without a second metadata request",
+          "passed": true
+        },
+        {
+          "name": "Start applies after admission on the existing owned decision worker",
+          "passed": true
+        },
+        {
+          "name": "Start publishes the complete exact prefetched file",
+          "passed": true
+        },
+        {
+          "name": "Confirmation reuses the complete response without another GET",
+          "passed": true
+        },
+        {
+          "name": "A second complete prefetch is available for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later joins the stopped prefetched transfer",
+          "passed": true
+        },
+        {
+          "name": "Download Later preserves the paused unpublished download",
+          "passed": true
+        },
+        {
+          "name": "A later Start publishes the retained complete body correctly",
+          "passed": true
+        },
+        {
+          "name": "Cancel fixture holds actual pending admission before its model transaction",
+          "passed": true
+        },
+        {
+          "name": "Cancellation owns a command and joins pending admission without blocking its requester",
+          "passed": true
+        },
+        {
+          "name": "The joined Cancel settles after admission is released",
+          "passed": true
+        },
+        {
+          "name": "A queued cancellation prevents a late admission from starting a request",
+          "passed": true
+        },
+        {
+          "name": "A real admitted transfer can finish while its admission acknowledgement is delayed",
+          "passed": true
+        },
+        {
+          "name": "Cancel does not race a still-owned admitted transfer",
+          "passed": true
+        },
+        {
+          "name": "Cancel joins admission and the running transfer before acknowledging",
+          "passed": true
+        },
+        {
+          "name": "Acknowledged cancellation leaves no active or published background download",
+          "passed": true
+        },
+        {
+          "name": "The real model is held before admission is requested",
+          "passed": true
+        },
+        {
+          "name": "Request and readiness checks return while admission waits for a held catalog",
+          "passed": true
+        },
+        {
+          "name": "Admission proceeds exactly once after model release",
+          "passed": true
+        },
+        {
+          "name": "One real prefetched response occupies the configured transfer slot",
+          "passed": true
+        },
+        {
+          "name": "An occupied slot returns capacity without a second transfer",
+          "passed": true
+        },
+        {
+          "name": "Capacity acknowledgement cannot create or replay a request",
+          "passed": true
+        },
+        {
+          "name": "An explicit cadence-style retry can use a newly available slot",
+          "passed": true
+        },
+        {
+          "name": "An uncertain admission acknowledgement settles its future",
+          "passed": true
+        },
+        {
+          "name": "An acknowledgement failure does not pretend an already admitted transfer was undone",
+          "passed": true
+        },
+        {
+          "name": "Cancel observes current state and stops an uncertain admitted transfer without replay",
+          "passed": true
+        },
+        {
+          "name": "Another accepted decision defers admission rather than reporting unsupported prefetch",
+          "passed": true
+        },
+        {
+          "name": "A removed job cannot be admitted or resurrected",
+          "passed": true
+        },
+        {
+          "name": "A missing job is rejected before dereferencing live state",
+          "passed": true
+        },
+        {
+          "name": "Pin the real catalog to reject the admission checkpoint",
+          "passed": true
+        },
+        {
+          "name": "A failed durable admission settles asynchronously",
+          "passed": true
+        },
+        {
+          "name": "Admission save failure preserves the draft and sends no HTTP request",
+          "passed": true
+        },
+        {
+          "name": "A failed mutation is not implicitly retried",
+          "passed": true
+        },
+        {
+          "name": "An explicit retry remains possible after the storage lock is released",
+          "passed": true
+        },
+        {
+          "name": "Teardown owns a real in-flight admission callback",
+          "passed": true
+        },
+        {
+          "name": "Teardown joins admission before allowing Manager lifetime to end",
+          "passed": true
+        },
+        {
+          "name": "Joined teardown consumes the outstanding acknowledgement without detaching work",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadRefreshTaskTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 34,
+      "exitCode": 0,
+      "binarySha256": "5DA93DE952A7B7686F687AE5321DF2593DA8A4E0CF83D8D3A86344502F9433A7",
+      "assertions": [
+        {
+          "name": "Begin durably prepares the ordinary recovery view and its saved progress/page",
+          "passed": true
+        },
+        {
+          "name": "Begin keeps the established paused recovery state",
+          "passed": true
+        },
+        {
+          "name": "Unchanged polls reuse the immutable decoded offer instead of reparsing it",
+          "passed": true
+        },
+        {
+          "name": "Save applies the new address durably while retaining saved bytes for validation",
+          "passed": true
+        },
+        {
+          "name": "Successful recovery returns the exact private saved selection for its owned parent continuation",
+          "passed": true
+        },
+        {
+          "name": "An already accepted address save cannot replay within the session",
+          "passed": true
+        },
+        {
+          "name": "Close settles the owned recovery session",
+          "passed": true
+        },
+        {
+          "name": "Read returns a real staged browser replacement",
+          "passed": true
+        },
+        {
+          "name": "Save rejects a newer undisplayed capture and returns it for explicit review",
+          "passed": true
+        },
+        {
+          "name": "A second explicit Save accepts the actually reviewed replacement",
+          "passed": true
+        },
+        {
+          "name": "Recovery captures the cohort actually available for display",
+          "passed": true
+        },
+        {
+          "name": "A real close-save failure retains the displayed receipt for explicit Retry",
+          "passed": true
+        },
+        {
+          "name": "Explicit Retry finishes the same owned close",
+          "passed": true
+        },
+        {
+          "name": "Close acknowledges only displayed tokens and preserves the later receipt",
+          "passed": true
+        },
+        {
+          "name": "A real address-save failure rolls back the request and does not report success",
+          "passed": true
+        },
+        {
+          "name": "An explicit Save retry succeeds after storage recovery",
+          "passed": true
+        },
+        {
+          "name": "File Info mode cannot save-and-resume through an unauthorized command",
+          "passed": true
+        },
+        {
+          "name": "A changed request route invalidates the recovery session before Save",
+          "passed": true
+        },
+        {
+          "name": "FTP recovery uses its ordinary immutable view without browser waiting",
+          "passed": true
+        },
+        {
+          "name": "FTP Save updates only the address without opening a transfer",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before recovery Begin",
+          "passed": true
+        },
+        {
+          "name": "Begin waits on the owned worker instead of the requesting thread",
+          "passed": true
+        },
+        {
+          "name": "Initial cancellation settles before Manager must become readable",
+          "passed": true
+        },
+        {
+          "name": "A session never begun closes without acquiring or mutating the held model",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Advisory polls reuse one persistent worker rather than spawning a thread each time",
+          "passed": true
+        },
+        {
+          "name": "A joined session refuses further work",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery prepares the saved media selection without browser access",
+          "passed": true
+        },
+        {
+          "name": "Media page preparation preserves the live session marker and saved quality",
+          "passed": true
+        },
+        {
+          "name": "A real matching adaptive capture stages onto the original session",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery reads the actual staged adaptive selection",
+          "passed": true
+        },
+        {
+          "name": "Save applies the reviewed adaptive session while preserving deferred validation",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "CategoryPropertiesTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 19,
+      "exitCode": 0,
+      "binarySha256": "67894C8F7DAACD9A676CC28C75E2D1135BFC560013F59E7F7B49177808F2D43D",
+      "assertions": [
+        {
+          "name": "An owned fresh settings read settles",
+          "passed": true
+        },
+        {
+          "name": "The editor receives current categories without a mutation",
+          "passed": true
+        },
+        {
+          "name": "Only editor preferences cross the worker boundary, including extension overrides",
+          "passed": true
+        },
+        {
+          "name": "Loading never saves or retargets a download",
+          "passed": true
+        },
+        {
+          "name": "A real catalog writer precedes the owned read",
+          "passed": true
+        },
+        {
+          "name": "Read acquisition waits off caller thread without owning the decision guard",
+          "passed": true
+        },
+        {
+          "name": "Cancel completes while the catalog writer remains held",
+          "passed": true
+        },
+        {
+          "name": "A real writer holds settings before accepted Save",
+          "passed": true
+        },
+        {
+          "name": "Accepted Save returns while its worker owns the global decision guard and waits for the model",
+          "passed": true
+        },
+        {
+          "name": "A busy editor refuses duplicate commands",
+          "passed": true
+        },
+        {
+          "name": "Read cancellation cannot discard an already accepted Save",
+          "passed": true
+        },
+        {
+          "name": "Save publishes before a throwing weak wake and keeps its guard until UI consumption",
+          "passed": true
+        },
+        {
+          "name": "Save returns the accepted name and category cohort and releases its guard",
+          "passed": true
+        },
+        {
+          "name": "An accepted category save preserves concurrent unrelated preferences and remembers its path",
+          "passed": true
+        },
+        {
+          "name": "A duplicate-category Save settles",
+          "passed": true
+        },
+        {
+          "name": "Failed validation rolls back remember settings and retains all prior state",
+          "passed": true
+        },
+        {
+          "name": "A read waits for another accepted global decision",
+          "passed": true
+        },
+        {
+          "name": "Cancelling the read never releases somebody else's decision guard",
+          "passed": true
+        },
+        {
+          "name": "The owner can retry after a failed save or cancelled read",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoCategoryTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 22,
+      "exitCode": 0,
+      "binarySha256": "54653E28B9AE24F3AB2154D7FDEC9302F9F5448D60836D0AD1F5DD2F7EC656EC",
+      "assertions": [
+        {
+          "name": "The worker derives IDM-style built-in folder mapping and remembered-path preference",
+          "passed": true
+        },
+        {
+          "name": "Category selection preparation never writes the catalog or download state",
+          "passed": true
+        },
+        {
+          "name": "The fallback category retains the configured root with IDM defaults",
+          "passed": true
+        },
+        {
+          "name": "An explicit category folder takes precedence over generated defaults",
+          "passed": true
+        },
+        {
+          "name": "A removed category returns no usable destination",
+          "passed": true
+        },
+        {
+          "name": "An invalid request identity cannot publish a ready category result",
+          "passed": true
+        },
+        {
+          "name": "A relative configured folder is rejected before a draft can be replaced",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before a prepared pending-dialog read",
+          "passed": true
+        },
+        {
+          "name": "Unbound File Info can prepare its category from owned preferences while Manager is held",
+          "passed": true
+        },
+        {
+          "name": "The prepared result uses its owned category snapshot without reading the held model",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before the bound category read",
+          "passed": true
+        },
+        {
+          "name": "The requesting thread stays free while the category worker waits for Manager",
+          "passed": true
+        },
+        {
+          "name": "A busy reader refuses another worker or an unbounded internal request queue",
+          "passed": true
+        },
+        {
+          "name": "Advisory cancellation settles before the held model becomes readable",
+          "passed": true
+        },
+        {
+          "name": "Repeated category choices reuse the same persistent worker",
+          "passed": true
+        },
+        {
+          "name": "Ready state is published before a throwing notification and remains usable",
+          "passed": true
+        },
+        {
+          "name": "A late category reply uses the current filename while applying its selected default folder",
+          "passed": true
+        },
+        {
+          "name": "A later manual destination folder wins and its remembered path follows that folder",
+          "passed": true
+        },
+        {
+          "name": "A later remember-path or rule-folder edit is retained exactly",
+          "passed": true
+        },
+        {
+          "name": "An obsolete revision or category cannot update the current destination draft",
+          "passed": true
+        },
+        {
+          "name": "Cancelled or failed reads cannot merge a partial destination result",
+          "passed": true
+        },
+        {
+          "name": "The joined reader can restart after an exceptional parent cancellation leaves File Info open",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoDecisionTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 13,
+      "exitCode": 0,
+      "binarySha256": "925A5FD09E3F8B43A2D04D37666A815DA0C95BF29D76DFAA3613F65B9273DA3C",
+      "assertions": [
+        {
+          "name": "An empty prepared action cannot claim or leak the Manager guard",
+          "passed": true
+        },
+        {
+          "name": "The owned decision worker reaches completion",
+          "passed": true
+        },
+        {
+          "name": "A completed worker retains the presentation guard until UI acknowledgement",
+          "passed": true
+        },
+        {
+          "name": "Another task cannot claim or clear an outstanding presentation guard",
+          "passed": true
+        },
+        {
+          "name": "An ordinary Download Later produces no spurious queue warning",
+          "passed": true
+        },
+        {
+          "name": "The worker applies one owned draft and leaves Download Later paused",
+          "passed": true
+        },
+        {
+          "name": "UI acknowledgement joins the worker and clears its guard",
+          "passed": true
+        },
+        {
+          "name": "Validation failure completes its future without blocking the caller",
+          "passed": true
+        },
+        {
+          "name": "The original backend validation error is delivered while the UI guard remains held",
+          "passed": true
+        },
+        {
+          "name": "A rejected command preserves both downloads without applying a mixed draft",
+          "passed": true
+        },
+        {
+          "name": "Failure acknowledgement also joins and releases the task",
+          "passed": true
+        },
+        {
+          "name": "Direct command execution reuses the same decision semantics without claiming a UI task",
+          "passed": true
+        },
+        {
+          "name": "Destroying an unconsumed task joins its owned worker before releasing the Manager guard",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "FileInfoPrefetchTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 42,
+      "exitCode": 0,
+      "binarySha256": "EA22F4BF2BDF2A8009854D22CD90FA7E8213F5B59F63CE0EC73D788E6E103D22",
+      "assertions": [
+        {
+          "name": "Prefetch admission runs to readiness on an owned worker",
+          "passed": true
+        },
+        {
+          "name": "A second request cannot replay an unacknowledged admission",
+          "passed": true
+        },
+        {
+          "name": "Acknowledgement joins the admission worker and reports Started",
+          "passed": true
+        },
+        {
+          "name": "The owned HTTP file downloads completely before Start is accepted",
+          "passed": true
+        },
+        {
+          "name": "Complete prefetch waits for confirmation without publishing the destination",
+          "passed": true
+        },
+        {
+          "name": "Prefetch uses one authorized GET without a second metadata request",
+          "passed": true
+        },
+        {
+          "name": "Start applies after admission on the existing owned decision worker",
+          "passed": true
+        },
+        {
+          "name": "Start publishes the complete exact prefetched file",
+          "passed": true
+        },
+        {
+          "name": "Confirmation reuses the complete response without another GET",
+          "passed": true
+        },
+        {
+          "name": "A second complete prefetch is available for Download Later",
+          "passed": true
+        },
+        {
+          "name": "Download Later joins the stopped prefetched transfer",
+          "passed": true
+        },
+        {
+          "name": "Download Later preserves the paused unpublished download",
+          "passed": true
+        },
+        {
+          "name": "A later Start publishes the retained complete body correctly",
+          "passed": true
+        },
+        {
+          "name": "Cancel fixture holds actual pending admission before its model transaction",
+          "passed": true
+        },
+        {
+          "name": "Cancellation owns a command and joins pending admission without blocking its requester",
+          "passed": true
+        },
+        {
+          "name": "The joined Cancel settles after admission is released",
+          "passed": true
+        },
+        {
+          "name": "A queued cancellation prevents a late admission from starting a request",
+          "passed": true
+        },
+        {
+          "name": "A real admitted transfer can finish while its admission acknowledgement is delayed",
+          "passed": true
+        },
+        {
+          "name": "Cancel does not race a still-owned admitted transfer",
+          "passed": true
+        },
+        {
+          "name": "Cancel joins admission and the running transfer before acknowledging",
+          "passed": true
+        },
+        {
+          "name": "Acknowledged cancellation leaves no active or published background download",
+          "passed": true
+        },
+        {
+          "name": "The real model is held before admission is requested",
+          "passed": true
+        },
+        {
+          "name": "Request and readiness checks return while admission waits for a held catalog",
+          "passed": true
+        },
+        {
+          "name": "Admission proceeds exactly once after model release",
+          "passed": true
+        },
+        {
+          "name": "One real prefetched response occupies the configured transfer slot",
+          "passed": true
+        },
+        {
+          "name": "An occupied slot returns capacity without a second transfer",
+          "passed": true
+        },
+        {
+          "name": "Capacity acknowledgement cannot create or replay a request",
+          "passed": true
+        },
+        {
+          "name": "An explicit cadence-style retry can use a newly available slot",
+          "passed": true
+        },
+        {
+          "name": "An uncertain admission acknowledgement settles its future",
+          "passed": true
+        },
+        {
+          "name": "An acknowledgement failure does not pretend an already admitted transfer was undone",
+          "passed": true
+        },
+        {
+          "name": "Cancel observes current state and stops an uncertain admitted transfer without replay",
+          "passed": true
+        },
+        {
+          "name": "Another accepted decision defers admission rather than reporting unsupported prefetch",
+          "passed": true
+        },
+        {
+          "name": "A removed job cannot be admitted or resurrected",
+          "passed": true
+        },
+        {
+          "name": "A missing job is rejected before dereferencing live state",
+          "passed": true
+        },
+        {
+          "name": "Pin the real catalog to reject the admission checkpoint",
+          "passed": true
+        },
+        {
+          "name": "A failed durable admission settles asynchronously",
+          "passed": true
+        },
+        {
+          "name": "Admission save failure preserves the draft and sends no HTTP request",
+          "passed": true
+        },
+        {
+          "name": "A failed mutation is not implicitly retried",
+          "passed": true
+        },
+        {
+          "name": "An explicit retry remains possible after the storage lock is released",
+          "passed": true
+        },
+        {
+          "name": "Teardown owns a real in-flight admission callback",
+          "passed": true
+        },
+        {
+          "name": "Teardown joins admission before allowing Manager lifetime to end",
+          "passed": true
+        },
+        {
+          "name": "Joined teardown consumes the outstanding acknowledgement without detaching work",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadRefreshTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 34,
+      "exitCode": 0,
+      "binarySha256": "5DA93DE952A7B7686F687AE5321DF2593DA8A4E0CF83D8D3A86344502F9433A7",
+      "assertions": [
+        {
+          "name": "Begin durably prepares the ordinary recovery view and its saved progress/page",
+          "passed": true
+        },
+        {
+          "name": "Begin keeps the established paused recovery state",
+          "passed": true
+        },
+        {
+          "name": "Unchanged polls reuse the immutable decoded offer instead of reparsing it",
+          "passed": true
+        },
+        {
+          "name": "Save applies the new address durably while retaining saved bytes for validation",
+          "passed": true
+        },
+        {
+          "name": "Successful recovery returns the exact private saved selection for its owned parent continuation",
+          "passed": true
+        },
+        {
+          "name": "An already accepted address save cannot replay within the session",
+          "passed": true
+        },
+        {
+          "name": "Close settles the owned recovery session",
+          "passed": true
+        },
+        {
+          "name": "Read returns a real staged browser replacement",
+          "passed": true
+        },
+        {
+          "name": "Save rejects a newer undisplayed capture and returns it for explicit review",
+          "passed": true
+        },
+        {
+          "name": "A second explicit Save accepts the actually reviewed replacement",
+          "passed": true
+        },
+        {
+          "name": "Recovery captures the cohort actually available for display",
+          "passed": true
+        },
+        {
+          "name": "A real close-save failure retains the displayed receipt for explicit Retry",
+          "passed": true
+        },
+        {
+          "name": "Explicit Retry finishes the same owned close",
+          "passed": true
+        },
+        {
+          "name": "Close acknowledges only displayed tokens and preserves the later receipt",
+          "passed": true
+        },
+        {
+          "name": "A real address-save failure rolls back the request and does not report success",
+          "passed": true
+        },
+        {
+          "name": "An explicit Save retry succeeds after storage recovery",
+          "passed": true
+        },
+        {
+          "name": "File Info mode cannot save-and-resume through an unauthorized command",
+          "passed": true
+        },
+        {
+          "name": "A changed request route invalidates the recovery session before Save",
+          "passed": true
+        },
+        {
+          "name": "FTP recovery uses its ordinary immutable view without browser waiting",
+          "passed": true
+        },
+        {
+          "name": "FTP Save updates only the address without opening a transfer",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before recovery Begin",
+          "passed": true
+        },
+        {
+          "name": "Begin waits on the owned worker instead of the requesting thread",
+          "passed": true
+        },
+        {
+          "name": "Initial cancellation settles before Manager must become readable",
+          "passed": true
+        },
+        {
+          "name": "A session never begun closes without acquiring or mutating the held model",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Advisory polls reuse one persistent worker rather than spawning a thread each time",
+          "passed": true
+        },
+        {
+          "name": "A joined session refuses further work",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery prepares the saved media selection without browser access",
+          "passed": true
+        },
+        {
+          "name": "Media page preparation preserves the live session marker and saved quality",
+          "passed": true
+        },
+        {
+          "name": "A real matching adaptive capture stages onto the original session",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery reads the actual staged adaptive selection",
+          "passed": true
+        },
+        {
+          "name": "Save applies the reviewed adaptive session while preserving deferred validation",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

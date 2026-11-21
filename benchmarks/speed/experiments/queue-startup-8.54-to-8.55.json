@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeExists": true,
+      "beforeSha256": "9D1E2DD34FB759FD5C350C46015383338432B8501AE4FBEE33D340CF0AA1F725",
+      "afterSha256": "5D867B93AABF4034ACE6CC6E3C7DD43C79FDBC3055EEA9EB1E92491B22C03BB7",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Queue.cpp",
+      "beforeExists": true,
+      "beforeSha256": "D1422567B3091512CB93CAC7B22C6565B910A022263CB25D814DD70C0E329627",
+      "afterSha256": "172D5B69B4A18A81C9293E5E493EC2F4B39C9E50D210B98B6801FF2A177804D7",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeExists": true,
+      "beforeSha256": "DEDF2458A0FD01B0C543CCE1022CCAF6A77969E478EE95252333A1DB205DA071",
+      "afterSha256": "AB36376CC7B194B212949C058DDB47F81BB7F39A9E85AE5F2A0E04ECF9B34FBC",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/WakeChecks.hpp",
+      "beforeExists": true,
+      "beforeSha256": "E4606585774A2BCE35E84AC3A03CA34DE65590FA92DAB589F423B47095780CEF",
+      "afterSha256": "CD8A2925FD0FF26C805C6D6CB2FC18D531FA15B9DD4C9FF9363DC9564C7B3D72",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "78C265FE5369C7C733DFA99A3633907DC5D51F9C03CCE2FF69EB89CA22D4CF6B",
+      "afterSha256": "939E827E57CA946E6907E674F6CDE0AF78DE7048F15037600C0D13AF88E84748",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "AC5EA4020382197E7DA3E59F8B90EACA3A2B526BEAA9C6F57012308B9FE903BF",
+      "afterSha256": "7AAFD26985F32242AADFB2BBE14C30F58DA4794B8C6EF23EC3750B1017247BC3",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/QueueSnapshotTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "9A1E7271A07546423DAD1FE6CFAD0593C1AC6BEA7B8CB1F19BE193EA19BF8616",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "benchmarks/speed/queue_startup_control.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "909F33344D53D0DF3753408470A4FE6BB49E67ED40EA8589EEC251D52E0B4752",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/queue-startup-8.54-to-8.55.patch",
+  "patchSha256": "D908E816BC3014EDB2A630D8F3551C27141122582F2D9A26773A6A0AC6A31D04",
+  "verifiedBothDirections": true,
+  "scope": "Six exact existing source inputs from qualified 8.54 plus one new fixture and one API control; normalized patch and per-side line endings reconstruct raw bytes."
+}

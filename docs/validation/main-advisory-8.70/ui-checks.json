@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "checks": 20,
+  "exitCode": 0,
+  "separateDesktop": true,
+  "desktopSwitched": false,
+  "userInputInjected": false,
+  "sourceSha256": "481A68DCDF1D79BC3619494BE0FAB5F576522E17C9EF3114C6982084CFC93A02",
+  "appSourceSha256": "2090F28D147F08542072E586A3B82713E864D6C8A97C1AD6F99E739B5BC01CC2",
+  "binarySha256": "06DA4C01F26778949389D4C65818FF5ED0EF7A49B8246DE1957F2F37E889C856",
+  "result": {
+    "checks": [
+      {
+        "name": "Owned main window contains the test download",
+        "passed": true
+      },
+      {
+        "name": "The actual modal-size path has a visible viewport",
+        "passed": true
+      },
+      {
+        "name": "Initial control and displayed model size agree",
+        "passed": true
+      },
+      {
+        "name": "The catalog writer holds the model before the nested refresh",
+        "passed": true
+      },
+      {
+        "name": "The production nested-refresh path returns while the writer remains held",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves the real control and its text cache",
+        "passed": true
+      },
+      {
+        "name": "Busy refresh preserves unrelated cells and selection",
+        "passed": true
+      },
+      {
+        "name": "The next production refresh updates both the real size cell and cache",
+        "passed": true
+      },
+      {
+        "name": "Successful refresh retains unrelated presentation and selection",
+        "passed": true
+      },
+      {
+        "name": "Subsequent refresh converges without reverting the new value",
+        "passed": true
+      },
+      {
+        "name": "Main-list tooltip comes from the displayed row snapshot",
+        "passed": true
+      },
+      {
+        "name": "A model writer holds changed live data during advisory UI reads",
+        "passed": true
+      },
+      {
+        "name": "The actual tooltip notification returns cached text while live data is locked",
+        "passed": true
+      },
+      {
+        "name": "Advisory command-state reads report busy instead of waiting",
+        "passed": true
+      },
+      {
+        "name": "Busy toolbar refresh preserves the real existing button state",
+        "passed": true
+      },
+      {
+        "name": "Selection file-status refresh also returns during a catalog hold",
+        "passed": true
+      },
+      {
+        "name": "Fresh rows and unchanged-structure navigation refresh update the tooltip",
+        "passed": true
+      },
+      {
+        "name": "Advisory command reads become available after release",
+        "passed": true
+      },
+      {
+        "name": "Ordinary command validation uses current model state rather than retained toolbar state",
+        "passed": true
+      },
+      {
+        "name": "Out-of-range tooltip notifications cannot access a live job",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "ownedDesktopClosed": true
+}

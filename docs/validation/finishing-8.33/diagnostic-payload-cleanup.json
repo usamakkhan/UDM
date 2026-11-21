@@ -1,0 +1,170 @@
+{
+  "files": 27,
+  "logicalBytesRemoved": 831652416,
+  "allRemovedAbsent": true,
+  "method": "Owned diagnostic payloads deleted individually after process exit, final size/SHA checks, decoded trace preservation and zero dropped-event verification. No recursive deletion.",
+  "outputs": [
+    {
+      "group": "comparison",
+      "file": "comparison/single-4m-udm-1/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/single-4m-idm-1/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/single-64m-idm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/single-64m-udm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/split-64m-udm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/split-64m-idm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/single-4m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "50B9B0499F95568FF235607341E0C57C3E023AC7565425860B12B023D98B72D5"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/single-64m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "7C7C2DFB741C988A57A6E1E5FAED7E523A396BF6BB836D99CEB0A585C44911EC"
+    },
+    {
+      "group": "comparison",
+      "file": "comparison/split-64m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "FFA0EC015CFD43128E22918E793081CCD511A14A25F07F122F008362F9CDC811"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-udm-1/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-idm-1/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-idm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-udm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-udm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-idm-1/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-idm-2/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-udm-2/files/sample.bin",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-udm-2/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-idm-2/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-idm-2/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-udm-2/files/sample.bin",
+      "bytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "0B0CF47B54A1062612C1B2EEF5F7C612635B1B02F48B09D82DB571B7F10226FE"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-4m-udm-2/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "5A06BB52EA6B502DC199A1198A85A629AE3027217DC7F8DBB86E5D692C225AAA"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "3028963746389D6F439E2A67706212C357FE3316CB2278F34F7CEA0E33597CCA"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/single-64m-udm-2/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "5FD16EE7F9F64F324968618803A03F23ABC512E4563C9717BBEE023B73B579CC"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-udm-1/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "8AAB5269D822A01877C3444E87EC8E0D4D8F21FCDB3FDBFE6726B1905F2C7990"
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "file": "comparison-blocker-followup/split-64m-udm-2/ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "A4DD4E61813CB46C09F0B4BD667C2D31F4F40EBB7161BB2693B7FC0F6C9AE585"
+    }
+  ]
+}

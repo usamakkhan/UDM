@@ -1,0 +1,253 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "The old silent invalid-tag launch does not exit within the bounded wait",
+      "passed": true
+    },
+    {
+      "name": "The rejected old instance tag never opens a catalog",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: long-tag-last-quiet",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: long-tag-last-quiet",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: long-tag-last-quiet",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: long-tag-last-quiet",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: long-tag-first-quiet",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: long-tag-first-quiet",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: long-tag-first-quiet",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: long-tag-first-quiet",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: tag-characters",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: tag-characters",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: tag-characters",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: tag-characters",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: missing-folder",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: missing-folder",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: missing-folder",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: missing-folder",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: unknown-option",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: unknown-option",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: unknown-option",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: unknown-option",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: bad-wait-process",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: bad-wait-process",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: bad-wait-process",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: bad-wait-process",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: missing-data",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: missing-data",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: missing-data",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: missing-data",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: missing-shortcut",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: missing-shortcut",
+      "passed": true
+    },
+    {
+      "name": "The silent diagnostic identifies the actual failure: missing-shortcut",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: missing-shortcut",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: blocked-data",
+      "passed": true
+    },
+    {
+      "name": "A redirected silent failure reports one complete diagnostic line: blocked-data",
+      "passed": true
+    },
+    {
+      "name": "A storage startup failure preserves the obstructing file",
+      "passed": true
+    },
+    {
+      "name": "A caught silent launch failure returns error status 1: discarded-stderr",
+      "passed": true
+    },
+    {
+      "name": "An invalid silent launch leaves its catalog unopened: discarded-stderr",
+      "passed": true
+    },
+    {
+      "name": "The tested App remains the hash-pinned product",
+      "passed": true
+    }
+  ],
+  "error": null,
+  "runs": [
+    {
+      "case": "long-tag-last-quiet",
+      "exitCode": 1,
+      "elapsedMs": 316.5857000003598,
+      "stderr": "UDM: Invalid instance tag. Use up to 32 letters, digits, underscores or hyphens.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "long-tag-first-quiet",
+      "exitCode": 1,
+      "elapsedMs": 53.5158999991836,
+      "stderr": "UDM: Invalid instance tag. Use up to 32 letters, digits, underscores or hyphens.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "tag-characters",
+      "exitCode": 1,
+      "elapsedMs": 53.118100000574486,
+      "stderr": "UDM: Invalid instance tag. Use up to 32 letters, digits, underscores or hyphens.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "missing-folder",
+      "exitCode": 1,
+      "elapsedMs": 53.28460000055202,
+      "stderr": "UDM: Missing value for --folder.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "unknown-option",
+      "exitCode": 1,
+      "elapsedMs": 54.85760000010487,
+      "stderr": "UDM: Unknown UDM option: --not-an-option\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "bad-wait-process",
+      "exitCode": 1,
+      "elapsedMs": 57.78850000024249,
+      "stderr": "UDM: Invalid process identifier.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "missing-data",
+      "exitCode": 1,
+      "elapsedMs": 55.75499999940803,
+      "stderr": "UDM: Missing value for --data-dir.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "missing-shortcut",
+      "exitCode": 1,
+      "elapsedMs": 49.60100000062084,
+      "stderr": "UDM: The Internet Shortcut file was not found.\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "blocked-data",
+      "exitCode": 1,
+      "elapsedMs": 56.3650999993115,
+      "stderr": "UDM: create_directories: Cannot create a file when that file already exists.: \"$REPOSITORY\\.media-cache\\owned-silent-launch-build-9.59\\owned-blackbox-9.59\\blocked-data\\catalog\"\r\n",
+      "stdout": ""
+    },
+    {
+      "case": "discarded-stderr",
+      "exitCode": 1,
+      "elapsedMs": 52.833300000202144,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "baseline": {
+    "timedOut": true,
+    "observedWaitMs": 3052.0541000005323,
+    "binarySha256": "013638E7A4C7844879E77AC44875993FB7BB9AF6572BCDCE41B9477AA4E4DF73",
+    "explicitCreateProcessDesktop": "UDM-Silent-Baseline-e25a3fda590349548023c9751173e655",
+    "desktopSwitched": false,
+    "userInputInjected": false,
+    "childDesktopAttested": false,
+    "modalCauseInferredFromSourceNotVisualCapture": true,
+    "ownedBlockedProcessStopped": true,
+    "ownedDesktopClosed": true
+  },
+  "sourceExecutableSha256": "37517677325F225417DE04555FB98723155172723F9DC55B87D3AEC336DBAB42",
+  "harnessSha256": "95FB2B9FAE10BD0334362C2619A8983CB7C26B2E0946D7B43B25A4538EA4B6DB",
+  "interactiveInputInjected": false
+}

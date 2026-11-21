@@ -1,0 +1,107 @@
+{
+  "baselineExecutableSha256": "C04EB1EE56CEB8C3F400BF034B99DDA5E4D38FE8292FF4BEE66D7DBD53797B43",
+  "fixtureSourceSha256": "052EB20D9EFC82CE787C97FC62D66A891C4DA8DA387F0EBF6796F12695536C93",
+  "reproduced": true,
+  "observedCases": [
+    {
+      "attack": "rename",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "write",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "write-alias",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": false,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "save-failure",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "read-held",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": false,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": true
+    },
+    {
+      "attack": "rename",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "write",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "write-alias",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": true,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": true,
+      "paired": true,
+      "recoveryReportedFailure": false,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "save-failure",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": false
+    },
+    {
+      "attack": "read-held",
+      "catalogBoundaryReached": true,
+      "journalMutationSucceeded": false,
+      "modelMutexAvailableDuringCatalogIo": false,
+      "newerJournalPathWasDeleted": false,
+      "paired": true,
+      "recoveryReportedFailure": true,
+      "sharedReaderSawOriginalBytes": true
+    }
+  ]
+}

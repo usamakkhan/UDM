@@ -1,0 +1,396 @@
+{
+  "purpose": "Kernel wait attribution; none of these attempts passed workload-event coverage. Not shipping speed qualification.",
+  "attempts": [
+    {
+      "attempt": "01",
+      "collectorConfirmedOffNow": true,
+      "workloadRoot": "PROJECT/.media-cache/finishing-8.34-d-trace-01",
+      "collectionResult": {
+        "startAttempted": true,
+        "started": true,
+        "recordingStopped": true,
+        "recordingObservedSeconds": 19.23632540000108,
+        "budgetSeconds": 45,
+        "bounded": true,
+        "exportComplete": false,
+        "stopReason": "controller-complete",
+        "errors": [
+          "Recording did not confirm stop within cleanup budget"
+        ],
+        "captureComplete": false
+      },
+      "workloadIntegrityPassed": true,
+      "workloadResults": [
+        {
+          "label": "8.34-D-IO-attribution",
+          "trial": 1,
+          "case": "split-64m",
+          "client": "udm",
+          "bytes": 67108864,
+          "configuredConnections": 8,
+          "firstAvailabilityTailSeconds": 0.5978054000006523,
+          "processExitTailSeconds": 0.7121757000059006,
+          "processExitWallSeconds": 3.057746500002395,
+          "firstAvailabilityWallSeconds": 2.9433761999971466,
+          "exitAfterFirstAvailabilitySeconds": 0.11437030000524828,
+          "clockMappingErrorBoundSeconds": 7.400001777568832e-06,
+          "clockDriftSeconds": 4.299995771894771e-06,
+          "trackedProcesses": 1,
+          "requests": 9,
+          "originConnections": 9,
+          "peakConcurrent": 9,
+          "originBytes": 69658643,
+          "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+          "hashMatches": true,
+          "launcherExitCode": 0,
+          "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+          "durableTailSeconds": 0.7615191000004415,
+          "durableWallSeconds": 3.107089899996936,
+          "postExitToDurableSeconds": 0.04934339999454096,
+          "postExitOperations": {
+            "openSeconds": 0.00016070000128820539,
+            "flushSeconds": 0.03227799999876879,
+            "closeSeconds": 9.059999865712598e-05
+          },
+          "finishPhases": {
+            "AdvisoryHashInput": "write-buffer",
+            "AdvisoryHashOverlap": true,
+            "AdvisoryHashSeconds": 0.1838757,
+            "CleanupPartsOrder": "after-final-publication-checkpoint",
+            "CommitStrategy": "prepared-final-checkpoint",
+            "ConfirmationWait": 4.6e-06,
+            "Content": 0.0004201,
+            "DirectSize": 1.87e-05,
+            "FlushPublished": 0.4620634,
+            "Hash": 4.62e-05,
+            "HashMode": "deferred",
+            "LateHash": 3.39e-05,
+            "PrePublicationMetadata": 0.0067944,
+            "PrefetchReceipt": 1.4e-06,
+            "PreparedTransferFinalizeSeconds": 0.47089129999999996,
+            "PublishedCloseError": 0,
+            "PublishedFileClose": 8.09e-05,
+            "PublishedFileFlush": 0.4618393,
+            "PublishedFileOpen": 0.0001074,
+            "PublishedFlushError": 0,
+            "PublishedNormalizeError": 0,
+            "PublishedOpenError": 0,
+            "PublishedSparseNormalize": 0.0,
+            "PublishedWriteAccess": "write-only",
+            "Settle": 0.0014792,
+            "SettleDestination": 0.0011378,
+            "SettleLengthQuery": 0.0001508,
+            "SettleLockWait": 1e-07,
+            "SettleRecoveryCheck": 0.000159,
+            "SettleSnapshot": 1.86e-05,
+            "SettleValidateFolder": 7e-07,
+            "SettleWriterReopen": false,
+            "SparseNormalization": "not-needed",
+            "StageMode": "hard-link",
+            "StageOutput": 0.0008882,
+            "TimingScope": "through-prepared-transfer-handoff",
+            "Unsparse": 0.0
+          },
+          "publicationPhases": {
+            "IntentOperations": {
+              "bytes-written": 0.0001252,
+              "directories-ready": 0.0011817,
+              "publish": 0.0015641,
+              "temporary-flushed": 0.0300141,
+              "temporary-opened": 0.0002052
+            },
+            "PrepareIntent": 0.0005162,
+            "PrepareSource": 0.0001892,
+            "Rename": 0.001137,
+            "TimingScope": "through-rename-before-final-catalog-save",
+            "VerifyIdentity": 1.9e-06,
+            "WriteIntent": 0.0330974
+          },
+          "networkTailSeconds": 0.0,
+          "prefinishWriteback": {
+            "Adjustments": 0,
+            "Errors": 0,
+            "Flushes": 1,
+            "LeadBytes": 58720256,
+            "Seconds": 0.5593766
+          },
+          "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+        },
+        {
+          "label": "8.34-D-IO-attribution",
+          "trial": 1,
+          "case": "split-64m",
+          "client": "idm",
+          "bytes": 67108864,
+          "configuredConnections": 8,
+          "firstAvailabilityTailSeconds": 0.22566050000023097,
+          "processExitTailSeconds": 0.5259649999934481,
+          "processExitWallSeconds": 5.335627499996917,
+          "firstAvailabilityWallSeconds": 5.0353230000037,
+          "exitAfterFirstAvailabilitySeconds": 0.3003044999932172,
+          "clockMappingErrorBoundSeconds": 7.300001016119495e-06,
+          "clockDriftSeconds": 2.6000061383868456e-06,
+          "trackedProcesses": 1,
+          "requests": 16,
+          "originConnections": 16,
+          "peakConcurrent": 9,
+          "originBytes": 68788436,
+          "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+          "hashMatches": true,
+          "launcherExitCode": 1,
+          "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+          "durableTailSeconds": 2.022101399998064,
+          "durableWallSeconds": 6.831763900001533,
+          "postExitToDurableSeconds": 1.496136400004616,
+          "postExitOperations": {
+            "openSeconds": 0.00010540000221226364,
+            "flushSeconds": 1.4342135999977472,
+            "closeSeconds": 8.160000288626179e-05
+          }
+        }
+      ],
+      "eventQualityVerified": false,
+      "attributionVerified": false,
+      "decodedEvents": 1,
+      "rejection": "Export interrupted by fixed five-second stop-confirmation limit; header only. No IO evidence."
+    },
+    {
+      "attempt": "02",
+      "collectorConfirmedOffNow": true,
+      "workloadRoot": "PROJECT/.media-cache/finishing-8.34-d-trace-02",
+      "collectionResult": null,
+      "eventQualityVerified": false,
+      "attributionVerified": false,
+      "workloadIntegrityPassed": false,
+      "rejection": "Controller approval wait expired before elevation; stale request did not start collection or workload."
+    },
+    {
+      "attempt": "03",
+      "collectorConfirmedOffNow": true,
+      "workloadRoot": "PROJECT/.media-cache/finishing-8.34-d-trace-03",
+      "collectionResult": {
+        "startAttempted": true,
+        "started": true,
+        "recordingStopped": true,
+        "recordingObservedSeconds": 23.619853099997272,
+        "budgetSeconds": 45,
+        "bounded": true,
+        "exportComplete": true,
+        "stopReason": "controller-complete",
+        "errors": [],
+        "captureComplete": true
+      },
+      "workloadIntegrityPassed": true,
+      "workloadResults": [
+        {
+          "label": "8.34-D-IO-attribution-corrected-stop",
+          "trial": 1,
+          "case": "split-64m",
+          "client": "udm",
+          "bytes": 67108864,
+          "configuredConnections": 8,
+          "firstAvailabilityTailSeconds": 0.5552109999989625,
+          "processExitTailSeconds": 0.6726669999989099,
+          "processExitWallSeconds": 2.76492750000034,
+          "firstAvailabilityWallSeconds": 2.6474715000003926,
+          "exitAfterFirstAvailabilitySeconds": 0.11745599999994738,
+          "clockMappingErrorBoundSeconds": 7.599999662488699e-06,
+          "clockDriftSeconds": 2.899998177152696e-06,
+          "trackedProcesses": 1,
+          "requests": 9,
+          "originConnections": 9,
+          "peakConcurrent": 9,
+          "originBytes": 70741845,
+          "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+          "hashMatches": true,
+          "launcherExitCode": 0,
+          "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+          "durableTailSeconds": 0.7597010000026785,
+          "durableWallSeconds": 2.8519615000041085,
+          "postExitToDurableSeconds": 0.0870340000037686,
+          "postExitOperations": {
+            "openSeconds": 0.0003189999988535419,
+            "flushSeconds": 0.03466579999803798,
+            "closeSeconds": 0.00010550000297371298
+          },
+          "finishPhases": {
+            "AdvisoryHashInput": "write-buffer",
+            "AdvisoryHashOverlap": true,
+            "AdvisoryHashSeconds": 0.1953259,
+            "CleanupPartsOrder": "after-final-publication-checkpoint",
+            "CommitStrategy": "prepared-final-checkpoint",
+            "ConfirmationWait": 4.7e-06,
+            "Content": 0.0004085,
+            "DirectSize": 1.77e-05,
+            "FlushPublished": 0.4381685,
+            "Hash": 4.49e-05,
+            "HashMode": "deferred",
+            "LateHash": 3.63e-05,
+            "PrePublicationMetadata": 0.0072232,
+            "PrefetchReceipt": 1.4e-06,
+            "PreparedTransferFinalizeSeconds": 0.44728409999999996,
+            "PublishedCloseError": 0,
+            "PublishedFileClose": 5.32e-05,
+            "PublishedFileFlush": 0.4378593,
+            "PublishedFileOpen": 0.0002148,
+            "PublishedFlushError": 0,
+            "PublishedNormalizeError": 0,
+            "PublishedOpenError": 0,
+            "PublishedSparseNormalize": 0.0,
+            "PublishedWriteAccess": "write-only",
+            "Settle": 0.00135,
+            "SettleDestination": 0.0010108,
+            "SettleLengthQuery": 0.0001454,
+            "SettleLockWait": 1e-07,
+            "SettleRecoveryCheck": 0.0001547,
+            "SettleSnapshot": 2.54e-05,
+            "SettleValidateFolder": 7e-07,
+            "SettleWriterReopen": false,
+            "SparseNormalization": "not-needed",
+            "StageMode": "hard-link",
+            "StageOutput": 0.0009498,
+            "TimingScope": "through-prepared-transfer-handoff",
+            "Unsparse": 0.0
+          },
+          "publicationPhases": {
+            "IntentOperations": {
+              "bytes-written": 0.0001006,
+              "directories-ready": 0.001219,
+              "publish": 0.0015055,
+              "temporary-flushed": 0.0200869,
+              "temporary-opened": 0.0001951
+            },
+            "PrepareIntent": 0.0005317,
+            "PrepareSource": 0.0001989,
+            "Rename": 0.0016947,
+            "TimingScope": "through-rename-before-final-catalog-save",
+            "VerifyIdentity": 1.8e-06,
+            "WriteIntent": 0.0231142
+          },
+          "networkTailSeconds": 0.0,
+          "prefinishWriteback": {
+            "Adjustments": 0,
+            "Errors": 0,
+            "Flushes": 1,
+            "LeadBytes": 58720256,
+            "Seconds": 0.4926414
+          },
+          "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+        },
+        {
+          "label": "8.34-D-IO-attribution-corrected-stop",
+          "trial": 1,
+          "case": "split-64m",
+          "client": "idm",
+          "bytes": 67108864,
+          "configuredConnections": 8,
+          "firstAvailabilityTailSeconds": 0.31521839999913936,
+          "processExitTailSeconds": 0.664264800005185,
+          "processExitWallSeconds": 4.763754500003415,
+          "firstAvailabilityWallSeconds": 4.41470809999737,
+          "exitAfterFirstAvailabilitySeconds": 0.3490464000060456,
+          "clockMappingErrorBoundSeconds": 6.999998731771484e-06,
+          "clockDriftSeconds": 2.3999963838505778e-06,
+          "trackedProcesses": 1,
+          "requests": 15,
+          "originConnections": 15,
+          "peakConcurrent": 9,
+          "originBytes": 71614914,
+          "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+          "hashMatches": true,
+          "launcherExitCode": 1,
+          "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+          "durableTailSeconds": 1.5142064000028768,
+          "durableWallSeconds": 5.613696100001107,
+          "postExitToDurableSeconds": 0.8499415999976918,
+          "postExitOperations": {
+            "openSeconds": 0.0001253000009455718,
+            "flushSeconds": 0.8152468999978737,
+            "closeSeconds": 6.53000024612993e-05
+          }
+        }
+      ],
+      "eventQualityVerified": false,
+      "attributionVerified": false,
+      "decodedEvents": 348756,
+      "ordinaryEventsLost": 0,
+      "traceSchemaWarning": true,
+      "ownedEventCounts": {
+        "udm": {},
+        "idm": {
+          "OperationEnd": 49,
+          "SetInfo": 3,
+          "QueryInfo": 3,
+          "FSControl": 2,
+          "Cleanup": 18,
+          "Create": 1,
+          "Delete": 1,
+          "DletePath": 1,
+          "Close": 19,
+          "": 520,
+          "UnLoad": 105,
+          "End": 14,
+          "Terminate": 1
+        }
+      },
+      "circularLastDroppedMetadata": [
+        [
+          {
+            "name": "TimeStampCount",
+            "value": "       4"
+          },
+          {
+            "name": "Padding",
+            "value": "     135"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187051795"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187109272"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187196158"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581186906424"
+          }
+        ],
+        [
+          {
+            "name": "TimeStampCount",
+            "value": "       4"
+          },
+          {
+            "name": "Padding",
+            "value": "     135"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187051795"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187109272"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581187196158"
+          },
+          {
+            "name": "TimeStamp",
+            "value": "581186906424"
+          }
+        ]
+      ],
+      "rejection": "Export/lifecycle succeeded but memory history omitted all UDM PID events. Zero ordinary lost-event count does not establish retained workload coverage."
+    }
+  ],
+  "attributionVerified": false,
+  "allOwnedCollectorsConfirmedOff": true,
+  "installedAppChanged": false
+}

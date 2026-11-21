@@ -1,0 +1,87 @@
+{
+  "cases": [
+    {
+      "acceptMilliseconds": 94.0,
+      "acceptReturnedBeforeRelease": true,
+      "closeGuard": true,
+      "completed": true,
+      "errorDialogHandled": true,
+      "heartbeatsWhileIoHeld": 3,
+      "ioOnUiThread": false,
+      "saveFailureRetried": true,
+      "watchdogRequired": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "The actual Properties dialog exposes its six editable fields",
+      "passed": true
+    },
+    {
+      "name": "Properties disables duplicate Save while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "The submitted draft is frozen while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "Close cannot destroy a Properties dialog with an owned save",
+      "passed": true
+    },
+    {
+      "name": "Properties disables duplicate Save while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "The submitted draft is frozen while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "Properties disables duplicate Save while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "The submitted draft is frozen while persistence is held",
+      "passed": true
+    },
+    {
+      "name": "A failed worker save restores the original Properties controls",
+      "passed": true
+    },
+    {
+      "name": "A failed worker save retains the submitted editable description",
+      "passed": true
+    },
+    {
+      "name": "The actual saved-catalog flush was held",
+      "passed": true
+    },
+    {
+      "name": "The actual Properties action persists the submitted description",
+      "passed": true
+    },
+    {
+      "name": "The submitted description is present in the durable catalog",
+      "passed": true
+    },
+    {
+      "name": "Properties keeps its actual message pump live during background persistence",
+      "passed": true
+    },
+    {
+      "name": "Properties releases its owned command after the UI acknowledges completion",
+      "passed": true
+    },
+    {
+      "name": "Reentrant Close and duplicate OK during control freezing cannot destroy or duplicate the owned save",
+      "passed": true
+    },
+    {
+      "name": "The real Properties dialog reports a failed save and successfully retries its retained draft",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

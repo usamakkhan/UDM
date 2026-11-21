@@ -1,0 +1,6 @@
+{
+  "version": "8.22",
+  "initialFailure": "New test accessor returned shared_ptr for a unique_ptr-owned registry. Corrected to a non-owning pointer used only before Manager destruction.",
+  "productInstalledBeforeCorrection": false,
+  "sourceReview": "Require empty active ownership as well as no remaining worker threads in the destructor shortcut. Core recompiles and every final target relinks; initial core cache for three unchanged candidate inputs is hash-verified."
+}

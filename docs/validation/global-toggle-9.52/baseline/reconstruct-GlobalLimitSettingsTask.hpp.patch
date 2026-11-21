@@ -1,0 +1,31 @@
+--- native/GlobalLimitSettingsTask.hpp@9.52
++++ native/GlobalLimitSettingsTask.hpp@9.51
+@@ -3,10 +3,8 @@
+ #include <future>
+ #include <condition_variable>
+ #define UDM_GLOBAL_LIMIT_SETTINGS_TASK_AVAILABLE
+-#define UDM_GLOBAL_LIMIT_TOGGLE_AVAILABLE
+ namespace udm {
+-// enabled is used only by On/Off actions; these retain the live rate and startup choice.
+-struct GlobalLimitSettingsDraft {i64 rate=1000;bool startup=false;std::optional<bool> enabled;};
++struct GlobalLimitSettingsDraft {i64 rate=1000;bool startup=false;};
+ struct GlobalLimitSettingsResult {Json settings;bool saved=false,cancelled=false;std::string error;};
+ inline void validateGlobalLimitSettings(const GlobalLimitSettingsDraft& draft){if(draft.rate<1||draft.rate>1000000)throw std::runtime_error("Enter a speed limit from 1 to 1,000,000 KB/s.");}
+ // Own a cancellable read or an accepted, joined settings save. Never capture a
+@@ -25,7 +23,7 @@
+    try{for(;;){if(!draft&&cancelled){result.cancelled=true;break;}std::unique_lock lock(manager.mutex,std::try_to_lock);
+     if(lock.owns_lock()&&(draft||!manager.fileInfoDecisionPending)){
+      if(!draft&&cancelled){result.cancelled=true;break;}if(observe)observe(draft?"before-save":"before-read");
+-     if(draft){auto next=manager.state["Settings"];if(draft->enabled)next=globalLimiterSettings(std::move(next),*draft->enabled,rememberedGlobalLimit(manager.state["Settings"]));else{next=globalLimiterSettings(std::move(next),num(manager.state["Settings"],"LimitKbps")>0,draft->rate);next["GlobalLimitOnStartup"]=draft->startup;}result.settings=next;manager.setSettings(next);result.saved=true;}
++     if(draft){auto next=globalLimiterSettings(manager.state["Settings"],num(manager.state["Settings"],"LimitKbps")>0,draft->rate);next["GlobalLimitOnStartup"]=draft->startup;result.settings=next;manager.setSettings(next);result.saved=true;}
+      else result.settings=manager.state["Settings"];lock.unlock();if(observe)try{observe("captured");}catch(...){}break;
+     }
+     if(lock.owns_lock())lock.unlock();if(observe)observe(draft?"waiting-save":"waiting-read");std::unique_lock waiting(mutex);wake.wait_for(waiting,std::chrono::milliseconds(10),[&]{return !draft&&cancelled.load();});
+@@ -33,7 +31,6 @@
+    if(!draft&&cancelled)result.cancelled=true;promise.set_value(std::move(result));if(notify)try{notify();}catch(...){}
+   });}catch(...){future={};releaseGuard();throw;}
+  }
+- void startToggle(Manager& manager,bool enabled,std::function<void()> notify={},std::function<void(const char*)> observe={}){start(manager,GlobalLimitSettingsDraft{1000,false,enabled},std::move(notify),std::move(observe));}
+  void cancelRead()noexcept{cancelled=true;wake.notify_all();}
+  GlobalLimitSettingsResult take(){if(!ready())throw std::runtime_error("Speed Limiter settings are not ready.");auto result=future.get();if(worker.joinable())worker.join();releaseGuard();return result;}
+  GlobalLimitSettingsResult finish()noexcept{

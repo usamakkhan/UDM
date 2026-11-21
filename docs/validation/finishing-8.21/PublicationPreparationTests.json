@@ -1,0 +1,283 @@
+{
+  "case": "directory-source",
+  "checks": [
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Publication preserves an independently committed setting accepted during preparation",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "A measured staging file rejects writers while prepared input is held",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Publication preserves an independently committed setting accepted during preparation",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Decoded completion uses one measured output length while retaining original wire-byte accounting",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Preparing an internal track does not insert its child job into the parent catalog",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Cancellation after preparation retains the original cancellation message",
+      "passed": true
+    },
+    {
+      "name": "Rejected preparation retains the complete staged source for review or retry",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Changing only the folder or its saved project-root policy invalidates prepared publication inputs",
+      "passed": true
+    },
+    {
+      "name": "Rejected preparation retains the complete staged source for review or retry",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Changing only the folder or its saved project-root policy invalidates prepared publication inputs",
+      "passed": true
+    },
+    {
+      "name": "Rejected preparation retains the complete staged source for review or retry",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "Owned source rename exercises allowed delete sharing without modifying the held measured object",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "A replaced staging name is rejected without overwriting either the measured file or replacement bytes",
+      "passed": true
+    },
+    {
+      "name": "Actual publication reaches the owned preparation boundary off the caller thread",
+      "passed": true
+    },
+    {
+      "name": "Publication path checks and measured-file preparation do not retain the catalog mutex",
+      "passed": true
+    },
+    {
+      "name": "Held preparation publishes neither a journal nor tentative completion metadata",
+      "passed": true
+    },
+    {
+      "name": "A measured staging file rejects writers while prepared input is held",
+      "passed": true
+    },
+    {
+      "name": "Protected website subfolders cannot be renamed while their validated directory handles are held",
+      "passed": true
+    },
+    {
+      "name": "Accepted prepared files publish through the existing rename and durable catalog transaction",
+      "passed": true
+    },
+    {
+      "name": "Prepared size, final metadata and complete output bytes match for ordinary, empty and decoded output",
+      "passed": true
+    },
+    {
+      "name": "Prepared completion and exact output size survive catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "Publication preserves an independently committed setting accepted during preparation",
+      "passed": true
+    },
+    {
+      "name": "Protected directory handles release after publication so later folder operations remain available",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Rejected preparation retains the complete staged source for review or retry",
+      "passed": true
+    },
+    {
+      "name": "Owned writer opens before publication preparation to test source sharing rejection",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Rejected preparation retains the complete staged source for review or retry",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    },
+    {
+      "name": "Canceled, stale or unavailable preparation cannot publish files, completion metadata or intent",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

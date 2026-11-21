@@ -1,0 +1,16 @@
+--- native/App.cpp@9.48
++++ native/App.cpp@9.47
+@@ -1261,12 +1261,7 @@
+   const auto chosen=selected(false);if(chosen.size()!=1)return;
+   scheduleListedDownload(this,manager,chosen.front(),id==CMD_EDIT_DOWNLOAD_SCHEDULE);PostMessage(WM_TIMER,1,0);return;
+  }
+- if(id==CMD_RESUME){if(!quitting&&!resumePresenting&&!authenticationDialogShowing()&&IsWindowEnabled()&&!optionsUiActive&&!optionsRefreshPending&&!optionsAppearanceSnapshot)resumeSelectedDownloads(selected(false));return;}if(runQueueMenuCommand(id)){refresh();return;}if(auto column=arrangeColumn(id);column>=0){sortColumn=column;ascending=true;rememberLayout();refresh();return;}if(toolbarMenuAction(id))return;if(!commandEnabled(id,true))return;
+- // Local view commands and Exit do not consume download records. Validating
+- // an unrelated selection here would wait for a deferred history refresh.
+- // Export accepts a selection without requiring one for command availability.
+- const bool capturesSelection=commandUsesSelection(id)||id==CMD_EXPORT||id==CMD_EXPORT_IDM||id==CMD_EXPORT_TEXT;
+- auto chosen=capturesSelection?selected():std::vector<JobPtr>{};switch(id){
++ if(id==CMD_RESUME){if(!quitting&&!resumePresenting&&!authenticationDialogShowing()&&IsWindowEnabled()&&!optionsUiActive&&!optionsRefreshPending&&!optionsAppearanceSnapshot)resumeSelectedDownloads(selected(false));return;}if(runQueueMenuCommand(id)){refresh();return;}if(auto column=arrangeColumn(id);column>=0){sortColumn=column;ascending=true;rememberLayout();refresh();return;}if(toolbarMenuAction(id))return;if(!commandEnabled(id,true))return;auto chosen=(id==CMD_OPTIONS||id==CMD_NEWCATEGORY||id==CMD_EDITCATEGORY)?std::vector<JobPtr>{}:selected();switch(id){
+  case CMD_CLIPBOARD_CAPTURE:{clipboardPromptPending=false;auto value=copiedUrl;copiedUrl.clear();if(!clipboardCandidate(value,preferences())||!IsWindowEnabled())break;auto job=manager.offerDownload(value);presentDownload(this,manager,job);break;}
+  case CMD_ZIP:previewZip(chosen[0]);break;
+  case CMD_BASKET:case CMD_HIDE_BASKET:preference("DropBasket",id==CMD_BASKET&&!yes(preferences(),"DropBasket"));showBasket();break;

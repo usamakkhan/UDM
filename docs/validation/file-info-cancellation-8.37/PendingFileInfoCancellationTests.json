@@ -1,0 +1,190 @@
+{
+  "checks": [
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "Cancel durably completes after a rejected or uncertain producer has retired",
+      "passed": true
+    },
+    {
+      "name": "Cancellation preserves unrelated history",
+      "passed": true
+    },
+    {
+      "name": "A missing receipt becomes a minimal durable cancellation barrier without request data",
+      "passed": true
+    },
+    {
+      "name": "A late replay after inbox destruction and process-state reload cannot create another download",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the release decision and emits no late File Info view",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "Cancel durably completes after a rejected or uncertain producer has retired",
+      "passed": true
+    },
+    {
+      "name": "Cancellation preserves unrelated history",
+      "passed": true
+    },
+    {
+      "name": "A missing receipt becomes a minimal durable cancellation barrier without request data",
+      "passed": true
+    },
+    {
+      "name": "A late replay after inbox destruction and process-state reload cannot create another download",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the release decision and emits no late File Info view",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "A late competing admission is held before the original session requests Cancel",
+      "passed": true
+    },
+    {
+      "name": "Cancellation waits outside Manager's lock and does not falsely release an active receipt",
+      "passed": true
+    },
+    {
+      "name": "Cancel resolves the matching late owner without leaving a download",
+      "passed": true
+    },
+    {
+      "name": "A successful owner retains its accepted tombstone; a failed owner receives the release barrier",
+      "passed": true
+    },
+    {
+      "name": "Neither resolved owner outcome permits a late replay",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "A late competing admission is held before the original session requests Cancel",
+      "passed": true
+    },
+    {
+      "name": "Cancellation waits outside Manager's lock and does not falsely release an active receipt",
+      "passed": true
+    },
+    {
+      "name": "Cancel resolves the matching late owner without leaving a download",
+      "passed": true
+    },
+    {
+      "name": "A successful owner retains its accepted tombstone; a failed owner receives the release barrier",
+      "passed": true
+    },
+    {
+      "name": "Neither resolved owner outcome permits a late replay",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "A different request fingerprint is held under the same token",
+      "passed": true
+    },
+    {
+      "name": "Cancellation reports failure instead of taking over a different in-flight request",
+      "passed": true
+    },
+    {
+      "name": "The mismatched accepted download is preserved",
+      "passed": true
+    },
+    {
+      "name": "A mismatched durable receipt also refuses cancellation",
+      "passed": true
+    },
+    {
+      "name": "Rejected cancellation cannot remove the mismatched history row",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "A same-token prepared successor with a different fingerprint cannot inherit the old presentation",
+      "passed": true
+    },
+    {
+      "name": "A rejected changed successor preserves the old session and releases its own reservation",
+      "passed": true
+    },
+    {
+      "name": "Cancellation setup reaches its actual temporary-flush failure",
+      "passed": true
+    },
+    {
+      "name": "The retired attempt retains exactly the validated request fingerprint",
+      "passed": true
+    },
+    {
+      "name": "A real cancellation-barrier write failure is reported rather than acknowledged as success",
+      "passed": true
+    },
+    {
+      "name": "A failed temporary write rolls back the tentative release in memory and on disk",
+      "passed": true
+    },
+    {
+      "name": "An explicit recovery persists the barrier and repeated cancellation performs no redundant save",
+      "passed": true
+    },
+    {
+      "name": "A user-confirmed Start or Download Later wins over stale pending cancellation",
+      "passed": true
+    },
+    {
+      "name": "A user-confirmed Start or Download Later wins over stale pending cancellation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

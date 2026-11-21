@@ -1,0 +1,2286 @@
+{
+  "passed": true,
+  "checks": 309,
+  "optimization": "Od",
+  "excludedFromQualificationCounts": true,
+  "sourceSha256": "A3524B46152B6A7FB595BA1A5024DECEB7115C4AA57678108086386E747B3FFD",
+  "result": {
+    "checks": [
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Toggle acknowledgement returns while a post-commit writer holds the model",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement updates the native radio from its result without reading Manager",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Successful ordinary toggle leaves the main window visible",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Successful ordinary toggle leaves the main window visible",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Failed save preserves the catalog and cancels deferred Exit for explicit retry",
+        "passed": true
+      },
+      {
+        "name": "A failed On command can be retried and acknowledged",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Successful ordinary toggle leaves the main window visible",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Normal Close waits for the accepted toggle without hiding early",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Deferred normal Close uses the current Close to Tray policy after saving",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Normal Close waits for the accepted toggle without hiding early",
+        "passed": true
+      },
+      {
+        "name": "Show cancels only a deferred normal close and preserves its accepted save",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Successful ordinary toggle leaves the main window visible",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Normal Close waits for the accepted toggle without hiding early",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement retains a cancellable normal Close decision",
+        "passed": true
+      },
+      {
+        "name": "Show after acknowledgement cancels normal Close before replay",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Successful ordinary toggle leaves the main window visible",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Explicit Exit remains queued through Show and duplicate commands",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Show after acknowledgement cannot cancel an explicit Exit",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Deferred or retried explicit Exit completes after toggle acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Final Exit preserves the accepted rate and latest layout after all background work",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Explicit Exit remains queued through Show and duplicate commands",
+        "passed": true
+      },
+      {
+        "name": "Weak notification or timer acknowledges the accepted toggle",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement restores the preceding toolbar advice without another model read",
+        "passed": true
+      },
+      {
+        "name": "Failed save preserves the catalog and cancels deferred Exit for explicit retry",
+        "passed": true
+      },
+      {
+        "name": "A failed On command can be retried and acknowledged",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle persists the exact enabled and remembered rates",
+        "passed": true
+      },
+      {
+        "name": "Completed toggle preserves startup mode and unrelated live settings",
+        "passed": true
+      },
+      {
+        "name": "Deferred or retried explicit Exit completes after toggle acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Final Exit preserves the accepted rate and latest layout after all background work",
+        "passed": true
+      },
+      {
+        "name": "Toggle returns before the catalog writer releases",
+        "passed": true
+      },
+      {
+        "name": "One accepted toggle retains its guard without disabling the main window",
+        "passed": true
+      },
+      {
+        "name": "An accepted pending toggle has no speculative catalog write",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables conflicting On and Off entries",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle does not announce an uncommitted radio state",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Pending toggle disables each present conflicting toolbar action",
+        "passed": true
+      },
+      {
+        "name": "Duplicate toggle and local selection sort timer and paint return without waiting",
+        "passed": true
+      },
+      {
+        "name": "Forced window destruction joins accepted toggle work and releases its guard",
+        "passed": true
+      },
+      {
+        "name": "Forced window destruction preserves the accepted durable rate",
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "cancel-after-ack": {
+        "afterPopupMs": 7.234499998390675,
+        "commandReturnMs": 6.445100001990795,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "cancel-close": {
+        "afterPopupMs": 8.108300000429153,
+        "commandReturnMs": 7.29839999973774,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "close-tray": {
+        "afterPopupMs": 8.067800000309944,
+        "commandReturnMs": 7.029500000178814,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "destroy-pending": {
+        "afterPopupMs": 6.941899999976158,
+        "commandReturnMs": 6.1394999995827675,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "exit": {
+        "afterPopupMs": 6.901199996471405,
+        "commandReturnMs": 6.0126999989151955,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "exit-failure": {
+        "afterPopupMs": 9.552299998700619,
+        "commandReturnMs": 8.74210000038147,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "failure-retry": {
+        "afterPopupMs": 6.699100002646446,
+        "commandReturnMs": 5.913100004196167,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "off": {
+        "afterPopupMs": 6.530199997127056,
+        "commandReturnMs": 5.7346000000834465,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      },
+      "on": {
+        "afterPopupMs": 8.237700000405312,
+        "commandReturnMs": 7.385899998247623,
+        "toolbarStates": [
+          {
+            "buttonId": 200,
+            "command": 200,
+            "enabled": 0,
+            "i": 0,
+            "position": 0,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 201,
+            "command": 201,
+            "enabled": 0,
+            "i": 1,
+            "position": 1,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 202,
+            "command": 202,
+            "enabled": 0,
+            "i": 2,
+            "position": 2,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 203,
+            "command": 203,
+            "enabled": 0,
+            "i": 3,
+            "position": 3,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 204,
+            "command": 204,
+            "enabled": 0,
+            "i": 4,
+            "position": 4,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 205,
+            "command": 205,
+            "enabled": 0,
+            "i": 5,
+            "position": 5,
+            "state": 64,
+            "style": 64
+          },
+          {
+            "buttonId": 206,
+            "command": 206,
+            "enabled": 0,
+            "i": 6,
+            "position": 6,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 207,
+            "command": 207,
+            "enabled": 0,
+            "i": 7,
+            "position": 7,
+            "state": 0,
+            "style": 64
+          },
+          {
+            "buttonId": 208,
+            "command": 208,
+            "enabled": 0,
+            "i": 8,
+            "position": 8,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 209,
+            "command": 209,
+            "enabled": 0,
+            "i": 9,
+            "position": 9,
+            "state": 64,
+            "style": 72
+          },
+          {
+            "buttonId": 0,
+            "command": 210,
+            "enabled": -1,
+            "i": 10,
+            "position": 4294967295,
+            "state": -1,
+            "style": 0
+          },
+          {
+            "buttonId": 300,
+            "command": 300,
+            "enabled": 0,
+            "i": 11,
+            "position": 10,
+            "state": 64,
+            "style": 64
+          }
+        ],
+        "writerHeldAfterPopup": true
+      }
+    },
+    "error": "",
+    "passed": true
+  }
+}

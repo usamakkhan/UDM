@@ -1,0 +1,13 @@
+{
+  "sha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "observedImports": [
+    "FlushFileBuffers",
+    "RegFlushKey",
+    "WriteFile",
+    "CreateFileMappingA",
+    "MapViewOfFile",
+    "MoveFileExW"
+  ],
+  "method": "Read-only dumpbin /imports of actual IDMan.exe; no binary modification or download.",
+  "limits": "An imported API does not establish whether, when, how often or for which files it is called. No internal IDM durability claim follows from imports."
+}

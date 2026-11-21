@@ -1,0 +1,153 @@
+{
+  "passed": true,
+  "label": "8.33-case-filter-tooling-smoke",
+  "transfers": 2,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 82.207,
+        "idm": 402.098
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          82.207
+        ],
+        "idm": [
+          402.098
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services.",
+  "results": [
+    {
+      "label": "8.33-case-filter-tooling-smoke",
+      "trial": 1,
+      "case": "single-4m",
+      "client": "udm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.03620489999957499,
+      "processExitTailSeconds": 0.08220719999735593,
+      "processExitWallSeconds": 1.0392487999997684,
+      "firstAvailabilityWallSeconds": 0.9932465000019874,
+      "exitAfterFirstAvailabilitySeconds": 0.04600229999778094,
+      "clockMappingErrorBoundSeconds": 7.900000127847306e-06,
+      "clockDriftSeconds": 4.7500000708300405e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "D042A5ADE7BF71285621CBBC73B1882D61EDE8BF973707062D120456F9351C99",
+      "durableTailSeconds": 0.09179129999756697,
+      "durableWallSeconds": 1.0488328999999794,
+      "postExitToDurableSeconds": 0.009584100000211038,
+      "postExitOperations": {
+        "openSeconds": 0.00017940000179805793,
+        "flushSeconds": 0.0008997999975690618,
+        "closeSeconds": 5.0099999498343095e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.5e-06,
+        "Content": 0.0002507,
+        "DirectSize": 1.95e-05,
+        "FlushPublished": 0.00417,
+        "Hash": 4.16e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0034548,
+        "PrefetchReceipt": 1.2e-06,
+        "PreparedTransferFinalizeSeconds": 0.009537700000000001,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 5.96e-05,
+        "PublishedFileFlush": 0.003942,
+        "PublishedFileOpen": 0.0001259,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0015466,
+        "SettleDestination": 0.0013771,
+        "SettleLengthQuery": 4.18e-05,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.0001012,
+        "SettleSnapshot": 1.46e-05,
+        "SettleValidateFolder": 6e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.000297,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.000156,
+          "directories-ready": 0.0015177,
+          "publish": 0.0008352,
+          "temporary-flushed": 0.0018079,
+          "temporary-opened": 0.0002627
+        },
+        "PrepareIntent": 0.000309,
+        "PrepareSource": 0.0001324,
+        "Rename": 0.0005805,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.6e-06,
+        "WriteIntent": 0.0045837
+      },
+      "networkTailSeconds": 0.016,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 524288,
+        "Seconds": 0.023725299999999998
+      },
+      "finalSha256": "7fd145086b19cd4c91911bb8a689c8acddf5c877464e768e87a272c7ae38d8af"
+    },
+    {
+      "label": "8.33-case-filter-tooling-smoke",
+      "trial": 1,
+      "case": "single-4m",
+      "client": "idm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.027257000001554843,
+      "processExitTailSeconds": 0.40209780000077444,
+      "processExitWallSeconds": 2.950748899998871,
+      "firstAvailabilityWallSeconds": 2.5759080999996513,
+      "exitAfterFirstAvailabilitySeconds": 0.3748407999992196,
+      "clockMappingErrorBoundSeconds": 8.799999704933725e-06,
+      "clockDriftSeconds": 4.949998671843758e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.4491913999991084,
+      "durableWallSeconds": 2.997842499997205,
+      "postExitToDurableSeconds": 0.04709359999833396,
+      "postExitOperations": {
+        "openSeconds": 0.0001458000006095972,
+        "flushSeconds": 0.027757999996538274,
+        "closeSeconds": 6.450000000768341e-05
+      }
+    }
+  ],
+  "purpose": "Single-case tool filtering smoke only; not a replacement for any losing qualification trial. No WPR recording."
+}

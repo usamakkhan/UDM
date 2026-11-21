@@ -1,0 +1,62 @@
+{
+  "probeSha256": "AE39E140DA6492B60AA38C7373D8EE628E04AB745ADBE9B3452F515CFF0E8E76",
+  "sourceSha256": "6C871C7E601F4CADB09A1DC836FA45B0D0F9137807E176693215CE8A3F0AF8A6",
+  "oldCoreHeaderSha256": "0C52E78A19AC82C8EE2DF9B42F632336A96C1CF3FEC89BF2F26D508F00AC33F4",
+  "nativeBuildRanConcurrently": true,
+  "notTimingEvidence": true,
+  "result": {
+    "cases": [
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "direct",
+        "journalBacked": false,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": ""
+      },
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "resume",
+        "journalBacked": false,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": ""
+      },
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "file-info-start",
+        "journalBacked": false,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location."
+      },
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "direct",
+        "journalBacked": true,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": ""
+      },
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "resume",
+        "journalBacked": true,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": ""
+      },
+      {
+        "actualCatalogFlushReached": true,
+        "entry": "file-info-start",
+        "journalBacked": true,
+        "modelLockAvailableDuringHeldBoundary": false,
+        "recoveredExactBytes": true,
+        "workflowError": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location."
+      }
+    ],
+    "diagnosticValid": true,
+    "error": "",
+    "recoveryResponsivenessFixed": false
+  }
+}

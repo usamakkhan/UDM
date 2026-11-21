@@ -1,0 +1,44 @@
+{
+  "nativeVersion": "8.39",
+  "appFunctionalChange": false,
+  "x86Fixture": {
+    "architecture": "ia32",
+    "bytes": 262144,
+    "hashMatched": true,
+    "apiCounts": {
+      "NtWriteFile": 1,
+      "FlushFileBuffers": 2,
+      "NtFlushBuffersFile": 2,
+      "WriteFile": 1,
+      "CreateFileW": 1,
+      "CloseHandle": 1
+    },
+    "metrics": {
+      "calls": 4,
+      "pathsResolved": 3,
+      "pathsMatched": 3,
+      "pathFailures": 1
+    },
+    "detachedNormally": true
+  },
+  "actualIdm": {
+    "bytes": 4194304,
+    "hashMatched": true,
+    "metrics": {
+      "calls": 423,
+      "pathsResolved": 421,
+      "pathsMatched": 0,
+      "pathFailures": 2
+    },
+    "payloadRemoved": true,
+    "protectedUdmFilesUnchanged": true
+  },
+  "finding": "Native hooks and path resolution operate on this x86 IDM process, but the full-token filter captured no native target-file calls. Investigate path filtering and temp-file identities before interpreting cadence.",
+  "writerCoverageVerified": false,
+  "performanceParityVerified": false,
+  "cleanup": {
+    "name": "user-io-x86.exe",
+    "bytes": 4096,
+    "sha256": "e310dfcb9104d0b926a751a5424cd54052d5ec70b0a6215e9c91a273c3456e84"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "preflightOnly": true,
+  "qualification": false,
+  "passed": false,
+  "checks": 30,
+  "error": "Canonical rejection retains its original error and accepted ownership",
+  "binarySha256": "9000458DCB68E7E389CC028435D59898A975F8B0A41B530D07ECBBA0E1F81B97",
+  "result": {
+    "checks": [
+      {
+        "name": "Import preparation reads its current prompt policy and selected queue",
+        "passed": true
+      },
+      {
+        "name": "Prompted batches prepare names and labels from one queue cohort",
+        "passed": true
+      },
+      {
+        "name": "Browser batches choose the current primary download queue without a second prompt",
+        "passed": true
+      },
+      {
+        "name": "Advisory batch preparation writes neither catalog nor accepted guard",
+        "passed": true
+      },
+      {
+        "name": "Suppressed prompting skips unused queue work without changing an earlier result",
+        "passed": true
+      },
+      {
+        "name": "Preparation returns while a real catalog writer remains held",
+        "passed": true
+      },
+      {
+        "name": "An outstanding batch reader rejects duplicate preparation",
+        "passed": true
+      },
+      {
+        "name": "Cancelling preparation settles before the external writer releases",
+        "passed": true
+      },
+      {
+        "name": "An unrelated accepted command defers batch policy reading",
+        "passed": true
+      },
+      {
+        "name": "Advisory cleanup leaves the other command's guard intact",
+        "passed": true
+      },
+      {
+        "name": "Read failure is consumed and a fresh preparation can retry",
+        "passed": true
+      },
+      {
+        "name": "Browser preparation prefers the download role and skips synchronization queues",
+        "passed": true
+      },
+      {
+        "name": "Missing browser/default or import identities cannot authorize acceptance",
+        "passed": true
+      },
+      {
+        "name": "An accepted batch owns its guard and returns while canonical admission waits for Manager",
+        "passed": true
+      },
+      {
+        "name": "A competing submission cannot duplicate or clear the accepted batch guard",
+        "passed": true
+      },
+      {
+        "name": "Successful admission retains ownership until UI acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "One accepted batch admits exactly its two selected entries",
+        "passed": true
+      },
+      {
+        "name": "Owned values preserve the original row draft and Download Later semantics",
+        "passed": true
+      },
+      {
+        "name": "Accepted rows retain their exact protected browser session, route and authenticated request",
+        "passed": true
+      },
+      {
+        "name": "Queue prompt preference and all admitted rows are durable before acknowledgement",
+        "passed": true
+      },
+      {
+        "name": "Saved batch context keeps request credentials and browser identity protected",
+        "passed": true
+      },
+      {
+        "name": "Acknowledgement joins the accepted worker and releases its guard",
+        "passed": true
+      },
+      {
+        "name": "Rejected canonical admission settles its owned future",
+        "passed": true
+      },
+      {
+        "name": "Canonical rejection retains its original error and accepted ownership",
+        "passed": true
+      },
+      {
+        "name": "Rejected or partially admitted batches restore jobs, queues, preferences and the durable catalog",
+        "passed": true
+      },
+      {
+        "name": "Rejected canonical admission settles its owned future",
+        "passed": true
+      },
+      {
+        "name": "Canonical rejection retains its original error and accepted ownership",
+        "passed": true
+      },
+      {
+        "name": "Rejected or partially admitted batches restore jobs, queues, preferences and the durable catalog",
+        "passed": true
+      },
+      {
+        "name": "Rejected canonical admission settles its owned future",
+        "passed": true
+      },
+      {
+        "name": "Canonical rejection retains its original error and accepted ownership",
+        "passed": false
+      }
+    ],
+    "error": "Canonical rejection retains its original error and accepted ownership",
+    "passed": false
+  },
+  "reason": "The partial-admission test expected Invalid, but the canonical URL parser reports Use a complete HTTP, HTTPS or FTP URL without credentials."
+}

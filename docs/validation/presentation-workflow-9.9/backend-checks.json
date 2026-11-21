@@ -1,0 +1,535 @@
+{
+  "passed": true,
+  "checks": 122,
+  "runs": 4,
+  "suites": [
+    {
+      "suite": "DownloadRefreshTaskTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 34,
+      "exitCode": 0,
+      "binarySha256": "31AE5012EACA517576C3023DE5459A19C52373B47A428AFE7B09C5292D15E01F",
+      "assertions": [
+        {
+          "name": "Begin durably prepares the ordinary recovery view and its saved progress/page",
+          "passed": true
+        },
+        {
+          "name": "Begin keeps the established paused recovery state",
+          "passed": true
+        },
+        {
+          "name": "Unchanged polls reuse the immutable decoded offer instead of reparsing it",
+          "passed": true
+        },
+        {
+          "name": "Save applies the new address durably while retaining saved bytes for validation",
+          "passed": true
+        },
+        {
+          "name": "Successful recovery returns the exact private saved selection for its owned parent continuation",
+          "passed": true
+        },
+        {
+          "name": "An already accepted address save cannot replay within the session",
+          "passed": true
+        },
+        {
+          "name": "Close settles the owned recovery session",
+          "passed": true
+        },
+        {
+          "name": "Read returns a real staged browser replacement",
+          "passed": true
+        },
+        {
+          "name": "Save rejects a newer undisplayed capture and returns it for explicit review",
+          "passed": true
+        },
+        {
+          "name": "A second explicit Save accepts the actually reviewed replacement",
+          "passed": true
+        },
+        {
+          "name": "Recovery captures the cohort actually available for display",
+          "passed": true
+        },
+        {
+          "name": "A real close-save failure retains the displayed receipt for explicit Retry",
+          "passed": true
+        },
+        {
+          "name": "Explicit Retry finishes the same owned close",
+          "passed": true
+        },
+        {
+          "name": "Close acknowledges only displayed tokens and preserves the later receipt",
+          "passed": true
+        },
+        {
+          "name": "A real address-save failure rolls back the request and does not report success",
+          "passed": true
+        },
+        {
+          "name": "An explicit Save retry succeeds after storage recovery",
+          "passed": true
+        },
+        {
+          "name": "File Info mode cannot save-and-resume through an unauthorized command",
+          "passed": true
+        },
+        {
+          "name": "A changed request route invalidates the recovery session before Save",
+          "passed": true
+        },
+        {
+          "name": "FTP recovery uses its ordinary immutable view without browser waiting",
+          "passed": true
+        },
+        {
+          "name": "FTP Save updates only the address without opening a transfer",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before recovery Begin",
+          "passed": true
+        },
+        {
+          "name": "Begin waits on the owned worker instead of the requesting thread",
+          "passed": true
+        },
+        {
+          "name": "Initial cancellation settles before Manager must become readable",
+          "passed": true
+        },
+        {
+          "name": "A session never begun closes without acquiring or mutating the held model",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Advisory polls reuse one persistent worker rather than spawning a thread each time",
+          "passed": true
+        },
+        {
+          "name": "A joined session refuses further work",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery prepares the saved media selection without browser access",
+          "passed": true
+        },
+        {
+          "name": "Media page preparation preserves the live session marker and saved quality",
+          "passed": true
+        },
+        {
+          "name": "A real matching adaptive capture stages onto the original session",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery reads the actual staged adaptive selection",
+          "passed": true
+        },
+        {
+          "name": "Save applies the reviewed adaptive session while preserving deferred validation",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "NetworkCaptureSessionTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 27,
+      "exitCode": 0,
+      "binarySha256": "B599CB1467419D363F8945B23E630C34F193631C321D8244F557C181FB679A1E",
+      "assertions": [
+        {
+          "name": "Idle background polling does not enumerate endpoints or start a worker without a monitor",
+          "passed": true
+        },
+        {
+          "name": "An explicit endpoint view accepts one owned poll",
+          "passed": true
+        },
+        {
+          "name": "Poll returns while its actual model work is held on a different thread",
+          "passed": true
+        },
+        {
+          "name": "UI observation retains its prior immutable view without waiting for Manager",
+          "passed": true
+        },
+        {
+          "name": "Repeated busy polling cannot accumulate another hundred operations",
+          "passed": true
+        },
+        {
+          "name": "An overlapping control request is rejected rather than queued or replayed",
+          "passed": true
+        },
+        {
+          "name": "The owned poll settles after its held work is released",
+          "passed": true
+        },
+        {
+          "name": "A completed endpoint snapshot is published on acknowledgement",
+          "passed": true
+        },
+        {
+          "name": "The owner and requesting view each receive exactly one completion wake",
+          "passed": true
+        },
+        {
+          "name": "Publishing a newer result cannot mutate a retained earlier snapshot",
+          "passed": true
+        },
+        {
+          "name": "Start is accepted after the preceding result is acknowledged",
+          "passed": true
+        },
+        {
+          "name": "Start publishes observed monitor state after one accepted mutation",
+          "passed": true
+        },
+        {
+          "name": "An uncertain capture mutation settles asynchronously",
+          "passed": true
+        },
+        {
+          "name": "A lost acknowledgement reports the observed changed state without replaying Capture",
+          "passed": true
+        },
+        {
+          "name": "Repeated result observation cannot replay an uncertain mutation",
+          "passed": true
+        },
+        {
+          "name": "The next explicit periodic poll remains available after a control error",
+          "passed": true
+        },
+        {
+          "name": "A successful poll refreshes state without resubmitting the failed control",
+          "passed": true
+        },
+        {
+          "name": "A new explicit Capture can be accepted after recovery",
+          "passed": true
+        },
+        {
+          "name": "Only the second explicit request produces the second capture mutation",
+          "passed": true
+        },
+        {
+          "name": "Pin the real owned catalog before a durable network-stop failure",
+          "passed": true
+        },
+        {
+          "name": "UI Stop returns a settled asynchronous failure",
+          "passed": true
+        },
+        {
+          "name": "Failed durable Stop retains the live session for a later explicit recovery",
+          "passed": true
+        },
+        {
+          "name": "Lifecycle Stop retries explicitly, joins its operation and commits the real owned stop",
+          "passed": true
+        },
+        {
+          "name": "A second settled lifecycle Stop does not repeat backend work",
+          "passed": true
+        },
+        {
+          "name": "Teardown starts with a real in-flight owned operation",
+          "passed": true
+        },
+        {
+          "name": "Shutdown cannot detach its held network operation",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins the operation and its final stop before returning",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "DownloadRefreshTaskTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 34,
+      "exitCode": 0,
+      "binarySha256": "31AE5012EACA517576C3023DE5459A19C52373B47A428AFE7B09C5292D15E01F",
+      "assertions": [
+        {
+          "name": "Begin durably prepares the ordinary recovery view and its saved progress/page",
+          "passed": true
+        },
+        {
+          "name": "Begin keeps the established paused recovery state",
+          "passed": true
+        },
+        {
+          "name": "Unchanged polls reuse the immutable decoded offer instead of reparsing it",
+          "passed": true
+        },
+        {
+          "name": "Save applies the new address durably while retaining saved bytes for validation",
+          "passed": true
+        },
+        {
+          "name": "Successful recovery returns the exact private saved selection for its owned parent continuation",
+          "passed": true
+        },
+        {
+          "name": "An already accepted address save cannot replay within the session",
+          "passed": true
+        },
+        {
+          "name": "Close settles the owned recovery session",
+          "passed": true
+        },
+        {
+          "name": "Read returns a real staged browser replacement",
+          "passed": true
+        },
+        {
+          "name": "Save rejects a newer undisplayed capture and returns it for explicit review",
+          "passed": true
+        },
+        {
+          "name": "A second explicit Save accepts the actually reviewed replacement",
+          "passed": true
+        },
+        {
+          "name": "Recovery captures the cohort actually available for display",
+          "passed": true
+        },
+        {
+          "name": "A real close-save failure retains the displayed receipt for explicit Retry",
+          "passed": true
+        },
+        {
+          "name": "Explicit Retry finishes the same owned close",
+          "passed": true
+        },
+        {
+          "name": "Close acknowledges only displayed tokens and preserves the later receipt",
+          "passed": true
+        },
+        {
+          "name": "A real address-save failure rolls back the request and does not report success",
+          "passed": true
+        },
+        {
+          "name": "An explicit Save retry succeeds after storage recovery",
+          "passed": true
+        },
+        {
+          "name": "File Info mode cannot save-and-resume through an unauthorized command",
+          "passed": true
+        },
+        {
+          "name": "A changed request route invalidates the recovery session before Save",
+          "passed": true
+        },
+        {
+          "name": "FTP recovery uses its ordinary immutable view without browser waiting",
+          "passed": true
+        },
+        {
+          "name": "FTP Save updates only the address without opening a transfer",
+          "passed": true
+        },
+        {
+          "name": "A real writer owns Manager before recovery Begin",
+          "passed": true
+        },
+        {
+          "name": "Begin waits on the owned worker instead of the requesting thread",
+          "passed": true
+        },
+        {
+          "name": "Initial cancellation settles before Manager must become readable",
+          "passed": true
+        },
+        {
+          "name": "A session never begun closes without acquiring or mutating the held model",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Repeated advisory reads settle on the same owned session",
+          "passed": true
+        },
+        {
+          "name": "Advisory polls reuse one persistent worker rather than spawning a thread each time",
+          "passed": true
+        },
+        {
+          "name": "A joined session refuses further work",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery prepares the saved media selection without browser access",
+          "passed": true
+        },
+        {
+          "name": "Media page preparation preserves the live session marker and saved quality",
+          "passed": true
+        },
+        {
+          "name": "A real matching adaptive capture stages onto the original session",
+          "passed": true
+        },
+        {
+          "name": "Streaming recovery reads the actual staged adaptive selection",
+          "passed": true
+        },
+        {
+          "name": "Save applies the reviewed adaptive session while preserving deferred validation",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "suite": "NetworkCaptureSessionTests",
+      "drive": "D",
+      "passed": true,
+      "checks": 27,
+      "exitCode": 0,
+      "binarySha256": "B599CB1467419D363F8945B23E630C34F193631C321D8244F557C181FB679A1E",
+      "assertions": [
+        {
+          "name": "Idle background polling does not enumerate endpoints or start a worker without a monitor",
+          "passed": true
+        },
+        {
+          "name": "An explicit endpoint view accepts one owned poll",
+          "passed": true
+        },
+        {
+          "name": "Poll returns while its actual model work is held on a different thread",
+          "passed": true
+        },
+        {
+          "name": "UI observation retains its prior immutable view without waiting for Manager",
+          "passed": true
+        },
+        {
+          "name": "Repeated busy polling cannot accumulate another hundred operations",
+          "passed": true
+        },
+        {
+          "name": "An overlapping control request is rejected rather than queued or replayed",
+          "passed": true
+        },
+        {
+          "name": "The owned poll settles after its held work is released",
+          "passed": true
+        },
+        {
+          "name": "A completed endpoint snapshot is published on acknowledgement",
+          "passed": true
+        },
+        {
+          "name": "The owner and requesting view each receive exactly one completion wake",
+          "passed": true
+        },
+        {
+          "name": "Publishing a newer result cannot mutate a retained earlier snapshot",
+          "passed": true
+        },
+        {
+          "name": "Start is accepted after the preceding result is acknowledged",
+          "passed": true
+        },
+        {
+          "name": "Start publishes observed monitor state after one accepted mutation",
+          "passed": true
+        },
+        {
+          "name": "An uncertain capture mutation settles asynchronously",
+          "passed": true
+        },
+        {
+          "name": "A lost acknowledgement reports the observed changed state without replaying Capture",
+          "passed": true
+        },
+        {
+          "name": "Repeated result observation cannot replay an uncertain mutation",
+          "passed": true
+        },
+        {
+          "name": "The next explicit periodic poll remains available after a control error",
+          "passed": true
+        },
+        {
+          "name": "A successful poll refreshes state without resubmitting the failed control",
+          "passed": true
+        },
+        {
+          "name": "A new explicit Capture can be accepted after recovery",
+          "passed": true
+        },
+        {
+          "name": "Only the second explicit request produces the second capture mutation",
+          "passed": true
+        },
+        {
+          "name": "Pin the real owned catalog before a durable network-stop failure",
+          "passed": true
+        },
+        {
+          "name": "UI Stop returns a settled asynchronous failure",
+          "passed": true
+        },
+        {
+          "name": "Failed durable Stop retains the live session for a later explicit recovery",
+          "passed": true
+        },
+        {
+          "name": "Lifecycle Stop retries explicitly, joins its operation and commits the real owned stop",
+          "passed": true
+        },
+        {
+          "name": "A second settled lifecycle Stop does not repeat backend work",
+          "passed": true
+        },
+        {
+          "name": "Teardown starts with a real in-flight owned operation",
+          "passed": true
+        },
+        {
+          "name": "Shutdown cannot detach its held network operation",
+          "passed": true
+        },
+        {
+          "name": "Shutdown joins the operation and its final stop before returning",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "checks": [
+    {
+      "name": "Empty bodies are rejected before worker creation",
+      "passed": true
+    },
+    {
+      "name": "The 64 MiB allocation cap is enforced before admission",
+      "passed": true
+    },
+    {
+      "name": "An empty writer window is rejected",
+      "passed": true
+    },
+    {
+      "name": "A missing writer cannot retain a budget lease",
+      "passed": true
+    },
+    {
+      "name": "A received tail waits in memory and earns no disk resume credit across a gap",
+      "passed": true
+    },
+    {
+      "name": "Finishing with a gap never writes the tail or claims a complete body",
+      "passed": true
+    },
+    {
+      "name": "Buffered-only bytes cannot supply a completion body or saved segment prefix",
+      "passed": true
+    },
+    {
+      "name": "Closed generations reject further input",
+      "passed": true
+    },
+    {
+      "name": "A second close cannot change an already settled policy or issue new IO",
+      "passed": true
+    },
+    {
+      "name": "Out-of-order network input completes only after every ordered write is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "The writer emits contiguous ascending windows with the exact original bytes",
+      "passed": true
+    },
+    {
+      "name": "Resume credit is clipped to the requested valid segment",
+      "passed": true
+    },
+    {
+      "name": "Only a settled successful finish exposes the full cached body",
+      "passed": true
+    },
+    {
+      "name": "Pause drains accepted noncontiguous spans without declaring completion",
+      "passed": true
+    },
+    {
+      "name": "Pause credit cannot cross a missing segment prefix",
+      "passed": true
+    },
+    {
+      "name": "Paused tail data is preserved while completion exposure remains closed",
+      "passed": true
+    },
+    {
+      "name": "Abort discards buffered-only tails without granting saved progress",
+      "passed": true
+    },
+    {
+      "name": "A held storage operation is observable without locking out state readers",
+      "passed": true
+    },
+    {
+      "name": "Identical retries do not overwrite in-flight bytes or credit a held write",
+      "passed": true
+    },
+    {
+      "name": "Conflicting retries are rejected before modifying accepted data",
+      "passed": true
+    },
+    {
+      "name": "Identical retries neither duplicate writes nor change the completed representation",
+      "passed": true
+    },
+    {
+      "name": "A failed write never earns completion or resume credit",
+      "passed": true
+    },
+    {
+      "name": "Storage failure closes completion and propagates to later producers",
+      "passed": true
+    },
+    {
+      "name": "A later partial write preserves earlier credit but grants none for the failed operation",
+      "passed": true
+    },
+    {
+      "name": "Physically changed but unacknowledged bytes cannot imply completeness",
+      "passed": true
+    },
+    {
+      "name": "Eight producers share one stable buffer and preserve exact ordered output",
+      "passed": true
+    },
+    {
+      "name": "Out-of-range and overflowing offsets cannot alter buffer state",
+      "passed": true
+    },
+    {
+      "name": "Oversized and missing-source writes are rejected before copying",
+      "passed": true
+    },
+    {
+      "name": "A valid zero-length notification accepts no bytes",
+      "passed": true
+    },
+    {
+      "name": "A second experimental body allocation is refused while the first lease is live",
+      "passed": true
+    },
+    {
+      "name": "Closing retains ownership while the body storage remains alive",
+      "passed": true
+    },
+    {
+      "name": "A successor acquires the budget after the prior buffer is destroyed",
+      "passed": true
+    },
+    {
+      "name": "Excessive fragmented metadata is rejected atomically at its fixed limit",
+      "passed": true
+    },
+    {
+      "name": "Metadata refusal preserves prior accepted bytes without false credit",
+      "passed": true
+    },
+    {
+      "name": "Abort control holds a real in-flight writer callback",
+      "passed": true
+    },
+    {
+      "name": "Abort closes producer admission before joining the active operation",
+      "passed": true
+    },
+    {
+      "name": "Abort acknowledges an operation that already succeeded and starts no later writes",
+      "passed": true
+    },
+    {
+      "name": "A writer callback cannot close and join its own thread",
+      "passed": true
+    },
+    {
+      "name": "A real regular file receives no tail write across a gap",
+      "passed": true
+    },
+    {
+      "name": "Real positioned writes advance from zero without gaps or reordered IO",
+      "passed": true
+    },
+    {
+      "name": "A separate explicit final flush remains the caller's responsibility",
+      "passed": true
+    },
+    {
+      "name": "The flushed regular file preserves every original byte after tail-first admission",
+      "passed": true
+    },
+    {
+      "name": "A real paused file retains only its acknowledged segment-prefix credit",
+      "passed": true
+    },
+    {
+      "name": "The paused output contains the exact tail while its unwritten leading gap remains uncredited",
+      "passed": true
+    },
+    {
+      "name": "A fully written paused body cannot be exported as confirmed completion",
+      "passed": true
+    },
+    {
+      "name": "An abort cannot export completion even when all writes already succeeded",
+      "passed": true
+    },
+    {
+      "name": "A failed writer cannot hand storage to the completion-hash stage",
+      "passed": true
+    },
+    {
+      "name": "Retry boundaries read accepted bytes before their disk write",
+      "passed": true
+    },
+    {
+      "name": "A missing buffered prefix is refused without copying unwritten zeros",
+      "passed": true
+    },
+    {
+      "name": "Buffered reads validate bounds, targets and empty spans",
+      "passed": true
+    },
+    {
+      "name": "A conflicting retry has a distinct representation error and preserves accepted coverage",
+      "passed": true
+    },
+    {
+      "name": "A held disk operation does not block reading already accepted retry bytes",
+      "passed": true
+    },
+    {
+      "name": "Transferred completion storage is no longer exposed through a stale buffered read",
+      "passed": true
+    },
+    {
+      "name": "Storage failure notifies the controller exactly once outside the buffer mutex",
+      "passed": true
+    },
+    {
+      "name": "Notification exceptions cannot replace the original failure or invent write credit",
+      "passed": true
+    },
+    {
+      "name": "Native writer destruction drains accepted tails before releasing their storage",
+      "passed": true
+    }
+  ],
+  "durabilityBarrierImplemented": false,
+  "error": "",
+  "passed": true,
+  "productIntegrated": false
+}

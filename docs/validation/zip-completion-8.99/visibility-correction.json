@@ -1,0 +1,26 @@
+{
+  "reason": "A child HWND can exist before modal initialization shows its window. Wait for actual visibility, retain the held-writer/deadline checks, record paint state and repeat the full current run.",
+  "productionCallbackCodeUnchanged": true,
+  "sourceChanges": [
+    {
+      "path": "native/ModalSizeUiTests.cpp",
+      "beforeSha256": "F408B2C3513AA6F76AB5FE02E7EAF055D53A07844972DBE9888768E7A1D677AC",
+      "afterSha256": "9EEB7830906C4D2D8AF2ABD6D698755D3F5DC9EB3A6AC5B522B53D1AC2C83DE8"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeSha256": "F8E5ECBDF96D9F194A35766E87E77DC75385AE6AFE39AF36B9EF53048CFD9D11",
+      "afterSha256": "4E96D52FB52764B4837C6BEEB9023EC408F22995F43428D8401E2462BE34259A"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeSha256": "0372574FB6F9020B9E52876A37877350B6ECEDF69AB68CFE8036ED1B6845B8FC",
+      "afterSha256": "03D2935791F7F457EC4A31E53BB357C77A64A4D194CEF487F8C8568775CA4E69"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeSha256": "389B6F428B2666BC678DDAAE0BD8E0D4F33E43FD4D1BCBB4AF1E04D2A43C9A0B",
+      "afterSha256": "37430020410DD5562213D15852E0C7F53E9632D870C0E7C50109C072847081C2"
+    }
+  ]
+}

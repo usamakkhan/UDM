@@ -1,0 +1,390 @@
+{
+  "productChanged": false,
+  "installedAppChanged": false,
+  "kernelCauseVerified": false,
+  "performanceParityVerified": false,
+  "fridaVersion": "17.26.3",
+  "runs": [
+    {
+      "case": "baseline-C",
+      "normalExit": true,
+      "lifecycle": "stop hooks, retain script until normal process exit",
+      "dropped": 0,
+      "openFiles": 0,
+      "openMappings": 0,
+      "nativeMetrics": {
+        "calls": 6,
+        "pathsResolved": 4,
+        "pathsMatched": 3,
+        "pathFailures": 2
+      },
+      "onlyOwnedPathSamples": false,
+      "apiCounts": {
+        "CloseHandle": 2,
+        "CreateFileMappingW": 1,
+        "CreateFileW": 1,
+        "FlushFileBuffers": 2,
+        "MapViewOfFile": 1,
+        "NtFlushBuffersFile": 2,
+        "NtWriteFile": 1,
+        "WriteFile": 1
+      },
+      "events": [
+        {
+          "api": "CreateFileW",
+          "thread": 440,
+          "durationMs": 0.4809,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtWriteFile",
+          "thread": 440,
+          "durationMs": 0.0978,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "WriteFile",
+          "thread": 440,
+          "durationMs": 0.2142,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 440,
+          "durationMs": 1.4208,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 440,
+          "durationMs": 1.5155,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CreateFileMappingW",
+          "thread": 440,
+          "durationMs": 0.0216,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "MapViewOfFile",
+          "thread": 440,
+          "durationMs": 0.0084,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 440,
+          "durationMs": 0.0071,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 440,
+          "durationMs": 0.3472,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 440,
+          "durationMs": 0.445,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 440,
+          "durationMs": 0.0384,
+          "completed": null,
+          "ok": true
+        }
+      ],
+      "outputSha256": "9A8F6FCF1F2CF90E7177030EF7CD0164960B7D78528DF3A41A8E905D0E4B714E",
+      "unrelatedSha256": "66687AADF862BD776C8FC18B8E9F8E20089714856EE233B3902A591D0D5F2925",
+      "payloadBytes": 8224,
+      "agentSha256": "A6B8CEE163A04650F20AEAE3103F27765B9536C2691B632861EC5CBA7D894DD5",
+      "fixtureBinarySha256": "E9424B8E5D39B4CEC1FE7A9F0CAFBC971245D2FC27E7EC74AED0E97E381C8114",
+      "sourceResultSha256": "EB9109E27C4CCD11E13E349A7A9498A13A6DE7DAD724FBF375B0BA56CC7E1E81"
+    },
+    {
+      "case": "fixed-C",
+      "normalExit": true,
+      "lifecycle": "stop hooks, retain script until normal process exit",
+      "dropped": 0,
+      "openFiles": 0,
+      "openMappings": 0,
+      "nativeMetrics": {
+        "calls": 6,
+        "pathsResolved": 4,
+        "pathsMatched": 3,
+        "pathFailures": 0,
+        "nonDiskSkipped": 2,
+        "fileTypeFailures": 0
+      },
+      "onlyOwnedPathSamples": true,
+      "apiCounts": {
+        "CloseHandle": 2,
+        "CreateFileMappingW": 1,
+        "CreateFileW": 1,
+        "FlushFileBuffers": 2,
+        "MapViewOfFile": 1,
+        "NtFlushBuffersFile": 2,
+        "NtWriteFile": 1,
+        "WriteFile": 1
+      },
+      "events": [
+        {
+          "api": "CreateFileW",
+          "thread": 6396,
+          "durationMs": 0.5059,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtWriteFile",
+          "thread": 6396,
+          "durationMs": 0.1022,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "WriteFile",
+          "thread": 6396,
+          "durationMs": 0.2504,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 6396,
+          "durationMs": 22.4423,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 6396,
+          "durationMs": 22.5689,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CreateFileMappingW",
+          "thread": 6396,
+          "durationMs": 0.0433,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "MapViewOfFile",
+          "thread": 6396,
+          "durationMs": 0.0124,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 6396,
+          "durationMs": 0.0096,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 6396,
+          "durationMs": 21.9088,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 6396,
+          "durationMs": 22.1124,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 6396,
+          "durationMs": 0.0948,
+          "completed": null,
+          "ok": true
+        }
+      ],
+      "outputSha256": "9A8F6FCF1F2CF90E7177030EF7CD0164960B7D78528DF3A41A8E905D0E4B714E",
+      "unrelatedSha256": "66687AADF862BD776C8FC18B8E9F8E20089714856EE233B3902A591D0D5F2925",
+      "payloadBytes": 8224,
+      "agentSha256": "7365EAF1AB07F47034B94068A132B6EB5723F76940F401AA2463768A957B0F1E",
+      "fixtureBinarySha256": "E9424B8E5D39B4CEC1FE7A9F0CAFBC971245D2FC27E7EC74AED0E97E381C8114",
+      "sourceResultSha256": "24FBDCC542355A70835A974F96D09F2E19290B1A8A25410A08C10663438AEE0F"
+    },
+    {
+      "case": "fixed-D",
+      "normalExit": true,
+      "lifecycle": "stop hooks, retain script until normal process exit",
+      "dropped": 0,
+      "openFiles": 0,
+      "openMappings": 0,
+      "nativeMetrics": {
+        "calls": 6,
+        "pathsResolved": 4,
+        "pathsMatched": 3,
+        "pathFailures": 0,
+        "nonDiskSkipped": 2,
+        "fileTypeFailures": 0
+      },
+      "onlyOwnedPathSamples": true,
+      "apiCounts": {
+        "CloseHandle": 2,
+        "CreateFileMappingW": 1,
+        "CreateFileW": 1,
+        "FlushFileBuffers": 2,
+        "MapViewOfFile": 1,
+        "NtFlushBuffersFile": 2,
+        "NtWriteFile": 1,
+        "WriteFile": 1
+      },
+      "events": [
+        {
+          "api": "CreateFileW",
+          "thread": 7332,
+          "durationMs": 0.9595,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtWriteFile",
+          "thread": 7332,
+          "durationMs": 0.0991,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "WriteFile",
+          "thread": 7332,
+          "durationMs": 0.2441,
+          "completed": 8192,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 7332,
+          "durationMs": 33.9437,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 7332,
+          "durationMs": 34.0566,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CreateFileMappingW",
+          "thread": 7332,
+          "durationMs": 0.0425,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "MapViewOfFile",
+          "thread": 7332,
+          "durationMs": 0.013,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 7332,
+          "durationMs": 0.0085,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "NtFlushBuffersFile",
+          "thread": 7332,
+          "durationMs": 24.093,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "FlushFileBuffers",
+          "thread": 7332,
+          "durationMs": 24.2575,
+          "completed": null,
+          "ok": true
+        },
+        {
+          "api": "CloseHandle",
+          "thread": 7332,
+          "durationMs": 0.0538,
+          "completed": null,
+          "ok": true
+        }
+      ],
+      "outputSha256": "9A8F6FCF1F2CF90E7177030EF7CD0164960B7D78528DF3A41A8E905D0E4B714E",
+      "unrelatedSha256": "66687AADF862BD776C8FC18B8E9F8E20089714856EE233B3902A591D0D5F2925",
+      "payloadBytes": 8224,
+      "agentSha256": "7365EAF1AB07F47034B94068A132B6EB5723F76940F401AA2463768A957B0F1E",
+      "fixtureBinarySha256": "E9424B8E5D39B4CEC1FE7A9F0CAFBC971245D2FC27E7EC74AED0E97E381C8114",
+      "sourceResultSha256": "235358DDC03C94C5209C623A1FDB5DFC6EC4182CC3E0A3F042DC87CE87A873B6"
+    }
+  ],
+  "lifecycleControls": [
+    {
+      "mode": "unobserved",
+      "pid": 21044,
+      "fixtureBinarySha256": "E9424B8E5D39B4CEC1FE7A9F0CAFBC971245D2FC27E7EC74AED0E97E381C8114",
+      "agentHooks": 0,
+      "fixtureBodyCompleted": true,
+      "normalExit": true,
+      "exitCode": 0,
+      "waitSeconds": 0.006267899996601045
+    },
+    {
+      "mode": "empty-frida",
+      "pid": 20824,
+      "fixtureBinarySha256": "E9424B8E5D39B4CEC1FE7A9F0CAFBC971245D2FC27E7EC74AED0E97E381C8114",
+      "agentHooks": 0,
+      "fixtureBodyCompleted": true,
+      "observerDetached": true,
+      "normalExit": true,
+      "exitCode": 0,
+      "waitSeconds": 0.014016899993293919
+    }
+  ],
+  "failedEarlyUnload": {
+    "pid": 5092,
+    "ownedImageHashVerified": true,
+    "completedFixtureWrites": true,
+    "normalExit": false,
+    "reason": "Observed single-thread CPU loop after observer unload/detach and fixture release; normal-process comparison rejected",
+    "forcedExitCode": 238,
+    "waitAfterTerminate": 0
+  },
+  "limits": [
+    "Early unload caused one reproducible fixture shutdown failure; no claim that the same cause explains IDM\u2019s earlier hang.",
+    "Instrumented fixture timings are not natural UDM/IDM performance measurements.",
+    "Normal-exit fixture checks do not establish live production writer coverage or all background work."
+  ],
+  "observedRuntimeWarnings": [
+    {
+      "attempt": "early-unload-C",
+      "message": "Unable to start idund: idund did not start listening"
+    },
+    {
+      "attempt": "fixed-D",
+      "message": "Unable to start idund: idund did not start listening"
+    }
+  ]
+}

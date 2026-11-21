@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "Current queue policy and session state are prepared together",
+      "passed": true
+    },
+    {
+      "name": "Queue names and display labels come from the same current cohort",
+      "passed": true
+    },
+    {
+      "name": "Advisory preparation changes no catalog, transfer or accepted-command guard",
+      "passed": true
+    },
+    {
+      "name": "Start does not prepare an unused queue selector",
+      "passed": true
+    },
+    {
+      "name": "A suppressed queue prompt does not prepare unused names and labels",
+      "passed": true
+    },
+    {
+      "name": "A fresh Start preparation observes session rejection without changing an earlier result",
+      "passed": true
+    },
+    {
+      "name": "A real writer precedes Start/Later preparation",
+      "passed": true
+    },
+    {
+      "name": "Preparing an action returns while Manager is held and claims no accepted guard",
+      "passed": true
+    },
+    {
+      "name": "One File Info owner cannot duplicate its outstanding action reader",
+      "passed": true
+    },
+    {
+      "name": "Cancelling advisory acquisition settles before the external writer releases Manager",
+      "passed": true
+    },
+    {
+      "name": "An unrelated accepted command defers the action reader",
+      "passed": true
+    },
+    {
+      "name": "Advisory cancellation never clears another command's guard",
+      "passed": true
+    },
+    {
+      "name": "A read failure is returned without retaining a worker or accepted command",
+      "passed": true
+    },
+    {
+      "name": "The same owner can retry after consuming a read failure",
+      "passed": true
+    },
+    {
+      "name": "A throwing wake cannot undo a published action result",
+      "passed": true
+    },
+    {
+      "name": "A missing download cannot authorize an action",
+      "passed": true
+    },
+    {
+      "name": "A stale strong selection is checked against current catalog membership",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

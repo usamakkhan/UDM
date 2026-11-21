@@ -1,0 +1,86 @@
+{
+  "fromVersion": "8.43",
+  "toVersion": "8.44",
+  "reason": "Two alternating D: sequential trials did not demonstrate a speedup. Remove per-file async overhead from production; retain recovery compatibility and accepted-name pins.",
+  "before": [
+    {
+      "path": "native/PreparedTransferCommit.hpp",
+      "sha256": "5AEE776814C1D81A70656272C994AE1FEA02ED287581A00B3AF41C37DB32779B"
+    },
+    {
+      "path": "native/PublicationPreparation.hpp",
+      "sha256": "4CCBDA3FF921678BA3231F114AAEA8A2C83BDB36B1EB36F14306DEF5985C95F9"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "BBA7E43D7B9483BB7A21FD42EEE47B4B02DFE61A906A5539EB30D6A48D8CF0ED"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "24DD412CD33173A018DD7D35A10BB2B91A301C52CC771F8B3FF4310F9AC1736F"
+    },
+    {
+      "path": "native/CompletedCheckpointTests.cpp",
+      "sha256": "040AFF9843C75DB084310793CEEF6A1C21EE85A6A758EEB155A9BC7A3DB75F2E"
+    },
+    {
+      "path": "native/PublicationBarrierTests.cpp",
+      "sha256": "FBBA3C74746B3C187FBB73562C10A3E5559CDAAD89C36AE42C044E3C8F573CE0"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "sha256": "5F9B2078F3765C4240E1EFF4B3CC92B66BCAF8C93D207923A8508382AC523006"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "A5F52ED354992AE55C16E6FA23FBD372F6FB26B30ED646B974EA9A8F91BD4E9F"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "21326C2B14EFA74BBC75B1F36EC22E71E0F7D5BF12B4ECA120F26721B1BAEC62"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "667F7078A6254CC9009105AE00A2BDA9BB8FE4AC880818E082E8366269173787"
+    }
+  ],
+  "after": [
+    {
+      "path": "native/PreparedTransferCommit.hpp",
+      "sha256": "07ADADFE249C7944B7DD75DF84C42208DAD163941A9B3A150AD92A1975B93BD4"
+    },
+    {
+      "path": "native/PublicationPreparation.hpp",
+      "sha256": "99749C9AADBA5758F2DFB7CD0ED476DD97F06E59760D701835A2CE473BDDD57E"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "50B4CACFD3A7FB29ED61749539C8F3925218BC580D7EE4175FC292ACCEE74147"
+    },
+    {
+      "path": "native/Duplicates.cpp",
+      "sha256": "4EB23507779C6BBEBE44305930702C9AA54B36BCE209A27DC29918463550464E"
+    },
+    {
+      "path": "native/CompletedCheckpointTests.cpp",
+      "sha256": "B104A6E63DD4F96EE6D2417558E7AE2B5A2D88876D160C31FD19D368FD71ABC1"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "sha256": "A687A5D54E2F0116302C8BF2077AA3D001E946C474E8913664C6F73CB738EE30"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "418B80803F1975DD22BF99FBBE71F18D501896473E138FAAE681E828F1CDED10"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "sha256": "EAD4CC8710D743A0758803CE1FA09CA0499B9361CB3C3E6073D03F998585E4D0"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "sha256": "96E100B6D1F6E150FDAA25566D014EBA77BD75741A77299165380597392E9EFC"
+    }
+  ],
+  "patchSha256": "FA22112097148E7D3A02FD9156A311B0EEBB7E2E7C4EAD87E09623006BBC45C2"
+}

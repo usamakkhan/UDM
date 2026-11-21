@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/Core.cpp",
+      "beforeSha256": "D7200D959D2EF3CAF3CE36E76F37A079357C43CA122B3235870233B229C9E404",
+      "afterSha256": "03EDCCD8EF6703C77417FF906F82E4D6E7A366C46A6F4248128A4E35D5E360E1",
+      "beforeVerified": true
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "beforeSha256": "50B4CACFD3A7FB29ED61749539C8F3925218BC580D7EE4175FC292ACCEE74147",
+      "afterSha256": "5D27A5B82C17D6A8F814B0E67236954C1B03D289F20073A4A0C14EA7C79451B6",
+      "beforeVerified": true
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeSha256": "F3E5218FFD624DFE414CF7A4E93607C3CBF5EBA9A69B0A3D06E264CDBD8C13B0",
+      "afterSha256": "01EC5472A88C897461F8CBE0DD084AD0F083EE3F28723E4305024BB3E860B867",
+      "beforeVerified": true
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeSha256": "D50587C81C50BFC5E62E2D2C3D08AD890C03237859C5DF6366D31EA049A504C8",
+      "afterSha256": "E17DB1C702D4738B8AC143EF99AD849AE21B3C3AED78D7790D8A462CEB2D480C",
+      "beforeVerified": true
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeSha256": "53742EF22897887F312B906C5CE30A59AB2E561997A603F2957C6D9F90B11B96",
+      "afterSha256": "F21EC7A68A871C39AE0FC937FE256373972737EBD5E94B65863847821028A7EA",
+      "beforeVerified": true
+    },
+    {
+      "path": "native/backend-tests.json",
+      "beforeSha256": "5A7F04E2FE474DAB6AD77A15AC876BDE12E92C8DCDC26B1868DEA03CFFED6906",
+      "afterSha256": "484BB68C4DE40F8973F127B88383C50DE5295C9287139BFC09B0989B8AAB8DAB",
+      "beforeVerified": true
+    },
+    {
+      "path": "native/WrittenDiskCheckpoint.hpp",
+      "added": true,
+      "afterSha256": "28589516B44DC5C29AECC2273A1532D020A6D8C137E8A5BBCB28E143B022C6E3"
+    },
+    {
+      "path": "native/CatalogDiskCredit.hpp",
+      "added": true,
+      "afterSha256": "E1C42E289F7981DD66B4667D86636A60F668F26A6B38A55B6DF0B6219B266A99"
+    },
+    {
+      "path": "native/CatalogDiskCreditTests.cpp",
+      "added": true,
+      "afterSha256": "74A08984FF5FF7286E5106FC1772273880EB98C79842533E4E6D5CF45FDFE73C"
+    },
+    {
+      "path": "native/WrittenDiskCheckpointTests.cpp",
+      "added": true,
+      "afterSha256": "F4D4ADFBC58D6BE5FDC762A08908EA89CB1407BC172B4EDF3D9BAC989FA2E800"
+    }
+  ],
+  "reverseApplyPassed": true
+}

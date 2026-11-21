@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "No snapshot produces only an unknown advisory shell",
+      "passed": true
+    },
+    {
+      "name": "A snapshot belonging to another job exposes none of its display values",
+      "passed": true
+    },
+    {
+      "name": "A matching immutable snapshot supplies address and destination without reading live state",
+      "passed": true
+    },
+    {
+      "name": "A recorded direct size is distinguished from a newly verified final size",
+      "passed": true
+    },
+    {
+      "name": "An ordinary browser filename is available as a read-only hint",
+      "passed": true
+    },
+    {
+      "name": "Live metadata changes cannot mutate an owned loading snapshot",
+      "passed": true
+    },
+    {
+      "name": "A real writer holds the model before loading hints are rendered",
+      "passed": true
+    },
+    {
+      "name": "Loading hint formatting completes before the model writer is released",
+      "passed": true
+    },
+    {
+      "name": "Formatting hints changes no catalog, download or decision ownership",
+      "passed": true
+    },
+    {
+      "name": "A browser direct-size hint retains its reported qualification",
+      "passed": true
+    },
+    {
+      "name": "An absent direct-size hint remains unknown rather than zero",
+      "passed": true
+    },
+    {
+      "name": "A replacement download does not advertise name adoption",
+      "passed": true
+    },
+    {
+      "name": "An unvalidated address cannot advertise an old browser filename",
+      "passed": true
+    },
+    {
+      "name": "Unsafe filenames are excluded from the advisory shell",
+      "passed": true
+    }
+  ],
+  "error": "Media helper missing. Run setup-media.ps1.",
+  "passed": false
+}

@@ -1,0 +1,101 @@
+{
+  "Physical": [
+    {
+      "FriendlyName": "KINGSTON SKC600/256G",
+      "MediaType": "SSD",
+      "BusType": "SATA",
+      "HealthStatus": "Healthy"
+    },
+    {
+      "FriendlyName": "WDC WD2500AAKX-753CA1",
+      "MediaType": "Unspecified",
+      "BusType": "SATA",
+      "HealthStatus": "Healthy"
+    }
+  ],
+  "Volumes": [
+    {
+      "DriveLetter": "D",
+      "FileSystem": "NTFS",
+      "AllocationUnitSize": 131072,
+      "Size": 249912229888
+    },
+    {
+      "DriveLetter": "C",
+      "FileSystem": "NTFS",
+      "AllocationUnitSize": 4096,
+      "Size": 242541916160
+    }
+  ],
+  "Mappings": [
+    {
+      "DiskIndex": 1,
+      "Model": "WDC WD2500AAKX-753CA1",
+      "PartitionType": "GPT: Logical Disk Manager Metadata",
+      "DriveLetters": []
+    },
+    {
+      "DiskIndex": 1,
+      "Model": "WDC WD2500AAKX-753CA1",
+      "PartitionType": "GPT: Logical Disk Manager Data",
+      "DriveLetters": [
+        "D:"
+      ]
+    },
+    {
+      "DiskIndex": 0,
+      "Model": "KINGSTON SKC600/256G",
+      "PartitionType": "GPT: System",
+      "DriveLetters": []
+    },
+    {
+      "DiskIndex": 0,
+      "Model": "KINGSTON SKC600/256G",
+      "PartitionType": "GPT: Basic Data",
+      "DriveLetters": [
+        "C:"
+      ]
+    },
+    {
+      "DiskIndex": 0,
+      "Model": "KINGSTON SKC600/256G",
+      "PartitionType": "GPT: Unknown",
+      "DriveLetters": []
+    }
+  ],
+  "seekQueries": {
+    "C:": {
+      "succeeded": true,
+      "returnedBytes": 12,
+      "descriptorVersion": 12,
+      "descriptorSize": 12,
+      "descriptorValid": true,
+      "incursSeekPenalty": false
+    },
+    "D:": {
+      "succeeded": false,
+      "returnedBytes": 0,
+      "error": 1
+    },
+    "PhysicalDrive0": {
+      "succeeded": true,
+      "returnedBytes": 12,
+      "descriptorVersion": 12,
+      "descriptorSize": 12,
+      "descriptorValid": true,
+      "incursSeekPenalty": false
+    },
+    "PhysicalDrive1": {
+      "succeeded": false,
+      "returnedBytes": 0,
+      "error": 31
+    }
+  },
+  "readOnly": true,
+  "dataPayloadBytesWritten": 0,
+  "cachePolicyChanged": false,
+  "elevated": false,
+  "kernelCauseVerified": false,
+  "limits": "Device topology and reported seek capability do not attribute a particular flush delay. Failed queries remain unknown. Compare both applications on the same target volume.",
+  "descriptorReference": "https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-device_seek_penalty_descriptor"
+}

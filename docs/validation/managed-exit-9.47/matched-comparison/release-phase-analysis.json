@@ -1,0 +1,205 @@
+{
+  "diagnosticOnly": true,
+  "noRawMeasurementsDiscarded": true,
+  "matchedTotalGateReclassified": false,
+  "rows": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "writerSleepMs": 761.6268000006676,
+      "releaseBracketMs": 0.045100003480911255,
+      "acquisitionOffsetFromPostUnlockMs": 0.02699999511241913,
+      "acquisitionAfterPreUnlockMs": 0.07209999859333038,
+      "totalMs": 839.9261000007391,
+      "phases": {
+        "close-entry": -761.6036000028253,
+        "integration-stop-begin": 0.0575999990105629,
+        "integration-stop-end": 0.06059999763965607,
+        "file-info-stop-end": 0.06389999389648438,
+        "manager-stop-begin": 10.573299996554852,
+        "manager-stop-end": 43.869599997997284,
+        "icons-stop-begin": 43.875,
+        "icons-stop-end": 43.879799999296665,
+        "command-files-stop-end": 43.881999999284744,
+        "windows-cleanup-end": 44.934999994933605,
+        "close-return": 77.88949999958277
+      }
+    },
+    {
+      "round": 1,
+      "variant": "control",
+      "writerSleepMs": 765.2326000034809,
+      "releaseBracketMs": 0.00469999760389328,
+      "acquisitionOffsetFromPostUnlockMs": 16.344700001180172,
+      "acquisitionAfterPreUnlockMs": 16.349399998784065,
+      "totalMs": 864.3778999969363,
+      "phases": {
+        "close-entry": 16.967600002884865,
+        "integration-stop-begin": 17.0067999958992,
+        "integration-stop-end": 17.009199999272823,
+        "file-info-stop-end": 17.013099998235703,
+        "manager-stop-begin": 17.61769999563694,
+        "manager-stop-end": 56.52080000191927,
+        "icons-stop-begin": 56.52650000154972,
+        "icons-stop-end": 56.531300000846386,
+        "command-files-stop-end": 56.53419999778271,
+        "windows-cleanup-end": 57.62959999591112,
+        "close-return": 98.67629999667406
+      }
+    },
+    {
+      "round": 1,
+      "variant": "current",
+      "writerSleepMs": 759.8354000002146,
+      "releaseBracketMs": 0.046800002455711365,
+      "acquisitionOffsetFromPostUnlockMs": -0.017000004649162292,
+      "acquisitionAfterPreUnlockMs": 0.029799997806549072,
+      "totalMs": 829.2625999972224,
+      "phases": {
+        "close-entry": 0.6327999979257584,
+        "integration-stop-begin": 0.6693999990820885,
+        "integration-stop-end": 0.6715999990701675,
+        "file-info-stop-end": 0.686099998652935,
+        "manager-stop-begin": 1.9759000018239021,
+        "manager-stop-end": 31.67679999768734,
+        "icons-stop-begin": 31.68249999731779,
+        "icons-stop-end": 31.68869999796152,
+        "command-files-stop-end": 31.6908999979496,
+        "windows-cleanup-end": 33.39140000194311,
+        "close-return": 68.8636000007391
+      }
+    },
+    {
+      "round": 2,
+      "variant": "control",
+      "writerSleepMs": 763.7057000026107,
+      "releaseBracketMs": 0.11219999939203262,
+      "acquisitionOffsetFromPostUnlockMs": 0.14719999581575394,
+      "acquisitionAfterPreUnlockMs": 0.25939999520778656,
+      "totalMs": 1023.2322999984026,
+      "phases": {
+        "close-entry": 0.7340999990701675,
+        "integration-stop-begin": 0.7674999982118607,
+        "integration-stop-end": 0.7723999992012978,
+        "file-info-stop-end": 0.7773000001907349,
+        "manager-stop-begin": 1.3216999992728233,
+        "manager-stop-end": 209.94730000197887,
+        "icons-stop-begin": 209.95579999685287,
+        "icons-stop-end": 209.96099999547005,
+        "command-files-stop-end": 209.96339999884367,
+        "windows-cleanup-end": 211.08410000056028,
+        "close-return": 258.91030000150204
+      }
+    },
+    {
+      "round": 2,
+      "variant": "current",
+      "writerSleepMs": 764.694200001657,
+      "releaseBracketMs": 0.06130000203847885,
+      "acquisitionOffsetFromPostUnlockMs": -0.031199999153614044,
+      "acquisitionAfterPreUnlockMs": 0.030100002884864807,
+      "totalMs": 844.7124999985099,
+      "phases": {
+        "close-entry": 0.7880999967455864,
+        "integration-stop-begin": 0.8179999962449074,
+        "integration-stop-end": 0.8200000002980232,
+        "file-info-stop-end": 0.8246999979019165,
+        "manager-stop-begin": 1.3973999992012978,
+        "manager-stop-end": 42.02519999444485,
+        "icons-stop-begin": 42.0308999940753,
+        "icons-stop-end": 42.03700000047684,
+        "command-files-stop-end": 42.03899999707937,
+        "windows-cleanup-end": 43.07829999923706,
+        "close-return": 79.39379999786615
+      }
+    },
+    {
+      "round": 2,
+      "variant": "baseline",
+      "writerSleepMs": 755.8596000000834,
+      "releaseBracketMs": 0.31279999762773514,
+      "acquisitionOffsetFromPostUnlockMs": -0.2677000015974045,
+      "acquisitionAfterPreUnlockMs": 0.04509999603033066,
+      "totalMs": 842.83710000664,
+      "phases": {
+        "close-entry": -756.1090999990702,
+        "integration-stop-begin": -0.15049999952316284,
+        "integration-stop-end": -0.14680000394582748,
+        "file-info-stop-end": -0.1428000032901764,
+        "manager-stop-begin": 11.203400000929832,
+        "manager-stop-end": 50.08850000053644,
+        "icons-stop-begin": 50.093800000846386,
+        "icons-stop-end": 50.09849999845028,
+        "command-files-stop-end": 50.100500002503395,
+        "windows-cleanup-end": 51.15209999680519,
+        "close-return": 86.2723999992013
+      }
+    },
+    {
+      "round": 3,
+      "variant": "current",
+      "writerSleepMs": 765.8382999971509,
+      "releaseBracketMs": 0.07199999690055847,
+      "acquisitionOffsetFromPostUnlockMs": 0.006300002336502075,
+      "acquisitionAfterPreUnlockMs": 0.07829999923706055,
+      "totalMs": 843.145100004971,
+      "phases": {
+        "close-entry": 0.9855000004172325,
+        "integration-stop-begin": 1.0270000025629997,
+        "integration-stop-end": 1.028999999165535,
+        "file-info-stop-end": 1.033900000154972,
+        "manager-stop-begin": 1.5241000056266785,
+        "manager-stop-end": 35.99960000067949,
+        "icons-stop-begin": 36.005300000309944,
+        "icons-stop-end": 36.01229999959469,
+        "command-files-stop-end": 36.01510000228882,
+        "windows-cleanup-end": 37.06060000509024,
+        "close-return": 76.63700000196695
+      }
+    },
+    {
+      "round": 3,
+      "variant": "baseline",
+      "writerSleepMs": 753.111200004816,
+      "releaseBracketMs": 0.4746999964118004,
+      "acquisitionOffsetFromPostUnlockMs": -0.3945999965071678,
+      "acquisitionAfterPreUnlockMs": 0.08009999990463257,
+      "totalMs": 832.4504000023007,
+      "phases": {
+        "close-entry": -753.4919999986887,
+        "integration-stop-begin": -0.33470000326633453,
+        "integration-stop-end": -0.33160000294446945,
+        "file-info-stop-end": -0.3271000012755394,
+        "manager-stop-begin": 10.40150000154972,
+        "manager-stop-end": 46.545299999415874,
+        "icons-stop-begin": 46.551500000059605,
+        "icons-stop-end": 46.55640000104904,
+        "command-files-stop-end": 46.55839999765158,
+        "windows-cleanup-end": 47.987900003790855,
+        "close-return": 78.41860000044107
+      }
+    },
+    {
+      "round": 3,
+      "variant": "control",
+      "writerSleepMs": 753.7899000048637,
+      "releaseBracketMs": 0.004799999296665192,
+      "acquisitionOffsetFromPostUnlockMs": 15.812399998307228,
+      "acquisitionAfterPreUnlockMs": 15.817199997603893,
+      "totalMs": 852.2195999994874,
+      "phases": {
+        "close-entry": 16.79230000078678,
+        "integration-stop-begin": 16.825300000607967,
+        "integration-stop-end": 16.82779999822378,
+        "file-info-stop-end": 16.833699993789196,
+        "manager-stop-begin": 17.350999996066093,
+        "manager-stop-end": 56.64000000059605,
+        "icons-stop-begin": 56.646099999547005,
+        "icons-stop-end": 56.650699995458126,
+        "command-files-stop-end": 56.652899995446205,
+        "windows-cleanup-end": 57.81309999525547,
+        "close-return": 97.87619999796152
+      }
+    }
+  ]
+}

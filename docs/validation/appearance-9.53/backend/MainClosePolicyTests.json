@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "Close policy captures the current tray setting",
+      "passed": true
+    },
+    {
+      "name": "A new close reads current policy without changing its older snapshot",
+      "passed": true
+    },
+    {
+      "name": "A real catalog writer precedes the close reader",
+      "passed": true
+    },
+    {
+      "name": "Close policy acquisition returns to its caller under a held writer",
+      "passed": true
+    },
+    {
+      "name": "One close owner coalesces duplicate starts",
+      "passed": true
+    },
+    {
+      "name": "Cancelling the close reader settles before its catalog writer releases",
+      "passed": true
+    },
+    {
+      "name": "An accepted download decision defers close policy capture",
+      "passed": true
+    },
+    {
+      "name": "Closing a reader never clears another command's ownership",
+      "passed": true
+    },
+    {
+      "name": "A close read failure is consumed as an owned result",
+      "passed": true
+    },
+    {
+      "name": "The close owner can retry after policy failure",
+      "passed": true
+    },
+    {
+      "name": "Close result publication occurs after releasing Manager",
+      "passed": true
+    },
+    {
+      "name": "Notification failure cannot undo the captured close result",
+      "passed": true
+    },
+    {
+      "name": "Repeated close reader cleanup is safe",
+      "passed": true
+    },
+    {
+      "name": "Policy acquisition never changes settings jobs layout or catalog files",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

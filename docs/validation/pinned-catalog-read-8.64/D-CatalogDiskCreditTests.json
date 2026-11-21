@@ -1,0 +1,202 @@
+{
+  "checks": [
+    {
+      "name": "The Manager fixture owns the expected root parts file",
+      "passed": true
+    },
+    {
+      "name": "A direct caller without the owning worker scope keeps the legacy synchronous path",
+      "passed": true
+    },
+    {
+      "name": "The active root worker attaches its actual expected parts file",
+      "passed": true
+    },
+    {
+      "name": "Duplicate binding admission is refused without replacing the owner",
+      "passed": true
+    },
+    {
+      "name": "The same actual save preserves and acknowledges the pending browser-admission overlay",
+      "passed": true
+    },
+    {
+      "name": "The actual Manager save persists written prefixes rather than live RAM-only progress",
+      "passed": true
+    },
+    {
+      "name": "Actual Job/UI progress and network accounting remain separate from persisted resume credit",
+      "passed": true
+    },
+    {
+      "name": "A pending browser admission retains its forced automatic publication even when disk credit is unchanged",
+      "passed": true
+    },
+    {
+      "name": "The real periodic dirty check skips a RAM-only progress change once the admission is installed",
+      "passed": true
+    },
+    {
+      "name": "Advancing acknowledged disk credit triggers the real automatic checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A changed live representation cannot publish the previous generation's credit",
+      "passed": true
+    },
+    {
+      "name": "The Manager private active map rejects the old cancellation generation",
+      "passed": true
+    },
+    {
+      "name": "A captured generation cannot disappear from catalog membership",
+      "passed": true
+    },
+    {
+      "name": "The binding physically denies deletion of the expected parts file",
+      "passed": true
+    },
+    {
+      "name": "Binding retirement waits outside Manager::mutex while an actual detached catalog write is held",
+      "passed": true
+    },
+    {
+      "name": "The held Manager write reports the intended success or injected failure",
+      "passed": true
+    },
+    {
+      "name": "Retirement atomically reconciles live resume counters and detaches without charging network bytes again",
+      "passed": true
+    },
+    {
+      "name": "The physical parts-file pin is released only after the held save and reconciliation settle",
+      "passed": true
+    },
+    {
+      "name": "Successful held catalog IO retains exact acknowledged resume credit",
+      "passed": true
+    },
+    {
+      "name": "A later forced checkpoint clears a resolved storage error",
+      "passed": true
+    },
+    {
+      "name": "The native binding leaves the caller-owned file durability barrier intact",
+      "passed": true
+    },
+    {
+      "name": "The acknowledged actual parts file matches independent complete fixture bytes and hash",
+      "passed": true
+    },
+    {
+      "name": "The actual Manager reload restores disk-backed progress and the independently admitted job",
+      "passed": true
+    },
+    {
+      "name": "The Manager fixture owns the expected root parts file",
+      "passed": true
+    },
+    {
+      "name": "A direct caller without the owning worker scope keeps the legacy synchronous path",
+      "passed": true
+    },
+    {
+      "name": "The active root worker attaches its actual expected parts file",
+      "passed": true
+    },
+    {
+      "name": "Duplicate binding admission is refused without replacing the owner",
+      "passed": true
+    },
+    {
+      "name": "The same actual save preserves and acknowledges the pending browser-admission overlay",
+      "passed": true
+    },
+    {
+      "name": "The actual Manager save persists written prefixes rather than live RAM-only progress",
+      "passed": true
+    },
+    {
+      "name": "Actual Job/UI progress and network accounting remain separate from persisted resume credit",
+      "passed": true
+    },
+    {
+      "name": "A pending browser admission retains its forced automatic publication even when disk credit is unchanged",
+      "passed": true
+    },
+    {
+      "name": "The real periodic dirty check skips a RAM-only progress change once the admission is installed",
+      "passed": true
+    },
+    {
+      "name": "Advancing acknowledged disk credit triggers the real automatic checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A changed live representation cannot publish the previous generation's credit",
+      "passed": true
+    },
+    {
+      "name": "The Manager private active map rejects the old cancellation generation",
+      "passed": true
+    },
+    {
+      "name": "A captured generation cannot disappear from catalog membership",
+      "passed": true
+    },
+    {
+      "name": "The binding physically denies deletion of the expected parts file",
+      "passed": true
+    },
+    {
+      "name": "Binding retirement waits outside Manager::mutex while an actual detached catalog write is held",
+      "passed": true
+    },
+    {
+      "name": "The held Manager write reports the intended success or injected failure",
+      "passed": true
+    },
+    {
+      "name": "Retirement atomically reconciles live resume counters and detaches without charging network bytes again",
+      "passed": true
+    },
+    {
+      "name": "The physical parts-file pin is released only after the held save and reconciliation settle",
+      "passed": true
+    },
+    {
+      "name": "A failed real save preserves the previous catalog and storage error",
+      "passed": true
+    },
+    {
+      "name": "A later forced checkpoint clears a resolved storage error",
+      "passed": true
+    },
+    {
+      "name": "The native binding leaves the caller-owned file durability barrier intact",
+      "passed": true
+    },
+    {
+      "name": "The acknowledged actual parts file matches independent complete fixture bytes and hash",
+      "passed": true
+    },
+    {
+      "name": "The actual Manager reload restores disk-backed progress and the independently admitted job",
+      "passed": true
+    },
+    {
+      "name": "Already-accounted buffered reception advances accepted progress without charging network bytes twice",
+      "passed": true
+    },
+    {
+      "name": "Buffered accepted progress retains the worker UI cursor contract",
+      "passed": true
+    },
+    {
+      "name": "Legacy progress retains its default one-time network accounting",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

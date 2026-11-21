@@ -1,0 +1,138 @@
+{
+  "version": "8.39",
+  "bytes": 4194304,
+  "sizeAndHashMatched": true,
+  "apiCounts": {
+    "WriteFile": 21,
+    "NtWriteFile": 21,
+    "FlushFileBuffers": 7,
+    "CloseHandle": 16,
+    "NtFlushBuffersFile": 7,
+    "CreateFileW": 17
+  },
+  "flushes": [
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0006451,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0007423,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0066139,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0067508,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0008623,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0009771,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0043992,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0045732,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0019869,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0022048,
+      "ok": true,
+      "role": "body"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0012016,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0013326,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "NtFlushBuffersFile",
+      "seconds": 0.0007525,
+      "ok": true,
+      "role": "catalog-or-other"
+    },
+    {
+      "api": "FlushFileBuffers",
+      "seconds": 0.0008768,
+      "ok": true,
+      "role": "catalog-or-other"
+    }
+  ],
+  "finishPhases": {
+    "AdvisoryHashOverlap": false,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 6.1e-06,
+    "Content": 0.0002449,
+    "DirectSize": 4.55e-05,
+    "FlushPublished": 0.0030797,
+    "Hash": 4.58e-05,
+    "HashMode": "inline",
+    "PrePublicationMetadata": 0.0101528,
+    "PrefetchReceipt": 1.1e-06,
+    "PreparedTransferFinalizeSeconds": 0.0151897,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 0.0001111,
+    "PublishedFileFlush": 0.0023251,
+    "PublishedFileOpen": 0.0005936,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0015509,
+    "SettleDestination": 0.0013632,
+    "SettleLengthQuery": 4.93e-05,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.0001081,
+    "SettleSnapshot": 1.47e-05,
+    "SettleValidateFolder": 5e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0005571,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "protectedCatalogsUnchanged": true,
+  "instrumentedAttributionOnly": true,
+  "performanceParityVerified": false
+}

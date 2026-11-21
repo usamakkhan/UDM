@@ -2,6 +2,10 @@
 #include "App.cpp"
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 namespace udm {
+struct CatalogCheckpointTestAccess {
+ static void hold(Manager& manager,JobPtr job){Lock lock(manager.mutex);manager.active[job->id()]=std::make_shared<Cancel>();}
+ static void retire(Manager& manager,JobPtr job){Lock lock(manager.mutex);manager.active.erase(job->id());}
+};
 static Json checks=Json::array();static fs::path output,referencePath;static std::string failure;
 static void expect(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!output.empty())atomicText(output/L"progress.json",checks.dump(2),false);if(!ok)throw std::runtime_error(name);}
 static std::wstring caption(HWND w){wchar_t value[2048]{};GetWindowTextW(w,value,2048);return value;}
@@ -467,6 +471,29 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
   frame.progress.back()->DestroyWindow();
   job->data.erase("CloseProgressOnCompletion");job->data.erase("PrefetchedBytesAtStart");job->data.erase("PrefetchPeakRate");
  }
+ {
+  const auto suppression=manager.state["Settings"]["SuppressCompletionDialog"];manager.state["Settings"]["SuppressCompletionDialog"]=true;
+  auto exitQueued=[&]{MSG message{};const bool present=PeekMessageW(&message,frame.GetSafeHwnd(),WM_COMMAND,WM_COMMAND,PM_REMOVE)!=FALSE;if(present&&LOWORD(message.wParam)!=CMD_EXIT)throw std::runtime_error("Unexpected command during CLI completion fixture");return present;};
+  expect(!exitQueued(),"CLI fixture begins without a pending Exit command");
+  struct Restore {Manager& manager;JobPtr job;MainWindow& frame;Json suppression;~Restore(){CatalogCheckpointTestAccess::retire(manager,job);frame.quitAfterDownload.reset();manager.state["Settings"]["SuppressCompletionDialog"]=suppression;}} restore{manager,job,frame,suppression};
+  manager.save();frame.quitAfterDownload=job;CatalogCheckpointTestAccess::hold(manager,job);
+  manager.filePublished(job);deliverTransferWakeup(frame);
+  expect(!exitQueued()&&frame.quitAfterDownload==job,"Published bytes do not trigger CLI Exit while final background work still owns the download");
+  manager.event(job,true);deliverTransferWakeup(frame);
+  expect(!exitQueued()&&frame.quitAfterDownload==job,"An early Finished notification cannot bypass active completion ownership");
+  CatalogCheckpointTestAccess::retire(manager,job);job->data["ScanResult"]={{"Status","Pending"}};manager.save();
+  manager.event(job,true);deliverTransferWakeup(frame);
+  expect(!exitQueued()&&frame.quitAfterDownload==job,"Pending scanner work prevents event-driven CLI Exit");
+  job->data.erase("ScanResult");manager.save();job->data["Description"]="unsaved CLI completion metadata";
+  manager.event(job,true);deliverTransferWakeup(frame);
+  expect(!exitQueued()&&frame.quitAfterDownload==job,"Event-driven CLI Exit requires the actual final catalog snapshot, not only Complete status");
+  manager.save();frame.EnableWindow(FALSE);manager.event(job,true);frame.SendMessage(TRANSFER_EVENTS);frame.EnableWindow(TRUE);
+  expect(!exitQueued()&&frame.quitAfterDownload==job,"A disabled owner defers CLI Exit until its modal interaction finishes");
+  frame.SendMessage(TRANSFER_EVENTS);
+  expect(exitQueued()&&!frame.quitAfterDownload,"A durable idle completed download posts Exit from its transfer wake-up without waiting for the 500 ms timer");
+  manager.event(job,true);deliverTransferWakeup(frame);
+  expect(!exitQueued(),"Repeated final completion events do not post duplicate Exit commands");
+ }
  const std::vector<std::pair<std::string,std::string>> scanCases={
   {"Finished","Microsoft Defender completed the scan: no malware found or detected malware remediated. Review Windows Security for details."},
   {"Attention","Microsoft Defender reports an unresolved detection or a scanning error. Review Windows Security before opening the file."},
@@ -514,7 +541,7 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
 class CompletionDialogApplication:public CWinApp {
  int result=1;bool started=false;std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;
  void finish(){
-  if(frame){frame->SendMessage(WM_CLOSE);frame=nullptr;m_pMainWnd=nullptr;}manager.reset();
+  if(frame){closeOwnedMainWindow(frame);frame=nullptr;m_pMainWnd=nullptr;}manager.reset();
   if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks}}.dump(2),false);
  }
 public:BOOL InitInstance()override{

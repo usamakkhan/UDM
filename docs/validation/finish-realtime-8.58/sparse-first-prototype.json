@@ -1,0 +1,126 @@
+{
+  "privateExperiment": true,
+  "productChanged": false,
+  "versionBumped": false,
+  "promotionAccepted": false,
+  "reason": "Final-body-flush reduction does not establish overall improvement; observed total backend interval was worse than baseline. Retain this loss and investigate checkpoint placement.",
+  "instrumentedCoreEntryPoint": true,
+  "bytes": 67108864,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "normalExit": true,
+  "observedWriteIntervalsExactlyCoverBody": true,
+  "nativeWrites": 271,
+  "dropped": 0,
+  "openFiles": 0,
+  "openMappings": 0,
+  "backendFromFirstOwnedMs": 2759.094,
+  "nativeFlushOperations": [
+    {
+      "kind": "catalog",
+      "ms": 21.7896
+    },
+    {
+      "kind": "catalog",
+      "ms": 22.1147
+    },
+    {
+      "kind": "catalog",
+      "ms": 143.7917
+    },
+    {
+      "kind": "body",
+      "ms": 239.8291
+    },
+    {
+      "kind": "catalog",
+      "ms": 287.6564
+    },
+    {
+      "kind": "publication-intent",
+      "ms": 261.0579
+    },
+    {
+      "kind": "catalog",
+      "ms": 25.8001
+    },
+    {
+      "kind": "body",
+      "ms": 13.5319
+    },
+    {
+      "kind": "catalog",
+      "ms": 18.5632
+    }
+  ],
+  "finishPhases": {
+    "AdvisoryHashInput": "write-buffer",
+    "AdvisoryHashOverlap": true,
+    "AdvisoryHashSeconds": 0.1913107,
+    "CleanupParts": 0.0007007,
+    "CommitOutput": 0.330141,
+    "ConfirmationWait": 2.5e-06,
+    "Content": 0.0563344,
+    "DirectSize": 3.03e-05,
+    "FlushPublished": 0.0141443,
+    "Hash": 6.05e-05,
+    "HashMode": "deferred",
+    "LateHash": 2.9e-05,
+    "PostPublicationMetadata": 0.0020976,
+    "PrefetchReceipt": 1.9e-06,
+    "Publish": 0.3309438,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 0.00013,
+    "PublishedFileFlush": 0.0137214,
+    "PublishedFileOpen": 0.0001957,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 6.21e-05,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0010657,
+    "SettleDestination": 0.0007851,
+    "SettleLengthQuery": 9.62e-05,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.0001418,
+    "SettleSnapshot": 2.28e-05,
+    "SettleValidateFolder": 5e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "requested",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0007938,
+    "Total": 0.38843659999999997,
+    "TransferBackgroundTotal": 0.4054278,
+    "Unsparse": 0.0141443
+  },
+  "publicationPhases": {
+    "AcceptCatalog": 3.5e-05,
+    "IntentOperations": {
+      "bytes-written": 0.0002756,
+      "directories-ready": 0.0007607,
+      "publish": 0.0013814,
+      "temporary-flushed": 0.2613481,
+      "temporary-opened": 0.0002528
+    },
+    "PrepareCatalog": 0.0002813,
+    "PrepareIntent": 0.0005679,
+    "PrepareSource": 0.0057841,
+    "ReleasePins": 0.0002564,
+    "RemoveJournal": 0.000293,
+    "Rename": 0.0176765,
+    "VerifyIdentity": 3.69e-05,
+    "WriteCatalog": 0.0410582,
+    "WriteIntent": 0.2640436
+  },
+  "postExitFlush": {
+    "openSeconds": 0.00024680000205989927,
+    "flushSeconds": 0.0017311999981757253,
+    "closeSeconds": 4.6999994083307683e-05
+  },
+  "originRequests": 8,
+  "originBytes": 69517364,
+  "binarySha256": "1AED78FAEB2BB158B1BAE42A7248B5E351D1A642A55522C7580774C92038A3B8",
+  "agentSha256": "56166D5DF87DFA026AA1F2545ABBE8DB0C3E7EBF5E130128EB15C15360887013",
+  "sourceResultSha256": "1E08C4D03A67BCC6C8E92739A9C547F99876D365CD04499F04C3AC469B40EF2C",
+  "kernelCauseVerified": false,
+  "uninstrumentedPerformanceCompared": false
+}

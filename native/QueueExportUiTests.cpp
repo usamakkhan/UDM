@@ -66,8 +66,8 @@ public:BOOL InitInstance()override{
     expect(GetMenuItemID(tasks,2)==CMD_BATCH_CLIPBOARD&&GetMenuItemID(tasks,5)==CMD_BASKET,"Batch-from-clipboard and drop target occupy the reference Tasks positions");
     auto exports=GetSubMenu(tasks,7),imports=GetSubMenu(tasks,8);expect(exports&&imports&&GetMenuItemID(exports,0)==CMD_EXPORT_IDM&&GetMenuItemID(exports,1)==CMD_EXPORT_TEXT&&GetMenuItemID(imports,0)==CMD_IMPORT_IDM&&GetMenuItemID(imports,1)==CMD_IMPORT_TEXT,"Actual main-window menus expose the IDM-file and text-file routes");
     expectedTitle=L"Export downloads";began=GetTickCount64();action=[&](HWND w){expect(SendMessageW(children(w,L"ComboBox")[1],CB_GETCURSEL,0,0)==2,"The actual main-window EF2 menu command opens the corresponding format");capture(w,L"main-command-export-ef2.png");press(w,L"Cancel");};auto timer=SetTimer(nullptr,0,80,onTimer);frame->SendMessage(WM_COMMAND,CMD_EXPORT_IDM);KillTimer(nullptr,timer);action={};if(!failure.empty())throw std::runtime_error(failure);
-   }catch(...){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;throw;}
-   frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;
+   }catch(...){closeOwnedMainWindow(frame);m_pMainWnd=nullptr;throw;}
+   closeOwnedMainWindow(frame);m_pMainWnd=nullptr;
   }
   code=0;
  }catch(const std::exception& e){failure=e.what();}

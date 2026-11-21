@@ -1,0 +1,28 @@
+--- original-qualified/compare-completion.py
++++ tooling/compare-completion.py
+@@ -83,10 +83,12 @@
+  return closed,{'openSeconds':opened-began,'flushSeconds':flushed-opened,'closeSeconds':closed-flushed}
+ 
+ def main():
+- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--output-root',type=Path,required=True);ap.add_argument('--udm',type=Path,default=Path('C:/Program Files/UDM/UDM.exe'));ap.add_argument('--idm',type=Path,default=Path('C:/Program Files (x86)/Internet Download Manager/IDMan.exe'));ap.add_argument('--expected-udm-sha256',required=True);ap.add_argument('--label',required=True);ap.add_argument('--trials',type=int,default=3);ap.add_argument('--flush-after-exit',action='store_true',help='Also record a symmetric explicit completed-output flush after app exit; retain original exit metrics.');args=ap.parse_args();work=args.output_root.resolve();assert not work.exists();assert 1<=args.trials<=5;assert sha(args.udm)==args.expected_udm_sha256.upper();assert not idm_pids(),'Current-session IDM must be closed before starting';work.mkdir(parents=True);original=read_settings();save(work/'idm-settings-original.json',original);results=[];payloads=[]
++ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--output-root',type=Path,required=True);ap.add_argument('--udm',type=Path,default=Path('C:/Program Files/UDM/UDM.exe'));ap.add_argument('--idm',type=Path,default=Path('C:/Program Files (x86)/Internet Download Manager/IDMan.exe'));ap.add_argument('--expected-udm-sha256',required=True);ap.add_argument('--label',required=True);ap.add_argument('--trials',type=int,default=3);ap.add_argument('--case',choices=['single-4m','single-64m','split-64m'],help='Restrict a diagnostic to one paired case; default retains all three cases.');ap.add_argument('--flush-after-exit',action='store_true',help='Also record a symmetric explicit completed-output flush after app exit; retain original exit metrics.');args=ap.parse_args();work=args.output_root.resolve();assert not work.exists();assert 1<=args.trials<=5;assert sha(args.udm)==args.expected_udm_sha256.upper();assert not idm_pids(),'Current-session IDM must be closed before starting';work.mkdir(parents=True);original=read_settings();save(work/'idm-settings-original.json',original);results=[];payloads=[]
++ cases=[('single-4m',4*1024**2,1),('single-64m',64*1024**2,1),('split-64m',64*1024**2,8)]
++ if args.case:cases=[case for case in cases if case[0]==args.case]
+  try:
+   for trial in range(1,args.trials+1):
+-   for case,size,connections in [('single-4m',4*1024**2,1),('single-64m',64*1024**2,1),('split-64m',64*1024**2,8)]:
++   for case,size,connections in cases:
+     for client in (['udm','idm']if(trial+(case=='single-64m'))%2 else['idm','udm']):
+      folder=work/(case+'-'+client+'-'+str(trial));folder.mkdir();destination=folder/'files';destination.mkdir();output=destination/'sample.bin';data=folder/'catalog';state=data/'state.json'
+      if client=='udm':
+@@ -123,8 +125,8 @@
+       origin.close()
+       if client=='idm':put_settings(original)
+  finally:put_settings(original);save(work/'idm-settings-restored.json',{'matches':read_settings()==original})
+- assert len(results)==args.trials*6;summary=[]
+- for case in ['single-4m','single-64m','split-64m']:
++ assert len(results)==args.trials*len(cases)*2;summary=[]
++ for case,_,_ in cases:
+   rows={c:[x for x in results if x['case']==case and x['client']==c]for c in ['udm','idm']};medians={c:statistics.median(x['processExitTailSeconds']for x in v)*1000 for c,v in rows.items()};summary.append({'case':case,'medianProcessExitTailMs':{c:round(v,3)for c,v in medians.items()},'udmNotSlowerMedian':medians['udm']<=medians['idm'],'processExitTailMs':{c:[round(x['processExitTailSeconds']*1000,3)for x in v]for c,v in rows.items()}})
+  save(work/'terminal.json',{'passed':True,'label':args.label,'transfers':len(results),'settingsRestored':read_settings()==original,'flushAfterExit':args.flush_after_exit,'summary':summary,'primaryMetric':'Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services.'});print(json.dumps({'summary':summary}),flush=True)
+ if __name__=='__main__':main()

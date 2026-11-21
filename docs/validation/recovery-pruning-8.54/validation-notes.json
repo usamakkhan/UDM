@@ -1,0 +1,24 @@
+{
+  "firstReducedProbe": {
+    "passed": true,
+    "checks": 181,
+    "includedInFinalCount": false
+  },
+  "expandedFixtureFailure": {
+    "passed": false,
+    "checks": 37,
+    "case": "receipt-prune-inventory/known-description",
+    "error": "Pruning releases every reserved destination on success and refusal",
+    "cause": "The fixture used downloadDestinationReserved, which correctly includes visible completed downloads. It was changed to PublicationOwnership::reserved to test retirement-lease release. No production behavior was changed for this assertion repair.",
+    "includedInFinalCount": false
+  },
+  "intermediateFullPass": {
+    "checks": 22703,
+    "suiteRuns": 21,
+    "includedInFinalCount": false,
+    "scope": "Before journal-name hardening. Replaced by final relinked qualification."
+  },
+  "finalPruningChecksPerDrive": 267,
+  "finalSuiteHashesMatchFinalBuild": true,
+  "performanceParityClaim": false
+}

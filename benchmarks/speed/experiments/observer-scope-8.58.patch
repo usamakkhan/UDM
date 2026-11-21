@@ -1,0 +1,40 @@
+--- a/benchmarks/speed/finish_user_io_agent.js
++++ b/benchmarks/speed/finish_user_io_agent.js
+@@ -5,7 +5,7 @@
+ let armed = false, dropped = 0, sequence = 0;
+ const limit = 12000;
+ const nativeResolvedSamples = [];
+-const nativeMetrics = { calls: 0, pathsResolved: 0, pathsMatched: 0, pathFailures: 0 };
++const nativeMetrics = { calls: 0, pathsResolved: 0, pathsMatched: 0, pathFailures: 0, nonDiskSkipped: 0, fileTypeFailures: 0 };
+ const kernel = Process.getModuleByName('kernel32.dll');
+ const counter = new NativeFunction(kernel.getExportByName('QueryPerformanceCounter'), 'bool', ['pointer']);
+ const frequency = new NativeFunction(kernel.getExportByName('QueryPerformanceFrequency'), 'bool', ['pointer']);
+@@ -119,16 +119,26 @@
+     // Kernel copy helpers may issue native writes without calling WriteFile.
+     const ntdll = Process.getModuleByName('ntdll.dll');
+     const finalPath = new NativeFunction(kernel.getExportByName('GetFinalPathNameByHandleW'), 'uint32', ['pointer', 'pointer', 'uint32', 'uint32']);
++    const fileType = new NativeFunction(kernel.getExportByName('GetFileType'), 'uint32', ['pointer']);
+     function ownedPath(handle) {
++      // Pipes, character devices and unknown handles are outside file attribution.
++      // Do not issue pathname queries on unrelated IPC handles.
++      const type = fileType(handle);
++      if (type !== 1) {
++        if (type === 0) ++nativeMetrics.fileTypeFailures;
++        else ++nativeMetrics.nonDiskSkipped;
++        return '';
++      }
+       // NativeFunction may release the JS lock; never share this output buffer.
+       const pathBuffer = Memory.alloc(65536);
+       const count = finalPath(handle, pathBuffer, 32768, 0);
+       if (count === 0 || count >= 32768) { ++nativeMetrics.pathFailures; return ''; }
+       ++nativeMetrics.pathsResolved;
+       const path = pathBuffer.readUtf16String(count);
++      if (!matches(path)) return '';
++      ++nativeMetrics.pathsMatched;
+       if (nativeResolvedSamples.length < 96 && !nativeResolvedSamples.includes(path)) nativeResolvedSamples.push(path);
+-      if (matches(path)) ++nativeMetrics.pathsMatched;
+-      return matches(path) ? path : '';
++      return path;
+     }
+     for (const name of ['NtWriteFile', 'NtFlushBuffersFile', 'NtFlushBuffersFileEx']) {
+       const address = ntdll.findExportByName(name); if (!address) continue;

@@ -1,0 +1,189 @@
+{
+  "changed": [
+    "assets/add.png",
+    "assets/complete.png",
+    "assets/grabber.png",
+    "assets/link.png",
+    "assets/remove.png",
+    "assets/resume.png",
+    "assets/schedule.png",
+    "assets/settings.png",
+    "assets/startqueue.png",
+    "assets/stop.png",
+    "assets/stopall.png",
+    "assets/stopqueue.png",
+    "assets/udm.ico",
+    "browser/chromium/manifest.json",
+    "browser/firefox/manifest.json",
+    "drivers/signed-network/CaptureObservations.hpp",
+    "drivers/signed-network/CaptureObservationsJson.hpp",
+    "drivers/signed-network/CaptureSession.hpp",
+    "drivers/signed-network/TrackedResponseSink.hpp",
+    "native/App.cpp",
+    "native/App.manifest",
+    "native/DownloadInfoUi.hpp",
+    "native/FileInfoDisplayTask.hpp",
+    "native/FileInfoDisplayTaskTests.cpp",
+    "native/ModalSizeUiTests.cpp",
+    "native/Ui.hpp",
+    "native/Version.hpp",
+    "native/backend-tests.json",
+    "native/vendor/curl/lib/libcurl.lib",
+    "native/vendor/nghttp2/lib/nghttp2_static.lib",
+    "native/vendor/zlib/zconf.h",
+    "native/vendor/zlib/zlib.h"
+  ],
+  "units": [
+    {
+      "source": "native/Core.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/PacProxy.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Queue.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/FileWorkflows.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Duplicates.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Transfer.cpp",
+      "changedDependencies": [
+        "native/vendor/zlib/zconf.h",
+        "native/vendor/zlib/zlib.h"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Grabber.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/GrabberLinks.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Streaming.cpp",
+      "changedDependencies": [
+        "native/vendor/zlib/zconf.h",
+        "native/vendor/zlib/zlib.h"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Adaptive.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DashManifest.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/YouTubePlayer.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Bridge.cpp",
+      "changedDependencies": [
+        "native/Version.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Network.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/SocksProxy.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/OfflineSite.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DialUp.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Ftp.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DownloadPreview.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/ZipPreview.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/QueueWake.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Scanner.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/CaptureExclusions.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/CaptureAdmission.cpp",
+      "changedDependencies": [],
+      "recompiled": false
+    }
+  ],
+  "inventoryScope": "repo-local quoted include closure plus resource payloads and linked local libraries; captured before compilation",
+  "unresolvedQuotedIncludes": [
+    [
+      "native/App.cpp",
+      "Udm.Automation_i.c"
+    ],
+    [
+      "native/AutomationMain.cpp",
+      "Udm.Automation_i.c"
+    ],
+    [
+      "native/AutomationServer.hpp",
+      "Udm.Automation_h.h"
+    ],
+    [
+      "native/AutomationTests.cpp",
+      "Udm.Automation_h.h"
+    ],
+    [
+      "native/AutomationTests.cpp",
+      "Udm.Automation_i.c"
+    ]
+  ]
+}

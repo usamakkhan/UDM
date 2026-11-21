@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "target": "IDMan.exe",
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "readOnly": true,
+  "provider": "REA / Ghidra",
+  "productSourceChanged": false,
+  "newNativeVersion": false,
+  "findings": [
+    {
+      "directImportCallPreferredVa": "0x456025",
+      "evidenceId": "ev_a5e7c706d1a2169bb7b29a4107c49cd7c3ee436c1773d23f0fb5145f06dab70e",
+      "privateReceiptSha256": "F90EA63D3911EEFC74285F577B1EE33664ED5EC489297C4954F5266C905EB46B",
+      "staticOnly": true,
+      "downloadPathReachabilityVerified": false,
+      "runtimeCadenceVerified": false,
+      "enclosingProcedure": "0x455d10",
+      "classification": "mapped-file operation followed by file-handle flush and conditional timestamp update",
+      "purposeVerified": false
+    },
+    {
+      "directImportCallPreferredVa": "0x61e784",
+      "evidenceId": "ev_32b71b4dcfdc0c4f264e23445946541a26a4f8824f6af2f3e0a45b97ba27e76e",
+      "privateReceiptSha256": "F5C889969AF547DF9160A6ACC385D76977C014ED2D58D343B97EBE9E3E40CA0A",
+      "staticOnly": true,
+      "downloadPathReachabilityVerified": false,
+      "runtimeCadenceVerified": false,
+      "classification": "REA library-match label: MFC CFile::Flush",
+      "independentOriginalSourceMatchVerified": false,
+      "observedBehavior": "valid-handle guard and OS-error exception path"
+    },
+    {
+      "directImportCallPreferredVa": "0x655132",
+      "evidenceId": "ev_4405a0acc2bf2aeb5cb3ebf66cbb46a725582fc0010a9e376c4b7958379b0f21",
+      "privateReceiptSha256": "7EC13DE5E24D1AF4F874D212EF94FB4F89799B31EF807BDFEA7F255DD3CC2217",
+      "staticOnly": true,
+      "downloadPathReachabilityVerified": false,
+      "runtimeCadenceVerified": false,
+      "classification": "REA library-match label: CRT __commit",
+      "independentOriginalSourceMatchVerified": false,
+      "observedBehavior": "descriptor validation/locking, OS-handle flush and error mapping"
+    }
+  ],
+  "callSiteInventorySource": "../finishing-8.33/idm-static-io-audit.json",
+  "closeBinarySucceeded": true,
+  "ownedMcpExited": true,
+  "ownedJavaExited": true,
+  "proprietaryPseudocodeCopiedIntoUdm": false,
+  "temporaryDownloadPayloadCreated": false,
+  "kernelCauseVerified": false,
+  "completionDurabilityParityVerified": false,
+  "limitation": "Decompiler library labels are reported as such. These static references neither establish runtime reachability/cadence nor prove absence of other flush paths, dynamically resolved calls, dependencies or background work."
+}

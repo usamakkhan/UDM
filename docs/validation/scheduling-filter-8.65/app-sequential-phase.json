@@ -1,0 +1,211 @@
+{
+  "passed": true,
+  "kernelJoined": true,
+  "fullSchemaQualificationPassed": false,
+  "kernelCauseVerified": false,
+  "performanceComparison": false,
+  "payloadIntegrityReverified": false,
+  "fileAttributionFromKernelVerified": false,
+  "nativePhaseValidated": true,
+  "bodyBytes": 67108864,
+  "bodyWrites": 256,
+  "finalNativeFlushMs": 83.8555,
+  "lastBodyWriteToMfcReturnMs": 276.9313,
+  "diskCorrelationsValidated": true,
+  "pendingTargetDiskOperations": 0,
+  "unmatchedOwnedDiskCompletions": 0,
+  "linkedDiskFlushIntervalUnionMs": 32.9127,
+  "linkedDiskRequestIntervalUnionMs": 82.6586,
+  "linkedDiskRequestKinds": {
+    "read": {
+      "requests": 0,
+      "transferBytes": 0,
+      "intervalUnionMs": 0.0
+    },
+    "write": {
+      "requests": 9,
+      "transferBytes": 4800512,
+      "intervalUnionMs": 49.7459
+    },
+    "flushbuffers": {
+      "requests": 2,
+      "transferBytes": 0,
+      "intervalUnionMs": 32.9127
+    }
+  },
+  "linkedDiskRequests": [
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.1646,
+      "durationMs": 0.3815,
+      "transferBytes": 73728,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.5879,
+      "durationMs": 0.183,
+      "transferBytes": 4096,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 0.8001,
+      "durationMs": 2.2343,
+      "transferBytes": 786432,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 3.1283,
+      "durationMs": 0.808,
+      "transferBytes": 262144,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 4.0581,
+      "durationMs": 15.0558,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 19.2859,
+      "durationMs": 4.6418,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 24.1098,
+      "durationMs": 22.2366,
+      "transferBytes": 1048576,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 46.4973,
+      "durationMs": 4.0051,
+      "transferBytes": 524288,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "write",
+      "beginAfterNativeStartMs": 50.67,
+      "durationMs": 0.1998,
+      "transferBytes": 4096,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "flushbuffers",
+      "beginAfterNativeStartMs": 50.9045,
+      "durationMs": 32.7239,
+      "transferBytes": 0,
+      "diskNumber": 1
+    },
+    {
+      "opcode": "flushbuffers",
+      "beginAfterNativeStartMs": 83.6336,
+      "durationMs": 0.1888,
+      "transferBytes": 0,
+      "diskNumber": 1
+    }
+  ],
+  "linkedDiskFlushes": [
+    {
+      "beginAfterNativeStartMs": 50.9045,
+      "durationMs": 32.7239,
+      "diskNumber": 1
+    },
+    {
+      "beginAfterNativeStartMs": 83.6336,
+      "durationMs": 0.1888,
+      "diskNumber": 1
+    }
+  ],
+  "failures": [],
+  "observedOffCpuMs": 82.5014,
+  "notClassifiedOffCpuMs": 1.3541,
+  "offCpuIntervals": [
+    {
+      "beginAfterNativeStartMs": 0.1863,
+      "offCpuMs": 0.3718,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 0.603,
+      "offCpuMs": 0.1813,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 0.8417,
+      "offCpuMs": 2.2062,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 3.1523,
+      "offCpuMs": 0.7947,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 4.101,
+      "offCpuMs": 15.0254,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 19.3319,
+      "offCpuMs": 4.6099,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 24.157,
+      "offCpuMs": 22.1999,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 46.5451,
+      "offCpuMs": 3.9659,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 50.5595,
+      "offCpuMs": 0.0692,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 27
+    },
+    {
+      "beginAfterNativeStartMs": 50.6849,
+      "offCpuMs": 0.2059,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 50.9157,
+      "offCpuMs": 32.6998,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    },
+    {
+      "beginAfterNativeStartMs": 83.6414,
+      "offCpuMs": 0.1714,
+      "oldStateByte": 5,
+      "oldWaitReasonByte": 0
+    }
+  ],
+  "limitations": "Instrumented selected-prefix model. Disk intervals can overlap and are unioned, not summed. They identify linked request intervals, not exclusive hardware/filter time or a kernel file mapping. Unobserved/system-worker IO and the full version-5 schema remain outside this model.",
+  "inputSha256": {
+    "kernel": "A7BCB693CBCFB706852BC22CF0A503CE6E62027C0B490D9DA54793D08EAF0E1E",
+    "native": "EBA3283E9EDC3FC94AB4DC3364FC92033CDF636F65530668C63F1B2794AF656E",
+    "app": "5207E950209C239D542A946443B56CC70D9AF23940218C26D07A2470ACB9B98F",
+    "identity": "B82FBE5E95486EC1DC7E75C788E4959091F50BEB0A6091F0E24B0408F2553E2E"
+  }
+}

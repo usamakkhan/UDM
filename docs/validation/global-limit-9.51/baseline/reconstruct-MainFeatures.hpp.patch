@@ -1,0 +1,37 @@
+--- native/MainFeatures.hpp@9.51
++++ native/MainFeatures.hpp@9.50
+@@ -82,34 +82,6 @@
+   };d.DoModal();auto remaining=task.finish();if(remaining.saved&&GetSafeHwnd())applyListLayout(remaining.layout);
+  }
+ 
+- void globalLimitSettingsDialog(){
+-  GlobalLimitSettingsTask task;Form d("Speed Limiter settings",302,89,this);d.dialogUnits=true;d.pulsePeriod=40;bool loaded=false;std::function<void()> read;CWnd* retry=nullptr;
+-  d.init=[&]{
+-   auto caption=d.control(L"STATIC","Maximum total download speed",SS_RIGHT,7,7,170,9);
+-   auto value=d.edit("",183,4,33,14);value->ModifyStyle(ES_LEFT,ES_RIGHT|ES_NUMBER);value->SendMessage(EM_SETLIMITTEXT,7);d.label("KBytes/sec",224,7,65);
+-   const auto warning=L"Note: Very low speeds can cause servers to disconnect. Avoid using Speed Limiter with servers that do not support resuming downloads.";
+-   auto message=d.label("Reading Speed Limiter settings...",7,23,288,26);
+-   auto startup=d.check("Always turn on Speed Limiter on UDM startup",false,7,52,288);
+-   auto ok=d.button("OK",189,68,50,[]{});d.defaultButton(ok);
+-   d.cancel=[&]{if(task.saving())return;task.cancelRead();d.close(IDCANCEL);};auto cancel=d.button("Cancel",245,68,50,d.cancel);
+-   const auto working=[&,value,startup,ok,cancel](bool busy){for(auto control:{value,startup,ok})control->EnableWindow(loaded&&!busy);cancel->EnableWindow(!task.saving());};
+-   const auto start=[&](std::optional<GlobalLimitSettingsDraft> draft){
+-#ifdef UDM_TOOLBAR_COMPONENT_TEST
+-    task.start(manager,std::move(draft),d.taskNotifier(),globalLimitSettingsObserver);
+-#else
+-    task.start(manager,std::move(draft),d.taskNotifier());
+-#endif
+-   };
+-   d.accept=[&,value,startup,message,working,start]{if(!loaded||task.valid())return;const auto raw=trim(text(value));if(raw.empty()||raw.size()>7||raw.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Enter a speed limit from 1 to 1,000,000 KB/s.");GlobalLimitSettingsDraft draft{std::stoll(raw),d.checked(startup)};validateGlobalLimitSettings(draft);
+-    try{start(draft);message->SetWindowText(L"Saving Speed Limiter settings...");working(true);}catch(const std::exception&){message->SetWindowText(L"Could not save settings. Your edits are kept; try OK again.");working(false);}
+-   };d.bind(ok,d.accept);
+-   read=[&,message,working,start]{retry->ShowWindow(SW_HIDE);message->SetWindowText(L"Reading Speed Limiter settings...");try{start({});working(true);}catch(const std::exception&){message->SetWindowText(L"Settings unavailable. Please retry.");working(false);retry->ShowWindow(SW_SHOW);}};
+-   retry=d.button("Retry",7,68,65,[&]{if(!loaded&&!task.valid())read();});retry->ShowWindow(SW_HIDE);
+-   d.pulse=[&,caption,value,startup,message,warning,working]{if(!task.ready())return;auto result=task.take();if(result.saved){d.close();return;}if(result.cancelled){d.cancel();return;}if(!result.error.empty()){working(false);message->SetWindowText(loaded?L"Could not save settings. Your edits are kept; try OK again.":L"Settings unavailable. Please retry.");if(!loaded)retry->ShowWindow(SW_SHOW);return;}
+-    caption->SetWindowText(str(result.settings,"GlobalLimitMode")=="Each download"?L"Maximum download speed for one file":L"Maximum total download speed");value->SetWindowText(cs(std::to_string(rememberedGlobalLimit(result.settings))));startup->SendMessage(BM_SETCHECK,yes(result.settings,"GlobalLimitOnStartup")?BST_CHECKED:BST_UNCHECKED);loaded=true;message->SetWindowText(warning);working(false);
+-   };working(true);read();
+-  };d.DoModal();task.finish();
+- }
+  void chooseFont(){LOGFONTW value{};font.GetLogFont(&value);CFontDialog d(&value,CF_SCREENFONTS|CF_INITTOLOGFONTSTRUCT|CF_LIMITSIZE,nullptr,this);d.m_cf.nSizeMin=6;d.m_cf.nSizeMax=18;if(d.DoModal()!=IDOK)return;d.GetCurrentFont(&value);auto p=preferences();p["FontName"]=utf8(value.lfFaceName);p["FontHeight"]=std::clamp((int)(std::abs(value.lfHeight)/scale),8,24);p["FontWeight"]=value.lfWeight;manager.setSettings(p);applyAppearance();}
+  void refreshSystemTheme(){uiDark=useDarkUi(yes(preferences(),"DarkMode"),windowsHighContrast());themeFrame(m_hWnd);menuTheme.apply(m_hWnd,menu.GetSafeHmenu(),uiDark,windowDpi());table.theme(true);themeScrollbars(tree.GetSafeHwnd());status.Invalidate();tree.SetBkColor(uiDark?CategoryPaneFrame::darkTree:uiBackground());tree.SetTextColor(uiDark?RGB(255,255,255):uiForeground());refreshOpenForms();if(basket&&basket->GetSafeHwnd())basket->refreshTheme();RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_ERASE);}
+  afx_msg void OnSysColorChange(){CFrameWnd::OnSysColorChange();if(table.GetSafeHwnd())refreshSystemTheme();}

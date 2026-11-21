@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "name": "Initial HTTP download has exact version-one bytes",
+      "passed": true
+    },
+    {
+      "name": "Completed synchronization file remains a queue member",
+      "passed": true
+    },
+    {
+      "name": "Scheduled synchronization publishes exact changed bytes",
+      "passed": true
+    },
+    {
+      "name": "Previous version bytes are retained",
+      "passed": true
+    },
+    {
+      "name": "Replacement remains enrolled for next synchronization",
+      "passed": true
+    },
+    {
+      "name": "Repeat used real one-minute timing without advancing clock",
+      "passed": true
+    },
+    {
+      "name": "Unchanged synchronization does not create another version",
+      "passed": true
+    },
+    {
+      "name": "Unchanged cycle preserves current bytes",
+      "passed": true
+    },
+    {
+      "name": "Unchanged check also waited the real minute",
+      "passed": true
+    },
+    {
+      "name": "Unchanged cycle contacts the server",
+      "passed": true
+    },
+    {
+      "name": "Unchanged cycle transfers only metadata or one-byte probes",
+      "passed": true
+    },
+    {
+      "name": "Both versions survive catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Current synchronized file survives reopen",
+      "passed": true
+    }
+  ],
+  "clockAdvanced": false,
+  "error": "",
+  "passed": true,
+  "timings": {
+    "changedCycleSeconds": 60.1365755,
+    "unchangedCycleSeconds": 60.05835
+  }
+}

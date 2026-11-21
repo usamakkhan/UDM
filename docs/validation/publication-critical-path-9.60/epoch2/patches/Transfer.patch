@@ -1,0 +1,63 @@
+--- diagnostic/Transfer.cpp@epoch1
++++ diagnostic/Transfer.cpp@epoch2
+@@ -56,6 +56,13 @@
+ #include <algorithm>
+ #include <condition_variable>
+ namespace udm {
++struct DiagnosticSlowIo {
++ const char* label;LONGLONG start=0,minimum=0;
++ explicit DiagnosticSlowIo(const char* stage,int milliseconds=1):label(stage){LARGE_INTEGER t{},f{};QueryPerformanceCounter(&t);QueryPerformanceFrequency(&f);start=t.QuadPart;minimum=f.QuadPart*milliseconds/1000;}
++ ~DiagnosticSlowIo()noexcept{LARGE_INTEGER end{};QueryPerformanceCounter(&end);if(end.QuadPart-start<minimum)return;auto view=nativeUiTraceSink.view;if(!view)return;const auto index=InterlockedIncrement(&view->header.next)-1;if(index>=nativeUiTraceCapacity){InterlockedIncrement(&view->header.dropped);return;}auto& event=view->events[index];event.threadId=GetCurrentThreadId();event.counter=start;event.finished=end.QuadPart;const auto length=std::min<size_t>(strlen(label),39);memcpy(event.stage,label,length);event.stage[length]=0;InterlockedExchange(&event.ready,1);}
++};
++struct DiagnosticReceiverExit {~DiagnosticReceiverExit(){nativeUiTraceRecord("receiver-return");}};
++
+ static void internetError(const char* operation){throw InternetFailure(operation,GetLastError());}
+ // Worker read size. Each read is one asynchronous WinHTTP round trip plus the
+ // Manager lock traffic of progress accounting, so 16 KiB reads capped a fast
+@@ -1115,8 +1122,8 @@
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(prefinishFile){
+     const auto dataFlush=connections>1?dataOnlyFlush():nullptr;
+-    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{return flushBodyData(dataFlush,prefinishFile.h);});
+-    else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
++    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{DiagnosticSlowIo span("slow-optional-data-flush");return flushBodyData(dataFlush,prefinishFile.h);});
++    else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{DiagnosticSlowIo span("slow-optional-full-flush");return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+    }
+   }catch(...){dataWriteback.reset();prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}
+   std::vector<std::chrono::steady_clock::time_point> assigned(connections);
+@@ -1315,7 +1322,7 @@
+   // Call under the manager lock, which also protects ownership transitions.
+   const auto unfinished=[&]{return std::any_of(owners.begin(),owners.end(),[](int owner){return owner!=-2;});};
+   const auto checkInterval=std::chrono::milliseconds(50);
+-  auto workerBody=[&](int worker){
++  auto workerBody=[&](int worker){DiagnosticReceiverExit receiverExit;
+    auto& activity=job->workers[worker];
+    // Consecutive failures without a byte, kept across ranges; a megabyte of progress restores the budget.
+    int failures=0,releases=0,probeReleases=0;
+@@ -1611,7 +1618,7 @@
+          }
+         }
+         if(!pendingRead)beginBodyRead(buffers[current],ownedBytes);
+-        BYTE* const buffer=buffers[current];auto n=response.finishRead(*group);pendingRead=false;if(!n)break;
++        BYTE* const buffer=buffers[current];auto n=[&]{DiagnosticSlowIo span("slow-response-read",5);return response.finishRead(*group);}();pendingRead=false;if(!n)break;
+         if(canSplitRead){
+          // A split can shorten this worker's ownership while a read is pending.
+          // Keep slow reads short enough to observe the new boundary promptly.
+@@ -1648,13 +1655,13 @@
+          beginBodyRead(buffers[1-current],ownedAfterWrite);
+         }
+         if(keep){
+-         if(ordered){try{ordered->put(static_cast<size_t>(at),buffer,keep);}catch(const OrderedBodyWriter::Conflict&){throw HttpOverlapMismatch("The retried HTTP bytes do not match the buffered representation.",index);}}
+-         else if(diskCredit){auto written=diskCredit->beginWrite(at,static_cast<i64>(keep));writeAt(output.h,buffer,keep,at);written.acknowledge();}
+-         else writeAt(output.h,buffer,keep,at);
++         if(ordered){try{DiagnosticSlowIo span("slow-ordered-put");ordered->put(static_cast<size_t>(at),buffer,keep);}catch(const OrderedBodyWriter::Conflict&){throw HttpOverlapMismatch("The retried HTTP bytes do not match the buffered representation.",index);}}
++         else if(diskCredit){auto written=[&]{DiagnosticSlowIo span("slow-credit-claim");return diskCredit->beginWrite(at,static_cast<i64>(keep));}();{DiagnosticSlowIo span("slow-file-write");writeAt(output.h,buffer,keep,at);}{DiagnosticSlowIo span("slow-credit-ack");written.acknowledge();}}
++         else {DiagnosticSlowIo span("slow-file-write");writeAt(output.h,buffer,keep,at);}
+         }
+         if(inlineHash)hasher->wrote(buffer,keep,at);
+         {
+-         Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
++         DiagnosticSlowIo span("slow-progress-owner");Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
+          const size_t credit=ranges?(size_t)std::min<i64>((i64)keep,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):keep;
+          if(memoryStage&&!ordered)bodyCache->wrote(buffer,credit,at);
+          if(hasher&&!ordered)hasher->writtenPrefix.capture(buffer,credit,at);

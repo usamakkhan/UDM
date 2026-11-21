@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "source": "benchmarks\\speed\\pinned_catalog_read_control.cpp",
+  "sourceSha256": "8591BBA5978490F54C02C072E014995C9F123B339277EE8A3D4813E0088E51CD",
+  "binarySha256": "756DE867F8881DC17AAA80FBE7324D47A86F20C4C4C077918C94D4DCB9683F6F",
+  "objectSha256": "8EA5CF2B3FD2914EFF765C2431D5B0C784413F922554E253327D94ED8A4647E9",
+  "sourceInputCount": 526,
+  "coreObjects": [
+    {
+      "path": "<development>\\finishing-8.64\\objects\\Core.obj",
+      "sha256": "067436C8BD487A9B01357AACFC7F97FC4446AD6FCA442913D0E13BE5F42F935D"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\PacProxy.obj",
+      "sha256": "8F77DDEB1ACCA186984D480B016B302155BED9D43D8052472913185EB0F40B87"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Queue.obj",
+      "sha256": "86DFB612C048886C14128F84CDF56051EA5EDB184953288D35330B594207C9F1"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\FileWorkflows.obj",
+      "sha256": "639C79B08A32D2F2FC7F1D2FC2A946B3934AB00B218893109CFEF4308389FCCE"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Duplicates.obj",
+      "sha256": "623D20D544C043EE9155367CD1758FFCDBD33F624B0A354A8A775C42A9AA0247"
+    },
+    {
+      "path": "<development>\\finishing-8.63\\objects\\Transfer.obj",
+      "sha256": "D05586E16DE75FCBACF732EA91B32953E11775374599BD66AD13BD1680B93CFA"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Grabber.obj",
+      "sha256": "ADE2D2360CC119E959DD0E716482B66ADEC471DD00F63447A1EC17F8AC4FD9D1"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\GrabberLinks.obj",
+      "sha256": "7EE8061DF73E7E203F413AFB43293A461B3B479BF8A0D2173118A59141B85834"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Streaming.obj",
+      "sha256": "B0CFD8C65E75CEF0C39A6C9D56845CC480B227F59DB74C11DE7A32A2CC67E00F"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Adaptive.obj",
+      "sha256": "B457B19C8CB2ED4829137E116F70185475E78FC06F1663C0867CF244F734A6A1"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\DashManifest.obj",
+      "sha256": "22960E83EDE3BE08AF54D975505E9EC684EEC68E39925FEA8CEDAD989D90249C"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\YouTubePlayer.obj",
+      "sha256": "8718EC97EC6808CEF55DFFAE92AD7082B0CCCB629C6EB679BC2A4613A588D40C"
+    },
+    {
+      "path": "<development>\\finishing-8.64\\objects\\Bridge.obj",
+      "sha256": "4F1687463A28BE0E308418A1345CAE09F9672C605F85C7C6550DAFB8F3B2B3A7"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Network.obj",
+      "sha256": "05D9A5F4625CF9E73914A2701A2AAADA8BEB276CA695B0476B23BB8A1BC966AB"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\SocksProxy.obj",
+      "sha256": "4F9A1224A6C8C2B80157508BE2D99DA253A15362EAA6EE923B1A0123449CF6A6"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\OfflineSite.obj",
+      "sha256": "6EF035E3402007799714A9DEACFD0DC49F8229A10B6F180587D24EB7E9C6307A"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\DialUp.obj",
+      "sha256": "8D789CB04BF40B69A9AECCCA9627BA9EA6A2552A8FD2F66745AA3330B4C8487B"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Ftp.obj",
+      "sha256": "EA21DB04415617D2B711B9B54A8BAF6F90650E2CE1845851BC5C636D5A865361"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\DownloadPreview.obj",
+      "sha256": "06830BEB747769C76D3FF9B4CD344959ED790873022DE2553862B55CFE80F8C7"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\ZipPreview.obj",
+      "sha256": "D609659099EE05D5AC5825B522FD1DA35D3977894DC9BC0AAA79BE83793923FD"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\QueueWake.obj",
+      "sha256": "37532A30605045E37A87054C1255EC6F40C9E2F1A46532B60CD0DD1E8970EFE3"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\Scanner.obj",
+      "sha256": "D5D976ECF1F3E54E550E7DAE95272D571613BCE1687045B84CECE8AAF4CA1058"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\CaptureExclusions.obj",
+      "sha256": "34480E4F57F3476AD5B8AE10F4AC04B0F7780931E527BBAF83A64AC441C8659C"
+    },
+    {
+      "path": "<development>\\finishing-8.62\\objects\\CaptureAdmission.obj",
+      "sha256": "5DFA8F1092BA9747DE93BE461032DA9EAB7BADB8870E9D12879B2FE64E26D811"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-adler32.obj",
+      "sha256": "17B7E7B913ACA511E0637448A7D56FEB245D6F6D0BD02ABB20813EA4B2EC2D6B"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-crc32.obj",
+      "sha256": "AC772BE753BC6F23CF96F0DA9C045C0601C22005BC3127848ACAF1FA68DD3C62"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-inffast.obj",
+      "sha256": "0355709EA9C16AD2BF47DB30863AC1E177D7E9EC485339864924F2F7A6A36F80"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-inflate.obj",
+      "sha256": "8AD6FAD9206EFEBCE545B05AB24463E7C40D3B9E07BD2A227A90C109DD5917BF"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-inftrees.obj",
+      "sha256": "CB93D6FB5E92BAA5BB720769DEA6246830B8E36CA80562D94A558C465DC6D48A"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\zlib-zutil.obj",
+      "sha256": "99C2B23E05AADB1F24BF4AC4F73B62662B273C8288FA19D5C9F3B9C47AD86E19"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-constants.obj",
+      "sha256": "E5B2AAA1695404B8D7B155A3A6EAE3D92A6785FE550B84B976A5ADF0BFF59BFA"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-context.obj",
+      "sha256": "8085BA17A8315E6813DD02C14A9E7DC8E8751B885019373828FD71FC78142E48"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-dictionary.obj",
+      "sha256": "67270FC0A77D5C83EC40E09E4CB8F3D21BF2EA726B8896B2E43252618D8B478C"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-platform.obj",
+      "sha256": "6CFACC0454598DFFAF7FBB120791691FF9D757B90BDB90628B68DC09EC8F654D"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-shared_dictionary.obj",
+      "sha256": "9B4F3AE88C5883ACFF5C89C11EC2AF188C3C9C96D6353A5D1F5A34DF60821D9C"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-common-transform.obj",
+      "sha256": "0FE45848374884347685FFE0BB8941D91165F3EBD48D6C30307DD335888CE987"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-bit_reader.obj",
+      "sha256": "C8E5ADB3884084548E89A183622D4886FF02F5D1AD8C2E751E1C31530968FCE0"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-decode.obj",
+      "sha256": "9A3B52F11037CF91ECB1C217526E6951F3EF2334AD8300B24B7B9D389812EE95"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-huffman.obj",
+      "sha256": "5FD34018FD75F9FE3FC1371ED14DF9326F829DEE2EF33BD7F1D5138EA26F853E"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-prefix.obj",
+      "sha256": "CC2C2FB138DDDAF7F95E580F494DFA2F5F03983388C8A3BA6EB449CB9F331546"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-state.obj",
+      "sha256": "3EB13E3B0C5BA4098DF7D59106FDEE4DEAC36CC05AC3180683AA8A0BB8EB86E1"
+    },
+    {
+      "path": "<development>\\native-work\\out-nosymbols\\brotli-dec-static_init.obj",
+      "sha256": "2D2B05B2A3F234C83385358FE1D13106D6B6106754654FFAA1227D5DA74E6188"
+    }
+  ],
+  "nativeVersion": "8.64",
+  "extensionVersion": "0.72.28"
+}

@@ -1,0 +1,317 @@
+--- a/native/WrittenBodyCache.hpp
++++ b/native/WrittenBodyCache.hpp
+@@ -1,20 +1,19 @@
+-#pragma once
++﻿#pragma once
+ #include "Core.hpp"
+ #include <algorithm>
+-#include <atomic>
++#include "BodyBufferStorage.hpp"
+ namespace udm {
+ // One process-wide 64 MiB optional cache. The owner serializes credited writes;
+ // readers use the body only after its download writers have joined.
+ // A worker may disable caching, so the budget lease has no thread affinity.
+ class WrittenBodyCache {
+ public:
+- static constexpr i64 maxBytes=64*1048576;
++ static constexpr i64 maxBytes=BodyBufferStorage::maxBytes;
+  bool valid=false;
+ private:
+- inline static std::atomic_bool slot{false};
+- bool leased=false;
+- Bytes bytes;std::vector<std::pair<i64,i64>> coverage;
+- void disable()noexcept{valid=false;Bytes{}.swap(bytes);decltype(coverage){}.swap(coverage);if(leased){leased=false;slot.store(false,std::memory_order_release);}}
++ BodyBufferStorage::Ptr storage;
++ std::vector<std::pair<i64,i64>> coverage;
++ void disable()noexcept{valid=false;decltype(coverage){}.swap(coverage);storage.reset();}
+ public:
+  WrittenBodyCache()=default;
+  WrittenBodyCache(const WrittenBodyCache&)=delete;
+@@ -24,13 +23,14 @@
+  ~WrittenBodyCache(){disable();}
+  void reset(i64 size)noexcept{
+   disable();if(size<=0||size>maxBytes)return;
+-  bool expected=false;if(!slot.compare_exchange_strong(expected,true,std::memory_order_acquire,std::memory_order_relaxed))return;
+-  leased=true;try{bytes.resize(static_cast<size_t>(size));valid=true;}catch(...){disable();}
++  storage=BodyBufferStorage::reserve(static_cast<size_t>(size));valid=bool(storage);
+  }
++ // Serialized handoff invalidates cache credit; storage bytes and budget survive.
++ BodyBufferStorage::Ptr releaseStorage()noexcept{valid=false;decltype(coverage){}.swap(coverage);return std::move(storage);}
+  void wrote(const BYTE* source,size_t count,i64 offset)noexcept{
+-  if(!valid||!count)return;
+-  if(!source||offset<0||static_cast<uint64_t>(offset)>bytes.size()||count>bytes.size()-static_cast<size_t>(offset)){disable();return;}
+-  std::copy_n(source,count,bytes.data()+static_cast<size_t>(offset));
++  if(!valid||!storage||!count)return;
++  if(!source||offset<0||static_cast<uint64_t>(offset)>storage->size()||count>storage->size()-static_cast<size_t>(offset)){disable();return;}
++  std::copy_n(source,count,storage->data()+static_cast<size_t>(offset));
+   try{
+    i64 low=offset,high=offset+static_cast<i64>(count);
+    auto first=std::lower_bound(coverage.begin(),coverage.end(),low,[](const auto& range,i64 start){return range.second<start;});auto last=first;
+@@ -40,7 +40,7 @@
+   }catch(...){disable();} // Optional allocation failure falls back to disk.
+  }
+  const Bytes* body(i64 size,i64 complete)const noexcept{
+-  return valid&&size>0&&size==complete&&size==static_cast<i64>(bytes.size())&&coverage.size()==1&&coverage[0].first==0&&coverage[0].second==size?&bytes:nullptr;
++  return valid&&storage&&size>0&&size==complete&&size==static_cast<i64>(storage->size())&&coverage.size()==1&&coverage[0].first==0&&coverage[0].second==size?&storage->bytes():nullptr;
+  }
+ };
+ }
+--- a/native/WrittenBodyCacheTests.cpp
++++ b/native/WrittenBodyCacheTests.cpp
+@@ -1,4 +1,5 @@
+-#include "WrittenBodyCache.hpp"
++﻿#include "WrittenBodyCache.hpp"
++#include "../benchmarks/speed/ordered_range_buffer.hpp"
+ #include <iostream>
+ #include <future>
+ #include <thread>
+@@ -59,6 +60,41 @@
+    release.set_value();for(auto& thread:workers)thread.join();
+    WrittenBodyCache next;next.reset(16);check(next.valid,"A fresh cache acquires the budget after every contender has finished");
+   }
++  {
++   WrittenBodyCache owner,denied;owner.reset(8);owner.wrote(reinterpret_cast<const BYTE*>("abcdefgh"),8,0);const auto address=owner.body(8,8)->data();auto exported=owner.releaseStorage();
++   check(!owner.valid&&!owner.body(8,8)&&exported&&exported->data()==address,"Storage export invalidates cache credit without copying or releasing its byte allocation");
++   check(exported->bytes()==Bytes({'a','b','c','d','e','f','g','h'}),"An exported lease preserves the exact buffered representation");
++   denied.reset(8);check(!denied.valid,"Exported storage still owns the same global cache budget");
++   auto reader=exported;exported.reset();denied.reset(8);check(!denied.valid,"A remaining shared storage reference prevents another body allocation");
++   std::thread destroy([last=std::move(reader)]{});destroy.join();denied.reset(8);check(denied.valid,"Last-reference destruction on a worker releases the budget exactly once");
++  }
++  {
++   WrittenBodyCache owner,denied;owner.reset(16);
++   check(!BodyBufferStorage::reserve(0)&&!BodyBufferStorage::reserve(BodyBufferStorage::maxBytes+1),"Invalid shared-storage reservations neither allocate nor disturb an existing owner");
++   denied.reset(16);check(owner.valid&&!denied.valid,"Invalid storage reservation cannot release the live owner's token");
++  }
++  {
++   auto exported=BodyBufferStorage::reserve(8);check(bool(exported),"The shared storage factory admits a bounded standalone owner");auto alias=exported;
++   bool refused=false;try{experiment::OrderedRangeBuffer writer(8,[](auto,auto,auto){},4,exported);}catch(const std::invalid_argument&){refused=true;}
++   check(refused&&exported.use_count()==2,"An ordered writer refuses aliased mutable storage before starting IO");alias.reset();
++   refused=false;try{experiment::OrderedRangeBuffer writer(16,[](auto,auto,auto){},4,std::move(exported));}catch(const std::invalid_argument&){refused=true;}
++   check(refused&&!exported,"An ordered writer rejects an incorrectly sized transferred buffer");WrittenBodyCache next;next.reset(8);check(next.valid,"Failed writer admission retains no consumed storage lease");
++  }
++  {
++   WrittenBodyCache cache,denied;cache.reset(8);check(cache.valid,"The existing production cache owns the shared token before writer admission");
++   bool refused=false;try{experiment::OrderedRangeBuffer other(8,[](auto,auto,auto){});}catch(const std::runtime_error&){refused=true;}
++   check(refused,"The ordered writer cannot allocate a second body beside the production cache");
++   auto storage=cache.releaseStorage();const auto address=storage->data();Bytes disk(8,0);experiment::OrderedRangeBuffer writer(8,[&](auto at,auto data,auto n){std::copy_n(data,n,disk.data()+at);},4,std::move(storage));
++   check(!storage&&!cache.valid,"Writer admission consumes the existing cache buffer rather than a second allocation");
++   const BYTE bytes[]={'a','b','c','d','e','f','g','h'};writer.put(4,bytes+4,4);writer.put(0,bytes,4);auto done=writer.finish();
++   check(done.complete&&disk==Bytes({'a','b','c','d','e','f','g','h'})&&writer.completedBody()->data()==address,"Ordered completion preserves buffer identity and exact bytes across cache-to-writer handoff");
++   auto completed=writer.takeCompletedStorage();check(completed&&completed->data()==address&&!writer.completedBody()&&!writer.takeCompletedStorage(),"A successful joined writer exports its original allocation at most once");
++   denied.reset(8);check(!denied.valid,"An exported completed body retains the budget for its hash reader");completed.reset();denied.reset(8);check(denied.valid,"The body budget is reusable after the final completed-buffer reader releases it");
++  }
++  {
++   experiment::OrderedRangeBuffer writer(8,[](auto,auto,auto){});const BYTE byte=1;writer.put(4,&byte,1);
++   check(!writer.takeCompletedStorage(),"An unsettled writer cannot export a body as complete");auto state=writer.pause();check(state.paused&&!writer.takeCompletedStorage(),"A paused incomplete writer cannot export completion storage");
++  }
+  }catch(const std::exception& e){error=e.what();}
+  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+ }
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,59,0,0
+-#define UDM_VERSION_STRING "8.59"
+-#define UDM_VERSION_WSTRING L"8.59"
++#define UDM_VERSION_TUPLE 8,60,0,0
++#define UDM_VERSION_STRING "8.60"
++#define UDM_VERSION_WSTRING L"8.60"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.23",
++  "version": "0.72.24",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.23",
++  "version": "0.72.24",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/benchmarks/speed/ordered_range_buffer.hpp
++++ b/benchmarks/speed/ordered_range_buffer.hpp
+@@ -1,7 +1,7 @@
+ ﻿#pragma once
+ // Standalone research component. Not included by the production downloader.
+ #include <algorithm>
+-#include <atomic>
++#include "BodyBufferStorage.hpp"
+ #include <condition_variable>
+ #include <cstdint>
+ #include <cstring>
+@@ -19,7 +19,7 @@
+  using Byte=std::uint8_t;
+  using Span=std::pair<std::size_t,std::size_t>;
+  using Writer=std::function<void(std::size_t,const Byte*,std::size_t)>;
+- static constexpr std::size_t maxBytes=64*1048576;
++ static constexpr std::size_t maxBytes=BodyBufferStorage::maxBytes;
+  static constexpr std::size_t maxSpans=4096;
+  struct State {
+   std::size_t total=0,acceptedBytes=0,writtenBytes=0;
+@@ -36,18 +36,9 @@
+  };
+ private:
+  using Ranges=std::map<std::size_t,std::size_t>;
+- // Standalone budget only. Production integration must reuse the existing
+- // WrittenBodyCache lease/storage rather than allocate a second body buffer.
+- struct Budget {
+-  inline static std::atomic_bool occupied{false};
+-  Budget(){bool free=false;if(!occupied.compare_exchange_strong(free,true,std::memory_order_acquire,std::memory_order_relaxed))throw std::runtime_error("Experimental body buffer is occupied");}
+-  ~Budget(){occupied.store(false,std::memory_order_release);}
+-  Budget(const Budget&)=delete;Budget& operator=(const Budget&)=delete;
+- };
+  const std::size_t total,chunk;
+  const Writer write;
+- Budget budget; // Declared before bytes: storage is destroyed before budget release.
+- std::vector<Byte> bytes;
++ BodyBufferStorage::Ptr storage;
+  mutable std::mutex mutex;
+  std::condition_variable changed;
+  Ranges accepted,written;
+@@ -55,6 +46,12 @@
+  std::exception_ptr failure;
+  std::thread worker;
+  std::thread::id writerId{};
++ static BodyBufferStorage::Ptr checkedStorage(std::size_t size,BodyBufferStorage::Ptr backing){
++  if(!backing)backing=BodyBufferStorage::reserve(size);
++  if(!backing)throw std::runtime_error("Shared body buffer is occupied or unavailable");
++  if(backing->size()!=size||backing.use_count()!=1)throw std::invalid_argument("Writer requires unique, exactly sized storage");
++  return backing;
++ }
+  static Writer checkedWriter(Writer callback){if(!callback)throw std::invalid_argument("Missing storage writer");return callback;}
+  static std::size_t checkedSize(std::size_t value){if(!value||value>maxBytes)throw std::invalid_argument("Unsupported body size");return value;}
+  static std::size_t checkedChunk(std::size_t value,std::size_t size){if(!value)throw std::invalid_argument("Empty writer window");return std::min(value,size);}
+@@ -93,7 +90,7 @@
+     // Prepare all credit bookkeeping before issuing IO. Failure cannot erase
+     // an earlier acknowledgment, and no allocation follows a successful write.
+     auto credit=written;include(credit,span.first,span.second);
+-    lock.unlock();write(span.first,bytes.data()+span.first,span.second-span.first);lock.lock();
++    lock.unlock();write(span.first,storage->data()+span.first,span.second-span.first);lock.lock();
+     written.swap(credit);changed.notify_all();
+    }
+   }catch(...){std::lock_guard<std::mutex> lock(mutex);failure=std::current_exception();closing=true;changed.notify_all();}
+@@ -111,7 +108,7 @@
+   std::lock_guard<std::mutex> lock(mutex);settled=true;
+  }
+ public:
+- explicit OrderedRangeBuffer(std::size_t size,Writer callback,std::size_t window=256*1024):total(checkedSize(size)),chunk(checkedChunk(window,total)),write(checkedWriter(std::move(callback))),bytes(total){
++ explicit OrderedRangeBuffer(std::size_t size,Writer callback,std::size_t window=256*1024,BodyBufferStorage::Ptr backing={}):total(checkedSize(size)),chunk(checkedChunk(window,total)),write(checkedWriter(std::move(callback))),storage(checkedStorage(total,std::move(backing))){
+   worker=std::thread([this]{run();});
+  }
+  OrderedRangeBuffer(const OrderedRangeBuffer&)=delete;OrderedRangeBuffer& operator=(const OrderedRangeBuffer&)=delete;
+@@ -124,17 +121,17 @@
+   if(offset>total||length>total-offset||(!source&&length))throw std::out_of_range("Invalid buffered span");
+   if(!length)return;
+   const auto end=offset+length;
+-  for(const auto& span:accepted){const auto low=std::max(offset,span.first),high=std::min(end,span.second);if(low<high&&!std::equal(source+(low-offset),source+(high-offset),bytes.data()+low))throw std::runtime_error("Conflicting buffered bytes");}
++  for(const auto& span:accepted){const auto low=std::max(offset,span.first),high=std::min(end,span.second);if(low<high&&!std::equal(source+(low-offset),source+(high-offset),storage->data()+low))throw std::runtime_error("Conflicting buffered bytes");}
+   auto nextAccepted=accepted;include(nextAccepted,offset,end);if(nextAccepted.size()>maxSpans)throw std::length_error("Buffered span limit");
+   // Copy only holes. The IO thread may be reading previously accepted bytes;
+   // even rewriting identical bytes there would be a C++ data race.
+   auto at=offset;
+   for(const auto& span:accepted){
+    if(span.second<=at)continue;if(span.first>=end)break;
+-   if(at<span.first){const auto high=std::min(end,span.first);std::memcpy(bytes.data()+at,source+(at-offset),high-at);at=high;}
++   if(at<span.first){const auto high=std::min(end,span.first);std::memcpy(storage->data()+at,source+(at-offset),high-at);at=high;}
+    at=std::max(at,std::min(end,span.second));if(at==end)break;
+   }
+-  if(at<end)std::memcpy(bytes.data()+at,source+(at-offset),end-at);
++  if(at<end)std::memcpy(storage->data()+at,source+(at-offset),end-at);
+   accepted.swap(nextAccepted);lock.unlock();changed.notify_all();
+  }
+  State snapshot()const{std::lock_guard<std::mutex> lock(mutex);return stateLocked();}
+@@ -142,8 +139,13 @@
+  State finish(){settle(false,false);return snapshot();}
+  State pause(){settle(false,true);return snapshot();}
+  State abort(){settle(true,false);return snapshot();}
++ BodyBufferStorage::Ptr takeCompletedStorage(){
++  std::lock_guard<std::mutex> lock(mutex);
++  if(!settled||aborted||drainGaps||failure||prefix()!=total||count(written)!=total)return {};
++  return std::move(storage);
++ }
+  const std::vector<Byte>* completedBody()const{
+-  std::lock_guard<std::mutex> lock(mutex);return settled&&!aborted&&!drainGaps&&!failure&&prefix()==total&&count(written)==total?&bytes:nullptr;
++  std::lock_guard<std::mutex> lock(mutex);return storage&&settled&&!aborted&&!drainGaps&&!failure&&prefix()==total&&count(written)==total?&storage->bytes():nullptr;
+  }
+ };
+ }
+--- a/benchmarks/speed/ordered_range_buffer_tests.cpp
++++ b/benchmarks/speed/ordered_range_buffer_tests.cpp
+@@ -122,6 +122,18 @@
+    if(!FlushFileBuffers(file))throw std::runtime_error("Cannot flush pause fixture");LARGE_INTEGER zero{};DWORD read=0;if(!SetFilePointerEx(file,zero,nullptr,FILE_BEGIN)||!ReadFile(file,disk.data(),static_cast<DWORD>(disk.size()),&read,nullptr))throw std::runtime_error("Cannot read pause fixture");
+    check(read==8192&&std::all_of(disk.begin(),disk.begin()+4096,[](auto value){return value==0;})&&std::equal(disk.begin()+4096,disk.end(),tail.begin()),"The paused output contains the exact tail while its unwritten leading gap remains uncredited");
+   }
++  {
++   Buffer b(8,[](auto,auto,auto){});b.put(0,body.data(),8);auto paused=b.pause();
++   check(paused.paused&&paused.writtenBytes==8&&!b.takeCompletedStorage(),"A fully written paused body cannot be exported as confirmed completion");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){});b.put(0,body.data(),8);const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);while(b.snapshot().writtenBytes<8&&std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++   auto aborted=b.abort();check(aborted.aborted&&aborted.writtenBytes==8&&!b.takeCompletedStorage(),"An abort cannot export completion even when all writes already succeeded");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){throw std::runtime_error("export failure control");});b.put(0,body.data(),8);auto failed=b.finish();
++   check(failed.failure&&!b.takeCompletedStorage(),"A failed writer cannot hand storage to the completion-hash stage");
++  }
+  }catch(const std::exception& e){error=e.what();}
+  Json result={{"passed",error.empty()},{"error",error},{"checks",checks},{"productIntegrated",false},{"durabilityBarrierImplemented",false}};std::ofstream(root/"results.json",std::ios::binary)<<result.dump(2);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+ }
+diff --git a/native/BodyBufferStorage.hpp b/native/BodyBufferStorage.hpp
+new file mode 100644
+index 00000000..6a2d8913
+--- /dev/null
++++ b/native/BodyBufferStorage.hpp
+@@ -0,0 +1,42 @@
++#pragma once
++#include <atomic>
++#include <cstddef>
++#include <cstdint>
++#include <memory>
++#include <utility>
++#include <vector>
++namespace udm {
++// Storage and its process-wide budget share one lifetime. The final reference
++// destroys bytes before releasing the token, on whichever thread owns it then.
++class BodyBufferStorage {
++public:
++ using Byte=std::uint8_t;
++ using Bytes=std::vector<Byte>;
++ using Ptr=std::shared_ptr<BodyBufferStorage>;
++ static constexpr std::size_t maxBytes=64*1048576;
++private:
++ struct Lease {
++  inline static std::atomic_bool occupied{false};
++  bool owned=false;
++  Lease()noexcept{bool free=false;owned=occupied.compare_exchange_strong(free,true,std::memory_order_acquire,std::memory_order_relaxed);}
++  Lease(Lease&& other)noexcept:owned(std::exchange(other.owned,false)){}
++  Lease(const Lease&)=delete;Lease& operator=(const Lease&)=delete;Lease& operator=(Lease&&)=delete;
++  ~Lease(){if(owned)occupied.store(false,std::memory_order_release);}
++ };
++ Lease lease;
++ Bytes body;
++ BodyBufferStorage(Lease&& token,std::size_t size):lease(std::move(token)),body(size){}
++public:
++ BodyBufferStorage(const BodyBufferStorage&)=delete;BodyBufferStorage& operator=(const BodyBufferStorage&)=delete;
++ BodyBufferStorage(BodyBufferStorage&&)=delete;BodyBufferStorage& operator=(BodyBufferStorage&&)=delete;
++ ~BodyBufferStorage()=default;
++ static Ptr reserve(std::size_t size)noexcept{
++  if(!size||size>maxBytes)return {};
++  Lease token;if(!token.owned)return {};
++  try{return Ptr(new BodyBufferStorage(std::move(token),size));}catch(...){return {};}
++ }
++ std::size_t size()const noexcept{return body.size();}
++ Byte* data()noexcept{return body.data();}
++ const Bytes& bytes()const noexcept{return body;}
++};
++}

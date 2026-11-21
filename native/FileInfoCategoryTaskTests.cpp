@@ -1,0 +1,37 @@
+#include "FileInfoCategoryTask.hpp"
+#include <iostream>
+using namespace udm;
+template<class F>static bool until(F f){const auto end=GetTickCount64()+6000;while(!f()&&GetTickCount64()<end)Sleep(1);return f();}
+int wmain(int argc,wchar_t** argv){
+ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
+ const auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
+ try{
+  Manager manager(root/L"catalog");manager.state["Settings"]["DownloadFolder"]=utf8((root/L"files").wstring());manager.state["Settings"]["CategoryFolders"]=true;manager.state["Settings"]["IdmCategoryDefaults"]=true;manager.state["Settings"]["CategoryRememberLast"]={{"Archives",true}};
+  FileInfoCategoryTask task;const auto read=[&](uint64_t revision,const std::string& category,FileInfoCategoryObserver observe={}){if(!task.start(&manager,{}, {},{revision,category},{},std::move(observe))||!until([&]{return task.ready();}))throw std::runtime_error("Owned category read did not settle");return task.take();};
+  auto snapshot=manager.snapshot();auto archives=read(1,"Archives");check(archives.error.empty()&&!archives.cancelled&&archives.folder==utf8((root/L"files"/L"Compressed").wstring())&&archives.remember,"The worker derives IDM-style built-in folder mapping and remembered-path preference");check(manager.snapshot()==snapshot,"Category selection preparation never writes the catalog or download state");
+  auto other=read(2,"Other");check(other.error.empty()&&other.folder==utf8((root/L"files").wstring()),"The fallback category retains the configured root with IDM defaults");
+  manager.state["Settings"]["CategoryPaths"]=legacyDictionary(Json{{"Archives",utf8((root/L"explicit").wstring())}});auto explicitPath=read(3,"Archives");check(explicitPath.error.empty()&&explicitPath.folder==utf8((root/L"explicit").wstring()),"An explicit category folder takes precedence over generated defaults");
+  auto missing=read(4,"removed-category");check(!missing.error.empty()&&missing.folder.empty(),"A removed category returns no usable destination");check(!read(0,"Other").error.empty(),"An invalid request identity cannot publish a ready category result");
+  manager.state["Settings"]["CategoryPaths"]=legacyDictionary(Json{{"Archives","relative"}});check(!read(5,"Archives").error.empty(),"A relative configured folder is rejected before a draft can be replaced");manager.state["Settings"]["CategoryPaths"]=Json::array();
+  {
+   auto settings=fileInfoCategoryPreferences(manager.state["Settings"]);settings["DownloadFolder"]=utf8((root/L"prepared").wstring());std::promise<void> release;auto gate=release.get_future().share();std::atomic_bool held=false;std::thread writer([&]{Lock lock(manager.mutex);held=true;gate.wait();});struct Join{std::promise<void>& release;std::thread& writer;~Join(){try{release.set_value();}catch(...){}if(writer.joinable())writer.join();}} cleanup{release,writer};check(until([&]{return held.load();}),"A real writer owns Manager before a prepared pending-dialog read");
+   task.start(nullptr,settings,{"Other","Archives"},{6,"Archives"});check(until([&]{return task.ready();}),"Unbound File Info can prepare its category from owned preferences while Manager is held");auto prepared=task.take();check(prepared.error.empty()&&prepared.folder==utf8((root/L"prepared"/L"Compressed").wstring())&&held,"The prepared result uses its owned category snapshot without reading the held model");release.set_value();writer.join();
+  }
+  {
+   std::promise<void> release;auto gate=release.get_future().share();std::atomic_bool held=false,waiting=false;std::thread writer([&]{Lock lock(manager.mutex);held=true;gate.wait();});struct Join{std::promise<void>& release;std::thread& writer;~Join(){try{release.set_value();}catch(...){}if(writer.joinable())writer.join();}} cleanup{release,writer};check(until([&]{return held.load();}),"A real writer owns Manager before the bound category read");
+   task.start(&manager,{}, {},{7,"Archives"},{},[&](const char* stage){if(std::string(stage)=="waiting-model")waiting=true;});check(until([&]{return waiting.load();})&&held&&!task.ready(),"The requesting thread stays free while the category worker waits for Manager");check(!task.start(&manager,{}, {},{8,"Other"}),"A busy reader refuses another worker or an unbounded internal request queue");task.cancelRead();check(until([&]{return task.ready();})&&task.take().cancelled&&held,"Advisory cancellation settles before the held model becomes readable");release.set_value();writer.join();
+  }
+  std::vector<std::thread::id> threads;const auto owner=std::this_thread::get_id();for(int i=0;i<3;++i)read(9+i,"Other",[&](const char* stage){if(std::string(stage)=="captured")threads.push_back(std::this_thread::get_id());});check(threads.size()==3&&threads[0]!=owner&&threads[0]==threads[1]&&threads[1]==threads[2],"Repeated category choices reuse the same persistent worker");
+  {
+   std::atomic_bool notified=false;task.start(&manager,{}, {},{12,"Other"},[&]{notified=true;throw std::runtime_error("Owned wake failure");});check(until([&]{return notified.load();})&&task.ready()&&task.take().error.empty(),"Ready state is published before a throwing notification and remains usable");
+  }
+  FileInfoCategoryDraft captured{root/L"old"/L"original.bin",utf8((root/L"old").wstring()),false};auto current=captured;current.destination=root/L"old"/L"renamed.bin";
+  auto merged=mergeFileInfoCategory(archives,1,"Archives",captured,current);check(merged&&merged->destination==root/L"files"/L"Compressed"/L"renamed.bin"&&merged->remember&&merged->rememberFolder==archives.folder,"A late category reply uses the current filename while applying its selected default folder");
+  current.destination=root/L"manual"/L"renamed.bin";merged=mergeFileInfoCategory(archives,1,"Archives",captured,current);check(merged&&merged->destination==current.destination&&merged->rememberFolder==utf8((root/L"manual").wstring()),"A later manual destination folder wins and its remembered path follows that folder");
+  current.remember=true;current.rememberFolder=utf8((root/L"rule-draft").wstring());merged=mergeFileInfoCategory(archives,1,"Archives",captured,current);check(merged&&merged->remember==current.remember&&merged->rememberFolder==current.rememberFolder,"A later remember-path or rule-folder edit is retained exactly");
+  check(!mergeFileInfoCategory(archives,2,"Archives",captured,current)&&!mergeFileInfoCategory(archives,1,"Other",captured,current),"An obsolete revision or category cannot update the current destination draft");
+  auto cancelled=archives;cancelled.cancelled=true;check(!mergeFileInfoCategory(cancelled,1,"Archives",captured,current)&&!mergeFileInfoCategory(missing,4,"removed-category",captured,current),"Cancelled or failed reads cannot merge a partial destination result");
+  task.finish();check(task.start(&manager,{}, {},{13,"Other"})&&until([&]{return task.ready();})&&task.take().error.empty(),"The joined reader can restart after an exceptional parent cancellation leaves File Info open");manager.stop();
+ }catch(const std::exception& failure){error=failure.what();}
+ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+}

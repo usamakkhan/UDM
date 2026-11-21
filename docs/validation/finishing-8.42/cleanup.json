@@ -1,0 +1,47 @@
+{
+  "diagnosticGeneratedFilesRemoved": [
+    {
+      "path": "objects/App.obj",
+      "bytes": 52331174,
+      "sha256": "347CF2AAC766D027066AA7C65AAA8D454D8D860C05EC8D4ADDD9A3CA46B57E01"
+    },
+    {
+      "path": "objects/Core.obj",
+      "bytes": 14659021,
+      "sha256": "0558822834975EE3BC55AE3FFEA8A6B91768536EE1B39698A8E09F24BF2FCE86"
+    },
+    {
+      "path": "objects/Duplicates.obj",
+      "bytes": 9256363,
+      "sha256": "9B8FEC7D402537F468C5679E8224F2E3290C2879807A444BC44DEF01A28C8187"
+    },
+    {
+      "path": "objects/Transfer.obj",
+      "bytes": 17668366,
+      "sha256": "4F3F018353EDAC88CA281CA747CFE87C767EB1033B65E240BA038311C1814EA7"
+    },
+    {
+      "path": "native/UDM.exe",
+      "bytes": 11909120,
+      "sha256": "E824CFC2DC977AAF0F5E086B10F10D9176F750890F50C3E0B452D4B9EB0B72E3"
+    },
+    {
+      "path": "ui-timing.bin",
+      "bytes": 131136,
+      "sha256": "80CB94812289A20D0A40AC4EC66A826A603BE98B2C6E17806B199F30B1102CD0"
+    }
+  ],
+  "diagnosticLogicalBytesRemoved": 105955180,
+  "finalPayloadsRemoved": 3,
+  "finalPayloadLogicalBytesRemoved": 201326592,
+  "productionBinariesUnchanged": true,
+  "installationPerformed": false,
+  "kept": [
+    "Native source and qualified production binaries/core",
+    "Compact decoded observations, failed-attempt evidence and private controllers",
+    "Personal catalogs and installed app"
+  ],
+  "remaining": [
+    "User must close existing IDM and older observation app before full-lifetime paired comparison"
+  ]
+}

@@ -1,0 +1,119 @@
+--- a/native/WrittenBodyCache.hpp
++++ b/native/WrittenBodyCache.hpp
+@@ -1,23 +1,31 @@
+ #pragma once
+ #include "Core.hpp"
+ #include <algorithm>
+-#include <mutex>
++#include <atomic>
+ namespace udm {
+ // One process-wide 64 MiB optional cache. The owner serializes credited writes;
+ // readers use the body only after its download writers have joined.
++// A worker may disable caching, so the budget lease has no thread affinity.
+ class WrittenBodyCache {
+ public:
+  static constexpr i64 maxBytes=64*1048576;
+  bool valid=false;
+ private:
+- inline static std::mutex slot;
+- std::unique_lock<std::mutex> lease;
++ inline static std::atomic_bool slot{false};
++ bool leased=false;
+  Bytes bytes;std::vector<std::pair<i64,i64>> coverage;
+- void disable()noexcept{valid=false;Bytes{}.swap(bytes);decltype(coverage){}.swap(coverage);if(lease.owns_lock())lease.unlock();}
++ void disable()noexcept{valid=false;Bytes{}.swap(bytes);decltype(coverage){}.swap(coverage);if(leased){leased=false;slot.store(false,std::memory_order_release);}}
+ public:
++ WrittenBodyCache()=default;
++ WrittenBodyCache(const WrittenBodyCache&)=delete;
++ WrittenBodyCache& operator=(const WrittenBodyCache&)=delete;
++ WrittenBodyCache(WrittenBodyCache&&)=delete;
++ WrittenBodyCache& operator=(WrittenBodyCache&&)=delete;
++ ~WrittenBodyCache(){disable();}
+  void reset(i64 size)noexcept{
+   disable();if(size<=0||size>maxBytes)return;
+-  try{lease=std::unique_lock(slot,std::try_to_lock);if(!lease.owns_lock())return;bytes.resize(static_cast<size_t>(size));valid=true;}catch(...){disable();}
++  bool expected=false;if(!slot.compare_exchange_strong(expected,true,std::memory_order_acquire,std::memory_order_relaxed))return;
++  leased=true;try{bytes.resize(static_cast<size_t>(size));valid=true;}catch(...){disable();}
+  }
+  void wrote(const BYTE* source,size_t count,i64 offset)noexcept{
+   if(!valid||!count)return;
+--- a/native/WrittenBodyCacheTests.cpp
++++ b/native/WrittenBodyCacheTests.cpp
+@@ -1,6 +1,11 @@
+ #include "WrittenBodyCache.hpp"
+ #include <iostream>
++#include <future>
++#include <thread>
++#include <type_traits>
+ using namespace udm;
++static_assert(!std::is_copy_constructible_v<WrittenBodyCache> && !std::is_copy_assignable_v<WrittenBodyCache>);
++static_assert(!std::is_move_constructible_v<WrittenBodyCache> && !std::is_move_assignable_v<WrittenBodyCache>);
+ int wmain(int argc,wchar_t** argv){
+  if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
+  auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
+@@ -27,6 +32,33 @@
+   {WrittenBodyCache first,second;first.reset(16);second.reset(16);check(first.valid&&!second.valid,"Concurrent transfers cannot each reserve the global body budget");first.reset(0);second.reset(16);check(second.valid,"Another owner can acquire the slot after release");second.reset(0);first.reset(WrittenBodyCache::maxBytes);check(!first.body(WrittenBodyCache::maxBytes,WrittenBodyCache::maxBytes),"The maximum budget never admits uncovered bytes, including on allocation refusal");first.reset(WrittenBodyCache::maxBytes+1);check(!first.valid,"A reset beyond the byte cap also releases an older lease");}
+   cache.reset(9000);const BYTE x=1;for(i64 offset=0;offset<=8192;offset+=2)cache.wrote(&x,1,offset);check(!cache.valid,"Excessively fragmented coverage is bounded and falls back to disk");
+   cache.reset(8);write("abcdefgh",8,0);body=cache.body(8,8);check(body&&std::string(body->begin(),body->end())=="abcdefgh","A fresh attempt can recover after optional-cache invalidation");
++  cache.reset(0);
++  {
++   WrittenBodyCache owner,contender;owner.reset(16);check(owner.valid,"The transfer thread acquires a cache before worker-side invalidation");
++   std::thread worker([&]{owner.wrote(nullptr,1,0);});worker.join();
++   check(!owner.valid&&!owner.body(16,16),"A serialized worker-side cache failure discards unverified bytes");
++   contender.reset(16);check(contender.valid,"Worker-side invalidation releases the process budget without unlocking another thread's mutex");
++  }
++  {
++   auto owner=std::make_unique<WrittenBodyCache>();owner->reset(16);check(owner->valid,"A cache lease is acquired before destruction on another thread");
++   std::thread destroy([owned=std::move(owner)]{});destroy.join();
++   WrittenBodyCache next;next.reset(16);check(next.valid,"Serialized cross-thread destruction releases the lease for its successor");
++  }
++  {
++   WrittenBodyCache owner;owner.reset(16);{WrittenBodyCache denied;denied.reset(16);check(!denied.valid,"A denied cache owns no process-budget lease");}
++   WrittenBodyCache contender;contender.reset(16);check(owner.valid&&!contender.valid,"Destroying a denied cache cannot release the real owner's budget");
++  }
++  for(unsigned round=0;round<24;++round){
++   std::promise<void> start,release;auto ready=start.get_future().share(),finish=release.get_future().share();
++   std::vector<std::thread> workers;std::atomic_uint attempted{0},owners{0};
++   struct Join {std::promise<void>& start;std::promise<void>& release;std::vector<std::thread>& workers;~Join(){try{start.set_value();}catch(...){}try{release.set_value();}catch(...){}for(auto& thread:workers)if(thread.joinable())thread.join();}} joined{start,release,workers};
++   for(unsigned i=0;i<8;++i)workers.emplace_back([&]{ready.wait();WrittenBodyCache candidate;candidate.reset(16);if(candidate.valid)++owners;++attempted;finish.wait();});
++   start.set_value();const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(5);
++   while(attempted.load()!=8&&std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++   check(attempted==8&&owners==1,"Eight simultaneous cache attempts retain exactly one budget owner until release");
++   release.set_value();for(auto& thread:workers)thread.join();
++   WrittenBodyCache next;next.reset(16);check(next.valid,"A fresh cache acquires the budget after every contender has finished");
++  }
+  }catch(const std::exception& e){error=e.what();}
+  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+ }
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,58,0,0
+-#define UDM_VERSION_STRING "8.58"
+-#define UDM_VERSION_WSTRING L"8.58"
++#define UDM_VERSION_TUPLE 8,59,0,0
++#define UDM_VERSION_STRING "8.59"
++#define UDM_VERSION_WSTRING L"8.59"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.22",
++  "version": "0.72.23",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.22",
++  "version": "0.72.23",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",

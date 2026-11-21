@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "name": "Extended UTF-8 name is decoded",
+      "passed": true
+    },
+    {
+      "name": "Extended name takes precedence over plain name",
+      "passed": true
+    },
+    {
+      "name": "Quoted semicolon and server path are handled",
+      "passed": true
+    },
+    {
+      "name": "Malformed extended escape falls back to plain name",
+      "passed": true
+    },
+    {
+      "name": "Ambiguous duplicate names retain URL fallback",
+      "passed": true
+    },
+    {
+      "name": "Injected header line retains URL fallback",
+      "passed": true
+    },
+    {
+      "name": "Absent server name retains URL fallback",
+      "passed": true
+    },
+    {
+      "name": "Legacy Latin-1 extended name converts to UTF-8",
+      "passed": true
+    },
+    {
+      "name": "Latin-1 extended name overrides fallback and supports language",
+      "passed": true
+    },
+    {
+      "name": "Malformed Latin-1 escapes preserve plain filename",
+      "passed": true
+    },
+    {
+      "name": "Encoded NUL cannot replace plain filename",
+      "passed": true
+    },
+    {
+      "name": "Latin-1 server path is stripped after decoding",
+      "passed": true
+    },
+    {
+      "name": "Unsupported charset retains explicit fallback",
+      "passed": true
+    },
+    {
+      "name": "Extended names preserve plus signs and decode percent once",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

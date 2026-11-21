@@ -1,0 +1,80 @@
+{
+  "policyChecks": 34,
+  "results": [
+    {
+      "passed": false,
+      "failures": [
+        "undecoded target events"
+      ],
+      "measuredFlushes": [
+        {
+          "nativeMs": 36.121,
+          "eventContainedInNativeCall": true
+        },
+        {
+          "nativeMs": 33.209,
+          "eventContainedInNativeCall": true
+        }
+      ],
+      "completeTargetSchemaCoverage": false,
+      "kernelCauseVerified": false,
+      "payloadIntegrityReverified": false,
+      "limitations": "Interval evidence alone does not decode unknown events, prove payload integrity, attribute filters/disk queueing or replace an uninstrumented comparison.",
+      "run": 1,
+      "independentPid": 35676,
+      "nativeResultSha256": "DE61C92200C87287F974A5B7F426DA6488A53D78642DC89F544E5EA156ED8601",
+      "collectorReportSha256": "FD24C28AA7F997E6E239785743E108D86D9C93514F7258DB19AACBC549F26F1E"
+    },
+    {
+      "passed": false,
+      "failures": [
+        "undecoded target events",
+        "failed schema inventory"
+      ],
+      "measuredFlushes": [
+        {
+          "nativeMs": 37.9363,
+          "eventContainedInNativeCall": true
+        },
+        {
+          "nativeMs": 20.0698,
+          "eventContainedInNativeCall": true
+        }
+      ],
+      "completeTargetSchemaCoverage": false,
+      "kernelCauseVerified": false,
+      "payloadIntegrityReverified": false,
+      "limitations": "Interval evidence alone does not decode unknown events, prove payload integrity, attribute filters/disk queueing or replace an uninstrumented comparison.",
+      "run": 2,
+      "independentPid": 35420,
+      "nativeResultSha256": "E5197D5E6E134B49E0EF30BAE2D4B33CCAD83E1D4FD5BC44843BA6F6AC111641",
+      "collectorReportSha256": "4C183AB6C2EA41717B5D9531B51E4108A0A569D16AF57258300341D758D65355"
+    },
+    {
+      "passed": false,
+      "failures": [
+        "undecoded target events",
+        "failed schema inventory"
+      ],
+      "measuredFlushes": [
+        {
+          "nativeMs": 29.6597,
+          "eventContainedInNativeCall": true
+        },
+        {
+          "nativeMs": 26.0801,
+          "eventContainedInNativeCall": true
+        }
+      ],
+      "completeTargetSchemaCoverage": false,
+      "kernelCauseVerified": false,
+      "payloadIntegrityReverified": false,
+      "limitations": "Interval evidence alone does not decode unknown events, prove payload integrity, attribute filters/disk queueing or replace an uninstrumented comparison.",
+      "run": 3,
+      "independentPid": 33260,
+      "nativeResultSha256": "6727C6D4BACBC75E3FD821D3E29C1903C161B7BC537252A91A4B2F1597B27102",
+      "collectorReportSha256": "6B5FA993511F8F61BD8139203A28510A167D81D2F27747E6AE12572FBF45CD73"
+    }
+  ],
+  "kernelCauseVerified": false
+}

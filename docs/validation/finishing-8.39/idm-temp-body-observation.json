@@ -1,0 +1,36 @@
+{
+  "target": "IDMan.exe",
+  "architecture": "ia32",
+  "observedTempNaming": "First 20 hexadecimal characters of the owned 32-character token, followed by a numbered directory suffix. Exact body/log leaves were required below the IDM DwnlData root.",
+  "bodyWriteCalls": 367,
+  "completedBodyBytes": 4194304,
+  "bodyThreads": 1,
+  "bodyHandles": 1,
+  "explicitMatchedNativeFlushCalls": 0,
+  "explicitMatchedWin32FlushCalls": 0,
+  "bodyWriteSizeCounts": {
+    "11680": 348,
+    "5184": 8,
+    "7095": 3,
+    "9769": 1,
+    "9605": 1,
+    "7259": 1,
+    "5181": 1,
+    "10368": 1,
+    "9766": 2,
+    "5193": 1
+  },
+  "eventsDropped": 0,
+  "privateRecordSha256": "a666228c35abc440d39be41b8feeab509a14ab8cbd4f06c9d2ff09e82586a14d",
+  "sizeAndHashMatched": true,
+  "payloadRemoved": true,
+  "fullOffsetCoverageVerified": false,
+  "performanceParityVerified": false,
+  "rootCauseVerified": false,
+  "limitations": [
+    "All native body-write offsets were null; per-offset coverage is not asserted from byte totals.",
+    "Observation covers the matched body and log files, not every catalog or unrelated process.",
+    "No explicit matched flush observed is not proof of no implicit filesystem, close, rename, device-cache or later writeback work.",
+    "Instrumentation adds overhead; no uninstrumented timing comparison is claimed."
+  ]
+}

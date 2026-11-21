@@ -1,0 +1,39 @@
+#include <afxwin.h>
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+namespace udm {
+struct CatalogCheckpointTestAccess {static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}};
+struct PropertiesSaveGate {
+ std::promise<void> enteredPromise,releasePromise;std::shared_future<void> enteredFuture=enteredPromise.get_future().share();std::shared_future<void> releaseFuture=releasePromise.get_future().share();std::atomic_bool entered=false,released=false,forced=false;std::atomic<DWORD> ioThread=0;std::atomic_uint writes=0;
+ void release(){if(!released.exchange(true))releasePromise.set_value();}
+ void observe(const char* p){if(std::string_view(p)!="temporary-flushed")return;++writes;if(!entered.exchange(true)){ioThread=GetCurrentThreadId();enteredPromise.set_value();if(releaseFuture.wait_for(std::chrono::seconds(3))!=std::future_status::ready)throw std::runtime_error("Properties save gate deadline");}}
+ ~PropertiesSaveGate(){release();}
+};
+static Json saveChecks=Json::array(),saveCases=Json::array();static std::string saveError;static std::shared_ptr<PropertiesSaveGate> saveGate;static unsigned saveStage=0,heartbeats=0;static bool returnedHeld=false,closeGuard=false;static ULONGLONG began=0;static double acceptMs=0;
+static std::wstring saveText(HWND w){wchar_t text[256]{};GetWindowTextW(w,text,256);return text;}
+static HWND saveNamed(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(saveText(c)==label)return c;throw std::runtime_error("Missing owned Properties action");}
+static std::vector<HWND> saveEdits(HWND w){std::vector<HWND> fields;for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t type[32]{};GetClassNameW(c,type,32);if(!_wcsicmp(type,L"Edit"))fields.push_back(c);}return fields;}
+static void saveCheck(bool good,const char* name){saveChecks.push_back({{"name",name},{"passed",good}});if(!good)throw std::runtime_error(name);}
+static BOOL CALLBACK saveWindow(HWND w,LPARAM){if(saveText(w)!=L"File Properties")return TRUE;try{
+ if(GetTickCount64()-began>6000){saveGate->release();PostMessageW(w,WM_CLOSE,0,0);throw std::runtime_error("Properties UI visibility deadline");}
+ if(saveStage==0){if(!IsWindowVisible(w))ShowWindow(w,SW_SHOWNOACTIVATE);auto fields=saveEdits(w);saveCheck(fields.size()==6,"The actual Properties dialog exposes its six editable fields");SetWindowTextW(fields[2],L"asynchronously saved description");saveStage=1;const auto before=GetTickCount64();const auto button=saveNamed(w,L"OK");SendMessageW(button,BM_CLICK,0,0);acceptMs=double(GetTickCount64()-before);returnedHeld=!saveGate->released;return FALSE;}
+ if(saveGate->entered&&!saveGate->released){++heartbeats;saveCheck(!IsWindowEnabled(saveNamed(w,L"OK")),"Properties disables duplicate Save while persistence is held");saveCheck(!IsWindowEnabled(saveEdits(w)[2]),"The submitted draft is frozen while persistence is held");if(heartbeats==1){SendMessageW(w,WM_CLOSE,0,0);closeGuard=IsWindow(w)!=FALSE;saveCheck(closeGuard,"Close cannot destroy a Properties dialog with an owned save");}if(heartbeats>=3)saveGate->release();}
+ if(GetTickCount64()-began>6000){saveGate->release();PostMessageW(w,WM_CLOSE,0,0);throw std::runtime_error("Properties UI heartbeat deadline");}
+ }catch(const std::exception& e){saveError=e.what();saveGate->release();PostMessageW(w,WM_CLOSE,0,0);}return FALSE;}
+static void CALLBACK saveTimer(HWND,UINT,UINT_PTR,DWORD){EnumThreadWindows(GetCurrentThreadId(),saveWindow,0);}
+class PropertiesSaveApplication:public CWinApp {int code=1;public:
+ BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);fs::path root;
+ try{if(argc!=2&&argc!=3)throw std::runtime_error("Pass new isolated output directory and optional completed mode");root=fs::absolute(args[1]);if(fs::exists(root))throw std::runtime_error("Isolated output already exists");fs::create_directories(root);CWnd fixtureOwner;if(!fixtureOwner.CreateEx(0,AfxRegisterWndClass(0),L"UDM Properties test owner",WS_OVERLAPPED,0,0,16,16,nullptr,0))throw std::runtime_error("Cannot create owned fixture anchor");m_pMainWnd=&fixtureOwner;for(const bool completed:argc==3?std::vector<bool>{std::wstring(args[2])==L"complete"}:std::vector<bool>{false,true}){
+  const auto folder=root/(completed?L"complete":L"paused");Manager manager(folder/L"catalog");fs::create_directories(folder/L"files");auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8((folder/L"files").wstring());settings["CategoryFolders"]=false;manager.setSettings(settings);auto job=manager.add("https://fixture.example/source","","sample.bin","Main queue",true);if(completed){atomicText(job->target(),"verified bytes",false);job->data["Status"]="Complete";job->data["Size"]=14;job->data["Received"]=14;job->data["Sha256"]=fileHash(job->target());job->data["Finished"]=date();}manager.save();saveGate=std::make_shared<PropertiesSaveGate>();saveStage=heartbeats=0;returnedHeld=closeGuard=false;acceptMs=0;saveError.clear();const auto uiThread=GetCurrentThreadId();CatalogCheckpointTestAccess::observe(manager,[g=saveGate](const char* p){g->observe(p);});auto watchdog=std::thread([g=saveGate]{if(g->enteredFuture.wait_for(std::chrono::seconds(6))!=std::future_status::ready){g->forced=true;g->release();return;}if(g->releaseFuture.wait_for(std::chrono::milliseconds(500))!=std::future_status::ready){g->forced=true;g->release();}});struct Join{std::thread& thread;std::shared_ptr<PropertiesSaveGate> gate;~Join(){gate->release();if(thread.joinable())thread.join();}}join{watchdog,saveGate};began=GetTickCount64();const auto timer=SetTimer(nullptr,0,30,saveTimer);fileProperties(&fixtureOwner,manager,job);KillTimer(nullptr,timer);saveGate->release();watchdog.join();CatalogCheckpointTestAccess::observe(manager,{});if(!saveError.empty())throw std::runtime_error(saveError);saveCheck(saveGate->entered,"The actual saved-catalog flush was held");saveCheck(str(job->data,"Description")=="asynchronously saved description","The actual Properties action persists the submitted description");const auto saved=Json::parse(readText(manager.root/L"state.json"));saveCheck(str(saved.at("Downloads").at(0),"Description")=="asynchronously saved description","The submitted description is present in the durable catalog");
+#ifdef UDM_PROPERTIES_SAVE_BASELINE
+  saveCheck(saveGate->ioThread==uiThread&&!returnedHeld&&heartbeats==0&&saveGate->forced,"The 8.52 baseline blocks its UI thread during the real flush");
+#else
+  saveCheck(saveGate->ioThread!=uiThread&&returnedHeld&&heartbeats>=3&&!saveGate->forced&&closeGuard,"Properties keeps its actual message pump live during background persistence");saveCheck(!manager.fileInfoDecisionPending,"Properties releases its owned command after the UI acknowledges completion");
+#endif
+  saveCases.push_back({{"completed",completed},{"ioOnUiThread",saveGate->ioThread==uiThread},{"acceptReturnedBeforeRelease",returnedHeld},{"heartbeatsWhileIoHeld",heartbeats},{"watchdogRequired",saveGate->forced.load()},{"closeGuard",closeGuard},{"acceptMilliseconds",acceptMs}});saveGate.reset();manager.stop();atomicText(root/L"progress.json",Json{{"checks",saveChecks},{"cases",saveCases}}.dump(2),false);}
+  m_pMainWnd=nullptr;fixtureOwner.DestroyWindow();code=0;
+ }catch(const std::exception& e){saveError=e.what();if(saveGate)saveGate->release();}
+ m_pMainWnd=nullptr;if(args)LocalFree(args);if(!root.empty())atomicText(root/L"results.json",Json{{"passed",code==0},{"error",saveError},{"checks",saveChecks},{"cases",saveCases}}.dump(2),false);return FALSE;}
+ int ExitInstance()override{AfxOleTerm(FALSE);return code;}
+};PropertiesSaveApplication application;
+}

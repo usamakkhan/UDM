@@ -1,0 +1,11 @@
+--- native/backend-tests.json@9.64
++++ native/backend-tests.json@9.63
+@@ -1,8 +1,4 @@
+ [
+-  {
+-    "source": "PublicationFailureLifetimeTests",
+-    "timeoutSeconds": 90
+-  },
+   {
+     "source": "PublicationOverlapTests",
+     "timeoutSeconds": 90

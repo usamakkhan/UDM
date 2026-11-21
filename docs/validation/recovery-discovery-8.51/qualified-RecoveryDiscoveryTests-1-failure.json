@@ -1,0 +1,136 @@
+{
+  "case": "ordinary-recovery-discovery-enumerate-scope-destination",
+  "cases": [
+    {
+      "claims": 1,
+      "error": "",
+      "fault": "none",
+      "kind": "ordinary",
+      "ownedContentReads": 0,
+      "phase": "recovery-discovery-enumerate",
+      "snapshotReads": 1
+    },
+    {
+      "claims": 1,
+      "error": "",
+      "fault": "metadata-save",
+      "kind": "ordinary",
+      "ownedContentReads": 0,
+      "phase": "recovery-discovery-enumerate",
+      "snapshotReads": 1
+    }
+  ],
+  "checks": [
+    {
+      "name": "Discovery starts with a real interrupted ordinary or paired publication",
+      "passed": true
+    },
+    {
+      "name": "The actual enumeration, journal read or claim boundary is held",
+      "passed": true
+    },
+    {
+      "name": "Discovery and same-object claim leave the model available",
+      "passed": true
+    },
+    {
+      "name": "The selected graph and paths remain reserved throughout each discovery interval",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot succeeds while journal IO is held",
+      "passed": true
+    },
+    {
+      "name": "Every held discovery boundary is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed input, missing/replaced journal, failure and closing refuse stale recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted discovery or explicit retry completes exact bytes and retires only its owned intent",
+      "passed": true
+    },
+    {
+      "name": "Same-file claim reuses one held content read without a second journal read",
+      "passed": true
+    },
+    {
+      "name": "Discovery starts with a real interrupted ordinary or paired publication",
+      "passed": true
+    },
+    {
+      "name": "The actual enumeration, journal read or claim boundary is held",
+      "passed": true
+    },
+    {
+      "name": "Discovery and same-object claim leave the model available",
+      "passed": true
+    },
+    {
+      "name": "The selected graph and paths remain reserved throughout each discovery interval",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot succeeds while journal IO is held",
+      "passed": true
+    },
+    {
+      "name": "An independent durable save completes during held journal IO",
+      "passed": true
+    },
+    {
+      "name": "Every held discovery boundary is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed input, missing/replaced journal, failure and closing refuse stale recovery",
+      "passed": true
+    },
+    {
+      "name": "Accepted discovery or explicit retry completes exact bytes and retires only its owned intent",
+      "passed": true
+    },
+    {
+      "name": "Discovery and recovery preserve independent current metadata",
+      "passed": true
+    },
+    {
+      "name": "Discovery starts with a real interrupted ordinary or paired publication",
+      "passed": true
+    },
+    {
+      "name": "The actual enumeration, journal read or claim boundary is held",
+      "passed": true
+    },
+    {
+      "name": "Discovery and same-object claim leave the model available",
+      "passed": true
+    },
+    {
+      "name": "The selected graph and paths remain reserved throughout each discovery interval",
+      "passed": true
+    },
+    {
+      "name": "An independent UI snapshot succeeds while journal IO is held",
+      "passed": true
+    },
+    {
+      "name": "Every held discovery boundary is explicitly released",
+      "passed": true
+    },
+    {
+      "name": "Changed input, missing/replaced journal, failure and closing refuse stale recovery",
+      "passed": true
+    },
+    {
+      "name": "A refused handoff does not apply recovery to current history",
+      "passed": true
+    }
+  ],
+  "error": "Cannot open file for verification.",
+  "passed": false,
+  "workflowError": "The download changed during file recovery. Its bytes and recovery journal were preserved."
+}

@@ -1,0 +1,260 @@
+{
+  "productChanged": false,
+  "kernelCauseVerified": false,
+  "installedComparisonRepeated": false,
+  "captures": [
+    {
+      "stage": "02",
+      "variant": "initial",
+      "passed": false,
+      "schemaErrors": 174,
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "sessionAbsent": true,
+      "stopStatus": 0,
+      "elapsedMs": 2610,
+      "pairs": [
+        {
+          "beginCounter": 762758594944,
+          "endCounter": 762758604042,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 10696
+        },
+        {
+          "beginCounter": 762758604721,
+          "endCounter": 762758609462,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 10696
+        }
+      ],
+      "schemaFailureInventory": null,
+      "sourceReportSha256": "AA1EC533202217D301B3D5853A2E19E241835CCE87AB88F19F87CE92FC751D35"
+    },
+    {
+      "stage": "03",
+      "variant": "baseline",
+      "passed": false,
+      "schemaErrors": 86,
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "sessionAbsent": true,
+      "stopStatus": 0,
+      "elapsedMs": 1563,
+      "pairs": [
+        {
+          "beginCounter": 766014849291,
+          "endCounter": 766014858417,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 30020
+        },
+        {
+          "beginCounter": 766014859266,
+          "endCounter": 766014865304,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 30020
+        }
+      ],
+      "schemaFailureInventory": {
+        "01853a65-418f-4f36-aefc-dc0f1d2fd235:0:19:2:832": {
+          "count": 2,
+          "eventId": 0,
+          "headerFlags": 832,
+          "metadataBytes": 0,
+          "opcode": 19,
+          "payloadBytes": 8,
+          "provider": "01853a65-418f-4f36-aefc-dc0f1d2fd235",
+          "requeryStatus": 1168,
+          "version": 2
+        },
+        "90cbdc39-4a3e-11d1-84f4-0000f80464e3:0:84:3:832": {
+          "count": 84,
+          "eventId": 0,
+          "headerFlags": 832,
+          "metadataBytes": 0,
+          "opcode": 84,
+          "payloadBytes": 40,
+          "provider": "90cbdc39-4a3e-11d1-84f4-0000f80464e3",
+          "requeryStatus": 1168,
+          "version": 3
+        }
+      },
+      "sourceReportSha256": "D62328D2B80AB080FCFC6F9CC244B9EE67CB39AA78A098CBB9B9DF9A698909C7"
+    },
+    {
+      "stage": "03",
+      "variant": "focused",
+      "passed": true,
+      "schemaErrors": 0,
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "sessionAbsent": true,
+      "stopStatus": 0,
+      "elapsedMs": 1046,
+      "pairs": [
+        {
+          "beginCounter": 766030361224,
+          "endCounter": 766030368793,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 30020
+        },
+        {
+          "beginCounter": 766030369658,
+          "endCounter": 766030374010,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 30020
+        }
+      ],
+      "schemaFailureInventory": {},
+      "sourceReportSha256": "EA9D5EEAE174C3DD4F4A56ECCE9DA87051146E85073C38A9089E72F7E8F0ABD2"
+    }
+  ],
+  "normalLifetimeCaptures": [
+    {
+      "run": 1,
+      "collectorPid": 18096,
+      "fixturePid": 35676,
+      "starts": 1,
+      "ends": 1,
+      "imageMatches": true,
+      "schemaErrors": 26,
+      "schemaFailureInventory": null,
+      "flushPairs": [
+        {
+          "beginCounter": 776531387187,
+          "endCounter": 776531748151,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 31052
+        },
+        {
+          "beginCounter": 776531748950,
+          "endCounter": 776532080754,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 31052
+        }
+      ],
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "stopStatus": 0,
+      "postStopQueryStatus": 4201,
+      "sessionAbsent": true,
+      "elapsedMs": 2094,
+      "largeDownloadLaunched": false,
+      "accepted": false,
+      "sourceReportSha256": "FD24C28AA7F997E6E239785743E108D86D9C93514F7258DB19AACBC549F26F1E"
+    },
+    {
+      "run": 2,
+      "collectorPid": 18820,
+      "fixturePid": 35420,
+      "starts": 1,
+      "ends": 1,
+      "imageMatches": true,
+      "schemaErrors": 26,
+      "schemaFailureInventory": {
+        "90cbdc39-4a3e-11d1-84f4-0000f80464e3:0:84:3:832": {
+          "count": 26,
+          "eventId": 0,
+          "headerFlags": 832,
+          "metadataBytes": 0,
+          "opcode": 84,
+          "payloadBytes": 40,
+          "provider": "90cbdc39-4a3e-11d1-84f4-0000f80464e3",
+          "requeryStatus": 1168,
+          "version": 3
+        }
+      },
+      "flushPairs": [
+        {
+          "beginCounter": 777068283362,
+          "endCounter": 777068662462,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 15700
+        },
+        {
+          "beginCounter": 777068663232,
+          "endCounter": 777068863652,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 15700
+        }
+      ],
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "stopStatus": 0,
+      "postStopQueryStatus": 4201,
+      "sessionAbsent": true,
+      "elapsedMs": 1937,
+      "largeDownloadLaunched": false,
+      "accepted": false,
+      "sourceReportSha256": "4C183AB6C2EA41717B5D9531B51E4108A0A569D16AF57258300341D758D65355"
+    },
+    {
+      "run": 3,
+      "collectorPid": 22236,
+      "fixturePid": 33260,
+      "starts": 1,
+      "ends": 1,
+      "imageMatches": true,
+      "schemaErrors": 26,
+      "schemaFailureInventory": {
+        "90cbdc39-4a3e-11d1-84f4-0000f80464e3:0:84:3:832": {
+          "count": 26,
+          "eventId": 0,
+          "headerFlags": 832,
+          "metadataBytes": 0,
+          "opcode": 84,
+          "payloadBytes": 40,
+          "provider": "90cbdc39-4a3e-11d1-84f4-0000f80464e3",
+          "requeryStatus": 1168,
+          "version": 3
+        }
+      },
+      "flushPairs": [
+        {
+          "beginCounter": 779233264722,
+          "endCounter": 779233561065,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 24100
+        },
+        {
+          "beginCounter": 779233561769,
+          "endCounter": 779233822387,
+          "relativePath": "probe.data",
+          "status": 0,
+          "thread": 24100
+        }
+      ],
+      "eventsLost": 0,
+      "buffersLost": 0,
+      "stopStatus": 0,
+      "postStopQueryStatus": 4201,
+      "sessionAbsent": true,
+      "elapsedMs": 1734,
+      "largeDownloadLaunched": false,
+      "accepted": false,
+      "sourceReportSha256": "6B5FA993511F8F61BD8139203A28510A167D81D2F27747E6AE12572FBF45CD73"
+    }
+  ],
+  "sessionWorker": {
+    "pid": 9056,
+    "scope": "hash-pinned realtime diagnostic collector only",
+    "expiresUtc": "2026-11-18T05:33:59.9966638Z",
+    "noService": true,
+    "noScheduledTask": true,
+    "noUacPolicyChanges": true,
+    "sourceSha256": "F9DCE3D0A951F7ACC6E790F6606F10D5496EB16945E86F64AF70E1C5A6E3469F",
+    "arbitraryCommandRejected": true,
+    "traceLaunchedWithoutAdditionalApproval": true,
+    "collectorSha256": "2D02B25F72CDE749096223076C610FB0447FE6ECFD84E1867BF989D2AC05B8E5"
+  }
+}

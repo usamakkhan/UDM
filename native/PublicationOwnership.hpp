@@ -11,7 +11,7 @@ public:
  using PathLess=windowsPath::Less;using Paths=windowsPath::Keys;
  static std::wstring pathKey(const fs::path& path){return windowsPath::key(path);}
 private:
- struct Entry {std::map<const Job*,uint64_t> jobs;std::map<std::wstring,uint64_t,PathLess> paths;std::set<uint64_t> committing;};
+ struct Entry {std::map<const Job*,uint64_t> jobs;std::map<std::wstring,uint64_t,PathLess> paths;std::set<uint64_t> committing,discovering;};
  struct Registry {std::mutex mutex;std::condition_variable changed;uint64_t next=0;std::map<const Manager*,Entry> managers;};
  // Process lifetime avoids static-destructor ordering against still-joining
  // application workers. Every lease removes its own rows during normal exit.
@@ -24,9 +24,25 @@ private:
   while(!pending.empty()){auto value=pending.back();pending.pop_back();if(!value||!seen.insert(value).second)continue;if(matches(value))return true;if(value->video)pending.push_back(value->video.get());if(value->audio)pending.push_back(value->audio.get());}return false;
  }
  const Manager* manager;uint64_t token=0;std::vector<JobPtr> jobs;Paths paths;
+ struct Discovery {};
+ PublicationOwnership(const Manager& owner,Discovery):manager(&owner){
+  auto& shared=registry();std::lock_guard<std::mutex> lock(shared.mutex);
+  if(shared.next==std::numeric_limits<uint64_t>::max())throw std::runtime_error("Publication ownership identifiers exhausted.");
+  const auto id=++shared.next;auto found=shared.managers.find(manager);Entry next=found==shared.managers.end()?Entry{}:found->second;next.discovering.insert(id);
+  if(found==shared.managers.end())shared.managers.emplace(manager,std::move(next));else found->second=std::move(next);token=id;
+ }
+
 public:
- PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations):manager(&owner),jobs(std::move(ownedJobs)){
-  if(jobs.empty()||std::any_of(jobs.begin(),jobs.end(),[](const JobPtr& j){return !j;}))throw std::runtime_error("Missing publication owner.");
+ // Enrol while holding Manager::mutex after checking shutdown. Discovery owns
+ // work lifetime only; selected jobs can still change and must be revalidated.
+ static PublicationOwnership discovery(const Manager& owner){return PublicationOwnership(owner,Discovery{});}
+ PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations):PublicationOwnership(owner,std::move(ownedJobs),destinations,false){}
+ // Private receipts can outlive every visible job. Reserve destination and
+ // journal names without inventing a job or weakening normal publication owners.
+ static PublicationOwnership receiptRetirement(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& paths){return PublicationOwnership(owner,std::move(ownedJobs),paths,true);}
+private:
+ PublicationOwnership(const Manager& owner,std::vector<JobPtr> ownedJobs,const std::vector<fs::path>& destinations,bool receiptOnly):manager(&owner),jobs(std::move(ownedJobs)){
+  if((jobs.empty()&&!receiptOnly)||std::any_of(jobs.begin(),jobs.end(),[](const JobPtr& j){return !j;}))throw std::runtime_error("Missing publication owner.");
   // Retain and exclude the captured descendant graph. Sibling-only leases do
   // not overlap, while a parent and any child cannot publish independently.
   {auto pending=std::move(jobs);jobs.clear();std::unordered_set<const Job*> seen;while(!pending.empty()){auto value=pending.back();pending.pop_back();if(!value||!seen.insert(value.get()).second)continue;jobs.push_back(value);if(value->video)pending.push_back(value->video);if(value->audio)pending.push_back(value->audio);}}
@@ -40,11 +56,12 @@ public:
   for(const auto& job:jobs)next.jobs[job.get()]=id;for(const auto& path:paths)next.paths[path]=id;
   if(found==state.managers.end())state.managers.emplace(manager,std::move(next));else found->second=std::move(next);token=id;
  }
+public:
  PublicationOwnership(const PublicationOwnership&)=delete;PublicationOwnership& operator=(const PublicationOwnership&)=delete;
  ~PublicationOwnership(){release();}
  void release()noexcept{
   if(!token)return;auto& state=registry();std::lock_guard<std::mutex> lock(state.mutex);auto found=state.managers.find(manager);if(found!=state.managers.end()){
-   auto& entry=found->second;for(const auto& job:jobs){auto i=entry.jobs.find(job.get());if(i!=entry.jobs.end()&&i->second==token)entry.jobs.erase(i);}for(const auto& path:paths){auto i=entry.paths.find(path);if(i!=entry.paths.end()&&i->second==token)entry.paths.erase(i);}entry.committing.erase(token);if(entry.jobs.empty()&&entry.paths.empty())state.managers.erase(found);
+   auto& entry=found->second;for(const auto& job:jobs){auto i=entry.jobs.find(job.get());if(i!=entry.jobs.end()&&i->second==token)entry.jobs.erase(i);}for(const auto& path:paths){auto i=entry.paths.find(path);if(i!=entry.paths.end()&&i->second==token)entry.paths.erase(i);}entry.committing.erase(token);entry.discovering.erase(token);if(entry.jobs.empty()&&entry.paths.empty()&&entry.committing.empty()&&entry.discovering.empty())state.managers.erase(found);
   }token=0;state.changed.notify_all();
  }
  // Call without any Manager::mutex ownership. Existing publishers need that

@@ -1,0 +1,75 @@
+{
+  "target": "IDMan.exe",
+  "architecture": "ia32",
+  "bytes": 4194304,
+  "fileHashMatched": true,
+  "sha256": "BCBDC331934C7FDD9C6C2F731E347F430FCC6916488FB2B74B65A480AEAE7BB9",
+  "apiCounts": {
+    "CloseHandle": 5,
+    "CreateFileW": 5
+  },
+  "dropped": 0,
+  "openFilesRemaining": 0,
+  "observedOpens": [
+    {
+      "api": "CreateFileW",
+      "access": 3221225472,
+      "share": 1,
+      "flags": 0,
+      "disposition": 3
+    },
+    {
+      "api": "CreateFileW",
+      "access": 3221356544,
+      "share": 0,
+      "flags": 128,
+      "disposition": 1
+    },
+    {
+      "api": "CreateFileW",
+      "access": 393216,
+      "share": 0,
+      "flags": 128,
+      "disposition": 3
+    },
+    {
+      "api": "CreateFileW",
+      "access": 3221356544,
+      "share": 0,
+      "flags": 128,
+      "disposition": 1
+    },
+    {
+      "api": "CreateFileW",
+      "access": 393216,
+      "share": 0,
+      "flags": 128,
+      "disposition": 3
+    }
+  ],
+  "flushes": [],
+  "protectedUdmFilesUnchanged": true,
+  "instrumentedAttributionOnly": true,
+  "allBackgroundWorkMeasured": false,
+  "performanceParityVerified": false,
+  "limitations": [
+    "Existing IDM instance and settings retained; no restart or shutdown measured.",
+    "Only paths containing the unique workload token were recorded; unmatched temporary or catalog files are not covered.",
+    "Instrumentation overhead prevents treating these timings as an uninstrumented performance comparison."
+  ],
+  "nativeMetrics": {
+    "calls": 1268,
+    "pathsResolved": 419,
+    "pathsMatched": 0,
+    "pathFailures": 849
+  },
+  "nativeResolvedSampleCount": 4,
+  "nativeWrites": [],
+  "nativeFlushes": [],
+  "nativeCompletedWriteBytes": 0,
+  "nativeWriteByteTotalIsDiagnosticOnly": true,
+  "writerCoveragePassed": false,
+  "writerCoverageLimitation": "Byte totals alone do not establish non-overlapping coverage of the entire output; explicit offset/interval and file-identity evidence is required.",
+  "flushAbsenceEstablished": false,
+  "ownedPayloadRemoved": true
+}

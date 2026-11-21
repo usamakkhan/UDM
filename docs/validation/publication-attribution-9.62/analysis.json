@@ -1,0 +1,317 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "paired": [
+    {
+      "trial": 1,
+      "case": "single-4m",
+      "mode": "owned",
+      "processExitTailMs": 146.7710500000976,
+      "processExitWallMs": 1220.2802499996324,
+      "launchToFirstRequestMs": 528.1873999992968,
+      "firstToLastBodyMs": 491.34720000074594,
+      "originRequests": 1,
+      "originBytesAtAppExit": 4194304,
+      "appInitEntryAfterLaunchMs": 286.5101000024879,
+      "acceptedFileReleaseMs": 0.039400000000000546,
+      "sourcePreparationMs": 41.7885,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 41.9232,
+      "bodyEndToIntentStartMs": 0.7611999994161991
+    },
+    {
+      "trial": 1,
+      "case": "single-4m",
+      "mode": "serial",
+      "processExitTailMs": 129.58419999995385,
+      "processExitWallMs": 980.4887999998755,
+      "launchToFirstRequestMs": 305.5757000001904,
+      "firstToLastBodyMs": 491.67059999672347,
+      "originRequests": 1,
+      "originBytesAtAppExit": 4194304,
+      "appInitEntryAfterLaunchMs": 45.77805000371882,
+      "acceptedFileReleaseMs": 0.02779999999999916,
+      "sourcePreparationMs": 0.205
+    },
+    {
+      "trial": 1,
+      "case": "single-64m",
+      "mode": "owned",
+      "processExitTailMs": 137.1957500014105,
+      "processExitWallMs": 8826.470650001284,
+      "launchToFirstRequestMs": 279.7491999990598,
+      "firstToLastBodyMs": 8355.588200000057,
+      "originRequests": 1,
+      "originBytesAtAppExit": 67108864,
+      "appInitEntryAfterLaunchMs": 47.722900002554525,
+      "acceptedFileReleaseMs": 0.04210000000000491,
+      "sourcePreparationMs": 34.4643,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 34.6132,
+      "bodyEndToIntentStartMs": 0.5651000005525546
+    },
+    {
+      "trial": 1,
+      "case": "single-64m",
+      "mode": "serial",
+      "processExitTailMs": 119.53284999981406,
+      "processExitWallMs": 8809.243349998724,
+      "launchToFirstRequestMs": 280.0870999999461,
+      "firstToLastBodyMs": 8355.584299999464,
+      "originRequests": 1,
+      "originBytesAtAppExit": 67108864,
+      "appInitEntryAfterLaunchMs": 45.753200003673555,
+      "acceptedFileReleaseMs": 0.03820000000000334,
+      "sourcePreparationMs": 0.1789
+    },
+    {
+      "trial": 1,
+      "case": "split-64m",
+      "mode": "owned",
+      "processExitTailMs": 310.22304999714834,
+      "processExitWallMs": 2414.875749997009,
+      "launchToFirstRequestMs": 283.6892999985139,
+      "firstToLastBodyMs": 1766.5057999984128,
+      "originRequests": 8,
+      "originBytesAtAppExit": 70115186,
+      "appInitEntryAfterLaunchMs": 46.56369999793242,
+      "acceptedFileReleaseMs": 0.041400000000010095,
+      "sourcePreparationMs": 70.7289,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 155.28459999999998,
+      "bodyEndToIntentStartMs": 0.6772999999656975
+    },
+    {
+      "trial": 1,
+      "case": "split-64m",
+      "mode": "serial",
+      "processExitTailMs": 264.1876499983482,
+      "processExitWallMs": 2413.542049998796,
+      "launchToFirstRequestMs": 273.7273999991885,
+      "firstToLastBodyMs": 1821.6203000010864,
+      "originRequests": 8,
+      "originBytesAtAppExit": 70382296,
+      "appInitEntryAfterLaunchMs": 44.80229999899166,
+      "acceptedFileReleaseMs": 0.030100000000004457,
+      "sourcePreparationMs": 0.2008
+    },
+    {
+      "trial": 2,
+      "case": "single-4m",
+      "mode": "serial",
+      "processExitTailMs": 199.04959999985294,
+      "processExitWallMs": 1057.5919000002614,
+      "launchToFirstRequestMs": 312.83320000147796,
+      "firstToLastBodyMs": 491.8087999976706,
+      "originRequests": 1,
+      "originBytesAtAppExit": 4194304,
+      "appInitEntryAfterLaunchMs": 49.01535000317381,
+      "acceptedFileReleaseMs": 0.04259999999999309,
+      "sourcePreparationMs": 0.182
+    },
+    {
+      "trial": 2,
+      "case": "single-4m",
+      "mode": "owned",
+      "processExitTailMs": 147.28239999749348,
+      "processExitWallMs": 974.9745999979496,
+      "launchToFirstRequestMs": 282.3845999992045,
+      "firstToLastBodyMs": 491.33200000142097,
+      "originRequests": 1,
+      "originBytesAtAppExit": 4194304,
+      "appInitEntryAfterLaunchMs": 45.613650006998796,
+      "acceptedFileReleaseMs": 0.039699999999996294,
+      "sourcePreparationMs": 22.3055,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 22.4375,
+      "bodyEndToIntentStartMs": 0.6248999996169005
+    },
+    {
+      "trial": 2,
+      "case": "single-64m",
+      "mode": "serial",
+      "processExitTailMs": 188.07255000137957,
+      "processExitWallMs": 8875.240050001594,
+      "launchToFirstRequestMs": 277.48869999777526,
+      "firstToLastBodyMs": 8355.786800002534,
+      "originRequests": 1,
+      "originBytesAtAppExit": 67108864,
+      "appInitEntryAfterLaunchMs": 43.39379999873927,
+      "acceptedFileReleaseMs": 0.028699999999986403,
+      "sourcePreparationMs": 0.2041
+    },
+    {
+      "trial": 2,
+      "case": "single-64m",
+      "mode": "owned",
+      "processExitTailMs": 201.51249999616994,
+      "processExitWallMs": 8897.854299997562,
+      "launchToFirstRequestMs": 286.2509000005957,
+      "firstToLastBodyMs": 8355.863799999497,
+      "originRequests": 1,
+      "originBytesAtAppExit": 67108864,
+      "appInitEntryAfterLaunchMs": 45.16020000301069,
+      "acceptedFileReleaseMs": 0.04159999999998831,
+      "sourcePreparationMs": 88.6196,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 88.7262,
+      "bodyEndToIntentStartMs": 0.6204000015905535
+    },
+    {
+      "trial": 2,
+      "case": "split-64m",
+      "mode": "serial",
+      "processExitTailMs": 241.14045000169426,
+      "processExitWallMs": 2413.1657500001893,
+      "launchToFirstRequestMs": 291.2920999988273,
+      "firstToLastBodyMs": 1826.8155000005208,
+      "originRequests": 8,
+      "originBytesAtAppExit": 69858548,
+      "appInitEntryAfterLaunchMs": 47.26184999526595,
+      "acceptedFileReleaseMs": 0.02909999999999968,
+      "sourcePreparationMs": 0.2043
+    },
+    {
+      "trial": 2,
+      "case": "split-64m",
+      "mode": "owned",
+      "processExitTailMs": 322.8401499982283,
+      "processExitWallMs": 2555.510750000394,
+      "launchToFirstRequestMs": 287.33370000190916,
+      "firstToLastBodyMs": 1890.800000001036,
+      "originRequests": 9,
+      "originBytesAtAppExit": 70473319,
+      "appInitEntryAfterLaunchMs": 45.43674999877112,
+      "acceptedFileReleaseMs": 0.040300000000002,
+      "sourcePreparationMs": 83.83210000000001,
+      "bodyAndIntentOverlapMs": 0,
+      "bodyWritebackMs": 152.8116,
+      "bodyEndToIntentStartMs": 0.6485999992446523
+    }
+  ],
+  "perQuery": [
+    {
+      "case": "single-4m",
+      "bodyWritebackMs": 34.0351,
+      "metadataQueries": [
+        {
+          "stage": "source-info-query",
+          "thread": 19240,
+          "startMs": 10.829549995833077,
+          "endMs": 44.70354999583308,
+          "durationMs": 33.874,
+          "portionAfterLastOriginByteMs": 33.874
+        },
+        {
+          "stage": "source-size-query",
+          "thread": 19240,
+          "startMs": 44.70424999453826,
+          "endMs": 44.70814999453826,
+          "durationMs": 0.003900000000001569,
+          "portionAfterLastOriginByteMs": 0.003900000000001569
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 19240,
+          "startMs": 44.74254999513505,
+          "endMs": 44.97154999513505,
+          "durationMs": 0.2289999999999992,
+          "portionAfterLastOriginByteMs": 0.2289999999999992
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 19240,
+          "startMs": 129.0021499953582,
+          "endMs": 129.1480499953582,
+          "durationMs": 0.1459000000000117,
+          "portionAfterLastOriginByteMs": 0.1459000000000117
+        }
+      ],
+      "bodyAndIntentOverlapMs": 0
+    },
+    {
+      "case": "single-64m",
+      "bodyWritebackMs": 85.4875,
+      "metadataQueries": [
+        {
+          "stage": "source-info-query",
+          "thread": 5868,
+          "startMs": 11.115549998066854,
+          "endMs": 96.46184999806685,
+          "durationMs": 85.3463,
+          "portionAfterLastOriginByteMs": 85.3463
+        },
+        {
+          "stage": "source-size-query",
+          "thread": 5868,
+          "startMs": 96.46224999596598,
+          "endMs": 96.46584999596598,
+          "durationMs": 0.0036000000000058208,
+          "portionAfterLastOriginByteMs": 0.0036000000000058208
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 5868,
+          "startMs": 96.49034999529249,
+          "endMs": 96.6719499952925,
+          "durationMs": 0.1816000000000031,
+          "portionAfterLastOriginByteMs": 0.1816000000000031
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 5868,
+          "startMs": 125.75604999801726,
+          "endMs": 126.02634999801727,
+          "durationMs": 0.270300000000006,
+          "portionAfterLastOriginByteMs": 0.270300000000006
+        }
+      ],
+      "bodyAndIntentOverlapMs": 0
+    },
+    {
+      "case": "split-64m",
+      "bodyWritebackMs": 158.635,
+      "metadataQueries": [
+        {
+          "stage": "source-info-query",
+          "thread": 23052,
+          "startMs": 76.91854999939096,
+          "endMs": 174.40914999939096,
+          "durationMs": 97.4906,
+          "portionAfterLastOriginByteMs": 97.4906
+        },
+        {
+          "stage": "source-size-query",
+          "thread": 23052,
+          "startMs": 174.4095499998366,
+          "endMs": 174.4132499998366,
+          "durationMs": 0.0037000000000091404,
+          "portionAfterLastOriginByteMs": 0.0037000000000091404
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 23052,
+          "startMs": 174.43795000144746,
+          "endMs": 174.64185000144747,
+          "durationMs": 0.2039000000000044,
+          "portionAfterLastOriginByteMs": 0.2039000000000044
+        },
+        {
+          "stage": "source-name-validation",
+          "thread": 23052,
+          "startMs": 201.1068499996327,
+          "endMs": 201.2678499996327,
+          "durationMs": 0.16100000000000136,
+          "portionAfterLastOriginByteMs": 0.16100000000000136
+        }
+      ],
+      "bodyAndIntentOverlapMs": 0
+    }
+  ],
+  "ownedRunsWithActualIntentBodyOverlap": 0,
+  "ownedRuns": 9,
+  "slowQueryIdentified": "GetFileInformationByHandle on the body file during FlushFileBuffers",
+  "kernelDiskFilterSchedulingCauseNotDistinguished": true,
+  "nextAction": "Capture source metadata and stable identity on the writer-excluding pin before asynchronous flush; avoid repeated pre-intent file queries while retaining post-join name/identity proof and recovery binding.",
+  "notAnIdmOrUninstrumentedComparison": true
+}

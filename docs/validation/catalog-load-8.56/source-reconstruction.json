@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeExists": true,
+      "beforeSha256": "5D867B93AABF4034ACE6CC6E3C7DD43C79FDBC3055EEA9EB1E92491B22C03BB7",
+      "afterSha256": "B1AFA12955BC23B72486F6D67B53D6128FCF48B8EB6036DB00BF49362D34DC9C",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Core.cpp",
+      "beforeExists": true,
+      "beforeSha256": "3D4443C02B70E0B2AC4E67BC6A69A6931CF2220CD1561D8E4A43B3E671DFAC90",
+      "afterSha256": "6A3AF651BE6531C9101BC25282A503A697259BE24B6E2A1C0E734CC7DBF952E3",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeExists": true,
+      "beforeSha256": "AB36376CC7B194B212949C058DDB47F81BB7F39A9E85AE5F2A0E04ECF9B34FBC",
+      "afterSha256": "3347828CC73B8BB54F65A0AE738333B3DD591FCB60E95BA1A1DD986D0D201B6A",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "939E827E57CA946E6907E674F6CDE0AF78DE7048F15037600C0D13AF88E84748",
+      "afterSha256": "BFA0548F683D967AB899323D542BAA290CB9A2E4CD413C29B4DD73FEBB1086BF",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "7AAFD26985F32242AADFB2BBE14C30F58DA4794B8C6EF23EC3750B1017247BC3",
+      "afterSha256": "E027A23A3EB1FDCB5F09CADD1A0F59B4050505DAB4620825412E655D83ABE708",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/CatalogLoadTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "68FD570BB20C7380CD7CE498B88BB76699AAB122C7E047659B1DB5B20EDD050A",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/catalog-load-8.55-to-8.56.patch",
+  "patchSha256": "5E3A1783DE33AEFA13EC993870EBD5AF6612DADA341F9E9580DF31D1AE1E2682",
+  "verifiedBothDirections": true,
+  "scope": "Five exact existing source inputs from qualified 8.55 plus one new catalog-load fixture; normalized patch and per-side line endings reconstruct raw bytes."
+}

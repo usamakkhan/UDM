@@ -1,0 +1,32 @@
+{
+  "label": "9.62 writer-excluding file-object handoff versus frozen 9.60 and IDM",
+  "trial": 1,
+  "case": "split-64m",
+  "client": "idm",
+  "bytes": 67108864,
+  "configuredConnections": 8,
+  "firstAvailabilityTailSeconds": 0.14002520000030927,
+  "processExitTailSeconds": 0.4139629499986768,
+  "processExitWallSeconds": 3.4447425499984092,
+  "firstAvailabilityWallSeconds": 3.1708048000000417,
+  "exitAfterFirstAvailabilitySeconds": 0.2739377499983675,
+  "clockMappingErrorBoundSeconds": 7.050000021990854e-06,
+  "clockDriftSeconds": 3.5500013377820494e-06,
+  "trackedProcesses": 1,
+  "requests": 15,
+  "originConnections": 15,
+  "peakConcurrent": 9,
+  "originBytes": 69228342,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 1.0724711000002571,
+  "durableWallSeconds": 4.10325069999999,
+  "postExitToDurableSeconds": 0.6585081500015804,
+  "postExitOperations": {
+    "openSeconds": 8.019999950192869e-05,
+    "flushSeconds": 0.6343926999998075,
+    "closeSeconds": 5.469999996421393e-05
+  }
+}

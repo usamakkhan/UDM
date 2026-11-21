@@ -1,0 +1,253 @@
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -361,5 +361,9 @@
+   {
+     "source": "RecoveryPruningTests",
+     "timeoutSeconds": 120
++  },
++  {
++    "source": "QueueSnapshotTests",
++    "timeoutSeconds": 120
+   }
+ ]
+--- a/native/Queue.cpp
++++ b/native/Queue.cpp
+@@ -14,6 +14,16 @@
+ namespace udm {
+ static bool queuedMember(const Json& job){
+  return yes(job,"QueueMember",str(job,"Status")!="Complete");
++}
++// Clone current members, preparing prefetches and Start's review erasures.
++// Passive completed rows can retain this queue label without owning work.
++enum class QueueRollbackScope { Startup, Start, Stop };
++static std::vector<std::pair<JobPtr,Json>> snapshotQueueRows(const std::vector<JobPtr>& jobs,const std::set<std::string>& names,QueueRollbackScope scope){
++ std::vector<std::pair<JobPtr,Json>> saved;
++ for(const auto& job:jobs)if(names.count(str(job->data,"Queue"))&&
++    (queuedMember(job->data)||(scope!=QueueRollbackScope::Stop&&job->prefetchDeferring)||
++     (scope==QueueRollbackScope::Start&&job->data.contains("ServerRetryRequiresReview"))))saved.emplace_back(job,job->data);
++ return saved;
+ }
+ bool Manager::canStopQueue(const std::string& name)const{
+  Lock lock(mutex);
+@@ -285,7 +295,7 @@
+  Lock l(mutex);
+  if(std::none_of(state["Queues"].begin(),state["Queues"].end(),[&](const Json& q){return str(q,"Name")==name;}))throw std::runtime_error("Queue no longer exists.");
+  bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousCycling=cyclingQueues;auto previousFailures=cycleFailed;auto previousPaused=schedulePaused;
+- std::vector<Json> previousJobs;for(auto job:jobs)previousJobs.push_back(job->data);
++ auto previousJobs=snapshotQueueRows(jobs,{name},enabled?QueueRollbackScope::Start:QueueRollbackScope::Stop);
+  std::vector<std::shared_ptr<Cancel>> pendingStops;
+  try{
+   for(auto& q:state["Queues"])if(str(q,"Name")==name){q["Enabled"]=enabled;if(!enabled){q["DailyRunUntilComplete"]=false;q["CompletionCanceled"]=true;}if(enabled)armIndependentStop(q,q,epoch(),true);armDailyManualStop(q,q,epoch(),enabled,true);}
+@@ -301,7 +311,7 @@
+   save();
+  }catch(...){
+   if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cyclingQueues=previousCycling;cycleFailed=previousFailures;schedulePaused=previousPaused;
+-  for(size_t i=0;i<jobs.size();++i)jobs[i]->data=previousJobs[i];
++  for(auto& entry:previousJobs)entry.first->data.swap(entry.second);
+   throw;
+  }
+  if(!enabled)queueActivity(name,false);
+@@ -310,15 +320,18 @@
+ }
+ void Manager::startQueuesOnStartup(){
+  Lock lock(mutex);if(startupQueuesApplied||stopping)return;
+- bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousFailures=cycleFailed;
+- std::vector<Json> previousJobs;for(auto job:jobs)previousJobs.push_back(job->data);
++ std::set<std::string> startupNames;
++ for(const auto& queue:state["Queues"])if(queue.contains("StartOnStartup")&&queue["StartOnStartup"].is_boolean()&&yes(queue,"StartOnStartup"))startupNames.insert(str(queue,"Name"));
++ if(startupNames.empty()){startupQueuesApplied=true;updateWakeTimer(epoch());return;}
++ bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousFailures=cycleFailed;auto previousPaused=schedulePaused;
++ auto previousJobs=snapshotQueueRows(jobs,startupNames,QueueRollbackScope::Startup);
+  bool changed=false;
+  try{
+   for(auto& q:state["Queues"])if(q.contains("StartOnStartup")&&q["StartOnStartup"].is_boolean()&&yes(q,"StartOnStartup")){
+    auto name=str(q,"Name");q["Enabled"]=true;armIndependentStop(q,q,epoch(),true);armDailyManualStop(q,q,epoch(),true,true);manualQueues.insert(name);prepareQueue(name);changed=true;
+   }
+   if(changed)save();startupQueuesApplied=true;
+- }catch(...){if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cycleFailed=previousFailures;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=previousJobs[i];throw;}
++ }catch(...){if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cycleFailed=previousFailures;schedulePaused=previousPaused;for(auto& entry:previousJobs)entry.first->data.swap(entry.second);throw;}
+  updateWakeTimer(epoch());
+ }
+ // The caller holds the catalog lock while deciding and recording the outcome.
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,54,0,0
+-#define UDM_VERSION_STRING "8.54"
+-#define UDM_VERSION_WSTRING L"8.54"
++#define UDM_VERSION_TUPLE 8,55,0,0
++#define UDM_VERSION_STRING "8.55"
++#define UDM_VERSION_WSTRING L"8.55"
+--- a/native/WakeChecks.hpp
++++ b/native/WakeChecks.hpp
+@@ -92,7 +92,7 @@
+   timer.update(Json::array({q}),{},now+3);check(str(timer.snapshot(),"Status")=="Waiting"&&!timer.signaled(),"Removing all queue work cancels the Windows wake timer");
+   q["WakeComputer"]=false;timer.update(Json::array({q}),jobs,now+4);check(str(timer.snapshot(),"Status")=="Off","Clearing wake opt-in cancels the timer immediately");q["WakeComputer"]=true;
+  }
+- {Manager m(root/L"wake-manager");auto bad=q;bad["WakeComputer"]="true";auto before=m.state["Queues"];rejects([&]{m.setQueue(bad);},"Queue validation rejects a non-boolean wake setting");check(m.state["Queues"]==before,"Invalid wake setting preserves saved queues");
++ {Manager m(root/L"wake-manager");q["Synchronize"]=false;auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8((root/L"wake-files").wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);auto bad=q;bad["WakeComputer"]="true";auto before=m.state["Queues"];rejects([&]{m.setQueue(bad);},"Queue validation rejects a non-boolean wake setting");check(m.state["Queues"]==before,"Invalid wake setting preserves saved queues");
+   auto j=m.add("https://example.invalid/file","","wake.bin","Main queue",true);q["StartOnceUtc"]=date(epoch()+120000);m.setQueue(q);
+   check(str(m.queueWakeStatus(),"Status")=="Armed"||str(m.queueWakeStatus(),"Status")=="Unsupported","Applying a queue registers its wake without a UI polling delay");
+   auto blocked=m.root/L"state.json.tmp";fs::create_directory(blocked);auto disabled=q;disabled["WakeComputer"]=false;rejects([&]{m.setQueue(disabled);},"Failed settings persistence does not apply a wake change");fs::remove(blocked);
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.18",
++  "version": "0.72.19",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.18",
++  "version": "0.72.19",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/QueueSnapshotTests.cpp
++++ b/native/QueueSnapshotTests.cpp
+@@ -0,0 +1,80 @@
++#include "Core.hpp"
++#include "OptionsModel.hpp"
++#include "Catalog.hpp"
++#include "QueueWake.hpp"
++#include <ws2tcpip.h>
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void observe(Manager& m,std::function<void(const char*)> fn){Lock lock(m.mutex);m.catalogCheckpoint=std::move(fn);}
++ static std::set<std::string> paused(Manager& m){Lock lock(m.mutex);return m.schedulePaused;}
++ static void seedPause(Manager& m,const std::string& id){Lock lock(m.mutex);m.schedulePaused.insert(id);}
++ static void dropWakeTimer(Manager& m){Lock lock(m.mutex);m.wakeTimer.reset();}
++ static bool applied(Manager& m){Lock lock(m.mutex);return m.startupQueuesApplied;}
++ static void active(Manager& m,const JobPtr& job,const std::shared_ptr<Cancel>& token){Lock lock(m.mutex);if(token)m.active[job->id()]=token;else m.active.erase(job->id());}
++};}
++using namespace udm;
++static Json checks=Json::array();
++static void check(bool value,const std::string& name){checks.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);}
++template<class F>static void rejects(F work,const std::string& name){bool refused=false;try{work();}catch(...){refused=true;}check(refused,name);}
++// Adapter for the existing startup/export checks: a bounded owned HTTP origin.
++class Fixture {
++ SOCKET listener=INVALID_SOCKET;std::thread worker;std::vector<std::thread> clients;std::atomic_bool stopping=false;unsigned short port=0;
++public:
++ const std::string payload="owned startup queue payload";std::atomic_uint requests=0;
++ Fixture(){listener=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);if(listener==INVALID_SOCKET)throw std::runtime_error("Cannot create fixture socket");sockaddr_in address{};address.sin_family=AF_INET;address.sin_addr.s_addr=htonl(INADDR_LOOPBACK);if(bind(listener,reinterpret_cast<sockaddr*>(&address),sizeof(address))||listen(listener,16))throw std::runtime_error("Cannot bind fixture");int length=sizeof(address);getsockname(listener,reinterpret_cast<sockaddr*>(&address),&length);port=ntohs(address.sin_port);
++  worker=std::thread([this]{while(!stopping){auto client=accept(listener,nullptr,nullptr);if(client==INVALID_SOCKET)break;clients.emplace_back([this,client]{DWORD timeout=2000;setsockopt(client,SOL_SOCKET,SO_RCVTIMEO,reinterpret_cast<const char*>(&timeout),sizeof(timeout));std::string request;char buffer[4096];while(request.find("\r\n\r\n")==std::string::npos&&request.size()<32768){const auto got=recv(client,buffer,sizeof(buffer),0);if(got<=0)break;request.append(buffer,got);}++requests;const auto reply="HTTP/1.1 200 OK\r\nContent-Length: "+std::to_string(payload.size())+"\r\nContent-Type: application/octet-stream\r\nAccept-Ranges: none\r\nConnection: close\r\n\r\n"+payload;for(size_t at=0;at<reply.size();){const auto sent=send(client,reply.data()+at,static_cast<int>(reply.size()-at),0);if(sent<=0)break;at+=sent;}shutdown(client,SD_BOTH);closesocket(client);});}});
++ }
++ ~Fixture(){stopping=true;shutdown(listener,SD_BOTH);closesocket(listener);if(worker.joinable())worker.join();for(auto& client:clients)if(client.joinable())client.join();}
++ std::string url(const std::string& path)const{return "http://127.0.0.1:"+std::to_string(port)+path;}
++};
++#include "StartupExportChecks.hpp"
++#include "WakeChecks.hpp"
++static JobPtr row(const fs::path& folder,const std::string& queue,const std::string& name){return std::make_shared<Job>(Json{{"Id",guid()},{"Url","http://127.0.0.1:9/not-started"},{"Folder",utf8(folder.wstring())},{"FileName",name},{"Queue",queue},{"Status","Paused"},{"QueueMember",true},{"Size",-1},{"Received",0},{"Segments",Json::array()}});}
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);WSADATA sockets{};if(WSAStartup(MAKEWORD(2,2),&sockets))return 3;CoInitializeEx(nullptr,COINIT_MULTITHREADED);
++ Json cases=Json::array();std::string error,active;
++ try{
++  for(const std::string mode:{"startup","start","stop"})for(const std::string fault:{"none","actual-write-failure","flushed-failure","unrelated-current"}){
++   active=mode+"/"+fault;const auto folder=root/wide(mode+"-"+fault);Manager m(folder/L"catalog");const auto files=folder/L"files";fs::create_directories(files);
++   auto queue=defaultQueue();queue["Enabled"]=false;queue["StartOnStartup"]=true;m.setQueue(queue);auto archive=defaultQueue("Archive");archive["Enabled"]=false;m.setQueue(archive);
++   auto a=row(files,"Main queue","a.bin"),b=row(files,"Main queue","b.bin"),other=row(files,"Archive","other.bin");other->data["Description"]="original unrelated metadata";
++   auto passive=row(files,"Main queue","history.bin");passive->data["Status"]="Complete";passive->data["QueueMember"]=false;passive->data["Description"]="original passive metadata";const auto passiveBefore=passive->data;
++   m.jobs={a,other,passive,b};if(mode!="stop")a->prefetchDeferring=true;CatalogCheckpointTestAccess::seedPause(m,other->id());m.save();
++   const auto beforeA=a->data,beforeB=b->data,beforeOther=other->data,beforeQueues=m.state["Queues"];const auto beforePause=CatalogCheckpointTestAccess::paused(m);
++   auto token=std::make_shared<Cancel>();if(mode=="stop")CatalogCheckpointTestAccess::active(m,b,token);
++   const auto temp=m.root/L"state.json.tmp";if(fault=="actual-write-failure")fs::create_directory(temp);
++   CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(fault!="none"&&fault!="actual-write-failure"&&std::string_view(point)=="temporary-flushed"){if(fault=="unrelated-current"){other->data["Description"]="new unrelated metadata";passive->data["Description"]="new passive metadata";m.state["Settings"]["QueueSnapshotMarker"]="current";}throw std::runtime_error("Owned queue checkpoint failure");}});
++   bool refused=false;try{if(mode=="startup")m.startQueuesOnStartup();else m.queueRun("Main queue",mode=="start");}catch(...){refused=true;}CatalogCheckpointTestAccess::observe(m,{});if(fault=="actual-write-failure")fs::remove(temp);
++   check(refused==(fault!="none"),"Queue preparation reports actual and observed persistence refusal");
++   if(refused){
++    check(a->data==beforeA&&b->data==beforeB&&m.state["Queues"]==beforeQueues,"Failed queue preparation restores only its affected job and queue state");
++    check(CatalogCheckpointTestAccess::paused(m)==beforePause,"Failed startup/start/stop restores the exact transient pause set");
++    check(!token->stop,"Failed Stop never cancels a live worker before persistence");
++    check(fault=="unrelated-current"?str(other->data,"Description")=="new unrelated metadata":other->data==beforeOther,"Rollback preserves independent unrelated current metadata");
++    if(fault=="unrelated-current")check(str(m.state["Settings"],"QueueSnapshotMarker")=="current","Rollback preserves unrelated current settings");
++    if(mode=="startup"){check(!CatalogCheckpointTestAccess::applied(m),"Failed startup remains eligible for explicit retry");m.startQueuesOnStartup();check(CatalogCheckpointTestAccess::applied(m)&&str(a->data,"Status")=="Queued","Healthy retry prepares startup members after exact rollback");}
++   }else{
++    check(other->data==beforeOther,"Successful queue preparation leaves unrelated history untouched");
++    check(mode=="stop"?token->stop.load():(str(a->data,"Status")=="Queued"&&str(b->data,"Status")=="Queued"),"Only accepted start/stop changes admission or worker cancellation");
++    const auto saved=Json::parse(readText(m.root/L"state.json"));check(saved["Queues"]==m.state["Queues"],"Accepted queue settings are actually persisted");
++   }
++   check(fault=="unrelated-current"?str(passive->data,"Description")=="new passive metadata":passive->data==passiveBefore,"Queue rollback preserves passive same-label history and its independent metadata");
++   a->prefetchDeferring=false;CatalogCheckpointTestAccess::active(m,b,{});m.stop();cases.push_back({{"mode",mode},{"fault",fault},{"refused",refused}});
++  }
++  for(const bool fail:{false,true}){
++   active=fail?"passive-review-refusal":"passive-review-acceptance";Manager m(root/wide(active));auto job=row(root/L"passive-review/files","Main queue","history.bin");job->data["Status"]="Complete";job->data["QueueMember"]=false;job->data["ServerRetryRequiresReview"]=true;m.jobs.push_back(job);m.save();const auto before=job->data;const auto blocked=m.root/L"state.json.tmp";if(fail)fs::create_directory(blocked);bool refused=false;try{m.queueRun("Main queue",true);}catch(...){refused=true;}if(fail)fs::remove(blocked);
++   check(refused==fail,"Review clearing reports an actual catalog persistence refusal");check(fail?job->data==before:!job->data.contains("ServerRetryRequiresReview"),"Start snapshots a passive row when it really clears its retry-review field");m.stop();
++  }
++  {
++   active="no-opt-in";Manager m(root/L"no-opt-in/catalog");auto queue=m.state["Queues"][0];queue["Enabled"]=false;queue["StartOnStartup"]=false;m.setQueue(queue);auto job=row(root/L"no-opt-in/files","Main queue","pending.bin");m.jobs.push_back(job);m.save();const auto before=m.snapshot();const auto beforeHash=fileHash(m.root/L"state.json");const auto blocked=m.root/L"state.json.tmp";fs::create_directory(blocked);m.startQueuesOnStartup();check(m.snapshot()==before&&fileHash(m.root/L"state.json")==beforeHash,"No opted-in queue performs no catalog write or record mutation");check(CatalogCheckpointTestAccess::applied(m),"No-op startup still consumes the session's once-only trigger");fs::remove(blocked);
++   queue["StartOnStartup"]=true;m.setQueue(queue);const auto later=m.snapshot();m.startQueuesOnStartup();check(m.snapshot()==later&&str(job->data,"Status")=="Paused","Enabling startup preference later does not run it in the current session");m.stop();
++  }
++  {
++   active="wake-without-startup-opt-in";Manager m(root/L"wake-only/catalog");auto job=row(root/L"wake-only/files","Main queue","waiting.bin");m.jobs.push_back(job);auto queue=defaultQueue();queue["WakeComputer"]=true;queue["RunOnce"]=true;queue["StartOnceUtc"]=date(epoch()+120000);queue["StartOnStartup"]=false;m.setQueue(queue);CatalogCheckpointTestAccess::dropWakeTimer(m);m.startQueuesOnStartup();
++   check(str(m.queueWakeStatus(),"Status")=="Armed"||str(m.queueWakeStatus(),"Status")=="Unsupported","No-op queue startup still initializes an eligible scheduled wake timer");m.stop();check(str(m.queueWakeStatus(),"Status")=="Off","The owned startup wake timer is canceled on shutdown");
++  }
++  {active="existing-wake";wakeChecks(root/L"existing-wake");}
++  {active="existing-startup-export";Fixture fixture;startupExportChecks(root/L"existing",fixture);cases.push_back({{"mode","existing-startup-export"},{"requests",fixture.requests.load()}});}
++ }catch(const std::exception& failure){error=failure.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"case",active},{"checks",checks},{"cases",cases},{"systemActionsExecuted",false}}.dump(2),false);CoUninitialize();WSACleanup();std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}
+--- a/benchmarks/speed/queue_startup_control.cpp
++++ b/benchmarks/speed/queue_startup_control.cpp
+@@ -0,0 +1,53 @@
++// Owned API-phase benchmark and failed-startup rollback control. No network IO.
++#include "Core.hpp"
++#include "Version.hpp"
++#include <iostream>
++#include <iomanip>
++#include <sstream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void reset(Manager& m){Lock lock(m.mutex);m.startupQueuesApplied=false;m.manualQueues.clear();m.cyclingQueues.clear();m.cycleFailed.clear();m.schedulePaused.clear();m.state.erase("CompletionWorkEpoch");}
++ static void batch(Manager& m,bool value){Lock lock(m.mutex);m.catalogTransaction=value;}
++ static bool paused(Manager& m,const JobPtr& job){Lock lock(m.mutex);return m.schedulePaused.count(job->id())!=0;}
++};}
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
++ Json cases=Json::array();std::string error;
++ try{
++  for(const size_t count:{size_t(0),size_t(2500),size_t(7500)}){
++   Manager m(root/std::to_wstring(count));auto other=defaultQueue("Archive");m.state["Queues"].push_back(other);
++   const std::string payload(2048,'x');std::vector<JobPtr> history;
++   for(size_t index=0;index<count;++index){std::ostringstream id;id<<std::hex<<std::setw(32)<<std::setfill('0')<<index;
++    auto job=std::make_shared<Job>(Json{{"Id",id.str()},{"Folder",utf8(root.wstring())},{"FileName","history-"+std::to_string(index)+".bin"},{"Status","Complete"},{"Queue","Archive"},{"QueueMember",false},{"Description",payload}});history.push_back(job);m.jobs.push_back(job);
++   }
++   std::vector<JobPtr> chosen;for(unsigned i=0;i<2;++i){auto job=std::make_shared<Job>(Json{{"Id",guid()},{"Folder",utf8(root.wstring())},{"FileName","chosen-"+std::to_string(i)+".bin"},{"Status","Paused"},{"Queue","Main queue"},{"QueueMember",true}});chosen.push_back(job);m.jobs.push_back(job);}
++   const auto queues=m.state["Queues"];const auto first=chosen[0]->data,second=chosen[1]->data;
++   for(const std::string mode:{"no-startup","batch-start","batch-stop","main-batch-start","main-batch-stop"}){
++    const std::string historyQueue=mode.rfind("main-",0)==0?"Main queue":"Archive";for(const auto& job:history)job->data["Queue"]=historyQueue;
++    Json samples=Json::array();
++    for(unsigned trial=0;trial<5;++trial){
++     CatalogCheckpointTestAccess::reset(m);m.state["Queues"]=queues;chosen[0]->data=first;chosen[1]->data=second;
++     CatalogCheckpointTestAccess::batch(m,mode!="no-startup");ULONG64 before=0,after=0;
++     if(!QueryThreadCycleTime(GetCurrentThread(),&before))throw std::runtime_error("Cannot read CPU cycle counter");
++     const auto start=std::chrono::steady_clock::now();
++     if(mode=="no-startup")m.startQueuesOnStartup();else m.queueRun("Main queue",(mode=="batch-start"||mode=="main-batch-start"));
++     const auto seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
++     if(!QueryThreadCycleTime(GetCurrentThread(),&after))throw std::runtime_error("Cannot read CPU cycle counter");
++     samples.push_back({{"trial",trial},{"seconds",seconds},{"threadCycles",after-before}});
++     for(const auto& job:history)if(str(job->data,"Description")!=payload||str(job->data,"Status")!="Complete"||str(job->data,"Queue")!=historyQueue||yes(job->data,"QueueMember"))throw std::runtime_error("Unrelated history changed");
++    }
++    cases.push_back({{"mode",mode},{"retainedHistoryQueue",historyQueue},{"unrelatedHistoryRows",count},{"historyDescriptionBytes",count*payload.size()},{"selectedRows",2},{"samples",samples},{"catalogBatchDefersIo",mode!="no-startup"}});
++   }
++   CatalogCheckpointTestAccess::batch(m,false);CatalogCheckpointTestAccess::reset(m);m.jobs.clear();m.stop();
++  }
++  {
++   Manager m(root/L"rollback");auto queue=m.state["Queues"][0];queue["StartOnStartup"]=true;m.setQueue(queue);
++   auto job=m.add("http://127.0.0.1:9/never-started",utf8((root/L"rollback-files").wstring()),"queued.bin","Main queue",true);job->prefetchDeferring=true;const auto before=job->data;
++   fs::create_directory(m.root/L"state.json.tmp");bool refused=false;try{m.startQueuesOnStartup();}catch(...){refused=true;}fs::remove(m.root/L"state.json.tmp");
++   if(!refused||job->data!=before)throw std::runtime_error("The actual failed catalog write did not restore job data");
++   cases.push_back({{"mode","failed-startup-prefetch"},{"actualCatalogWriteRefused",refused},{"jobRestored",job->data==before},{"pauseHintLeaked",CatalogCheckpointTestAccess::paused(m,job)}});job->prefetchDeferring=false;m.stop();
++  }
++ }catch(const std::exception& failure){error=failure.what();}
++ const Json result={{"passed",error.empty()},{"error",error},{"compiledVersion",UDM_VERSION_STRING},{"cases",cases},{"scope","API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."},{"networkRequests",0}};
++ atomicText(root/L"results.json",result.dump(2),false);std::cout<<result.dump()<<"\n";return error.empty()?0:1;
++}

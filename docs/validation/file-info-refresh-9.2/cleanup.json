@@ -1,0 +1,835 @@
+{
+  "passed": true,
+  "ownedRoots": [
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 19103
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-DownloadRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 31605
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-ZipCompletionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 4737
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoZipTaskTests",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 14448
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-PrefetchedZipReadTaskTests",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 9565
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoPreviewTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 7535
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoInitialTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 12516
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-BrowserPresentationAcksTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 11041
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoBindingTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 65582
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-IndependentFinishingTests",
+      "filesRemoved": 6,
+      "logicalBytesRemoved": 3179217
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoPrefetchTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4251008
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoDisplayTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10794
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-NetworkCaptureSessionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8794
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-MonitorReconnectTests",
+      "filesRemoved": 22,
+      "logicalBytesRemoved": 642619
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-DuplicateDecisionTaskTests",
+      "filesRemoved": 9,
+      "logicalBytesRemoved": 2147450
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-ResumeSelectionTaskTests",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 5303824
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-RequestedAuthenticationTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 2128228
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-AuthenticationLoginTaskTests",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 5298035
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FileInfoDecisionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10184
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-AuthenticationPromptTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 2130919
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-AutomaticPromptSnapshotTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 19121
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-ModelMaintenanceTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 6178
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-UiTaskSignalTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 692
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-LaunchQueueTests",
+      "filesRemoved": 11,
+      "logicalBytesRemoved": 38232
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-HistoryReadSnapshotTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 6993
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-FindFilterCacheTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 5925
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-DownloadListTooltipTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 3824
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-ModalSizeRefreshTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 4767
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-WrittenBodyCacheTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 14193
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-DataOnlyWritebackTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 10233
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-PrefinishWritebackTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 1055626
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-CatalogDiskCreditTests",
+      "filesRemoved": 12,
+      "logicalBytesRemoved": 63898
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-CompletedCheckpointTests",
+      "filesRemoved": 31,
+      "logicalBytesRemoved": 1063086
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-CatalogCheckpointTests",
+      "filesRemoved": 33,
+      "logicalBytesRemoved": 86258
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-PublicationPreparationTests",
+      "filesRemoved": 59,
+      "logicalBytesRemoved": 163104
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-PublicationOwnershipTests",
+      "filesRemoved": 64,
+      "logicalBytesRemoved": 213818
+    },
+    {
+      "scope": "owned-data-writeback-9.2-C-PublicationRecoveryTests",
+      "filesRemoved": 75,
+      "logicalBytesRemoved": 207155
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 18308
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-DownloadRefreshTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 30439
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-ZipCompletionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 4737
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoZipTaskTests",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 14342
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-PrefetchedZipReadTaskTests",
+      "filesRemoved": 4,
+      "logicalBytesRemoved": 9459
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoPreviewTaskTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 7482
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoInitialTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 12251
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-BrowserPresentationAcksTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10935
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoBindingTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 63462
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-IndependentFinishingTests",
+      "filesRemoved": 6,
+      "logicalBytesRemoved": 3178843
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoPrefetchTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 4249906
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoDisplayTaskTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 10688
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-NetworkCaptureSessionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 8794
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-MonitorReconnectTests",
+      "filesRemoved": 22,
+      "logicalBytesRemoved": 641246
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-DuplicateDecisionTaskTests",
+      "filesRemoved": 9,
+      "logicalBytesRemoved": 2145989
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-ResumeSelectionTaskTests",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 5302697
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-RequestedAuthenticationTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 2127940
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-AuthenticationLoginTaskTests",
+      "filesRemoved": 8,
+      "logicalBytesRemoved": 5297165
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FileInfoDecisionTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 9760
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-AuthenticationPromptTaskTests",
+      "filesRemoved": 7,
+      "logicalBytesRemoved": 2130610
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-AutomaticPromptSnapshotTests",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 17637
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-ModelMaintenanceTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 6125
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-UiTaskSignalTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 692
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-LaunchQueueTests",
+      "filesRemoved": 11,
+      "logicalBytesRemoved": 38073
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-HistoryReadSnapshotTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 6993
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-FindFilterCacheTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 5923
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-DownloadListTooltipTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 3824
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-ModalSizeRefreshTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 4661
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-WrittenBodyCacheTests",
+      "filesRemoved": 1,
+      "logicalBytesRemoved": 14193
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-DataOnlyWritebackTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 10233
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-PrefinishWritebackTests",
+      "filesRemoved": 2,
+      "logicalBytesRemoved": 1055626
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-CatalogDiskCreditTests",
+      "filesRemoved": 12,
+      "logicalBytesRemoved": 63262
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-CompletedCheckpointTests",
+      "filesRemoved": 31,
+      "logicalBytesRemoved": 1061140
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-CatalogCheckpointTests",
+      "filesRemoved": 33,
+      "logicalBytesRemoved": 86152
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-PublicationPreparationTests",
+      "filesRemoved": 59,
+      "logicalBytesRemoved": 158281
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-PublicationOwnershipTests",
+      "filesRemoved": 64,
+      "logicalBytesRemoved": 206769
+    },
+    {
+      "scope": "owned-data-writeback-9.2-D-PublicationRecoveryTests",
+      "filesRemoved": 75,
+      "logicalBytesRemoved": 201113
+    },
+    {
+      "scope": "owned-modal-ui-9.2",
+      "filesRemoved": 13,
+      "logicalBytesRemoved": 6432665
+    },
+    {
+      "scope": "owned-pending-ui-9.2",
+      "filesRemoved": 46,
+      "logicalBytesRemoved": 242165
+    },
+    {
+      "scope": "owned-progress-menu-ui-9.2",
+      "filesRemoved": 23,
+      "logicalBytesRemoved": 88154
+    },
+    {
+      "scope": "owned-refresh-preflight-9.2",
+      "filesRemoved": 3,
+      "logicalBytesRemoved": 18743
+    }
+  ],
+  "temporaryBuildFiles": [
+    {
+      "name": "Udm.FileInfoRefreshTaskTests.exe",
+      "bytes": 2230272,
+      "sha256": "0FAFCFEB29C1DFC77A635443F8454208D6E7825174AA6B1EC25022BBBE7DBD8C"
+    },
+    {
+      "name": "Udm.DownloadRefreshTaskTests-9.2.exe",
+      "bytes": 2722304,
+      "sha256": "D05B3A888C7E15A70AACCCF01D9F4A1B9317DC7D5FA1FD05CB687D9E1641D3DB"
+    },
+    {
+      "name": "Udm.ZipCompletionTests.exe",
+      "bytes": 2610176,
+      "sha256": "CF475526F99E26785E1C842D89E8163E54C76360777A088DD3E72EFDBA088870"
+    },
+    {
+      "name": "Udm.FileInfoZipTaskTests.exe",
+      "bytes": 4989952,
+      "sha256": "57AFDDDC4CF8149275E56436B7AF8FFF8F2FA19FD067E9279FE1AA2C04E181BA"
+    },
+    {
+      "name": "Udm.PrefetchedZipReadTaskTests.exe",
+      "bytes": 2196480,
+      "sha256": "CE4340A1698F5B0CFCC9A0EEE16B9A78C48E959033294EDA5DEDC427866AEB05"
+    },
+    {
+      "name": "Udm.FileInfoPreviewTaskTests.exe",
+      "bytes": 2841088,
+      "sha256": "8C8B58F38E1EA07A7C837ECACBD43D99642FF27C28D43C6366448FFFA2DB79E2"
+    },
+    {
+      "name": "Udm.FileInfoInitialTaskTests.exe",
+      "bytes": 2233856,
+      "sha256": "639B88E28AB8184FABB5A7879FFC18F71DF1D126F29A419AC443D98C7A5F423A"
+    },
+    {
+      "name": "Udm.BrowserPresentationAcksTests.exe",
+      "bytes": 2192896,
+      "sha256": "E820A8FD194044DD0ED60AFB42C01F952FE6AD6360D6D688FB4475001756A0AE"
+    },
+    {
+      "name": "Udm.FileInfoBindingTaskTests.exe",
+      "bytes": 2250240,
+      "sha256": "4612FB11DAB2DA2B2C21336A28AF2D1FD4DEAE2CAEE75A0CE6DF9C1744F25939"
+    },
+    {
+      "name": "Udm.IndependentFinishingTests.exe",
+      "bytes": 5178880,
+      "sha256": "7B67AD56CB2DEE039C09741EB08E0544437E7BA2FC0F6954B2E45D5FD8EC8DC8"
+    },
+    {
+      "name": "Udm.FileInfoPrefetchTaskTests.exe",
+      "bytes": 5324800,
+      "sha256": "A273C49C2CBFFAF1944BD430BD059DA9D67B14C4B68CD72BA3FB207D5B3A2BFD"
+    },
+    {
+      "name": "Udm.FileInfoDisplayTaskTests.exe",
+      "bytes": 2202624,
+      "sha256": "7A55E640E844C41ADCA771A3E29AA4DE6D733B8D743BD8716A4818243C5A320C"
+    },
+    {
+      "name": "Udm.NetworkCaptureSessionTests.exe",
+      "bytes": 2029568,
+      "sha256": "895291CDAF2A5B96C3731819C09E678A93BC98F7E179D8CDB47298397A3C7BE6"
+    },
+    {
+      "name": "Udm.MonitorReconnectTests.exe",
+      "bytes": 2463232,
+      "sha256": "EC84FEC0D1055509AF1E5AEA6AD9354386ED2F37EAF725E03D2A449D37691EC3"
+    },
+    {
+      "name": "Udm.DuplicateDecisionTaskTests.exe",
+      "bytes": 5233664,
+      "sha256": "D9C115AC802869DFBF4B73F6759F9D283DCD086C1B33874CBE8E7C7D57CBE81D"
+    },
+    {
+      "name": "Udm.ResumeSelectionTaskTests.exe",
+      "bytes": 5231616,
+      "sha256": "61C8929C76F47F100DE8955E8F3BEEDBCE80D9B533F5BF172C53F9B0E4D6B3D2"
+    },
+    {
+      "name": "Udm.RequestedAuthenticationTaskTests.exe",
+      "bytes": 5233664,
+      "sha256": "5AE1F889E506B0E7C534490A3CF6F7B08BD55D9A44C55FAF5898B6E0E8E3FBE5"
+    },
+    {
+      "name": "Udm.AuthenticationLoginTaskTests.exe",
+      "bytes": 5225472,
+      "sha256": "D7C78E14D936F6A124C4FEF1FE897D1E46128089129F6D26DC0FFB74CC9F4C69"
+    },
+    {
+      "name": "Udm.FileInfoDecisionTests.exe",
+      "bytes": 5186048,
+      "sha256": "310A3CCBAB190D61134621FBA4908BDFA7CD91CB2C0EA1558B9F95F56123CCBD"
+    },
+    {
+      "name": "Udm.AuthenticationPromptTaskTests.exe",
+      "bytes": 5224448,
+      "sha256": "F121404D1DB48D92E6FF6633BEAB0B2560E8BCAAA22C22D19A9DF5E081737E80"
+    },
+    {
+      "name": "Udm.AutomaticPromptSnapshotTests.exe",
+      "bytes": 2043904,
+      "sha256": "A03B3A4D6791ED3B386F34DFFC3F7E4A468CB2A30A33FC0BB5CD19F66B6BFD2D"
+    },
+    {
+      "name": "Udm.ModelMaintenanceTests.exe",
+      "bytes": 5155840,
+      "sha256": "065598C4979582028F1F43D0C85F7994452C14E1A70342300CAD0F06886D653F"
+    },
+    {
+      "name": "Udm.UiTaskSignalTests.exe",
+      "bytes": 1145344,
+      "sha256": "F6CC4CD62478CF0EC8EC0D28EA0648F0F20A66293F0F272247D17025C3E58817"
+    },
+    {
+      "name": "Udm.LaunchQueueTests.exe",
+      "bytes": 5388288,
+      "sha256": "CB1538408413669F1EA2EB4327E78C5462573F347E71D5C5B467D1587C33166A"
+    },
+    {
+      "name": "Udm.HistoryReadSnapshotTests.exe",
+      "bytes": 2115072,
+      "sha256": "089FF9CC6A453011FF8141B33E863AC0F8359EA8B1611FCECC0A1F48206043CB"
+    },
+    {
+      "name": "Udm.FindFilterCacheTests.exe",
+      "bytes": 1391104,
+      "sha256": "0CC65D93A9692C45812171F20545CA05DE72E565ABC4314DFB352CF1050B125A"
+    },
+    {
+      "name": "Udm.DownloadListTooltipTests.exe",
+      "bytes": 2006016,
+      "sha256": "8823E9ADD218D65FB58C464CC999BD9FE293E457EE2AD31B7C1C824FFFAED60D"
+    },
+    {
+      "name": "Udm.ModalSizeRefreshTests.exe",
+      "bytes": 1990656,
+      "sha256": "31241548132A3B6AB5FB5A308B2CC7DCA1D95D540F20F8C729383195AB858451"
+    },
+    {
+      "name": "Udm.WrittenBodyCacheTests.exe",
+      "bytes": 1204736,
+      "sha256": "57DB61D8DDEB5F16DE97D49F23AEBD4DF02E81267F8C9A3D40EB24AFAB3A5869"
+    },
+    {
+      "name": "Udm.DataOnlyWritebackTests.exe",
+      "bytes": 1213952,
+      "sha256": "0E1FFDC51D64F807450A50AE094F1F0FC2E3DC9FFEA15CBC83D4351A041460A5"
+    },
+    {
+      "name": "Udm.PrefinishWritebackTests.exe",
+      "bytes": 1254400,
+      "sha256": "722BC2D287E4D33321CB6EAC1FB5D9EFEC51F0E08A77043AAA0B0DE287FC65D2"
+    },
+    {
+      "name": "Udm.CatalogDiskCreditTests.exe",
+      "bytes": 2063872,
+      "sha256": "630FB7BC7E37EA1121286F264D681D0472CF4B3E2B3978588586FF7FC8F6E7DF"
+    },
+    {
+      "name": "Udm.CompletedCheckpointTests.exe",
+      "bytes": 5044736,
+      "sha256": "88E670B700FCA036E7BE09D5B367B6DC41E7D9CBAC5A5EA67FEF1774A6771082"
+    },
+    {
+      "name": "Udm.CatalogCheckpointTests.exe",
+      "bytes": 2051072,
+      "sha256": "3EA47FEB3E0B8B894EC77741A632C9D29B3231144D728C343B34351946C35529"
+    },
+    {
+      "name": "Udm.PublicationPreparationTests.exe",
+      "bytes": 2313216,
+      "sha256": "D6FA5C457084E4D9833C538BD792444D15FCA21F8C1FAF36454FA7670860069F"
+    },
+    {
+      "name": "Udm.PublicationOwnershipTests.exe",
+      "bytes": 2555904,
+      "sha256": "3AAE271CE708767C1295C8FD608B9BEAD58A7E5381053B57E4E6BCE90B626A72"
+    },
+    {
+      "name": "Udm.PublicationRecoveryTests.exe",
+      "bytes": 2394112,
+      "sha256": "05780268E82108730633F9950102F7A04D8FC30576814338163B98A628364FE3"
+    },
+    {
+      "name": "FileInfoRefreshTaskTests.obj",
+      "bytes": 3773591,
+      "sha256": "900605B87913AAE520A4EE361F65933451F8C72C824C2FDE112217E30658CEEB"
+    },
+    {
+      "name": "DownloadRefreshTaskTests.obj",
+      "bytes": 4106031,
+      "sha256": "314A9C1B723FF940B1D13DD17B044090E81DE4D96421C98A2400C97AA6CB7607"
+    },
+    {
+      "name": "ZipCompletionTests.obj",
+      "bytes": 3569852,
+      "sha256": "AD839F2A41061A09647EB239F267892DB0844231A244646575BC969953F92025"
+    },
+    {
+      "name": "FileInfoZipTaskTests.obj",
+      "bytes": 6119333,
+      "sha256": "AD17F490DEE23473C29052ABCEFB3B6C44AF3C638857FD2A43C4A8BAC4BD21C2"
+    },
+    {
+      "name": "PrefetchedZipReadTaskTests.obj",
+      "bytes": 3810481,
+      "sha256": "237BD2E07FF5A7E4AE630C034BF6DBF011371481F8A5F2C346C3B50C5AA7BD7C"
+    },
+    {
+      "name": "FileInfoPreviewTaskTests.obj",
+      "bytes": 5257985,
+      "sha256": "8EE6F0C46ED9C007686969890C8960A6BD4DC846B447274C43626713D0805278"
+    },
+    {
+      "name": "FileInfoInitialTaskTests.obj",
+      "bytes": 5724054,
+      "sha256": "A5CF25884F83CA0C7BD43DBA069BF9F69EF399CBF393911528C9F45E26E5C335"
+    },
+    {
+      "name": "BrowserPresentationAcksTests.obj",
+      "bytes": 3844025,
+      "sha256": "16A513A45ED08D82842808D1160BB38BC785243C651D868EC07912CB111FF013"
+    },
+    {
+      "name": "FileInfoBindingTaskTests.obj",
+      "bytes": 5055367,
+      "sha256": "0CEE65F5F04847440415B8041E1FD55FEBC04E35DDE70244E7FF6CD523F64D48"
+    },
+    {
+      "name": "IndependentFinishingTests.obj",
+      "bytes": 3409846,
+      "sha256": "85662D96C6ACCF8C0C390BCFA1CDF3CCFA5C91BB85DF7B250675D79C6B162095"
+    },
+    {
+      "name": "FileInfoPrefetchTaskTests.obj",
+      "bytes": 4745717,
+      "sha256": "B5126897E64EAF6C7A64CE2209DC831C9792A786D4F4B39C2FD210D87E520223"
+    },
+    {
+      "name": "FileInfoDisplayTaskTests.obj",
+      "bytes": 3685521,
+      "sha256": "E3A7FA14D80E08612E53596014093D50518F184CFECF5A1E53495F82E9DDC57A"
+    },
+    {
+      "name": "NetworkCaptureSessionTests.obj",
+      "bytes": 3387993,
+      "sha256": "CF6475834070F457E9A2A891C9BC105076E79AAE3ADD4328DC828ECFA077FB30"
+    },
+    {
+      "name": "MonitorReconnectTests.obj",
+      "bytes": 7260159,
+      "sha256": "AB87E47B4A0DC2361DEF69B438B7F3D51595B73BE8D9864CD840480D3E423A1C"
+    },
+    {
+      "name": "DuplicateDecisionTaskTests.obj",
+      "bytes": 4568117,
+      "sha256": "1F11F872FF130146BDE0FF997C2DE46FA777E69D68588FACE5A88E71FCC3331A"
+    },
+    {
+      "name": "ResumeSelectionTaskTests.obj",
+      "bytes": 6040654,
+      "sha256": "2DA2B4B22A09D0CC5C371FA66F72B273899B00E5C0C4BF63365FBA301C06F581"
+    },
+    {
+      "name": "RequestedAuthenticationTaskTests.obj",
+      "bytes": 5034005,
+      "sha256": "20BC52120B4DAECCED64268DDF6EEB0129B72422A4A690117903A863510D5CDB"
+    },
+    {
+      "name": "AuthenticationLoginTaskTests.obj",
+      "bytes": 4575942,
+      "sha256": "BD849F102B2F009FC3DB65278D98B89D01D4FD4955365547B39B2768B69AD6A1"
+    },
+    {
+      "name": "FileInfoDecisionTests.obj",
+      "bytes": 2789658,
+      "sha256": "0F980811CAC5A82F378BD8060726AD58E2D2CA3BB04D5A2F123FBF67420B45A1"
+    },
+    {
+      "name": "AuthenticationPromptTaskTests.obj",
+      "bytes": 6163410,
+      "sha256": "0300EEB646B1D8AF0EBCFD4FEA46565A56D76ED17C9030E7BBFE6605254B873A"
+    },
+    {
+      "name": "AutomaticPromptSnapshotTests.obj",
+      "bytes": 5084503,
+      "sha256": "3E0EC2110FE5E30E21A4AF40BB3FE2E72F9061F74AB528B218772A9DA9D8406F"
+    },
+    {
+      "name": "ModelMaintenanceTests.obj",
+      "bytes": 3387945,
+      "sha256": "1C1C63B8A57937305229BF9AADAC1368A4423A7ECE229CD0A3DE197A563FF660"
+    },
+    {
+      "name": "UiTaskSignalTests.obj",
+      "bytes": 2169664,
+      "sha256": "FD823AFA2C8DEE8999CD10B655A1BEF593DFF255F2FAB8EBC4FA6002522821E6"
+    },
+    {
+      "name": "LaunchQueueTests.obj",
+      "bytes": 4284304,
+      "sha256": "10CF3FA56C6840B9647B099633BD253EEBF9F14BDFD86FC0CF0ADA649C5ECC0E"
+    },
+    {
+      "name": "HistoryReadSnapshotTests.obj",
+      "bytes": 6614977,
+      "sha256": "AD8F7F542D95C846A10B484A7621EFF1B950D1AC8935A5FB79D1A14CFC2D527C"
+    },
+    {
+      "name": "FindFilterCacheTests.obj",
+      "bytes": 5238464,
+      "sha256": "93E1D968825828CB92C299FEE9BF42E24C15DA690D499CE8B45CBF3C46D2AADC"
+    },
+    {
+      "name": "DownloadListTooltipTests.obj",
+      "bytes": 3230222,
+      "sha256": "3DC1D6033F713933EA626E4F2D3834262081BCAD1E15A09194001C89D2491108"
+    },
+    {
+      "name": "ModalSizeRefreshTests.obj",
+      "bytes": 2746307,
+      "sha256": "CB0FA03D4C65253ED670CAA1945C31377D95A4AC9FEC793C42E1C65F73F6BA04"
+    },
+    {
+      "name": "WrittenBodyCacheTests.obj",
+      "bytes": 2777910,
+      "sha256": "2FACE5F19E5E0471F6FC48A40BFA6E010F2D3FE3194596FE26EA8B771F45F12E"
+    },
+    {
+      "name": "DataOnlyWritebackTests.obj",
+      "bytes": 3065450,
+      "sha256": "F712F993409ED0A93AB3E062120F9B124C5C6354CECF46C625FD47F753B3EC06"
+    },
+    {
+      "name": "PrefinishWritebackTests.obj",
+      "bytes": 3625948,
+      "sha256": "D93A2E42CF4499DEA89A4D608F0C875EA3BE4E110C57040120EF96A4A4F048C8"
+    },
+    {
+      "name": "CatalogDiskCreditTests.obj",
+      "bytes": 6124544,
+      "sha256": "3404D67CC536967E3ED222D290986F57C938C3B9FB7BA660E58178FC60D6D0F0"
+    },
+    {
+      "name": "CompletedCheckpointTests.obj",
+      "bytes": 6449335,
+      "sha256": "E742CEE359B4C1AB4385A800305C70F31A8853B83575DC126A568FE21CB70B67"
+    },
+    {
+      "name": "CatalogCheckpointTests.obj",
+      "bytes": 5266844,
+      "sha256": "ECD804BC97ABC49326C17C39C315BBE5FBBDAA7D78E60540D91BC6A1E6B3CDF6"
+    },
+    {
+      "name": "PublicationPreparationTests.obj",
+      "bytes": 3684674,
+      "sha256": "2BC7AD27B8B69ADBD255AA548FE062D743FC5CC125F4D996281A7CBA5D74D10C"
+    },
+    {
+      "name": "PublicationOwnershipTests.obj",
+      "bytes": 5495377,
+      "sha256": "75B60B0F45D8B340F42A1CDDEA937F1406A909E8695E5289B8CBAB5B18B59633"
+    },
+    {
+      "name": "PublicationRecoveryTests.obj",
+      "bytes": 3335589,
+      "sha256": "1977B1A6DFAADD1A3B9EFA929E3C671B3427890EAA534FDD40F5C5FFBA6EC110"
+    },
+    {
+      "name": "App.obj",
+      "bytes": 59787012,
+      "sha256": "916061D51199B1AA703DED776F7C495ACE12201BCEDC1685991530B82DE0C893"
+    },
+    {
+      "name": "HostMain.obj",
+      "bytes": 1615,
+      "sha256": "A784BE62A19E8FB46640891E5BF3168A9B26D9DB9E65937FE23B8CC30CF00494"
+    },
+    {
+      "name": "MonitorMain.obj",
+      "bytes": 6742920,
+      "sha256": "BFDAB42358CD4EF2AEB45E628F1391C4C3876B5D03C1FE3B8DF1F78F9E0317EB"
+    },
+    {
+      "name": "SetupMain.obj",
+      "bytes": 4630502,
+      "sha256": "94454F1308238D8B0EE9061FFCA894323C0E25BE37F67E3A26701B3EB2E77A5B"
+    },
+    {
+      "name": "AutomationMain.obj",
+      "bytes": 3134997,
+      "sha256": "C331BEBC16E3C282DFD4032341574F9549F9D50B687A38AB7333497E590A2CDC"
+    },
+    {
+      "name": "App.res",
+      "bytes": 34044,
+      "sha256": "C7D5DBD5896BC504C0A66ADC1EF9F1D69C086D1ABC518B67EEFBD2C0D6A8B837"
+    },
+    {
+      "name": "Udm.ModalSizeUiTests.exe",
+      "bytes": 12307456,
+      "sha256": "CB19935C4DD211B774C5854E3F6E18FB049E53376AA979DC5AB59029716B786A"
+    },
+    {
+      "name": "ModalSizeUiTests.obj",
+      "bytes": 60165723,
+      "sha256": "CDA3A46B861831EB5D470FE232CDCF124B46003117E41CF8F4A0C0DB05584AC6"
+    },
+    {
+      "name": "Udm.PendingFileInfoUiTests-9.2.exe",
+      "bytes": 9086976,
+      "sha256": "546B518509F3F49E7D6D3C72632E7C3F9D179D64BA4D7E9EC1F03CE9CFBD5B26"
+    },
+    {
+      "name": "PendingFileInfoUiTests.obj",
+      "bytes": 24866183,
+      "sha256": "FBCE71207BCE650DD03359B934BDF1FC1CC6B009330E4545EFEBC04AAE6E1DBD"
+    },
+    {
+      "name": "Udm.ProgressMenuUiTests.exe",
+      "bytes": 8249856,
+      "sha256": "04454290D44C973412AB0CED446B17A3A00769B5D29645DA1166A45A468E88D8"
+    },
+    {
+      "name": "ProgressMenuUiTests.obj",
+      "bytes": 15420812,
+      "sha256": "D895C273A2B4DD9212DB2746FB2B5C04A08B6C0631220140519D855CF5F29A94"
+    },
+    {
+      "name": "Bridge.obj",
+      "bytes": 11876274,
+      "sha256": "59A0C719D34AA00A022F7C2F69E2AB0C54A265E1532579890386234695DF4BAB"
+    }
+  ],
+  "ownedRootCount": 78,
+  "temporaryBuildFileCount": 87,
+  "logicalBytesRemoved": 559189456
+}

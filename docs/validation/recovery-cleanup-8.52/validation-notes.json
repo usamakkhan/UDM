@@ -1,0 +1,21 @@
+{
+  "scope": "Private 8.52 cleanup qualification, not installed acceptance or an IDM latency comparison.",
+  "retainedFailures": [
+    {
+      "result": "qualified-RecoveryCleanupTests-1/results.json",
+      "cause": "The Paused fixture removed both target and staging, correctly reaching manual recovery rather than cleanup. It now retains unrelated unpublished staging to exercise the real Paused branch."
+    },
+    {
+      "result": "qualified-final-RecoveryCatalogTests/results.json",
+      "cause": "The first cleanup wrapper reused the pre-acceptance stopping check and abandoned its journal after a durable checkpoint during shutdown. The corrected wrapper drains already-accepted cleanup while retaining row/receipt checks; pre-acceptance work still refuses closing."
+    }
+  ],
+  "actualFilesystemFailures": "Read-only journals return Windows error 5 during accepted retirement, keep their exact intent and final bytes, and retire successfully on explicit retry after the fixture restores its own attribute. A held retained-source reader also preserves best-effort deletion refusal. A real hard-link retained alias is removed without losing the final file.",
+  "scopeRules": "Post-acceptance cleanup retains complete job/path ownership, including the separate immutable retained source. It validates accepted current rows and exact private receipt before/after unlocked observations. Accepted history is never rolled back when cleanup fails. Shutdown itself drains already-accepted cleanup rather than canceling it; after-retirement failure leaves durable history and any receipt for later reconciliation.",
+  "limits": [
+    "Receipt-only pruning still performs filesystem checks and save inside Model.",
+    "Cleanup source/final filesystem namespace replacement by an external actor, alias parent directories, and further caller scopes still require adversarial audit.",
+    "markZone and retained-source deletion retain their existing best-effort behavior.",
+    "The original sequential/split finishing losses and installed/browser acceptance remain unresolved."
+  ]
+}

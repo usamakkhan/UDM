@@ -1,0 +1,135 @@
+{
+  "prototypeVersion": "8.89",
+  "prototypeQualified": false,
+  "preflight": {
+    "checks": [
+      {
+        "name": "An owned preview preparation accepts one identified request",
+        "passed": true
+      },
+      {
+        "name": "An unconsumed preparation cannot be overwritten",
+        "passed": true
+      },
+      {
+        "name": "Actual loopback preview launch settles asynchronously",
+        "passed": true
+      },
+      {
+        "name": "The result identifies its exact job and request generation",
+        "passed": true
+      },
+      {
+        "name": "Both launch and actual HTTP completion deliver result-only wake-ups",
+        "passed": true
+      },
+      {
+        "name": "One actual HEAD returns the exact owned-origin metadata length",
+        "passed": true
+      },
+      {
+        "name": "Metadata probing does not admit or change the saved download",
+        "passed": true
+      },
+      {
+        "name": "Edited credentials prepare a distinct metadata request for a partially saved job",
+        "passed": true
+      },
+      {
+        "name": "Only the owned probe copy receives edited credentials and reset progress",
+        "passed": true
+      },
+      {
+        "name": "An edited-login preview cannot persist cookies or credentials into its original job",
+        "passed": true
+      },
+      {
+        "name": "Changed request identity, membership or retry policy prevents a late probe launch",
+        "passed": true
+      },
+      {
+        "name": "Changed request identity, membership or retry policy prevents a late probe launch",
+        "passed": true
+      },
+      {
+        "name": "Changed request identity, membership or retry policy prevents a late probe launch",
+        "passed": true
+      },
+      {
+        "name": "Changed request identity, membership or retry policy prevents a late probe launch",
+        "passed": true
+      },
+      {
+        "name": "A real catalog writer holds Manager before metadata preparation",
+        "passed": true
+      },
+      {
+        "name": "Requesting file details returns while its reader waits for the model",
+        "passed": true
+      },
+      {
+        "name": "Cancelling a model-waiting request joins it before release and never launches a later probe",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "Automatic preview preserves verification, authorization, replacement, browser-hint and POST safeguards",
+        "passed": true
+      },
+      {
+        "name": "An owned preparation error settles without a UI model callback",
+        "passed": true
+      },
+      {
+        "name": "The error is consumed and leaves the owner reusable",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": true
+  },
+  "preflightExcludedFromPrimaryCounts": true,
+  "reason": "The source audit found that final eligibility must recheck progress/completion/capture rules and that routing uses ProtectedBrowserProxy, not only ProtectedProxy. Stop incomplete builds, add negative launch and binding cases, advance to 8.90/0.72.54, freeze fresh inputs and rebuild.",
+  "sourceChanges": [
+    {
+      "path": "native/FileInfoPreviewTask.hpp",
+      "beforeSha256": "8DA4852814185BAED63165659E7C7FB4B8FECEF1213AD1195621D3F8609EC559",
+      "afterSha256": "C9F37769B4253340E7D672C5B48FC75AC1070FD71A8159B78BF44B1C181CD697"
+    },
+    {
+      "path": "native/FileInfoPreviewTaskTests.cpp",
+      "beforeSha256": "EE249F87344A0BE621B133BF0844AA3E3BA6417E76F99E9FE5EA8AEC93D70409",
+      "afterSha256": "BBA02ECA0F1EE4393C93546D727AA9CEC76B9400307D509525EBB348254C4470"
+    },
+    {
+      "path": "native/FileInfoInitialView.hpp",
+      "beforeSha256": "3CD1247471524F4AC3A0CE73B7379BF9C2A92DE50A49C157CE2579BADE6590E5",
+      "afterSha256": "953319E7DC0AE85C6D9141FF0BA148855DC4A1FA56024F22652EA5E8D2A7CD8B"
+    },
+    {
+      "path": "native/FileInfoBindingTaskTests.cpp",
+      "beforeSha256": "91A18501E85D71C33BCC0B0D3D293BB3EF8C10B08C9B33D327323A1625091F37",
+      "afterSha256": "DDD9F71A334A1A58493A4E609D46FF95263C4F9F1BFB13C8B4290C6B0F5A476E"
+    }
+  ],
+  "assertionsWeakened": false
+}

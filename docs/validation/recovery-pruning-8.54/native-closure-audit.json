@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "recompiled": [
+    "Core",
+    "FileWorkflows",
+    "Duplicates",
+    "Bridge",
+    "CaptureAdmission"
+  ],
+  "units": [
+    {
+      "source": "native/Core.cpp",
+      "ownedDependencyCount": 53,
+      "changedDependencies": [
+        "native/PublicationCatalogProof.hpp",
+        "native/PublicationOwnership.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/PacProxy.cpp",
+      "ownedDependencyCount": 8,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Queue.cpp",
+      "ownedDependencyCount": 27,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/FileWorkflows.cpp",
+      "ownedDependencyCount": 42,
+      "changedDependencies": [
+        "native/PublicationOwnership.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Duplicates.cpp",
+      "ownedDependencyCount": 32,
+      "changedDependencies": [
+        "native/Duplicates.cpp",
+        "native/PublicationCatalogProof.hpp",
+        "native/PublicationOwnership.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Transfer.cpp",
+      "ownedDependencyCount": 54,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Grabber.cpp",
+      "ownedDependencyCount": 24,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/GrabberLinks.cpp",
+      "ownedDependencyCount": 19,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Streaming.cpp",
+      "ownedDependencyCount": 17,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Adaptive.cpp",
+      "ownedDependencyCount": 42,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DashManifest.cpp",
+      "ownedDependencyCount": 27,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/YouTubePlayer.cpp",
+      "ownedDependencyCount": 6,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Bridge.cpp",
+      "ownedDependencyCount": 53,
+      "changedDependencies": [
+        "native/Version.hpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "native/Network.cpp",
+      "ownedDependencyCount": 6,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/SocksProxy.cpp",
+      "ownedDependencyCount": 6,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/OfflineSite.cpp",
+      "ownedDependencyCount": 23,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DialUp.cpp",
+      "ownedDependencyCount": 7,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Ftp.cpp",
+      "ownedDependencyCount": 17,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/DownloadPreview.cpp",
+      "ownedDependencyCount": 23,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/ZipPreview.cpp",
+      "ownedDependencyCount": 20,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/QueueWake.cpp",
+      "ownedDependencyCount": 11,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/Scanner.cpp",
+      "ownedDependencyCount": 6,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/CaptureExclusions.cpp",
+      "ownedDependencyCount": 8,
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "native/CaptureAdmission.cpp",
+      "ownedDependencyCount": 34,
+      "changedDependencies": [
+        "native/PublicationOwnership.hpp"
+      ],
+      "recompiled": true
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+from pathlib import Path
+base=Path('<development>');s=(base/'run-intent-write-through-app-9.64-private.py').read_text(encoding='utf-8-sig').replace("owned-intent-write-through-app-9.64'","owned-intent-write-through-app-9.64/catalog-epoch2'").replace('unbuffered-write-through','combined-write-through').replace("'1' if mode=='combined-write-through' else '0'","'3' if mode=='combined-write-through' else '0'");(base/'run-combined-write-through-app-9.64-private.py').write_text(s,encoding='utf-8',newline='\n')

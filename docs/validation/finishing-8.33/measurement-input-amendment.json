@@ -1,0 +1,76 @@
+{
+  "file": "benchmarks/speed/compare-completion.py",
+  "originalSha256": "B6DF2B73E496D305B809174F6518BCFA405ED5B605B218D5016553B7F5BBE6FA",
+  "updatedSha256": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB",
+  "originalReconstructedHashMatches": true,
+  "defaultProtocolPreserved": true,
+  "declaredTransformations": [
+    "Add optional --case argument (default None)",
+    "Select one case only when supplied; otherwise retain exact original case triples/order",
+    "Derive expected row count from selected case count; default remains trials * 6",
+    "Build summaries for selected cases; default remains all three"
+  ],
+  "caseSelectionChecks": [
+    {
+      "case": null,
+      "selected": [
+        [
+          "single-4m",
+          4194304,
+          1
+        ],
+        [
+          "single-64m",
+          67108864,
+          1
+        ],
+        [
+          "split-64m",
+          67108864,
+          8
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "case": "single-4m",
+      "selected": [
+        [
+          "single-4m",
+          4194304,
+          1
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "case": "single-64m",
+      "selected": [
+        [
+          "single-64m",
+          67108864,
+          1
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "case": "split-64m",
+      "selected": [
+        [
+          "split-64m",
+          67108864,
+          8
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "nativeProductCodeChanged": false,
+  "nativeBinariesRebuilt": false,
+  "nativeQualificationTests": 1913,
+  "supplementalProfilerLifecycleTests": 19,
+  "realCaseFilterSmokeTransfers": 2,
+  "originalPerformanceMeasurementsNotRelabeled": true,
+  "scope": "Amends a frozen measurement input only; original qualification/portable observations retain their original runner identity. Future installed run will use the updated default protocol."
+}

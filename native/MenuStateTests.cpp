@@ -18,6 +18,9 @@ struct LayoutReadProbe {
  }
 };
 class CapturePresentationComponentTest {
+static void waitGlobalLimit(MainWindow& frame){
+ const auto end=GetTickCount64()+10000;while(frame.globalLimitCommandTask.valid()&&GetTickCount64()<end){MSG message{};while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){if(message.message==WM_QUIT)continue;TranslateMessage(&message);DispatchMessageW(&message);}frame.SendMessage(WM_TIMER,1,0);Sleep(1);}expect(!frame.globalLimitCommandTask.valid(),"Accepted limiter command reaches UI acknowledgement");
+}
 static void checkLayoutSnapshot(Manager& manager,MainWindow& frame){
  LayoutReadProbe probe{manager};
  const auto window=frame.table.GetSafeHwnd();
@@ -153,8 +156,11 @@ public:static void run(Manager& manager,MainWindow& frame){
  {
   auto oldFilter=frame.filter;auto oldSort=frame.sortColumn;auto oldAscending=frame.ascending;
   auto tipAt=[&](int row,int capacity=256){wchar_t buffer[256];wcscpy_s(buffer,L"previous row text");NMLVGETINFOTIPW tip{};tip.hdr={frame.table.GetSafeHwnd(),502,LVN_GETINFOTIPW};tip.iItem=row;tip.pszText=buffer;tip.cchTextMax=capacity;frame.SendMessage(WM_NOTIFY,502,(LPARAM)&tip);return std::wstring(buffer);};
-  frame.filter="all";frame.sortColumn=0;frame.ascending=false;frame.refresh();
-  for(int row=0;row<(int)frame.visible.size();++row)expect(tipAt(row)==wide(str(frame.visible[row]->data,"FileName")+"\n"+frame.queueInfo(frame.visible[row]->data)),"Tooltip follows the actual sorted row and its queue");
+  frame.filter="all";frame.refresh();
+  std::map<JobPtr,std::wstring> priorTips;
+  for(int row=0;row<(int)frame.visible.size();++row)priorTips.emplace(frame.visible[row],tipAt(row));
+  frame.sortColumn=0;frame.ascending=false;frame.refresh();
+  for(int row=0;row<(int)frame.visible.size();++row)expect(tipAt(row)==priorTips.at(frame.visible[row])&&tipAt(row).find(std::wstring(frame.table.GetItemText(row,0))+L"\n")==0,"Tooltip follows the actual sorted row and its queue");
   expect(tipAt(-1).empty(),"Negative tooltip row clears stale text");
   expect(tipAt((int)frame.visible.size()).empty(),"Removed tooltip row clears stale text");
   expect(tipAt(0,1).empty(),"One-character tooltip capacity remains terminated");
@@ -245,38 +251,38 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(viewMenu->GetMenuItemCount()==9,"View menu has reference nine-position grouping");
  for(int i=0;i<9;++i){CString label;viewMenu->GetMenuString(i,label,MF_BYPOSITION);expect(label==viewLabels[i],"View label and position match reference with UDM branding");}
  auto trayMenu=viewMenu->GetSubMenu(3);expect(trayMenu&&trayMenu->GetMenuItemCount()==3,"Tray choices are grouped in View submenu");
- for(auto id:{CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE}){frame.SendMessage(WM_COMMAND,id);frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)trayMenu->GetSafeHmenu(),MAKELPARAM(3,FALSE));expect((trayMenu->GetMenuState(id,MF_BYCOMMAND)&MF_CHECKED)!=0,"Selected tray choice is checked");}
- frame.SendMessage(WM_COMMAND,CMD_TRAY_COLOR);
+ for(auto id:{CMD_TRAY_COLOR,CMD_TRAY_SYSTEM,CMD_TRAY_HIDE}){frame.SendMessage(WM_COMMAND,id);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Appearance fixture deadline");}frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)trayMenu->GetSafeHmenu(),MAKELPARAM(3,FALSE));expect((trayMenu->GetMenuState(id,MF_BYCOMMAND)&MF_CHECKED)!=0,"Selected tray choice is checked");}
+ frame.SendMessage(WM_COMMAND,CMD_TRAY_COLOR);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Appearance fixture deadline");}
  auto languageMenu=viewMenu->GetSubMenu(8);auto beforeEnglish=manager.state["Settings"];frame.SendMessage(WM_COMMAND,CMD_LANGUAGE_ENGLISH);frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)languageMenu->GetSafeHmenu(),MAKELPARAM(8,FALSE));
  expect(languageMenu->GetMenuItemCount()==1&&(languageMenu->GetMenuState(CMD_LANGUAGE_ENGLISH,MF_BYCOMMAND)&MF_CHECKED)!=0,"English is the supported checked language");
  expect(manager.state["Settings"]==beforeEnglish,"Selecting current English language preserves preferences");
  auto fontMenu=frame.GetMenu()->GetSubMenu(3)->GetSubMenu(6);expect(fontMenu&&fontMenu->GetMenuItemCount()==2,"Font menu exposes Choose and Reset");
  auto custom=manager.state["Settings"];custom["FontName"]="Arial";custom["FontHeight"]=17;custom["FontWeight"]=700;manager.setSettings(custom);frame.applyAppearance();auto recordsBeforeFont=manager.snapshot()["Downloads"];
  frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)fontMenu->GetSafeHmenu(),MAKELPARAM(6,FALSE));expect((fontMenu->GetMenuState(CMD_FONT_RESET,MF_BYCOMMAND)&3)==0,"Font Reset stays enabled in opened menu");
- frame.SendMessage(WM_COMMAND,CMD_FONT_RESET);auto expectedFont=custom;auto defaults=defaultSettings();for(auto key:{"FontName","FontHeight","FontWeight"})expectedFont[key]=defaults[key];
+ frame.SendMessage(WM_COMMAND,CMD_FONT_RESET);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Appearance fixture deadline");}auto expectedFont=custom;auto defaults=defaultSettings();for(auto key:{"FontName","FontHeight","FontWeight"})expectedFont[key]=defaults[key];
  expect(manager.state["Settings"]==expectedFont,"Reset restores only the three default font preferences");expect(manager.snapshot()["Downloads"]==recordsBeforeFont,"Font Reset preserves download records");
  LOGFONTW actual{};frame.font.GetLogFont(&actual);expect(std::wstring(actual.lfFaceName)==wide(str(defaults,"FontName"))&&actual.lfHeight==-frame.px((int)num(defaults,"FontHeight"))&&actual.lfWeight==num(defaults,"FontWeight"),"Reset applies the default native font immediately");
  expect(frame.table.GetFont()->GetSafeHandle()==frame.font.GetSafeHandle()&&frame.tree.GetFont()->GetSafeHandle()==frame.font.GetSafeHandle(),"List and category tree receive the reset font");
  auto fontSaved=Json::parse(readText(manager.root/L"state.json"));expect(fontSaved["Settings"]==expectedFont,"Reset font preferences are saved");
  auto limiter=frame.GetMenu()->GetSubMenu(2)->GetSubMenu(12);expect(limiter&&limiter->GetMenuItemCount()==4,"Speed Limiter exposes On Off separator and Settings");
  auto rateSettings=manager.state["Settings"];rateSettings["LimitKbps"]=321;rateSettings["GlobalLimitMode"]="Each download";manager.setSettings(rateSettings);auto records=manager.snapshot()["Downloads"];
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);expect(num(manager.state["Settings"],"LimitKbps")==0&&num(manager.state["Settings"],"GlobalLimitRememberedKbps")==321,"Turn off remembers the previous global rate");
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);expect(num(manager.state["Settings"],"LimitKbps")==0&&num(manager.state["Settings"],"GlobalLimitRememberedKbps")==321,"Turn off remembers the previous global rate");
  frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)limiter->GetSafeHmenu(),MAKELPARAM(12,FALSE));expect((limiter->GetMenuState(CMD_LIMIT_OFF,MF_BYCOMMAND)&MF_CHECKED)!=0,"Turn off is checked while disabled");
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);expect(num(manager.state["Settings"],"LimitKbps")==321,"Turn on restores rate after repeated off");
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);waitGlobalLimit(frame);expect(num(manager.state["Settings"],"LimitKbps")==321,"Turn on restores rate after repeated off");
  frame.SendMessage(WM_INITMENUPOPUP,(WPARAM)limiter->GetSafeHmenu(),MAKELPARAM(12,FALSE));expect((limiter->GetMenuState(CMD_LIMIT_ON,MF_BYCOMMAND)&MF_CHECKED)!=0,"Turn on is checked while enabled");
  expect(str(manager.state["Settings"],"GlobalLimitMode")=="Each download","On Off preserves aggregate versus per-download mode");expect(manager.snapshot()["Downloads"]==records,"Global toggles preserve individual download records");
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);auto saved=Json::parse(readText(manager.root/L"state.json"));expect(num(saved["Settings"],"GlobalLimitRememberedKbps")==321&&num(saved["Settings"],"LimitKbps")==0,"Off and remembered rate persist together");
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);auto saved=Json::parse(readText(manager.root/L"state.json"));expect(num(saved["Settings"],"GlobalLimitRememberedKbps")==321&&num(saved["Settings"],"LimitKbps")==0,"Off and remembered rate persist together");
  for(auto bad:{i64(0),i64(-1),i64(1000001)}){bool rejected=false;try{globalLimiterSettings(rateSettings,false,bad);}catch(...){rejected=true;}expect(rejected,"Invalid remembered speed is rejected even while off");}
 
  auto optionsRate=manager.state["Settings"];optionsRate["LimitKbps"]=777;manager.setSettings(optionsRate);
  auto optionsOff=manager.state["Settings"];optionsOff["LimitKbps"]=0;manager.setSettings(optionsOff);
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);expect(num(manager.state["Settings"],"LimitKbps")==777,"Options rate survives disabling there and enabling from menu");
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);
- manager.setSettings(globalLimiterSettings(manager.state["Settings"],false,456));frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);waitGlobalLimit(frame);expect(num(manager.state["Settings"],"LimitKbps")==777,"Options rate survives disabling there and enabling from menu");
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);
+ manager.setSettings(globalLimiterSettings(manager.state["Settings"],false,456));frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);waitGlobalLimit(frame);
  expect(num(manager.state["Settings"],"LimitKbps")==456,"Explicit disabled dialog rate replaces remembered Options rate");
- auto otherSettings=manager.state["Settings"];otherSettings["Sound"]=!yes(otherSettings,"Sound");manager.setSettings(otherSettings);frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);
+ auto otherSettings=manager.state["Settings"];otherSettings["Sound"]=!yes(otherSettings,"Sound");manager.setSettings(otherSettings);frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);frame.SendMessage(WM_COMMAND,CMD_LIMIT_ON);waitGlobalLimit(frame);
  expect(num(manager.state["Settings"],"LimitKbps")==456,"Unrelated settings changes preserve remembered rate");
- frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);
+ frame.SendMessage(WM_COMMAND,CMD_LIMIT_OFF);waitGlobalLimit(frame);
 
  {auto startupSettings=manager.state["Settings"];startupSettings["GlobalLimitOnStartup"]=false;manager.setSettings(startupSettings);auto untouched=fileHash(manager.root/L"state.json");applyStartupGlobalLimiter(manager);
   expect(num(manager.state["Settings"],"LimitKbps")==0&&fileHash(manager.root/L"state.json")==untouched,"Disabled startup preference leaves limiter and catalog untouched");
@@ -593,6 +599,13 @@ public:static void run(Manager& manager,MainWindow& frame){
  deadline=GetTickCount64()+15000;while(GetTickCount64()<deadline){manager.tick();bool done;{Lock lock(manager.mutex);done=str(running->data,"Status")=="Complete"||str(running->data,"Status")=="Failed";}if(done)break;Sleep(20);}
  {Lock lock(manager.mutex);expect(str(running->data,"Status")=="Complete","Resume command completes real transfer");}
  server.expected(manager.root.parent_path()/L"expected.bin");expect(fileHash(running->target())==fileHash(manager.root.parent_path()/L"expected.bin"),"Menu-driven paused/resumed transfer has exact bytes");
+ // This fixture runs synchronously inside InitInstance, outside the normal UI
+ // loop. A finished transfer still owns its Resume decision until the window
+ // acknowledges it, just as OnTimer/OnModelMaintenanceReady do in production.
+ const Json resumeAcknowledgment={{"activeBefore",frame.resumeTask.active()},{"readyBefore",frame.resumeTask.ready()},{"pendingBefore",manager.fileInfoDecisionPending.load()}};
+ deadline=GetTickCount64()+5000;while(frame.resumeTask.active()&&GetTickCount64()<deadline){frame.pollResumeCommands();Sleep(10);}
+ expect(!frame.resumeTask.active()&&!manager.fileInfoDecisionPending.load(),"Completed Resume releases its accepted UI decision before the next batch");
+ atomicText(checkpointRoot/L"resume-acknowledgment.json",resumeAcknowledgment.dump(2),false);
  frame.refresh();select({running});expect(enabled(1,CMD_OPEN),"Completed real transfer enables Open");expect(!enabled(1,CMD_RESUME),"Completed real transfer disables Resume");
 
  auto multiPrefs=manager.state["Settings"];multiPrefs["Parallel"]=2;manager.setSettings(multiPrefs);
@@ -601,7 +614,14 @@ public:static void run(Manager& manager,MainWindow& frame){
  manager.tick();deadline=GetTickCount64()+5000;
  while(GetTickCount64()<deadline){int receiving=0;{Lock lock(manager.mutex);for(auto j:batch)if(manager.isActive(j)&&num(j->data,"Received")>0)++receiving;}if(receiving==2)break;manager.tick();Sleep(20);}
  {Lock lock(manager.mutex);int receiving=0,queued=0;for(auto j:batch){if(manager.isActive(j)&&num(j->data,"Received")>0)++receiving;if(str(j->data,"Status")=="Queued")++queued;}expect(receiving==2&&queued==1,"Stop-all batch has two receiving transfers and one queued");}
- frame.refresh();select({batch[0],running});auto completedBeforeSelected=running->data;frame.SendMessage(WM_COMMAND,CMD_STOP);
+ // Refresh may defer while a receiving transfer owns Manager. Wait for the
+ // completed UI cohort before selecting the newly added batch member.
+ deadline=GetTickCount64()+5000;
+ do{frame.refresh();if(!frame.historyRefreshDeferred&&std::find(frame.visible.begin(),frame.visible.end(),batch[0])!=frame.visible.end()&&std::find(frame.visible.begin(),frame.visible.end(),running)!=frame.visible.end())break;Sleep(10);}while(GetTickCount64()<deadline);
+ expect(!frame.historyRefreshDeferred&&std::find(frame.visible.begin(),frame.visible.end(),batch[0])!=frame.visible.end()&&std::find(frame.visible.begin(),frame.visible.end(),running)!=frame.visible.end(),"Completed history refresh renders the intended active and completed batch rows");
+ select({batch[0],running});
+ {const auto chosen=frame.selected(false);expect(chosen.size()==2&&std::find(chosen.begin(),chosen.end(),batch[0])!=chosen.end()&&std::find(chosen.begin(),chosen.end(),running)!=chosen.end(),"Batch Stop targets the rendered active/completed selection");}
+ auto completedBeforeSelected=running->data;frame.SendMessage(WM_COMMAND,CMD_STOP);
  deadline=GetTickCount64()+5000;while(manager.isActive(batch[0])&&GetTickCount64()<deadline)Sleep(20);
  expect(!manager.isActive(batch[0])&&!::IsWindow(batchWindows[0]),"Selected Stop pauses transfer and closes only its progress window");
  expect(manager.isActive(batch[1])&&::IsWindow(batchWindows[1]),"Selected Stop leaves other receiving transfer and window running");
@@ -634,7 +654,7 @@ public:BOOL InitInstance()override{
  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();
  int argc;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);fs::path root;std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;std::string failure;
  try{if(argc!=2)throw std::runtime_error("Fresh fixture required");root=argv[1];if(fs::exists(root))throw std::runtime_error("Fixture exists");fs::create_directories(root);checkpointRoot=root;manager=std::make_unique<Manager>(root/L"data");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((root/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ProxyMode"]="Connect directly";prefs["SuppressCompletionDialog"]=true;prefs["SuppressProgressDialog"]=true;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;frame->ShowWindow(SW_SHOWNOACTIVATE);CapturePresentationComponentTest::run(*manager,*frame);result=0;}catch(const std::exception& e){failure=e.what();}
- if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
+ if(frame){closeOwnedMainWindow(frame);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
  if(!root.empty())atomicText(root/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks}}.dump(2),false);return FALSE;
  }
  int ExitInstance()override{AfxOleTerm(FALSE);return result;}

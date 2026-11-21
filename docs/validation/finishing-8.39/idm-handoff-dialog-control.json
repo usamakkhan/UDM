@@ -1,0 +1,31 @@
+{
+  "orderedControls": [
+    {
+      "privateEvidenceSha256": "0610829023be49fe36c6d568bb119d1f51f826704c1cf28ba16b00f44356107e",
+      "instrumented": false,
+      "outputExists": false,
+      "outputBytes": null,
+      "launcherExitCode": 0,
+      "originRequests": 0,
+      "originBytes": 0,
+      "hashMatched": false,
+      "payloadRemoved": false
+    },
+    {
+      "privateEvidenceSha256": "20767b4dd5af81cbe59603c273531855b1ad906763ab43c15c2cc1d566540978",
+      "instrumented": false,
+      "outputExists": true,
+      "outputBytes": 4194304,
+      "launcherExitCode": 0,
+      "originRequests": 1,
+      "originBytes": 4194304,
+      "hashMatched": true,
+      "payloadRemoved": true
+    }
+  ],
+  "userReportedCompletionDialogClosedBetweenLatestControls": true,
+  "handoffRestoredAfterDialogClose": true,
+  "nativeWriterCoverageVerified": false,
+  "performanceParityVerified": false,
+  "limitation": "Existing-instance before/after observation; this does not prove every cause of CLI refusal or provide timing parity."
+}

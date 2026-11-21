@@ -1,0 +1,189 @@
+{
+  "source": "portable-comparison.json",
+  "sourceSha256": "669520F2B499395D68C07061C91E70DBB8F409361377BF1C033D00D8E1F855BD",
+  "comparisonKind": "qualified-portable-before-install",
+  "installedComparison": false,
+  "samples": [
+    {
+      "case": "single-4m",
+      "trial": 1,
+      "tailMs": 89.08415000041714,
+      "dataFlushMs": 9.7152,
+      "dataOpenMs": 0.13640000000000002,
+      "settleLockWaitMs": 0.00019999999999999998,
+      "hashFinalMs": 0.0505,
+      "lateHashMs": 0,
+      "intentWriteMs": 3.5461,
+      "intentTemporaryFlushCloseMs": 1.0988,
+      "afterAvailabilityToExitMs": 43.53645000082906,
+      "earlyWritebackSeconds": 0.0641436,
+      "earlyWritebacks": 2
+    },
+    {
+      "case": "single-64m",
+      "trial": 1,
+      "tailMs": 111.91039999903296,
+      "dataFlushMs": 0.5261,
+      "dataOpenMs": 0.1198,
+      "settleLockWaitMs": 9.999999999999999e-05,
+      "hashFinalMs": 0.0359,
+      "lateHashMs": 0,
+      "intentWriteMs": 4.7513,
+      "intentTemporaryFlushCloseMs": 2.1790999999999996,
+      "afterAvailabilityToExitMs": 43.30370000025141,
+      "earlyWritebackSeconds": 0.113686,
+      "earlyWritebacks": 3
+    },
+    {
+      "case": "split-64m",
+      "trial": 1,
+      "tailMs": 262.4789499968756,
+      "dataFlushMs": 147.8134,
+      "dataOpenMs": 0.1212,
+      "settleLockWaitMs": 0.00019999999999999998,
+      "hashFinalMs": 0.0334,
+      "lateHashMs": 29.026,
+      "intentWriteMs": 4.3309999999999995,
+      "intentTemporaryFlushCloseMs": 1.6768,
+      "afterAvailabilityToExitMs": 48.55614999905811,
+      "earlyWritebackSeconds": 0.0757083,
+      "earlyWritebacks": 1
+    },
+    {
+      "case": "single-4m",
+      "trial": 2,
+      "tailMs": 502.6753000020108,
+      "dataFlushMs": 53.5377,
+      "dataOpenMs": 0.1056,
+      "settleLockWaitMs": 9.999999999999999e-05,
+      "hashFinalMs": 0.0376,
+      "lateHashMs": 0,
+      "intentWriteMs": 115.43480000000001,
+      "intentTemporaryFlushCloseMs": 112.2315,
+      "afterAvailabilityToExitMs": 47.14070000409265,
+      "earlyWritebackSeconds": 0.3453376,
+      "earlyWritebacks": 2
+    },
+    {
+      "case": "single-64m",
+      "trial": 2,
+      "tailMs": 417.4947499996051,
+      "dataFlushMs": 123.0534,
+      "dataOpenMs": 0.1295,
+      "settleLockWaitMs": 0.00019999999999999998,
+      "hashFinalMs": 0.0133,
+      "lateHashMs": 0.0401,
+      "intentWriteMs": 112.0333,
+      "intentTemporaryFlushCloseMs": 109.2602,
+      "afterAvailabilityToExitMs": 47.184449998894706,
+      "earlyWritebackSeconds": 2.8720936999999997,
+      "earlyWritebacks": 3
+    },
+    {
+      "case": "split-64m",
+      "trial": 2,
+      "tailMs": 262.503950001701,
+      "dataFlushMs": 158.3414,
+      "dataOpenMs": 0.1168,
+      "settleLockWaitMs": 0.00019999999999999998,
+      "hashFinalMs": 0.0402,
+      "lateHashMs": 20.439,
+      "intentWriteMs": 4.6178,
+      "intentTemporaryFlushCloseMs": 1.6823000000000001,
+      "afterAvailabilityToExitMs": 47.19235000084154,
+      "earlyWritebackSeconds": 0.0597573,
+      "earlyWritebacks": 1
+    },
+    {
+      "case": "single-4m",
+      "trial": 3,
+      "tailMs": 83.39404999787803,
+      "dataFlushMs": 4.7913,
+      "dataOpenMs": 0.1595,
+      "settleLockWaitMs": 9.999999999999999e-05,
+      "hashFinalMs": 0.0393,
+      "lateHashMs": 0,
+      "intentWriteMs": 4.7443,
+      "intentTemporaryFlushCloseMs": 1.9501,
+      "afterAvailabilityToExitMs": 43.58904999753577,
+      "earlyWritebackSeconds": 0.0109221,
+      "earlyWritebacks": 2
+    },
+    {
+      "case": "single-64m",
+      "trial": 3,
+      "tailMs": 569.557499999064,
+      "dataFlushMs": 228.3425,
+      "dataOpenMs": 0.131,
+      "settleLockWaitMs": 9.999999999999999e-05,
+      "hashFinalMs": 0.014,
+      "lateHashMs": 0.039799999999999995,
+      "intentWriteMs": 101.28059999999999,
+      "intentTemporaryFlushCloseMs": 98.4036,
+      "afterAvailabilityToExitMs": 48.221400000329595,
+      "earlyWritebackSeconds": 1.4578709,
+      "earlyWritebacks": 3
+    },
+    {
+      "case": "split-64m",
+      "trial": 3,
+      "tailMs": 958.5330500012788,
+      "dataFlushMs": 800.7909,
+      "dataOpenMs": 0.1235,
+      "settleLockWaitMs": 9.999999999999999e-05,
+      "hashFinalMs": 0.0356,
+      "lateHashMs": 0.0457,
+      "intentWriteMs": 31.3637,
+      "intentTemporaryFlushCloseMs": 28.3642,
+      "afterAvailabilityToExitMs": 46.3576500005729,
+      "earlyWritebackSeconds": 2.384672,
+      "earlyWritebacks": 1
+    }
+  ],
+  "summary": {
+    "dataFlushMs": {
+      "minMs": 0.5261,
+      "medianMs": 123.0534,
+      "maxMs": 800.7909
+    },
+    "dataOpenMs": {
+      "minMs": 0.1056,
+      "medianMs": 0.1235,
+      "maxMs": 0.1595
+    },
+    "settleLockWaitMs": {
+      "minMs": 9.999999999999999e-05,
+      "medianMs": 9.999999999999999e-05,
+      "maxMs": 0.00019999999999999998
+    },
+    "hashFinalMs": {
+      "minMs": 0.0133,
+      "medianMs": 0.0359,
+      "maxMs": 0.0505
+    },
+    "lateHashMs": {
+      "minMs": 0,
+      "medianMs": 0.039799999999999995,
+      "maxMs": 29.026
+    },
+    "intentWriteMs": {
+      "minMs": 3.5461,
+      "medianMs": 4.7513,
+      "maxMs": 115.43480000000001
+    },
+    "afterAvailabilityToExitMs": {
+      "minMs": 43.30370000025141,
+      "medianMs": 47.14070000409265,
+      "maxMs": 48.55614999905811
+    }
+  },
+  "limits": [
+    "Final file flush is measured by a real synchronous API call; its wait duration does not distinguish kernel disk service, queueing, filter drivers or scheduling.",
+    "Intent flush timing includes the existing helper flush/close boundary; it is not an isolated disk-service measure.",
+    "Do not sum early writeback, network tail and finish scopes: these are overlapping intervals and prefixes, not a complete disjoint timeline.",
+    "Data availability polling and actual process exit are distinct endpoints. The interval between them is not a measured shutdown function.",
+    "Final catalog IO and some tail intervals lack per-operation shipping timestamps. No attribution is invented for that residual.",
+    "Portable measurements remain unchanged and do not substitute for the pending installed comparison."
+  ],
+  "nextAction": "Install the qualified 8.33 payload, run the installed comparison, then capture one bounded paired IO trace with event-loss checks before changing flush policy."
+}

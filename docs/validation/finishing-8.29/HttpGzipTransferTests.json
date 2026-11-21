@@ -1,0 +1,178 @@
+{
+  "checks": [
+    {
+      "name": "Valid gzip response publishes through the production transfer path",
+      "passed": true
+    },
+    {
+      "name": "Published decoded bytes match the independently generated payload",
+      "passed": true
+    },
+    {
+      "name": "Completion records output bytes rather than encoded offsets",
+      "passed": true
+    },
+    {
+      "name": "Completion preserves a separate wire-byte audit",
+      "passed": true
+    },
+    {
+      "name": "Valid gzip response publishes through the production transfer path",
+      "passed": true
+    },
+    {
+      "name": "Published decoded bytes match the independently generated payload",
+      "passed": true
+    },
+    {
+      "name": "Completion records output bytes rather than encoded offsets",
+      "passed": true
+    },
+    {
+      "name": "Completion preserves a separate wire-byte audit",
+      "passed": true
+    },
+    {
+      "name": "Valid gzip response publishes through the production transfer path",
+      "passed": true
+    },
+    {
+      "name": "Published decoded bytes match the independently generated payload",
+      "passed": true
+    },
+    {
+      "name": "Completion records output bytes rather than encoded offsets",
+      "passed": true
+    },
+    {
+      "name": "Completion preserves a separate wire-byte audit",
+      "passed": true
+    },
+    {
+      "name": "Valid gzip response publishes through the production transfer path",
+      "passed": true
+    },
+    {
+      "name": "Published decoded bytes match the independently generated payload",
+      "passed": true
+    },
+    {
+      "name": "Completion records output bytes rather than encoded offsets",
+      "passed": true
+    },
+    {
+      "name": "Completion preserves a separate wire-byte audit",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsupported encoded response never publishes a final file",
+      "passed": true
+    },
+    {
+      "name": "Invalid gzip durably invalidates its completed wire receipt",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsupported encoded response never publishes a final file",
+      "passed": true
+    },
+    {
+      "name": "Invalid gzip durably invalidates its completed wire receipt",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsupported encoded response never publishes a final file",
+      "passed": true
+    },
+    {
+      "name": "Invalid gzip durably invalidates its completed wire receipt",
+      "passed": true
+    },
+    {
+      "name": "Malformed or unsupported encoded response never publishes a final file",
+      "passed": true
+    },
+    {
+      "name": "Gzip prefetch starts before confirmation",
+      "passed": true
+    },
+    {
+      "name": "Gzip prefetch reaches verified confirmation without publishing",
+      "passed": true
+    },
+    {
+      "name": "Gzip aliases persist the canonical representation for output size and retained-response reuse",
+      "passed": true
+    },
+    {
+      "name": "Before Start size is verified decoded output and target is absent",
+      "passed": true
+    },
+    {
+      "name": "Verified decoded prefetch is already staged in the destination folder before Start",
+      "passed": true
+    },
+    {
+      "name": "Start confirms the existing prefetched response",
+      "passed": true
+    },
+    {
+      "name": "Final file exactly matches the size shown before Start",
+      "passed": true
+    },
+    {
+      "name": "Confirmation publishes the destination sibling without leaving a decoded staging copy",
+      "passed": true
+    },
+    {
+      "name": "Relocation fixture prepares the decoded response before confirmation",
+      "passed": true
+    },
+    {
+      "name": "Confirmation can change the folder after decoded prefetch",
+      "passed": true
+    },
+    {
+      "name": "A destination change publishes the same verified bytes through the relocation fallback",
+      "passed": true
+    },
+    {
+      "name": "Relocation removes the original decoded sibling after successful publication",
+      "passed": true
+    },
+    {
+      "name": "Download Later fixture has fully decoded bytes",
+      "passed": true
+    },
+    {
+      "name": "Ending confirmation keeps the destination unpublished",
+      "passed": true
+    },
+    {
+      "name": "Resume reuses verified encoded bytes without a second response",
+      "passed": true
+    },
+    {
+      "name": "Pause checkpoints encoded offsets without publishing decoded bytes",
+      "passed": true
+    },
+    {
+      "name": "Pause retains a genuine partial encoded response",
+      "passed": true
+    },
+    {
+      "name": "Encoded-byte range resume decodes to the complete original file",
+      "passed": true
+    },
+    {
+      "name": "UI helpers never label compressed length as final size or use wire rate for decoded ETA",
+      "passed": true
+    },
+    {
+      "name": "Output projection leaves authoritative wire metadata unchanged",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,81 @@
+{
+  "checks": [
+    {
+      "name": "Legacy permanent-error behavior preserved",
+      "passed": true
+    },
+    {
+      "name": "Explicit bounded policy retries HTTP rejection",
+      "passed": true
+    },
+    {
+      "name": "Configured retry limit terminates attempts",
+      "passed": true
+    },
+    {
+      "name": "Unchecked limit allows retries beyond bounded maximum",
+      "passed": true
+    },
+    {
+      "name": "Stopped queue cannot schedule retries",
+      "passed": true
+    },
+    {
+      "name": "Idle completed cycle cannot schedule retries",
+      "passed": true
+    },
+    {
+      "name": "Protected one-shot request is not automatically replayed",
+      "passed": true
+    },
+    {
+      "name": "Required browser or authentication interaction prevents blind retry",
+      "passed": true
+    },
+    {
+      "name": "Required browser or authentication interaction prevents blind retry",
+      "passed": true
+    },
+    {
+      "name": "Required browser or authentication interaction prevents blind retry",
+      "passed": true
+    },
+    {
+      "name": "Browser verification stops transport retries even on HTTP 503",
+      "passed": true
+    },
+    {
+      "name": "Browser verification stops an unlimited queue from replaying the request",
+      "passed": true
+    },
+    {
+      "name": "Explicit restart clears the browser verification retry block",
+      "passed": true
+    },
+    {
+      "name": "HTTP authentication rejection remains stopped after prompt dismissal",
+      "passed": true
+    },
+    {
+      "name": "HTTP authentication rejection remains stopped after prompt dismissal",
+      "passed": true
+    },
+    {
+      "name": "FTP authentication rejection remains stopped after prompt dismissal",
+      "passed": true
+    },
+    {
+      "name": "Removed member cannot retry",
+      "passed": true
+    },
+    {
+      "name": "Paused file cannot be converted into retry work",
+      "passed": true
+    },
+    {
+      "name": "Invalid limit flag rejected atomically",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

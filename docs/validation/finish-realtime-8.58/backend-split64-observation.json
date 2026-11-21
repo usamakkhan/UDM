@@ -1,0 +1,149 @@
+{
+  "productChanged": false,
+  "instrumentedCoreEntryPoint": true,
+  "productionGuiLifetimeMeasured": false,
+  "pairedIdmComparison": false,
+  "kernelCauseVerified": false,
+  "bytes": 67108864,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "normalExit": true,
+  "coreObjectsVerified": 42,
+  "nativeWrites": 270,
+  "observedWriteIntervalsExactlyCoverBody": true,
+  "bodyCompletedBytes": 67108864,
+  "dropped": 0,
+  "openFiles": 0,
+  "openMappings": 0,
+  "nativeFlushOperations": [
+    {
+      "kind": "catalog",
+      "nativeMs": 29.1284,
+      "wrapperMs": 29.2446,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "catalog",
+      "nativeMs": 32.0859,
+      "wrapperMs": 32.2034,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "catalog",
+      "nativeMs": 25.7603,
+      "wrapperMs": 25.9417,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "body",
+      "nativeMs": 343.1544,
+      "wrapperMs": 343.3758,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "catalog",
+      "nativeMs": 27.3611,
+      "wrapperMs": 27.67,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "body",
+      "nativeMs": 564.1891,
+      "wrapperMs": 564.3378,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "publication-intent",
+      "nativeMs": 34.5656,
+      "wrapperMs": 34.7407,
+      "nestedOneOperation": true
+    },
+    {
+      "kind": "catalog",
+      "nativeMs": 14.4306,
+      "wrapperMs": 14.5534,
+      "nestedOneOperation": true
+    }
+  ],
+  "finishPhases": {
+    "AdvisoryHashInput": "write-buffer",
+    "AdvisoryHashOverlap": true,
+    "AdvisoryHashSeconds": 0.1833581,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 2.2e-06,
+    "Content": 0.0004995,
+    "DirectSize": 1.84e-05,
+    "FlushPublished": 0.5646193,
+    "Hash": 4.74e-05,
+    "HashMode": "deferred",
+    "LateHash": 3.17e-05,
+    "PrePublicationMetadata": 0.0051132,
+    "PrefetchReceipt": 1.6e-06,
+    "PreparedTransferFinalizeSeconds": 0.5712421000000001,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 8.15e-05,
+    "PublishedFileFlush": 0.5643483,
+    "PublishedFileOpen": 0.000147,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "Settle": 0.0008772,
+    "SettleDestination": 0.0006123,
+    "SettleLengthQuery": 8.23e-05,
+    "SettleLockWait": 1e-07,
+    "SettleRecoveryCheck": 0.0001081,
+    "SettleSnapshot": 4.29e-05,
+    "SettleValidateFolder": 1.71e-05,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0007897,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "prefinishWriteback": {
+    "Adjustments": 0,
+    "Errors": 0,
+    "Flushes": 1,
+    "LeadBytes": 58720256,
+    "Seconds": 0.3434516
+  },
+  "publicationPhases": {
+    "IntentOperations": {
+      "bytes-written": 0.0002992,
+      "directories-ready": 0.0007483,
+      "publish": 0.0010055,
+      "temporary-flushed": 0.0349264,
+      "temporary-opened": 0.0002796
+    },
+    "PrepareIntent": 0.0009286,
+    "PrepareSource": 0.000311,
+    "Rename": 0.0013097,
+    "TimingScope": "through-rename-before-final-catalog-save",
+    "VerifyIdentity": 1.4e-06,
+    "WriteIntent": 0.0372651
+  },
+  "postExitFlush": {
+    "openSeconds": 0.0001720000000204891,
+    "flushSeconds": 0.008853099992848001,
+    "closeSeconds": 4.030000127386302e-05
+  },
+  "originRequests": 8,
+  "originBytes": 67560442,
+  "sourceBinarySha256": "902D22480E9A508CF55E4EBE338CC00233D4E56F8783D971623927170B43277D",
+  "agentSha256": "56166D5DF87DFA026AA1F2545ABBE8DB0C3E7EBF5E130128EB15C15360887013",
+  "failedExtentQuery": {
+    "querySucceeded": false,
+    "returnedBytes": 0,
+    "readOnly": true,
+    "error": 50
+  },
+  "sourceResultSha256": "25C225E326A96548198997AD645CD25B8DF3B0100651998EBECC825340B93718",
+  "limits": [
+    "Instrumentation changes timing; not an uninstrumented speed comparison.",
+    "Observed native writes cover each body byte once, but do not prove absence of every unobserved writer mechanism.",
+    "Backend destruction precedes the observer handshake; application GUI/process-global and all kernel/background lifetime coverage are separate."
+  ]
+}

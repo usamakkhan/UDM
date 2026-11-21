@@ -1,0 +1,9 @@
+{
+  "version": "8.87",
+  "extensionVersion": "0.72.51",
+  "supersededVersion": "8.86",
+  "supersededExtensionVersion": "0.72.50",
+  "reason": "The new coherent view filled the window, but the existing admission guard kept More disabled. Queue names and labels are now owned, so enable safe navigation during admission and keep mutation controls guarded.",
+  "failedUiExcludedFromQualification": true,
+  "sourceCondition": "All captured backend input hashes remain exact; only Bridge recompiles for 8.87. The reused CaptureAdmission object is qualified again by current backend and UI runs."
+}

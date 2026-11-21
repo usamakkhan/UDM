@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "sources": [
+    {
+      "path": "benchmarks\\speed\\finish_thread_filtered_lifetime.cpp",
+      "sha256": "7DA7E546459329C89884943B9F451A724854E44C6B45248F5DDD453C9B9B804E"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_realtime_lifetime.cpp",
+      "sha256": "31C027685E622672F797254ECC99F3D8A83369A6EA2250DB16FEFD207A66D51B"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_etl_reader.cpp",
+      "sha256": "BA7BCDC795152BBB6E2EC911B48B1C5CABBC56A40ACBC7AAE2D5795FD792A9D2"
+    },
+    {
+      "path": "benchmarks\\speed\\TraceSchemaInventory.hpp",
+      "sha256": "9C4F089CA635200943F3B91707928C45D4EC1F1B4CF776C7CB74E2336CF634D4"
+    },
+    {
+      "path": "benchmarks\\speed\\trace_schema_inventory_control.cpp",
+      "sha256": "C6A2212C64284E2964440E21033D2030215DDF3B0B8FE743870B487BB41FFC4B"
+    }
+  ],
+  "nativeControls": 21,
+  "replay": {
+    "passed": true,
+    "inputRecords": 6883,
+    "retainedRecords": 308,
+    "unrelatedRecords": 6575,
+    "retainedRecordsExactlyMatchIndependentSelection": true,
+    "originalReportSha256": "634269BB1D1901FAC8B66F87807854FC7CD7772B23DC151C48B9203DAD6748AF"
+  },
+  "unelevatedCollectorRefused": true,
+  "newElevationRequested": false,
+  "productSourceChanged": false,
+  "liveCoverageProven": false,
+  "outputs": [
+    {
+      "name": "finish_thread_filtered_lifetime",
+      "binarySha256": "B5E6D52615174ACE463397DF524B2DAD6BC18C1C75060A75D9B6B9D012CEF141",
+      "objectSha256": "324D6998C26149A6FBA6359CCEBA9F7E9320F568656D12B4B8D638542EA7A598"
+    },
+    {
+      "name": "trace_schema_inventory_control",
+      "binarySha256": "5197DA8E1B7DE37DBBBBFACF6111C073F1FD7CC1E7B6CB921184B90F3917E72F",
+      "objectSha256": "6B25A973B82A67FC77A6D59A4EB8A8E88DFA18DF934455384ED49FD623B1512E"
+    }
+  ]
+}

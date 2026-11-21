@@ -1,0 +1,20 @@
+--- diagnostic/PublicationPreparation.hpp@epoch1
++++ diagnostic/PublicationPreparation.hpp@epoch2
+@@ -19,7 +19,7 @@
+  i64 size=0;
+  PublicationPreparation(const fs::path& staging,const Json& destination,Handle ownedWriteback=Handle{}):source(std::move(ownedWriteback)),writableSource(bool(source)){
+   if(!source)source.h=CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER length{};
+-  if(!source||!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
++  if(!source||![&]{DiagnosticOperation query("source-info-query",0);return GetFileInformationByHandle(source.h,&info);}()||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||![&]{DiagnosticOperation query("source-size-query",0);return GetFileSizeEx(source.h,&length);}()||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
+   validateGrabberFolder(destination);auto value=str(destination,"ProjectDestinationRoot");if(value.empty())return;
+   auto root=fs::path(wide(value)).lexically_normal(),folder=fs::path(wide(str(destination,"Folder"))).lexically_normal();pin(root,false);pin(root,false,true);auto current=root;
+   for(const auto& component:folder.lexically_relative(root)){if(component==L".")continue;current/=component;pin(current,true);}
+@@ -28,7 +28,7 @@
+  // or fallback hashing. validateSourceName still verifies the named file.
+  Json sourceIdentity()const{return stableFileIdentity(source.h);}
+  std::string sourceHash(const std::function<void()>& checkpoint={})const{if(writableSource)throw std::runtime_error("A write-only publication pin cannot supply an unknown digest.");return fileHash(source.h,checkpoint);}
+- void validateSourceName(const fs::path& staging)const{
++ void validateSourceName(const fs::path& staging)const{DiagnosticOperation operation("source-name-validation",0);
+   Handle named(CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION current{};LARGE_INTEGER length{};
+   if(!named||!GetFileInformationByHandle(named.h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(named.h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The completed file changed before publication. Its files were preserved.");
+  }

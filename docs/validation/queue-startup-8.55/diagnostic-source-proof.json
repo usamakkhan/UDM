@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "originalAppSha256": "92F36919001954DE7A16D6BA8EAB50548E71C26FDC6500FF0B11B8A38AFA8225",
+  "diagnosticEntrySha256": "FFBDD0ED0B8BEFF089B22CF5162A72CD7B72087A9B9ADC8887EC51994DC8BC7F",
+  "baselineAndCandidateEntriesByteIdentical": true,
+  "patchSha256": "9928DAE26D01242C4F5CCFBB51E75C6CC886A830E4DA90891F39253E34290047",
+  "extraBehavior": "Two queue-stage QPC markers plus guarded normal close after initial-refresh-returned. Production App.cpp remains unmodified by this increment.",
+  "baselineControllerDifference": "Version label directive pinned to the actual qualified 8.54 core bundle; current controller body is otherwise identical."
+}

@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "name": "The actual main Close returns before its policy writer releases",
+      "passed": false
+    },
+    {
+      "name": "The owned main close workflow completes without a held writer or stale result",
+      "passed": false
+    }
+  ],
+  "diagnostics": {
+    "tray-busy": {
+      "closeReturnMs": 398.41789999976754,
+      "error": "The actual main Close returns before its policy writer releases",
+      "integrationStops": 0,
+      "writerExpiredAtReturn": true,
+      "writerHeldAtReturn": false
+    }
+  },
+  "error": "The owned main close workflow completes without a held writer or stale result",
+  "passed": false
+}

@@ -1,0 +1,11 @@
+--- native/Duplicates.cpp@9.60
++++ native/Duplicates.cpp@9.59
+@@ -287,7 +287,7 @@
+   timing("PrepareCatalog");UDM_FINISH_POINT("catalog-write-begin");lock.unlock();std::exception_ptr failure;try{if(publicationObservation)publicationObservation("publication-catalog-prepared");if(finalCommit&&publicationObservation){const std::function<void(const char*)> observeFinal=[&](const char* point){if(publicationObservation){if(std::string_view(point)=="snapshot-prepared")publicationObservation("completed-transfer-checkpoint");publicationObservation(point);}};saveCatalog(false,&observeFinal);}else save();}catch(...){failure=std::current_exception();}timing("WriteCatalog");UDM_FINISH_POINT("catalog-write-end");const bool accepted=catalogProof.resolve();UDM_FINISH_POINT("catalog-resolve-end");lock.lock();
+   if(!accepted){if(str(job->data,"PublicationCommitId")==commitId)job->data=PublicationCommit::rollback(current,completed,job->data);catalogProof.release();if(insertedReceipt)PublicationCatalogProof::eraseReceipt(*this,receipt);if(failure)std::rethrow_exception(failure);throw std::runtime_error("The completed file has not been durably recorded. Its recovery journal was preserved.");}
+   if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||!PublicationCommit::accepted(intent,job->data,hash))throw std::runtime_error("The completed download changed after catalog publication. Its recovery journal was preserved.");
+-  timing("AcceptCatalog");lock.unlock();prepared.releaseAcceptedFile();timing("ReleaseAcceptedFile");if(publicationObservation)publicationObservation("publication-cleanup");
++  timing("AcceptCatalog");lock.unlock();if(publicationObservation)publicationObservation("publication-cleanup");
+   std::error_code ec;const bool removed=fs::remove(journal,ec);if(removed&&publicationObservation)publicationObservation("publication-journal-removed");if(!catalogBound&&removed){lock.lock();catalogProof.release();PublicationCatalogProof::eraseReceipt(*this,receipt);lock.unlock();}timing("RemoveJournal");UDM_FINISH_POINT("publication-cleanup-end");return;
+  }
+  auto journal=root/L"replacements"/(wide(job->id())+L".json");JobPtr original;for(auto item:jobs)if(item->id()==originalId)original=item;

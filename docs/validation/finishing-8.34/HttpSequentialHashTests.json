@@ -1,0 +1,302 @@
+{
+  "passed": true,
+  "executableSha256": "1DE556A5389135C02D9C5E230F34BBA47467749091B2FBA830DCA70BC7E1D157",
+  "payloadSha256": "fa2d93e40adeb02d527990e17a27866a08c4522be556a5104eaa878b622fee79",
+  "payloadBytes": 8388608,
+  "checks": 17,
+  "cases": [
+    {
+      "case": "plain",
+      "checks": 5,
+      "passed": true,
+      "requests": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.23760279999987688,
+            "closed": 1.311082099993655,
+            "peer_port": 61891,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.23907060000055935,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 1.3090101999987382,
+                "outcome": "complete",
+                "headers_sent": 0.25967169999785256,
+                "first_body_sent": 0.26827849999972386,
+                "last_body_sent": 1.3090067999946768
+              }
+            ],
+            "drops": 0,
+            "rate": 8000000,
+            "drop_after": 0
+          }
+        ]
+      },
+      "nativeResults": {
+        "checks": [
+          {
+            "name": "Production HTTP transfer completes",
+            "passed": true
+          },
+          {
+            "name": "Large response preserves its exact byte count",
+            "passed": true
+          },
+          {
+            "name": "Output and recorded digest match the independent origin digest",
+            "passed": true
+          },
+          {
+            "name": "Only proven sequential responses use the extended inline hash path",
+            "passed": true
+          },
+          {
+            "name": "Successful write accounting covers the complete representation",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "case": "verified",
+      "checks": 5,
+      "passed": true,
+      "requests": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.06935209999937797,
+            "closed": 1.141908899997361,
+            "peer_port": 61894,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.06989059999614256,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 1.1395029999985127,
+                "outcome": "complete",
+                "headers_sent": 0.09018219999416033,
+                "first_body_sent": 0.098633499997959,
+                "last_body_sent": 1.1395000999982585
+              }
+            ],
+            "drops": 0,
+            "rate": 8000000,
+            "drop_after": 0
+          }
+        ]
+      },
+      "nativeResults": {
+        "checks": [
+          {
+            "name": "Production HTTP transfer completes",
+            "passed": true
+          },
+          {
+            "name": "Large response preserves its exact byte count",
+            "passed": true
+          },
+          {
+            "name": "Output and recorded digest match the independent origin digest",
+            "passed": true
+          },
+          {
+            "name": "Only proven sequential responses use the extended inline hash path",
+            "passed": true
+          },
+          {
+            "name": "Successful write accounting covers the complete representation",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "case": "mismatch",
+      "checks": 2,
+      "passed": true,
+      "requests": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.0777317000029143,
+            "closed": 1.1496366999999736,
+            "peer_port": 61897,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.07813180000084685,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 1.1476963000022806,
+                "outcome": "complete",
+                "headers_sent": 0.09842770000250312,
+                "first_body_sent": 0.10694949999742676,
+                "last_body_sent": 1.147694400002365
+              }
+            ],
+            "drops": 0,
+            "rate": 8000000,
+            "drop_after": 0
+          }
+        ]
+      },
+      "nativeResults": {
+        "checks": [
+          {
+            "name": "A required digest mismatch is rejected by digest verification",
+            "passed": true
+          },
+          {
+            "name": "Digest rejection cannot publish or report completion",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    },
+    {
+      "case": "ranged",
+      "checks": 5,
+      "passed": true,
+      "requests": {
+        "connections": 2,
+        "rejected_connections": 0,
+        "requests": 2,
+        "bytes_sent": 8454181,
+        "drops": 0,
+        "peak_concurrent": 2,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.07408350000332575,
+            "closed": 0.6365166999967187,
+            "peer_port": 61901,
+            "rejected": false,
+            "bytes": 4259813,
+            "requests": [
+              {
+                "at": 0.07450519999838434,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 4259813,
+                "finished": null,
+                "outcome": "",
+                "headers_sent": 0.09508590000041295,
+                "first_body_sent": 0.10372410000127275,
+                "last_body_sent": 0.6280146999997669
+              }
+            ],
+            "drops": 0,
+            "rate": 8000000,
+            "drop_after": 0
+          },
+          {
+            "id": 2,
+            "opened": 0.1012747999993735,
+            "closed": 0.6482455000004848,
+            "peer_port": 61902,
+            "rejected": false,
+            "bytes": 4194368,
+            "requests": [
+              {
+                "at": 0.10162300000229152,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": "bytes=4194240-8388607",
+                "status": 206,
+                "start": 4194240,
+                "end": 8388607,
+                "sent": 4194368,
+                "finished": 0.6472638999985065,
+                "outcome": "complete",
+                "headers_sent": 0.12216389999957755,
+                "first_body_sent": 0.12223339999763994,
+                "last_body_sent": 0.6472622000001138
+              }
+            ],
+            "drops": 0,
+            "rate": 8000000,
+            "drop_after": 0
+          }
+        ]
+      },
+      "nativeResults": {
+        "checks": [
+          {
+            "name": "Production HTTP transfer completes",
+            "passed": true
+          },
+          {
+            "name": "Large response preserves its exact byte count",
+            "passed": true
+          },
+          {
+            "name": "Output and recorded digest match the independent origin digest",
+            "passed": true
+          },
+          {
+            "name": "Only proven sequential responses use the extended inline hash path",
+            "passed": true
+          },
+          {
+            "name": "Successful write accounting covers the complete representation",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "passed": true
+      }
+    }
+  ],
+  "limits": "Correctness and path coverage, not a performance comparison."
+}

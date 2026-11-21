@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeExists": true,
+      "beforeSha256": "519BEEB6A1F55F4263430DC3ED93135C77D7CB5F1228D778649A59F55E35467E",
+      "afterSha256": "558FEA3796C148515B10385FD19082949E19414C8DC3A955C4DB555163A068B8",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Core.cpp",
+      "beforeExists": true,
+      "beforeSha256": "0E54886B60CE5EB9265EF9DC08FC4659473CA7AFA02F23E828F01DBB2D873BEE",
+      "afterSha256": "3D4443C02B70E0B2AC4E67BC6A69A6931CF2220CD1561D8E4A43B3E671DFAC90",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Core.hpp",
+      "beforeExists": true,
+      "beforeSha256": "A1FAD530DDEB8997245C951671E085860A6D1151A4E8C8166C43B65AD72254AF",
+      "afterSha256": "DDF0608F5F0E548304EC2E900ACC5393DDB36317022E7C97D9C48E32AFB8BA88",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/PropertiesRequestDraft.hpp",
+      "beforeExists": true,
+      "beforeSha256": "5BFFE96F385EF6400CCA73166A3C2BC17242632E583B5C74109238D1ACFE1B9E",
+      "afterSha256": "19DF8F9F5CAA44C2AB3B121CE904B4D508200CE22742B678D550277F1942F0A3",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "beforeExists": true,
+      "beforeSha256": "B73B0B13DCEFE4FFA404301D1D6E9FEB08707FD5A547C37C919F27B4E010735E",
+      "afterSha256": "BDB72ACC2DB36DC7F93AC5610EA2B9015ECD3BC147DE4D418E375799E8803E3E",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeExists": true,
+      "beforeSha256": "233ABF166DFAE6C1FE9C3B0729720F3EE5D19AA13C1A636F7E82734B5237BB00",
+      "afterSha256": "EAD63438F91A9B4D4B5D0752D88CC5FA144CB05DA84AFA1B13AC9F7B3DA35CB6",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "BE0FFA3E728F515E6EE87B93342FF1573435D370DD05D11E28347585FE79882C",
+      "afterSha256": "F5F85DF4A77DF599F0D2313F53B2BBBDDA845E6878AD557043E022F3E7D39907",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "3E34457B67AC33C34B366144BD49E1ECC37C1885EF8F9E38E39329DC2BB65F61",
+      "afterSha256": "D4B458DD5FD82F37553FA515D382E16ED406142393CC14B386286EEA8E8A2FF3",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/PropertiesDecisionTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "67100FDDE1D6FA4DB1DF05F1432CA8022562D4FB3A9EA4F8BCAFA5B4393CE095",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/PropertiesSaveUiTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "123FBA4CFB9B4530E0206DD26F096EAC9811830C158167FB27DB26B1A2783AEC",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/properties-save-8.52-to-8.53.patch",
+  "patchSha256": "E30AE93C93038D08002BC09741F713786E5540DE4097EBE8687B01D49EC244C7",
+  "verifiedBothDirections": true,
+  "scope": "Ten exact source inputs from qualified 8.52; normalized patch and per-side line endings reconstruct raw bytes."
+}

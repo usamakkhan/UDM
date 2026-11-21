@@ -5,7 +5,23 @@ namespace udm {
 // Copy only inputs consumed by list filtering, sorting and rendering. Transfer
 // journals, captured plans, POST bodies and private child tracks stay on the job.
 // The caller holds Manager::mutex while reading the source record and speed.
-struct DownloadListRow {Json data;double speed=0;};
+struct DownloadListRow {Json data;double speed=0;bool active=false,prefetchDeferring=false;};
+inline bool downloadResumeAvailable(const Json& data,bool active,bool prefetchDeferring){const auto status=str(data,"Status");return active?prefetchDeferring&&status=="Paused":status!="Complete"&&status!="Queued";}
+inline bool downloadStopAvailable(const Json& data,bool active){return active||str(data,"Status")=="Queued";}
+enum class DownloadSelectionAction {Resume,Stop,Remove,Relocate,RemoveQueue,Reorder};
+inline bool downloadSelectionAvailable(DownloadSelectionAction action,const std::vector<std::shared_ptr<const DownloadListRow>>& rows){
+ if(rows.empty()||std::any_of(rows.begin(),rows.end(),[](const auto& row){return !row;}))return false;
+ const auto member=[](const auto& row){return yes(row->data,"QueueMember",str(row->data,"Status")!="Complete");};
+ switch(action){
+  case DownloadSelectionAction::Resume:return std::any_of(rows.begin(),rows.end(),[](const auto& row){return downloadResumeAvailable(row->data,row->active,row->prefetchDeferring);});
+  case DownloadSelectionAction::Stop:return std::any_of(rows.begin(),rows.end(),[](const auto& row){return downloadStopAvailable(row->data,row->active);});
+  case DownloadSelectionAction::Remove:return std::all_of(rows.begin(),rows.end(),[](const auto& row){return !row->active;});
+  case DownloadSelectionAction::Relocate:return std::all_of(rows.begin(),rows.end(),[](const auto& row){return !row->active&&str(row->data,"Status")=="Complete";});
+  case DownloadSelectionAction::RemoveQueue:return std::all_of(rows.begin(),rows.end(),[&](const auto& row){return !row->active&&member(row);});
+  case DownloadSelectionAction::Reorder:return rows.size()==1&&!rows.front()->active&&member(rows.front());
+ }
+ return false;
+}
 inline constexpr const char* DownloadListFields[]={"Id","FileName","Folder","Category","Status","Size","Received",
  "ConfirmationPending","MediaPhase","PrefetchedFinalSize","LiveRecording",
  "StreamDurationMs","StreamCompletedMs","AdaptiveTotalSegments","AdaptiveCompletedSegments",
@@ -17,11 +33,11 @@ inline bool downloadListRecordMatches(const Json& source,const Json& record,bool
  for(const auto* field:DownloadListFields)if(!same(field))return false;
  return includeHeaders?same("ProtectedHeaders"):!record.contains("ProtectedHeaders");
 }
-inline std::shared_ptr<const DownloadListRow> downloadListRow(const Json& source,double speed,bool includeHeaders,int queueImage,const std::shared_ptr<const DownloadListRow>& previous){
- if(previous&&previous->speed==speed&&num(previous->data,"ListQueueImage",-1)==queueImage&&downloadListRecordMatches(source,previous->data,includeHeaders))return previous;
+inline std::shared_ptr<const DownloadListRow> downloadListRow(const Json& source,double speed,bool includeHeaders,int queueImage,const std::shared_ptr<const DownloadListRow>& previous,bool active=false,bool prefetchDeferring=false){
+ if(previous&&previous->speed==speed&&previous->active==active&&previous->prefetchDeferring==prefetchDeferring&&num(previous->data,"ListQueueImage",-1)==queueImage&&downloadListRecordMatches(source,previous->data,includeHeaders))return previous;
  Json record=Json::object();for(const auto* field:DownloadListFields){auto value=source.find(field);if(value!=source.end())record[field]=*value;}
  if(includeHeaders){auto value=source.find("ProtectedHeaders");if(value!=source.end())record["ProtectedHeaders"]=*value;}
- record["ListQueueImage"]=queueImage;return std::make_shared<const DownloadListRow>(DownloadListRow{std::move(record),speed});
+ record["ListQueueImage"]=queueImage;return std::make_shared<const DownloadListRow>(DownloadListRow{std::move(record),speed,active,prefetchDeferring});
 }
 inline const std::string& downloadListFilename(const Json& record){
  static const std::string empty;const auto value=record.find("FileName");return value!=record.end()&&value->is_string()?value->get_ref<const std::string&>():empty;

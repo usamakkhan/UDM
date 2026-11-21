@@ -1,0 +1,28 @@
+{
+  "observedSourceVersion": "8.52",
+  "sourceInspectionOnly": true,
+  "installedUiTimingMeasured": false,
+  "sources": [
+    {
+      "path": "native/Ui.hpp",
+      "line": 279,
+      "sha256": "8383B5B0215D1D69373E333220B83878DA770E544A3E3ECD771F1FDD6025CDB9",
+      "matchingSource": "void OnOK()override{if(accept){try{accept();}catch(const std::exception& e){error(this,e);}}}"
+    },
+    {
+      "path": "native/PropertiesUi.hpp",
+      "line": 183,
+      "sha256": "B73B0B13DCEFE4FFA404301D1D6E9FEB08707FD5A547C37C919F27B4E010735E",
+      "matchingSource": "manager.configureProperties(job,changes,requestChanges);"
+    },
+    {
+      "path": "native/ProgressUi.hpp",
+      "line": 531,
+      "sha256": "F0E6B3E7816B1647BCFA2539E7E419E07B614CF7F271B15C747BE8E7EE832D70",
+      "matchingSource": "try{commandTask.startAction(manager,[source=&manager,target=job,request,result]{"
+    }
+  ],
+  "finding": "Form::OnOK directly invokes accept; unfinished Properties acceptance calls configureProperties synchronously. Progress separately dispatches applyProgressCommand through FileInfoDecisionTask. Releasing Model inside backend recovery does not move a synchronous caller off its UI thread.",
+  "requiredFollowup": "Give Properties an owned asynchronous save/decision lifecycle while retaining atomic current-header patching, membership/path revalidation, error retention, dialog lifetime and shutdown ownership. Verify message-pump responsiveness at held real backend IO, not only Model availability. Audit completed Properties persistence too.",
+  "notClaimed": "Neither 8.52 model availability tests nor headless command-adapter tests prove installed UI responsiveness."
+}

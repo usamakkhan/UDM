@@ -1,0 +1,427 @@
+{
+  "purpose": "Blocking attribution, not shipping performance qualification",
+  "initialGroup": "One paired trial per case without the new production build",
+  "followupGroup": "Two diagnostic trials per case concurrent with native compilation; load is a confound, not a fair speed comparison",
+  "traces": [
+    {
+      "group": "comparison",
+      "case": "single-4m-udm-1",
+      "events": 84,
+      "dropped": 0,
+      "outputFlushMs": 2.105499999743188,
+      "intentMs": 4.890200001682388,
+      "catalogMs": 18.867599999794038,
+      "ackMs": 0.0006000009307172149,
+      "lateHashAndTransferMs": 0.16569999934290536,
+      "commitCleanupMs": 0.9234999997715931,
+      "workerProofMs": 0.9038000025611836,
+      "notifyToCloseMs": 0.576599999476457,
+      "integrationStopMs": 0.21980000019539148,
+      "managerStopMs": 0.9532000003673602,
+      "windowCloseMs": 24.89390000118874,
+      "exitInstanceMs": 3.559999997378327,
+      "atomicFlushes": [
+        {
+          "seconds": 19957.8735013,
+          "thread": 7112,
+          "ms": 1.223399998707464
+        },
+        {
+          "seconds": 19958.5261949,
+          "thread": 24260,
+          "ms": 2.0616999972844496
+        },
+        {
+          "seconds": 19958.5326576,
+          "thread": 24260,
+          "ms": 2.6532000010774937
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison",
+      "case": "single-64m-udm-1",
+      "events": 159,
+      "dropped": 0,
+      "outputFlushMs": 7.2766000012052245,
+      "intentMs": 4.641999999876134,
+      "catalogMs": 17.158099999505794,
+      "ackMs": 0.00039999940781854093,
+      "lateHashAndTransferMs": 0.4583000009006355,
+      "commitCleanupMs": 0.6599999978789128,
+      "workerProofMs": 0.7659000002604444,
+      "notifyToCloseMs": 0.14320000263978727,
+      "integrationStopMs": 0.22319999698083848,
+      "managerStopMs": 1.1172999984410126,
+      "windowCloseMs": 23.673400002735434,
+      "exitInstanceMs": 5.0228000000061,
+      "atomicFlushes": [
+        {
+          "seconds": 19971.5936248,
+          "thread": 1992,
+          "ms": 0.9539999991829973
+        },
+        {
+          "seconds": 19973.1787696,
+          "thread": 24860,
+          "ms": 0.8357000006071758
+        },
+        {
+          "seconds": 19974.7061916,
+          "thread": 24860,
+          "ms": 0.8096000019577332
+        },
+        {
+          "seconds": 19976.2230161,
+          "thread": 24860,
+          "ms": 2.4080000002868474
+        },
+        {
+          "seconds": 19977.7477774,
+          "thread": 24860,
+          "ms": 0.8629000003566034
+        },
+        {
+          "seconds": 19979.2786324,
+          "thread": 24860,
+          "ms": 0.9749999990162905
+        },
+        {
+          "seconds": 19980.1443557,
+          "thread": 24636,
+          "ms": 1.5198000000964385
+        },
+        {
+          "seconds": 19980.1505222,
+          "thread": 24636,
+          "ms": 0.751499999751104
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison",
+      "case": "split-64m-udm-1",
+      "events": 99,
+      "dropped": 0,
+      "outputFlushMs": 140.61690000016824,
+      "intentMs": 4.29699999949662,
+      "catalogMs": 17.25109999824781,
+      "ackMs": 0.0006000009307172149,
+      "lateHashAndTransferMs": 50.00350000045728,
+      "commitCleanupMs": 0.714700003300095,
+      "workerProofMs": 0.918399997317465,
+      "notifyToCloseMs": 0.1795999996829778,
+      "integrationStopMs": 0.17759999900590628,
+      "managerStopMs": 1.1138000008941162,
+      "windowCloseMs": 25.049200001376448,
+      "exitInstanceMs": 5.59120000252733,
+      "atomicFlushes": [
+        {
+          "seconds": 19980.8268975,
+          "thread": 30648,
+          "ms": 1.3705999990634155
+        },
+        {
+          "seconds": 19982.3973145,
+          "thread": 16652,
+          "ms": 7.9853999995975755
+        },
+        {
+          "seconds": 19982.5177021,
+          "thread": 18272,
+          "ms": 1.4254999987315387
+        },
+        {
+          "seconds": 19982.5230071,
+          "thread": 18272,
+          "ms": 1.2042999987897929
+        }
+      ],
+      "lateAutomaticSaves": [
+        {
+          "stage": "auto-save-write-acquired",
+          "thread": 16652,
+          "qpcSeconds": 19982.3944212
+        }
+      ]
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "single-4m-udm-1",
+      "events": 84,
+      "dropped": 0,
+      "outputFlushMs": 2.207599998655496,
+      "intentMs": 11.671299998852191,
+      "catalogMs": 57.7817999983381,
+      "ackMs": 0.0002999986463692039,
+      "lateHashAndTransferMs": 0.3924000011465978,
+      "commitCleanupMs": 25.175600003422005,
+      "workerProofMs": 1.321699997788528,
+      "notifyToCloseMs": 0.23539999892818742,
+      "integrationStopMs": 0.3059999980905559,
+      "managerStopMs": 1.071599999704631,
+      "windowCloseMs": 56.50170000080834,
+      "exitInstanceMs": 15.018900001450675,
+      "atomicFlushes": [
+        {
+          "seconds": 20652.382997,
+          "thread": 29904,
+          "ms": 0.9174000006169081
+        },
+        {
+          "seconds": 20653.2824269,
+          "thread": 16076,
+          "ms": 1.5854999983275775
+        },
+        {
+          "seconds": 20653.2960902,
+          "thread": 16076,
+          "ms": 12.295199998334283
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "single-4m-udm-2",
+      "events": 84,
+      "dropped": 0,
+      "outputFlushMs": 22.65880000049947,
+      "intentMs": 36.17149999990943,
+      "catalogMs": 29.765200000838377,
+      "ackMs": 0.0005000001692678779,
+      "lateHashAndTransferMs": 0.1975999985006638,
+      "commitCleanupMs": 1.1438000001362525,
+      "workerProofMs": 2.215000000433065,
+      "notifyToCloseMs": 0.27740000223275274,
+      "integrationStopMs": 0.2812999991874676,
+      "managerStopMs": 2.9873000021325424,
+      "windowCloseMs": 50.604700001713354,
+      "exitInstanceMs": 82.90340000166907,
+      "atomicFlushes": [
+        {
+          "seconds": 20707.9598394,
+          "thread": 25220,
+          "ms": 1.5657000003557187
+        },
+        {
+          "seconds": 20709.2672965,
+          "thread": 29492,
+          "ms": 32.26180000274326
+        },
+        {
+          "seconds": 20709.3083486,
+          "thread": 29492,
+          "ms": 0.9868000015558209
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "single-64m-udm-1",
+      "events": 159,
+      "dropped": 0,
+      "outputFlushMs": 41.55510000055074,
+      "intentMs": 52.99109999759821,
+      "catalogMs": 85.17650000067079,
+      "ackMs": 0.0005000001692678779,
+      "lateHashAndTransferMs": 0.32789999750093557,
+      "commitCleanupMs": 2.5783999990380835,
+      "workerProofMs": 4.613699999026721,
+      "notifyToCloseMs": -4.2269000005035195,
+      "integrationStopMs": 0.46010000005480833,
+      "managerStopMs": 3.245500000048196,
+      "windowCloseMs": 159.7412000010081,
+      "exitInstanceMs": 107.7212000018335,
+      "atomicFlushes": [
+        {
+          "seconds": 20671.3497415,
+          "thread": 19732,
+          "ms": 1.8587000013212673
+        },
+        {
+          "seconds": 20673.0417611,
+          "thread": 11932,
+          "ms": 5.261899998004083
+        },
+        {
+          "seconds": 20674.602404,
+          "thread": 11932,
+          "ms": 1.1365999998815823
+        },
+        {
+          "seconds": 20676.1499874,
+          "thread": 11932,
+          "ms": 3.8593999997829087
+        },
+        {
+          "seconds": 20677.7038952,
+          "thread": 11932,
+          "ms": 5.405500000051688
+        },
+        {
+          "seconds": 20679.2464615,
+          "thread": 11932,
+          "ms": 0.8060000000114087
+        },
+        {
+          "seconds": 20680.2384736,
+          "thread": 23444,
+          "ms": 46.37800000273273
+        },
+        {
+          "seconds": 20680.2913228,
+          "thread": 23444,
+          "ms": 47.93179999978747
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "single-64m-udm-2",
+      "events": 159,
+      "dropped": 0,
+      "outputFlushMs": 70.44499999756226,
+      "intentMs": 24.490499999956228,
+      "catalogMs": 41.37230000196723,
+      "ackMs": 0.0005000001692678779,
+      "lateHashAndTransferMs": 0.2277000021422282,
+      "commitCleanupMs": 10.444499999721302,
+      "workerProofMs": 1.714200003334554,
+      "notifyToCloseMs": -0.18049999926006421,
+      "integrationStopMs": 0.4886999995505903,
+      "managerStopMs": 1.1125999990326818,
+      "windowCloseMs": 113.58389999804785,
+      "exitInstanceMs": 21.263400001771515,
+      "atomicFlushes": [
+        {
+          "seconds": 20711.6610378,
+          "thread": 25092,
+          "ms": 1.5477999986615032
+        },
+        {
+          "seconds": 20713.3625925,
+          "thread": 15836,
+          "ms": 1.1244999986956827
+        },
+        {
+          "seconds": 20714.9326878,
+          "thread": 15836,
+          "ms": 0.7368000005953945
+        },
+        {
+          "seconds": 20716.4942903,
+          "thread": 15836,
+          "ms": 0.9900000004563481
+        },
+        {
+          "seconds": 20718.0677227,
+          "thread": 15836,
+          "ms": 1.046399996994296
+        },
+        {
+          "seconds": 20719.6269822,
+          "thread": 15836,
+          "ms": 0.9237000012944918
+        },
+        {
+          "seconds": 20720.8663431,
+          "thread": 24952,
+          "ms": 8.856500000547385
+        },
+        {
+          "seconds": 20720.8895903,
+          "thread": 24952,
+          "ms": 0.7463999972969759
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "split-64m-udm-1",
+      "events": 99,
+      "dropped": 0,
+      "outputFlushMs": 446.56340000074124,
+      "intentMs": 139.56210000105784,
+      "catalogMs": 299.82860000018263,
+      "ackMs": 0.0006000009307172149,
+      "lateHashAndTransferMs": 4.6677999998792075,
+      "commitCleanupMs": 0.8017000000108965,
+      "workerProofMs": 2.2828999972261954,
+      "notifyToCloseMs": 0.2907999987655785,
+      "integrationStopMs": 3.345400000398513,
+      "managerStopMs": 3.804599997238256,
+      "windowCloseMs": 59.66650000118534,
+      "exitInstanceMs": 16.439700000773882,
+      "atomicFlushes": [
+        {
+          "seconds": 20684.5975793,
+          "thread": 24688,
+          "ms": 70.36869999865303
+        },
+        {
+          "seconds": 20686.3782781,
+          "thread": 20136,
+          "ms": 202.50749999831896
+        },
+        {
+          "seconds": 20686.9986414,
+          "thread": 29640,
+          "ms": 67.24039999971865
+        },
+        {
+          "seconds": 20687.1968296,
+          "thread": 29640,
+          "ms": 256.1182999997982
+        }
+      ],
+      "lateAutomaticSaves": []
+    },
+    {
+      "group": "comparison-blocker-followup",
+      "case": "split-64m-udm-2",
+      "events": 99,
+      "dropped": 0,
+      "outputFlushMs": 227.88439999931143,
+      "intentMs": 70.44369999857736,
+      "catalogMs": 177.60660000203643,
+      "ackMs": 0.00039999940781854093,
+      "lateHashAndTransferMs": 101.39469999921857,
+      "commitCleanupMs": 3.371599999809405,
+      "workerProofMs": 1.8649000012374017,
+      "notifyToCloseMs": 0.20729999960167333,
+      "integrationStopMs": 1.1709000027622096,
+      "managerStopMs": 5.803500000183703,
+      "windowCloseMs": 162.873799999943,
+      "exitInstanceMs": 19.538200001989026,
+      "atomicFlushes": [
+        {
+          "seconds": 20758.3853651,
+          "thread": 5484,
+          "ms": 1.1670999992929865
+        },
+        {
+          "seconds": 20760.0186921,
+          "thread": 13408,
+          "ms": 24.580600002082065
+        },
+        {
+          "seconds": 20760.8411934,
+          "thread": 22004,
+          "ms": 65.38279999949737
+        },
+        {
+          "seconds": 20760.9246418,
+          "thread": 22004,
+          "ms": 123.69250000119791
+        }
+      ],
+      "lateAutomaticSaves": []
+    }
+  ]
+}

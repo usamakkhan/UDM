@@ -1,0 +1,1538 @@
+{
+  "passed": true,
+  "label": "8.34-portable-qualified",
+  "transfers": 18,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 239.92,
+        "idm": 412.078
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          105.39,
+          803.053,
+          239.92
+        ],
+        "idm": [
+          412.078,
+          516.843,
+          369.854
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 568.49,
+        "idm": 341.011
+      },
+      "udmNotSlowerMedian": false,
+      "processExitTailMs": {
+        "udm": [
+          387.893,
+          600.446,
+          568.49
+        ],
+        "idm": [
+          336.314,
+          397.118,
+          341.011
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 388.579,
+        "idm": 461.506
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          346.798,
+          639.339,
+          388.579
+        ],
+        "idm": [
+          480.195,
+          461.506,
+          441.118
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services.",
+  "comparisonKind": "qualified-portable-before-install",
+  "buildInstalled": false,
+  "installedDesktop": "8.32",
+  "verifiedBuildVersion": "8.34",
+  "results": [
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "single-4m",
+      "client": "udm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.04210849999799393,
+      "processExitTailSeconds": 0.10538960000121733,
+      "processExitWallSeconds": 1.4348008000015398,
+      "firstAvailabilityWallSeconds": 1.3715196999983164,
+      "exitAfterFirstAvailabilitySeconds": 0.0632811000032234,
+      "clockMappingErrorBoundSeconds": 8.000002708286047e-06,
+      "clockDriftSeconds": 3.750000277191745e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.11677159999817377,
+      "durableWallSeconds": 1.4461827999984962,
+      "postExitToDurableSeconds": 0.011381999996956438,
+      "postExitOperations": {
+        "openSeconds": 0.00020309999672463164,
+        "flushSeconds": 0.0006243000025278889,
+        "closeSeconds": 4.289999924367294e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 6.8e-06,
+        "Content": 0.0002686,
+        "DirectSize": 2.57e-05,
+        "FlushPublished": 0.005786,
+        "Hash": 4.75e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0037765,
+        "PrefetchReceipt": 1.1e-06,
+        "PreparedTransferFinalizeSeconds": 0.0114518,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 8.37e-05,
+        "PublishedFileFlush": 0.0055011,
+        "PublishedFileOpen": 0.0001528,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0014702,
+        "SettleDestination": 0.0012989,
+        "SettleLengthQuery": 4.62e-05,
+        "SettleLockWait": 2e-07,
+        "SettleRecoveryCheck": 7.77e-05,
+        "SettleSnapshot": 2.31e-05,
+        "SettleValidateFolder": 5e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004146,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001656,
+          "directories-ready": 0.0024257,
+          "publish": 0.0010933,
+          "temporary-flushed": 0.0009392,
+          "temporary-opened": 0.0002576
+        },
+        "PrepareIntent": 0.0004913,
+        "PrepareSource": 0.0001303,
+        "Rename": 0.0006736,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.6e-06,
+        "WriteIntent": 0.004886
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 524288,
+        "Seconds": 0.0134877
+      },
+      "finalSha256": "7fd145086b19cd4c91911bb8a689c8acddf5c877464e768e87a272c7ae38d8af"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "single-4m",
+      "client": "idm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.038698500000464264,
+      "processExitTailSeconds": 0.412077799999679,
+      "processExitWallSeconds": 2.423098500003107,
+      "firstAvailabilityWallSeconds": 2.049719200003892,
+      "exitAfterFirstAvailabilitySeconds": 0.3733792999992147,
+      "clockMappingErrorBoundSeconds": 7.700000423938036e-06,
+      "clockDriftSeconds": 3.349997896417989e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.4608634999967762,
+      "durableWallSeconds": 2.471884200000204,
+      "postExitToDurableSeconds": 0.048785699997097254,
+      "postExitOperations": {
+        "openSeconds": 0.00016070000128820539,
+        "flushSeconds": 0.015418999995745253,
+        "closeSeconds": 7.069999992381781e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "single-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.06666430000041146,
+      "processExitTailSeconds": 0.3363135500039789,
+      "processExitWallSeconds": 10.25713055000233,
+      "firstAvailabilityWallSeconds": 9.987481299998763,
+      "exitAfterFirstAvailabilitySeconds": 0.26964925000356743,
+      "clockMappingErrorBoundSeconds": 8.249997335951775e-06,
+      "clockDriftSeconds": 3.849999048455288e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.38248420000309125,
+      "durableWallSeconds": 10.303301200001442,
+      "postExitToDurableSeconds": 0.046170649999112356,
+      "postExitOperations": {
+        "openSeconds": 0.00014820000069448724,
+        "flushSeconds": 0.012527300001238473,
+        "closeSeconds": 7.129999721655622e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "single-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.16764259999763453,
+      "processExitTailSeconds": 0.38789294999151025,
+      "processExitWallSeconds": 9.187183649992221,
+      "firstAvailabilityWallSeconds": 8.966933299998345,
+      "exitAfterFirstAvailabilitySeconds": 0.22025034999387572,
+      "clockMappingErrorBoundSeconds": 7.650000043213367e-06,
+      "clockDriftSeconds": 3.400005629927705e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.4087221999943722,
+      "durableWallSeconds": 9.208012899995083,
+      "postExitToDurableSeconds": 0.020829250002861954,
+      "postExitOperations": {
+        "openSeconds": 0.00030079999851295725,
+        "flushSeconds": 0.0006206999969435856,
+        "closeSeconds": 4.5000000682193786e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 5.8e-06,
+        "Content": 0.0003388,
+        "DirectSize": 2.51e-05,
+        "FlushPublished": 0.0140953,
+        "Hash": 4.78e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0427626,
+        "PrefetchReceipt": 2e-06,
+        "PreparedTransferFinalizeSeconds": 0.0734329,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 0.0002025,
+        "PublishedFileFlush": 0.0136718,
+        "PublishedFileOpen": 0.0001698,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0161126,
+        "SettleDestination": 0.0158002,
+        "SettleLengthQuery": 6.55e-05,
+        "SettleLockWait": 3e-07,
+        "SettleRecoveryCheck": 0.0001973,
+        "SettleSnapshot": 2.27e-05,
+        "SettleValidateFolder": 9e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0025735,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001138,
+          "directories-ready": 0.0048052,
+          "publish": 0.0008469,
+          "temporary-flushed": 0.0007962,
+          "temporary-opened": 0.0011398
+        },
+        "PrepareIntent": 0.0004465,
+        "PrepareSource": 0.0002551,
+        "Rename": 0.0007439,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 2.8e-06,
+        "WriteIntent": 0.0077081
+      },
+      "networkTailSeconds": 0.015,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 4194304,
+        "Seconds": 0.0846282
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "split-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.25156549999519484,
+      "processExitTailSeconds": 0.3467982000001939,
+      "processExitWallSeconds": 2.082227700004296,
+      "firstAvailabilityWallSeconds": 1.9869949999992969,
+      "exitAfterFirstAvailabilitySeconds": 0.09523270000499906,
+      "clockMappingErrorBoundSeconds": 7.299997378140688e-06,
+      "clockDriftSeconds": 3.849997888938361e-06,
+      "trackedProcesses": 1,
+      "requests": 8,
+      "originConnections": 8,
+      "peakConcurrent": 8,
+      "originBytes": 67725458,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.3738766999958898,
+      "durableWallSeconds": 2.109306199999992,
+      "postExitToDurableSeconds": 0.027078499995695893,
+      "postExitOperations": {
+        "openSeconds": 0.00017360000492772087,
+        "flushSeconds": 0.0012141999977757223,
+        "closeSeconds": 0.00032169999758480117
+      },
+      "finishPhases": {
+        "AdvisoryHashInput": "write-buffer",
+        "AdvisoryHashOverlap": true,
+        "AdvisoryHashSeconds": 0.2031502,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.5e-06,
+        "Content": 0.000416,
+        "DirectSize": 1.62e-05,
+        "FlushPublished": 0.1577251,
+        "Hash": 3.45e-05,
+        "HashMode": "deferred",
+        "LateHash": 0.043553,
+        "PrePublicationMetadata": 0.005525,
+        "PrefetchReceipt": 1e-06,
+        "PreparedTransferFinalizeSeconds": 0.2088086,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 5.8e-05,
+        "PublishedFileFlush": 0.1574527,
+        "PublishedFileOpen": 0.0001682,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0014833,
+        "SettleDestination": 0.0013047,
+        "SettleLengthQuery": 6.12e-05,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 7.85e-05,
+        "SettleSnapshot": 2.52e-05,
+        "SettleValidateFolder": 8e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004507,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001543,
+          "directories-ready": 0.0015028,
+          "publish": 0.0007099,
+          "temporary-flushed": 0.0008352,
+          "temporary-opened": 0.0002455
+        },
+        "PrepareIntent": 0.0004952,
+        "PrepareSource": 0.0108618,
+        "Rename": 0.0007223,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 5.69e-05,
+        "WriteIntent": 0.0034531
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 0.044487
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 1,
+      "case": "split-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.19879970000329195,
+      "processExitTailSeconds": 0.48019529999874067,
+      "processExitWallSeconds": 3.846606299994164,
+      "firstAvailabilityWallSeconds": 3.5652106999987154,
+      "exitAfterFirstAvailabilitySeconds": 0.2813955999954487,
+      "clockMappingErrorBoundSeconds": 9.2999980552122e-06,
+      "clockDriftSeconds": 4.449995132382867e-06,
+      "trackedProcesses": 1,
+      "requests": 13,
+      "originConnections": 13,
+      "peakConcurrent": 9,
+      "originBytes": 71013748,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 2.2064395000052173,
+      "durableWallSeconds": 5.572850500000641,
+      "postExitToDurableSeconds": 1.7262442000064766,
+      "postExitOperations": {
+        "openSeconds": 0.00015780000103404745,
+        "flushSeconds": 1.6976366000017151,
+        "closeSeconds": 7.400000322377309e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "single-4m",
+      "client": "idm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.02059490000101505,
+      "processExitTailSeconds": 0.5168431000056444,
+      "processExitWallSeconds": 2.4852817000064533,
+      "firstAvailabilityWallSeconds": 1.989033500001824,
+      "exitAfterFirstAvailabilitySeconds": 0.4962482000046293,
+      "clockMappingErrorBoundSeconds": 6.899997970322147e-06,
+      "clockDriftSeconds": 2.349997589856656e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.7504122000027564,
+      "durableWallSeconds": 2.7188508000035654,
+      "postExitToDurableSeconds": 0.23356909999711206,
+      "postExitOperations": {
+        "openSeconds": 0.00014680000458611175,
+        "flushSeconds": 0.20162899999559158,
+        "closeSeconds": 8.570000500185415e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "single-4m",
+      "client": "udm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.7446694000027492,
+      "processExitTailSeconds": 0.8030533999990439,
+      "processExitWallSeconds": 1.7767001999964123,
+      "firstAvailabilityWallSeconds": 1.7183162000001175,
+      "exitAfterFirstAvailabilitySeconds": 0.05838399999629473,
+      "clockMappingErrorBoundSeconds": 7.800001185387373e-06,
+      "clockDriftSeconds": -2.6750005682307787e-05,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.914586999999301,
+      "durableWallSeconds": 1.8882337999966694,
+      "postExitToDurableSeconds": 0.11153360000025714,
+      "postExitOperations": {
+        "openSeconds": 0.0002521999995224178,
+        "flushSeconds": 0.10111070000129985,
+        "closeSeconds": 9.259999933419749e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.2e-06,
+        "Content": 0.0002352,
+        "DirectSize": 1.4e-05,
+        "FlushPublished": 0.1314669,
+        "Hash": 3.58e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0039501,
+        "PrefetchReceipt": 1.2e-06,
+        "PreparedTransferFinalizeSeconds": 0.1371239,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 8.39e-05,
+        "PublishedFileFlush": 0.1311861,
+        "PublishedFileOpen": 0.0001455,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0013687,
+        "SettleDestination": 0.001221,
+        "SettleLengthQuery": 3.6e-05,
+        "SettleLockWait": 0.0,
+        "SettleRecoveryCheck": 7.37e-05,
+        "SettleSnapshot": 1.86e-05,
+        "SettleValidateFolder": 6e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0003218,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001424,
+          "directories-ready": 0.0013999,
+          "publish": 0.0008673,
+          "temporary-flushed": 0.0612269,
+          "temporary-opened": 0.0002364
+        },
+        "PrepareIntent": 0.000251,
+        "PrepareSource": 0.0001329,
+        "Rename": 0.0006606,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.2e-06,
+        "WriteIntent": 0.0638768
+      },
+      "networkTailSeconds": 0.062,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 524288,
+        "Seconds": 0.4645053
+      },
+      "finalSha256": "7fd145086b19cd4c91911bb8a689c8acddf5c877464e768e87a272c7ae38d8af"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "single-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.5379455000002054,
+      "processExitTailSeconds": 0.6004459000032512,
+      "processExitWallSeconds": 9.442678300001717,
+      "firstAvailabilityWallSeconds": 9.380177899998671,
+      "exitAfterFirstAvailabilitySeconds": 0.0625004000030458,
+      "clockMappingErrorBoundSeconds": 6.999998731771484e-06,
+      "clockDriftSeconds": 3.850000735994286e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.6646905000015977,
+      "durableWallSeconds": 9.506922900000063,
+      "postExitToDurableSeconds": 0.06424459999834653,
+      "postExitOperations": {
+        "openSeconds": 0.00017309999384451658,
+        "flushSeconds": 0.05571260000579059,
+        "closeSeconds": 8.939999679569155e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.6e-06,
+        "Content": 0.0002206,
+        "DirectSize": 1.96e-05,
+        "FlushPublished": 0.0888401,
+        "Hash": 4.09e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.005757,
+        "PrefetchReceipt": 1.6e-06,
+        "PreparedTransferFinalizeSeconds": 0.0965661,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 8.7e-05,
+        "PublishedFileFlush": 0.0884789,
+        "PublishedFileOpen": 0.0002219,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0015926,
+        "SettleDestination": 0.0014281,
+        "SettleLengthQuery": 4.43e-05,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 9.18e-05,
+        "SettleSnapshot": 1.47e-05,
+        "SettleValidateFolder": 8e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004087,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001073,
+          "directories-ready": 0.0015265,
+          "publish": 0.1023354,
+          "temporary-flushed": 0.1063639,
+          "temporary-opened": 0.0004802
+        },
+        "PrepareIntent": 0.0002805,
+        "PrepareSource": 0.0001629,
+        "Rename": 0.1005565,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.8e-06,
+        "WriteIntent": 0.2108244
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 13564476,
+        "Seconds": 0.7875341
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "single-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.13243070000316948,
+      "processExitTailSeconds": 0.3971178499996313,
+      "processExitWallSeconds": 10.247733149997657,
+      "firstAvailabilityWallSeconds": 9.983046000001195,
+      "exitAfterFirstAvailabilitySeconds": 0.2646871499964618,
+      "clockMappingErrorBoundSeconds": 9.149996913038194e-06,
+      "clockDriftSeconds": -2.7149999059616903e-05,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.7083988000013051,
+      "durableWallSeconds": 10.559014099999331,
+      "postExitToDurableSeconds": 0.3112809500016738,
+      "postExitOperations": {
+        "openSeconds": 0.00017780000052880496,
+        "flushSeconds": 0.2827962999945157,
+        "closeSeconds": 7.850000110920519e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "split-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.1505741000000853,
+      "processExitTailSeconds": 0.4615061500007869,
+      "processExitWallSeconds": 3.8709246500002337,
+      "firstAvailabilityWallSeconds": 3.559992599999532,
+      "exitAfterFirstAvailabilitySeconds": 0.31093205000070157,
+      "clockMappingErrorBoundSeconds": 1.255000097444281e-05,
+      "clockDriftSeconds": 7.999995685015193e-06,
+      "trackedProcesses": 1,
+      "requests": 14,
+      "originConnections": 14,
+      "peakConcurrent": 10,
+      "originBytes": 69274363,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.8447262000045157,
+      "durableWallSeconds": 4.2541447000039625,
+      "postExitToDurableSeconds": 0.38322005000372883,
+      "postExitOperations": {
+        "openSeconds": 0.0001717000050120987,
+        "flushSeconds": 0.3517606999957934,
+        "closeSeconds": 6.370000483002514e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 2,
+      "case": "split-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.5780024000050616,
+      "processExitTailSeconds": 0.6393386500058114,
+      "processExitWallSeconds": 6.509555349999573,
+      "firstAvailabilityWallSeconds": 6.448219099998823,
+      "exitAfterFirstAvailabilitySeconds": 0.061336250000749715,
+      "clockMappingErrorBoundSeconds": 7.950002327561378e-06,
+      "clockDriftSeconds": 5.200001769622986e-06,
+      "trackedProcesses": 1,
+      "requests": 9,
+      "originConnections": 9,
+      "peakConcurrent": 7,
+      "originBytes": 70721744,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.7102598000055877,
+      "durableWallSeconds": 6.5804764999993495,
+      "postExitToDurableSeconds": 0.07092114999977639,
+      "postExitOperations": {
+        "openSeconds": 0.0001756999990902841,
+        "flushSeconds": 0.06152670000301441,
+        "closeSeconds": 0.00042519999988144264
+      },
+      "finishPhases": {
+        "AdvisoryHashInput": "write-buffer",
+        "AdvisoryHashOverlap": true,
+        "AdvisoryHashSeconds": 0.2179,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 2.58e-05,
+        "Content": 0.000492,
+        "DirectSize": 0.0001374,
+        "FlushPublished": 0.272258,
+        "Hash": 4.07e-05,
+        "HashMode": "deferred",
+        "LateHash": 3.93e-05,
+        "PrePublicationMetadata": 0.0039954,
+        "PrefetchReceipt": 1.8e-06,
+        "PreparedTransferFinalizeSeconds": 0.2785195,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 6.83e-05,
+        "PublishedFileFlush": 0.2720483,
+        "PublishedFileOpen": 0.0001121,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0015193,
+        "SettleDestination": 0.0013413,
+        "SettleLengthQuery": 5.57e-05,
+        "SettleLockWait": 2e-07,
+        "SettleRecoveryCheck": 7.8e-05,
+        "SettleSnapshot": 2.96e-05,
+        "SettleValidateFolder": 7e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004484,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.000125,
+          "directories-ready": 0.0015009,
+          "publish": 0.0014759,
+          "temporary-flushed": 0.1260464,
+          "temporary-opened": 0.0002694
+        },
+        "PrepareIntent": 0.0003848,
+        "PrepareSource": 0.0001697,
+        "Rename": 0.0011827,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.6e-06,
+        "WriteIntent": 0.1294294
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 1.9832583
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "single-4m",
+      "client": "udm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.18089100000361213,
+      "processExitTailSeconds": 0.2399195999969379,
+      "processExitWallSeconds": 1.2745037999993656,
+      "firstAvailabilityWallSeconds": 1.2154752000060398,
+      "exitAfterFirstAvailabilitySeconds": 0.05902859999332577,
+      "clockMappingErrorBoundSeconds": 7.200000254670158e-06,
+      "clockDriftSeconds": 4.400009022909046e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.27332580000074813,
+      "durableWallSeconds": 1.3079100000031758,
+      "postExitToDurableSeconds": 0.03340620000381023,
+      "postExitOperations": {
+        "openSeconds": 0.0001736999984132126,
+        "flushSeconds": 0.023274099999980535,
+        "closeSeconds": 9.790000331122428e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 6.1e-06,
+        "Content": 0.0004201,
+        "DirectSize": 2.89e-05,
+        "FlushPublished": 0.0638703,
+        "Hash": 4.37e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0041517,
+        "PrefetchReceipt": 1.5e-06,
+        "PreparedTransferFinalizeSeconds": 0.07099290000000001,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 7.45e-05,
+        "PublishedFileFlush": 0.0636216,
+        "PublishedFileOpen": 0.0001235,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0024252,
+        "SettleDestination": 0.0022253,
+        "SettleLengthQuery": 4.62e-05,
+        "SettleLockWait": 3e-07,
+        "SettleRecoveryCheck": 9.48e-05,
+        "SettleSnapshot": 3.73e-05,
+        "SettleValidateFolder": 1.7e-06,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0004031,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001336,
+          "directories-ready": 0.0014268,
+          "publish": 0.00117,
+          "temporary-flushed": 0.0157182,
+          "temporary-opened": 0.0002304
+        },
+        "PrepareIntent": 0.0002707,
+        "PrepareSource": 0.0001111,
+        "Rename": 0.0008192,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.2e-06,
+        "WriteIntent": 0.0186852
+      },
+      "networkTailSeconds": 0.031,
+      "prefinishWriteback": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 2097152,
+        "Seconds": 0.2563725
+      },
+      "finalSha256": "7fd145086b19cd4c91911bb8a689c8acddf5c877464e768e87a272c7ae38d8af"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "single-4m",
+      "client": "idm",
+      "bytes": 4194304,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.039707399999315385,
+      "processExitTailSeconds": 0.36985365000145976,
+      "processExitWallSeconds": 2.5189140500006033,
+      "firstAvailabilityWallSeconds": 2.188767799998459,
+      "exitAfterFirstAvailabilitySeconds": 0.33014625000214437,
+      "clockMappingErrorBoundSeconds": 8.149996574502438e-06,
+      "clockDriftSeconds": 4.449995282929109e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 0.6350018000011914,
+      "durableWallSeconds": 2.784062200000335,
+      "postExitToDurableSeconds": 0.2651481499997317,
+      "postExitOperations": {
+        "openSeconds": 0.0001610000035725534,
+        "flushSeconds": 0.23434889999771258,
+        "closeSeconds": 9.169999975711107e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "single-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.04729100000258768,
+      "processExitTailSeconds": 0.34101105000445386,
+      "processExitWallSeconds": 10.468232350001927,
+      "firstAvailabilityWallSeconds": 10.17451230000006,
+      "exitAfterFirstAvailabilitySeconds": 0.2937200500018662,
+      "clockMappingErrorBoundSeconds": 8.44999885885045e-06,
+      "clockDriftSeconds": 3.349999005308746e-06,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 2.1594694000013988,
+      "durableWallSeconds": 12.286690699998871,
+      "postExitToDurableSeconds": 1.818458349996945,
+      "postExitOperations": {
+        "openSeconds": 0.0001424999936716631,
+        "flushSeconds": 1.7874773000003188,
+        "closeSeconds": 6.53000024612993e-05
+      }
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "single-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 1,
+      "firstAvailabilityTailSeconds": 0.5052028999998583,
+      "processExitTailSeconds": 0.5684898999970756,
+      "processExitWallSeconds": 9.459102499997243,
+      "firstAvailabilityWallSeconds": 9.395815500000026,
+      "exitAfterFirstAvailabilitySeconds": 0.06328699999721721,
+      "clockMappingErrorBoundSeconds": 7.700000423938036e-06,
+      "clockDriftSeconds": 8.500014434531522e-07,
+      "trackedProcesses": 1,
+      "requests": 1,
+      "originConnections": 1,
+      "peakConcurrent": 1,
+      "originBytes": 67108864,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.6533453000010923,
+      "durableWallSeconds": 9.54395790000126,
+      "postExitToDurableSeconds": 0.0848554000040167,
+      "postExitOperations": {
+        "openSeconds": 0.0002765000026556663,
+        "flushSeconds": 0.07370919999812031,
+        "closeSeconds": 8.830000297166407e-05
+      },
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 1.95e-05,
+        "Content": 0.0001929,
+        "DirectSize": 1.83e-05,
+        "FlushPublished": 0.1918334,
+        "Hash": 6.29e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0037559,
+        "PrefetchReceipt": 1.4e-06,
+        "PreparedTransferFinalizeSeconds": 0.1977876,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 8.75e-05,
+        "PublishedFileFlush": 0.1915906,
+        "PublishedFileOpen": 0.0001209,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0018694,
+        "SettleDestination": 0.0012424,
+        "SettleLengthQuery": 0.0004804,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.0001019,
+        "SettleSnapshot": 3.16e-05,
+        "SettleValidateFolder": 7e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0005232,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001375,
+          "directories-ready": 0.0015237,
+          "publish": 0.1146604,
+          "temporary-flushed": 0.055469,
+          "temporary-opened": 0.0002232
+        },
+        "PrepareIntent": 0.0002789,
+        "PrepareSource": 0.0001411,
+        "Rename": 0.0617888,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.5e-06,
+        "WriteIntent": 0.1720216
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 14565108,
+        "Seconds": 1.0059078000000001
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "split-64m",
+      "client": "udm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.33039490000373917,
+      "processExitTailSeconds": 0.388578599995526,
+      "processExitWallSeconds": 2.428938399993058,
+      "firstAvailabilityWallSeconds": 2.370754700001271,
+      "exitAfterFirstAvailabilitySeconds": 0.05818369999178685,
+      "clockMappingErrorBoundSeconds": 6.899997970322147e-06,
+      "clockDriftSeconds": 4.1000023802695296e-06,
+      "trackedProcesses": 1,
+      "requests": 9,
+      "originConnections": 9,
+      "peakConcurrent": 9,
+      "originBytes": 70478847,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 0,
+      "sourceExecutableSha256": "A294A8C9E8494F4637E7340A44A1C0D2D32EECD7122A2563D942858F7454CD6C",
+      "durableTailSeconds": 0.4206158000015421,
+      "durableWallSeconds": 2.460975599999074,
+      "postExitToDurableSeconds": 0.032037200006016064,
+      "postExitOperations": {
+        "openSeconds": 0.00016759999562054873,
+        "flushSeconds": 0.02318030000606086,
+        "closeSeconds": 0.00011529999756021425
+      },
+      "finishPhases": {
+        "AdvisoryHashInput": "write-buffer",
+        "AdvisoryHashOverlap": true,
+        "AdvisoryHashSeconds": 0.196921,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 4.4e-06,
+        "Content": 0.0004192,
+        "DirectSize": 2.54e-05,
+        "FlushPublished": 0.0528799,
+        "Hash": 4.57e-05,
+        "HashMode": "deferred",
+        "LateHash": 0.1425879,
+        "PrePublicationMetadata": 0.0035334,
+        "PrefetchReceipt": 1.7e-06,
+        "PreparedTransferFinalizeSeconds": 0.2016262,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 7.92e-05,
+        "PublishedFileFlush": 0.0526586,
+        "PublishedFileOpen": 0.0001082,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0020786,
+        "SettleDestination": 0.0018972,
+        "SettleLengthQuery": 4.26e-05,
+        "SettleLockWait": 2e-07,
+        "SettleRecoveryCheck": 8.25e-05,
+        "SettleSnapshot": 4.02e-05,
+        "SettleValidateFolder": 8e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.000401,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0001013,
+          "directories-ready": 0.0014912,
+          "publish": 0.0012166,
+          "temporary-flushed": 0.0448723,
+          "temporary-opened": 0.0003648
+        },
+        "PrepareIntent": 0.0003776,
+        "PrepareSource": 0.0001541,
+        "Rename": 0.0008009,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 1.5e-06,
+        "WriteIntent": 0.0480521
+      },
+      "networkTailSeconds": 0.0,
+      "prefinishWriteback": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 1.1040193
+      },
+      "finalSha256": "a5f55d2da15c2bdd9999d79dfd6b952bc8fffee2508666650bf202699afedb12"
+    },
+    {
+      "label": "8.34-portable-qualified",
+      "trial": 3,
+      "case": "split-64m",
+      "client": "idm",
+      "bytes": 67108864,
+      "configuredConnections": 8,
+      "firstAvailabilityTailSeconds": 0.1450946000040858,
+      "processExitTailSeconds": 0.4411183999982313,
+      "processExitWallSeconds": 4.096819999991567,
+      "firstAvailabilityWallSeconds": 3.8007961999974214,
+      "exitAfterFirstAvailabilitySeconds": 0.2960237999941455,
+      "clockMappingErrorBoundSeconds": 9.400002454640344e-06,
+      "clockDriftSeconds": 4.9500061827245645e-06,
+      "trackedProcesses": 1,
+      "requests": 15,
+      "originConnections": 15,
+      "peakConcurrent": 9,
+      "originBytes": 69566736,
+      "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+      "hashMatches": true,
+      "launcherExitCode": 1,
+      "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+      "durableTailSeconds": 2.0297946999999112,
+      "durableWallSeconds": 5.685496299993247,
+      "postExitToDurableSeconds": 1.58867630000168,
+      "postExitOperations": {
+        "openSeconds": 0.0001548000000184402,
+        "flushSeconds": 1.5568908999994164,
+        "closeSeconds": 7.949999417178333e-05
+      }
+    }
+  ],
+  "pairedComparisons": [
+    {
+      "case": "single-4m",
+      "trial": 1,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.10538960000121733,
+          "idm": 0.412077799999679
+        },
+        "processExitWallSeconds": {
+          "udm": 1.4348008000015398,
+          "idm": 2.423098500003107
+        },
+        "durableTailSeconds": {
+          "udm": 0.11677159999817377,
+          "idm": 0.4608634999967762
+        },
+        "durableWallSeconds": {
+          "udm": 1.4461827999984962,
+          "idm": 2.471884200000204
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 2,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.8030533999990439,
+          "idm": 0.5168431000056444
+        },
+        "processExitWallSeconds": {
+          "udm": 1.7767001999964123,
+          "idm": 2.4852817000064533
+        },
+        "durableTailSeconds": {
+          "udm": 0.914586999999301,
+          "idm": 0.7504122000027564
+        },
+        "durableWallSeconds": {
+          "udm": 1.8882337999966694,
+          "idm": 2.7188508000035654
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": false,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 3,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.2399195999969379,
+          "idm": 0.36985365000145976
+        },
+        "processExitWallSeconds": {
+          "udm": 1.2745037999993656,
+          "idm": 2.5189140500006033
+        },
+        "durableTailSeconds": {
+          "udm": 0.27332580000074813,
+          "idm": 0.6350018000011914
+        },
+        "durableWallSeconds": {
+          "udm": 1.3079100000031758,
+          "idm": 2.784062200000335
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 1,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.38789294999151025,
+          "idm": 0.3363135500039789
+        },
+        "processExitWallSeconds": {
+          "udm": 9.187183649992221,
+          "idm": 10.25713055000233
+        },
+        "durableTailSeconds": {
+          "udm": 0.4087221999943722,
+          "idm": 0.38248420000309125
+        },
+        "durableWallSeconds": {
+          "udm": 9.208012899995083,
+          "idm": 10.303301200001442
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": false,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 2,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.6004459000032512,
+          "idm": 0.3971178499996313
+        },
+        "processExitWallSeconds": {
+          "udm": 9.442678300001717,
+          "idm": 10.247733149997657
+        },
+        "durableTailSeconds": {
+          "udm": 0.6646905000015977,
+          "idm": 0.7083988000013051
+        },
+        "durableWallSeconds": {
+          "udm": 9.506922900000063,
+          "idm": 10.559014099999331
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 3,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.5684898999970756,
+          "idm": 0.34101105000445386
+        },
+        "processExitWallSeconds": {
+          "udm": 9.459102499997243,
+          "idm": 10.468232350001927
+        },
+        "durableTailSeconds": {
+          "udm": 0.6533453000010923,
+          "idm": 2.1594694000013988
+        },
+        "durableWallSeconds": {
+          "udm": 9.54395790000126,
+          "idm": 12.286690699998871
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 1,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.3467982000001939,
+          "idm": 0.48019529999874067
+        },
+        "processExitWallSeconds": {
+          "udm": 2.082227700004296,
+          "idm": 3.846606299994164
+        },
+        "durableTailSeconds": {
+          "udm": 0.3738766999958898,
+          "idm": 2.2064395000052173
+        },
+        "durableWallSeconds": {
+          "udm": 2.109306199999992,
+          "idm": 5.572850500000641
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 2,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.6393386500058114,
+          "idm": 0.4615061500007869
+        },
+        "processExitWallSeconds": {
+          "udm": 6.509555349999573,
+          "idm": 3.8709246500002337
+        },
+        "durableTailSeconds": {
+          "udm": 0.7102598000055877,
+          "idm": 0.8447262000045157
+        },
+        "durableWallSeconds": {
+          "udm": 6.5804764999993495,
+          "idm": 4.2541447000039625
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": true,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 3,
+      "measurements": {
+        "processExitTailSeconds": {
+          "udm": 0.388578599995526,
+          "idm": 0.4411183999982313
+        },
+        "processExitWallSeconds": {
+          "udm": 2.428938399993058,
+          "idm": 4.096819999991567
+        },
+        "durableTailSeconds": {
+          "udm": 0.4206158000015421,
+          "idm": 2.0297946999999112
+        },
+        "durableWallSeconds": {
+          "udm": 2.460975599999074,
+          "idm": 5.685496299993247
+        }
+      },
+      "udmNotSlower": {
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    }
+  ],
+  "medianSummary": [
+    {
+      "case": "single-4m",
+      "medians": {
+        "processExitTailSeconds": {
+          "udm": 0.2399195999969379,
+          "idm": 0.412077799999679
+        },
+        "processExitWallSeconds": {
+          "udm": 1.4348008000015398,
+          "idm": 2.4852817000064533
+        },
+        "durableTailSeconds": {
+          "udm": 0.27332580000074813,
+          "idm": 0.6350018000011914
+        },
+        "durableWallSeconds": {
+          "udm": 1.4461827999984962,
+          "idm": 2.7188508000035654
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "medians": {
+        "processExitTailSeconds": {
+          "udm": 0.5684898999970756,
+          "idm": 0.34101105000445386
+        },
+        "processExitWallSeconds": {
+          "udm": 9.442678300001717,
+          "idm": 10.25713055000233
+        },
+        "durableTailSeconds": {
+          "udm": 0.6533453000010923,
+          "idm": 0.7083988000013051
+        },
+        "durableWallSeconds": {
+          "udm": 9.506922900000063,
+          "idm": 10.559014099999331
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "medians": {
+        "processExitTailSeconds": {
+          "udm": 0.388578599995526,
+          "idm": 0.4615061500007869
+        },
+        "processExitWallSeconds": {
+          "udm": 2.428938399993058,
+          "idm": 3.8709246500002337
+        },
+        "durableTailSeconds": {
+          "udm": 0.4206158000015421,
+          "idm": 2.0297946999999112
+        },
+        "durableWallSeconds": {
+          "udm": 2.460975599999074,
+          "idm": 5.572850500000641
+        }
+      }
+    }
+  ],
+  "wins": {
+    "processExitTailSeconds": 4,
+    "processExitWallSeconds": 8,
+    "durableTailSeconds": 7,
+    "durableWallSeconds": 8
+  },
+  "performanceTargetMet": false,
+  "freshSequentialInlineConfirmed": true,
+  "idmLauncherExitCodes": [
+    1
+  ],
+  "idmExitStatusInterpretation": "All nine IDM launchers returned 1, matching earlier retained runs; no independently verified IDM exit-code contract is assumed. Actual exit, file availability, complete length and independent digest are separate observed checks.",
+  "measurementRunnerSha256": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB",
+  "limits": [
+    "All original pairs, including losses, retained. No unchanged-build rerun seeks a passing score.",
+    "Actual application process exit includes observed app-owned work and /q shutdown; the separate symmetric output flush is not a measurement of every system service or GUI completion animation.",
+    "Portable C: comparison, not an installed or D: verification. Cache/device/profile/background conditions remain confounds; no code-only causal speedup or universal guarantee."
+  ]
+}

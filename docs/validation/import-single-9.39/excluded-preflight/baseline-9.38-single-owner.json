@@ -1,0 +1,28 @@
+{
+  "preflightOnly": true,
+  "qualification": false,
+  "sourceVersion": "9.38",
+  "linkedCoreVersion": "9.38",
+  "passed": false,
+  "checks": 3,
+  "binarySha256": "F24E47BEB682A373CEA9CBE236D69E4D3FBE9890BEE5B1C71A20271EFA3F8176",
+  "sourceSha256": "C44BF35DC0FDEFD4AB4DBDB17907FF8BD7385CA398EAF198A5BF159CAB7BD09F",
+  "result": {
+    "checks": [
+      {
+        "name": "An existing owner remains attached to its changed slot",
+        "passed": true
+      },
+      {
+        "name": "A reused owner retains its existing policy cohort without a new Manager read",
+        "passed": true
+      },
+      {
+        "name": "A single slot recreates its missing preview owner",
+        "passed": false
+      }
+    ],
+    "error": "A single slot recreates its missing preview owner",
+    "passed": false
+  }
+}

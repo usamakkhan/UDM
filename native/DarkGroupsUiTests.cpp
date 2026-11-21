@@ -52,8 +52,8 @@ public:static void menuBarAppearance(){
    frame->menuTheme.releasePopup(popup.GetSafeHmenu());expect((popup.GetMenuState(0,MF_BYPOSITION)&MF_OWNERDRAW)==0,"Popup lifecycle restores native item metadata");
    capture(frame->GetSafeHwnd(),wide(std::string(dark?"dark-":"light-")+std::to_string(dpi)+"-main-menu.png").c_str());
   }
-  frame->quitting=true;frame->OnClose();AfxGetApp()->m_pMainWnd=nullptr;
- }catch(...){frame->quitting=true;frame->OnClose();AfxGetApp()->m_pMainWnd=nullptr;throw;}
+  closeOwnedMainWindow(frame);AfxGetApp()->m_pMainWnd=nullptr;
+ }catch(...){closeOwnedMainWindow(frame);AfxGetApp()->m_pMainWnd=nullptr;throw;}
 }
 public:static void appearanceTransitions(){
  Manager manager(output/L"appearance-state");auto prefs=manager.state["Settings"];prefs["DarkMode"]=false;prefs["CloseToTray"]=false;prefs["ClipboardMonitor"]=false;manager.setSettings(prefs);
@@ -92,8 +92,8 @@ public:static void appearanceTransitions(){
   const auto saved=manager.state["Settings"];frame->SendMessage(WM_SYSCOLORCHANGE);expect(manager.state["Settings"]==saved&&text(value)=="Keep this draft","System color notifications refresh without changing preferences or drafts");
   frame->SendMessage(WM_SETTINGCHANGE,SPI_SETHIGHCONTRAST,0);expect(manager.state["Settings"]==saved&&list->GetBkColor()==uiBackground(),"Contrast-setting notification refreshes current controls without changing Windows settings");
   form.DestroyWindow();progress.DestroyWindow();
- }catch(...){frame->SendMessage(WM_CLOSE);AfxGetApp()->m_pMainWnd=nullptr;throw;}
- frame->SendMessage(WM_CLOSE);AfxGetApp()->m_pMainWnd=nullptr;
+ }catch(...){closeOwnedMainWindow(frame);AfxGetApp()->m_pMainWnd=nullptr;throw;}
+ closeOwnedMainWindow(frame);AfxGetApp()->m_pMainWnd=nullptr;
  }
 };
 

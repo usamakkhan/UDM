@@ -1,0 +1,290 @@
+--- a/native/PreparedTransferCommit.hpp
++++ b/native/PreparedTransferCommit.hpp
+@@ -8,7 +8,7 @@
+ class PreparedTransferCommit {
+  inline static thread_local PreparedTransferCommit* current=nullptr;
+  PreparedTransferCommit* previous;Manager& manager;JobPtr job;std::shared_ptr<Cancel> cancel;bool allowed;
+- bool ready=false,inCommit=false,accepted=false,keepParts=false,bodyBarrier=false;
++ bool ready=false,inCommit=false,accepted=false,keepParts=false;
+  fs::path staging,parts,target;Json destination;std::string digest;
+  struct Finalizing {std::mutex mutex;std::map<const Manager*,std::set<const Cancel*>> owners;};
+  static Finalizing& finalizing(){static auto* value=new Finalizing;return *value;}
+@@ -21,27 +21,25 @@
+  static PreparedTransferCommit* publishing(Manager& m,const JobPtr& j,const Cancel* c){auto p=current;return p&&p->inCommit&& &p->manager==&m&&p->job==j&&p->cancel.get()==c?p:nullptr;}
+  bool prepared()const noexcept{return ready;}
+  bool committed()const noexcept{return accepted;}
+- bool requiresBodyBarrier()const noexcept{return bodyBarrier;}
+  // A full-body ordinary transfer is about to force its completion checkpoint.
+  // Defer only redundant automatic IO, never explicit saves or pending receipts.
+  void beginFinalization()noexcept{try{Lock lock(manager.mutex);if(!allowed||ready||accepted||!manager.isActive(job)||cancel->cancelled()||num(job->data,"Size")<=0||num(job->data,"Size")>64*1048576LL||num(job->data,"Received")!=num(job->data,"Size"))return;auto& state=finalizing();std::lock_guard<std::mutex> guard(state.mutex);state.owners[&manager].insert(cancel.get());finalizationOwned=true;}catch(...){/* Optional coalescing failure retains automatic IO. */}}
+  void endFinalization()noexcept{if(!finalizationOwned)return;try{auto& state=finalizing();std::lock_guard<std::mutex> guard(state.mutex);auto found=state.owners.find(&manager);if(found!=state.owners.end()){found->second.erase(cancel.get());if(found->second.empty())state.owners.erase(found);}finalizationOwned=false;}catch(...){}}
+  static bool defersAutomatic(Manager& manager,const std::map<std::string,std::shared_ptr<Cancel>>& active)noexcept{try{Lock lock(manager.mutex);if(!manager.storageError.empty()||active.empty())return false;auto& state=finalizing();std::lock_guard<std::mutex> guard(state.mutex);const auto found=state.owners.find(&manager);if(found==state.owners.end()||found->second.size()!=active.size())return false;for(const auto& item:active)if(item.second->cancelled()||!found->second.count(item.second.get()))return false;return true;}catch(...){return false;}}
+- void prepare(const fs::path& stage,const fs::path& work,const std::string& hash,bool retain,bool flushBeforePublish=false){
++ void prepare(const fs::path& stage,const fs::path& work,const std::string& hash,bool retain){
+   if(!allowed||ready||inCommit||accepted||!stage.is_absolute()||!work.is_absolute()||stage.filename()!=L".udm-"+wide(job->id())+L".assembling")throw std::runtime_error("Invalid prepared download handoff.");
+   Lock lock(manager.mutex);if(!str(job->data,"ReplacementOf").empty())throw std::runtime_error("A replacement cannot use prepared ordinary publication.");const auto final=job->target();
+   if(stage.parent_path().lexically_normal()!=final.parent_path().lexically_normal())throw std::runtime_error("The prepared download destination changed.");
+   Json inputs=Json::object();for(const char* key:{"Folder","FileName","ProjectDestinationRoot"})if(job->data.contains(key))inputs[key]=job->data[key];
+-  staging=stage;parts=work;target=final;digest=hash;destination=std::move(inputs);keepParts=retain;bodyBarrier=flushBeforePublish;ready=true;
++  staging=stage;parts=work;target=final;digest=hash;destination=std::move(inputs);keepParts=retain;ready=true;
+  }
+  void commit(){
+   if(!ready||accepted)throw std::runtime_error("The prepared download is not awaiting publication.");
+   {Lock lock(manager.mutex);Json inputs=Json::object();for(const char* key:{"Folder","FileName","ProjectDestinationRoot"})if(job->data.contains(key))inputs[key]=job->data[key];if(job->target()!=target||inputs!=destination)throw std::runtime_error("The prepared download destination changed before publication.");}
+-  // Automatic checkpoints may coalesce until the exact publication proof exists;
+-  // explicit saves and pending receipt/proof captures still force their real IO.
++  endFinalization(); // Publication's own receipt/capture protocol now owns IO.
+   struct Committing {bool& flag;explicit Committing(bool& value):flag(value){flag=true;}~Committing(){flag=false;}};
+   {Committing committing(inCommit);manager.publishFile(job,staging,digest,cancel.get());}
+-  endFinalization();accepted=true;
++  accepted=true;
+   const auto began=std::chrono::steady_clock::now();
+   if(!keepParts)try{if(fs::exists(parts))for(const auto& entry:fs::directory_iterator(parts))if(entry.is_regular_file()&&(entry.path().extension()==L".part"||entry.path().extension()==L".data"))fs::remove(entry.path());}catch(...){/* Cleanup cannot revoke an accepted completion. */}
+   cleanupSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+--- a/native/PublicationPreparation.hpp
++++ b/native/PublicationPreparation.hpp
+@@ -7,7 +7,7 @@
+ // Prepared on the publishing worker without the Manager lock. Prevent source writes and directory rename/deletion until publication finishes.
+ // Directory writes stay shared so normal child-file publication can proceed.
+ class PublicationPreparation {
+- Handle source;std::unique_ptr<Handle> publishedName;bool writable=false;BY_HANDLE_FILE_INFORMATION identity{};std::vector<Handle> directories;std::vector<bool> belowRoots;
++ Handle source;std::unique_ptr<Handle> publishedName;BY_HANDLE_FILE_INFORMATION identity{};std::vector<Handle> directories;std::vector<bool> belowRoots;
+  void pin(const fs::path& path,bool belowRoot,bool resolve=false){
+   Handle handle(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|(resolve?0:FILE_FLAG_OPEN_REPARSE_POINT),nullptr));BY_HANDLE_FILE_INFORMATION info{};
+   if(!handle)throw std::runtime_error("Cannot keep the Grabber destination stable for publication. Wait for other folder operations or choose another project folder.");
+@@ -16,8 +16,8 @@
+  }
+ public:
+  i64 size=0;
+- PublicationPreparation(const fs::path& staging,const Json& destination,bool flushBeforePublish=false):writable(flushBeforePublish){
+-  source.h=CreateFileW(staging.c_str(),GENERIC_READ|(writable?GENERIC_WRITE:0),FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER length{};
++ PublicationPreparation(const fs::path& staging,const Json& destination){
++  source.h=CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER length{};
+   if(!source||!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
+   validateGrabberFolder(destination);auto value=str(destination,"ProjectDestinationRoot");if(value.empty())return;
+   auto root=fs::path(wide(value)).lexically_normal(),folder=fs::path(wide(str(destination,"Folder"))).lexically_normal();pin(root,false);pin(root,false,true);auto current=root;
+@@ -32,13 +32,8 @@
+   if(!named||!GetFileInformationByHandle(named.h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(named.h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The completed file changed before publication. Its files were preserved.");
+  }
+  void validateDirectories()const{for(size_t i=0;i<directories.size();++i){BY_HANDLE_FILE_INFORMATION info{};if(!GetFileInformationByHandle(directories[i].h,&info)||!(info.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)||(belowRoots[i]&&(info.dwFileAttributes&FILE_ATTRIBUTE_REPARSE_POINT)))throw std::runtime_error("A website subfolder is redirected or occupied by a file. Choose another project folder.");}}
+- double flushSource()const{
+-  if(!writable||!source)throw std::runtime_error("Missing publication body writeback owner.");
+-  const auto began=std::chrono::steady_clock::now();if(!FlushFileBuffers(source.h))throw std::runtime_error("The downloaded file could not be written through before publication. Keep its staged file and recovery journal.");
+-  return std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();
+- }
+  void pinPublishedName(const fs::path& path){
+-  auto pin=std::make_unique<Handle>(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|(writable?FILE_SHARE_WRITE:0),nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION current{};LARGE_INTEGER length{};
++  auto pin=std::make_unique<Handle>(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION current{};LARGE_INTEGER length{};
+   if(!*pin||!GetFileInformationByHandle(pin->h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(pin->h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The published destination changed before catalog acceptance. Keep its file and recovery journal.");
+   publishedName=std::move(pin);
+  }
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -2495,7 +2495,6 @@
+  auto finalCommit=PreparedTransferCommit::available(m,job,cancel);
+  const bool prepareFinal=finalCommit&&ownsConnection&&single&&stripped<=0&&!copiedAcrossVolumes&&!post&&!ftp&&!yes(j,"SparseDataFile",true)&&num(j,"Size")>0&&num(j,"Size")<=64*1048576&&str(j,"ReplacementOf").empty()&&fixedVolume(data);
+ 
+- if(prepareFinal)finalCommit->beginFinalization();
+  struct AdvisoryHashResult {std::string digest;double seconds=0;};std::shared_ptr<Cancel> advisoryCancel;std::future<AdvisoryHashResult> advisoryHash;
+  struct StopAdvisory {std::shared_ptr<Cancel>& token;~StopAdvisory(){if(token)token->stop=true;}} stopAdvisory{advisoryCancel};
+  phases["AdvisoryHashOverlap"]=false;
+@@ -2537,10 +2536,11 @@
+  if(announcePublication&&m.filePublished)
+   try{m.filePublished(job);}catch(...){/* The file has already been committed. */}
+  const auto metadataFinished=std::chrono::steady_clock::now();phases[prepareFinal?"PrePublicationMetadata":"PostPublicationMetadata"]=std::chrono::duration<double>(metadataFinished-mark).count();mark=metadataFinished;
+- if(single&&stripped<=0&&!prepareFinal){
++ if(single&&stripped<=0){
+   // Flush needs write access only. Requesting read access here reopens the
+   // completed body unnecessarily and may invoke extra filesystem/filter work.
+   const bool normalize=!copiedAcrossVolumes&&yes(j,"SparseDataFile",true);
++  if(prepareFinal)finalCommit->beginFinalization();
+   UDM_FINISH_POINT("output-flush-begin");const auto writeback=publishedWriteback(copiedAcrossVolumes?job->target():data,normalize);
+   UDM_FINISH_POINT("output-flush-end");phases["PublishedFileOpen"]=writeback.openSeconds;phases["PublishedSparseNormalize"]=writeback.normalizeSeconds;
+   phases["PublishedFileFlush"]=writeback.flushSeconds;phases["PublishedFileClose"]=writeback.closeSeconds;phases["PublishedWriteAccess"]="write-only";
+@@ -2574,7 +2574,7 @@
+  const auto cleanupStarted=std::chrono::steady_clock::now();
+  if(prepareFinal){
+   std::string finalDigest=digest;if(finalDigest.empty()){Lock lock(m.mutex);finalDigest=str(job->data,"Sha256");}
+-  finalCommit->prepare(staging,parts,finalDigest,keepParts,true);stageHandedOff=true;phases["CleanupPartsOrder"]="after-final-publication-checkpoint";
++  finalCommit->prepare(staging,parts,finalDigest,keepParts);stageHandedOff=true;phases["CleanupPartsOrder"]="after-final-publication-checkpoint";
+  }else{if(!keepParts&&!partsCleared)try{clearParts(parts);}catch(const fs::filesystem_error&){}phases["CleanupParts"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-cleanupStarted).count();}
+  // Includes final data writeback, normalization, advisory hash and parts cleanup.
+  // The Manager-owned completion checkpoint and application shutdown follow it.
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -1,5 +1,4 @@
+ #include "PreparedTransferCommit.hpp"
+-#include <future>
+ #include "Core.hpp"
+ #ifdef UDM_FINISH_TIMING_TEST
+ #include "ProductionUiTiming.hpp"
+@@ -215,8 +214,7 @@
+  struct RecordPublicationTiming {std::function<void()> record;~RecordPublicationTiming(){record();}} recordTiming{[&]()noexcept{try{timing("ReleasePins");Lock guard(mutex);const auto owner=active.find(job->id());if(cancel&&owner!=active.end()&&owner->second.get()==cancel)if(finalCommit)finalCommit->publicationTimings=publicationTimings;else job->data["PublicationPhases"]=publicationTimings;}catch(...){}}};
+  auto checkpoint=[&]{if(cancel)cancel->check();};checkpoint();
+  if(publicationObservation)publicationObservation("publication-preflight-begin");
+- const bool overlapBody=finalCommit&&finalCommit->requiresBodyBarrier();
+- PublicationPreparation prepared(staging,destinationInputs,overlapBody);
++ PublicationPreparation prepared(staging,destinationInputs);
+  if(publicationObservation)publicationObservation("publication-preflight-ready");timing("PrepareSource");checkpoint();
+  auto hash=knownHash;
+  Json stagedIdentity;
+@@ -263,23 +261,13 @@
+   auto journal=root/L"publications"/(wide(job->id())+L".json");
+   Json intent={{"Id",job->id()},{"Target",utf8(target.wstring())},{"Staging",utf8(staging.wstring())},{"Hash",hash},{"Before",before},{"After",after},{"CommitId",commitId},{"Ephemeral",!catalogBound}};
+   if(!stagedIdentity.is_null())intent["StagedIdentity"]=stagedIdentity;
+-  if(overlapBody)intent["FlushBeforePublish"]=true;
+   lock.unlock();
+   if(fs::exists(journal))throw std::runtime_error("A previous publication needs recovery. Resume the download or restart UDM.");
+   if(fs::exists(target))throw std::runtime_error("Cannot publish the download. The destination already exists; choose another file name.");
+-  std::future<double> bodyBarrier;
+-  if(overlapBody)bodyBarrier=std::async(std::launch::async,[&prepared,publicationObservation]{
+-   if(publicationObservation)publicationObservation("publication-body-flush-begin");UDM_FINISH_POINT("output-flush-begin");const auto seconds=prepared.flushSource();UDM_FINISH_POINT("output-flush-end");if(publicationObservation)publicationObservation("publication-body-flush-end");return seconds;
+-  });
+   auto intentMark=std::chrono::steady_clock::now();Json intentOperations=Json::object();
+   const auto observeIntent=[&](const char* stage){const auto now=std::chrono::steady_clock::now();try{intentOperations[stage]=std::chrono::duration<double>(now-intentMark).count();}catch(...){}intentMark=now;if(publicationObservation){const auto name=std::string("publication-intent-")+stage;publicationObservation(name.c_str());}};
+   timing("PrepareIntent");UDM_FINISH_POINT("intent-write-begin");intentMark=std::chrono::steady_clock::now();atomicText(journal,intent.dump(),false,observeIntent);try{intentOperations["publish"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-intentMark).count();publicationTimings["IntentOperations"]=std::move(intentOperations);}catch(...){}timing("WriteIntent");UDM_FINISH_POINT("intent-write-end");
+   if(publicationObservation)publicationObservation("publication-intent-written");
+-  if(bodyBarrier.valid()){
+-   const auto seconds=bodyBarrier.get();publicationTimings["BodyFlushSeconds"]=seconds;publicationTimings["BodyFlushOverlappedIntent"]=true;checkpoint();
+-   {Lock guard(mutex);auto& phases=job->data["FinishPhases"];phases["PublishedWriteAccess"]="pinned-read-write";phases["PublishedFileFlush"]=seconds;phases["BodyBarrierScope"]="overlapped-with-publication-intent";phases["BodyBarrierConfirmed"]=true;}
+-  }
+-  if(overlapBody){Lock guard(mutex);if(stopping||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||publicationDestinationInputs(job->data)!=destinationInputs||catalogTransaction)throw std::runtime_error("The download changed while publication barriers were pending. Keep its staged file and recovery journal.");}
+   prepared.validateSourceName(staging);prepared.validateDirectories();
+   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+   prepared.pinPublishedName(target);
+--- a/native/CompletedCheckpointTests.cpp
++++ b/native/CompletedCheckpointTests.cpp
+@@ -61,7 +61,7 @@
+    auto owner=CatalogCheckpointTestAccess::owner(manager,job);check(bool(owner)&&published==0,"Held first completion checkpoint belongs to its actual worker and emits no early published notification");
+    manager.resume(job);check(CatalogCheckpointTestAccess::owner(manager,job)==owner,"Resume during a completed checkpoint cannot start a duplicate worker or replace ownership");
+    bool rejected=false;try{manager.remove(job);}catch(const std::exception& e){rejected=std::string(e.what()).find("Pause the download")!=std::string::npos;}check(rejected&&manager.jobs.size()==1,"Removing a published download still waits for completed-checkpoint ownership to retire");
+-   check(str(job->data["FinishPhases"],"PublishedWriteAccess")=="pinned-read-write"&&yes(job->data["FinishPhases"],"BodyBarrierConfirmed")&&job->data["FinishPhases"].contains("PublishedFileFlush")&&yes(job->data["PublicationPhases"],"BodyFlushOverlappedIntent"),"Actual HTTP worker confirms its pinned body barrier before the completed checkpoint while overlapping intent persistence");
++   check(str(job->data["FinishPhases"],"PublishedWriteAccess")=="write-only"&&job->data["FinishPhases"].contains("PublishedFileOpen")&&job->data["FinishPhases"].contains("PublishedFileFlush")&&job->data["FinishPhases"].contains("PublishedFileClose")&&!yes(job->data["PublicationPhases"],"BodyFlushOverlappedIntent"),"Actual HTTP worker retains serial write-only body flush and close before its final checkpoint without the retired overlap");
+    check(!yes(job->data["FinishPhases"],"SettleWriterReopen",true),"An already correct actual output length skips the finish-path writer reopen");check(!yes(job->data,"SparseDataFile",true),"A sequential response does not create a sparse output requiring post-publication normalization");check(str(job->data,"ContentPrefixSource")=="write-buffer","The actual completed worker classifies its credited write prefix without a finish-path file reread");check((GetFileAttributesW(job->target().c_str())&FILE_ATTRIBUTE_SPARSE_FILE)==0,"The published sequential file is a normal allocated file, not a skipped sparse conversion");
+    check(str(job->data["FinishPhases"],"CommitStrategy")=="prepared-final-checkpoint","Actual ordinary HTTP worker uses the prepared final completion checkpoint");
+    const auto retained=str(job->data,"PartsFolder").empty()?manager.root/L"parts"/wide(job->id()):fs::path(wide(str(job->data,"PartsFolder")));
+--- a/native/PublicationBarrierTests.cpp
++++ /dev/null
+@@ -1,79 +0,0 @@
+-#include "PreparedTransferCommit.hpp"
+-#include "PublicationOwnership.hpp"
+-#include <future>
+-#include <iostream>
+-namespace udm {struct CatalogCheckpointTestAccess {
+- static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}
+- static void automatic(Manager& m){m.checkpointPeriodic();}
+- static void own(Manager& m,JobPtr job,std::shared_ptr<Cancel> cancel){Lock lock(m.mutex);if(cancel)m.active[job->id()]=cancel;else m.active.erase(job->id());}
+-};}
+-using namespace udm;
+-struct BarrierGate {
+- std::promise<void> entered,other,released;std::shared_future<void> ready=entered.get_future().share(),otherReady=other.get_future().share(),wait=released.get_future().share();std::atomic_bool held=false,otherSeen=false,done=false,expired=false;
+- void hold(){if(!held.exchange(true)){entered.set_value();if(wait.wait_for(std::chrono::seconds(10))!=std::future_status::ready){expired=true;throw std::runtime_error("Owned barrier gate expired");}}}
+- void signal(){if(!otherSeen.exchange(true))other.set_value();}
+- void release(){if(!done.exchange(true))released.set_value();}
+-};
+-static DWORD crashEarlyIntent(const fs::path& folder){
+- wchar_t image[32768]{};const auto length=GetModuleFileNameW(nullptr,image,32768);if(!length||length>=32768)throw std::runtime_error("Cannot locate the owned crash fixture.");std::wstring command=L"\""+std::wstring(image,length)+L"\" --crash \""+folder.wstring()+L"\"";STARTUPINFOW startup{};startup.cb=sizeof(startup);PROCESS_INFORMATION process{};
+- if(!CreateProcessW(image,command.data(),nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,nullptr,&startup,&process))throw std::runtime_error("Cannot start the owned early-intent crash child.");Handle thread(process.hThread),child(process.hProcess);if(WaitForSingleObject(child.h,15000)!=WAIT_OBJECT_0)throw std::runtime_error("Owned early-intent child remains live; inspect PID "+std::to_string(process.dwProcessId));DWORD code=0;if(!GetExitCodeProcess(child.h,&code))throw std::runtime_error("Cannot read the owned crash-child outcome.");return code;
+-}
+-int wmain(int argc,wchar_t** argv){
+- if(argc==3&&std::wstring(argv[1])==L"--crash"){
+-  const auto folder=fs::absolute(argv[2]);Manager manager(folder/L"catalog");auto job=manager.jobs.at(0);auto cancel=std::make_shared<Cancel>();CatalogCheckpointTestAccess::own(manager,job,cancel);std::promise<void> entered,never;auto ready=entered.get_future().share(),wait=never.get_future().share();
+-  CatalogCheckpointTestAccess::observe(manager,[&](const char* phase){if(std::string_view(phase)=="publication-body-flush-begin"){entered.set_value();wait.wait();}if(std::string_view(phase)=="publication-intent-written"){if(ready.wait_for(std::chrono::seconds(5))!=std::future_status::ready)throw std::runtime_error("Body did not reach the pre-flush crash hold");TerminateProcess(GetCurrentProcess(),197);ExitProcess(198);}});
+-  const auto stage=job->target().parent_path()/(L".udm-"+wide(job->id())+L".assembling");PreparedTransferCommit handoff(manager,job,cancel,true);handoff.beginFinalization();handoff.prepare(stage,manager.root/L"parts"/wide(job->id()),fileHash(stage),false,true);handoff.commit();return 9;
+- }
+- if(argc!=2)return 2;auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error,activeCase;
+- const auto check=[&](bool value,const char* message){checks.push_back({{"name",message},{"passed",value}});if(!value)throw std::runtime_error(message);};
+- try{
+- for(const std::string mode:{"body-held","intent-held","body-failure","intent-failure","cancel","destination-changed","stage-renamed","unknown-hash","catalog-held"}){
+-  activeCase=mode;auto folder=root/wide(mode);Manager manager(folder/L"catalog");auto files=folder/L"files";fs::create_directories(files);auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8(files.wstring());settings["CategoryFolders"]=false;manager.setSettings(settings);auto job=manager.add("https://example.invalid/barrier.bin");auto stage=files/(L".udm-"+wide(job->id())+L".assembling");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage);const auto journal=manager.root/L"publications"/(wide(job->id())+L".json");job->data["Size"]=14;job->data["Received"]=14;manager.save();auto cancel=std::make_shared<Cancel>();CatalogCheckpointTestAccess::own(manager,job,cancel);auto gate=std::make_shared<BarrierGate>();const bool holdBody=mode!="intent-held"&&mode!="catalog-held";
+-  CatalogCheckpointTestAccess::observe(manager,[&,gate](const char* point){const std::string_view phase=point;
+-   if(phase=="publication-body-flush-begin"&&holdBody)gate->hold();
+-   if(phase=="publication-body-flush-end"){if(!holdBody)gate->signal();if(mode=="body-failure")throw std::runtime_error("Owned body barrier failure");}
+-   if(phase=="publication-intent-written"){if(holdBody)gate->signal();if(mode=="intent-held")gate->hold();if(mode=="intent-failure")throw std::runtime_error("Owned intent barrier failure");}
+-   if(phase=="temporary-flushed"&&mode=="catalog-held")gate->hold();
+-  });
+-  std::future<void> publisher,independentSave;struct Release {std::shared_ptr<BarrierGate> gate;~Release(){gate->release();}} release{gate};
+-  publisher=std::async(std::launch::async,[&]{PreparedTransferCommit handoff(manager,job,cancel,true);handoff.beginFinalization();handoff.prepare(stage,manager.root/L"parts"/wide(job->id()),mode=="unknown-hash"?"":hash,false,true);handoff.commit();});
+-  check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Publication reaches the actual selected durability boundary");
+-  if(mode!="catalog-held")check(gate->otherReady.wait_for(std::chrono::seconds(5))==std::future_status::ready,"The independent intent or body barrier completes while the other remains held");
+-  std::unique_lock<std::recursive_mutex> lease(manager.mutex,std::try_to_lock);check(lease.owns_lock(),"Held publication barriers leave the shared model available");
+-  check(fs::exists(journal)&&Json::parse(readText(journal)).value("FlushBeforePublish",false),"Early durable intent explicitly requires recovery body writeback");
+-  if(mode=="catalog-held")check(str(job->data,"Status")=="Complete"&&readText(job->target())=="verified bytes","Both barriers finish before applying completion at the catalog gate");
+-  else check(str(job->data,"Status")!="Complete"&&!fs::exists(job->target()),"Neither rename nor Complete status bypasses either held barrier");
+-  manager.state["Settings"]["BarrierMarker"]="independent save";lease.unlock();if(mode!="catalog-held"){const auto saved=readText(manager.root/L"state.json");CatalogCheckpointTestAccess::automatic(manager);check(readText(manager.root/L"state.json")==saved,"Automatic checkpoint coalesces while the full-body owner is already forcing publication barriers");}if(mode=="catalog-held"){independentSave=std::async(std::launch::async,[&]{manager.save();});check(independentSave.wait_for(std::chrono::milliseconds(50))!=std::future_status::ready,"A competing catalog writer waits for the held writer without holding the model mutex");}else manager.save();
+-  {Handle writer(CreateFileW((mode=="catalog-held"?job->target():stage).c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!writer,"Pinned body rejects a competing writer during either barrier or catalog acceptance");}
+-  if(mode=="catalog-held")check(!MoveFileExW(job->target().c_str(),(files/L"foreign.bin").c_str(),0),"Combined body and destination handles reject rename during catalog acceptance");
+-  if(mode=="cancel")cancel->stop=true;
+-  if(mode=="destination-changed"){Lock lock(manager.mutex);job->data["FileName"]="changed.bin";}
+-  if(mode=="stage-renamed")check(MoveFileExW(stage.c_str(),(files/L"foreign.bin").c_str(),0)!=FALSE,"Owned source rename exercises the final staged-name validation");
+-  gate->release();std::string failure;try{publisher.get();}catch(const std::exception& e){failure=e.what();}if(independentSave.valid())independentSave.get();check(!gate->expired,"Every held boundary is explicitly released without using its timeout as success");CatalogCheckpointTestAccess::observe(manager,{});CatalogCheckpointTestAccess::own(manager,job,{});
+-  const bool rejected=mode=="body-failure"||mode=="intent-failure"||mode=="cancel"||mode=="destination-changed"||mode=="stage-renamed";
+-  if(rejected){check(!failure.empty()&&str(job->data,"Status")!="Complete"&&fs::exists(journal),"Failed or stale barrier retains its recovery intent without false completion");check(readText(mode=="stage-renamed"?files/L"foreign.bin":stage)=="verified bytes","Failure keeps the exact verified source bytes");if(mode=="destination-changed"){Lock lock(manager.mutex);job->data["FileName"]="barrier.bin";}if(mode=="stage-renamed")check(MoveFileExW((files/L"foreign.bin").c_str(),stage.c_str(),0)!=FALSE,"Restore only the fixture-owned source name before explicit retry");cancel->stop=false;manager.recoverReplacements(job);check(str(job->data,"Status")=="Complete"&&fileHash(job->target())==hash&&!fs::exists(journal),"Explicit recovery verifies and flushes early-intent bytes before recording completion");}
+-  else check(failure.empty()&&str(job->data,"Status")=="Complete"&&fileHash(job->target())==hash&&!fs::exists(journal),"Successful overlap publishes only the complete verified file and accepted catalog");
+-  check(str(manager.state["Settings"],"BarrierMarker")=="independent save"&&!PublicationOwnership::owned(manager,job),"Independent metadata survives and publication ownership retires");
+-  {Handle writer(CreateFileW(job->target().c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(bool(writer),"All body and namespace pins release after completion or explicit recovery");}
+-  manager.stop();{Manager reopened(manager.root);check(str(reopened.jobs.at(0)->data,"Status")=="Complete"&&fileHash(reopened.jobs.at(0)->target())==hash,"Early-intent completion survives reopening the saved catalog");}
+- }
+- for(const bool moved:{false,true}){
+-  activeCase=moved?"recovery-target":"recovery-stage";auto folder=root/wide(activeCase);Manager manager(folder/L"catalog");auto files=folder/L"files";fs::create_directories(files);auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8(files.wstring());settings["CategoryFolders"]=false;manager.setSettings(settings);auto job=manager.add("https://example.invalid/recovery.bin");auto stage=files/(L".udm-"+wide(job->id())+L".assembling");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage);CatalogCheckpointTestAccess::observe(manager,[moved](const char* point){if(std::string_view(point)==(moved?"publication-file-moved":"publication-intent-written"))throw std::runtime_error("Owned interruption");});try{manager.publishFile(job,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(manager,{});auto journal=manager.root/L"publications"/(wide(job->id())+L".json");auto op=Json::parse(readText(journal));op["FlushBeforePublish"]=true;atomicText(journal,op.dump(),false);
+-  int barriers=0;CatalogCheckpointTestAccess::observe(manager,[&](const char* phase){if(std::string_view(phase)=="recovery-body-flush-begin"){++barriers;throw std::runtime_error("Owned recovery barrier failure");}});bool failed=false;try{manager.recoverReplacements(job);}catch(...){failed=true;}CatalogCheckpointTestAccess::observe(manager,{});check(failed&&barriers==1&&fs::exists(journal)&&str(job->data,"Status")!="Complete","Recovery body failure preserves staged or renamed intent and rejects completion");
+-  Handle reader(CreateFileW((moved?job->target():stage).c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,0,nullptr));check(bool(reader),"A read-only shared fixture handle deliberately excludes a recovery flush writer");failed=false;try{manager.recoverReplacements(job);}catch(...){failed=true;}check(failed&&fs::exists(journal),"A denied recovery write barrier cannot consume its early intent");CloseHandle(reader.h);reader.h=INVALID_HANDLE_VALUE;
+-  const auto preservedIntent=readText(journal);const auto preservedPath=moved?job->target():stage;
+-  atomicText(preservedPath,"modified bytes",false);failed=false;try{manager.recoverReplacements(job);}catch(...){failed=true;}check(failed&&fs::exists(journal)&&readText(journal)==preservedIntent&&str(job->data,"Status")!="Complete"&&readText(preservedPath)=="modified bytes","Corrupt early-intent bytes preserve the exact journal instead of authorizing reuse of unflushed parts");
+-  atomicText(preservedPath,"short",false);failed=false;try{manager.recoverReplacements(job);}catch(...){failed=true;}check(failed&&fs::exists(journal)&&readText(journal)==preservedIntent,"A truncated early-intent body preserves its journal and cannot fall back to completed byte accounting");atomicText(preservedPath,"verified bytes",false);
+-  const auto foreign=files/L"foreign.part";atomicText(foreign,"verified bytes",false);auto invalid=op;invalid["Staging"]=utf8(foreign.wstring());atomicText(journal,invalid.dump(),false);const auto invalidIntent=readText(journal);failed=false;try{manager.recoverReplacements(job);}catch(...){failed=true;}check(failed&&fs::exists(journal)&&readText(journal)==invalidIntent&&readText(foreign)=="verified bytes","An unrecognized early-intent source preserves its journal and foreign bytes without reusing completion accounting");atomicText(journal,preservedIntent,false);fs::remove(foreign);
+-  CatalogCheckpointTestAccess::observe(manager,[&](const char* phase){if(std::string_view(phase)=="recovery-body-flush-end")++barriers;});manager.recoverReplacements(job);CatalogCheckpointTestAccess::observe(manager,{});check(barriers==2&&str(job->data,"Status")=="Complete"&&fileHash(job->target())==hash&&!fs::exists(journal),"Staged and already-renamed recovery execute the required body flush before catalog acceptance");manager.stop();
+- }
+- {
+-  activeCase="crash-before-body-flush";const auto folder=root/wide(activeCase);fs::path target,stage,journal;std::string hash;
+-  {Manager manager(folder/L"catalog");auto files=folder/L"files";fs::create_directories(files);auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8(files.wstring());settings["CategoryFolders"]=false;manager.setSettings(settings);auto job=manager.add("https://example.invalid/crash.bin");target=job->target();stage=files/(L".udm-"+wide(job->id())+L".assembling");journal=manager.root/L"publications"/(wide(job->id())+L".json");atomicText(stage,"verified bytes",false);hash=fileHash(stage);manager.stop();}
+-  check(crashEarlyIntent(folder)==197,"Owned process terminates after durable intent with the body flush still held before its syscall");check(fs::exists(journal)&&Json::parse(readText(journal)).value("FlushBeforePublish",false)&&!fs::exists(target)&&readText(stage)=="verified bytes","Actual process interruption preserves an explicit early intent and its staged bytes without publishing");
+-  {Manager recovered(folder/L"catalog");check(str(recovered.jobs.at(0)->data,"Status")=="Complete"&&fileHash(target)==hash&&!fs::exists(journal),"Startup verifies and forces the early-intent body before accepting its recovered completion");recovered.stop();}
+-  {Manager reopened(folder/L"catalog");check(str(reopened.jobs.at(0)->data,"Status")=="Complete"&&fileHash(target)==hash,"Recovered early-intent completion survives a second catalog reopen");}
+- }
+- }catch(const std::exception& e){error=e.what();}
+- auto result=Json{{"passed",error.empty()},{"error",error},{"case",activeCase},{"checks",checks}};atomicText(root/L"results.json",result.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+-}
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -15,7 +15,7 @@
+   {"source": "WrittenPrefixTests", "timeoutSeconds": 30},
+   {"source": "PrefinishWritebackTests", "timeoutSeconds": 30},
+   {"source": "PublicationPreparationTests", "timeoutSeconds": 120},
+-  {"source": "PublicationBarrierTests", "timeoutSeconds": 180},
++  {"source": "EarlyPublicationRecoveryTests", "timeoutSeconds": 180},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+   {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+   {"source": "PublicationOwnershipTests", "timeoutSeconds": 120},
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,43,0,0
+-#define UDM_VERSION_STRING "8.43"
+-#define UDM_VERSION_WSTRING L"8.43"
++#define UDM_VERSION_TUPLE 8,44,0,0
++#define UDM_VERSION_STRING "8.44"
++#define UDM_VERSION_WSTRING L"8.44"
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.7",
++  "version": "0.72.8",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.7",
++  "version": "0.72.8",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",

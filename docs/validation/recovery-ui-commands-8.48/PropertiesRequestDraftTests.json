@@ -1,0 +1,174 @@
+{
+  "checks": [
+    {
+      "name": "An oversized Referer rejects the combined credential edit",
+      "passed": true
+    },
+    {
+      "name": "Rejected request edits preserve the full draft",
+      "passed": true
+    },
+    {
+      "name": "Retrying the same invalid input cannot silently accept the old headers",
+      "passed": true
+    },
+    {
+      "name": "Correcting Referer preserves the other typed login changes",
+      "passed": true
+    },
+    {
+      "name": "The corrected Referer saves with the credentials",
+      "passed": true
+    },
+    {
+      "name": "Request editing leaves unrelated metadata intact",
+      "passed": true
+    },
+    {
+      "name": "Credential protection failure rejects the edit",
+      "passed": true
+    },
+    {
+      "name": "Protection failure preserves the previous protected headers",
+      "passed": true
+    },
+    {
+      "name": "Retrying failed protection still attempts the changed credentials",
+      "passed": true
+    },
+    {
+      "name": "A later successful protection attempt retains the typed login",
+      "passed": true
+    },
+    {
+      "name": "A later successful protection attempt retains the typed Referer",
+      "passed": true
+    },
+    {
+      "name": "Untouched controls preserve refreshed credentials and their protected representation",
+      "passed": true
+    },
+    {
+      "name": "An explicit login edit replaces the refreshed authorization",
+      "passed": true
+    },
+    {
+      "name": "An untouched Referer preserves its refreshed value during a login edit",
+      "passed": true
+    },
+    {
+      "name": "Explicitly clearing fields removes both request headers",
+      "passed": true
+    },
+    {
+      "name": "Unchanged request fields do not re-encrypt protected headers",
+      "passed": true
+    },
+    {
+      "name": "Accepting Advanced fields establishes a clean control baseline",
+      "passed": true
+    },
+    {
+      "name": "Editing after Advanced still saves the new password",
+      "passed": true
+    },
+    {
+      "name": "A header patch owns only the explicitly changed logical header",
+      "passed": true
+    },
+    {
+      "name": "Commit merging preserves unrelated refreshed cookie and Referer values",
+      "passed": true
+    },
+    {
+      "name": "Header merging retains newly added session headers and staged metadata",
+      "passed": true
+    },
+    {
+      "name": "Applying a request patch never mutates the supplied current record",
+      "passed": true
+    },
+    {
+      "name": "Explicit header removal deletes that header without reverting current authentication",
+      "passed": true
+    },
+    {
+      "name": "An explicit empty Authorization marker remains distinct from removing the header",
+      "passed": true
+    },
+    {
+      "name": "Unchanged logical headers do not re-encrypt the refreshed session",
+      "passed": true
+    },
+    {
+      "name": "A header patch already satisfied by the current session does not re-encrypt it",
+      "passed": true
+    },
+    {
+      "name": "Header-name casing alone does not claim ownership of a refreshed value",
+      "passed": true
+    },
+    {
+      "name": "Failed commit-time protection preserves the entire staged edit",
+      "passed": true
+    },
+    {
+      "name": "Retrying protection retains explicit request changes and the fresh session",
+      "passed": true
+    },
+    {
+      "name": "Invalid request values are rejected before a commit patch is created",
+      "passed": true
+    },
+    {
+      "name": "Same-origin refreshes use normalized host and default-port identity",
+      "passed": true
+    },
+    {
+      "name": "Host, scheme or port changes reject staged authentication without altering the edit",
+      "passed": true
+    },
+    {
+      "name": "Host, scheme or port changes reject staged authentication without altering the edit",
+      "passed": true
+    },
+    {
+      "name": "Host, scheme or port changes reject staged authentication without altering the edit",
+      "passed": true
+    },
+    {
+      "name": "Each explicitly changed sensitive header remains bound to the opening target origin",
+      "passed": true
+    },
+    {
+      "name": "Each explicitly changed sensitive header remains bound to the opening target origin",
+      "passed": true
+    },
+    {
+      "name": "Each explicitly changed sensitive header remains bound to the opening target origin",
+      "passed": true
+    },
+    {
+      "name": "Each explicitly changed sensitive header remains bound to the opening target origin",
+      "passed": true
+    },
+    {
+      "name": "An ordinary User-Agent edit does not transplant staged authentication across origins",
+      "passed": true
+    },
+    {
+      "name": "Explicit authorization removal remains available after an origin change",
+      "passed": true
+    },
+    {
+      "name": "An empty authorization suppression marker is not treated as transmitting a credential",
+      "passed": true
+    },
+    {
+      "name": "An untouched session can follow a target change without carrying a request-header patch",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

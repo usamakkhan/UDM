@@ -1,0 +1,11 @@
+--- diagnostic/Transfer.cpp@epoch1
++++ diagnostic/Transfer.cpp@epoch2
+@@ -1122,7 +1122,7 @@
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(prefinishFile){
+     const auto dataFlush=connections>1?dataOnlyFlush():nullptr;
+-    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{DiagnosticSlowIo span("slow-optional-data-flush");return flushBodyData(dataFlush,prefinishFile.h);});
++    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush,skipOptional=GetEnvironmentVariableW(L"UDM_TEST_NO_OPTIONAL_DATA_FLUSH",nullptr,0)>0]{if(skipOptional){nativeUiTraceRecord("optional-data-suppressed");return true;}nativeUiTraceRecord("optional-data-call");DiagnosticSlowIo span("slow-optional-data-flush");return flushBodyData(dataFlush,prefinishFile.h);});
+     else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{DiagnosticSlowIo span("slow-optional-full-flush");return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+    }
+   }catch(...){dataWriteback.reset();prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}

@@ -1,0 +1,34 @@
+--- native/App.cpp@9.51
++++ native/App.cpp@9.50
+@@ -11,7 +11,6 @@
+ #include <regex>
+ #include "Core.hpp"
+ #include "ColumnSettingsTask.hpp"
+-#include "GlobalLimitSettingsTask.hpp"
+ #include "UiDesktopAttestation.hpp"
+ #include "MainClosePolicyTask.hpp"
+ #include "MainExitLayoutTask.hpp"
+@@ -139,7 +138,7 @@
+  MainExitLayoutTask exitLayoutTask;bool exitLayoutPrepared=false,exitLayoutOwnerEnabled=true;
+ #ifdef UDM_TOOLBAR_COMPONENT_TEST
+  std::function<void(const char*)> exitLayoutObserver;
+- std::function<void(const char*)> columnSettingsObserver;std::function<void(const char*)> globalLimitSettingsObserver;
++ std::function<void(const char*)> columnSettingsObserver;
+ #endif
+  DownloadMenuTask downloadMenuTask;
+  struct DownloadMenuAdvice {std::shared_ptr<const std::map<UINT,bool>> current;};
+@@ -1298,7 +1297,13 @@
+  case CMD_DELETEQUEUE:if(filter.rfind("queue:",0)==0&&MessageBox(L"Delete this queue? Its records will be reassigned to another queue.",L"Delete queue",MB_YESNO|MB_ICONQUESTION)==IDYES){manager.deleteQueue(selectedQueue());filter="all";}break;
+  case CMD_STARTQUEUEMENU:case CMD_STOPQUEUEMENU:{CPoint point;GetCursorPos(&point);queuePopup(id==CMD_STARTQUEUEMENU,point);break;}
+  case CMD_LIMIT_ON:case CMD_LIMIT_OFF:{auto p=preferences();manager.setSettings(globalLimiterSettings(p,id==CMD_LIMIT_ON,rememberedGlobalLimit(p)));break;}
+- case CMD_LIMIT:globalLimitSettingsDialog();break;
++ case CMD_LIMIT:{Form d("Speed Limiter settings",302,89,this);d.dialogUnits=true;auto p=preferences();d.init=[&]{
++  d.control(L"STATIC",str(p,"GlobalLimitMode")=="Each download"?"Maximum download speed for one file":"Maximum total download speed",SS_RIGHT,7,7,170,9);
++  auto value=d.edit(std::to_string(rememberedGlobalLimit(p)),183,4,33,14);value->ModifyStyle(ES_LEFT,ES_RIGHT|ES_NUMBER);value->SendMessage(EM_SETLIMITTEXT,7);d.label("KBytes/sec",224,7,65);
++  d.label("Note: Very low speeds can cause servers to disconnect. Avoid using Speed Limiter with servers that do not support resuming downloads.",7,23,288,26);
++  auto startup=d.check("Always turn on Speed Limiter on UDM startup",yes(p,"GlobalLimitOnStartup"),7,52,288);
++  d.accept=[&,startup,value]{auto next=preferences();auto raw=trim(text(value));if(raw.empty()||raw.size()>7||raw.find_first_not_of("0123456789")!=std::string::npos)throw std::runtime_error("Enter a speed limit from 1 to 1,000,000 KB/s.");next=globalLimiterSettings(next,num(next,"LimitKbps")>0,std::stoll(raw));next["GlobalLimitOnStartup"]=d.checked(startup);manager.setSettings(next);d.close();};d.defaultButton(d.button("OK",189,68,50,d.accept));d.button("Cancel",245,68,50,[&]{d.close(IDCANCEL);});
++ };d.DoModal();break;}
+  case CMD_SELECTALL:table.SetItemState(-1,LVIS_SELECTED,LVIS_SELECTED);break;
+  case CMD_DARK:preference("DarkMode",!yes(preferences(),"DarkMode"));applyAppearance();break;
+  case CMD_HOME:openProductLink(m_hWnd,productHome);break;case CMD_SUPPORT:openProductLink(m_hWnd,productSupport);break;case CMD_SHARE:showShareDialog(this);break;case CMD_CHECK_UPDATES:startUpdateCheck(true);break;case CMD_TIP_DAY:showTipOfDay();break;case CMD_HELP_CONTENTS:case CMD_HELP_TUTORIALS:case CMD_HELP_SCHEDULER:case CMD_HELP_GRABBER:showHelpTopic(id-CMD_HELP_CONTENTS);break;case CMD_LANGUAGE_ENGLISH:break;case CMD_FONT:chooseFont();break;

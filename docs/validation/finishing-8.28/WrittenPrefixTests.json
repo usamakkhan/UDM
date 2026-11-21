@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "name": "Unknown final length cannot claim a complete captured prefix",
+      "passed": true
+    },
+    {
+      "name": "A later range cannot fill an unwritten leading gap",
+      "passed": true
+    },
+    {
+      "name": "Out-of-order committed writes reconstruct the exact leading bytes",
+      "passed": true
+    },
+    {
+      "name": "A large representation keeps only the bounded prefix",
+      "passed": true
+    },
+    {
+      "name": "Short final bodies expose no padding beyond actual EOF",
+      "passed": true
+    },
+    {
+      "name": "Overwritten prefix offsets reflect the latest successful file write",
+      "passed": true
+    },
+    {
+      "name": "Invalid or out-of-window captures leave the verified window unchanged",
+      "passed": true
+    },
+    {
+      "name": "A new HTTP attempt cannot reuse the preceding representation prefix",
+      "passed": true
+    },
+    {
+      "name": "A proven empty body remains empty for content classification",
+      "passed": true
+    },
+    {
+      "name": "Coverage beyond a short body's EOF cannot disguise a leading gap",
+      "passed": true
+    },
+    {
+      "name": "Captured bytes preserve rejection of an HTML body served as a file",
+      "passed": true
+    },
+    {
+      "name": "Captured bytes preserve exact recognized archive content",
+      "passed": true
+    },
+    {
+      "name": "Unavailable optional cache falls back rather than inventing content",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

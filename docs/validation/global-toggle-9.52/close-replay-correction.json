@@ -1,0 +1,11 @@
+{
+  "reason": "Replace queued WM_CLOSE with an owned cancellable replay decision. Show cancels normal Close even after acknowledgement; explicit Exit remains reserved. Timer handlers return directly after a replay can destroy the window.",
+  "supersededBeforeQualification": true,
+  "changedPaths": [
+    "native/App.cpp",
+    "native/MainFeatures.hpp",
+    "native/GlobalLimitToggleUiTests.cpp"
+  ],
+  "baselineFixtureUsesInitialInventory": true,
+  "baselineFirstCaseAndFailingAssertionUnchanged": true
+}

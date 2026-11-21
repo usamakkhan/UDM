@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "The proof fixture obtains the actual nonsharing read pin",
+      "passed": true
+    },
+    {
+      "name": "Exact-limit pinned read returns complete original bytes",
+      "passed": true
+    },
+    {
+      "name": "The production pin excludes concurrent writers through comparison",
+      "passed": true
+    },
+    {
+      "name": "The production pin excludes pathname retirement through comparison",
+      "passed": true
+    },
+    {
+      "name": "Oversized catalog is refused before content allocation",
+      "passed": true
+    },
+    {
+      "name": "Repeated pinned reads reset position rather than accepting an empty EOF",
+      "passed": true
+    },
+    {
+      "name": "Identity control retains its open object across an allowed rename",
+      "passed": true
+    },
+    {
+      "name": "Pinned reader cannot silently reopen a replacement pathname",
+      "passed": true
+    },
+    {
+      "name": "Empty, UTF-8 BOM, partial BOM and multi-chunk inputs retain existing text semantics",
+      "passed": true
+    },
+    {
+      "name": "Empty, UTF-8 BOM, partial BOM and multi-chunk inputs retain existing text semantics",
+      "passed": true
+    },
+    {
+      "name": "Empty, UTF-8 BOM, partial BOM and multi-chunk inputs retain existing text semantics",
+      "passed": true
+    },
+    {
+      "name": "Empty, UTF-8 BOM, partial BOM and multi-chunk inputs retain existing text semantics",
+      "passed": true
+    },
+    {
+      "name": "A readable-size handle without read access cannot prove checkpoint content",
+      "passed": true
+    },
+    {
+      "name": "Invalid handles fail conservatively",
+      "passed": true
+    },
+    {
+      "name": "Directory handles cannot stand in for regular checkpoint files",
+      "passed": true
+    },
+    {
+      "name": "Nondisk control creates an owned anonymous pipe",
+      "passed": true
+    },
+    {
+      "name": "Nondisk handles are refused before a potentially blocking read",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

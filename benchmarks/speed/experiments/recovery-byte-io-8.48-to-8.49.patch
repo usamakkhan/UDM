@@ -1,0 +1,350 @@
+--- a/native/Duplicates.cpp
++++ b/native/Duplicates.cpp
+@@ -189,7 +189,6 @@
+  return isActive(job)||str(job->data,"Status")=="Queued"?OfferPresentation::Progress:OfferPresentation::Information;
+ }
+ static Json completeData(const Json& data,i64 measuredSize,const std::string& hash){auto next=data;next.erase("RetainedMediaOutput");next["Sha256"]=hash;if(str(data,"HttpContentEncoding")=="gzip"||(yes(data,"PostResponseComplete")&&yes(data,"StripContentPrefix")&&num(data,"ContentPrefixBytes")>0)){next["HttpWireSize"]=num(data,"Size",-1);next["HttpWireReceived"]=num(data,"Received");const auto length=measuredSize;next["Segments"]=Json::array();if(length>0)next["Segments"].push_back({{"Index",0},{"Start",0},{"End",length-1},{"Done",length}});next.erase("CompletedPrefetch");next["HttpDecodedSize"]=length;next["HttpDecodedReceived"]=length;}next["Size"]=measuredSize;next["Received"]=next["Size"];if(yes(data,"PostResponseComplete")){next.erase("CompletedPrefetch");next.erase("PostResponseComplete");next.erase("PostResponseRequestSha256");next.erase("PostResponseRetentionWarning");}next["Status"]="Complete";next["MediaPhase"]="Complete";next["MediaTracksReady"]=false;next["SabrRetainedBytes"]=0;next["Finished"]=date();next["Error"]="";next["QueueMember"]=false;if(yes(next,"SynchronizationRestoration")){next["SyncStatus"]="Restored missing file";next["LastSync"]=next["Finished"];next["SyncRetryFailed"]=false;next.erase("SynchronizationRestoration");}return next;}
+-static Json completeData(const Json& data,const fs::path& staging,const std::string& hash){return completeData(data,static_cast<i64>(fs::file_size(staging)),hash);}
+ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& knownHash,const Cancel* cancel,const LivePublicationDetails* live){
+  auto finalCommit=PreparedTransferCommit::publishing(*this,job,cancel);
+  fs::path target;std::string originalId,replacementHash,previousPath;bool registered=false,catalogBound=false;Json destinationInputs;std::function<void(const char*)> publicationObservation;std::unique_ptr<PublicationOwnership> publicationOwner;JobPtr leasedOriginal;
+@@ -327,23 +326,23 @@
+  lock.unlock();if(publicationObservation)publicationObservation("replacement-cleanup");std::error_code ec;const bool removed=fs::remove(journal,ec);if(removed&&publicationObservation)publicationObservation("replacement-journal-removed");if(!catalogBound&&removed){lock.lock();proof.release();PublicationCatalogProof::eraseReceipt(*this,receipt);lock.unlock();}
+ 
+ }
+-static bool recoverableStagingPath(const Json& operation,const Job& job,const fs::path& staging,const fs::path& target){
++static bool recoverableStagingPath(const Json& operation,const Json& data,const fs::path& staging,const fs::path& target){
+  const auto& before=operation.at("Before");
+  if(yes(before,"ConfirmationPending")||fs::exists(target))return false;
+  const auto stagedPath=staging.lexically_normal();
+  if(stagedPath.parent_path()==target.lexically_normal().parent_path()&&
+-    stagedPath.filename()==L".udm-"+wide(job.id())+L".assembling")return true;
++    stagedPath.filename()==L".udm-"+wide(str(data,"Id"))+L".assembling")return true;
+  const auto source=retainedMediaOutputPath(before);
+  const auto receipt=before.find("RetainedMediaOutput");
+- if(source.empty()||receipt==before.end()||job.data.value("RetainedMediaOutput",Json())!=*receipt||
++ if(source.empty()||receipt==before.end()||data.value("RetainedMediaOutput",Json())!=*receipt||
+     str(*receipt,"Sha256")!=str(operation,"Hash")||num(*receipt,"Size",-1)!=num(operation.at("After"),"Size",-1))return false;
+  if(stagedPath==source.lexically_normal())return true;
+  return stagedPath.parent_path()==target.lexically_normal().parent_path()&&
+-        std::regex_match(utf8(stagedPath.filename().wstring()),std::regex("\\.udm-"+job.id()+"-[0-9a-f]{32}\\.publishing"));
++        std::regex_match(utf8(stagedPath.filename().wstring()),std::regex("\\.udm-"+str(data,"Id")+"-[0-9a-f]{32}\\.publishing"));
+ }
+ struct RecoveredPublicationBytes {
+- std::unique_ptr<Handle> file,name;std::string digest;
+- RecoveredPublicationBytes(Handle&& owned,std::string hash):file(std::make_unique<Handle>(std::move(owned))),digest(std::move(hash)){}
++ std::unique_ptr<Handle> file,name;std::string digest;i64 size=-1;
++ RecoveredPublicationBytes(Handle&& owned,std::string hash,i64 length=-1):file(std::make_unique<Handle>(std::move(owned))),digest(std::move(hash)),size(length){}
+  void release(){name.reset();file.reset();}
+ };
+ static Handle pinRecoveredDestination(const Handle& measured,const fs::path& destination,bool measuredWritable=false){
+@@ -352,11 +351,13 @@
+   throw std::runtime_error("The recovered destination changed during publication. Keep its file and recovery journal.");
+  return pinned;
+ }
+-static std::optional<RecoveredPublicationBytes> recoverReplacementBytes(const fs::path& path,const std::string& expected,bool restoring=false){
++static std::optional<RecoveredPublicationBytes> recoverReplacementBytes(const fs::path& path,const std::string& expected,bool restoring=false,const std::function<void(const char*)>& checkpoint={}){
+  Handle file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|(restoring?FILE_SHARE_DELETE:0),nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+  if(!file||!GetFileInformationByHandle(file.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return {};
+- auto digest=fileHash(file.h);if(digest!=expected)return {};
+- return RecoveredPublicationBytes(std::move(file),std::move(digest));
++ LARGE_INTEGER length{};if(!GetFileSizeEx(file.h,&length)||length.QuadPart<0)return {};
++ if(checkpoint)checkpoint("recovery-file-opened");
++ auto digest=fileHash(file.h,[&]{if(checkpoint)checkpoint("recovery-hash-read");});if(checkpoint)checkpoint("recovery-hash-complete");if(!expected.empty()&&digest!=expected)return {};
++ return RecoveredPublicationBytes(std::move(file),std::move(digest),length.QuadPart);
+ }
+ static std::optional<RecoveredPublicationBytes> recoverPublicationBytes(const Json& operation,const fs::path& path,const fs::path* destination=nullptr,const std::function<void(const char*)>& observer={}){
+  const bool flushRequired=operation.value("FlushBeforePublish",false);
+@@ -369,19 +370,21 @@
+     !GetFileSizeEx(file.h,&size)||size.QuadPart!=num(operation.at("After"),"Size",-1))return rejected();
+  const auto expected=str(operation,"Hash");
+  if(expected.empty()&&stableFileIdentity(file.h)!=operation.at("StagedIdentity"))return rejected();
+- auto digest=fileHash(file.h);
++ if(observer)observer("recovery-file-opened");
++ auto digest=fileHash(file.h,[&]{if(observer)observer("recovery-hash-read");});if(observer)observer("recovery-hash-complete");
+  if(!expected.empty()&&digest!=expected)return rejected();
+  if(flushRequired){if(observer)observer("recovery-body-flush-begin");if(!FlushFileBuffers(file.h))throw std::runtime_error("The preserved publication body could not be flushed. Keep its file and recovery journal.");if(observer)observer("recovery-body-flush-end");}
+  // Never replace a file that appeared after the interrupted publication.
+  if(destination){
++  if(observer)observer("recovery-before-move");
+   if(!MoveFileExW(path.c_str(),destination->c_str(),MOVEFILE_WRITE_THROUGH))return rejected();
+   // The staging name allowed deletion for rename. Pin the resulting name and
+   // require the exact measured object before it can enter the saved catalog.
+   auto pinned=pinRecoveredDestination(file,*destination,flushRequired);
+-  if(flushRequired){RecoveredPublicationBytes result(std::move(file),std::move(digest));result.name=std::make_unique<Handle>(std::move(pinned));return result;}
+-  return RecoveredPublicationBytes(std::move(pinned),std::move(digest));
+- }
+- return RecoveredPublicationBytes(std::move(file),std::move(digest));
++  if(flushRequired){RecoveredPublicationBytes result(std::move(file),std::move(digest),size.QuadPart);result.name=std::make_unique<Handle>(std::move(pinned));return result;}
++  return RecoveredPublicationBytes(std::move(pinned),std::move(digest),size.QuadPart);
++ }
++ return RecoveredPublicationBytes(std::move(file),std::move(digest),size.QuadPart);
+ }
+ static void finishRetainedMediaRecovery(const Json& before,const fs::path& target){
+  const auto source=retainedMediaOutputPath(before);
+@@ -442,10 +445,34 @@
+   auto found=publicationJobs.find(id);return found==publicationJobs.end()?JobPtr{}:found->second;
+  };
+  // Every unlocked checkpoint retains its affected job tree, destination paths,
+- // journal and verified bytes. Only detached catalog snapshots leave this lease;
+- // verification/discovery IO is migrated in the next transaction phase.
++ // journal and verified bytes. Verification IO and catalog checkpoints leave
++ // this lease separately; discovery and post-acceptance cleanup remain locked.
+  auto modelJob=[&](const std::string& id)->JobPtr{auto pending=jobs;std::unordered_set<const Job*> seen;JobPtr result;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;if(item->id()==id){if(result&&result!=item)throw std::runtime_error("Recovery found ambiguous catalog membership.");result=item;}if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}return result;};
+  auto recoveryPaths=[&](const std::vector<JobPtr>& owners,std::vector<fs::path> paths){auto pending=owners;std::unordered_set<const Job*> seen;while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;paths.push_back(item->target());auto previous=str(item->data,"PreviousPath");if(!previous.empty())paths.emplace_back(wide(previous));if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}paths.erase(std::remove_if(paths.begin(),paths.end(),[](const fs::path& path){return path.empty();}),paths.end());return paths;};
++ // File IO consumes only immutable copies; no live JSON iterator/reference
++ // survives its unlocked interval. Reservations and held journals remain live.
++ const auto ioInputs=[](const Json& data){Json inputs=Json::object();for(const char* key:{"Id","Folder","FileName","ProjectDestinationRoot","PublicationCommitId","ReplacementOf","ReplacementHash","PreviousPath","Status","Size","Received","Sha256","Finished","ExpectedSha256","Error","OriginalResponse","ConfirmationPending","RetainedMediaOutput","PartsFolder","Segments","Url","SourceUrl","ProtectedAdaptive","ProtectedRequest","HttpContentEncoding","PostResponseComplete","StripContentPrefix","ContentPrefixBytes"})if(data.contains(key))inputs[key]=data.at(key);return inputs;};
++ struct IoRow {JobPtr job,video,audio;Json data,inputs;bool inCatalog,registered,owned;};
++ const auto captureIo=[&](const std::vector<JobPtr>& owners){
++  std::vector<IoRow> rows;auto pending=owners;std::unordered_set<const Job*> seen;
++  while(!pending.empty()){auto item=pending.back();pending.pop_back();if(!item||!seen.insert(item.get()).second)continue;rows.push_back({item,item->video,item->audio,item->data,ioInputs(item->data),modelJob(item->id())==item,std::find(jobs.begin(),jobs.end(),item)!=jobs.end(),true});if(item->video)pending.push_back(item->video);if(item->audio)pending.push_back(item->audio);}
++  if(scope&&!seen.count(scope.get()))rows.push_back({scope,scope->video,scope->audio,scope->data,ioInputs(scope->data),modelJob(scope->id())==scope,std::find(jobs.begin(),jobs.end(),scope)!=jobs.end(),false});return rows;
++ };
++ const auto clearIndexes=[&]{jobsById.clear();publicationJobs.clear();publicationIndexReady=false;};
++ const auto validateIo=[&](const std::vector<IoRow>& rows,const PublicationOwnership& owner){
++  if(stopping)throw std::runtime_error("UDM is closing.");
++  if(catalogTransaction)throw std::runtime_error("The catalog batch changed during recovery. Keep its bytes and recovery journal.");
++  for(const auto& row:rows)if((row.owned&&!owner.owns(row.job))||modelJob(str(row.data,"Id"))!=(row.inCatalog?row.job:JobPtr{})||(std::find(jobs.begin(),jobs.end(),row.job)!=jobs.end())!=row.registered||row.job->video!=row.video||row.job->audio!=row.audio||ioInputs(row.job->data)!=row.inputs)throw std::runtime_error("The download changed during file recovery. Its bytes and recovery journal were preserved.");
++ };
++ const auto detachedIo=[&](const std::vector<IoRow>& rows,const PublicationOwnership& owner,auto&& work){
++  const auto observation=catalogCheckpoint;
++  const auto checkpoint=[&](const char* point){
++   {Lock guard(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::string_view(point)=="recovery-before-move")validateIo(rows,owner);}
++   if(observation)observation(point);
++  };
++  recoveryLock.unlock();try{work(checkpoint);}catch(...){recoveryLock.lock();clearIndexes();throw;}
++  recoveryLock.lock();clearIndexes();validateIo(rows,owner);
++ };
+  struct RecoveredRow {JobPtr job;Json before,applied,destination;bool inCatalog,registered;};
+  auto capturedRow=[&](const JobPtr& job,const Json& before,bool inCatalog,bool registered){return RecoveredRow{job,before,job->data,publicationDestinationInputs(job->data),inCatalog,registered};};
+  auto checkpointRecovery=[&](const std::vector<RecoveredRow>& rows,const Json& receipt,bool inserted){
+@@ -483,25 +510,22 @@
+   if(!scope&&PublicationOwnership::reserved(*this,target,job))continue;
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+   PublicationOwnership owner(*this,{job},recoveryPaths({job},{target,staging}));owner.beginCommit();
+-  auto before=job->data;
++  const auto prepared=captureIo({job});const auto input=job->data;
+   std::optional<RecoveredPublicationBytes> published;
+-  if(!commitId.empty()&&str(before,"PublicationCommitId")==commitId){
+-   published=recoverPublicationBytes(op,target,nullptr,catalogCheckpoint);if(!published)throw std::runtime_error("An acknowledged publication needs manual recovery. Keep its file and completion record.");
+-  }
+-  else if(fs::exists(staging)){
+-   if(recoverableStagingPath(op,*job,staging,target)){
+-    validateGrabberFolder(op["Before"]);
+-    published=recoverPublicationBytes(op,staging,&target,catalogCheckpoint);
++  detachedIo(prepared,owner,[&](const auto& checkpoint){
++   if(!commitId.empty()&&str(input,"PublicationCommitId")==commitId){
++    published=recoverPublicationBytes(op,target,nullptr,checkpoint);if(!published)throw std::runtime_error("An acknowledged publication needs manual recovery. Keep its file and completion record.");
++   }else if(fs::exists(staging)){
++    if(recoverableStagingPath(op,input,staging,target)){validateGrabberFolder(op["Before"]);published=recoverPublicationBytes(op,staging,&target,checkpoint);}
++   }else{
++    published=recoverPublicationBytes(op,target,nullptr,checkpoint);if(!published)throw std::runtime_error("A published download needs manual recovery. Keep the saved file and publication record.");
+    }
+-  }
+-  else{
+-   published=recoverPublicationBytes(op,target,nullptr,catalogCheckpoint);
+-   if(!published)throw std::runtime_error("A published download needs manual recovery. Keep the saved file and publication record.");
+-  }
++  });
++  auto before=job->data;PublicationCommit::validateCurrent(op,before);
+   if(!published&&op.value("FlushBeforePublish",false))throw std::runtime_error("The early publication source cannot be recovered safely. Keep its bytes and recovery journal; do not reuse unflushed completion accounting.");
+   const bool accepted=published&&!commitId.empty()&&PublicationCommit::accepted(op,before,published->digest);
+   if(!commitId.empty())job->data=accepted?before:PublicationCommit::apply(op["Before"],published?op["After"]:op["Before"],before);
+-  else job->data=published?op["After"]:op["Before"];
++  else job->data=PublicationCommit::apply(op["Before"],published?op["After"]:op["Before"],before);
+   if(published){
+    job->data["Sha256"]=published->digest;
+    if(!commitId.empty()&&!accepted){job->data["QueueMember"]=retainCompletedMembership(*this,before);if(findJob(job->id())==job)prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;}
+@@ -519,14 +543,15 @@
+  }
+  // Older builds could publish and hash the final file before a catalog save
+  // failed, without a publication journal. Reconcile only that exact failure.
+- const auto legacyJobs=jobs;for(auto job:legacyJobs){if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())continue;if(scope&&!scopeIds.count(job->id()))continue;if(isActive(job))continue;const auto& data=job->data;const auto hash=lower(str(data,"Sha256"));
++ const auto legacyJobs=jobs;for(auto job:legacyJobs){if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())continue;if(scope&&!scopeIds.count(job->id()))continue;if(isActive(job))continue;const auto data=job->data;const auto hash=lower(str(data,"Sha256"));
+   if(str(data,"Status")!="Failed"||str(data,"Error").find("Could not replace the saved state (Windows error 1175).")!=0||str(data,"Finished").empty()||data.contains("OriginalResponse")||!str(data,"ReplacementOf").empty()||num(data,"Size",-1)<0||num(data,"Received")!=num(data,"Size")||!std::regex_match(hash,std::regex("[a-f0-9]{64}")))continue;
+   auto expected=lower(str(data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)continue;
+   auto target=job->target();PublicationOwnership owner(*this,{job},recoveryPaths({job},{target}));owner.beginCommit();
+-  std::error_code ec;Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
+-  try{if(fileHash(target)!=hash)continue;}catch(const std::exception&){continue;}
+   if(catalogTransaction)throw std::runtime_error("Recover this completed file before starting a catalog batch.");
+-  auto before=job->data;auto after=completeData(before,target,hash);after["Finished"]=before["Finished"];after["QueueMember"]=retainCompletedMembership(*this,before);after["PublicationRecovered"]=date();job->data=std::move(after);
++  const auto prepared=captureIo({job});std::optional<RecoveredPublicationBytes> stableFile;
++  detachedIo(prepared,owner,[&](const auto& checkpoint){stableFile=recoverReplacementBytes(target,hash,false,checkpoint);});
++  if(!stableFile||stableFile->size!=num(data,"Size"))continue;
++  auto before=job->data;auto after=completeData(before,stableFile->size,hash);after["Finished"]=before["Finished"];after["QueueMember"]=retainCompletedMembership(*this,before);after["PublicationRecovered"]=date();job->data=std::move(after);
+   prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;
+   checkpointRecovery({capturedRow(job,before,true,true)},Json(),false);
+  }
+@@ -556,27 +581,35 @@
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+   if(modelJob(original->id())!=original)throw std::runtime_error("The recovered original history changed.");
+   PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,fs::path(wide(str(op,"Staging")))}));owner.beginCommit();
+-  auto newBytes=recoverReplacementBytes(target,str(op,"NewHash"));
+-  auto previousBytes=newBytes?recoverReplacementBytes(previous,str(op,"OldHash")):std::optional<RecoveredPublicationBytes>{};
+-  std::optional<RecoveredPublicationBytes> originalBytes;
+-  Json recovered,recoveredOriginal;
+-  const bool published=newBytes&&previousBytes;
++  const auto prepared=captureIo({job,original});
++  std::optional<RecoveredPublicationBytes> newBytes,previousBytes,originalBytes;enum class FileOutcome {Complete,Original};FileOutcome outcome=FileOutcome::Original;
++  detachedIo(prepared,owner,[&](const auto& checkpoint){
++   // Inspect a target once. A preserved old original must not be opened and
++   // hashed again merely because its digest differs from the new version.
++   auto targetBytes=recoverReplacementBytes(target,"",false,checkpoint);
++   if(targetBytes&&targetBytes->digest==str(op,"NewHash")){
++    previousBytes=recoverReplacementBytes(previous,str(op,"OldHash"),false,checkpoint);
++    if(previousBytes){newBytes=std::move(targetBytes);outcome=FileOutcome::Complete;return;}
++   }
++   if(targetBytes&&targetBytes->digest==str(op,"OldHash")&&!fs::exists(previous)){originalBytes=std::move(targetBytes);return;}
++   if(!fs::exists(target)&&(originalBytes=recoverReplacementBytes(previous,str(op,"OldHash"),true,checkpoint))){
++    checkpoint("recovery-before-move");if(!MoveFileExW(previous.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Windows could not restore the original file.");
++    auto pinned=pinRecoveredDestination(*originalBytes->file,target);originalBytes=RecoveredPublicationBytes(std::move(pinned),std::move(originalBytes->digest));return;
++   }
++   throw std::runtime_error("A replacement needs manual recovery. Keep the journal, original and downloaded files.");
++  });
++  ReplacementCommit::validateCurrent(op,job->data,original->data);
++  Json recovered,recoveredOriginal;const bool published=outcome==FileOutcome::Complete;
+   if(published){
+-   if(commitId.empty()){recovered=op.at("After");recoveredOriginal=op.at("OriginalAfter");prepareRecoveredScan(recovered,job->data);}
++   if(commitId.empty()){recovered=PublicationCommit::apply(op.at("Before"),op.at("After"),job->data);recoveredOriginal=ReplacementCommit::applyOriginal(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);prepareRecoveredScan(recovered,job->data);}
+    else if(ReplacementCommit::accepted(op,job->data,original->data)){recovered=job->data;recoveredOriginal=original->data;}
+    else{const bool currentFile=ReplacementCommit::rowAccepted(op.at("After"),job->data),currentOriginal=ReplacementCommit::rowAccepted(op.at("OriginalAfter"),original->data);recovered=currentFile?job->data:PublicationCommit::apply(op.at("Before"),op.at("After"),job->data);recoveredOriginal=currentOriginal?original->data:ReplacementCommit::applyOriginal(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);if(!currentFile){recovered["QueueMember"]=retainCompletedMembership(*this,job->data);if(findJob(job->id())==job)prepareRecoveredScan(recovered,job->data);recovered["CompletionActionArmed"]=false;}}
+-  }
+-  else if((originalBytes=recoverReplacementBytes(target,str(op,"OldHash")))&&!fs::exists(previous)){
+-   recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";
+-  }
+-  else if(!fs::exists(target)&&(originalBytes=recoverReplacementBytes(previous,str(op,"OldHash"),true))){
+-   recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";if(!MoveFileExW(previous.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Windows could not restore the original file.");
+-   auto pinned=pinRecoveredDestination(*originalBytes->file,target);originalBytes=RecoveredPublicationBytes(std::move(pinned),std::move(originalBytes->digest));
+-  }
+-  else throw std::runtime_error("A replacement needs manual recovery. Keep the journal, original and downloaded files.");
++  }else{
++   recovered=PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";
++  }
+   Json receipt;bool inserted=false;if(ephemeral&&published){receipt=PublicationCatalogProof::binding(op.at("After"));inserted=PublicationCatalogProof::installReceipt(*this,receipt);}
+   // Prepare both records before changing live state. Preserve independent current
+-  // metadata on new-format recovery; legacy journals retain their old behavior.
++  // metadata on both current and legacy recovery.
+   job->data.swap(recovered);original->data.swap(recoveredOriginal);
+   checkpointRecovery({capturedRow(job,recovered,inCatalog,registered),capturedRow(original,recoveredOriginal,true,true)},receipt,inserted);
+   newBytes.reset();previousBytes.reset();originalBytes.reset(); // Catalog acceptance precedes releasing either verified version.
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 8,48,0,0
+-#define UDM_VERSION_STRING "8.48"
+-#define UDM_VERSION_WSTRING L"8.48"
++#define UDM_VERSION_TUPLE 8,49,0,0
++#define UDM_VERSION_STRING "8.49"
++#define UDM_VERSION_WSTRING L"8.49"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -19,6 +19,7 @@
+   {"source": "RecoveryJournalTests", "timeoutSeconds": 120},
+   {"source": "RecoveryCatalogTests", "timeoutSeconds": 180},
+   {"source": "RecoveryCommandTests", "timeoutSeconds": 180},
++  {"source": "RecoveryByteIoTests", "timeoutSeconds": 240},
+   {"source": "CapturePresentationModelTests", "timeoutSeconds": 120},
+   {"source": "PublicationCommitTests", "timeoutSeconds": 180},
+   {"source": "ReplacementCommitTests", "timeoutSeconds": 180},
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.12",
++  "version": "0.72.13",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.12",
++  "version": "0.72.13",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- /dev/null
++++ b/native/RecoveryByteIoTests.cpp
+@@ -0,0 +1,75 @@
++#include "Core.hpp"
++#include <future>
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {
++ static void observe(Manager& m,std::function<void(const char*)> f){Lock lock(m.mutex);m.catalogCheckpoint=std::move(f);}
++ static void batch(Manager& m,bool value){Lock lock(m.mutex);m.catalogTransaction=value;}
++ static bool closing(Manager& m){Lock lock(m.mutex);return m.stopping;}
++};}
++using namespace udm;
++struct ByteIoGate {
++ std::promise<void> entered,released;std::shared_future<void> ready=entered.get_future().share(),wait=released.get_future().share();std::atomic_bool held=false,done=false,expired=false;std::atomic_uint reads=0,hashes=0,flushes=0;
++ void observe(const char* point){const std::string_view phase(point);if(phase=="recovery-hash-complete")++hashes;if(phase=="recovery-body-flush-end")++flushes;if(phase=="recovery-hash-read"){++reads;if(!held.exchange(true)){entered.set_value();if(wait.wait_for(std::chrono::seconds(10))!=std::future_status::ready){expired=true;throw std::runtime_error("Owned byte IO gate expired");}}}}
++ void release(){if(!done.exchange(true))released.set_value();}~ByteIoGate(){release();}
++};
++struct ByteIoObservation {Manager& m;~ByteIoObservation(){CatalogCheckpointTestAccess::observe(m,{});}};
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array(),cases=Json::array();std::string error,activeCase,workflowError;
++ auto check=[&](bool good,const char* name){checks.push_back({{"name",name},{"passed",good}});if(!good)throw std::runtime_error(name);};
++#ifdef UDM_RECOVERY_IO_BASELINE
++ const bool baseline=true;
++#else
++ const bool baseline=false;
++#endif
++ try{
++  for(const std::string kind:{"ordinary-staged","ordinary-published","ordinary-early","ordinary-legacy-journal","private-published","child-published","legacy","replacement-complete","replacement-original","replacement-restore"})for(const std::string fault:{"none","metadata-save","destination","membership","newer-commit","graph","batch","read-failure","shutdown","occupied"}){
++   if(baseline&&fault!="none")continue;if(fault=="occupied"&&kind!="ordinary-staged"&&kind!="ordinary-early")continue;
++   activeCase=kind+"-"+fault;workflowError.clear();const auto folder=root/wide(activeCase);Manager m(folder/L"catalog");const auto files=folder/L"files";fs::create_directories(files);auto prefs=m.state["Settings"];prefs["DownloadFolder"]=utf8(files.wstring());prefs["CategoryFolders"]=false;m.setSettings(prefs);
++   const bool paired=kind.find("replacement-")==0,legacy=kind=="legacy",child=kind=="child-published",privateRow=kind=="private-published",early=kind=="ordinary-early";
++   JobPtr original,parent;std::string oldHash;
++   if(paired){original=m.add("https://fixture.example/original","","result.bin","Main queue",true);atomicText(original->target(),"old bytes",false);oldHash=fileHash(original->target());original->data["Status"]="Complete";original->data["Size"]=9;original->data["Received"]=9;original->data["Sha256"]=oldHash;original->data["Finished"]=date();}
++   auto j=m.add("https://fixture.example/recovered","",paired?"next.bin":"result.bin","Main queue",true);
++   if(paired){j->data["FileName"]=str(original->data,"FileName");j->data["ReplacementOf"]=original->id();j->data["ReplacementHash"]=oldHash;j->data["PreviousPath"]=utf8((files/L"previous.bin").wstring());}
++   if(child||privateRow){m.jobs.erase(std::find(m.jobs.begin(),m.jobs.end(),j));if(child){parent=m.add("https://fixture.example/parent","","parent.bin","Main queue",true);parent->video=j;}}
++   m.save();const auto target=j->target(),previous=files/L"previous.bin",stage=files/(L".udm-"+wide(j->id())+L".assembling"),journal=m.root/(paired?L"replacements":L"publications")/(wide(j->id())+L".json");atomicText(stage,"verified bytes",false);const auto hash=fileHash(stage);
++   if(legacy){fs::rename(stage,target);j->data["Status"]="Failed";j->data["Error"]="Could not replace the saved state (Windows error 1175). Retry after closing programs that hold the state file.";j->data["Size"]=14;j->data["Received"]=14;j->data["Sha256"]=hash;j->data["Finished"]=date();m.save();}
++   else{const auto interrupt=paired?(kind=="replacement-complete"?"replacement-file-moved":"replacement-intent-written"):(kind=="ordinary-staged"||early?"publication-intent-written":"publication-file-moved");CatalogCheckpointTestAccess::observe(m,[&](const char* point){if(std::string_view(point)==interrupt)throw std::runtime_error("Owned interrupted byte IO setup");});try{m.publishFile(j,stage,hash);}catch(...){}CatalogCheckpointTestAccess::observe(m,{});check(fs::exists(journal),"A real interrupted publication supplies the byte recovery journal");if(early){auto op=Json::parse(readText(journal));op["FlushBeforePublish"]=true;atomicText(journal,op.dump(),false);}if(kind=="ordinary-legacy-journal"){auto op=Json::parse(readText(journal));op.erase("CommitId");op["Before"].erase("PublicationCommitId");op["After"].erase("PublicationCommitId");atomicText(journal,op.dump(),false);}if(kind=="replacement-restore")fs::rename(target,previous);}
++   const auto originalJobs=m.jobs;const auto before=j->data;const auto beforeOriginal=original?original->data:Json();const auto beforeParent=parent?parent->data:Json();const auto beforeVideo=j->video,beforeAudio=j->audio;auto gate=std::make_shared<ByteIoGate>();CatalogCheckpointTestAccess::observe(m,[&](const char* point){gate->observe(point);if(fault=="read-failure"&&std::string_view(point)=="recovery-hash-read")throw std::runtime_error("Owned byte read checkpoint failure");});ByteIoObservation clear{m};std::future<void> stopper;
++   auto work=std::async(std::launch::async,[&]{m.recoverReplacements(parent?parent:j);});struct Release {std::shared_ptr<ByteIoGate> gate;~Release(){gate->release();}} release{gate};
++   check(gate->ready.wait_for(std::chrono::seconds(5))==std::future_status::ready,"Recovery reaches its actual held open-file SHA-256 read loop");
++   {std::unique_lock<std::recursive_mutex> lock(m.mutex,std::try_to_lock);check(lock.owns_lock()!=baseline,"The read-loop control is blocked in 8.48 and model availability is required after detachment");if(lock.owns_lock()){
++    check(m.isActive(j)&&m.downloadDestinationReserved(target),"Byte verification retains the affected job and destination reservation");check(m.snapshot()["Downloads"].size()==m.jobs.size(),"A UI-facing snapshot is available while verification is held");
++    if(fault=="metadata-save"){j->data["Description"]="independent verified metadata";if(original)original->data["Description"]="independent original metadata";m.state["Settings"]["ByteIoMarker"]=activeCase;}
++    if(fault=="destination")j->data["FileName"]="changed.bin";
++    if(fault=="membership"){if(privateRow)m.jobs.push_back(j);else if(child)parent->video.reset();else m.jobs.erase(std::find(m.jobs.begin(),m.jobs.end(),j));}
++    if(fault=="newer-commit")j->data["PublicationCommitId"]=guid();
++    if(fault=="graph")j->video=std::make_shared<Job>(Json{{"Id",guid()},{"Folder",utf8(files.wstring())},{"FileName","other.bin"},{"Status","Paused"}});
++    if(fault=="batch")CatalogCheckpointTestAccess::batch(m,true);
++   }}
++   const auto heldFile=legacy||kind=="ordinary-published"||kind=="ordinary-legacy-journal"||privateRow||child||kind=="replacement-complete"||kind=="replacement-original"?target:kind=="replacement-restore"?previous:stage;
++   Handle writer(CreateFileW(heldFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!writer,"The actual open verification source refuses a concurrent writer");
++   if(!legacy){Handle journalWriter(CreateFileW(journal.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr));check(!journalWriter,"The held immutable journal refuses writes during detached hashing");}
++   if(fault=="metadata-save"){m.save();check(Json::parse(readText(m.root/L"state.json"))["Settings"]["ByteIoMarker"]==activeCase,"An independent durable model save completes while the recovery read loop is held");}
++   if(fault=="occupied")atomicText(target,"foreign target",false);
++   if(fault=="shutdown"){stopper=std::async(std::launch::async,[&]{m.stop();});const auto deadline=GetTickCount64()+5000;while(!CatalogCheckpointTestAccess::closing(m)&&GetTickCount64()<deadline)Sleep(1);check(CatalogCheckpointTestAccess::closing(m)&&stopper.wait_for(std::chrono::milliseconds(20))!=std::future_status::ready,"Shutdown marks closing but waits for the owned byte IO transaction");}
++   gate->release();try{work.get();}catch(const std::exception& e){workflowError=e.what();}CatalogCheckpointTestAccess::observe(m,{});if(stopper.valid())stopper.get();CatalogCheckpointTestAccess::batch(m,false);check(!gate->expired,"Each actual read-loop hold is explicitly released before its deadline");
++   const bool expectedFailure=fault!="none"&&fault!="metadata-save"&&!(fault=="occupied"&&!early);
++   check(expectedFailure?!workflowError.empty():workflowError.empty(),"Changed inputs, lost membership, closing and read failures cannot apply an unproved recovery result");
++   const bool paused=kind=="replacement-original"||kind=="replacement-restore"||(fault=="occupied"&&!early);
++   if(expectedFailure){check(legacy||fs::exists(journal),"Rejected byte IO preserves the original journal for retry");check(!m.isActive(j),"Failed byte verification releases runtime job/path ownership");{Lock lock(m.mutex);m.jobs=originalJobs;j->data=before;j->video=beforeVideo;j->audio=beforeAudio;if(parent){parent->data=beforeParent;parent->video=j;}if(original)original->data=beforeOriginal;}if(fault=="occupied")fs::remove(target);
++    if(fault=="shutdown"){Manager reopened(m.root);JobPtr restored;for(auto item:reopened.jobs)if(item->id()==(parent?parent:j)->id())restored=item;check(privateRow?reopened.jobs.empty()&&fileHash(target)==hash:restored&&str((parent?restored->video:restored)->data,"Status")== (paused?"Paused":"Complete"),"Reopening after shutdown recovers the retained intent without another transfer");reopened.stop();cases.push_back({{"kind",kind},{"fault",fault},{"modelAvailable",true},{"failure",workflowError}});continue;}
++    m.recoverReplacements(parent?parent:j);
++   }
++   if(fault=="occupied"&&!early)check(readText(target)=="foreign target"&&readText(stage)=="verified bytes"&&str(j->data,"Status")=="Paused","An occupied ordinary target is never overwritten and unpublished bytes remain paused");
++   else if(paused)check(readText(target)=="old bytes"&&readText(stage)=="verified bytes"&&str(j->data,"Status")=="Paused","Original retention and restoration preserve both old and unpublished bytes");
++   else check(fs::exists(target)&&fileHash(target)==hash&&str(j->data,"Status")=="Complete","Accepted byte recovery records the exact complete file");
++   if(paired&&kind=="replacement-complete")check(fileHash(previous)==oldHash,"Paired completion preserves the verified previous version");
++   if(fault=="metadata-save")check(str(j->data,"Description")=="independent verified metadata"&&(!original||str(original->data,"Description")=="independent original metadata"),"Recovery application preserves independently saved metadata for both roles");
++   check(!m.isActive(j)&&(legacy||!fs::exists(journal)),"Accepted verification and catalog proof retire the journal before releasing ownership");
++   if(early&&fault=="none"&&!baseline)check(gate->flushes==1,"Early-intent recovery still performs its required body flush");
++   if(kind=="replacement-original"&&fault=="none")check(gate->reads==(baseline?4u:2u),"An intact old replacement target is measured once after detachment instead of twice in the control");
++   cases.push_back({{"kind",kind},{"fault",fault},{"modelAvailable",!baseline},{"readCheckpoints",gate->reads.load()},{"hashes",gate->hashes.load()},{"failure",workflowError}});m.stop();
++  }
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"case",activeCase},{"workflowError",workflowError},{"checks",checks},{"cases",cases},{"instrumented848Control",baseline}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}

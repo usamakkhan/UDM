@@ -1,0 +1,1896 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "version": "8.55",
+      "trial": 1,
+      "historyRows": 0,
+      "pid": 25100,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 17.0839,
+      "frameCreatedMs": 182.3026,
+      "configuredPipeReadyMs": 182.4971,
+      "initialRefreshReturnedMs": 183.0973,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 25100,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562792104551,
+            "threadId": 36372,
+            "msAfterAnchor": 0.0058,
+            "epochMs": 1794956627416.3926,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562792275390,
+            "threadId": 36372,
+            "msAfterAnchor": 17.0897,
+            "epochMs": 1794956627433.4763,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562793927577,
+            "threadId": 36372,
+            "msAfterAnchor": 182.3084,
+            "epochMs": 1794956627598.695,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562793929522,
+            "threadId": 36372,
+            "msAfterAnchor": 182.5029,
+            "epochMs": 1794956627598.8896,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562793929525,
+            "threadId": 36372,
+            "msAfterAnchor": 182.5032,
+            "epochMs": 1794956627598.89,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562793933630,
+            "threadId": 36372,
+            "msAfterAnchor": 182.9137,
+            "epochMs": 1794956627599.3005,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562793933760,
+            "threadId": 36372,
+            "msAfterAnchor": 182.9267,
+            "epochMs": 1794956627599.3135,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562793934508,
+            "threadId": 36372,
+            "msAfterAnchor": 183.0015,
+            "epochMs": 1794956627599.3882,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562793935524,
+            "threadId": 36372,
+            "msAfterAnchor": 183.1031,
+            "epochMs": 1794956627599.4897,
+            "recordWorkMs": 0.0
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 1,
+      "historyRows": 0,
+      "pid": 9428,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 9.744299999999999,
+      "frameCreatedMs": 173.7571,
+      "configuredPipeReadyMs": 173.95569999999998,
+      "initialRefreshReturnedMs": 174.593,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 9428,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562797304642,
+            "threadId": 8276,
+            "msAfterAnchor": 0.0046,
+            "epochMs": 1794956627937.3816,
+            "recordWorkMs": 0.0068
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562797402085,
+            "threadId": 8276,
+            "msAfterAnchor": 9.7489,
+            "epochMs": 1794956627947.1257,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562799042213,
+            "threadId": 8276,
+            "msAfterAnchor": 173.7617,
+            "epochMs": 1794956628111.1387,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562799044199,
+            "threadId": 8276,
+            "msAfterAnchor": 173.9603,
+            "epochMs": 1794956628111.3372,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562799044201,
+            "threadId": 8276,
+            "msAfterAnchor": 173.9605,
+            "epochMs": 1794956628111.3374,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562799048867,
+            "threadId": 8276,
+            "msAfterAnchor": 174.4271,
+            "epochMs": 1794956628111.804,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562799048995,
+            "threadId": 8276,
+            "msAfterAnchor": 174.4399,
+            "epochMs": 1794956628111.817,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562799049630,
+            "threadId": 8276,
+            "msAfterAnchor": 174.5034,
+            "epochMs": 1794956628111.8804,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562799050572,
+            "threadId": 8276,
+            "msAfterAnchor": 174.5976,
+            "epochMs": 1794956628111.9746,
+            "recordWorkMs": 0.0
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 2,
+      "historyRows": 0,
+      "pid": 36460,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 11.9866,
+      "frameCreatedMs": 182.4084,
+      "configuredPipeReadyMs": 182.5843,
+      "initialRefreshReturnedMs": 183.12519999999998,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 36460,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562800094405,
+            "threadId": 29392,
+            "msAfterAnchor": 0.0041,
+            "epochMs": 1794956628216.7463,
+            "recordWorkMs": 0.0032
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562800214271,
+            "threadId": 29392,
+            "msAfterAnchor": 11.9907,
+            "epochMs": 1794956628228.733,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562801918489,
+            "threadId": 29392,
+            "msAfterAnchor": 182.4125,
+            "epochMs": 1794956628399.1548,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562801920248,
+            "threadId": 29392,
+            "msAfterAnchor": 182.5884,
+            "epochMs": 1794956628399.3306,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562801920250,
+            "threadId": 29392,
+            "msAfterAnchor": 182.5886,
+            "epochMs": 1794956628399.3308,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562801924058,
+            "threadId": 29392,
+            "msAfterAnchor": 182.9694,
+            "epochMs": 1794956628399.7117,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562801924217,
+            "threadId": 29392,
+            "msAfterAnchor": 182.9853,
+            "epochMs": 1794956628399.7275,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562801924904,
+            "threadId": 29392,
+            "msAfterAnchor": 183.054,
+            "epochMs": 1794956628399.7961,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562801925657,
+            "threadId": 29392,
+            "msAfterAnchor": 183.1293,
+            "epochMs": 1794956628399.8716,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 2,
+      "historyRows": 0,
+      "pid": 24236,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 9.3438,
+      "frameCreatedMs": 172.52790000000002,
+      "configuredPipeReadyMs": 172.7817,
+      "initialRefreshReturnedMs": 173.3547,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 24236,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562802943985,
+            "threadId": 30508,
+            "msAfterAnchor": 0.0035,
+            "epochMs": 1794956628499.5776,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562803037423,
+            "threadId": 30508,
+            "msAfterAnchor": 9.3473,
+            "epochMs": 1794956628508.9216,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562804669264,
+            "threadId": 30508,
+            "msAfterAnchor": 172.5314,
+            "epochMs": 1794956628672.1057,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562804671802,
+            "threadId": 30508,
+            "msAfterAnchor": 172.7852,
+            "epochMs": 1794956628672.3594,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562804671804,
+            "threadId": 30508,
+            "msAfterAnchor": 172.7854,
+            "epochMs": 1794956628672.3596,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562804675991,
+            "threadId": 30508,
+            "msAfterAnchor": 173.2041,
+            "epochMs": 1794956628672.7783,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562804676136,
+            "threadId": 30508,
+            "msAfterAnchor": 173.2186,
+            "epochMs": 1794956628672.7927,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562804676799,
+            "threadId": 30508,
+            "msAfterAnchor": 173.2849,
+            "epochMs": 1794956628672.8591,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562804677532,
+            "threadId": 30508,
+            "msAfterAnchor": 173.3582,
+            "epochMs": 1794956628672.9324,
+            "recordWorkMs": 0.0
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 3,
+      "historyRows": 0,
+      "pid": 17836,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 8.9907,
+      "frameCreatedMs": 172.8215,
+      "configuredPipeReadyMs": 172.9787,
+      "initialRefreshReturnedMs": 173.4648,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 17836,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562805684911,
+            "threadId": 34832,
+            "msAfterAnchor": 0.0044,
+            "epochMs": 1794956628775.727,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562805774818,
+            "threadId": 34832,
+            "msAfterAnchor": 8.9951,
+            "epochMs": 1794956628784.7178,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562807413126,
+            "threadId": 34832,
+            "msAfterAnchor": 172.8259,
+            "epochMs": 1794956628948.5486,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562807414698,
+            "threadId": 34832,
+            "msAfterAnchor": 172.9831,
+            "epochMs": 1794956628948.7058,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562807414700,
+            "threadId": 34832,
+            "msAfterAnchor": 172.9833,
+            "epochMs": 1794956628948.706,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562807418104,
+            "threadId": 34832,
+            "msAfterAnchor": 173.3237,
+            "epochMs": 1794956628949.0464,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562807418231,
+            "threadId": 34832,
+            "msAfterAnchor": 173.3364,
+            "epochMs": 1794956628949.059,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562807418836,
+            "threadId": 34832,
+            "msAfterAnchor": 173.3969,
+            "epochMs": 1794956628949.1196,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562807419559,
+            "threadId": 34832,
+            "msAfterAnchor": 173.4692,
+            "epochMs": 1794956628949.192,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 3,
+      "historyRows": 0,
+      "pid": 29756,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 9.9139,
+      "frameCreatedMs": 180.1457,
+      "configuredPipeReadyMs": 180.3082,
+      "initialRefreshReturnedMs": 180.87429999999998,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "892B274D0F34BFB14A376739404EFFE8B93B7F2BFE03AB7A2704D8486F738EFA",
+      "seedBytes": 515,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 29756,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562808438959,
+            "threadId": 36588,
+            "msAfterAnchor": 0.0049,
+            "epochMs": 1794956629043.4795,
+            "recordWorkMs": 0.0033
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562808538098,
+            "threadId": 36588,
+            "msAfterAnchor": 9.9188,
+            "epochMs": 1794956629053.3933,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562810240416,
+            "threadId": 36588,
+            "msAfterAnchor": 180.1506,
+            "epochMs": 1794956629223.6252,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562810242041,
+            "threadId": 36588,
+            "msAfterAnchor": 180.3131,
+            "epochMs": 1794956629223.7876,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562810242043,
+            "threadId": 36588,
+            "msAfterAnchor": 180.3133,
+            "epochMs": 1794956629223.7878,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562810246304,
+            "threadId": 36588,
+            "msAfterAnchor": 180.7394,
+            "epochMs": 1794956629224.214,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562810246431,
+            "threadId": 36588,
+            "msAfterAnchor": 180.7521,
+            "epochMs": 1794956629224.2268,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562810247013,
+            "threadId": 36588,
+            "msAfterAnchor": 180.8103,
+            "epochMs": 1794956629224.285,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562810247702,
+            "threadId": 36588,
+            "msAfterAnchor": 180.8792,
+            "epochMs": 1794956629224.3538,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 1,
+      "historyRows": 2500,
+      "pid": 35000,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 153.775,
+      "frameCreatedMs": 328.0193,
+      "configuredPipeReadyMs": 328.2044,
+      "initialRefreshReturnedMs": 336.2271,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 35000,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562811676091,
+            "threadId": 29520,
+            "msAfterAnchor": 0.0034,
+            "epochMs": 1794956629375.3062,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562813213841,
+            "threadId": 29520,
+            "msAfterAnchor": 153.7784,
+            "epochMs": 1794956629529.081,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562814956284,
+            "threadId": 29520,
+            "msAfterAnchor": 328.0227,
+            "epochMs": 1794956629703.3254,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562814958135,
+            "threadId": 29520,
+            "msAfterAnchor": 328.2078,
+            "epochMs": 1794956629703.5105,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562814958137,
+            "threadId": 29520,
+            "msAfterAnchor": 328.208,
+            "epochMs": 1794956629703.5107,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562814963415,
+            "threadId": 29520,
+            "msAfterAnchor": 328.7358,
+            "epochMs": 1794956629704.0386,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562814963577,
+            "threadId": 29520,
+            "msAfterAnchor": 328.752,
+            "epochMs": 1794956629704.0547,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562814964252,
+            "threadId": 29520,
+            "msAfterAnchor": 328.8195,
+            "epochMs": 1794956629704.1223,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562815038362,
+            "threadId": 29520,
+            "msAfterAnchor": 336.2305,
+            "epochMs": 1794956629711.5332,
+            "recordWorkMs": 0.0003
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 1,
+      "historyRows": 2500,
+      "pid": 33992,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 141.8676,
+      "frameCreatedMs": 310.2466,
+      "configuredPipeReadyMs": 310.4198,
+      "initialRefreshReturnedMs": 319.0361,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 33992,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562818690960,
+            "threadId": 16332,
+            "msAfterAnchor": 0.0124,
+            "epochMs": 1794956630076.2742,
+            "recordWorkMs": 0.0026
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562820109636,
+            "threadId": 16332,
+            "msAfterAnchor": 141.88,
+            "epochMs": 1794956630218.1416,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562821793426,
+            "threadId": 16332,
+            "msAfterAnchor": 310.259,
+            "epochMs": 1794956630386.5208,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562821795158,
+            "threadId": 16332,
+            "msAfterAnchor": 310.4322,
+            "epochMs": 1794956630386.6938,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562821795160,
+            "threadId": 16332,
+            "msAfterAnchor": 310.4324,
+            "epochMs": 1794956630386.694,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562821799243,
+            "threadId": 16332,
+            "msAfterAnchor": 310.8407,
+            "epochMs": 1794956630387.1025,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562821799373,
+            "threadId": 16332,
+            "msAfterAnchor": 310.8537,
+            "epochMs": 1794956630387.1155,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562821800020,
+            "threadId": 16332,
+            "msAfterAnchor": 310.9184,
+            "epochMs": 1794956630387.1802,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562821881321,
+            "threadId": 16332,
+            "msAfterAnchor": 319.0485,
+            "epochMs": 1794956630395.3103,
+            "recordWorkMs": 0.0002
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 2,
+      "historyRows": 2500,
+      "pid": 29260,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 191.0652,
+      "frameCreatedMs": 498.84610000000004,
+      "configuredPipeReadyMs": 499.02299999999997,
+      "initialRefreshReturnedMs": 506.3113,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 29260,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562825641024,
+            "threadId": 30688,
+            "msAfterAnchor": 0.0038,
+            "epochMs": 1794956630762.0195,
+            "recordWorkMs": 0.0028
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562827551676,
+            "threadId": 30688,
+            "msAfterAnchor": 191.069,
+            "epochMs": 1794956630953.0847,
+            "recordWorkMs": 0.0007
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562830629485,
+            "threadId": 30688,
+            "msAfterAnchor": 498.8499,
+            "epochMs": 1794956631260.8655,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562830631254,
+            "threadId": 30688,
+            "msAfterAnchor": 499.0268,
+            "epochMs": 1794956631261.0425,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562830631256,
+            "threadId": 30688,
+            "msAfterAnchor": 499.027,
+            "epochMs": 1794956631261.0427,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562830634918,
+            "threadId": 30688,
+            "msAfterAnchor": 499.3932,
+            "epochMs": 1794956631261.409,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562830635046,
+            "threadId": 30688,
+            "msAfterAnchor": 499.406,
+            "epochMs": 1794956631261.4216,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562830635685,
+            "threadId": 30688,
+            "msAfterAnchor": 499.4699,
+            "epochMs": 1794956631261.4856,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562830704137,
+            "threadId": 30688,
+            "msAfterAnchor": 506.3151,
+            "epochMs": 1794956631268.3308,
+            "recordWorkMs": 0.0004
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 2,
+      "historyRows": 2500,
+      "pid": 35452,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 156.85060000000001,
+      "frameCreatedMs": 333.5014,
+      "configuredPipeReadyMs": 333.69739999999996,
+      "initialRefreshReturnedMs": 341.327,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 35452,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562834310957,
+            "threadId": 27860,
+            "msAfterAnchor": 0.0049,
+            "epochMs": 1794956631638.1045,
+            "recordWorkMs": 0.0006
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562835879463,
+            "threadId": 27860,
+            "msAfterAnchor": 156.8555,
+            "epochMs": 1794956631794.955,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562837645971,
+            "threadId": 27860,
+            "msAfterAnchor": 333.5063,
+            "epochMs": 1794956631971.606,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562837647931,
+            "threadId": 27860,
+            "msAfterAnchor": 333.7023,
+            "epochMs": 1794956631971.802,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562837647933,
+            "threadId": 27860,
+            "msAfterAnchor": 333.7025,
+            "epochMs": 1794956631971.802,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562837651871,
+            "threadId": 27860,
+            "msAfterAnchor": 334.0963,
+            "epochMs": 1794956631972.1958,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562837652054,
+            "threadId": 27860,
+            "msAfterAnchor": 334.1146,
+            "epochMs": 1794956631972.214,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562837652766,
+            "threadId": 27860,
+            "msAfterAnchor": 334.1858,
+            "epochMs": 1794956631972.2854,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562837724227,
+            "threadId": 27860,
+            "msAfterAnchor": 341.3319,
+            "epochMs": 1794956631979.4314,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 3,
+      "historyRows": 2500,
+      "pid": 1124,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 156.4749,
+      "frameCreatedMs": 333.4719,
+      "configuredPipeReadyMs": 333.6385,
+      "initialRefreshReturnedMs": 342.092,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 1124,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562841272276,
+            "threadId": 33136,
+            "msAfterAnchor": 0.0054,
+            "epochMs": 1794956632333.4878,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562842837025,
+            "threadId": 33136,
+            "msAfterAnchor": 156.4803,
+            "epochMs": 1794956632489.9626,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562844606995,
+            "threadId": 33136,
+            "msAfterAnchor": 333.4773,
+            "epochMs": 1794956632666.9597,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562844608661,
+            "threadId": 33136,
+            "msAfterAnchor": 333.6439,
+            "epochMs": 1794956632667.1262,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562844608664,
+            "threadId": 33136,
+            "msAfterAnchor": 333.6442,
+            "epochMs": 1794956632667.1267,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562844612632,
+            "threadId": 33136,
+            "msAfterAnchor": 334.041,
+            "epochMs": 1794956632667.5234,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562844612759,
+            "threadId": 33136,
+            "msAfterAnchor": 334.0537,
+            "epochMs": 1794956632667.5361,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562844613391,
+            "threadId": 33136,
+            "msAfterAnchor": 334.1169,
+            "epochMs": 1794956632667.5994,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562844693196,
+            "threadId": 33136,
+            "msAfterAnchor": 342.0974,
+            "epochMs": 1794956632675.5798,
+            "recordWorkMs": 0.0002
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 3,
+      "historyRows": 2500,
+      "pid": 11480,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 141.74190000000002,
+      "frameCreatedMs": 320.8029,
+      "configuredPipeReadyMs": 320.98290000000003,
+      "initialRefreshReturnedMs": 328.8392,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "CF9DFE2D6A6FB740FDFB87B3D7C3405A3ED8DAD633D4E9610770444D32BEFB08",
+      "seedBytes": 5883297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 11480,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562848324996,
+            "threadId": 35564,
+            "msAfterAnchor": 0.0047,
+            "epochMs": 1794956633038.5886,
+            "recordWorkMs": 0.0031
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562849742415,
+            "threadId": 35564,
+            "msAfterAnchor": 141.7466,
+            "epochMs": 1794956633180.3306,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562851533025,
+            "threadId": 35564,
+            "msAfterAnchor": 320.8076,
+            "epochMs": 1794956633359.3916,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562851534825,
+            "threadId": 35564,
+            "msAfterAnchor": 320.9876,
+            "epochMs": 1794956633359.5715,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562851534827,
+            "threadId": 35564,
+            "msAfterAnchor": 320.9878,
+            "epochMs": 1794956633359.5718,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562851539311,
+            "threadId": 35564,
+            "msAfterAnchor": 321.4362,
+            "epochMs": 1794956633360.0203,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562851539434,
+            "threadId": 35564,
+            "msAfterAnchor": 321.4485,
+            "epochMs": 1794956633360.0325,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562851540071,
+            "threadId": 35564,
+            "msAfterAnchor": 321.5122,
+            "epochMs": 1794956633360.0962,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562851613388,
+            "threadId": 35564,
+            "msAfterAnchor": 328.8439,
+            "epochMs": 1794956633367.428,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 1,
+      "historyRows": 7500,
+      "pid": 28280,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 447.86490000000003,
+      "frameCreatedMs": 626.1968,
+      "configuredPipeReadyMs": 626.3996,
+      "initialRefreshReturnedMs": 651.7352,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 28280,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562856206620,
+            "threadId": 35872,
+            "msAfterAnchor": 0.0036,
+            "epochMs": 1794956633827.1482,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562860685269,
+            "threadId": 35872,
+            "msAfterAnchor": 447.8685,
+            "epochMs": 1794956634275.013,
+            "recordWorkMs": 0.0006
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562862468588,
+            "threadId": 35872,
+            "msAfterAnchor": 626.2004,
+            "epochMs": 1794956634453.345,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562862470616,
+            "threadId": 35872,
+            "msAfterAnchor": 626.4032,
+            "epochMs": 1794956634453.5479,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562862470619,
+            "threadId": 35872,
+            "msAfterAnchor": 626.4035,
+            "epochMs": 1794956634453.548,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562862475992,
+            "threadId": 35872,
+            "msAfterAnchor": 626.9408,
+            "epochMs": 1794956634454.0854,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562862476300,
+            "threadId": 35872,
+            "msAfterAnchor": 626.9716,
+            "epochMs": 1794956634454.1162,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562862477338,
+            "threadId": 35872,
+            "msAfterAnchor": 627.0754,
+            "epochMs": 1794956634454.22,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562862723972,
+            "threadId": 35872,
+            "msAfterAnchor": 651.7388,
+            "epochMs": 1794956634478.8833,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 1,
+      "historyRows": 7500,
+      "pid": 34540,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 401.8617,
+      "frameCreatedMs": 581.5089,
+      "configuredPipeReadyMs": 581.6735,
+      "initialRefreshReturnedMs": 606.9993000000001,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 34540,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562871252642,
+            "threadId": 33368,
+            "msAfterAnchor": 0.0051,
+            "epochMs": 1794956635332.3313,
+            "recordWorkMs": 0.0035
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562875271259,
+            "threadId": 33368,
+            "msAfterAnchor": 401.8668,
+            "epochMs": 1794956635734.1929,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562877067731,
+            "threadId": 33368,
+            "msAfterAnchor": 581.514,
+            "epochMs": 1794956635913.84,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562877069377,
+            "threadId": 33368,
+            "msAfterAnchor": 581.6786,
+            "epochMs": 1794956635914.005,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562877069378,
+            "threadId": 33368,
+            "msAfterAnchor": 581.6787,
+            "epochMs": 1794956635914.005,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562877073422,
+            "threadId": 33368,
+            "msAfterAnchor": 582.0831,
+            "epochMs": 1794956635914.4092,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562877073556,
+            "threadId": 33368,
+            "msAfterAnchor": 582.0965,
+            "epochMs": 1794956635914.4226,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562877074278,
+            "threadId": 33368,
+            "msAfterAnchor": 582.1687,
+            "epochMs": 1794956635914.4949,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562877322635,
+            "threadId": 33368,
+            "msAfterAnchor": 607.0044,
+            "epochMs": 1794956635939.3306,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 2,
+      "historyRows": 7500,
+      "pid": 19840,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 408.2649,
+      "frameCreatedMs": 588.8052,
+      "configuredPipeReadyMs": 588.9807000000001,
+      "initialRefreshReturnedMs": 613.5402,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 19840,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562886034991,
+            "threadId": 12204,
+            "msAfterAnchor": 0.0036,
+            "epochMs": 1794956636810.7166,
+            "recordWorkMs": 0.0029
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562890117640,
+            "threadId": 12204,
+            "msAfterAnchor": 408.2685,
+            "epochMs": 1794956637218.9814,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562891923043,
+            "threadId": 12204,
+            "msAfterAnchor": 588.8088,
+            "epochMs": 1794956637399.5217,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562891924798,
+            "threadId": 12204,
+            "msAfterAnchor": 588.9843,
+            "epochMs": 1794956637399.6973,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562891924800,
+            "threadId": 12204,
+            "msAfterAnchor": 588.9845,
+            "epochMs": 1794956637399.6975,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562891929344,
+            "threadId": 12204,
+            "msAfterAnchor": 589.4389,
+            "epochMs": 1794956637400.1519,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562891929475,
+            "threadId": 12204,
+            "msAfterAnchor": 589.452,
+            "epochMs": 1794956637400.1648,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562891930085,
+            "threadId": 12204,
+            "msAfterAnchor": 589.513,
+            "epochMs": 1794956637400.2258,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562892170393,
+            "threadId": 12204,
+            "msAfterAnchor": 613.5438,
+            "epochMs": 1794956637424.2566,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 2,
+      "historyRows": 7500,
+      "pid": 21236,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 438.79879999999997,
+      "frameCreatedMs": 616.8697,
+      "configuredPipeReadyMs": 617.0563,
+      "initialRefreshReturnedMs": 642.3037,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 21236,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562900812352,
+            "threadId": 32184,
+            "msAfterAnchor": 0.0031,
+            "epochMs": 1794956638287.009,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562905200340,
+            "threadId": 32184,
+            "msAfterAnchor": 438.8019,
+            "epochMs": 1794956638725.8079,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562906981049,
+            "threadId": 32184,
+            "msAfterAnchor": 616.8728,
+            "epochMs": 1794956638903.8787,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562906982915,
+            "threadId": 32184,
+            "msAfterAnchor": 617.0594,
+            "epochMs": 1794956638904.0652,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562906982917,
+            "threadId": 32184,
+            "msAfterAnchor": 617.0596,
+            "epochMs": 1794956638904.0654,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562906987130,
+            "threadId": 32184,
+            "msAfterAnchor": 617.4809,
+            "epochMs": 1794956638904.4868,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562906987267,
+            "threadId": 32184,
+            "msAfterAnchor": 617.4946,
+            "epochMs": 1794956638904.5005,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562906987924,
+            "threadId": 32184,
+            "msAfterAnchor": 617.5603,
+            "epochMs": 1794956638904.5662,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562907235389,
+            "threadId": 32184,
+            "msAfterAnchor": 642.3068,
+            "epochMs": 1794956638929.3127,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.55",
+      "trial": 3,
+      "historyRows": 7500,
+      "pid": 33492,
+      "exeSha256": "6DA67D2715030F775891FF081F10F8E9156FCD9F7F9DF14F8FB3DD2B9979FBCC",
+      "managerReadyMs": 447.20120000000003,
+      "frameCreatedMs": 634.3497,
+      "configuredPipeReadyMs": 634.5181,
+      "initialRefreshReturnedMs": 659.7072000000001,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 33492,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562915860589,
+            "threadId": 5540,
+            "msAfterAnchor": 0.0037,
+            "epochMs": 1794956639792.951,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562920332601,
+            "threadId": 5540,
+            "msAfterAnchor": 447.2049,
+            "epochMs": 1794956640240.152,
+            "recordWorkMs": 0.0004
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562922204086,
+            "threadId": 5540,
+            "msAfterAnchor": 634.3534,
+            "epochMs": 1794956640427.3008,
+            "recordWorkMs": 0.0002
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562922205770,
+            "threadId": 5540,
+            "msAfterAnchor": 634.5218,
+            "epochMs": 1794956640427.469,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562922205773,
+            "threadId": 5540,
+            "msAfterAnchor": 634.5221,
+            "epochMs": 1794956640427.4695,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562922209868,
+            "threadId": 5540,
+            "msAfterAnchor": 634.9316,
+            "epochMs": 1794956640427.879,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562922210002,
+            "threadId": 5540,
+            "msAfterAnchor": 634.945,
+            "epochMs": 1794956640427.8923,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562922210621,
+            "threadId": 5540,
+            "msAfterAnchor": 635.0069,
+            "epochMs": 1794956640427.954,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562922457661,
+            "threadId": 5540,
+            "msAfterAnchor": 659.7109,
+            "epochMs": 1794956640452.6582,
+            "recordWorkMs": 0.0001
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    },
+    {
+      "version": "8.56",
+      "trial": 3,
+      "historyRows": 7500,
+      "pid": 18132,
+      "exeSha256": "EC956132E5BC765F24C4753C991D242ED6D440E4FD60E3C5955B5B60BA744A2B",
+      "managerReadyMs": 406.3427,
+      "frameCreatedMs": 583.8967,
+      "configuredPipeReadyMs": 584.0564,
+      "initialRefreshReturnedMs": 609.444,
+      "normalExit": true,
+      "historyPreserved": true,
+      "seedSha256": "0E72B968799D614FA0A072020DA0AA6D7C4C610D664989F0F4EF74B4F10660C0",
+      "seedBytes": 17653297,
+      "trace": {
+        "format": 1,
+        "frequency": 10000000,
+        "processId": 18132,
+        "count": 9,
+        "dropped": 0,
+        "incomplete": [],
+        "events": [
+          {
+            "stage": "app-init-entry",
+            "counter": 562931103090,
+            "threadId": 35684,
+            "msAfterAnchor": 0.0034,
+            "epochMs": 1794956641317.2944,
+            "recordWorkMs": 0.0028
+          },
+          {
+            "stage": "manager-ready",
+            "counter": 562935166517,
+            "threadId": 35684,
+            "msAfterAnchor": 406.3461,
+            "epochMs": 1794956641723.6372,
+            "recordWorkMs": 0.0006
+          },
+          {
+            "stage": "frame-created",
+            "counter": 562936942057,
+            "threadId": 35684,
+            "msAfterAnchor": 583.9001,
+            "epochMs": 1794956641901.1912,
+            "recordWorkMs": 0.0003
+          },
+          {
+            "stage": "pipe-ready",
+            "counter": 562936943654,
+            "threadId": 35684,
+            "msAfterAnchor": 584.0598,
+            "epochMs": 1794956641901.3508,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-start",
+            "counter": 562936943656,
+            "threadId": 35684,
+            "msAfterAnchor": 584.06,
+            "epochMs": 1794956641901.351,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "automation-finished",
+            "counter": 562936947822,
+            "threadId": 35684,
+            "msAfterAnchor": 584.4766,
+            "epochMs": 1794956641901.7676,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "app-init-returning",
+            "counter": 562936947948,
+            "threadId": 35684,
+            "msAfterAnchor": 584.4892,
+            "epochMs": 1794956641901.7803,
+            "recordWorkMs": 0.0
+          },
+          {
+            "stage": "initial-refresh-entry",
+            "counter": 562936948553,
+            "threadId": 35684,
+            "msAfterAnchor": 584.5497,
+            "epochMs": 1794956641901.8408,
+            "recordWorkMs": 0.0001
+          },
+          {
+            "stage": "initial-refresh-returned",
+            "counter": 562937197530,
+            "threadId": 35684,
+            "msAfterAnchor": 609.4474,
+            "epochMs": 1794956641926.7385,
+            "recordWorkMs": 0.0003
+          }
+        ],
+        "limitations": [
+          "Absolute epoch alignment uses a coarse FILETIME anchor; QPC stage deltas are the timing source.",
+          "recordWorkMs covers the timestamp/copy work, not the index reservation, final commit or all scheduling effects.",
+          "The memory-mapped trace is diagnostic, not a crash-durable or power-loss-safe journal."
+        ]
+      }
+    }
+  ],
+  "summary": [
+    {
+      "historyRows": 0,
+      "8.55": {
+        "managerReadyMs": 9.3438,
+        "frameCreatedMs": 172.8215,
+        "configuredPipeReadyMs": 172.9787,
+        "initialRefreshReturnedMs": 173.4648,
+        "samples": 3
+      },
+      "8.56": {
+        "managerReadyMs": 9.9139,
+        "frameCreatedMs": 180.1457,
+        "configuredPipeReadyMs": 180.3082,
+        "initialRefreshReturnedMs": 180.87429999999998,
+        "samples": 3
+      }
+    },
+    {
+      "historyRows": 2500,
+      "8.55": {
+        "managerReadyMs": 156.4749,
+        "frameCreatedMs": 333.4719,
+        "configuredPipeReadyMs": 333.6385,
+        "initialRefreshReturnedMs": 341.327,
+        "samples": 3
+      },
+      "8.56": {
+        "managerReadyMs": 141.8676,
+        "frameCreatedMs": 320.8029,
+        "configuredPipeReadyMs": 320.98290000000003,
+        "initialRefreshReturnedMs": 328.8392,
+        "samples": 3
+      }
+    },
+    {
+      "historyRows": 7500,
+      "8.55": {
+        "managerReadyMs": 447.20120000000003,
+        "frameCreatedMs": 626.1968,
+        "configuredPipeReadyMs": 626.3996,
+        "initialRefreshReturnedMs": 651.7352,
+        "samples": 3
+      },
+      "8.56": {
+        "managerReadyMs": 406.3427,
+        "frameCreatedMs": 583.8967,
+        "configuredPipeReadyMs": 584.0564,
+        "initialRefreshReturnedMs": 609.444,
+        "samples": 3
+      }
+    }
+  ],
+  "baselineAndCandidateDiagnosticEntryIdentical": true,
+  "scope": "Fresh hidden diagnostic desktop launches with identically reseeded owned catalogs, three balanced process pairs per row count and normal exit. Existing manager-ready includes catalog IO, parsing, adoption and recovery. Marker-only App entry self-closes after initial refresh. Warm OS caches may apply. No visible paint, external pipe handshake, installed, reboot-cold, IDM or statistical significance claim."
+}

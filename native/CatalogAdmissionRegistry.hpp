@@ -13,6 +13,29 @@ class CatalogAdmissionRegistry {
 public:
  enum class Phase { Missing, Preparing, Prepared, Resolving, Committed };
  struct Status {Phase phase=Phase::Missing;unsigned long long durableSequence=0;};
+ // Read-only ownership observation. This never acquires a lease, publishes a
+ // receipt or releases another caller's reservation. Wait outside Manager's
+ // lock; durable publication alone is insufficient until live installation or
+ // terminal owner/publication retirement.
+ class Observation {
+  friend class CatalogAdmissionRegistry;
+  std::shared_ptr<State> state;std::shared_ptr<Entry> entry;
+  Observation(std::shared_ptr<State> owner,std::shared_ptr<Entry> value):state(std::move(owner)),entry(std::move(value)){}
+ public:
+  Observation()=default;
+  explicit operator bool()const noexcept{return entry!=nullptr;}
+  bool wait()const{
+   if(!entry||!state)throw std::runtime_error("Missing media admission observation.");
+   std::unique_lock<std::mutex> lock(state->mutex);
+   state->changed.wait(lock,[&]{return entry->installed||(!entry->owner&&!entry->publications);});
+   return entry->durable.load(std::memory_order_acquire)!=0;
+  }
+ };
+ Observation observe(const std::string& token,const std::string& selection)const{
+  std::lock_guard<std::mutex> lock(state->mutex);auto found=state->entries.find(token);if(found==state->entries.end())return {};
+  if(selection.empty()||found->second->selection!=selection)throw std::runtime_error("The pending media selection changed. Do not reuse its token.");
+  return Observation(state,found->second);
+ }
  class Lease {
   friend class CatalogAdmissionRegistry;
   std::shared_ptr<State> state;std::shared_ptr<Entry> entry;std::string token;
@@ -22,7 +45,7 @@ public:
   Lease(Lease&&)=default;
   Lease& operator=(Lease&& other){if(this!=&other){release();state=std::move(other.state);entry=std::move(other.entry);token=std::move(other.token);}return *this;}
   ~Lease(){release();}
-  void release(){if(!state||!entry)return;{std::lock_guard<std::mutex> lock(state->mutex);entry->owner=false;retire(*state,token,entry);}entry.reset();state.reset();}
+  void release(){if(!state||!entry)return;{std::lock_guard<std::mutex> lock(state->mutex);entry->owner=false;retire(*state,token,entry);}state->changed.notify_all();entry.reset();state.reset();}
   bool committed()const noexcept{return entry&&entry->durable.load(std::memory_order_acquire)!=0;}
   // Caller must not hold Manager's lock: a captured writer may need it before
   // retiring its ticket. Freeze new uncommitted captures, then resolve success
@@ -30,7 +53,7 @@ public:
   bool resolve(){if(!state||!entry)return false;std::unique_lock<std::mutex> lock(state->mutex);entry->resolving=true;state->changed.wait(lock,[&]{return committed()||entry->publications==0;});return committed();}
   // Caller holds Manager's lock and has installed the accepted job/receipt in
   // live state. Until this handoff, even a committed entry remains an overlay.
-  void installed(){if(!state||!entry||!committed())throw std::runtime_error("Media acceptance has not been published.");std::lock_guard<std::mutex> lock(state->mutex);entry->installed=true;}
+  void installed(){if(!state||!entry||!committed())throw std::runtime_error("Media acceptance has not been published.");{std::lock_guard<std::mutex> lock(state->mutex);entry->installed=true;}state->changed.notify_all();}
   void prepare(std::shared_ptr<const CatalogAdmissionReservation> candidate){
    if(!state||!entry||!candidate||candidate->operation()!=token||candidate->binding()!=entry->binding)throw std::runtime_error("The selected media operation changed.");
    std::lock_guard<std::mutex> lock(state->mutex);
@@ -48,6 +71,7 @@ public:
   Publication(std::shared_ptr<State> owner,std::vector<std::pair<std::string,std::shared_ptr<Entry>>> included):state(std::move(owner)),entries(std::move(included)){}
   void finish(){if(!state)return;{std::lock_guard<std::mutex> lock(state->mutex);for(const auto& item:entries){--item.second->publications;retire(*state,item.first,item.second);}}state->changed.notify_all();entries.clear();state.reset();}
  public:
+  explicit operator bool()const noexcept{return !entries.empty();}
   Publication()=default;Publication(const Publication&)=delete;Publication& operator=(const Publication&)=delete;Publication(Publication&&)=default;
   Publication& operator=(Publication&& other){if(this!=&other){finish();state=std::move(other.state);entries=std::move(other.entries);}return *this;}
   ~Publication(){finish();}

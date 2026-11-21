@@ -1,0 +1,196 @@
+{
+  "passed": true,
+  "method": "Normal-token standalone native build; normalized fault tests, actual process-local TraceLogging ETL smoke, Windows tracerpt count cross-check and real CLI refusal checks.",
+  "build": {
+    "tools": [
+      {
+        "source": "benchmarks/speed/finish_etl_reader.cpp",
+        "sourceSha256": "BA7BCDC795152BBB6E2EC911B48B1C5CABBC56A40ACBC7AAE2D5795FD792A9D2",
+        "name": "finish_etl_reader.exe",
+        "exeSha256": "AE94CC659D1A96DD598305CD0A433774FB2E5335CE8CFB4769B4EEF8D8E8A69B",
+        "objectSha256": "9800E96E5190A51F660913ED01687CCB0BE532CBED7A2ACFBFC335AFCA509FF2",
+        "flags": [
+          "O2",
+          "MT",
+          "std:c++17",
+          "no symbols"
+        ],
+        "libraries": [
+          "tdh.lib",
+          "advapi32.lib",
+          "shell32.lib"
+        ],
+        "appChanged": false
+      },
+      {
+        "source": "benchmarks/speed/finish_etl_fixture.cpp",
+        "sourceSha256": "4FB30959023DF415AF251493CCF9AEEC5BFF0BF20A9F50FF1DCD5E0B2DD21D5E",
+        "name": "finish_etl_fixture.exe",
+        "exeSha256": "CC714EADF49986162A16B559F1A449CF6CEBCA19AB7C003085949A0C21911BFB",
+        "objectSha256": "45CA8A8A9A31B3D2B9ABD6747EC8A734D6DC1DA76E96C7223083A9D96ACF91F8",
+        "flags": [
+          "O2",
+          "MT",
+          "std:c++17",
+          "no symbols"
+        ],
+        "libraries": [
+          "tdh.lib",
+          "advapi32.lib",
+          "shell32.lib"
+        ],
+        "appChanged": false
+      }
+    ],
+    "actualKernelAdapterValidated": false,
+    "processLocalEtlSmokeValidated": true
+  },
+  "normalizedChecks": {
+    "checks": [
+      {
+        "name": "Complete normalized lifetime and two owned data-flush pairs pass structural coverage",
+        "passed": true
+      },
+      {
+        "name": "Missing target process start rejects partial history",
+        "passed": true
+      },
+      {
+        "name": "Missing target process end rejects partial history",
+        "passed": true
+      },
+      {
+        "name": "Repeated PID lifetimes cannot be silently combined",
+        "passed": true
+      },
+      {
+        "name": "Wrong image identity rejects the target lifetime",
+        "passed": true
+      },
+      {
+        "name": "Ordinary lost events reject structural coverage",
+        "passed": true
+      },
+      {
+        "name": "Lost buffers reject structural coverage",
+        "passed": true
+      },
+      {
+        "name": "Older overwritten history may precede a fully retained target interval",
+        "passed": true
+      },
+      {
+        "name": "Circular overwrite intersecting target history rejects coverage",
+        "passed": true
+      },
+      {
+        "name": "Missing memory-history metadata is not treated as zero loss",
+        "passed": true
+      },
+      {
+        "name": "Incomplete overwrite arrays reject coverage",
+        "passed": true
+      },
+      {
+        "name": "Unfinished flush starts reject coverage",
+        "passed": true
+      },
+      {
+        "name": "Reused outstanding IRP identities reject ambiguous pairing",
+        "passed": true
+      },
+      {
+        "name": "Failed IO completion cannot be labeled a confirmed flush",
+        "passed": true
+      },
+      {
+        "name": "Missing contemporaneous file identity rejects attribution",
+        "passed": true
+      },
+      {
+        "name": "Reversed timestamps reject timing claims",
+        "passed": true
+      },
+      {
+        "name": "One data-flush pair cannot prove the controlled split scenario",
+        "passed": true
+      },
+      {
+        "name": "Unexpected extra data-flush pairs require scenario review",
+        "passed": true
+      },
+      {
+        "name": "Capacity exhaustion cannot silently truncate a passing report",
+        "passed": true
+      },
+      {
+        "name": "Target schema failures reject coverage",
+        "passed": true
+      }
+    ],
+    "method": "Synthetic normalized-event safety checks; not real ETL/TDH integration validation",
+    "passed": true,
+    "realTraceConsumed": false
+  },
+  "entrypointChecks": {
+    "passed": true,
+    "cliRefusals": [
+      {
+        "name": "missing-input",
+        "passed": true,
+        "exitCode": 2
+      },
+      {
+        "name": "invalid-pid",
+        "passed": true,
+        "exitCode": 2
+      },
+      {
+        "name": "existing-output",
+        "passed": true,
+        "exitCode": 2
+      },
+      {
+        "name": "outside-private-output",
+        "passed": true,
+        "exitCode": 2
+      },
+      {
+        "name": "malformed-etl",
+        "passed": true,
+        "exitCode": 2
+      }
+    ],
+    "nativeConsumerEvents": 5,
+    "referenceConsumerEvents": 5,
+    "nativeTraceLoggingEvents": 3,
+    "nativeMetadataDecodedEvents": 5,
+    "referenceCountsMatch": true,
+    "actualKernelFileIoAdapterValidated": false,
+    "elevationRequested": false
+  },
+  "processLocalSmoke": {
+    "emittedEvents": 3,
+    "nativeEvents": 5,
+    "referenceEvents": 5,
+    "metadataDecodedEvents": 5,
+    "processTraceStatus": 0,
+    "clockType": 1,
+    "counterFrequency": 10000000,
+    "structuralCoveragePassed": false,
+    "rejectionExpected": true,
+    "stopStatus": 0,
+    "kernelProvidersEnabled": 0,
+    "elevationRequested": false
+  },
+  "kernelAdapterValidated": false,
+  "kernelRootCauseVerified": false,
+  "appChanged": false,
+  "readyExecutable": "LOCALAPPDATA/UDM-Development/finish-etl-reader/finish_etl_reader.exe",
+  "limits": [
+    "The real ETL smoke validates file consumption and TraceLogging metadata, not kernel Process/FileIo/DiskIo field mapping.",
+    "A complete target lifetime, overwrite metadata and exactly two successful owned .data flush pairs are required for the declared fresh split scenario.",
+    "Report image matching is a basename check; the caller must provide PID provenance and qualified executable identity.",
+    "Structural coverage is necessary; it is not a disk/filter/scheduler causality verdict."
+  ]
+}

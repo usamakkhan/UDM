@@ -184,6 +184,7 @@ if($BackendTestsOnly){
  if('RenderedOfflineTests' -in $BackendTestNames){$udmBackendNames+='RenderedOfflineTests'}
  # This integration fixture also requires a runner-owned loopback origin.
  if('HttpGzipTransferTests' -in $BackendTestNames){$udmBackendNames+='HttpGzipTransferTests'}
+ if('HttpSequentialHashTests' -in $BackendTestNames){$udmBackendNames+='HttpSequentialHashTests'}
  if('HttpPostGzipTests' -in $BackendTestNames){$udmBackendNames+='HttpPostGzipTests'}
  if('HttpPostIdentityTests' -in $BackendTestNames){$udmBackendNames+='HttpPostIdentityTests'}
  foreach($udmRequested in $BackendTestNames){if($udmRequested -notin $udmBackendNames){throw ('Unknown backend test: '+$udmRequested)}}

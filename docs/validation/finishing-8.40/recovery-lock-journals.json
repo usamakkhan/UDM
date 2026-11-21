@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "direct",
+      "journalBacked": false,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "resume",
+      "journalBacked": false,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "file-info-start",
+      "journalBacked": false,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location."
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "direct",
+      "journalBacked": true,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "resume",
+      "journalBacked": true,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": ""
+    },
+    {
+      "actualCatalogFlushReached": true,
+      "entry": "file-info-start",
+      "journalBacked": true,
+      "modelLockAvailableDuringHeldBoundary": false,
+      "recoveredExactBytes": true,
+      "workflowError": "The saved file was recovered at its previous destination. Use Move in File Properties to change its location."
+    }
+  ],
+  "diagnosticValid": true,
+  "error": "",
+  "recoveryResponsivenessFixed": false,
+  "baselineVersion": "8.40",
+  "appFunctionalChange": false,
+  "sourceSha256": "275f0d85f3f461231d291421c0356fefd4e403f65bf958b819dd76b358afd97b",
+  "journalScenario": "Actual publication interrupted by an owned callback after rename; its preserved journal is then reconciled through each entry point.",
+  "cleanup": {
+    "files": 20,
+    "logicalBytesRemoved": 5436302
+  },
+  "limitations": [
+    "Controlled held callback at the actual catalog-flush boundary; kernel/disk root cause is not attributed.",
+    "The baseline confirms a lock hold, not a responsiveness fix."
+  ]
+}

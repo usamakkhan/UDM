@@ -1,0 +1,141 @@
+{
+  "version": "8.95",
+  "qualified": false,
+  "result": {
+    "checks": [
+      {
+        "name": "ZIP preparation settles on its owned worker",
+        "passed": true
+      },
+      {
+        "name": "A remote ZIP probe is returned with one preparation wake-up",
+        "passed": true
+      },
+      {
+        "name": "The actual authenticated ZIP probe finishes",
+        "passed": true
+      },
+      {
+        "name": "The actual HTTP response parses as a complete empty ZIP",
+        "passed": true
+      },
+      {
+        "name": "Ordinary ZIP preparation does not admit or change the download",
+        "passed": true
+      },
+      {
+        "name": "Edited credentials prepare asynchronously",
+        "passed": true
+      },
+      {
+        "name": "Private edited credentials authenticate the real ZIP request",
+        "passed": true
+      },
+      {
+        "name": "Edited ZIP credentials never modify the saved request",
+        "passed": true
+      },
+      {
+        "name": "Active reserved-response preparation settles without stopping its prefetch",
+        "passed": true
+      },
+      {
+        "name": "An active confirmation returns the existing-file readiness reader instead of a remote probe",
+        "passed": true
+      },
+      {
+        "name": "Selecting the existing prefetch cannot issue another network request or change its reservation",
+        "passed": true
+      },
+      {
+        "name": "A changed ZIP selection settles without launching",
+        "passed": true
+      },
+      {
+        "name": "Final membership, request, routing and capture checks prevent a stale remote probe",
+        "passed": true
+      },
+      {
+        "name": "A changed ZIP selection settles without launching",
+        "passed": true
+      },
+      {
+        "name": "Final membership, request, routing and capture checks prevent a stale remote probe",
+        "passed": true
+      },
+      {
+        "name": "A changed ZIP selection settles without launching",
+        "passed": true
+      },
+      {
+        "name": "Final membership, request, routing and capture checks prevent a stale remote probe",
+        "passed": true
+      },
+      {
+        "name": "A changed ZIP selection settles without launching",
+        "passed": true
+      },
+      {
+        "name": "Final membership, request, routing and capture checks prevent a stale remote probe",
+        "passed": true
+      },
+      {
+        "name": "A changed ZIP selection settles without launching",
+        "passed": true
+      },
+      {
+        "name": "Final membership, request, routing and capture checks prevent a stale remote probe",
+        "passed": true
+      },
+      {
+        "name": "A selected-stop race settles",
+        "passed": true
+      },
+      {
+        "name": "Manager rejects a changed selection before stopping or saving its confirmation",
+        "passed": true
+      },
+      {
+        "name": "Cancellation after a real durable prefetch stop settles",
+        "passed": true
+      },
+      {
+        "name": "A completed stop preserves restoration intent while cancellation prevents remote launch",
+        "passed": true
+      },
+      {
+        "name": "A selected restoration can defer behind an accepted decision",
+        "passed": true
+      },
+      {
+        "name": "A default retry retains restoration's selected-request guard and refuses newer routing without extra traffic",
+        "passed": true
+      },
+      {
+        "name": "The positive stop-and-preview path prepares asynchronously",
+        "passed": true
+      },
+      {
+        "name": "A real durable stop leads to a remote preview and preserves restoration intent",
+        "passed": true
+      },
+      {
+        "name": "The complete ZIP parses after stopping confirmation",
+        "passed": true
+      },
+      {
+        "name": "An unchanged selected request restores its real HTTP prefetch",
+        "passed": true
+      },
+      {
+        "name": "The restored prefetch downloads all exact ZIP bytes before confirmation",
+        "passed": true
+      }
+    ],
+    "error": "The selected download changed while preparing ZIP preview. Close Preview and try again.",
+    "passed": false
+  },
+  "binarySha256": "8FD0095D1E5D345E8AC0C90374A054B1B2710067D992CB42A54A96DF7E249BE8",
+  "excludedFromPrimaryCounts": true,
+  "reason": "An empty no-redirect ProtectedResolvedUrl was newly added by actual HTTP prefetch. Preserve the selected stop guard, normalize only empty response-address metadata and test nonempty-address rejection."
+}

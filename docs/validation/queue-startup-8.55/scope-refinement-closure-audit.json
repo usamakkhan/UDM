@@ -1,0 +1,134 @@
+{
+  "passed": true,
+  "changedSources": [
+    "benchmarks/speed/queue_startup_control.cpp",
+    "native/Queue.cpp",
+    "native/QueueSnapshotTests.cpp"
+  ],
+  "entries": [
+    {
+      "source": "LaunchQueueTests",
+      "object": "<development>/finishing-8.55\\objects\\LaunchQueueTests.obj",
+      "sha256": "2A01EEF08E3D13D455BEE84389F927613A892B0C327B952AE5AAAACA52CDE14A",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueRetryPolicyTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueRetryPolicyTests.obj",
+      "sha256": "66B57ED30EC4E0EFA3EFAE586CEC01FDE4172466EA6D5F54192696588CD449B2",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueRetryLiveTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueRetryLiveTests.obj",
+      "sha256": "F8B1C26669A020F06F42FD635A88B29DC4D2DCFAC036D4CEA880AE2E9C49A083",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueFinishPolicyTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueFinishPolicyTests.obj",
+      "sha256": "24BCBE1E4E7590F9FCCAAF1ED885FF16A717957D5C9A4D8F2343866A5C007D43",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueCompletionCycleTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueCompletionCycleTests.obj",
+      "sha256": "26A5F4439766AD9D2C5917FD71D83AA00A0063B818B7DDBAD8E40A040AAE818D",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueMultiSelectionTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueMultiSelectionTests.obj",
+      "sha256": "2B8E8BBC30B2D0EE37A8B8E556AFC8B1D10D9A4F275CF0D8A12BD7CF93D337E6",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "SyncMembershipTests",
+      "object": "<development>/finishing-8.55\\objects\\SyncMembershipTests.obj",
+      "sha256": "DF8A9C8C509DFB9E0586468D007C494DDC3B695D43EF92C49DD0E38DBDA4550F",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "SyncReplacementRecoveryTests",
+      "object": "<development>/finishing-8.55\\objects\\SyncReplacementRecoveryTests.obj",
+      "sha256": "6EC45269E2CF6CDCD1772A5959BA9F24BE22F5F38B60BD2EA938D14C5037546D",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "PeriodicSyncLiveTests",
+      "object": "<development>/finishing-8.55\\objects\\PeriodicSyncLiveTests.obj",
+      "sha256": "9B429F340A72F6FC6990B1CD35BA8121D38DE5F45AB1E1ABE57461AC5549C6C7",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "App",
+      "object": "<development>/finishing-8.55\\objects\\App.obj",
+      "sha256": "59C34B799A86A6EF57C34EEA27C4A9968757734C17715B9164B3343BCD806E3E",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "HostMain",
+      "object": "<development>/finishing-8.55\\objects\\HostMain.obj",
+      "sha256": "749C83AA725388848F337844B810F70368D5A10863DAA65A7317149F5EE29F84",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "MonitorMain",
+      "object": "<development>/finishing-8.55\\objects\\MonitorMain.obj",
+      "sha256": "579AA8A2F24BCA42322FBA137C5EDD4472E772366C3BA3756549550E50C64935",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "SetupMain",
+      "object": "<development>/finishing-8.55\\objects\\SetupMain.obj",
+      "sha256": "9DB5AC525CBA51D76F8EA420754EE09F889F8229EE2F5A520AF24BD16286152D",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "AutomationMain",
+      "object": "<development>/finishing-8.55\\objects\\AutomationMain.obj",
+      "sha256": "A7317D3F0B8137880B96443D410280D8EC496973A8BB4098DA233F4990920CB4",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "queue_startup_control",
+      "object": "<development>/finishing-8.55\\objects\\queue_startup_control.obj",
+      "sha256": "D7EE107000649D066791B1F716DEE77D615CD2FEF9B6D83887B40BD33FED6EF4",
+      "changedDependencies": [
+        "benchmarks/speed/queue_startup_control.cpp"
+      ],
+      "recompiled": true
+    },
+    {
+      "source": "startup-candidate-App",
+      "object": "<development>/finishing-8.55\\objects\\startup-candidate-App.obj",
+      "sha256": "606984EA14203B3D7D8AFC23AE8CCF95B07F94721143384F98D247C7C1235CBE",
+      "changedDependencies": [],
+      "recompiled": false
+    },
+    {
+      "source": "QueueSnapshotTests",
+      "object": "<development>/finishing-8.55\\objects\\QueueSnapshotTests.obj",
+      "sha256": "A099A25F5315D94D9389C616D325DCE1C0D3480517B2D1AD6CE08E22F41A800A",
+      "changedDependencies": [
+        "native/QueueSnapshotTests.cpp"
+      ],
+      "recompiled": true
+    }
+  ],
+  "onlyChangedCoreUnit": "Queue"
+}

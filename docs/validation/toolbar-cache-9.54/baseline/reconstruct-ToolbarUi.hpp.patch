@@ -1,0 +1,72 @@
+--- native/ToolbarUi.hpp@9.54
++++ native/ToolbarUi.hpp@9.53
+@@ -1,16 +1,6 @@
+ // Included inside MainWindow.
+  static int toolbarCommand(int index){return index==11?CMD_SHARE:CMD_ADD+index;}
+  static int toolbarIndex(int command){return command==CMD_SHARE?11:(command>=CMD_ADD&&command<=CMD_GRABBER?command-CMD_ADD:-2);}
+- ToolbarSourceCache toolbarSources;ToolbarRasterCache toolbarRasters;std::optional<ToolbarRasterKey> toolbarImageKey;
+-#ifdef UDM_TOOLBAR_COMPONENT_TEST
+- std::function<void(int)> toolbarSourceObserver;std::function<void(const ToolbarRasterKey&)> toolbarRasterObserver;
+-#endif
+- void invalidateToolbarImages(){toolbarSources.clear();toolbarRasters.clear();toolbarImageKey.reset();}
+- std::shared_ptr<const ToolbarBitmap> builtInToolbarSource(int index){return toolbarSources.get(index,[&](int value){
+-#ifdef UDM_TOOLBAR_COMPONENT_TEST
+-  if(toolbarSourceObserver)toolbarSourceObserver(value);
+-#endif
+-  return loadBuiltInToolbarPng(appDir()/L"assets",value);});}
+  CToolBarCtrl toolbar;CMenu toolbarMenu;CImageList toolbarNormal,toolbarHot,toolbarDisabled;
+  bool toolbarReferenceHeight=false;
+  bool toolbarBuilding=false,toolbarAdjusting=false;std::vector<int> toolbarBefore;std::vector<fs::path> toolbarSkins;std::string toolbarSkinError,toolbarSkinName;int toolbarButtonHeight=60,toolbarButtonWidth=67;
+@@ -45,33 +35,17 @@
+   }catch(const std::exception& e){toolbarSkinError=e.what();skin.reset();}
+   const bool customImages=skin&&!group.empty();
+   const bool raised=!customImages&&(skin.has_value()||str(prefs,"ToolbarLook","Neon")=="3D Style");
+-  const ToolbarRasterKey key{w,h,raised,toolbarSources.generation()};
+-  const bool reuse=!customImages&&toolbarImageKey&&*toolbarImageKey==key&&toolbarNormal.GetSafeHandle()&&toolbarHot.GetSafeHandle()&&toolbarDisabled.GetSafeHandle();
+-  if(!reuse){
+-   std::shared_ptr<const ToolbarRasterSet> cached;
+-   if(!customImages&&toolbarRasters.cacheable(key))cached=toolbarRasters.get(key,[&]{
+-#ifdef UDM_TOOLBAR_COMPONENT_TEST
+-    if(toolbarRasterObserver)toolbarRasterObserver(key);
+-#endif
+-    ToolbarRasterSet result;for(int i=0;i<ToolbarCommandCount;++i){auto source=builtInToolbarSource(i);for(int state=0;state<3;++state)result.pixels[i][state]=toolbarFrame(*source,0,1,w,h,state,raised);}
+-    if(toolbarSources.generation()!=key.generation)throw std::runtime_error("Toolbar images changed during preparation. Please reload again.");return result;
+-   });
+-   CImageList normal,hot,disabled;if(!normal.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!hot.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!disabled.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0))throw std::runtime_error("Cannot create toolbar images.");
+-   auto add=[&](CImageList& list,const Bytes& pixels){CBitmap bitmap;bitmap.Attach(toolbarDib(pixels,w,h));if(list.Add(&bitmap,(CBitmap*)nullptr)<0)throw std::runtime_error("Cannot add toolbar image.");};
+-   for(int i=0;i<ToolbarCommandCount;++i){
+-    std::shared_ptr<const ToolbarBitmap> builtIn;if(!customImages&&!cached)builtIn=builtInToolbarSource(i);
+-    for(int state=0;state<3;++state){
+-     if(cached){add(state==0?normal:state==1?hot:disabled,cached->pixels[i][state]);continue;}
+-     const ToolbarBitmap* input=builtIn.get();int effect=state;
+-     if(customImages){auto name=group+(state==1?"hot":state==2?"disabled":"");auto at=skin->images.find(name);if(at!=skin->images.end()){input=&at->second;effect=0;}else input=&skin->images.at(group);}
+-     auto pixels=toolbarFrame(*input,customImages?i:0,customImages?ToolbarSkinColumns:1,w,h,effect,raised);add(state==0?normal:state==1?hot:disabled,pixels);
+-    }
++  CImageList normal,hot,disabled;if(!normal.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!hot.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0)||!disabled.Create(w,h,ILC_COLOR32,ToolbarCommandCount,0))throw std::runtime_error("Cannot create toolbar images.");
++  auto add=[&](CImageList& list,const Bytes& pixels){CBitmap bitmap;bitmap.Attach(toolbarDib(pixels,w,h));if(list.Add(&bitmap,(CBitmap*)nullptr)<0)throw std::runtime_error("Cannot add toolbar image.");};
++  for(int i=0;i<ToolbarCommandCount;++i){
++   ToolbarBitmap builtIn;if(!customImages)builtIn=loadBuiltInToolbarPng(appDir()/L"assets",i);
++   for(int state=0;state<3;++state){const ToolbarBitmap* input=&builtIn;int effect=state;
++    if(customImages){auto key=group+(state==1?"hot":state==2?"disabled":"");auto at=skin->images.find(key);if(at!=skin->images.end()){input=&at->second;effect=0;}else input=&skin->images.at(group);}
++    auto pixels=toolbarFrame(*input,customImages?i:0,customImages?ToolbarSkinColumns:1,w,h,effect,raised);add(state==0?normal:state==1?hot:disabled,pixels);
+    }
+-   if(!customImages&&toolbarSources.generation()!=key.generation)throw std::runtime_error("Toolbar images changed during preparation. Please reload again.");
+-   toolbar.SetImageList(&normal);toolbar.SetHotImageList(&hot);toolbar.SetDisabledImageList(&disabled);
+-   toolbarNormal.DeleteImageList();toolbarHot.DeleteImageList();toolbarDisabled.DeleteImageList();toolbarNormal.Attach(normal.Detach());toolbarHot.Attach(hot.Detach());toolbarDisabled.Attach(disabled.Detach());
+-   if(customImages)toolbarImageKey.reset();else toolbarImageKey=key;
+-  }else{toolbar.SetImageList(&toolbarNormal);toolbar.SetHotImageList(&toolbarHot);toolbar.SetDisabledImageList(&toolbarDisabled);}
++  }
++  toolbar.SetImageList(&normal);toolbar.SetHotImageList(&hot);toolbar.SetDisabledImageList(&disabled);
++  toolbarNormal.DeleteImageList();toolbarHot.DeleteImageList();toolbarDisabled.DeleteImageList();toolbarNormal.Attach(normal.Detach());toolbarHot.Attach(hot.Detach());toolbarDisabled.Attach(disabled.Detach());
+   const auto style=str(prefs,"ToolbarStyle","Icons and text");toolbar.SetBitmapSize(CSize(w,h));toolbar.SetMaxTextRows(style=="Icons only"?0:1);
+   CClientDC dc(this);auto fontBefore=dc.SelectObject(&font);TEXTMETRIC tm{};dc.GetTextMetrics(&tm);dc.SelectObject(fontBefore);
+   toolbarButtonHeight=style=="Text only"?std::max<int>(px(33),tm.tmHeight+px(14)):h+px(10)+(style=="Icons and text"?tm.tmHeight:0);
+@@ -140,7 +114,7 @@
+    case CMD_TOOLBAR_NEON:p["ToolbarSkin"]="";p["ToolbarLook"]="Neon";break;case CMD_TOOLBAR_3D:p["ToolbarSkin"]="";p["ToolbarLook"]="3D Style";break;
+    case CMD_TOOLBAR_FOLDER:{auto path=manager.root/L"Toolbar";fs::create_directories(path);openFile(this,path);return true;}
+    case CMD_TOOLBAR_DISCOVER:openProductLink(m_hWnd,toolbarGallery);return true;
+-   case CMD_TOOLBAR_RELOAD:invalidateToolbarImages();applyAppearance();return true;
++   case CMD_TOOLBAR_RELOAD:applyAppearance();return true;
+    case CMD_TOOLBAR_LOAD:{CFileDialog chooser(TRUE,L"tbi",nullptr,OFN_FILEMUSTEXIST|OFN_PATHMUSTEXIST,L"Toolbar information|*.tbi||",this);if(chooser.DoModal()!=IDOK)return true;auto path=fs::path((LPCWSTR)chooser.GetPathName());loadToolbarSkin(path);p["ToolbarSkin"]=utf8(path.wstring());break;}
+   }
+   manager.setSettings(p);applyAppearance();return true;

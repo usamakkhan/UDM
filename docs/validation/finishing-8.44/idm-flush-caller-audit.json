@@ -1,0 +1,209 @@
+{
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "targetArchitecture": "x86",
+  "provider": "REA 6.5.0 / Ghidra 12.1.3",
+  "readOnly": true,
+  "staticAnalysisOnly": true,
+  "knownChain": [
+    "0x570290",
+    "0x55ac20",
+    "0x5bb350"
+  ],
+  "resolvedFlushLoopCallers": [
+    "0x5bb350"
+  ],
+  "resolvedUpdateCallers": [
+    "0x57c990",
+    "0x57d6b0",
+    "0x597280",
+    "0x59ac70",
+    "0x5a7ec0",
+    "0x5a8880",
+    "0x5b9930",
+    "0x5b9cf0",
+    "0x5bb9f0"
+  ],
+  "observedGuards": {
+    "controlArgument": "param_1 == 0",
+    "elapsedCounterOffset": "0x218",
+    "elapsedThreshold": 40000,
+    "rateLikeFieldOffset": "0x24",
+    "rateLikeUpperBound": 512000
+  },
+  "counterUpdater": "0x5bab90",
+  "counterResetter": "0x5babf0",
+  "counterConstruction": "Current coarse clock multiplied by 1000 plus a short fractional clock component, minus reset baseline.",
+  "byteDeltaConstruction": "Subtract base 64-bit pair at 0x208/0x20c from the 0x1c8/0x1cc pair used by the surrounding byte-count log.",
+  "zeroArgumentCallers": [
+    "0x57d6b0",
+    "0x59ac70",
+    "0x5a8880",
+    "0x5b9cf0"
+  ],
+  "oneArgumentSocketClosingCallers": [
+    "0x57c990",
+    "0x597280",
+    "0x5a7ec0",
+    "0x5b9930"
+  ],
+  "oneArgumentDestructorLikeCaller": "0x5bb9f0",
+  "unitsVerified": true,
+  "clockAndRateHelpersPending": [],
+  "runtimeCadenceVerified": false,
+  "completionDurabilityParityVerified": false,
+  "newUdmPacingRuleImplemented": false,
+  "proprietaryPseudocodeCopiedIntoUdm": false,
+  "privateEvidence": [
+    {
+      "operation": "procedure_callers",
+      "procedure": "0x55ac20",
+      "evidenceId": "ev_3efb7bbc19e71a2c83820fb51d7fad4396fe4b497ee801cb0d448ac48560817e",
+      "privateResultSha256": "A98DFC281B972E6550E93BCCE2AA9354CE26466B389C040A6FE02920CCDDE56B"
+    },
+    {
+      "operation": "procedure_callers",
+      "procedure": "0x5bb350",
+      "evidenceId": "ev_eec29bba3ea5dfc8994e93e8b0633eaaddce3ed5391a324fc0a3fba460ce6f44",
+      "privateResultSha256": "BFD5CF0B974088F6A4006EB6FC30096E0056D714F29C10A5575906D862EEE99B"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x55ac20",
+      "evidenceId": "ev_0fed04585539e88b79b593d1f2677decddffa6fa7777d4a3a4a3ec0bfa291812",
+      "privateResultSha256": "09EAA5675243A5FC6DE5558804B5A523A70539724ED8A8E75AEA0212D532D35E"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5bb350",
+      "evidenceId": "ev_98acb414e97b62b37d30add0cb1494b00b8ef1b18278c13ab30b008b1b949060",
+      "privateResultSha256": "A0110AAEC851D65486896F9AD6A943ADBFBABDBB9B8D0BFC1EFD9DB86C6BF732"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5bab90",
+      "evidenceId": "ev_e12ae4598671bf568f983c401cf783b4c1f558c429713035174deb706645c93f",
+      "privateResultSha256": "100F0F46FFB7DDAA9FD07AED30058A8C007AA29976CFA44E2BF0158EAB328517"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5babf0",
+      "evidenceId": "ev_3802bdb35f37a92a825d5023a2dd2e3ff333495a68d260a2eef335342c65f088",
+      "privateResultSha256": "742C754863195246DFAC9D4075D093185F07FE01E399B9BCE59543D861027340"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5ba7b0",
+      "evidenceId": "ev_710db37003047ae2f782aa8b3fc359d1201b97724340ee6ce9767b2c9af1c02b",
+      "privateResultSha256": "CA7874D0888153BD3931CD4D3AA58601BD50DF374DAA796FC6F4422FA57854F9"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x57c990",
+      "evidenceId": "ev_fd86bd36e9c5e6a83637a71dd1286e0e6385325ae848f948380190f7831304ad",
+      "privateResultSha256": "594A64B68E4417CA70072EAE1976F6DDA1161CAE758FEC16577F6ABE540D0F6A"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x57d6b0",
+      "evidenceId": "ev_31d51c12ef0710823e99e8b342760a335e36d21d3196d63e0fcffb510441f6da",
+      "privateResultSha256": "34DED7238CD05C4EA57F5BB987416D6B56456125D483039A3702EE2BE3D7F3B7"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x597280",
+      "evidenceId": "ev_b33a53d4b9e6589a1f2db02f7153046ba9128254bb2d046ec538a259bc747f2a",
+      "privateResultSha256": "2C6220DD96EE628E2AE2711C2019B22A27C64C7B8D522470FE3C1171D6897691"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x59ac70",
+      "evidenceId": "ev_71de07bd6895af4ccec735a8625f2f985a049fe801ae05ae32b5d09427ed32ee",
+      "privateResultSha256": "7C5AA8AD3364D510151C51ACF498854F8A22D8105155B60809EACA45A6500FB3"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5a7ec0",
+      "evidenceId": "ev_2aa368875d2c8c0b86bde09d7693bfdafec7f15832cc771d8c616603aa8f2a8d",
+      "privateResultSha256": "3B8192A4A46F8491E396265F625F9B6CABE909AFF3034AF6E74B3ED3DFD0DFA5"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5a8880",
+      "evidenceId": "ev_88057028156969cf69e4cd1e1c661e2bca412fc623ec622628de9be32e8b4951",
+      "privateResultSha256": "2F89D9ED6DD1F39F38C90B328194537774E178B9771F12FADB566650DCCEB328"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5b9930",
+      "evidenceId": "ev_c4054ccf5b375742f7f6415cfd35cb699fd3e35d31a78b438163075a0ae9818a",
+      "privateResultSha256": "A6F8BB8FDD1E8574CED1534D18E8593637936618266E4E13890CCAE8D82B9132"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5b9cf0",
+      "evidenceId": "ev_9be5efee7239b8095b65e297a1dac610611ca8f71dc5eaca3c22d1b3f0afd177",
+      "privateResultSha256": "5F86D890CA2E9F626F8AAEB2A5E997EBC09A43AAA36CEA37B1E196F3A0DC4536"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5bb9f0",
+      "evidenceId": "ev_8dcab2c85127d905c61a1f285656e02ebc2d2a175da2bf9af0d4d55ba2f6bf5c",
+      "privateResultSha256": "60B7DC0ECB2E351AA44AB5EF7A8A93A55CAF6640F92E0DC35BA74937F7F8E66B"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x640031",
+      "evidenceId": "ev_ca9467b549c37847f52c6f53c0094c8715687d0284e583db01dfe1c1ffd62289",
+      "privateResultSha256": "A3F42585F4723646BAB7C09EFA71025488551238AC6017DC241399C77EDF4B2B"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x63e760",
+      "evidenceId": "ev_7dddb351d4bd862d79fd077f9b6328cc63c45455bc4c09c4316981c55dee5893",
+      "privateResultSha256": "EBEEB10E4D670D6CA7EBC3AA56F55CBAEC289365B5A609539A89974407830E2F"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "procedure": "0x5bb2b0",
+      "evidenceId": "ev_ac7ccf8795d9c044ed811cd6b6fb541131dfbe0930cf04d4d0ded004a43ac525",
+      "privateResultSha256": "F180C1CFC799B43B822BC24220D6FFB2CB89216BE544F7C904699B2BC54CDFC5"
+    }
+  ],
+  "limitations": [
+    "Ghidra resolves direct calls; unresolved indirect/dynamic calls remain unknown.",
+    "The guards belong to one known explicit flush chain, not a proof of every IO or durability action.",
+    "No fresh IDM download or process-lifetime comparison was performed; desktop input still fails.",
+    "The condition is progress-call driven after more than 40 seconds; this is not a guaranteed periodic timer schedule.",
+    "Control argument one bypasses the known flush branch in the reviewed socket-close/destructor-like callers; other durability actions remain unproven."
+  ],
+  "knownCallFlow": [
+    "0x5bb350",
+    "0x55ac20",
+    "0x570290",
+    "FlushFileBuffers"
+  ],
+  "verifiedUnits": {
+    "clock": "_ftime32_s seconds plus millisecond fraction",
+    "elapsedCounter": "milliseconds",
+    "elapsedGuardSeconds": 40,
+    "rateScaleConstant": 1000.0,
+    "rateConstantAddress": "0x6a4b38",
+    "rateConstantRawBytes": "0000000000408f40",
+    "rateUnits": "bytes per second",
+    "effectiveRateThresholdBytesPerSecond": 512000,
+    "effectiveRateThresholdKiBPerSecond": 500,
+    "effectiveRateAdjustments": "Integer-converted rate plus its integer tenth, then an optional cap from 0x5ba7b0; threshold applies to that effective field, not necessarily raw throughput."
+  },
+  "helperCorrection": "0x63e760 is a floating-point-to-integer conversion helper. It does not itself compute bytes per second; bounded x87 disassembly and the 1000.0 constant establish the scale.",
+  "boundedDisassemblySha256": "5502B28D31DD540C64E397A0A7522F11391233F6762275C51257F268D45B99B4",
+  "authoritativeReferences": [
+    {
+      "title": "Microsoft CRT _ftime_s / _ftime32_s / _ftime64_s",
+      "url": "https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/ftime-s-ftime32-s-ftime64-s?view=msvc-170"
+    },
+    {
+      "title": "Microsoft DUMPBIN /RANGE",
+      "url": "https://learn.microsoft.com/en-us/cpp/build/reference/range?view=msvc-170"
+    }
+  ]
+}

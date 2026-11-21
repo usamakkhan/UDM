@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "proofs": 120,
+  "summary": [
+    {
+      "drive": "C",
+      "records": 128,
+      "bytes": 25978,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 0.7244499999999999,
+          "threadCycles": 2447836.5
+        },
+        "accepted-text": {
+          "wallMs": 0.019700000000000002,
+          "threadCycles": 68857.5
+        }
+      }
+    },
+    {
+      "drive": "C",
+      "records": 7500,
+      "bytes": 1556738,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 49.8381,
+          "threadCycles": 160786225.0
+        },
+        "accepted-text": {
+          "wallMs": 0.9373,
+          "threadCycles": 3184579.0
+        }
+      }
+    },
+    {
+      "drive": "C",
+      "records": 30000,
+      "bytes": 6296738,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 218.73995000000002,
+          "threadCycles": 676426028.5
+        },
+        "accepted-text": {
+          "wallMs": 5.1171,
+          "threadCycles": 16966953.5
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 128,
+      "bytes": 25978,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 0.8183,
+          "threadCycles": 2738361.5
+        },
+        "accepted-text": {
+          "wallMs": 0.029149999999999995,
+          "threadCycles": 101081.5
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 7500,
+      "bytes": 1556738,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 50.7284,
+          "threadCycles": 162246313.5
+        },
+        "accepted-text": {
+          "wallMs": 1.0086000000000002,
+          "threadCycles": 3417780.0
+        }
+      }
+    },
+    {
+      "drive": "D",
+      "records": 30000,
+      "bytes": 6296738,
+      "medians": {
+        "parsed-proof": {
+          "wallMs": 214.63135,
+          "threadCycles": 668595419.0
+        },
+        "accepted-text": {
+          "wallMs": 5.210400000000001,
+          "threadCycles": 17115862.5
+        }
+      }
+    }
+  ],
+  "completeApplicationTiming": false,
+  "pairedIdmComparison": false,
+  "slowerAcceptedWallPairs": 0,
+  "allSamplesRetained": true
+}

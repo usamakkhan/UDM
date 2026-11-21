@@ -1,0 +1,34 @@
+{
+  "preflightOnly": true,
+  "qualification": false,
+  "sourceVersion": "9.36",
+  "linkedCoreVersion": "9.35",
+  "binarySha256": "29BFAE672B085FE2D76BD1E3B6F63C4896691C966303C077E883836D7F78F880",
+  "result": {
+    "checks": [
+      {
+        "name": "Initial browser projection retains source order and filters repeated plain links",
+        "passed": true
+      },
+      {
+        "name": "Projected browser rows retain explicit unchecked semantics",
+        "passed": true
+      },
+      {
+        "name": "URL names and normalized extensions are prepared before the GUI consumes rows",
+        "passed": true
+      },
+      {
+        "name": "Scoped observed size metadata avoids an unnecessary preview request",
+        "passed": true
+      },
+      {
+        "name": "The initial category destination is projected from the same settings snapshot",
+        "passed": false
+      }
+    ],
+    "error": "The initial category destination is projected from the same settings snapshot",
+    "passed": false
+  },
+  "reason": "The test compared raw mixed-separator path strings instead of equivalent normalized Windows paths."
+}

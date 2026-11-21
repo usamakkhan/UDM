@@ -52,8 +52,8 @@ public:
    manager.setSettings(changed);frame->applyAppearance();validate(changed);
    manager.setSettings(prefs);frame->applyAppearance();validate(prefs);
    cases.push_back({{"case",name},{"fontMessagesAtStartup",counts},{"fontName",str(prefs,"FontName")},{"fontHeight",num(prefs,"FontHeight")},{"fontWeight",num(prefs,"FontWeight")},{"dpi",frame->windowDpi()}});
-  }catch(...){frame->quitting=true;frame->SendMessage(WM_CLOSE);throw;}
-  frame->quitting=true;frame->SendMessage(WM_CLOSE);
+  }catch(...){closeOwnedMainWindow(frame);throw;}
+  closeOwnedMainWindow(frame);
  }
 };
 class StartupFontTestApplication:public CWinApp {

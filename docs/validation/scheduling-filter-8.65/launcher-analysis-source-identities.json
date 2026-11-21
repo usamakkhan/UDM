@@ -1,0 +1,23 @@
+{
+  "sources": [
+    {
+      "path": "benchmarks/speed/launch-diagnostic-session.ps1",
+      "sha256": "A84CBF5A06DE44721658546C7E5880297BE739AD1C502E03EF10FAD77B5535BA"
+    },
+    {
+      "path": "benchmarks/speed/test-diagnostic-launcher.ps1",
+      "sha256": "51E9065E3F685DC7230D6899CF5E1BE4683FD9D84CAC3628D7DA9202D4D3E2A6"
+    },
+    {
+      "path": "benchmarks/speed/analyze_cswitch_prefix.py",
+      "sha256": "3F5216D80904BF180B2933B3030FF22493EF0038A6E52DA81E4166D9BB6E8F69"
+    },
+    {
+      "path": "benchmarks/speed/test_cswitch_prefix.py",
+      "sha256": "E12BEB80D6B8DB036068D6E6221F7AB9096EB59DC00952157869DFFB1DC42F2C"
+    }
+  ],
+  "prefixPolicyChecks": 52,
+  "mockLauncherControls": 4,
+  "newElevationRequestedAfterCancellation": false
+}

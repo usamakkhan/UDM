@@ -1,0 +1,142 @@
+{
+  "kind": "Characterization of an unresolved race, not product acceptance",
+  "qualifiedVersion": "8.34",
+  "productChanged": false,
+  "qualifiedExecutableChanged": false,
+  "installedAppChanged": false,
+  "versionIncrementRequired": false,
+  "versionReason": "Test-only characterization and documentation; no functional app or extension change.",
+  "build": {
+    "source": "native/PendingFileInfoConcurrentRetryTests.cpp",
+    "sourceSha256": "F606B39DA29872DA2BC569B2E7B89BA75C735DAC1204C6DDD7FFC9DCCC123EFC",
+    "exeSha256": "07697FE2CD01F6E9F5718C2AD811217382C8FAC3AACCB476AF51B8635DF7BC4E",
+    "objectSha256": "CAA8B59B659F5AC9B58EC7A59CEDDF37050FCD8D118642DAE5A6AE17B20B02CE",
+    "qualifiedProductChanged": false,
+    "coreObjectsVerified": 42
+  },
+  "sourceChangesSinceNativeQualification": [
+    "native/backend-tests.json"
+  ],
+  "nativeCheckCount": 18,
+  "passed": true,
+  "checks": [
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The competing retry terminates without blocking on the browser's held disk write",
+      "passed": true
+    },
+    {
+      "name": "A busy same-token receipt is conservatively uncertain and cannot authorize another admission",
+      "passed": true
+    },
+    {
+      "name": "The race creates at most one committed download",
+      "passed": true
+    },
+    {
+      "name": "Recovery reports the actual durable outcome after the competing browser finishes",
+      "passed": true
+    },
+    {
+      "name": "Current limitation: the original dialog does not reconcile a later browser outcome",
+      "passed": true
+    },
+    {
+      "name": "Initial admission reaches its owned flush failure: Owned initial rejection",
+      "passed": true
+    },
+    {
+      "name": "The original dialog can retry without a tentative history row",
+      "passed": true
+    },
+    {
+      "name": "Browser resubmission holds the same receipt in flight outside the Manager lock",
+      "passed": true
+    },
+    {
+      "name": "The retained dialog explicitly requests Retry while browser admission is pending",
+      "passed": true
+    },
+    {
+      "name": "The competing retry terminates without blocking on the browser's held disk write",
+      "passed": true
+    },
+    {
+      "name": "A busy same-token receipt is conservatively uncertain and cannot authorize another admission",
+      "passed": true
+    },
+    {
+      "name": "The race creates at most one committed download",
+      "passed": true
+    },
+    {
+      "name": "Recovery reports the actual durable outcome after the competing browser finishes",
+      "passed": true
+    },
+    {
+      "name": "Current limitation: the original dialog does not reconcile a later browser outcome",
+      "passed": true
+    }
+  ],
+  "observations": [
+    {
+      "automaticDialogRecoveryVerified": false,
+      "browserAccepted": true,
+      "committedDownloads": 1,
+      "dialogStillUncertain": true
+    },
+    {
+      "automaticDialogRecoveryVerified": false,
+      "browserAccepted": false,
+      "committedDownloads": 0,
+      "dialogStillUncertain": true
+    }
+  ],
+  "parityGateClosed": false,
+  "method": "Normal-token isolated native fixture linked to the 42 hash-verified qualified core objects. Two explicit temporary-flush gates race same-token browser admission against dialog Retry. No network downloads or production UI automation. The media-tools dependency is a junction to the installed canonical directory, not a copy.",
+  "limits": [
+    "This proves inbox/controller behavior, not rendered dialog appearance or installed-browser acceptance.",
+    "Missing-receipt status inspection after the rejected browser run intentionally creates the normal durable release barrier in that isolated catalog.",
+    "The initial failed environment attempt is retained separately and is not included in the 18-check pass.",
+    "The original 1930-check qualification is unchanged; this separate characterization is not added to that product total."
+  ],
+  "initialAttempt": {
+    "checks": [
+      {
+        "name": "Initial admission is definitely rejected after the private temporary flush",
+        "passed": true
+      },
+      {
+        "name": "The original dialog can retry without a tentative history row",
+        "passed": false
+      }
+    ],
+    "error": "The original dialog can retry without a tentative history row",
+    "observations": [],
+    "parityGateClosed": false,
+    "passed": false
+  },
+  "standardBackendRegistration": {
+    "source": "PendingFileInfoConcurrentRetryTests",
+    "requiresMediaHelpers": true,
+    "timeoutSeconds": 90,
+    "entryPresent": true,
+    "standardRunnerExecuted": false
+  },
+  "nextImplementation": "Resolve a concurrent matching receipt with explicit pending/outcome ownership. Attach only the exact durable accepted identity; retain draft and cancellation across generations. A rejection must not grant retry while another owner or durable release barrier exists. Avoid treating generic uncertainty as permission to submit again."
+}

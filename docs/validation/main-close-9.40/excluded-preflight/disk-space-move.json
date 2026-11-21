@@ -1,0 +1,338 @@
+{
+  "passed": true,
+  "moves": [
+    {
+      "source": "$UDM_DEVELOPMENT\\owned-main-close-preflight-9.40",
+      "target": "$REPOSITORY\\.media-cache\\owned-main-close-preflight-9.40",
+      "files": [
+        {
+          "path": ".udm-build-owned",
+          "sha256": "45F4C5A5B4FDD024E425480A06AC4E0C0B82A42721F93BD3F589E1433E8C7006",
+          "bytes": 54
+        },
+        {
+          "path": "App.res",
+          "sha256": "F492B4B33B67E099AC2198D54A9407B05852A396DAC9E0FC7FFDE4FFDA8AFB5E",
+          "bytes": 34052
+        },
+        {
+          "path": "attempt1-status-layout-main-close-policy-ui-build.json",
+          "sha256": "4713EABEB92060D8000B4F829B94EA53738A24568F004959203CC1570207DA62",
+          "bytes": 286
+        },
+        {
+          "path": "attempt1-status-layout-main-close-policy-ui-result.json",
+          "sha256": "9254A10C6D45BEED92EDE1164218FE56C1140F7EC7C14458AA61D0643DD8984B",
+          "bytes": 99621
+        },
+        {
+          "path": "attempt1-status-layout-source-inputs.json",
+          "sha256": "6630F5E5DA71BA38CC75222D87A32143CC4775EF4F261BFBD5EC03BAE8E9E404",
+          "bytes": 92486
+        },
+        {
+          "path": "baseline-9.39-main-close.json",
+          "sha256": "49CBBEB10221540745286B6F8DE51FF10D5F0E0A3CED58E161542BF0E33093B9",
+          "bytes": 99323
+        },
+        {
+          "path": "baseline-source-inputs.json",
+          "sha256": "1DBB0892AC7CB58B26393E172B94C4BFBAA6D712778B6F368846FE85DC657C53",
+          "bytes": 92189
+        },
+        {
+          "path": "build-MainClosePolicyTests-normalized.log",
+          "sha256": "82575F7EFF2CFE5E29D95E12C864E3508916867128C056C648402F36C8118B08",
+          "bytes": 26
+        },
+        {
+          "path": "build-MainClosePolicyUiTests-corrected.log",
+          "sha256": "BA12177EB1A3AAA6278B73B1A14D967A70DE7DD113564648F0A57D696984926B",
+          "bytes": 3060
+        },
+        {
+          "path": "build-MainClosePolicyUiTests-corrected2.log",
+          "sha256": "63E471FB0FA424168B48B03C3E62DF52443A2342C18A9441AF620F639FCECD28",
+          "bytes": 3188
+        },
+        {
+          "path": "build-MainClosePolicyUiTests.log",
+          "sha256": "7B8E7E4D5967DAF8660FCC19A479D02BE89B61722C926BB2808946DABBA52974",
+          "bytes": 3060
+        },
+        {
+          "path": "build-result.json",
+          "sha256": "14D395A1917F77A7F145BC07A4EA8D55F63E19B5B25ECA380053DCD952A7A0C7",
+          "bytes": 9301
+        },
+        {
+          "path": "cleanup-fixture-source-changes.json",
+          "sha256": "B3A259823FCB71B59EBC764428F0252CB0314759BFB5217695EBF0FE0A6C4CF9",
+          "bytes": 471
+        },
+        {
+          "path": "line-ending-repair.json",
+          "sha256": "035EC2ED7D2C95D707A2D4F195CE77D2CA0D1D961E98EEFF111521A1D83598EA",
+          "bytes": 465
+        },
+        {
+          "path": "main-close-policy-ui-build.json",
+          "sha256": "BA79BA75B0971BCBBC78BE1FD88520E70A69A1BD1B419FEB6C3195055441677B",
+          "bytes": 286
+        },
+        {
+          "path": "main-close-policy-ui-process.json",
+          "sha256": "8F43985AD08D11F2D11E27BFECCBD850E0DAC8A8A7265C2D505AF0202CDF5F9E",
+          "bytes": 232
+        },
+        {
+          "path": "main-close-policy-ui-result.json",
+          "sha256": "2D3EACC579934C1B6E5BDAD6AE5E3FAED32249677D86D4F8B84F7A48B28E6FB3",
+          "bytes": 102878
+        },
+        {
+          "path": "resources.log",
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+          "bytes": 0
+        },
+        {
+          "path": "source-encoding-repair.json",
+          "sha256": "F52DEF06CA61168C300940BAECC3B393CD23FAA5488E3C7103E389D2CCFC17ED",
+          "bytes": 348
+        },
+        {
+          "path": "source-inputs.json",
+          "sha256": "50768E4BD8C0D177249367EA580174DB2CC8815FB26DD9FB94EC811F431DA22A",
+          "bytes": 92486
+        },
+        {
+          "path": "owned-backend-preflight/results.json",
+          "sha256": "20E804950D7864B4607A2D1A4D7213261D0D0DB0753855C7B3494B51BE3A9C2B",
+          "bytes": 1551
+        },
+        {
+          "path": "owned-main-close-policy-baseline-ui-9.40/results.json",
+          "sha256": "98380AE79A5034D0CA97EEA6A481B80D46A46085B45F0433E16B4CD15C063E49",
+          "bytes": 651
+        },
+        {
+          "path": "owned-main-close-policy-corrected-ui-9.40/results.json",
+          "sha256": "859062AA0E8831A153750666D8E38BAB9FD903C29182FCD909E385D3C3379E71",
+          "bytes": 651
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/results.json",
+          "sha256": "FAD74BF39DF30997A11E6C78FD5442DC38C6C309281CB933179B1DBE4BB1B6AB",
+          "bytes": 3592
+        },
+        {
+          "path": "release-native/Udm.MainClosePolicyTests.exe",
+          "sha256": "4FECC79AE158ED1FE878A47EFF1B8B30A644224CECC399AB4E56579D80D26EEA",
+          "bytes": 2099712
+        },
+        {
+          "path": "release-native/Udm.MainClosePolicyUiTests.exe",
+          "sha256": "18D97058990B68767FF57F280D3AFF9E0B8097AED49709AABEF034EFC4E11C13",
+          "bytes": 12222464
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/cancel-via-show/state.json",
+          "sha256": "398A78749AB42F620E889D93D011770CE3273B867238ED7A9CD25B8304DD0802",
+          "bytes": 3079
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/cancel-via-show/state.json.bak",
+          "sha256": "FBEED097C6195B1790D8FBE0A1F5DC941D745B63B93A56D7575D257A207C854E",
+          "bytes": 2950
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/exit-decision/state.json",
+          "sha256": "47A9EF5B1AD64E33FE973581A3B3604A7F09E8DAF4DC183787ED537193A659AF",
+          "bytes": 3078
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/exit-decision/state.json.bak",
+          "sha256": "3CCE67FF1AA2B8F9AB5DDC3C97A395308E37C2C22CE2233C0233595A6247882C",
+          "bytes": 2949
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/tray-busy/state.json",
+          "sha256": "1C83EF19820E06FDFC2A03A31CC3FFC7A6C7CE9B87BC12B1FD685C8916F8695F",
+          "bytes": 3073
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/tray-busy/state.json.bak",
+          "sha256": "BAAC0A97B91E292760F0010E7881F9D38236640A1971551C6E1A5CAC5B59E25B",
+          "bytes": 2944
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/tray-late-setting/state.json",
+          "sha256": "50A35A81C608E8A37D45B3CC13E0056C1F73A0F83E925C8F6F0A1B917BC8F9F2",
+          "bytes": 3081
+        },
+        {
+          "path": "owned-main-close-policy-corrected2-ui-9.40/tray-late-setting/state.json.bak",
+          "sha256": "348570D41226713AF6A586D41B501AACE6AD0BB498B3FFFFD0EDA316FE309AA5",
+          "bytes": 2953
+        },
+        {
+          "path": "owned-main-close-policy-corrected-ui-9.40/tray-busy/state.json",
+          "sha256": "68C12BB38EFEC9A3CDC505CB770B5671AF228DAEEEEC9D1063BDAF6D6617830F",
+          "bytes": 3072
+        },
+        {
+          "path": "owned-main-close-policy-corrected-ui-9.40/tray-busy/state.json.bak",
+          "sha256": "713B2FA96132EDF61C80BCB7CA6362BE9A4613E5F74DB14FC793A61227B3228B",
+          "bytes": 2943
+        },
+        {
+          "path": "owned-main-close-policy-baseline-ui-9.40/tray-busy/state.json",
+          "sha256": "DE9D6A396DD881FC30598DF78444433BBEC7E59D5296AE09D4E4B0F5C1DD9C5E",
+          "bytes": 3071
+        },
+        {
+          "path": "owned-main-close-policy-baseline-ui-9.40/tray-busy/state.json.bak",
+          "sha256": "5F26A33B3BF3A455E79E711DD4EDECC390FAE83241B4AFC1ED9AB8762055C0C1",
+          "bytes": 2942
+        },
+        {
+          "path": "owned-backend-preflight/catalog/state.json",
+          "sha256": "E6D05666FE0C772C072AB83F5A86A864C7D67F9D2CCA85D709A50689CC99FC01",
+          "bytes": 2776
+        },
+        {
+          "path": "owned-backend-preflight/catalog/state.json.bak",
+          "sha256": "2F5C5DD338922A6D20692B2905271898924AC6CAB67DEEDCAB0B6EA640660F0E",
+          "bytes": 2775
+        }
+      ],
+      "onlyCurrentOwnedWorkMoved": true
+    },
+    {
+      "source": "$UDM_DEVELOPMENT\\owned-native-pre-normalization-9.40",
+      "target": "$REPOSITORY\\.media-cache\\owned-native-pre-normalization-9.40",
+      "files": [
+        {
+          "path": ".udm-build-owned",
+          "sha256": "ACF3EB99D8746B63BA3A43D16773AB5B8912963E7354F777A43A543DDDCD42C6",
+          "bytes": 56
+        },
+        {
+          "path": "App.res",
+          "sha256": "F492B4B33B67E099AC2198D54A9407B05852A396DAC9E0FC7FFDE4FFDA8AFB5E",
+          "bytes": 34052
+        },
+        {
+          "path": "Bridge.log",
+          "sha256": "917F4326C9EF2BB42BDB741EC0E707187C7828BE39B62A3C95A5DACB704D5C0B",
+          "bytes": 856
+        },
+        {
+          "path": "build-MainClosePolicyTests.log",
+          "sha256": "82575F7EFF2CFE5E29D95E12C864E3508916867128C056C648402F36C8118B08",
+          "bytes": 26
+        },
+        {
+          "path": "generated-com-inputs.json",
+          "sha256": "11A242FB30CC70520A11A55F8B88A8D3C7FB22638177ED1A2F56C40524838A37",
+          "bytes": 691
+        },
+        {
+          "path": "resources.log",
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+          "bytes": 0
+        },
+        {
+          "path": "source-inputs.json",
+          "sha256": "E101A0F00CA970578D4B9C9C888F90AFE0213FEE1087FF3D73A26C9B04F7511C",
+          "bytes": 96358
+        },
+        {
+          "path": "objects/Bridge.obj",
+          "sha256": "35DDC4D44C202F4189B762E87EB8C3F48EA2AA68D95292E4C73F7E27D6999C9E",
+          "bytes": 11876280
+        },
+        {
+          "path": "objects/MainClosePolicyTests.obj",
+          "sha256": "834F79561FD3D15E4ADA6B4C48035615A6F4C2E536F2CA2E6ECCC63B02C7EF7E",
+          "bytes": 2475517
+        },
+        {
+          "path": "release-native/Udm.MainClosePolicyTests.exe",
+          "sha256": "2FD0543A8198C812A74BC480F71F5A719056A2D9CE24BE47CC3D18DDD7E9F546",
+          "bytes": 2099712
+        }
+      ],
+      "onlyCurrentOwnedWorkMoved": true
+    },
+    {
+      "source": "$UDM_DEVELOPMENT\\finishing-9.40-corrected",
+      "target": "$REPOSITORY\\.media-cache\\owned-native-space-failure-9.40",
+      "files": [
+        {
+          "path": ".udm-build-owned",
+          "sha256": "ACF3EB99D8746B63BA3A43D16773AB5B8912963E7354F777A43A543DDDCD42C6",
+          "bytes": 56
+        },
+        {
+          "path": "App.res",
+          "sha256": "F492B4B33B67E099AC2198D54A9407B05852A396DAC9E0FC7FFDE4FFDA8AFB5E",
+          "bytes": 34052
+        },
+        {
+          "path": "Bridge.log",
+          "sha256": "917F4326C9EF2BB42BDB741EC0E707187C7828BE39B62A3C95A5DACB704D5C0B",
+          "bytes": 856
+        },
+        {
+          "path": "build-BatchRefreshApplyTests.log",
+          "sha256": "15B1D97016B23A2406A9F7EB4BAB2ACEF40D40F2A73B5179794BB67BE9823AA8",
+          "bytes": 261
+        },
+        {
+          "path": "build-BatchSingleRefreshTests.log",
+          "sha256": "0FE6478DBC676A300C5AB849F4A59F115F242892AFA7396C322279B562F2E076",
+          "bytes": 264
+        },
+        {
+          "path": "build-MainClosePolicyTests.log",
+          "sha256": "82575F7EFF2CFE5E29D95E12C864E3508916867128C056C648402F36C8118B08",
+          "bytes": 26
+        },
+        {
+          "path": "generated-com-inputs.json",
+          "sha256": "11A242FB30CC70520A11A55F8B88A8D3C7FB22638177ED1A2F56C40524838A37",
+          "bytes": 691
+        },
+        {
+          "path": "resources.log",
+          "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+          "bytes": 0
+        },
+        {
+          "path": "source-inputs.json",
+          "sha256": "B6FCF4A1896E788B703552B49DEEE9EFCA051188E89B68FE959825EA02F6948D",
+          "bytes": 96358
+        },
+        {
+          "path": "objects/Bridge.obj",
+          "sha256": "121CB041A0D13952F07C698C092C649076417AACC0E9F493C652605F5B799E23",
+          "bytes": 11876280
+        },
+        {
+          "path": "objects/MainClosePolicyTests.obj",
+          "sha256": "0089ABDAF8A94689CCD8414D19F842DE1F9DEC141D4559ED84218B967372DFDE",
+          "bytes": 2475517
+        },
+        {
+          "path": "release-native/Udm.MainClosePolicyTests.exe",
+          "sha256": "688D6D3B0BCF6CD51C1DC68C209706FE48F602F9034EA1744162FE8F4F96EA12",
+          "bytes": 2099712
+        }
+      ],
+      "onlyCurrentOwnedWorkMoved": true
+    }
+  ],
+  "sharedCoreCachesMoved": false,
+  "personalDataMoved": false
+}

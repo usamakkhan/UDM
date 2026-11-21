@@ -1,0 +1,174 @@
+{
+  "checks": [
+    {
+      "name": "Prefetch admission runs to readiness on an owned worker",
+      "passed": true
+    },
+    {
+      "name": "A second request cannot replay an unacknowledged admission",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement joins the admission worker and reports Started",
+      "passed": true
+    },
+    {
+      "name": "The owned HTTP file downloads completely before Start is accepted",
+      "passed": true
+    },
+    {
+      "name": "Complete prefetch waits for confirmation without publishing the destination",
+      "passed": true
+    },
+    {
+      "name": "Prefetch uses one authorized GET without a second metadata request",
+      "passed": true
+    },
+    {
+      "name": "Start applies after admission on the existing owned decision worker",
+      "passed": true
+    },
+    {
+      "name": "Start publishes the complete exact prefetched file",
+      "passed": true
+    },
+    {
+      "name": "Confirmation reuses the complete response without another GET",
+      "passed": true
+    },
+    {
+      "name": "A second complete prefetch is available for Download Later",
+      "passed": true
+    },
+    {
+      "name": "Download Later joins the stopped prefetched transfer",
+      "passed": true
+    },
+    {
+      "name": "Download Later preserves the paused unpublished download",
+      "passed": true
+    },
+    {
+      "name": "A later Start publishes the retained complete body correctly",
+      "passed": true
+    },
+    {
+      "name": "Cancel fixture holds actual pending admission before its model transaction",
+      "passed": true
+    },
+    {
+      "name": "Cancellation owns a command and joins pending admission without blocking its requester",
+      "passed": true
+    },
+    {
+      "name": "The joined Cancel settles after admission is released",
+      "passed": true
+    },
+    {
+      "name": "A queued cancellation prevents a late admission from starting a request",
+      "passed": true
+    },
+    {
+      "name": "A real admitted transfer can finish while its admission acknowledgement is delayed",
+      "passed": true
+    },
+    {
+      "name": "Cancel does not race a still-owned admitted transfer",
+      "passed": true
+    },
+    {
+      "name": "Cancel joins admission and the running transfer before acknowledging",
+      "passed": true
+    },
+    {
+      "name": "Acknowledged cancellation leaves no active or published background download",
+      "passed": true
+    },
+    {
+      "name": "The real model is held before admission is requested",
+      "passed": true
+    },
+    {
+      "name": "Request and readiness checks return while admission waits for a held catalog",
+      "passed": true
+    },
+    {
+      "name": "Admission proceeds exactly once after model release",
+      "passed": true
+    },
+    {
+      "name": "One real prefetched response occupies the configured transfer slot",
+      "passed": true
+    },
+    {
+      "name": "An occupied slot returns capacity without a second transfer",
+      "passed": true
+    },
+    {
+      "name": "Capacity acknowledgement cannot create or replay a request",
+      "passed": true
+    },
+    {
+      "name": "An explicit cadence-style retry can use a newly available slot",
+      "passed": true
+    },
+    {
+      "name": "An uncertain admission acknowledgement settles its future",
+      "passed": true
+    },
+    {
+      "name": "An acknowledgement failure does not pretend an already admitted transfer was undone",
+      "passed": true
+    },
+    {
+      "name": "Cancel observes current state and stops an uncertain admitted transfer without replay",
+      "passed": true
+    },
+    {
+      "name": "Another accepted decision defers admission rather than reporting unsupported prefetch",
+      "passed": true
+    },
+    {
+      "name": "A removed job cannot be admitted or resurrected",
+      "passed": true
+    },
+    {
+      "name": "A missing job is rejected before dereferencing live state",
+      "passed": true
+    },
+    {
+      "name": "Pin the real catalog to reject the admission checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A failed durable admission settles asynchronously",
+      "passed": true
+    },
+    {
+      "name": "Admission save failure preserves the draft and sends no HTTP request",
+      "passed": true
+    },
+    {
+      "name": "A failed mutation is not implicitly retried",
+      "passed": true
+    },
+    {
+      "name": "An explicit retry remains possible after the storage lock is released",
+      "passed": true
+    },
+    {
+      "name": "Teardown owns a real in-flight admission callback",
+      "passed": true
+    },
+    {
+      "name": "Teardown joins admission before allowing Manager lifetime to end",
+      "passed": true
+    },
+    {
+      "name": "Joined teardown consumes the outstanding acknowledgement without detaching work",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

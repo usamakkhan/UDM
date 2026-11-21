@@ -72,7 +72,7 @@
  }
  std::string currentCategory(){for(auto prefix:{"category:","unfinished:","finished:"})if(filter.rfind(prefix,0)==0)return filter.substr(strlen(prefix));return {};}
  void categoryEditor(std::string original=""){
-  const auto accepted=showCategoryProperties(this,manager,preferences(),original);
+  const auto accepted=showCategoryProperties(this,manager,original);
   if(accepted&&!original.empty()&&currentCategory()==original)
    filter=filter.substr(0,filter.find(':')+1)+*accepted;
  }

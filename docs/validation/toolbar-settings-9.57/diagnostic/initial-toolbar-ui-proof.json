@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "excludedFromQualification": true,
+  "sourceSha256": "B5F9F3DC2BCF6E47D385D82F88550E676E308517410C4763EC8F4D6BAD9EAEA4",
+  "failedBinarySha256": "8DD3868EEC6E727E4FA4D0DDBCF294382F4C485FBD70CCAE899EF98B81B0DD1A",
+  "binaryVerifiedBeforeReplacement": true,
+  "failedCheck": "Reset is saved when customization closes",
+  "reason": "Customization helper immediately invoked another dialog while its accepted asynchronous save was still awaiting acknowledgement"
+}

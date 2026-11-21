@@ -1,0 +1,32 @@
+{
+  "label": "9.63 pre-flush metadata capture with identity-bound recovery versus frozen 9.62 and IDM",
+  "trial": 2,
+  "case": "split-64m",
+  "client": "idm",
+  "bytes": 67108864,
+  "configuredConnections": 8,
+  "firstAvailabilityTailSeconds": 0.11915810000209603,
+  "processExitTailSeconds": 0.3957654499972705,
+  "processExitWallSeconds": 3.5406588499972713,
+  "firstAvailabilityWallSeconds": 3.264051500002097,
+  "exitAfterFirstAvailabilitySeconds": 0.27660734999517445,
+  "clockMappingErrorBoundSeconds": 6.550000762217678e-06,
+  "clockDriftSeconds": 3.0500007919265215e-06,
+  "trackedProcesses": 1,
+  "requests": 15,
+  "originConnections": 15,
+  "peakConcurrent": 10,
+  "originBytes": 69617658,
+  "sha256": "A5F55D2DA15C2BDD9999D79DFD6B952BC8FFFEE2508666650BF202699AFEDB12",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 1.094166300001234,
+  "durableWallSeconds": 4.239059700001235,
+  "postExitToDurableSeconds": 0.6984008500039636,
+  "postExitOperations": {
+    "openSeconds": 8.140000136336312e-05,
+    "flushSeconds": 0.6810301000004984,
+    "closeSeconds": 5.999999848427251e-05
+  }
+}

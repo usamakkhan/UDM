@@ -1,0 +1,159 @@
+{
+  "passed": false,
+  "stage": "Existing PrefinishWritebackTests cancellation synchronization",
+  "error": "Paced stop drops unstarted optional work and records failure without scheduling another flush",
+  "checks": [
+    {
+      "name": "Data writeback is not requested before its in-flight threshold",
+      "passed": true
+    },
+    {
+      "name": "A completed body prefix schedules actual background writeback",
+      "passed": true
+    },
+    {
+      "name": "Credited transfer progress does not wait for a held disk flush",
+      "passed": true
+    },
+    {
+      "name": "Shutdown joins an already running writeback before its file handle can close",
+      "passed": true
+    },
+    {
+      "name": "Threshold requests are bounded/coalesced and successful flush statistics remain accurate",
+      "passed": true
+    },
+    {
+      "name": "Finished writeback cannot schedule another operation",
+      "passed": true
+    },
+    {
+      "name": "The optional background failure is exercised by the worker",
+      "passed": true
+    },
+    {
+      "name": "An optional early-flush exception is recorded without replacing the required final flush",
+      "passed": true
+    },
+    {
+      "name": "Owned real-file fixture opens the data writeback handle",
+      "passed": true
+    },
+    {
+      "name": "Background operation performs real FlushFileBuffers on the owned data file",
+      "passed": true
+    },
+    {
+      "name": "Successful prefinish writeback preserves exact bytes and joins before releasing the handle",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    },
+    {
+      "name": "Sequential writeback performs its half-body flush",
+      "passed": true
+    },
+    {
+      "name": "The distinct near-end writeback is not consumed by an earlier progress update",
+      "passed": true
+    },
+    {
+      "name": "Small and medium sequential responses each execute a distinct near-end flush before EOF",
+      "passed": true
+    },
+    {
+      "name": "Both sequential milestones finish without dropping or duplicating their operations",
+      "passed": true
+    },
+    {
+      "name": "The adaptive fixture reaches its held first real worker operation",
+      "passed": true
+    },
+    {
+      "name": "A measured slow first flush advances the second operation before the old final-2-MiB threshold",
+      "passed": true
+    },
+    {
+      "name": "Adaptive runway is bounded to half-body and retains exactly two successful operations",
+      "passed": true
+    },
+    {
+      "name": "Adaptive completion cannot admit another late operation",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing starts at quarter body",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing flushes the half-body prefix",
+      "passed": true
+    },
+    {
+      "name": "The final paced milestone cannot be consumed before its four-MiB runway",
+      "passed": true
+    },
+    {
+      "name": "The third sequential flush starts with four MiB remaining",
+      "passed": true
+    },
+    {
+      "name": "Medium sequential pacing is bounded to three operations and cannot restart after joining",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing starts at quarter body",
+      "passed": true
+    },
+    {
+      "name": "Bounded medium sequential pacing flushes the half-body prefix",
+      "passed": true
+    },
+    {
+      "name": "The final paced milestone cannot be consumed before its four-MiB runway",
+      "passed": true
+    },
+    {
+      "name": "The third sequential flush starts with four MiB remaining",
+      "passed": true
+    },
+    {
+      "name": "Medium sequential pacing is bounded to three operations and cannot restart after joining",
+      "passed": true
+    },
+    {
+      "name": "Paced cancellation fixture holds an actual in-flight operation",
+      "passed": true
+    },
+    {
+      "name": "Paced progress coalesces later milestones without waiting for held IO",
+      "passed": true
+    },
+    {
+      "name": "Paced teardown waits for in-flight IO before a caller releases its handle",
+      "passed": true
+    },
+    {
+      "name": "Paced stop drops unstarted optional work and records failure without scheduling another flush",
+      "passed": false
+    }
+  ],
+  "sourceSha256": "C28B6240E67AFDCF1ED5DA7E48FF2E09FC5908733ABC21778679C113056A98B3",
+  "binarySha256": "394D1440F8B68E35C69AB8CDAC2C89514C0A9DBD0C3C6673AAAD3DA682769357",
+  "countedAsPassingValidation": false,
+  "diagnosis": "The fixture used a future timeout as proof the finish worker had entered stopping; under compilation load it could release held IO before that worker started. Explicit stopping-state synchronization is required."
+}

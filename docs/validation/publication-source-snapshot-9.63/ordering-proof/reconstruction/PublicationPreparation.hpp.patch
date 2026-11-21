@@ -1,0 +1,43 @@
+--- native/PublicationPreparation.hpp
++++ diagnostic/PublicationPreparation.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticOperation.hpp"
+ #include "FileIdentity.hpp"
+ #include "PublicationSourcePin.hpp"
+ #include "GrabberDestinations.hpp"
+@@ -17,13 +18,13 @@
+  }
+ public:
+  i64 size=0;
+- PublicationPreparation(const fs::path& staging,const Json& destination,std::unique_ptr<PublicationSourcePin> ownedWriteback={}):source(ownedWriteback?std::move(ownedWriteback->file):Handle{}),writableSource(bool(source)){
++ PublicationPreparation(const fs::path& staging,const Json& destination,std::unique_ptr<PublicationSourcePin> ownedWriteback={}):source(ownedWriteback?std::move(ownedWriteback->file):Handle{}),writableSource(bool(source)){DiagnosticOperation operation("prepared-source-init",0);
+   if(ownedWriteback){
+    if(!source||ownedWriteback->stable.is_null())throw std::runtime_error("The prepared download source lost its protection.");
+    identity=ownedWriteback->information;capturedIdentity=ownedWriteback->stable;size=num(capturedIdentity,"Size",-1);
+   }else{
+    source.h=CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER length{};
+-   if(!source||!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
++   if(!source||![&]{DiagnosticOperation query("source-info-query",0);return GetFileInformationByHandle(source.h,&info);}()||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
+   }
+   validateGrabberFolder(destination);auto value=str(destination,"ProjectDestinationRoot");if(value.empty())return;
+   auto root=fs::path(wide(value)).lexically_normal(),folder=fs::path(wide(str(destination,"Folder"))).lexically_normal();pin(root,false);pin(root,false,true);auto current=root;
+@@ -33,7 +34,7 @@
+  // or fallback hashing. validateSourceName still verifies the named file.
+  Json sourceIdentity()const{return capturedIdentity.is_null()?stableFileIdentity(source.h):capturedIdentity;}
+  std::string sourceHash(const std::function<void()>& checkpoint={})const{if(writableSource)throw std::runtime_error("A write-only publication pin cannot supply an unknown digest.");return fileHash(source.h,checkpoint);}
+- void validateSourceName(const fs::path& staging)const{
++ void validateSourceName(const fs::path& staging)const{DiagnosticOperation operation("source-name-validation",0);
+   Handle named(CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION current{};LARGE_INTEGER length{};
+   if(!named||!GetFileInformationByHandle(named.h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(named.h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The completed file changed before publication. Its files were preserved.");
+   if(!capturedIdentity.is_null()&&stableFileIdentity(named.h)!=capturedIdentity)throw std::runtime_error("The protected download identity changed. Keep its file and recovery record.");
+@@ -48,7 +49,7 @@
+  }
+  // Only the ordinary publication owner calls this after its exact completed
+  // catalog proof is accepted. Journal cleanup no longer needs the file pins.
+- void releaseAcceptedFile(){releaseSource();publishedName.reset();}
++ void releaseAcceptedFile(){DiagnosticOperation operation("accepted-file-release",0);releaseSource();publishedName.reset();}
+  void releaseSource(){if(source){CloseHandle(source.h);source.h=INVALID_HANDLE_VALUE;}}
+ };
+ }

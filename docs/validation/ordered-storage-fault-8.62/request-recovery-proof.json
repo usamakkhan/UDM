@@ -1,0 +1,137 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "drive": "C",
+      "mode": "fail",
+      "savedBytes": 49152,
+      "recoveryRequests": 17,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "C",
+      "mode": "partial-fail",
+      "savedBytes": 49152,
+      "recoveryRequests": 18,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "C",
+      "mode": "short-success",
+      "savedBytes": 49152,
+      "recoveryRequests": 15,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "C",
+      "mode": "hold-pause",
+      "savedBytes": 7421952,
+      "recoveryRequests": 2,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "C",
+      "mode": "hold-rollback",
+      "savedBytes": 7421952,
+      "recoveryRequests": 2,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "C",
+      "mode": "hold-eof",
+      "savedBytes": 8388608,
+      "recoveryRequests": 1,
+      "firstRecoveryStart": 0,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "fail",
+      "savedBytes": 49152,
+      "recoveryRequests": 17,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "partial-fail",
+      "savedBytes": 49152,
+      "recoveryRequests": 17,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "short-success",
+      "savedBytes": 49152,
+      "recoveryRequests": 15,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": 49152,
+      "corruptFailureRevisited": true,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "hold-pause",
+      "savedBytes": 7421952,
+      "recoveryRequests": 2,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "hold-rollback",
+      "savedBytes": 7913472,
+      "recoveryRequests": 1,
+      "firstRecoveryStart": 49088,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    },
+    {
+      "drive": "D",
+      "mode": "hold-eof",
+      "savedBytes": 8388608,
+      "recoveryRequests": 1,
+      "firstRecoveryStart": 0,
+      "firstRecoveryStatus": 206,
+      "failedOffset": null,
+      "corruptFailureRevisited": false,
+      "completeSavedBodyReusedWithoutNetwork": false
+    }
+  ]
+}

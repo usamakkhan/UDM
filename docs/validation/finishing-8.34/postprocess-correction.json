@@ -1,0 +1,6 @@
+{
+  "initialFailure": "New postprocessor assumed every launcher uses zero for /q completion. All nine IDM launchers returned 1; all nine UDM launchers returned 0.",
+  "priorEvidence": "8.33 portable comparison also records IDM code 1.",
+  "correction": "Require zero for UDM; retain IDM exit codes without assigning unverified semantics. Require independent output size/hash, actual observed exit and restored settings for every pair. No transfer rerun or product code change.",
+  "outputFilesDeletedBeforeCorrection": 0
+}

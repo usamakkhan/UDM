@@ -1,0 +1,18 @@
+--- native/PublicationPreparation.hpp
++++ diagnostic/PublicationPreparation.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticOperation.hpp"
+ #include "FileIdentity.hpp"
+ #include "GrabberDestinations.hpp"
+ namespace udm {
+@@ -41,7 +42,7 @@
+  }
+  // Only the ordinary publication owner calls this after its exact completed
+  // catalog proof is accepted. Journal cleanup no longer needs the file pins.
+- void releaseAcceptedFile(){releaseSource();publishedName.reset();}
++ void releaseAcceptedFile(){DiagnosticOperation operation("accepted-file-release",0);releaseSource();publishedName.reset();}
+  void releaseSource(){if(source){CloseHandle(source.h);source.h=INVALID_HANDLE_VALUE;}}
+ };
+ }

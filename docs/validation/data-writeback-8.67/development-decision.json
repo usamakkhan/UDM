@@ -1,0 +1,34 @@
+{
+  "readyForInstallation": true,
+  "allIdmEndpointPairsPassed": true,
+  "medianSeconds": {
+    "udm": {
+      "processExitWallSeconds": 2.5545269750000443,
+      "processExitTailSeconds": 0.3848998500000107,
+      "durableWallSeconds": 2.577256549999902,
+      "durableTailSeconds": 0.407716149999942
+    },
+    "baseline": {
+      "processExitWallSeconds": 2.5755874999999833,
+      "processExitTailSeconds": 0.3674619249998159,
+      "durableWallSeconds": 2.5973706499999025,
+      "durableTailSeconds": 0.3889466499997525
+    },
+    "older": {
+      "processExitWallSeconds": 2.6769407000003866,
+      "processExitTailSeconds": 0.662857924999571,
+      "durableWallSeconds": 2.696662650000235,
+      "durableTailSeconds": 0.6809654999997292
+    },
+    "idm": {
+      "processExitWallSeconds": 3.695664824999767,
+      "processExitTailSeconds": 0.4388357749999159,
+      "durableWallSeconds": 4.345575599999847,
+      "durableTailSeconds": 1.085286349999933
+    }
+  },
+  "original155msRegresssionReproducedInCurrent866": false,
+  "exactNoLossVersus866Proven": false,
+  "medianFinishingDifferenceVersus866Ms": 17.43792500019481,
+  "scope": "Validated development increment, preserving a large finishing advantage versus 8.65 and IDM; does not prove universal or exact no-loss performance."
+}

@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "stagedOnly": true,
+  "newElevationRequested": false,
+  "sourceSha256": "460160D6B740446A933EE515E3E22C91FE7610F3D53CDEB28BF5279C8137BE05",
+  "readerSourceSha256": "BA7BCDC795152BBB6E2EC911B48B1C5CABBC56A40ACBC7AAE2D5795FD792A9D2",
+  "binarySha256": "A3773A39462F69F42AC0830088C4726397F845D2BFE7BC50F91EA0DAD22F7D2E",
+  "objectSha256": "BF6CE8AFA2D332E6D2650E9CC3A4B6C7C225240E3037ED739D1FD2321668DD76",
+  "accessTests": [
+    {
+      "case": "normal-profile",
+      "passed": true,
+      "exitCode": 0,
+      "sessionStarted": false,
+      "result": {
+        "elevated": false,
+        "elevationRequired": true,
+        "passed": true,
+        "sessionStarted": false
+      }
+    },
+    {
+      "case": "other-profile",
+      "passed": true,
+      "exitCode": 0,
+      "sessionStarted": false,
+      "result": {
+        "elevated": false,
+        "elevationRequired": true,
+        "passed": true,
+        "sessionStarted": false
+      }
+    },
+    {
+      "case": "unelevated-refusal",
+      "passed": true,
+      "exitCode": 77,
+      "sessionStarted": false,
+      "result": {
+        "elevated": false,
+        "elevationRequired": true,
+        "passed": false,
+        "sessionStarted": false
+      }
+    },
+    {
+      "case": "foreign-root",
+      "passed": true,
+      "exitCode": 2,
+      "sessionStarted": false,
+      "foreignRootNotCreated": true
+    }
+  ],
+  "readerSafetyChecks": 20,
+  "kernelTraceValidated": false
+}

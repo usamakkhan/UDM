@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeExists": true,
+      "beforeSha256": "1C55F4A3CA86E267BFB773EE009047C96B149251A7CC05FCF6CAD0C2D365DFAB",
+      "afterSha256": "5A7F04E2FE474DAB6AD77A15AC876BDE12E92C8DCDC26B1868DEA03CFFED6906",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Core.cpp",
+      "beforeExists": true,
+      "beforeSha256": "30F648B1A0231C93ED2AF72358BCB7B64EB7A0DBD3A3A6FE2AA2E6AA1E62ED72",
+      "afterSha256": "D7200D959D2EF3CAF3CE36E76F37A079357C43CA122B3235870233B229C9E404",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/FilenameValidationTests.cpp",
+      "beforeExists": true,
+      "beforeSha256": "2D21C275024C05784110893325E2C5CBF67CB8C0A76F310DFAD34987E390FDB1",
+      "afterSha256": "9CC98360B3F4100F408FC8329365464F9641A477A5C059897EDA4AB1ED0B6ABB",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/Version.hpp",
+      "beforeExists": true,
+      "beforeSha256": "188465C1E39498AC7BFE1DF6CED816F1CE89CB3073AD25151647C521E5341E73",
+      "afterSha256": "AB3FA9D234270073992152E94BEF46CAF479E987557CE389E69CFE0E7130FF82",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "2C6221786E2123D07363E8A81AF20DA074189326CBDFAD60FEC0BB943B7526BA",
+      "afterSha256": "698EA6FC46518140E6A7167C1DC5B15BE02584C48033B477EE3F7ED81B67D3CB",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "beforeExists": true,
+      "beforeSha256": "FADC81D7E1B9844DB5599F2FA418A34815BDD9CDA30E1DD051D8D15401BC03F8",
+      "afterSha256": "CAF0A97504F754C250D8E632E3C28F50EC6C19CBD7AF619E65E26799AE432A78",
+      "beforeLineEndings": "CRLF",
+      "afterLineEndings": "CRLF"
+    },
+    {
+      "path": "native/UnicodeFilenameWorkflowTests.cpp",
+      "beforeExists": false,
+      "beforeSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "afterSha256": "C439CB524A756813D45B317157F4623AF788E4824580AEBE2AF7727421EBF2E3",
+      "beforeLineEndings": "LF",
+      "afterLineEndings": "CRLF"
+    }
+  ],
+  "patch": "benchmarks/speed/experiments/unicode-filename-8.57-to-8.58.patch",
+  "patchSha256": "D5080A9873594550D2EE600F3E5D187CF706A3E5C8C2B578F789FB72F932F999",
+  "verifiedBothDirections": true,
+  "scope": "Six exact existing source inputs from qualified 8.57 plus one new Unicode workflow fixture; normalized patch and per-side line endings reconstruct raw bytes."
+}

@@ -1,0 +1,11 @@
+--- a/benchmarks/speed/finish_user_io_agent.js
++++ b/benchmarks/speed/finish_user_io_agent.js
+@@ -7,7 +7,7 @@
+ const nativeResolvedSamples = [];
+ const nativeMetrics = { calls: 0, pathsResolved: 0, pathsMatched: 0, pathFailures: 0, nonDiskSkipped: 0, fileTypeFailures: 0 };
+ const kernel = Process.getModuleByName('kernel32.dll');
+-const counter = new NativeFunction(kernel.getExportByName('QueryPerformanceCounter'), 'bool', ['pointer']);
++const counter = new NativeFunction(kernel.getExportByName('QueryPerformanceCounter'), 'bool', ['pointer'], { scheduling: 'exclusive' });
+ const frequency = new NativeFunction(kernel.getExportByName('QueryPerformanceFrequency'), 'bool', ['pointer']);
+ const clock = Memory.alloc(8);
+ if (!frequency(clock)) throw new Error('QueryPerformanceFrequency failed');

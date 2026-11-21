@@ -3,6 +3,16 @@
 
 namespace udm {
 using QueueLabels=std::map<std::string,std::string>;
+inline std::string primaryDownloadQueueName(const Json& queues){
+ std::string fallback;
+ for(const auto& queue:queues){
+  if(yes(queue,"Synchronize"))continue;
+  auto name=str(queue,"Name");
+  if(str(queue,"DefaultQueueRole")=="Download")return name;
+  if(fallback.empty()||name=="Main queue")fallback=std::move(name);
+ }
+ return fallback;
+}
 
 inline QueueLabels queueDisplayLabels(const Json& queues){
  QueueLabels labels;

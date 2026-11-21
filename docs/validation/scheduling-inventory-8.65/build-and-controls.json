@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "sources": [
+    {
+      "path": "benchmarks\\speed\\finish_scheduling_lifetime.cpp",
+      "sha256": "26093E2B1E2E83DCFDDA8B7E76199A35280F9577841B5DFEF79CF69E663FCD7E"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_realtime_lifetime.cpp",
+      "sha256": "F9C2495CE442A3769FD57777BBBAED78F2E4A63001F9F11CDF5C010E14672324"
+    },
+    {
+      "path": "benchmarks\\speed\\finish_etl_reader.cpp",
+      "sha256": "BA7BCDC795152BBB6E2EC911B48B1C5CABBC56A40ACBC7AAE2D5795FD792A9D2"
+    },
+    {
+      "path": "benchmarks\\speed\\TraceSchemaInventory.hpp",
+      "sha256": "B1DCAB7615974CEBC3BAB010C2F0A9BC4B97846C3945629F158905E236CACAB0"
+    },
+    {
+      "path": "benchmarks\\speed\\trace_schema_inventory_control.cpp",
+      "sha256": "EFEAA836C98FAF7F249AFD8037DF38E2D241BF10D4CCB88E636C34BA03F5A52D"
+    }
+  ],
+  "inventoryControls": {
+    "checks": 12,
+    "kernelSessionStarted": false,
+    "liveCoverageProven": false,
+    "passed": true
+  },
+  "unelevatedCollectorRefused": true,
+  "newElevationRequested": false,
+  "productSourceChanged": false,
+  "liveCoverageProven": false,
+  "outputs": [
+    {
+      "name": "finish_scheduling_lifetime",
+      "binarySha256": "050914BB75C56D9006124DEEC3E11D47756F541B6D36C622A47B877D1B9E96D1",
+      "objectSha256": "4DF8536BA91F8368333C15F93CB2F2F0F042F64E90534753C6A28CB7729ED659"
+    },
+    {
+      "name": "trace_schema_inventory_control",
+      "binarySha256": "6E796ECC0F4649AC9D45A4DD43FCE6746007A8C978D4B36C9A5B944EDA6A86F2",
+      "objectSha256": "134D123181F792CE33BFDEA429A574F57E7F15C4BB2FB9C5A9C4CA3E0EF16BF8"
+    }
+  ]
+}

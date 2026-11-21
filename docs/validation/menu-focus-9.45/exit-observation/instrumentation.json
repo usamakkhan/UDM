@@ -1,0 +1,15 @@
+{
+  "sourceAppSha256": "07E3CF3424011093A719AE25213662126497595FA7C77A0DF99FF2E654D0A9AF",
+  "replacements": [
+    {
+      "before": "#define UDM_FINISH_POINT(stage) ((void)0)",
+      "after": "declare observeOwnedExitStage; redirect UDM_FINISH_POINT to it"
+    },
+    {
+      "before": "preparedFileInfoViews.clear();rememberLayout();",
+      "after": "surround rememberLayout with layout-begin/layout-end markers"
+    }
+  ],
+  "controlledCatalogHoldMs": 750,
+  "notNaturalDownloadMeasurement": true
+}

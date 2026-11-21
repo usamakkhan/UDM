@@ -1,0 +1,44 @@
+{
+  "diagnosticOnly": true,
+  "qualification": false,
+  "controlledHoldMs": 750,
+  "eventDrivenMessageWait": true,
+  "samplesPerVersion": 3,
+  "summary": {
+    "baseline": {
+      "exitCommandMs": {
+        "median": 842.8363999985158,
+        "minimum": 834.5497000031173,
+        "maximum": 843.4640999995172
+      },
+      "windowCloseMs": {
+        "median": 842.8367999978364,
+        "minimum": 834.5502000004053,
+        "maximum": 843.4644999988377
+      },
+      "ownerAndBackgroundCleanupMs": {
+        "median": 843.2140999995172,
+        "minimum": 835.2375000007451,
+        "maximum": 843.8830000013113
+      }
+    },
+    "current": {
+      "exitCommandMs": {
+        "median": 14.215599998831749,
+        "minimum": 10.196100000292063,
+        "maximum": 15.328000001609325
+      },
+      "windowCloseMs": {
+        "median": 863.826099999249,
+        "minimum": 845.8984999991953,
+        "maximum": 865.7800999991596
+      },
+      "ownerAndBackgroundCleanupMs": {
+        "median": 864.2734000012279,
+        "minimum": 846.3227999992669,
+        "maximum": 866.2426000013947
+      }
+    }
+  },
+  "notInstalledIdmComparison": true
+}

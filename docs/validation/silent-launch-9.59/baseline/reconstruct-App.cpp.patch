@@ -1,0 +1,41 @@
+--- native/App.cpp@9.59
++++ native/App.cpp@9.58
+@@ -48,7 +48,7 @@
+ #include "QueueMembership.hpp"
+ #include "QueueCompletion.hpp"
+ #include "CategoryEditor.hpp"
+-#include "LaunchFailure.hpp"
++#include "Launch.hpp"
+ #include "CliCompletion.hpp"
+ #include "RecoverySession.hpp"
+ #include "RecoveryUi.hpp"
+@@ -1692,7 +1692,7 @@
+ #endif
+ #if !defined(UDM_TOOLBAR_COMPONENT_TEST) && !defined(UDM_CAPTURE_PRESENTATION_COMPONENT_TEST)
+ class Application:public CWinApp {
+- std::unique_ptr<Manager> manager;std::unique_ptr<PipeServer> pipe;std::unique_ptr<AutomationHost> automation;Handle mutex;std::unique_ptr<RecoveryDataLease> recoveryLease;bool recoveryClosed=false,silentLaunchFailure=false;int startupExitCode=0;
++ std::unique_ptr<Manager> manager;std::unique_ptr<PipeServer> pipe;std::unique_ptr<AutomationHost> automation;Handle mutex;std::unique_ptr<RecoveryDataLease> recoveryLease;bool recoveryClosed=false;
+ public:BOOL InitInstance()override{
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  if(!nativeUiTraceInitialize())return FALSE;
+@@ -1701,7 +1701,7 @@
+  CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();SetRegistryKey(L"UDM");
+  try{
+   int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);if(!argv)throw std::runtime_error("Cannot read launch options.");
+-  std::vector<std::wstring> args;for(int i=1;i<argc;++i)args.emplace_back(argv[i]);LocalFree(argv);silentLaunchFailure=launchSilentFailureRequested(args);auto options=parseLaunch(args);
++  std::vector<std::wstring> args;for(int i=1;i<argc;++i)args.emplace_back(argv[i]);LocalFree(argv);auto options=parseLaunch(args);
+   if(!options.tag.empty())SetEnvironmentVariableW(L"UDM_INSTANCE_TAG",wide(options.tag).c_str());
+   if(options.waitProcess){
+    if(options.waitProcess==GetCurrentProcessId())throw std::runtime_error("Cannot wait for the current process.");
+@@ -1772,9 +1772,9 @@
+ #else
+   frame->ShowWindow(options.background?SW_HIDE:SW_SHOW);frame->UpdateWindow();frame->PostMessage(INITIAL_REFRESH);if(!options.silent&&!options.startQueue&&!options.waitProcess&&!options.recovery&&updateCheckDue(manager->state["Settings"],epoch()))frame->startUpdateCheck(false);if(!options.background&&!options.silent&&!options.startQueue&&!options.waitProcess&&options.address.empty()&&yes(manager->state["Settings"],"ShowTipsOnStartup",true))frame->PostMessage(WM_COMMAND,CMD_TIP_DAY);return TRUE;
+ #endif
+- }catch(const std::exception& e){startupExitCode=1;if(silentLaunchFailure)writeLaunchFailure(e.what());else AfxMessageBox(cs(e.what()),MB_OK|MB_ICONERROR);return FALSE;}
++ }catch(const std::exception& e){AfxMessageBox(cs(e.what()),MB_OK|MB_ICONERROR);return FALSE;}
+ }
+- int ExitInstance()override{UDM_FINISH_POINT("exit-instance-begin");automation.reset();UDM_FINISH_POINT("automation-reset-end");pipe.reset();manager.reset();UDM_FINISH_POINT("manager-reset-end");recoveryLease.reset();AfxOleTerm(FALSE);UDM_FINISH_POINT("ole-term-end");auto result=CWinApp::ExitInstance();UDM_FINISH_POINT("exit-instance-end");return startupExitCode?startupExitCode:(recoveryClosed?0:result);}
++ int ExitInstance()override{UDM_FINISH_POINT("exit-instance-begin");automation.reset();UDM_FINISH_POINT("automation-reset-end");pipe.reset();manager.reset();UDM_FINISH_POINT("manager-reset-end");recoveryLease.reset();AfxOleTerm(FALSE);UDM_FINISH_POINT("ole-term-end");auto result=CWinApp::ExitInstance();UDM_FINISH_POINT("exit-instance-end");return recoveryClosed?0:result;}
+ };
+ Application application;
+ #endif

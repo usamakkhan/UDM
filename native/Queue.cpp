@@ -1,6 +1,7 @@
 #include "BrowserProxy.hpp"
 #include "BrowserSession.hpp"
 #include "Core.hpp"
+#include "PreparedTransferCommit.hpp"
 #include "QueueMembership.hpp"
 #include "CapturePresentation.hpp"
 #include "QueueCompletion.hpp"
@@ -14,6 +15,16 @@
 namespace udm {
 static bool queuedMember(const Json& job){
  return yes(job,"QueueMember",str(job,"Status")!="Complete");
+}
+// Clone current members, preparing prefetches and Start's review erasures.
+// Passive completed rows can retain this queue label without owning work.
+enum class QueueRollbackScope { Startup, Start, Stop };
+static std::vector<std::pair<JobPtr,Json>> snapshotQueueRows(const std::vector<JobPtr>& jobs,const std::set<std::string>& names,QueueRollbackScope scope){
+ std::vector<std::pair<JobPtr,Json>> saved;
+ for(const auto& job:jobs)if(names.count(str(job->data,"Queue"))&&
+    (queuedMember(job->data)||(scope!=QueueRollbackScope::Stop&&job->prefetchDeferring)||
+     (scope==QueueRollbackScope::Start&&job->data.contains("ServerRetryRequiresReview"))))saved.emplace_back(job,job->data);
+ return saved;
 }
 bool Manager::canStopQueue(const std::string& name)const{
  Lock lock(mutex);
@@ -134,11 +145,12 @@ static void checkScheduleDownloadDraft(const Json& record,const Json& original){
 }
 void Manager::scheduleExistingDownload(JobPtr job,const Json& original,const DownloadQueueChoice& choice,
                                        const Json& edit,const FileInfoFolderChoice& folderChoice){
+ {Lock initial(mutex);if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");if(!canScheduleExistingDownload(job))throw std::runtime_error("This download is no longer ready to schedule. Pause the download and its queue first.");}
+ recoverBeforeConfigure(job);
  Lock lock(mutex);
  if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
  if(!canScheduleExistingDownload(job))
   throw std::runtime_error("This download is no longer ready to schedule. Pause the download and its queue first.");
- recoverBeforeConfigure(job);
  checkScheduleDownloadDraft(job->data,original);
  if(!choice.create||!choice.window)throw std::runtime_error("Choose a one-time schedule.");
  auto queues=queuesWithDownloadDraft(choice.name,&choice);
@@ -161,11 +173,12 @@ void Manager::scheduleExistingDownload(JobPtr job,const Json& original,const Dow
 }
 void Manager::reviseDownloadSchedule(JobPtr job,const Json& originalQueue,const Json& originalDownload,const ScheduledDownloadWindow& window,
                                     const Json& edit,const FileInfoFolderChoice& folderChoice){
+ {Lock initial(mutex);const auto current=editableDownloadSchedule(job);if(!current||*current!=originalQueue)throw std::runtime_error("The schedule changed while the wizard was open. Reopen it to review the latest settings.");if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");}
+ recoverBeforeConfigure(job);
  Lock lock(mutex);
  const auto current=editableDownloadSchedule(job);
  if(!current||*current!=originalQueue)throw std::runtime_error("The schedule changed while the wizard was open. Reopen it to review the latest settings.");
  if(catalogTransaction)throw std::runtime_error("Finish the current catalog operation before updating the schedule.");
- recoverBeforeConfigure(job);
  checkScheduleDownloadDraft(job->data,originalDownload);
  auto next=configuredDownload(job,edit,false),settings=state["Settings"];
  rememberFileInfoDestination(settings,str(next,"Category"),fs::path(wide(str(next,"Folder"))),folderChoice);
@@ -283,7 +296,7 @@ void Manager::queueRun(const std::string& name,bool enabled){
  Lock l(mutex);
  if(std::none_of(state["Queues"].begin(),state["Queues"].end(),[&](const Json& q){return str(q,"Name")==name;}))throw std::runtime_error("Queue no longer exists.");
  bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousCycling=cyclingQueues;auto previousFailures=cycleFailed;auto previousPaused=schedulePaused;
- std::vector<Json> previousJobs;for(auto job:jobs)previousJobs.push_back(job->data);
+ auto previousJobs=snapshotQueueRows(jobs,{name},enabled?QueueRollbackScope::Start:QueueRollbackScope::Stop);
  std::vector<std::shared_ptr<Cancel>> pendingStops;
  try{
   for(auto& q:state["Queues"])if(str(q,"Name")==name){q["Enabled"]=enabled;if(!enabled){q["DailyRunUntilComplete"]=false;q["CompletionCanceled"]=true;}if(enabled)armIndependentStop(q,q,epoch(),true);armDailyManualStop(q,q,epoch(),enabled,true);}
@@ -299,7 +312,7 @@ void Manager::queueRun(const std::string& name,bool enabled){
   save();
  }catch(...){
   if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cyclingQueues=previousCycling;cycleFailed=previousFailures;schedulePaused=previousPaused;
-  for(size_t i=0;i<jobs.size();++i)jobs[i]->data=previousJobs[i];
+  for(auto& entry:previousJobs)entry.first->data.swap(entry.second);
   throw;
  }
  if(!enabled)queueActivity(name,false);
@@ -308,15 +321,18 @@ void Manager::queueRun(const std::string& name,bool enabled){
 }
 void Manager::startQueuesOnStartup(){
  Lock lock(mutex);if(startupQueuesApplied||stopping)return;
- bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousFailures=cycleFailed;
- std::vector<Json> previousJobs;for(auto job:jobs)previousJobs.push_back(job->data);
+ std::set<std::string> startupNames;
+ for(const auto& queue:state["Queues"])if(queue.contains("StartOnStartup")&&queue["StartOnStartup"].is_boolean()&&yes(queue,"StartOnStartup"))startupNames.insert(str(queue,"Name"));
+ if(startupNames.empty()){startupQueuesApplied=true;updateWakeTimer(epoch());return;}
+ bool hadEpoch=state.contains("CompletionWorkEpoch");auto previousEpoch=state.value("CompletionWorkEpoch",Json());auto previousQueues=state["Queues"];auto previousManual=manualQueues;auto previousFailures=cycleFailed;auto previousPaused=schedulePaused;
+ auto previousJobs=snapshotQueueRows(jobs,startupNames,QueueRollbackScope::Startup);
  bool changed=false;
  try{
   for(auto& q:state["Queues"])if(q.contains("StartOnStartup")&&q["StartOnStartup"].is_boolean()&&yes(q,"StartOnStartup")){
    auto name=str(q,"Name");q["Enabled"]=true;armIndependentStop(q,q,epoch(),true);armDailyManualStop(q,q,epoch(),true,true);manualQueues.insert(name);prepareQueue(name);changed=true;
   }
   if(changed)save();startupQueuesApplied=true;
- }catch(...){if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cycleFailed=previousFailures;for(size_t i=0;i<jobs.size();++i)jobs[i]->data=previousJobs[i];throw;}
+ }catch(...){if(hadEpoch)state["CompletionWorkEpoch"]=previousEpoch;else state.erase("CompletionWorkEpoch");state["Queues"]=previousQueues;manualQueues=previousManual;cycleFailed=previousFailures;schedulePaused=previousPaused;for(auto& entry:previousJobs)entry.first->data.swap(entry.second);throw;}
  updateWakeTimer(epoch());
 }
 // The caller holds the catalog lock while deciding and recording the outcome.
@@ -370,7 +386,7 @@ void Manager::queueTick(i64 now){
   if(automatic&&scheduled&&!openWindows.count(name)){openWindows.insert(name);if(!yes(q,"RunOnce")||!yes(q,"OnceStarted"))prepareQueue(name);}
   auto due=parseDate(q.value("NextRunUtc",Json()));if(automatic&&due&&due<=now)prepareQueue(name);
   bool work=false;int running=0;std::vector<JobPtr> retried;
-  for(auto j:jobs)if((queuedMember(j->data)||(yes(j->data,"QueueOrigin")&&active.count(j->id())))&&j->id()!=relocationId&&(str(j->data,"Status")!="Complete"||yes(j->data,"SyncPending")||yes(j->data,"SyncRetryFailed")||isActive(j))&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")){
+  for(auto j:jobs)if((queuedMember(j->data)||(yes(j->data,"QueueOrigin")&&active.count(j->id())))&&j->id()!=relocationId&&(str(j->data,"Status")!="Complete"||yes(j->data,"SyncPending")||yes(j->data,"SyncRetryFailed")||isActive(j))&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!PreparedTransferCommit::independentlyFinishing(*this,j,active)){
    if(!isActive(j)&&queueFailureCanRetry(q,j->data,cyclingQueues.count(name)!=0)){
     j->data["QueueAttempts"]=num(j->data,"QueueAttempts")+1;j->data["Status"]="Queued";j->data["NotBefore"]=date(queueRetryNotBefore(q,j->data,now));retried.push_back(j);
    }
@@ -399,7 +415,7 @@ void Manager::queueTick(i64 now){
   }
   if(!inWindow(q,now,manualQueues.count(name)!=0)){
    queueActivity(name,false);
-   for(auto j:jobs)if(queuedMember(j->data)&&j->id()!=relocationId&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){
+   for(auto j:jobs)if(queuedMember(j->data)&&j->id()!=relocationId&&str(j->data,"Queue")==name&&!yes(j->data,"GrabberImmediate")&&!yes(j->data,"IndividualStart")&&!PreparedTransferCommit::independentlyFinishing(*this,j,active)&&!convertingProjects.count(str(j->data,"ProjectId"))&&str(j->data,"Status")!="Pausing"){
     const auto worker=active.find(j->id());
     if(worker==active.end()||worker->second->cancelled())continue;
     schedulePaused.insert(j->id());

@@ -1,0 +1,11 @@
+{
+  "reason": "Use the already prepared advice during native popup update routing instead of repeating model/decryption reads",
+  "affectedProductSource": "native/App.cpp",
+  "unaffectedProductSources": [
+    "native/HostMain.cpp",
+    "native/MonitorMain.cpp",
+    "native/SetupMain.cpp",
+    "native/AutomationMain.cpp"
+  ],
+  "preserveFirstBuildAndUiEvidence": true
+}

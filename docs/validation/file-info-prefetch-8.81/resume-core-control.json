@@ -1,0 +1,54 @@
+{
+  "allOtherCoreObjectsUnchanged": true,
+  "scope": "Correctness control, same normal fixture entry and production resources, only Core object relinked; no timing claim",
+  "runs": [
+    {
+      "kind": "original",
+      "trial": 1,
+      "exitCode": 1,
+      "passed": false,
+      "checks": 7,
+      "error": "The owned selected Resume publishes the complete exact file",
+      "sourceSha256": "46A43E0B79003630A5C04E54F0DE6D4196858BAA87A7A314EF87953E6B96C45C",
+      "entryObjectSha256": "5E67A035AAE3EA4D8AEDC4BF5D1EFF9DED0AD1FED6FEBC17C6375D81D1C1F877",
+      "coreObjectSha256": "1883958F2DB737420FA080406271EC1B99E818FD4CAE0979DDB7EC2B5C4108E4",
+      "binarySha256": "D148F89B8A33B4CB9C8D6786968CA621777F910508DD70D99002899CF108F67F"
+    },
+    {
+      "kind": "fresh",
+      "trial": 1,
+      "exitCode": 0,
+      "passed": true,
+      "checks": 34,
+      "error": "",
+      "sourceSha256": "46A43E0B79003630A5C04E54F0DE6D4196858BAA87A7A314EF87953E6B96C45C",
+      "entryObjectSha256": "5E67A035AAE3EA4D8AEDC4BF5D1EFF9DED0AD1FED6FEBC17C6375D81D1C1F877",
+      "coreObjectSha256": "4923FBC2417CFF0622F636F19CB5B32B7E608A4B212B425CDD0CFCBFE0FD9FE1",
+      "binarySha256": "E0AC45CD3963F3E6198BCAD92DB931A5BCFB03CB15DCD39C6A13D026D1085315"
+    },
+    {
+      "kind": "fresh",
+      "trial": 2,
+      "exitCode": 1,
+      "passed": false,
+      "checks": 28,
+      "error": "A failed item remains unchanged while a later selected retry completes its exact file",
+      "sourceSha256": "46A43E0B79003630A5C04E54F0DE6D4196858BAA87A7A314EF87953E6B96C45C",
+      "entryObjectSha256": "5E67A035AAE3EA4D8AEDC4BF5D1EFF9DED0AD1FED6FEBC17C6375D81D1C1F877",
+      "coreObjectSha256": "4923FBC2417CFF0622F636F19CB5B32B7E608A4B212B425CDD0CFCBFE0FD9FE1",
+      "binarySha256": "E0AC45CD3963F3E6198BCAD92DB931A5BCFB03CB15DCD39C6A13D026D1085315"
+    },
+    {
+      "kind": "original",
+      "trial": 2,
+      "exitCode": 1,
+      "passed": false,
+      "checks": 26,
+      "error": "A fresh complete content decision retries through the actual origin and publishes exact bytes",
+      "sourceSha256": "46A43E0B79003630A5C04E54F0DE6D4196858BAA87A7A314EF87953E6B96C45C",
+      "entryObjectSha256": "5E67A035AAE3EA4D8AEDC4BF5D1EFF9DED0AD1FED6FEBC17C6375D81D1C1F877",
+      "coreObjectSha256": "1883958F2DB737420FA080406271EC1B99E818FD4CAE0979DDB7EC2B5C4108E4",
+      "binarySha256": "D148F89B8A33B4CB9C8D6786968CA621777F910508DD70D99002899CF108F67F"
+    }
+  ]
+}

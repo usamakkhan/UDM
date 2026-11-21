@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "reason": "Retain transfer events before any UI model read while Resume owns the command guard",
+  "changedSources": [
+    "native/App.cpp",
+    "native/ModalSizeUiTests.cpp"
+  ],
+  "recompiledTargets": [
+    "UDM",
+    "ModalSizeUiTests",
+    "ProgressMenuUiTests"
+  ],
+  "backendSourceClosuresUnchanged": true,
+  "oldUdmSha256": "3614B876BECEE3B83CA4CB8773D1A8C079BA6481EC25B62449381F77773FB990",
+  "newUdmSha256": "8F4AAF083357366CD7BC8A96548A5609B9BC64955465F52852976083F5CA8367",
+  "preliminaryUiChecks": 138,
+  "finalUiChecks": 139,
+  "preliminaryUiSha256": "EA09D3DB1BEAD5DEBFAAAFFDE6A7159435D203DA6E4720A216A508C965A1CCE5",
+  "finalUiSha256": "E70159F06717598BE81B0C876D70E567A067A9356D8712CFA559AC3B836CD5EF",
+  "preliminaryAssertionsIncludedInFinalCount": false
+}

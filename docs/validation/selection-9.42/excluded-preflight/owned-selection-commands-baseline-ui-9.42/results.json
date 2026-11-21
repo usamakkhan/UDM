@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "name": "The selected-command fixture receives real loopback bytes",
+      "passed": true
+    },
+    {
+      "name": "The real list renders the active transfer before selection",
+      "passed": true
+    },
+    {
+      "name": "Completed selection establishes an initially disabled Stop item",
+      "passed": true
+    },
+    {
+      "name": "A separate writer owns Manager before the real menu update",
+      "passed": true
+    },
+    {
+      "name": "Stop follows the displayed active selection while Manager is held",
+      "passed": false
+    }
+  ],
+  "diagnostics": {
+    "busyActive": {
+      "remove": false,
+      "resume": false,
+      "selected": 1,
+      "stop": false,
+      "writerHeld": true
+    }
+  },
+  "error": "Stop follows the displayed active selection while Manager is held",
+  "passed": false
+}

@@ -1,0 +1,34 @@
+--- native/PreparedTransferCommit.hpp
++++ diagnostic/PreparedTransferCommit.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticOperation.hpp"
+ #include "PublicationRecovery.hpp"
+ #include "PublishedWriteback.hpp"
+ #include <future>
+@@ -25,13 +26,13 @@
+  static PreparedTransferCommit* available(Manager& m,const JobPtr& j,const std::shared_ptr<Cancel>& c){auto p=current;return p&&p->allowed&&!p->ready&&!p->accepted&&!p->inCommit&& &p->manager==&m&&p->job==j&&p->cancel==c?p:nullptr;}
+  static PreparedTransferCommit* publishing(Manager& m,const JobPtr& j,const Cancel* c){auto p=current;return p&&p->inCommit&& &p->manager==&m&&p->job==j&&p->cancel.get()==c?p:nullptr;}
+  // Launch failure leaves the caller on its existing synchronous path.
+- static PublishedWritebackResult flushPinned(Handle body,const fs::path& path,double opening){
++ static PublishedWritebackResult flushPinned(Handle body,const fs::path& path,double opening){DiagnosticOperation operation("owned-body-writeback",0);
+   struct Ops:PublishedWritebackOps {Handle& owned;explicit Ops(Handle& h):owned(h){}HANDLE open(const fs::path&,DWORD){const auto result=owned.h;owned.h=INVALID_HANDLE_VALUE;return result;}} ops(body);
+   auto result=publishedWriteback(path,false,ops);result.openSeconds+=opening;return result;
+  }
+  bool startWriteback(const fs::path& path,bool normalize){
+   if(!allowed||ready||writeback.valid()||normalize)return false;
+-  const auto began=std::chrono::steady_clock::now();
++  DiagnosticOperation operation("owned-body-open-launch",0);const auto began=std::chrono::steady_clock::now();
+   // The write-only object excludes every other writer from open through exact
+   // acceptance. Its duplicate flushes on the task; publication adopts this pin.
+   Handle pin(CreateFileW(path.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+@@ -47,7 +48,7 @@
+  void joinWriteback()noexcept{if(writeback.valid())try{writeback.wait();}catch(...){}}
+  void finishWriteback(){
+   if(!writeback.valid())return;
+-  const auto began=std::chrono::steady_clock::now();const auto result=writeback.get();
++  DiagnosticOperation operation("owned-body-join",0);const auto began=std::chrono::steady_clock::now();const auto result=writeback.get();
+   {Lock lock(manager.mutex);auto& phases=job->data["FinishPhases"];
+    phases["PublishedFileOpen"]=result.openSeconds;phases["PublishedSparseNormalize"]=result.normalizeSeconds;
+    phases["PublishedFileFlush"]=result.flushSeconds;phases["PublishedFileClose"]=result.closeSeconds;

@@ -1,0 +1,40 @@
+--- a/benchmarks/speed/finish-io.wprp
++++ b/benchmarks/speed/finish-io.wprp
+@@ -8,7 +8,6 @@
+     <SystemProvider Id="UDMFinishKernel">
+       <Keywords>
+         <Keyword Value="ProcessThread" />
+-        <Keyword Value="Loader" />
+         <Keyword Value="CSwitch" />
+         <Keyword Value="ReadyThread" />
+         <Keyword Value="DiskIO" />
+--- a/benchmarks/speed/finish_io_trace.py
++++ b/benchmarks/speed/finish_io_trace.py
+@@ -78,7 +78,10 @@
+         raise ValueError("Unexpected profile variants")
+     keywords = [n.get("Value") for n in root.findall("./Profiles/SystemProvider/Keywords/Keyword")]
+     stacks = [n.get("Value") for n in root.findall("./Profiles/SystemProvider/Stacks/Stack")]
+-    if set(keywords) != {"ProcessThread", "Loader", "CSwitch", "ReadyThread", "DiskIO", "DiskIOInit", "FileIO", "FileIOInit"} or len(keywords) != 8:
++    # This bounded IO capture needs process/thread identity, not module-symbol
++    # rundown. Loader can make WPR stop/merge outlive the collection budget.
++    # Keep it excluded explicitly; recorded stack addresses remain unresolved.
++    if set(keywords) != {"ProcessThread", "CSwitch", "ReadyThread", "DiskIO", "DiskIOInit", "FileIO", "FileIOInit"} or len(keywords) != 7:
+         raise ValueError("Unexpected kernel keywords")
+     if set(stacks) != {"DiskReadInit", "DiskWriteInit", "DiskFlushInit", "FileFlush", "FileOpEnd"} or len(stacks) != 5:
+         raise ValueError("Unexpected kernel stacks")
+--- a/benchmarks/speed/test_finish_io_trace.py
++++ b/benchmarks/speed/test_finish_io_trace.py
+@@ -220,6 +220,13 @@
+             with self.assertRaisesRegex(ValueError, "inherited profile"):
+                 trace.validate_profile(trace.PROFILE, hashlib.sha256(content).hexdigest().upper())
+ 
++    def test_module_rundown_is_excluded_from_bounded_io_profile(self):
++        content = trace.PROFILE.read_bytes().replace(b'<Keyword Value="FileIO" />',
++                   b'<Keyword Value="FileIO" /><Keyword Value="Loader" />')
++        with patch.object(Path, "read_bytes", return_value=content):
++            with self.assertRaisesRegex(ValueError, "kernel keywords"):
++                trace.validate_profile(trace.PROFILE, hashlib.sha256(content).hexdigest().upper())
++
+     def test_cleanup_supervisor_retries_owned_instance_until_confirmed_off(self):
+         self.backend.sessions.update([self.instance, "another-recording"])
+         self.backend.cancel_error = True

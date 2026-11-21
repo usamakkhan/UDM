@@ -1,0 +1,754 @@
+--- a/native/Core.hpp
++++ b/native/Core.hpp
+@@ -441,7 +441,7 @@
+  Json quotaStatus(JobPtr job={})const;
+  std::set<JobPtr> quotaWaitingJobs()const;
+  Json takeQuotaWarning();
+- void progress(JobPtr,size_t,size_t segment,Worker*);
++ void progress(JobPtr,size_t,size_t segment,Worker*,bool accountNetwork=true);
+ private:
+  // Caller holds the manager lock. A supplied lookup can contain an empty match.
+  JobPtr offerDownload(const std::string& address,const std::string& folder,const std::string& name,
+--- a/native/Core.cpp
++++ b/native/Core.cpp
+@@ -817,7 +817,7 @@
+  return "Download limit reached. Resuming automatically in "+std::to_string(seconds/3600)+" hr "+std::to_string((seconds/60)%60)+" min "+std::to_string(seconds%60)+" sec.";
+ }
+ 
+-void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
++void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker,bool accountNetwork){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;if(accountNetwork)j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
+ void Manager::ensureConnection(JobPtr j,const Cancel& c){Json prefs;{Lock l(mutex);prefs=state["Settings"];}ensureDialConnection(prefs,c,[this,j](const std::string& message){Lock l(mutex);if(message.empty())j->data.erase("ConnectionStatus");else j->data["ConnectionStatus"]=message;});}
+ void requestLiveHlsFinish(Manager& manager,JobPtr job,const std::function<bool()>& allowed){
+  std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(allowed&&!allowed())return;if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -5,6 +5,7 @@
+ #include "WrittenPrefix.hpp"
+ #include "WrittenBodyCache.hpp"
+ #include "CatalogDiskCredit.hpp"
++#include "OrderedBodyWriter.hpp"
+ #include "PrefinishWriteback.hpp"
+ #include "MediaStorage.hpp"
+ #include "MediaAssemblyVerification.hpp"
+@@ -694,7 +695,7 @@
+   bool resumeWithoutHttp2=false,resumeWithoutHttp3=false,catalogHasSavedBytes=false;
+   std::string savedStrongDate;
+   {
+-   Lock lock(m.mutex);const auto& data=job->data;const auto& segments=data["Segments"];
++   Lock lock(m.mutex);auto& data=job->data;data.erase("OrderedBodyWrites");data.erase("DiskCreditCheckpoint");const auto& segments=data["Segments"];
+    refreshPending=yes(data,"RefreshPendingValidation");
+    if(refreshPending){
+     protectSavedRefresh=num(data,"Received")>0;
+@@ -1023,6 +1024,32 @@
+   // cache-eligible root path before ordered network writes are introduced.
+   std::unique_ptr<CatalogDiskCredit::Lease> diskCredit;
+   if(memoryStage&&size>0)diskCredit=CatalogDiskCredit::attach(m,job,cancel);
++  Handle prefinishFile;std::unique_ptr<PrefinishWriteback> prefinish;
++  std::atomic<i64> orderedWritten{0};Handle orderedFile;std::unique_ptr<OrderedBodyWriter> ordered;
++#ifdef UDM_ORDERED_BODY_QUALIFICATION
++  // Private qualification path until queued ownership, interruption and whole-
++  // lifetime performance gates pass. No browser/IPC preference enables it.
++  if(diskCredit&&memoryStage&&!inlineHash){
++   bool eligible;{Lock lock(m.mutex);eligible=yes(job->data,"RangeSupported")&&num(job->data,"Connections",8)>1;}
++   if(eligible){
++    auto storage=bodyCache->releaseStorage();
++    try{
++     orderedFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
++     if(!orderedFile)throw std::runtime_error("Cannot open ordered download storage");
++     ordered=std::make_unique<OrderedBodyWriter>(static_cast<size_t>(size),[&](size_t offset,const BYTE* bytes,size_t count){
++      auto operation=diskCredit->beginBufferedWrite(static_cast<i64>(offset),static_cast<i64>(count));
++      writeAt(orderedFile.h,bytes,count,static_cast<i64>(offset));operation.acknowledge();
++      hasher->writtenPrefix.capture(bytes,count,static_cast<i64>(offset));
++      const auto written=orderedWritten.fetch_add(static_cast<i64>(count))+static_cast<i64>(count);
++      if(prefinish)try{prefinish->progress(written);}catch(...){/* Optional writeback cannot invalidate a successful write. */}
++     },256*1024,std::move(storage),[&](std::exception_ptr){group->stop=true;});
++    }catch(...){
++     storage.reset();if(orderedFile){CloseHandle(orderedFile.h);orderedFile.h=INVALID_HANDLE_VALUE;}
++     bodyCache->reset(cacheSize);memoryStage=bodyCache->valid;
++    }
++   }
++  }
++#endif
+   if(hasher&&!inlineHash&&!memoryStage){hashing=std::thread([&]{try{
+    PrefixHasher::Reader reader;
+    while(!hashCancel.cancelled()){
+@@ -1071,7 +1098,6 @@
+    }
+    job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
+   }
+-  Handle prefinishFile;std::unique_ptr<PrefinishWriteback> prefinish;
+   if(size>=1048576&&(connections==1||(connections<=8&&size>=32*1048576LL&&size<=64*1048576LL))&&fixedVolume(dataFile))try{
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(prefinishFile)prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+@@ -1491,9 +1517,12 @@
+          Lock lock(m.mutex);job->data["Segments"][index]["HttpBoundarySha256"]=digest;
+         }else{
+          BYTE saved[httpOverlapLimit];
+-         Handle input(CreateFileW(dataFile.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
+-         if(!input||readAt(input.h,saved,overlap,requestStart)!=overlap)
+-          throw std::runtime_error("Cannot read the saved HTTP resume boundary.");
++         if(ordered){
++          if(!ordered->readAccepted(static_cast<size_t>(requestStart),saved,overlap))throw std::runtime_error("Cannot read the buffered HTTP resume boundary.");
++         }else{
++          Handle input(CreateFileW(dataFile.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));
++          if(!input||readAt(input.h,saved,overlap,requestStart)!=overlap)throw std::runtime_error("Cannot read the saved HTTP resume boundary.");
++         }
+          if(memcmp(saved,incoming,overlap)!=0)
+           throw HttpOverlapMismatch("The HTTP resume bytes do not match the saved file. The old partial download was kept.",index);
+         }
+@@ -1503,9 +1532,10 @@
+         job->data["RangeSupported"]=true;
+         verifyRangeOnReconnect=false;
+        }
+-       // One handle per worker on the shared output file; every write names its offset.
+-       Handle output(CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+-       if(!output)throw std::runtime_error("Cannot write the partial download.");
++       // The ordered path has one storage thread and one output handle. Only
++       // legacy synchronous workers need their own positioned-write handle.
++       Handle output;
++       if(!ordered){output.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);if(!output)throw std::runtime_error("Cannot write the partial download.");}
+        if(ranges){
+         {Lock lock(m.mutex);responseEnd[worker]=retainedInitial?num(data,"Size")-1:num(segment,"End");acceptedResponses[worker]=1;}
+         rangeWorkChanged.notify_all();
+@@ -1574,6 +1604,7 @@
+         }
+         if(need>=0&&(i64)n>need-have-readBytes)throw std::runtime_error("Server sent more bytes than the declared range.");
+         readBytes+=(i64)n;m.charge(n,*group,*rate,limitOwner);
++        if(ordered){Lock lock(m.mutex);job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+n;}
+         size_t keep;i64 at,ownedAfterWrite=-1;
+         {
+          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];
+@@ -1600,24 +1631,25 @@
+          beginBodyRead(buffers[1-current],ownedAfterWrite);
+         }
+         if(keep){
+-         if(diskCredit){auto written=diskCredit->beginWrite(at,static_cast<i64>(keep));writeAt(output.h,buffer,keep,at);written.acknowledge();}
++         if(ordered){try{ordered->put(static_cast<size_t>(at),buffer,keep);}catch(const OrderedBodyWriter::Conflict&){throw HttpOverlapMismatch("The retried HTTP bytes do not match the buffered representation.",index);}}
++         else if(diskCredit){auto written=diskCredit->beginWrite(at,static_cast<i64>(keep));writeAt(output.h,buffer,keep,at);written.acknowledge();}
+          else writeAt(output.h,buffer,keep,at);
+         }
+         if(inlineHash)hasher->wrote(buffer,keep,at);
+         {
+          Lock lock(m.mutex);const auto& actual=job->data["Segments"][index];inflightEnd[worker]=0;
+          const size_t credit=ranges?(size_t)std::min<i64>((i64)keep,num(actual,"End")-num(actual,"Start")+1-num(actual,"Done")):keep;
+-         if(memoryStage)bodyCache->wrote(buffer,credit,at);
+-         if(hasher)hasher->writtenPrefix.capture(buffer,credit,at);
+-         m.progress(job,credit,index,&activity);
+-         if(prefinish)prefinish->progress(num(job->data,"Received"));
++         if(memoryStage&&!ordered)bodyCache->wrote(buffer,credit,at);
++         if(hasher&&!ordered)hasher->writtenPrefix.capture(buffer,credit,at);
++         m.progress(job,credit,index,&activity,!ordered);
++         if(prefinish&&!ordered)prefinish->progress(num(job->data,"Received"));
+          const auto end=at+(i64)credit;
+          if(ranges&&credit&&end==num(actual,"End")+1&&end<num(data,"Size")){
+           const auto tailSize=(size_t)std::min(end,httpOverlapLimit);
+           if(credit>=tailSize)
+            std::copy_n(buffer+credit-tailSize,tailSize,writtenTails[end].begin());
+          }
+-         job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-credit);
++         if(!ordered)job->data["TransferredBytes"]=num(job->data,"TransferredBytes")+(n-credit);
+          if((!headChecked||checkOutputSize)&&credit&&head.size()<headLimit)
+           head.insert(head.end(),buffer,buffer+std::min<size_t>(credit,headLimit-head.size()));
+         }
+@@ -1724,6 +1756,13 @@
+   }
+   for(auto& worker:workers)worker.join();
+   const auto workersJoined=GetTickCount64();
++  if(ordered){
++   const auto result=(error||cancel->cancelled())?ordered->pause():ordered->finish();
++   if(result.failure){error=result.failure;changed=false;repairable=false;}
++   else if(!error&&!cancel->cancelled()&&!result.complete){error=std::make_exception_ptr(std::runtime_error("The ordered download did not write the complete body."));changed=false;repairable=false;}
++   if(result.complete)bodyCache->adoptCompletedStorage(ordered->takeCompletedStorage(),size);
++   {Lock lock(m.mutex);job->data["OrderedBodyWrites"]={{"Used",true},{"AcceptedBytes",result.acceptedBytes},{"WrittenBytes",result.writtenBytes},{"Complete",result.complete},{"Paused",result.paused},{"Failed",bool(result.failure)}};}
++  }
+   PrefinishWriteback::Stats writeback;if(prefinish)writeback=prefinish->finish();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}
+   {Lock lock(m.mutex);job->data["PrefinishWriteback"]={{"Flushes",writeback.flushes},{"Errors",writeback.errors},{"Seconds",writeback.seconds},{"Adjustments",writeback.adjustments},{"LeadBytes",writeback.leadBytes}};}
+   joinHasher.stop();
+--- a/native/WrittenBodyCache.hpp
++++ b/native/WrittenBodyCache.hpp
+@@ -27,6 +27,12 @@
+  }
+  // Serialized handoff invalidates cache credit; storage bytes and budget survive.
+  BodyBufferStorage::Ptr releaseStorage()noexcept{valid=false;decltype(coverage){}.swap(coverage);return std::move(storage);}
++ // Only a joined writer with complete successful disk coverage may call this.
++ // Admission transfers the existing allocation; hashing never reserves a copy.
++ bool adoptCompletedStorage(BodyBufferStorage::Ptr completed,i64 size)noexcept{
++  disable();if(!completed||size<=0||size>maxBytes||static_cast<size_t>(size)!=completed->size()||completed.use_count()!=1)return false;
++  try{coverage.emplace_back(0,size);storage=std::move(completed);valid=true;return true;}catch(...){disable();return false;}
++ }
+  void wrote(const BYTE* source,size_t count,i64 offset)noexcept{
+   if(!valid||!storage||!count)return;
+   if(!source||offset<0||static_cast<uint64_t>(offset)>storage->size()||count>storage->size()-static_cast<size_t>(offset)){disable();return;}
+--- a/native/WrittenBodyCacheTests.cpp
++++ b/native/WrittenBodyCacheTests.cpp
+@@ -1,5 +1,5 @@
+ ﻿#include "WrittenBodyCache.hpp"
+-#include "../benchmarks/speed/ordered_range_buffer.hpp"
++#include "OrderedBodyWriter.hpp"
+ #include <iostream>
+ #include <future>
+ #include <thread>
+@@ -75,16 +75,16 @@
+   }
+   {
+    auto exported=BodyBufferStorage::reserve(8);check(bool(exported),"The shared storage factory admits a bounded standalone owner");auto alias=exported;
+-   bool refused=false;try{experiment::OrderedRangeBuffer writer(8,[](auto,auto,auto){},4,exported);}catch(const std::invalid_argument&){refused=true;}
++   bool refused=false;try{OrderedBodyWriter writer(8,[](auto,auto,auto){},4,exported);}catch(const std::invalid_argument&){refused=true;}
+    check(refused&&exported.use_count()==2,"An ordered writer refuses aliased mutable storage before starting IO");alias.reset();
+-   refused=false;try{experiment::OrderedRangeBuffer writer(16,[](auto,auto,auto){},4,std::move(exported));}catch(const std::invalid_argument&){refused=true;}
++   refused=false;try{OrderedBodyWriter writer(16,[](auto,auto,auto){},4,std::move(exported));}catch(const std::invalid_argument&){refused=true;}
+    check(refused&&!exported,"An ordered writer rejects an incorrectly sized transferred buffer");WrittenBodyCache next;next.reset(8);check(next.valid,"Failed writer admission retains no consumed storage lease");
+   }
+   {
+    WrittenBodyCache cache,denied;cache.reset(8);check(cache.valid,"The existing production cache owns the shared token before writer admission");
+-   bool refused=false;try{experiment::OrderedRangeBuffer other(8,[](auto,auto,auto){});}catch(const std::runtime_error&){refused=true;}
++   bool refused=false;try{OrderedBodyWriter other(8,[](auto,auto,auto){});}catch(const std::runtime_error&){refused=true;}
+    check(refused,"The ordered writer cannot allocate a second body beside the production cache");
+-   auto storage=cache.releaseStorage();const auto address=storage->data();Bytes disk(8,0);experiment::OrderedRangeBuffer writer(8,[&](auto at,auto data,auto n){std::copy_n(data,n,disk.data()+at);},4,std::move(storage));
++   auto storage=cache.releaseStorage();const auto address=storage->data();Bytes disk(8,0);OrderedBodyWriter writer(8,[&](auto at,auto data,auto n){std::copy_n(data,n,disk.data()+at);},4,std::move(storage));
+    check(!storage&&!cache.valid,"Writer admission consumes the existing cache buffer rather than a second allocation");
+    const BYTE bytes[]={'a','b','c','d','e','f','g','h'};writer.put(4,bytes+4,4);writer.put(0,bytes,4);auto done=writer.finish();
+    check(done.complete&&disk==Bytes({'a','b','c','d','e','f','g','h'})&&writer.completedBody()->data()==address,"Ordered completion preserves buffer identity and exact bytes across cache-to-writer handoff");
+@@ -92,8 +92,23 @@
+    denied.reset(8);check(!denied.valid,"An exported completed body retains the budget for its hash reader");completed.reset();denied.reset(8);check(denied.valid,"The body budget is reusable after the final completed-buffer reader releases it");
+   }
+   {
+-   experiment::OrderedRangeBuffer writer(8,[](auto,auto,auto){});const BYTE byte=1;writer.put(4,&byte,1);
++   OrderedBodyWriter writer(8,[](auto,auto,auto){});const BYTE byte=1;writer.put(4,&byte,1);
+    check(!writer.takeCompletedStorage(),"An unsettled writer cannot export a body as complete");auto state=writer.pause();check(state.paused&&!writer.takeCompletedStorage(),"A paused incomplete writer cannot export completion storage");
++  }
++  {
++   WrittenBodyCache cache;cache.reset(8);auto storage=cache.releaseStorage();const auto address=storage->data();const BYTE expected[]={1,2,3,4,5,6,7,8};
++   OrderedBodyWriter writer(8,[](auto,auto,auto){},4,std::move(storage));writer.put(4,expected+4,4);writer.put(0,expected,4);auto done=writer.finish();
++   check(done.complete&&cache.adoptCompletedStorage(writer.takeCompletedStorage(),8),"The joined native writer transfers complete disk-backed storage into advisory hashing");
++   const auto body=cache.body(8,8);check(body&&body->data()==address&&*body==Bytes(expected,expected+8),"The final cache reuses the same allocation and preserves every original byte");
++   WrittenBodyCache denied;denied.reset(8);check(!denied.valid,"The adopted hash body continues to hold the one-buffer budget");
++  }
++  {
++   WrittenBodyCache cache;auto storage=BodyBufferStorage::reserve(8);auto alias=storage;
++   check(!cache.adoptCompletedStorage(std::move(storage),8)&&!cache.valid,"Completed hash admission refuses a shared mutable allocation");alias.reset();cache.reset(8);check(cache.valid,"A refused completed-body alias retains no abandoned budget");
++  }
++  {
++   WrittenBodyCache cache;auto storage=BodyBufferStorage::reserve(8);
++   check(!cache.adoptCompletedStorage(std::move(storage),7)&&!cache.valid,"Completed hash admission refuses the wrong exact body size");cache.reset(8);check(cache.valid,"A rejected completion size releases its transferred buffer");
+   }
+  }catch(const std::exception& e){error=e.what();}
+  atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+--- a/native/WrittenDiskCheckpoint.hpp
++++ b/native/WrittenDiskCheckpoint.hpp
+@@ -59,6 +59,7 @@
+  }
+ 
+ public:
++ enum class WriteIntent { NewWork, AcceptedBuffer };
+  class Write {
+   friend class WrittenDiskCheckpoint;
+   std::shared_ptr<State> state;i64 offset=0,length=0;
+@@ -96,8 +97,8 @@
+   state=std::make_shared<State>(std::move(cancel),std::move(file),identity(row),size);
+  }
+  WrittenDiskCheckpoint(const WrittenDiskCheckpoint&)=delete;WrittenDiskCheckpoint& operator=(const WrittenDiskCheckpoint&)=delete;
+- Write beginWrite(const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file,i64 offset,i64 length){
+-  std::lock_guard<std::mutex> lock(state->mutex);current(*state,cancel,file);cancel->check();
++ Write beginWrite(const std::shared_ptr<const Cancel>& cancel,const std::shared_ptr<Handle>& file,i64 offset,i64 length,WriteIntent intent=WriteIntent::NewWork){
++  std::lock_guard<std::mutex> lock(state->mutex);current(*state,cancel,file);if(intent==WriteIntent::NewWork)cancel->check();
+   if(offset<0||length<=0||offset>state->size||length>state->size-offset)throw std::out_of_range("Invalid disk-credit write");
+   ++state->writes;return Write(state,offset,length);
+  }
+--- a/native/CatalogDiskCredit.hpp
++++ b/native/CatalogDiskCredit.hpp
+@@ -38,6 +38,9 @@
+   Lease(const Lease&)=delete;Lease& operator=(const Lease&)=delete;
+   ~Lease(){try{close();}catch(const std::exception& e){try{Lock lock(manager.mutex);manager.storageError=e.what();}catch(...){}}}
+   WrittenDiskCheckpoint::Write beginWrite(i64 offset,i64 length){if(!entry)throw std::logic_error("Disk-credit binding closed");return entry->credit.beginWrite(entry->cancel,entry->file,offset,length);}
++  // The ordered writer owns these already accepted bytes before cancellation.
++  // Preserve them on pause; this is not admission for a new network operation.
++  WrittenDiskCheckpoint::Write beginBufferedWrite(i64 offset,i64 length){if(!entry)throw std::logic_error("Disk-credit binding closed");return entry->credit.beginWrite(entry->cancel,entry->file,offset,length,WrittenDiskCheckpoint::WriteIntent::AcceptedBuffer);}
+   // Producers must be joined before close. Call without an outer model lock.
+   void close(){
+    if(!entry)return;
+--- a/native/Version.hpp
++++ b/native/Version.hpp
+@@ -1,4 +1,4 @@
+ ﻿#pragma once
+-#define UDM_VERSION_TUPLE 8,61,0,0
+-#define UDM_VERSION_STRING "8.61"
+-#define UDM_VERSION_WSTRING L"8.61"
++#define UDM_VERSION_TUPLE 8,62,0,0
++#define UDM_VERSION_STRING "8.62"
++#define UDM_VERSION_WSTRING L"8.62"
+--- a/native/backend-tests.json
++++ b/native/backend-tests.json
+@@ -51,6 +51,10 @@
+   },
+   {
+     "source": "WrittenDiskCheckpointTests",
++    "timeoutSeconds": 90
++  },
++  {
++    "source": "OrderedBodyWriterTests",
+     "timeoutSeconds": 90
+   },
+   {
+--- a/browser/chromium/manifest.json
++++ b/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.25",
++  "version": "0.72.26",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/browser/firefox/manifest.json
++++ b/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ ﻿{
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.72.25",
++  "version": "0.72.26",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- a/native/CatalogDiskCreditTests.cpp
++++ b/native/CatalogDiskCreditTests.cpp
+@@ -1,4 +1,4 @@
+-#include "CatalogDiskCredit.hpp"
++﻿#include "CatalogDiskCredit.hpp"
+ #include "CatalogAdmissionRegistry.hpp"
+ #include <future>
+ #include <iostream>
+@@ -87,6 +87,14 @@
+    CatalogCheckpointTestAccess::active(m,job,{});m.stop();
+    {Manager reload(m.root);check(reload.jobs.size()==2&&reload.jobs[0]->id()==id&&num(reload.jobs[0]->data,"Received")==8192&&num(reload.jobs[0]->data["Segments"][0],"Done")==8192,"The actual Manager reload restores disk-backed progress and the independently admitted job");}
+   }
++  {
++   Manager m(root/L"network-accounting");auto c=std::make_shared<Cancel>();auto job=std::make_shared<Job>(Json{{"Id",guid()},{"FileName","counter.bin"},{"Received",0},{"TransferredBytes",20},{"Segments",Json::array({{{"Index",0},{"Start",0},{"End",99},{"Done",0}}})}});Worker worker;
++   m.progress(job,4,0,&worker,false);
++   check(num(job->data,"Received")==4&&num(job->data["Segments"][0],"Done")==4&&num(job->data,"TransferredBytes")==20,"Already-accounted buffered reception advances accepted progress without charging network bytes twice");
++   check(worker.received==4&&worker.position==4,"Buffered accepted progress retains the worker UI cursor contract");
++   m.progress(job,3,0,&worker);
++   check(num(job->data,"Received")==7&&num(job->data,"TransferredBytes")==23&&worker.position==7,"Legacy progress retains its default one-time network accounting");
++  }
+   passed=true;
+  }catch(const std::exception& e){error=e.what();}
+  atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
+--- a/native/WrittenDiskCheckpointTests.cpp
++++ b/native/WrittenDiskCheckpointTests.cpp
+@@ -1,4 +1,4 @@
+-#include "WrittenDiskCheckpoint.hpp"
++﻿#include "WrittenDiskCheckpoint.hpp"
+ #include "CatalogCommitCoordinator.hpp"
+ #include <future>
+ #include <iostream>
+@@ -119,6 +119,12 @@
+    DWORD saved=0;if(!WriteFile(file->h,tail.data(),static_cast<DWORD>(tail.size()),&saved,nullptr)||saved!=tail.size())throw std::runtime_error("Fixture tail write failed");
+    cancel->stop=true;
+    check(refused([&]{credit->beginWrite(generation,file,0,1);}),"Cancellation blocks new IO admission");
++   {
++    auto retained=credit->beginWrite(generation,file,0,1,WrittenDiskCheckpoint::WriteIntent::AcceptedBuffer);
++    LARGE_INTEGER zero{};BYTE byte=0;DWORD done=0;if(!SetFilePointerEx(file->h,zero,nullptr,FILE_BEGIN)||!WriteFile(file->h,&byte,1,&done,nullptr)||done!=1)throw std::runtime_error("Retained-byte write failed");retained.acknowledge();
++    check(true,"An already accepted buffered byte can be preserved after cancellation without admitting new network work");
++    check(refused([&]{credit->beginWrite(std::make_shared<Cancel>(),file,0,1,WrittenDiskCheckpoint::WriteIntent::AcceptedBuffer);}),"Preservation cannot bypass exact generation ownership");
++   }
+    lease.acknowledge();
+    auto snapshot=credit->capture(live,generation,file);
+    check(num(snapshot.value(),"Received")==total,"Already issued successful writes can be acknowledged and checkpointed after cancellation");
+diff --git a/native/OrderedBodyWriter.hpp b/native/OrderedBodyWriter.hpp
+new file mode 100644
+index 00000000..2f098ded
+--- /dev/null
++++ b/native/OrderedBodyWriter.hpp
+@@ -0,0 +1,169 @@
++#pragma once
++// Ordered body storage. Network ownership and checkpoint leases belong to the caller.
++#include <algorithm>
++#include "BodyBufferStorage.hpp"
++#include <condition_variable>
++#include <cstdint>
++#include <cstring>
++#include <exception>
++#include <functional>
++#include <map>
++#include <mutex>
++#include <stdexcept>
++#include <thread>
++#include <utility>
++#include <vector>
++namespace udm {
++class OrderedBodyWriter {
++public:
++ using Byte=std::uint8_t;
++ using Span=std::pair<std::size_t,std::size_t>;
++ using Writer=std::function<void(std::size_t,const Byte*,std::size_t)>;
++ using Failure=std::function<void(std::exception_ptr)>;
++ struct Conflict:std::runtime_error{using std::runtime_error::runtime_error;};
++ static constexpr std::size_t maxBytes=BodyBufferStorage::maxBytes;
++ static constexpr std::size_t maxSpans=4096;
++ struct State {
++  std::size_t total=0,acceptedBytes=0,writtenBytes=0;
++  bool closing=false,paused=false,aborted=false,settled=false,complete=false;
++  std::exception_ptr failure;
++  std::vector<Span> accepted,written;
++  // Segment Done is a contiguous prefix, never a sum across a hole.
++  std::size_t resumePrefix(std::size_t offset,std::size_t length)const noexcept{
++   if(offset>total||length>total-offset)return 0;
++   auto at=offset;const auto end=offset+length;
++   for(const auto& span:written){if(span.second<=at)continue;if(span.first>at)break;at=std::min(end,span.second);if(at==end)break;}
++   return at-offset;
++  }
++ };
++private:
++ using Ranges=std::map<std::size_t,std::size_t>;
++ const std::size_t total,chunk;
++ const Writer write;
++ const Failure notifyFailure;
++ BodyBufferStorage::Ptr storage;
++ mutable std::mutex mutex;
++ std::condition_variable changed;
++ Ranges accepted,written;
++ bool closing=false,drainGaps=false,aborted=false,settled=false;
++ std::exception_ptr failure;
++ std::thread worker;
++ std::thread::id writerId{};
++ static BodyBufferStorage::Ptr checkedStorage(std::size_t size,BodyBufferStorage::Ptr backing){
++  if(!backing)backing=BodyBufferStorage::reserve(size);
++  if(!backing)throw std::runtime_error("Shared body buffer is occupied or unavailable");
++  if(backing->size()!=size||backing.use_count()!=1)throw std::invalid_argument("Writer requires unique, exactly sized storage");
++  return backing;
++ }
++ static Writer checkedWriter(Writer callback){if(!callback)throw std::invalid_argument("Missing storage writer");return callback;}
++ static std::size_t checkedSize(std::size_t value){if(!value||value>maxBytes)throw std::invalid_argument("Unsupported body size");return value;}
++ static std::size_t checkedChunk(std::size_t value,std::size_t size){if(!value)throw std::invalid_argument("Empty writer window");return std::min(value,size);}
++ static void include(Ranges& ranges,std::size_t low,std::size_t high){
++  auto at=ranges.lower_bound(low);
++  if(at!=ranges.begin()){auto prior=std::prev(at);if(prior->second>=low)at=prior;}
++  while(at!=ranges.end()&&at->first<=high){low=std::min(low,at->first);high=std::max(high,at->second);at=ranges.erase(at);}
++  ranges.emplace(low,high);
++ }
++ static std::size_t count(const Ranges& ranges)noexcept{std::size_t n=0;for(const auto& span:ranges)n+=span.second-span.first;return n;}
++ std::size_t prefix()const noexcept{return !written.empty()&&written.begin()->first==0?written.begin()->second:0;}
++ bool next(Span& result)const noexcept{
++  for(const auto& available:accepted){
++   auto at=available.first;
++   for(const auto& saved:written){
++    if(saved.second<=at)continue;if(saved.first>=available.second)break;
++    if(saved.first>at)break;at=std::max(at,saved.second);if(at>=available.second)break;
++   }
++   if(at>=available.second)continue;
++   if(!drainGaps&&at!=prefix())return false;
++   auto end=std::min(available.second,at+std::min(chunk,total-at));
++   // Do not rewrite a later committed span after partial drain.
++   auto later=written.lower_bound(at);if(later!=written.end())end=std::min(end,later->first);
++   if(end>at){result={at,end};return true;}
++  }
++  return false;
++ }
++ void run()noexcept{
++  try{
++   std::unique_lock<std::mutex> lock(mutex);writerId=std::this_thread::get_id();
++   for(;;){
++    Span span{};
++    changed.wait(lock,[&]{return aborted||closing||next(span);});
++    if(aborted)return;
++    if(!next(span)){if(closing)return;continue;}
++    // Prepare all credit bookkeeping before issuing IO. Failure cannot erase
++    // an earlier acknowledgment, and no allocation follows a successful write.
++    auto credit=written;include(credit,span.first,span.second);
++    lock.unlock();write(span.first,storage->data()+span.first,span.second-span.first);lock.lock();
++    written.swap(credit);changed.notify_all();
++   }
++  }catch(...){
++   const auto original=std::current_exception();
++   {std::lock_guard<std::mutex> lock(mutex);failure=original;closing=true;changed.notify_all();}
++   if(notifyFailure)try{notifyFailure(original);}catch(...){/* Preserve the storage failure. */}
++  }
++ }
++ State stateLocked()const{
++  State value;value.total=total;value.acceptedBytes=count(accepted);value.writtenBytes=count(written);value.closing=closing;value.paused=closing&&drainGaps;value.aborted=aborted;value.settled=settled;value.failure=failure;
++  value.complete=settled&&!aborted&&!drainGaps&&!failure&&value.writtenBytes==total&&prefix()==total;
++  for(const auto& span:accepted)value.accepted.push_back(span);
++  for(const auto& span:written)value.written.push_back(span);
++  return value;
++ }
++ void settle(bool aborting,bool preserveGaps){
++  {std::lock_guard<std::mutex> lock(mutex);if(writerId==std::this_thread::get_id())throw std::logic_error("Writer cannot close itself");if(!closing){closing=true;aborted=aborting;drainGaps=preserveGaps;}}
++  changed.notify_all();if(worker.joinable())worker.join();
++  std::lock_guard<std::mutex> lock(mutex);settled=true;
++ }
++public:
++ explicit OrderedBodyWriter(std::size_t size,Writer callback,std::size_t window=256*1024,BodyBufferStorage::Ptr backing={},Failure failed={}):total(checkedSize(size)),chunk(checkedChunk(window,total)),write(checkedWriter(std::move(callback))),notifyFailure(std::move(failed)),storage(checkedStorage(total,std::move(backing))){
++  worker=std::thread([this]{run();});
++ }
++ OrderedBodyWriter(const OrderedBodyWriter&)=delete;OrderedBodyWriter& operator=(const OrderedBodyWriter&)=delete;
++ OrderedBodyWriter(OrderedBodyWriter&&)=delete;OrderedBodyWriter& operator=(OrderedBodyWriter&&)=delete;
++ ~OrderedBodyWriter(){if(worker.joinable())settle(false,true);}
++ void put(std::size_t offset,const Byte* source,std::size_t length){
++  std::unique_lock<std::mutex> lock(mutex);
++  if(failure)std::rethrow_exception(failure);
++  if(closing)throw std::runtime_error("Buffer has closed");
++  if(offset>total||length>total-offset||(!source&&length))throw std::out_of_range("Invalid buffered span");
++  if(!length)return;
++  const auto end=offset+length;
++  for(const auto& span:accepted){const auto low=std::max(offset,span.first),high=std::min(end,span.second);if(low<high&&!std::equal(source+(low-offset),source+(high-offset),storage->data()+low))throw Conflict("Conflicting buffered bytes");}
++  auto nextAccepted=accepted;include(nextAccepted,offset,end);if(nextAccepted.size()>maxSpans)throw std::length_error("Buffered span limit");
++  // Copy only holes. The IO thread may be reading previously accepted bytes;
++  // even rewriting identical bytes there would be a C++ data race.
++  auto at=offset;
++  for(const auto& span:accepted){
++   if(span.second<=at)continue;if(span.first>=end)break;
++   if(at<span.first){const auto high=std::min(end,span.first);std::memcpy(storage->data()+at,source+(at-offset),high-at);at=high;}
++   at=std::max(at,std::min(end,span.second));if(at==end)break;
++  }
++  if(at<end)std::memcpy(storage->data()+at,source+(at-offset),end-at);
++  accepted.swap(nextAccepted);lock.unlock();changed.notify_all();
++ }
++ // Retry boundaries may have been accepted but not written yet. Reading an
++ // unwritten preallocated region would compare zeros against the server.
++ bool readAccepted(std::size_t offset,Byte* target,std::size_t length)const{
++  std::lock_guard<std::mutex> lock(mutex);
++  if(failure)std::rethrow_exception(failure);
++  if(!storage||offset>total||length>total-offset||(!target&&length))return false;
++  if(!length)return true;
++  auto at=accepted.upper_bound(offset);if(at==accepted.begin())return false;--at;
++  if(at->first>offset||at->second<offset+length)return false;
++  std::memcpy(target,storage->data()+offset,length);return true;
++ }
++ State snapshot()const{std::lock_guard<std::mutex> lock(mutex);return stateLocked();}
++ // Only one controller closes the buffer. Snapshot/put can run concurrently.
++ State finish(){settle(false,false);return snapshot();}
++ State pause(){settle(false,true);return snapshot();}
++ State abort(){settle(true,false);return snapshot();}
++ BodyBufferStorage::Ptr takeCompletedStorage(){
++  std::lock_guard<std::mutex> lock(mutex);
++  if(!settled||aborted||drainGaps||failure||prefix()!=total||count(written)!=total)return {};
++  return std::move(storage);
++ }
++ const std::vector<Byte>* completedBody()const{
++  std::lock_guard<std::mutex> lock(mutex);return storage&&settled&&!aborted&&!drainGaps&&!failure&&prefix()==total&&count(written)==total?&storage->bytes():nullptr;
++ }
++};
++}
+diff --git a/native/OrderedBodyWriterTests.cpp b/native/OrderedBodyWriterTests.cpp
+new file mode 100644
+index 00000000..32d898ca
+--- /dev/null
++++ b/native/OrderedBodyWriterTests.cpp
+@@ -0,0 +1,166 @@
++#include <windows.h>
++#include "OrderedBodyWriter.hpp"
++#include "third_party/json.hpp"
++#include <filesystem>
++#include <fstream>
++#include <future>
++#include <iostream>
++#include <limits>
++#include <memory>
++#include <string>
++#include <type_traits>
++using Buffer=udm::OrderedBodyWriter;
++using Json=nlohmann::json;namespace fs=std::filesystem;
++static_assert(!std::is_copy_constructible_v<Buffer>&&!std::is_move_constructible_v<Buffer>);
++struct Release {std::promise<void>& value;~Release(){try{value.set_value();}catch(...){}}};
++int main(int argc,char**argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);std::ofstream(root/".udm-ordered-range-fixture")<<"owned";
++ Json checks=Json::array();std::string error;
++ auto check=[&](bool value,const char* label){checks.push_back({{"name",label},{"passed",value}});if(!value)throw std::runtime_error(label);};
++ auto rejects=[](auto&& fn){try{fn();return false;}catch(const std::exception&){return true;}};
++ const std::vector<Buffer::Byte> body={'a','b','c','d','e','f','g','h'};
++ try{
++  auto noop=[](std::size_t,const Buffer::Byte*,std::size_t){};
++  check(rejects([&]{Buffer b(0,noop);}),"Empty bodies are rejected before worker creation");
++  check(rejects([&]{Buffer b(Buffer::maxBytes+1,noop);}),"The 64 MiB allocation cap is enforced before admission");
++  check(rejects([&]{Buffer b(8,noop,0);}),"An empty writer window is rejected");
++  check(rejects([&]{Buffer b(8,Buffer::Writer{});}),"A missing writer cannot retain a budget lease");
++  {
++   std::atomic_uint calls{0};Buffer b(8,[&](auto,auto,auto){++calls;});b.put(4,body.data()+4,4);auto s=b.snapshot();
++   check(s.acceptedBytes==4&&s.writtenBytes==0&&calls==0,"A received tail waits in memory and earns no disk resume credit across a gap");
++   s=b.finish();check(s.settled&&!s.complete&&s.writtenBytes==0&&s.acceptedBytes==4&&calls==0,"Finishing with a gap never writes the tail or claims a complete body");
++   check(!b.completedBody()&&s.resumePrefix(4,4)==0,"Buffered-only bytes cannot supply a completion body or saved segment prefix");
++   check(rejects([&]{b.put(0,body.data(),4);}),"Closed generations reject further input");
++   check(!b.pause().complete&&calls==0,"A second close cannot change an already settled policy or issue new IO");
++  }
++  {
++   std::vector<Buffer::Byte> disk(8,0);std::vector<std::size_t> calls;Buffer b(8,[&](auto at,auto data,auto n){calls.push_back(at);std::copy_n(data,n,disk.data()+at);},2);
++   b.put(4,body.data()+4,4);b.put(2,body.data()+2,2);b.put(0,body.data(),2);auto s=b.finish();
++   check(s.complete&&s.settled&&!s.failure&&s.acceptedBytes==8&&s.writtenBytes==8,"Out-of-order network input completes only after every ordered write is acknowledged");
++   check(calls==std::vector<std::size_t>({0,2,4,6})&&disk==body,"The writer emits contiguous ascending windows with the exact original bytes");
++   check(s.resumePrefix(0,8)==8&&s.resumePrefix(2,3)==3&&s.resumePrefix(9,1)==0,"Resume credit is clipped to the requested valid segment");
++   check(b.completedBody()&&*b.completedBody()==body,"Only a settled successful finish exposes the full cached body");
++  }
++  {
++   std::vector<Buffer::Byte> disk(8,0);Buffer b(8,[&](auto at,auto data,auto n){std::copy_n(data,n,disk.data()+at);},2);b.put(4,body.data()+4,4);auto s=b.pause();
++   check(s.paused&&s.settled&&!s.complete&&s.acceptedBytes==4&&s.writtenBytes==4,"Pause drains accepted noncontiguous spans without declaring completion");
++   check(s.resumePrefix(0,8)==0&&s.resumePrefix(4,4)==4,"Pause credit cannot cross a missing segment prefix");
++   check(std::equal(disk.begin()+4,disk.end(),body.begin()+4)&&!b.completedBody(),"Paused tail data is preserved while completion exposure remains closed");
++  }
++  {
++   std::atomic_uint calls{0};Buffer b(8,[&](auto,auto,auto){++calls;});b.put(4,body.data()+4,4);auto s=b.abort();
++   check(s.aborted&&s.settled&&!s.complete&&s.acceptedBytes==4&&s.writtenBytes==0&&calls==0,"Abort discards buffered-only tails without granting saved progress");
++  }
++  {
++   std::promise<void> entered,release;auto waiting=entered.get_future();auto proceed=release.get_future().share();std::atomic_uint calls{0};std::vector<Buffer::Byte> disk(8,0);
++   Buffer* observer=nullptr;std::size_t duringWrite=99;Buffer b(8,[&](auto at,auto data,auto n){duringWrite=observer->snapshot().writtenBytes;if(calls++==0){entered.set_value();proceed.wait();}std::copy_n(data,n,disk.data()+at);},4);observer=&b;Release safe{release};
++   b.put(0,body.data(),8);check(waiting.wait_for(std::chrono::seconds(3))==std::future_status::ready,"A held storage operation is observable without locking out state readers");
++   for(unsigned i=0;i<32;++i)b.put(1,body.data()+1,6);
++   check(b.snapshot().acceptedBytes==8&&b.snapshot().writtenBytes==0,"Identical retries do not overwrite in-flight bytes or credit a held write");
++   const Buffer::Byte wrong[]={'x','x'};check(rejects([&]{b.put(2,wrong,2);}),"Conflicting retries are rejected before modifying accepted data");
++   release.set_value();auto s=b.finish();check(s.complete&&disk==body&&calls==2&&duringWrite==4,"Identical retries neither duplicate writes nor change the completed representation");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){throw std::runtime_error("storage failed");});b.put(0,body.data(),8);auto s=b.finish();
++   check(bool(s.failure)&&!s.complete&&s.writtenBytes==0&&s.resumePrefix(0,8)==0,"A failed write never earns completion or resume credit");
++   check(!b.completedBody()&&rejects([&]{b.put(0,body.data(),1);}),"Storage failure closes completion and propagates to later producers");
++  }
++  {
++   std::vector<Buffer::Byte> disk(8,0);unsigned calls=0;Buffer b(8,[&](auto at,auto data,auto n){if(calls++==1){std::copy_n(data,2,disk.data()+at);throw std::runtime_error("partial write");}std::copy_n(data,n,disk.data()+at);},4);b.put(0,body.data(),8);auto s=b.finish();
++   check(s.failure&&s.writtenBytes==4&&s.resumePrefix(0,8)==4&&s.resumePrefix(4,4)==0,"A later partial write preserves earlier credit but grants none for the failed operation");
++   check(disk[4]==body[4]&&!s.complete&&!b.completedBody(),"Physically changed but unacknowledged bytes cannot imply completeness");
++  }
++  {
++   std::vector<Buffer::Byte> source(65536),disk(source.size(),0);for(std::size_t i=0;i<source.size();++i)source[i]=static_cast<Buffer::Byte>(i%251);
++   Buffer b(source.size(),[&](auto at,auto data,auto n){std::copy_n(data,n,disk.data()+at);},4096);std::vector<std::thread> producers;
++   struct Join {std::vector<std::thread>& threads;~Join(){for(auto& t:threads)if(t.joinable())t.join();}} joined{producers};
++   for(unsigned i=0;i<8;++i)producers.emplace_back([&,i]{const auto at=(7-i)*8192;b.put(at,source.data()+at,8192);});for(auto& t:producers)t.join();auto s=b.finish();
++   check(s.complete&&s.writtenBytes==source.size()&&disk==source,"Eight producers share one stable buffer and preserve exact ordered output");
++  }
++  {
++   Buffer b(8,noop);check(rejects([&]{b.put(9,body.data(),0);})&&rejects([&]{b.put(std::numeric_limits<std::size_t>::max(),body.data(),1);}),"Out-of-range and overflowing offsets cannot alter buffer state");
++   check(rejects([&]{b.put(7,body.data(),2);})&&rejects([&]{b.put(0,nullptr,1);}),"Oversized and missing-source writes are rejected before copying");
++   b.put(8,nullptr,0);check(b.snapshot().acceptedBytes==0,"A valid zero-length notification accepts no bytes");b.abort();
++  }
++  {
++   Buffer b(8,noop);check(rejects([&]{Buffer contender(8,noop);}),"A second experimental body allocation is refused while the first lease is live");b.abort();
++   check(rejects([&]{Buffer contender(8,noop);}),"Closing retains ownership while the body storage remains alive");
++  }
++  {
++   Buffer successor(8,noop);successor.put(0,body.data(),8);check(successor.finish().complete,"A successor acquires the budget after the prior buffer is destroyed");
++  }
++  {
++   Buffer b(16384,noop);const Buffer::Byte value=1;for(std::size_t i=0;i<Buffer::maxSpans;++i)b.put(i*2+1,&value,1);
++   check(rejects([&]{b.put(Buffer::maxSpans*2+1,&value,1);}),"Excessive fragmented metadata is rejected atomically at its fixed limit");
++   auto s=b.abort();check(s.acceptedBytes==Buffer::maxSpans&&s.writtenBytes==0,"Metadata refusal preserves prior accepted bytes without false credit");
++  }
++  {
++   std::promise<void> entered,release;auto waiting=entered.get_future();auto proceed=release.get_future().share();std::atomic_uint calls{0};Buffer b(8,[&](auto,auto,auto){if(calls++==0){entered.set_value();proceed.wait();}},2);Release safe{release};b.put(0,body.data(),8);check(waiting.wait_for(std::chrono::seconds(3))==std::future_status::ready,"Abort control holds a real in-flight writer callback");
++   auto stopped=std::async(std::launch::async,[&]{return b.abort();});Release safeFuture{release};const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);while(!b.snapshot().closing&&std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++   check(b.snapshot().closing&&rejects([&]{b.put(0,body.data(),1);}),"Abort closes producer admission before joining the active operation");release.set_value();auto s=stopped.get();
++   check(s.aborted&&!s.complete&&s.writtenBytes==2&&calls==1,"Abort acknowledges an operation that already succeeded and starts no later writes");
++  }
++  {
++   Buffer* observer=nullptr;Buffer b(8,[&](auto,auto,auto){observer->abort();});observer=&b;b.put(0,body.data(),8);auto s=b.finish();
++   check(s.failure&&!s.complete&&s.writtenBytes==0,"A writer callback cannot close and join its own thread");
++  }
++  {
++   const auto path=root/"ordered-file.bin";HANDLE file=CreateFileW(path.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);if(file==INVALID_HANDLE_VALUE)throw std::runtime_error("Cannot create owned disk fixture");
++   struct File {HANDLE h;~File(){if(h!=INVALID_HANDLE_VALUE)CloseHandle(h);}} held{file};
++   constexpr std::size_t size=262144;LARGE_INTEGER eof{};eof.QuadPart=size;if(!SetFilePointerEx(file,eof,nullptr,FILE_BEGIN)||!SetEndOfFile(file))throw std::runtime_error("Cannot reserve owned fixture");
++   std::vector<Buffer::Byte> source(size),disk(size);for(std::size_t i=0;i<size;++i)source[i]=static_cast<Buffer::Byte>(i%251);std::vector<std::size_t> offsets;
++   Buffer b(size,[&](auto at,auto data,auto n){OVERLAPPED place{};place.Offset=static_cast<DWORD>(at);DWORD done=0;if(!WriteFile(file,data,static_cast<DWORD>(n),&done,&place)||done!=n)throw std::runtime_error("Owned positioned write failed");offsets.push_back(at);},32768);
++   b.put(size/2,source.data()+size/2,size/2);check(b.snapshot().writtenBytes==0,"A real regular file receives no tail write across a gap");b.put(0,source.data(),size/2);auto complete=b.finish();
++   check(complete.complete&&offsets==std::vector<std::size_t>({0,32768,65536,98304,131072,163840,196608,229376}),"Real positioned writes advance from zero without gaps or reordered IO");
++   check(FlushFileBuffers(file)!=FALSE,"A separate explicit final flush remains the caller's responsibility");LARGE_INTEGER zero{};DWORD read=0;if(!SetFilePointerEx(file,zero,nullptr,FILE_BEGIN)||!ReadFile(file,disk.data(),static_cast<DWORD>(disk.size()),&read,nullptr))throw std::runtime_error("Cannot verify owned output");
++   check(read==size&&disk==source,"The flushed regular file preserves every original byte after tail-first admission");
++  }
++  {
++   const auto path=root/"paused-file.bin";HANDLE file=CreateFileW(path.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);if(file==INVALID_HANDLE_VALUE)throw std::runtime_error("Cannot create owned pause fixture");struct File {HANDLE h;~File(){CloseHandle(h);}} held{file};
++   std::vector<Buffer::Byte> tail(4096,123),disk(8192);Buffer b(8192,[&](auto at,auto data,auto n){OVERLAPPED place{};place.Offset=static_cast<DWORD>(at);DWORD done=0;if(!WriteFile(file,data,static_cast<DWORD>(n),&done,&place)||done!=n)throw std::runtime_error("Owned pause write failed");});b.put(4096,tail.data(),tail.size());auto paused=b.pause();
++   check(paused.paused&&!paused.complete&&paused.resumePrefix(0,8192)==0&&paused.resumePrefix(4096,4096)==4096,"A real paused file retains only its acknowledged segment-prefix credit");
++   if(!FlushFileBuffers(file))throw std::runtime_error("Cannot flush pause fixture");LARGE_INTEGER zero{};DWORD read=0;if(!SetFilePointerEx(file,zero,nullptr,FILE_BEGIN)||!ReadFile(file,disk.data(),static_cast<DWORD>(disk.size()),&read,nullptr))throw std::runtime_error("Cannot read pause fixture");
++   check(read==8192&&std::all_of(disk.begin(),disk.begin()+4096,[](auto value){return value==0;})&&std::equal(disk.begin()+4096,disk.end(),tail.begin()),"The paused output contains the exact tail while its unwritten leading gap remains uncredited");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){});b.put(0,body.data(),8);auto paused=b.pause();
++   check(paused.paused&&paused.writtenBytes==8&&!b.takeCompletedStorage(),"A fully written paused body cannot be exported as confirmed completion");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){});b.put(0,body.data(),8);const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(3);while(b.snapshot().writtenBytes<8&&std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++   auto aborted=b.abort();check(aborted.aborted&&aborted.writtenBytes==8&&!b.takeCompletedStorage(),"An abort cannot export completion even when all writes already succeeded");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){throw std::runtime_error("export failure control");});b.put(0,body.data(),8);auto failed=b.finish();
++   check(failed.failure&&!b.takeCompletedStorage(),"A failed writer cannot hand storage to the completion-hash stage");
++  }
++  {
++   Buffer b(8,[](auto,auto,auto){});const Buffer::Byte tail[]={5,6,7,8};Buffer::Byte read[4]={99,99,99,99};b.put(4,tail,4);
++   check(b.readAccepted(4,read,4)&&std::equal(read,read+4,tail),"Retry boundaries read accepted bytes before their disk write");
++   std::fill(read,read+4,99);check(!b.readAccepted(0,read,4)&&std::all_of(read,read+4,[](auto x){return x==99;}),"A missing buffered prefix is refused without copying unwritten zeros");
++   check(!b.readAccepted(7,read,2)&&!b.readAccepted(0,nullptr,1)&&b.readAccepted(0,nullptr,0),"Buffered reads validate bounds, targets and empty spans");
++   bool typed=false;const Buffer::Byte changed=77;try{b.put(4,&changed,1);}catch(const Buffer::Conflict&){typed=true;}
++   check(typed&&b.snapshot().acceptedBytes==4,"A conflicting retry has a distinct representation error and preserves accepted coverage");b.pause();
++  }
++  {
++   std::promise<void> held,release;auto waiting=held.get_future();auto proceed=release.get_future();
++   Buffer b(8,[&](auto,auto,auto){held.set_value();proceed.wait();},8);const Buffer::Byte bytes[]={1,2,3,4,5,6,7,8};b.put(0,bytes,8);
++   const bool reached=waiting.wait_for(std::chrono::seconds(5))==std::future_status::ready;Buffer::Byte read[4]{};const bool copied=reached&&b.readAccepted(2,read,4);release.set_value();auto done=b.finish();
++   check(copied&&std::equal(read,read+4,bytes+2)&&done.complete,"A held disk operation does not block reading already accepted retry bytes");
++   auto completed=b.takeCompletedStorage();check(completed&&!b.readAccepted(0,read,1),"Transferred completion storage is no longer exposed through a stale buffered read");
++  }
++  {
++   Buffer* current=nullptr;std::atomic<unsigned> callbacks{0};bool reentered=false;
++   Buffer b(4,[](auto,auto,auto){throw std::runtime_error("original storage failure");},4,{},[&](std::exception_ptr failure){++callbacks;reentered=bool(current->snapshot().failure)&&bool(failure);throw std::runtime_error("notification failure");});current=&b;const Buffer::Byte data[]={1,2,3,4};b.put(0,data,4);auto failed=b.finish();std::string original;
++   try{std::rethrow_exception(failed.failure);}catch(const std::exception& e){original=e.what();}
++   check(callbacks==1&&reentered,"Storage failure notifies the controller exactly once outside the buffer mutex");
++   check(original=="original storage failure"&&failed.writtenBytes==0&&!failed.complete,"Notification exceptions cannot replace the original failure or invent write credit");
++  }
++  {
++   std::vector<Buffer::Byte> disk(8,0);const Buffer::Byte tail[]={5,6,7,8};
++   {Buffer b(8,[&](auto at,auto bytes,auto count){std::copy_n(bytes,count,disk.data()+at);});b.put(4,tail,4);}
++   check(std::all_of(disk.begin(),disk.begin()+4,[](auto x){return x==0;})&&std::equal(disk.begin()+4,disk.end(),tail),"Native writer destruction drains accepted tails before releasing their storage");
++  }
++ }catch(const std::exception& e){error=e.what();}
++ Json result={{"passed",error.empty()},{"error",error},{"checks",checks},{"productIntegrated",false},{"durabilityBarrierImplemented",false}};std::ofstream(root/"results.json",std::ios::binary)<<result.dump(2);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
++}
+diff --git a/benchmarks/speed/ordered_http_control.cpp b/benchmarks/speed/ordered_http_control.cpp
+new file mode 100644
+index 00000000..0623bb3c
+--- /dev/null
++++ b/benchmarks/speed/ordered_http_control.cpp
+@@ -0,0 +1,43 @@
++#include "Core.hpp"
++#include <iostream>
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=4)return 2;const fs::path area=fs::absolute(argv[1]);const std::string mode=utf8(argv[3]);
++ if(mode!="pause"&&mode!="resume"&&mode!="complete")return 3;
++ if(mode=="resume"){if(!fs::is_regular_file(area/L".udm-ordered-http-control"))return 4;}
++ else{if(fs::exists(area))return 5;fs::create_directories(area);atomicText(area/L".udm-ordered-http-control","owned native HTTP qualification",false);}
++ Json result;bool passed=false;std::string error;
++ try{
++  Manager m(area/L"catalog");JobPtr job;
++  if(mode=="resume"){if(m.jobs.size()!=1)throw std::runtime_error("Expected one saved controlled job");job=m.jobs[0];}
++  else{
++   {Lock lock(m.mutex);auto& prefs=m.state["Settings"];prefs["Connections"]=8;prefs["Parallel"]=1;prefs["SuppressProgressDialog"]=true;prefs["SuppressCompletionDialog"]=true;prefs["Sound"]=false;prefs["ClipboardMonitor"]=false;prefs["PrefetchFileInfo"]=false;prefs["CloseToTray"]=false;prefs["Retries"]=10;prefs["CategoryFolders"]=false;m.state["Queues"][0]["Retries"]=10;}
++   job=m.add(utf8(argv[2]),utf8((area/L"files").wstring()),"ordered-control.bin","Main queue",true);
++  }
++  m.resume(job);const auto began=GetTickCount64();bool requestedPause=false;
++  for(;;){
++   m.tick();
++   bool complete,active;std::string status; i64 received;
++   {Lock lock(m.mutex);status=str(job->data,"Status");complete=status=="Complete";active=m.isActive(job);received=num(job->data,"Received");}
++   if(mode=="pause"&&!requestedPause&&received>=1048576){m.pause(job);requestedPause=true;}
++   if((complete||status=="Failed"||requestedPause)&&!active)break;
++   if(GetTickCount64()-began>120000)throw std::runtime_error("Controlled HTTP deadline exceeded");
++   Sleep(5);
++  }
++  m.stop();
++  {Lock lock(m.mutex);result["job"]=job->snapshot();}
++  const auto status=str(result["job"],"Status");
++  if(mode=="pause"){
++   if(!requestedPause||status!="Paused"||num(result["job"],"Received")<=0||num(result["job"],"Received")>=num(result["job"],"Size"))throw std::runtime_error("Controlled pause did not retain a partial job");
++   if(!yes(result["job"]["OrderedBodyWrites"],"Used")||!yes(result["job"]["OrderedBodyWrites"],"Paused"))throw std::runtime_error("The controlled pause did not use ordered-body preservation");
++   i64 saved=0;for(const auto& segment:result["job"]["Segments"])saved+=num(segment,"Done");if(saved!=num(result["job"],"Received"))throw std::runtime_error("Controlled pause counters disagree");
++  }else{
++   if(status!="Complete")throw std::runtime_error("Controlled HTTP failed: "+str(result["job"],"Error"));
++   if(mode=="resume"&&result["job"].contains("OrderedBodyWrites"))throw std::runtime_error("A legacy resume retained stale ordered-generation diagnostics");
++   const auto path=job->target();result["fileSha256"]=fileHash(path);result["fileBytes"]=fs::file_size(path);result["target"]=utf8(path.wstring());
++   if(mode=="complete"&&(!yes(result["job"]["OrderedBodyWrites"],"Used")||!yes(result["job"]["OrderedBodyWrites"],"Complete")))throw std::runtime_error("Controlled completion did not use joined ordered writes");
++  }
++  result["elapsedMs"]=GetTickCount64()-began;result["normalStopJoined"]=true;passed=true;
++ }catch(const std::exception& e){error=e.what();}
++ result["passed"]=passed;result["error"]=error;result["mode"]=mode;result["qualificationFeatureDefine"]="UDM_ORDERED_BODY_QUALIFICATION";atomicText(area/wide(mode+"-result.json"),result.dump(2),false);std::cout<<(passed?"passed":error)<<"\n";return passed?0:1;
++}

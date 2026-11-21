@@ -1,0 +1,2912 @@
+{
+  "version": "9.65",
+  "sourceExtensionVersion": "0.73.29",
+  "productionInputsVerified": 682,
+  "normalProductsRetained": 5,
+  "referencedCoreObjectsRetained": 42,
+  "protectedInstalledPersonalAndHelperFilesUnchanged": 11,
+  "exportedRecordsVerified": 72,
+  "affectedSuitesPassed": 14,
+  "assertionsPassed": 1315,
+  "precheckAssertionsNotDoubleCounted": 26,
+  "componentAndHttpNegativeControlsReproduced": true,
+  "acceptedHttpControlUsesFrozen964HeadersAndObjects": true,
+  "sourceFixtureHashesMatchAcrossControls": true,
+  "installedFilesChanged": false,
+  "successfulDownloadTimingMeasured": false,
+  "newIdmComparison": false,
+  "broadParityComplete": false,
+  "cleanup": {
+    "recursiveOrWholeFixtureCleanupCompleted": false,
+    "automaticReviewReason": "blocked by policy",
+    "saferCompilerOutputCleanupSucceeded": true,
+    "removedGeneratedFiles": 33,
+    "removedLogicalBytes": 187872111,
+    "remainingPlannedGeneratedFiles": 720,
+    "remainingPlannedLogicalBytes": 32975602,
+    "physicalSpaceNotMeasured": true,
+    "remainingFiles": [
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-unchanged\\catalog\\state.json",
+        "bytes": 3411
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-unchanged\\catalog\\state.json.bak",
+        "bytes": 2857
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\catalog\\state.json",
+        "bytes": 3409
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\catalog\\state.json.bak",
+        "bytes": 2856
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-859f413f16354278bd80d7bbea324af9.assembling",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-859f413f16354278bd80d7bbea324af9.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-missing\\catalog\\state.json",
+        "bytes": 3407
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-missing\\catalog\\state.json.bak",
+        "bytes": 2855
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-missing\\files\\.udm-716ecb2e80124e95952a8e516137d7d1.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-directory\\catalog\\state.json",
+        "bytes": 3411
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-directory\\catalog\\state.json.bak",
+        "bytes": 2857
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-directory\\files\\.udm-67556e107e21476fa51a1f4048a1ff38.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-unchanged\\catalog\\state.json",
+        "bytes": 3413
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-unchanged\\catalog\\state.json.bak",
+        "bytes": 2858
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\catalog\\state.json",
+        "bytes": 3411
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\catalog\\state.json.bak",
+        "bytes": 2857
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\files\\.udm-db2efe24924b4855b0766a04aa62333e.assembling",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\files\\.udm-db2efe24924b4855b0766a04aa62333e.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-missing\\catalog\\state.json",
+        "bytes": 3409
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-missing\\catalog\\state.json.bak",
+        "bytes": 2856
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-missing\\files\\.udm-fc77606c8a5a4f7badfc09b51fb33cfe.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-directory\\catalog\\state.json",
+        "bytes": 3413
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-directory\\catalog\\state.json.bak",
+        "bytes": 2858
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-directory\\files\\.udm-e443e7f575c5484b9e23261c284762e0.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\state.json",
+        "bytes": 5839
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3502
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-4dcddec5376c47f9bf02941bf53c9655.assembling",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-4dcddec5376c47f9bf02941bf53c9655.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\parts\\4dcddec5376c47f9bf02941bf53c9655\\4dcddec5376c47f9bf02941bf53c9655.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\state.json",
+        "bytes": 5844
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\state.json.bak",
+        "bytes": 3498
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\files\\.udm-bf44399342774a2f9b9946e5c0d51bd3.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\parts\\bf44399342774a2f9b9946e5c0d51bd3\\bf44399342774a2f9b9946e5c0d51bd3.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\state.json",
+        "bytes": 5838
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3502
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-a192fe8123ee42e1bd23057937110544.assembling",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-a192fe8123ee42e1bd23057937110544.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\parts\\a192fe8123ee42e1bd23057937110544\\a192fe8123ee42e1bd23057937110544.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\state.json",
+        "bytes": 5836
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\state.json.bak",
+        "bytes": 3498
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\files\\.udm-66261fd514e642d5a9ed828e0d397d45.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\parts\\66261fd514e642d5a9ed828e0d397d45\\66261fd514e642d5a9ed828e0d397d45.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\state.json",
+        "bytes": 5814
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\state.json.bak",
+        "bytes": 3492
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\parts\\f5dcd3a3a144491297c7d0f047e9eba2\\f5dcd3a3a144491297c7d0f047e9eba2.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\state.json",
+        "bytes": 5817
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\state.json.bak",
+        "bytes": 3492
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\parts\\3dc3ccccce914d38942baf81c88727ff\\3dc3ccccce914d38942baf81c88727ff.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\state.json",
+        "bytes": 5809
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\state.json.bak",
+        "bytes": 3490
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\files\\.udm-40197fbdc16b4a16b12810c8bf17a400.assembling",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\publications\\40197fbdc16b4a16b12810c8bf17a400.json",
+        "bytes": 6520
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\parts\\40197fbdc16b4a16b12810c8bf17a400\\40197fbdc16b4a16b12810c8bf17a400.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\state.json",
+        "bytes": 5828
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\state.json.bak",
+        "bytes": 3510
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\publications\\5d93a7f05a6b413abd26c1a13f77710a.json.tmp",
+        "bytes": 6559
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\parts\\5d93a7f05a6b413abd26c1a13f77710a\\5d93a7f05a6b413abd26c1a13f77710a.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\adopted.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-rejected\\catalog\\state.json",
+        "bytes": 4453
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-rejected\\catalog\\state.json.bak",
+        "bytes": 3425
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-rejected\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-blocked\\catalog\\state.json",
+        "bytes": 4440
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-blocked\\catalog\\state.json.bak",
+        "bytes": 3423
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-blocked\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\catalog\\state.json",
+        "bytes": 3437
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\catalog\\state.json.bak",
+        "bytes": 3431
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\files\\.udm-42af689396ea4cdfbd9a28aedb31eda1.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unknown-hash\\catalog\\state.json",
+        "bytes": 4359
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unknown-hash\\catalog\\state.json.bak",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unknown-hash\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\catalog\\state.json",
+        "bytes": 3423
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\catalog\\state.json.bak",
+        "bytes": 3417
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\files\\.udm-8812066fd4574a94b579f9ac328e5849.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\catalog\\publications\\8812066fd4574a94b579f9ac328e5849.json",
+        "bytes": 1979
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\success\\catalog\\state.json",
+        "bytes": 4425
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\success\\catalog\\state.json.bak",
+        "bytes": 3409
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\success\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\catalog\\state.json",
+        "bytes": 4097
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\catalog\\state.json.bak",
+        "bytes": 3431
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\catalog\\state.json",
+        "bytes": 3688
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\catalog\\state.json.bak",
+        "bytes": 3433
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-error\\catalog\\state.json",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-error\\catalog\\state.json.bak",
+        "bytes": 3413
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-error\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-error\\catalog\\publications\\2a456d06089d455495174cd55f194b8b.json.tmp",
+        "bytes": 1972
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\catalog\\state.json",
+        "bytes": 3944
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\catalog\\state.json.bak",
+        "bytes": 3417
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\files\\.udm-fb5ff114e61d482e9a0c8d48d8250188.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\catalog\\publications\\fb5ff114e61d482e9a0c8d48d8250188.json",
+        "bytes": 1966
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\catalog\\state.json",
+        "bytes": 3831
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\catalog\\state.json.bak",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\files\\.udm-bfb93e9c70084cdeae07c7dea0ae7ca4.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\files\\retained.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\catalog\\publications\\bfb93e9c70084cdeae07c7dea0ae7ca4.json",
+        "bytes": 1972
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\catalog\\state.json",
+        "bytes": 3844
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\catalog\\state.json.bak",
+        "bytes": 3423
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\files\\.udm-38f545fb382544b2ba7c8b8a7f119846.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\catalog\\publications\\38f545fb382544b2ba7c8b8a7f119846.json",
+        "bytes": 1979
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\catalog\\state.json",
+        "bytes": 3821
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\catalog\\state.json.bak",
+        "bytes": 3407
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\files\\.udm-1ec6dbb26f9a4665860ede09e1ac3030.assembling",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\parts\\owned.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\catalog\\publications\\1ec6dbb26f9a4665860ede09e1ac3030.json",
+        "bytes": 1947
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\finalization-admission\\state.json",
+        "bytes": 3397
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\finalization-admission\\state.json.bak",
+        "bytes": 3397
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\finalization-coalescing\\state.json",
+        "bytes": 3058
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\finalization-coalescing\\state.json.bak",
+        "bytes": 3052
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\settlement-lock\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\writeback-operations\\actual.bin",
+        "bytes": 35
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\superseded\\files\\superseded.udmfixture",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\superseded\\state\\state.before-native.json",
+        "bytes": 6879
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\superseded\\state\\state.json",
+        "bytes": 6907
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\superseded\\state\\state.json.bak",
+        "bytes": 6879
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\stop\\files\\stop.udmfixture",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\stop\\state\\state.before-native.json",
+        "bytes": 6782
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\stop\\state\\state.json",
+        "bytes": 6810
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\stop\\state\\state.json.bak",
+        "bytes": 6782
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\snapshot\\files\\snapshot.udmfixture",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\snapshot\\state\\state.before-native.json",
+        "bytes": 6803
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\snapshot\\state\\state.json",
+        "bytes": 6831
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\snapshot\\state\\state.json.bak",
+        "bytes": 6803
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\flush\\files\\flush.udmfixture",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\flush\\state\\state.before-native.json",
+        "bytes": 6789
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\flush\\state\\state.json",
+        "bytes": 6817
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\flush\\state\\state.json.bak",
+        "bytes": 6789
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\files\\failure.udmfixture",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\state\\state.before-native.json",
+        "bytes": 6215
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\state\\state.json",
+        "bytes": 6466
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\state\\state.json.bak",
+        "bytes": 6215
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\state\\parts\\b101cfec48ab424fb8b1a6c1e2c031dd\\b101cfec48ab424fb8b1a6c1e2c031dd.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\cancel-prepared\\state\\state.json",
+        "bytes": 5838
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\cancel-prepared\\state\\state.json.bak",
+        "bytes": 3548
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\cancel-prepared\\state\\parts\\490900c90dad414a904fcd374b9fa38c\\490900c90dad414a904fcd374b9fa38c.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\catalog\\state.json",
+        "bytes": 14614
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\catalog\\state.json.bak",
+        "bytes": 14615
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\files\\finishing-0.bin",
+        "bytes": 1048647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\files\\finishing-1.bin",
+        "bytes": 1048647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\catalog\\parts\\f50cacd67c70491eb69fc3f5870576c3\\f50cacd67c70491eb69fc3f5870576c3.data",
+        "bytes": 1048647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\during-catalog\\catalog\\state.before-native.json",
+        "bytes": 3665
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\during-catalog\\catalog\\state.json",
+        "bytes": 3665
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\during-catalog\\catalog\\state.json.bak",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\during-catalog\\files\\output.bin",
+        "bytes": 22
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\before-catalog\\catalog\\state.before-native.json",
+        "bytes": 3665
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\before-catalog\\catalog\\state.json",
+        "bytes": 3665
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\before-catalog\\catalog\\state.json.bak",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\before-catalog\\files\\output.bin",
+        "bytes": 22
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-project-cleanup\\catalog\\state.before-native.json",
+        "bytes": 3833
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-project-cleanup\\catalog\\state.json",
+        "bytes": 3833
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-project-cleanup\\catalog\\state.json.bak",
+        "bytes": 3861
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-project-cleanup\\files\\output.bin",
+        "bytes": 22
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\catalog\\state.json",
+        "bytes": 3699
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\catalog\\state.json.bak",
+        "bytes": 3468
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\files\\output.bin",
+        "bytes": 27
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\catalog\\publications\\82a93d4b28064786bd5b07c1700ed3e2.json",
+        "bytes": 1846
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\catalog\\state.before-native.json",
+        "bytes": 3715
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\catalog\\state.json",
+        "bytes": 3715
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\catalog\\state.json.bak",
+        "bytes": 3743
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\files\\output.bin",
+        "bytes": 22
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup\\catalog\\state.before-native.json",
+        "bytes": 3669
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup\\catalog\\state.json",
+        "bytes": 3669
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup\\catalog\\state.json.bak",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup\\files\\output.bin",
+        "bytes": 22
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\busy-source\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\cancel\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-folder\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-root\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\retained.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-changed-folder\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-project\\staged-\u2603.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\pinned-source-reuse\\renamed.part",
+        "bytes": 24
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\zero\\files\\output.bin",
+        "bytes": 0
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\zero\\state\\state.before-native.json",
+        "bytes": 3634
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\zero\\state\\state.json",
+        "bytes": 3634
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\zero\\state\\state.json.bak",
+        "bytes": 3662
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\unknown-hash\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\unknown-hash\\state\\state.before-native.json",
+        "bytes": 3588
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\unknown-hash\\state\\state.json",
+        "bytes": 3588
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\unknown-hash\\state\\state.json.bak",
+        "bytes": 3616
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\ready\\files\\output-\u2603.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\ready\\state\\state.before-native.json",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\ready\\state\\state.json",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\ready\\state\\state.json.bak",
+        "bytes": 3721
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\project\\moved\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\project\\state\\state.before-native.json",
+        "bytes": 3839
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\project\\state\\state.json",
+        "bytes": 3839
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\project\\state\\state.json.bak",
+        "bytes": 3867
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-source\\state\\state.json",
+        "bytes": 3425
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-source\\state\\state.json.bak",
+        "bytes": 2864
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-project\\state\\state.json",
+        "bytes": 3581
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-project\\state\\state.json.bak",
+        "bytes": 3443
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\gzip\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\gzip\\state\\state.before-native.json",
+        "bytes": 3791
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\gzip\\state\\state.json",
+        "bytes": 3791
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\gzip\\state\\state.json.bak",
+        "bytes": 3819
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directory-source\\state\\state.json",
+        "bytes": 3429
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directory-source\\state\\state.json.bak",
+        "bytes": 2866
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-ready\\state\\state.before-native.json",
+        "bytes": 3869
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-ready\\state\\state.json",
+        "bytes": 3869
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-ready\\state\\state.json.bak",
+        "bytes": 3897
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-ready\\files\\nested\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-changed-folder\\state\\state.json",
+        "bytes": 3661
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-changed-folder\\state\\state.json.bak",
+        "bytes": 3665
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\child\\files\\child.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\child\\state\\state.json",
+        "bytes": 3407
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\child\\state\\state.json.bak",
+        "bytes": 3855
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\state\\state.json",
+        "bytes": 3476
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\state\\state.json.bak",
+        "bytes": 3425
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-root\\state\\state.json",
+        "bytes": 3616
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-root\\state\\state.json.bak",
+        "bytes": 3623
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-folder\\state\\state.json",
+        "bytes": 3480
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-folder\\state\\state.json.bak",
+        "bytes": 3476
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\cancel\\state\\state.json",
+        "bytes": 3460
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\cancel\\state\\state.json.bak",
+        "bytes": 3409
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\busy-source\\state\\state.json",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\busy-source\\state\\state.json.bak",
+        "bytes": 2861
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\begin\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\begin\\state\\state.before-native.json",
+        "bytes": 3689
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\begin\\state\\state.json",
+        "bytes": 3689
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\begin\\state\\state.json.bak",
+        "bytes": 3717
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\entry-batch\\state.json",
+        "bytes": 3556
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\entry-batch\\state.json.bak",
+        "bytes": 3325
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\request.json",
+        "bytes": 333
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\request.json",
+        "bytes": 328
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\request.json",
+        "bytes": 332
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\request.json",
+        "bytes": 333
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\original.saved",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\unknown-hash\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\unknown-hash\\state\\state.before-native.json",
+        "bytes": 3646
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\unknown-hash\\state\\state.json",
+        "bytes": 3646
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\unknown-hash\\state\\state.json.bak",
+        "bytes": 3674
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\superseded\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\superseded\\state\\state.before-native.json",
+        "bytes": 3624
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\superseded\\state\\state.json",
+        "bytes": 3624
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\superseded\\state\\state.json.bak",
+        "bytes": 3652
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-unknown\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-unknown\\state\\state.before-native.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-unknown\\state\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-unknown\\state\\state.json.bak",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-save-failure\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-save-failure\\state\\state.before-native.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-save-failure\\state\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-save-failure\\state\\state.json.bak",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-receipt\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-receipt\\state\\state.before-native.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-receipt\\state\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-receipt\\state\\state.json.bak",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-cleanup-denied\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-cleanup-denied\\state\\state.before-native.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-cleanup-denied\\state\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-cleanup-denied\\state\\state.json.bak",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\files\\.udm-b0a0d0258ecf43999028239f73b86ae1.assembling",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\state\\state.before-native.json",
+        "bytes": 3482
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\state\\state.json",
+        "bytes": 3482
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\state\\state.json.bak",
+        "bytes": 3510
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\snapshot-missing\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\snapshot-missing\\state\\state.before-native.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\snapshot-missing\\state\\state.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\snapshot-missing\\state\\state.json.bak",
+        "bytes": 3664
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\shutdown-catalog\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\shutdown-catalog\\state\\state.before-native.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\shutdown-catalog\\state\\state.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\shutdown-catalog\\state\\state.json.bak",
+        "bytes": 3664
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\save-failure\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\save-failure\\state\\state.before-native.json",
+        "bytes": 3740
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\save-failure\\state\\state.json",
+        "bytes": 3740
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\save-failure\\state\\state.json.bak",
+        "bytes": 3768
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\newer-id\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\newer-id\\state\\state.before-native.json",
+        "bytes": 3698
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\newer-id\\state\\state.json",
+        "bytes": 3698
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\newer-id\\state\\state.json.bak",
+        "bytes": 3726
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\metadata-rollback\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\metadata-rollback\\state\\state.before-native.json",
+        "bytes": 3668
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\metadata-rollback\\state\\state.json",
+        "bytes": 3668
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\metadata-rollback\\state\\state.json.bak",
+        "bytes": 3696
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\late-batch\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\late-batch\\state\\state.before-native.json",
+        "bytes": 3654
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\late-batch\\state\\state.json",
+        "bytes": 3654
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\late-batch\\state\\state.json.bak",
+        "bytes": 3682
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\invalid-id\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\invalid-id\\state\\state.before-native.json",
+        "bytes": 3704
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\invalid-id\\state\\state.json",
+        "bytes": 3704
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\invalid-id\\state\\state.json.bak",
+        "bytes": 3732
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-written\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-written\\state\\state.before-native.json",
+        "bytes": 3716
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-written\\state\\state.json",
+        "bytes": 3716
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-written\\state\\state.json.bak",
+        "bytes": 3744
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-flush\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-flush\\state\\state.before-native.json",
+        "bytes": 3710
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-flush\\state\\state.json",
+        "bytes": 3710
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-flush\\state\\state.json.bak",
+        "bytes": 3738
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-failure\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-failure\\state\\state.before-native.json",
+        "bytes": 3746
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-failure\\state\\state.json",
+        "bytes": 3746
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-failure\\state\\state.json.bak",
+        "bytes": 3774
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\gzip\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\gzip\\state\\state.before-native.json",
+        "bytes": 3841
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\gzip\\state\\state.json",
+        "bytes": 3841
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\gzip\\state\\state.json.bak",
+        "bytes": 3869
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\file-moved\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\file-moved\\state\\state.before-native.json",
+        "bytes": 3704
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\file-moved\\state\\state.json",
+        "bytes": 3704
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\file-moved\\state\\state.json.bak",
+        "bytes": 3732
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\state\\state.before-native.json",
+        "bytes": 3372
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\state\\state.json",
+        "bytes": 2888
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\state\\state.json.bak",
+        "bytes": 2888
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\state\\state.before-native.json",
+        "bytes": 2887
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\state\\state.json",
+        "bytes": 2887
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\state\\state.json.bak",
+        "bytes": 2887
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\state\\state.before-native.json",
+        "bytes": 2883
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\state\\state.json",
+        "bytes": 2883
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\state\\state.json.bak",
+        "bytes": 2883
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\files\\internal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\state\\state.before-native.json",
+        "bytes": 3372
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\state\\state.json",
+        "bytes": 2888
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\state\\state.json.bak",
+        "bytes": 2888
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\entry-batch\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\deferred-save\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\deferred-save\\state\\state.before-native.json",
+        "bytes": 3660
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\deferred-save\\state\\state.json",
+        "bytes": 3660
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\deferred-save\\state\\state.json.bak",
+        "bytes": 3688
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\containing-success\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\containing-success\\state\\state.before-native.json",
+        "bytes": 3640
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\containing-success\\state\\state.json",
+        "bytes": 3640
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\containing-success\\state\\state.json.bak",
+        "bytes": 3668
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\cleanup\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\cleanup\\state\\state.before-native.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\cleanup\\state\\state.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\cleanup\\state\\state.json.bak",
+        "bytes": 3723
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child-catalog\\files\\child.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child-catalog\\state\\state.before-native.json",
+        "bytes": 4178
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child-catalog\\state\\state.json",
+        "bytes": 4178
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child-catalog\\state\\state.json.bak",
+        "bytes": 4206
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child\\files\\track.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child\\state\\state.before-native.json",
+        "bytes": 4228
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child\\state\\state.json",
+        "bytes": 4228
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child\\state\\state.json.bak",
+        "bytes": 4256
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-written\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-written\\state\\state.before-native.json",
+        "bytes": 3634
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-written\\state\\state.json",
+        "bytes": 3634
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-written\\state\\state.json.bak",
+        "bytes": 3662
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-snapshot\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-snapshot\\state\\state.before-native.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-snapshot\\state\\state.json",
+        "bytes": 3636
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-snapshot\\state\\state.json.bak",
+        "bytes": 3664
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-lost-ack\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-lost-ack\\state\\state.before-native.json",
+        "bytes": 3666
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-lost-ack\\state\\state.json",
+        "bytes": 3666
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-lost-ack\\state\\state.json.bak",
+        "bytes": 3694
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-flush\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-flush\\state\\state.before-native.json",
+        "bytes": 3630
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-flush\\state\\state.json",
+        "bytes": 3630
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-flush\\state\\state.json.bak",
+        "bytes": 3658
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-failure\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-failure\\state\\state.before-native.json",
+        "bytes": 3664
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-failure\\state\\state.json",
+        "bytes": 3664
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-failure\\state\\state.json.bak",
+        "bytes": 3692
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ack-failure\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ack-failure\\state\\state.before-native.json",
+        "bytes": 3737
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ack-failure\\state\\state.json",
+        "bytes": 3737
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ack-failure\\state\\state.json.bak",
+        "bytes": 3765
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-unknown\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-unknown\\state\\state.before-native.json",
+        "bytes": 4714
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-unknown\\state\\state.json",
+        "bytes": 4714
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-unknown\\state\\state.json.bak",
+        "bytes": 4742
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\files\\.udm-efcd6924d0c34da199a66e0e3b76e6a8.assembling",
+        "bytes": 25
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\state\\state.before-native.json",
+        "bytes": 4726
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\state\\state.json",
+        "bytes": 4726
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\state\\state.json.bak",
+        "bytes": 4754
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted\\files\\output.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted\\state\\state.before-native.json",
+        "bytes": 4690
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted\\state\\state.json",
+        "bytes": 4690
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted\\state\\state.json.bak",
+        "bytes": 4718
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\cancel\\owned.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\committing\\state.json",
+        "bytes": 3245
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\family\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\independent\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\preparing\\state.json",
+        "bytes": 3290
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\preparing\\state.json.bak",
+        "bytes": 3291
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\registry\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\retry-files\\retry.bin",
+        "bytes": 11
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\late.part",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\shutdown.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\late.part",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\late.part",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\late.part",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-save-retry\\state.json",
+        "bytes": 3617
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-save-retry\\state.json.bak",
+        "bytes": 3320
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\d\u00e4ta-more.bin",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00e9-after.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00c9-before.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\state\\state.before-native.json",
+        "bytes": 15121
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\state\\state.json",
+        "bytes": 15121
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\state\\state.json.bak",
+        "bytes": 15709
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\files\\old.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\files\\previous.bin",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\independent\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\state\\state.before-native.json",
+        "bytes": 4493
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\state\\state.json",
+        "bytes": 4493
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\state\\state.json.bak",
+        "bytes": 4549
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\files\\new.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\independent\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\state\\state.before-native.json",
+        "bytes": 3654
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\state\\state.json",
+        "bytes": 3654
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\state\\state.json.bak",
+        "bytes": 3682
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\files\\track.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\independent\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\state\\state.before-native.json",
+        "bytes": 4201
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\state\\state.json",
+        "bytes": 4201
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\state\\state.json.bak",
+        "bytes": 4229
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\independent\\state.json",
+        "bytes": 2776
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\state\\state.before-native.json",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\state\\state.json",
+        "bytes": 3419
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\state\\state.json.bak",
+        "bytes": 3447
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\files\\old.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\files\\previous.bin",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\state\\state.json",
+        "bytes": 4495
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\state\\state.json.bak",
+        "bytes": 4330
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\recovery\\files\\new.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\recovery\\state\\state.json",
+        "bytes": 3670
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\recovery\\state\\state.json.bak",
+        "bytes": 3439
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\ordinary\\files\\new.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\ordinary\\state\\state.json",
+        "bytes": 3670
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\ordinary\\state\\state.json.bak",
+        "bytes": 3439
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\files\\after-move.bin",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\files\\Moved-\u00c4.bin",
+        "bytes": 12
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\state\\state.json",
+        "bytes": 3397
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\state\\state.json.bak",
+        "bytes": 3853
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\missing\\state\\state.json",
+        "bytes": 3398
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\missing\\state\\state.json.bak",
+        "bytes": 2855
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\files\\independent-move.bin",
+        "bytes": 10
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\files\\\u00c4.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\state\\state.json",
+        "bytes": 5370
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\state\\state.json.bak",
+        "bytes": 5139
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\cancel\\state\\state.json",
+        "bytes": 3435
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\cancel\\state\\state.json.bak",
+        "bytes": 3396
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\0\\state.before-native.json",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\0\\state.json",
+        "bytes": 3679
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\0\\state.json.bak",
+        "bytes": 3679
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\1\\state.before-native.json",
+        "bytes": 3651
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\1\\state.json",
+        "bytes": 3679
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\1\\state.json.bak",
+        "bytes": 3651
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\state.before-native.json",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\state.json",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\state.json.bak",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\3\\assembled.part",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\3\\state.before-native.json",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\3\\state.json",
+        "bytes": 3418
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\3\\state.json.bak",
+        "bytes": 3390
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\4\\state.before-native.json",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\4\\state.json",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\4\\state.json.bak",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-0\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-0\\state.json",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-0\\state.json.bak",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-1\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-1\\state.json",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-1\\state.json.bak",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-2\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-2\\state.json",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-2\\state.json.bak",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-3\\state.before-native.json",
+        "bytes": 3683
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-3\\state.json",
+        "bytes": 3711
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-3\\state.json.bak",
+        "bytes": 3711
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-4\\state.before-native.json",
+        "bytes": 3584
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-4\\state.json",
+        "bytes": 3612
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-4\\state.json.bak",
+        "bytes": 3612
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-5\\state.before-native.json",
+        "bytes": 3538
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-5\\state.json",
+        "bytes": 3566
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-5\\state.json.bak",
+        "bytes": 3566
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-6\\state.before-native.json",
+        "bytes": 3543
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-6\\state.json",
+        "bytes": 3571
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-6\\state.json.bak",
+        "bytes": 3571
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-7\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-7\\state.json",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-7\\state.json.bak",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-8\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-8\\state.json",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-8\\state.json.bak",
+        "bytes": 3647
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-9\\state.before-native.json",
+        "bytes": 3619
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-9\\state.json",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-9\\state.json.bak",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-file-pin\\moved.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-staged-pin\\moved.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\catalog\\state.json",
+        "bytes": 4373
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\catalog\\state.json.bak",
+        "bytes": 4373
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\old.bin.moved",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\stage.part",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\catalog\\state.json",
+        "bytes": 4533
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\catalog\\state.json.bak",
+        "bytes": 4361
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.bin.moved",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.previous.bin.moved",
+        "bytes": 9
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-staged-pin\\catalog\\state.json",
+        "bytes": 3691
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-staged-pin\\catalog\\state.json.bak",
+        "bytes": 3430
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-file-pin\\catalog\\state.json",
+        "bytes": 3687
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-file-pin\\catalog\\state.json.bak",
+        "bytes": 3426
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-9\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-7\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-6\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-5\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-4\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-3\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-2\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-1\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-0\\files\\legacy.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\4\\files\\file.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\files\\file.bin",
+        "bytes": 15
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\publications\\e39619015286400fb4d16c5d6017e22b.json",
+        "bytes": 1691
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\1\\files\\file.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\0\\files\\file.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-valid\\catalog\\state.before-native.json",
+        "bytes": 3691
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-valid\\catalog\\state.json",
+        "bytes": 3691
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-valid\\catalog\\state.json.bak",
+        "bytes": 3719
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-valid\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-truncated\\catalog\\state.before-native.json",
+        "bytes": 3699
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-truncated\\catalog\\state.json",
+        "bytes": 3699
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-truncated\\catalog\\state.json.bak",
+        "bytes": 3727
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-truncated\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-read-held\\catalog\\state.before-native.json",
+        "bytes": 3699
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-read-held\\catalog\\state.json",
+        "bytes": 3699
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-read-held\\catalog\\state.json.bak",
+        "bytes": 3727
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-read-held\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\catalog\\state.before-native.json",
+        "bytes": 3705
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\catalog\\state.json",
+        "bytes": 3705
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\catalog\\state.json.bak",
+        "bytes": 3733
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-foreign\\catalog\\state.before-native.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-foreign\\catalog\\state.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-foreign\\catalog\\state.json.bak",
+        "bytes": 3723
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-foreign\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\catalog\\state.before-native.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\catalog\\state.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\catalog\\state.json.bak",
+        "bytes": 3735
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-changed\\catalog\\state.before-native.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-changed\\catalog\\state.json",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-changed\\catalog\\state.json.bak",
+        "bytes": 3723
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-changed\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\catalog\\state.before-native.json",
+        "bytes": 3705
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\catalog\\state.json",
+        "bytes": 3705
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\catalog\\state.json.bak",
+        "bytes": 3733
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-valid\\catalog\\state.before-native.json",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-valid\\catalog\\state.json",
+        "bytes": 3693
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-valid\\catalog\\state.json.bak",
+        "bytes": 3721
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-valid\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-truncated\\catalog\\state.before-native.json",
+        "bytes": 3701
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-truncated\\catalog\\state.json",
+        "bytes": 3701
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-truncated\\catalog\\state.json.bak",
+        "bytes": 3729
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-truncated\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-read-held\\catalog\\state.before-native.json",
+        "bytes": 3701
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-read-held\\catalog\\state.json",
+        "bytes": 3701
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-read-held\\catalog\\state.json.bak",
+        "bytes": 3729
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-read-held\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\catalog\\state.before-native.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\catalog\\state.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\catalog\\state.json.bak",
+        "bytes": 3735
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-foreign\\catalog\\state.before-native.json",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-foreign\\catalog\\state.json",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-foreign\\catalog\\state.json.bak",
+        "bytes": 3725
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-foreign\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\catalog\\state.before-native.json",
+        "bytes": 3709
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\catalog\\state.json",
+        "bytes": 3709
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\catalog\\state.json.bak",
+        "bytes": 3737
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-changed\\catalog\\state.before-native.json",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-changed\\catalog\\state.json",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-changed\\catalog\\state.json.bak",
+        "bytes": 3725
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-changed\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\catalog\\state.before-native.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\catalog\\state.json",
+        "bytes": 3707
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\catalog\\state.json.bak",
+        "bytes": 3735
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\files\\recovery.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\catalog\\state.before-native.json",
+        "bytes": 3667
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\catalog\\state.json",
+        "bytes": 3667
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\catalog\\state.json.bak",
+        "bytes": 3695
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\normal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\retained.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\catalog\\state.before-native.json",
+        "bytes": 3669
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\catalog\\state.json",
+        "bytes": 3669
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\catalog\\state.json.bak",
+        "bytes": 3697
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\normal.bin",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\retained.data",
+        "bytes": 14
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchFailureTests\\stderr.txt",
+        "bytes": 27
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\atomic-admission\\state.json",
+        "bytes": 3721
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\atomic-admission\\state.json.bak",
+        "bytes": 3248
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\blocked-completion\\state.json",
+        "bytes": 3252
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\blocked-completion\\state.json.bak",
+        "bytes": 3250
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\data\\state.before-native.json",
+        "bytes": 3314
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\data\\state.json",
+        "bytes": 3314
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\data\\state.json.bak",
+        "bytes": 3342
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\hangup-data\\state.before-native.json",
+        "bytes": 3297
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\hangup-data\\state.json",
+        "bytes": 3270
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-LaunchQueueTests\\hangup-data\\state.json.bak",
+        "bytes": 3255
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\objects\\PreparedCleanupTests.obj",
+        "bytes": 3751301
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\release-native\\Udm.PreparedCleanupTests.exe",
+        "bytes": 2220544
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-unchanged\\catalog\\state.json",
+        "bytes": 3393
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-unchanged\\catalog\\state.json.bak",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-replaced\\catalog\\state.json",
+        "bytes": 3391
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-replaced\\catalog\\state.json.bak",
+        "bytes": 2847
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-replaced\\files\\.udm-a9d19307aa594025aab5bb38f5a45325.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-missing\\catalog\\state.json",
+        "bytes": 3389
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-missing\\catalog\\state.json.bak",
+        "bytes": 2846
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-missing\\files\\.udm-b565a42894ab4c00ab124ae973d5ca9d.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-directory\\catalog\\state.json",
+        "bytes": 3393
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-directory\\catalog\\state.json.bak",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-directory\\files\\.udm-4d9883c71c1044b0957d43fef56dc531.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-unchanged\\catalog\\state.json",
+        "bytes": 3395
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-unchanged\\catalog\\state.json.bak",
+        "bytes": 2849
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-replaced\\catalog\\state.json",
+        "bytes": 3393
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-replaced\\catalog\\state.json.bak",
+        "bytes": 2848
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-replaced\\files\\.udm-fd17a0035c384db88f70247f0839046e.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-missing\\catalog\\state.json",
+        "bytes": 3391
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-missing\\catalog\\state.json.bak",
+        "bytes": 2847
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-missing\\files\\.udm-fbd1bf5ed8b04f84a715905ff12d971b.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-directory\\catalog\\state.json",
+        "bytes": 3395
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-directory\\catalog\\state.json.bak",
+        "bytes": 2849
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-directory\\files\\.udm-924f0ddd51bc4de9835f9335c13811fb.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\objects\\PreparedCleanupHttpTests.obj",
+        "bytes": 2460288
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+        "bytes": 4892672
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\state.json",
+        "bytes": 5821
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3486
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\files\\.udm-824471b37bad4ee58bd1998213ddd11a.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\parts\\824471b37bad4ee58bd1998213ddd11a\\824471b37bad4ee58bd1998213ddd11a.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\state.json",
+        "bytes": 5829
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\state.json.bak",
+        "bytes": 3482
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\files\\.udm-628fbbe49363411aa0e5684a9d9d181a.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\parts\\628fbbe49363411aa0e5684a9d9d181a\\628fbbe49363411aa0e5684a9d9d181a.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\state.json",
+        "bytes": 5827
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3486
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\files\\.udm-5175457487ea48babc5a3003bc6abc74.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\parts\\5175457487ea48babc5a3003bc6abc74\\5175457487ea48babc5a3003bc6abc74.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\state.json",
+        "bytes": 5818
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\state.json.bak",
+        "bytes": 3482
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\files\\.udm-fb9bcbc2d5b5485ba554ce9c1cbf4fdb.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\parts\\fb9bcbc2d5b5485ba554ce9c1cbf4fdb\\fb9bcbc2d5b5485ba554ce9c1cbf4fdb.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\PreparedCleanupHttpTests.cpp",
+        "bytes": 4881
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\Core.hpp",
+        "bytes": 35499
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\FileIdentity.hpp",
+        "bytes": 935
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\PeriodicCheckpoint.hpp",
+        "bytes": 1408
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\PreparedTransferCommit.hpp",
+        "bytes": 10614
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\PublicationRecovery.hpp",
+        "bytes": 715
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\PublicationSourcePin.hpp",
+        "bytes": 1516
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\PublishedWriteback.hpp",
+        "bytes": 2277
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\SpeedMeter.hpp",
+        "bytes": 1167
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\objects\\PreparedCleanupHttpTests.obj",
+        "bytes": 2460427
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+        "bytes": 4894208
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\state.json",
+        "bytes": 5836
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3500
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\files\\.udm-533d2e52a5174659bc068761e814bf4f.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\parts\\533d2e52a5174659bc068761e814bf4f\\533d2e52a5174659bc068761e814bf4f.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\state.json",
+        "bytes": 5837
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\state.json.bak",
+        "bytes": 3496
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\files\\.udm-e32988ef41f1491483cfe9dddaa6d792.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\parts\\e32988ef41f1491483cfe9dddaa6d792\\e32988ef41f1491483cfe9dddaa6d792.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\state.json",
+        "bytes": 5841
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3500
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\files\\.udm-52c10e58c2524ff591da9b809681e88d.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\parts\\52c10e58c2524ff591da9b809681e88d\\52c10e58c2524ff591da9b809681e88d.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\state.json",
+        "bytes": 5845
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\state.json.bak",
+        "bytes": 3496
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\files\\.udm-8117d80871394ce8a6b1190bcb1085b1.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\parts\\8117d80871394ce8a6b1190bcb1085b1\\8117d80871394ce8a6b1190bcb1085b1.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\frozen-native\\third_party\\json.hpp",
+        "bytes": 953436
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-unchanged\\catalog\\state.json",
+        "bytes": 3403
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-unchanged\\catalog\\state.json.bak",
+        "bytes": 2853
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\catalog\\state.json",
+        "bytes": 3401
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\catalog\\state.json.bak",
+        "bytes": 2852
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\files\\.udm-05770ca77af143618b24c88851f4bbe8.assembling",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\files\\.udm-05770ca77af143618b24c88851f4bbe8.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-missing\\catalog\\state.json",
+        "bytes": 3399
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-missing\\catalog\\state.json.bak",
+        "bytes": 2851
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-missing\\files\\.udm-dda75a60a39a4da8924081a3b6ef8ef4.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-directory\\catalog\\state.json",
+        "bytes": 3403
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-directory\\catalog\\state.json.bak",
+        "bytes": 2853
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-directory\\files\\.udm-431359c11cf1448d896d1dc08533530d.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-unchanged\\catalog\\state.json",
+        "bytes": 3405
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-unchanged\\catalog\\state.json.bak",
+        "bytes": 2854
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\catalog\\state.json",
+        "bytes": 3403
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\catalog\\state.json.bak",
+        "bytes": 2853
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\files\\.udm-602bf0e4152746d898f006b65b0b9c11.assembling",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\files\\.udm-602bf0e4152746d898f006b65b0b9c11.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-missing\\catalog\\state.json",
+        "bytes": 3401
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-missing\\catalog\\state.json.bak",
+        "bytes": 2852
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-missing\\files\\.udm-0a87db1fda9f442db30225855b4d2864.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-directory\\catalog\\state.json",
+        "bytes": 3405
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-directory\\catalog\\state.json.bak",
+        "bytes": 2854
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-directory\\files\\.udm-5a720b6214e8499eada31928636ca6d2.assembling.moved",
+        "bytes": 13
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\catalog\\state.json",
+        "bytes": 5814
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3476
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\files\\.udm-5ada6d706eb6477fb1eb54ea04761535.assembling",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\files\\.udm-5ada6d706eb6477fb1eb54ea04761535.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\catalog\\parts\\5ada6d706eb6477fb1eb54ea04761535\\5ada6d706eb6477fb1eb54ea04761535.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\catalog\\state.json",
+        "bytes": 5820
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\catalog\\state.json.bak",
+        "bytes": 3472
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\files\\.udm-f751037914e141a3871446df0b7de129.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\catalog\\parts\\f751037914e141a3871446df0b7de129\\f751037914e141a3871446df0b7de129.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\catalog\\state.json",
+        "bytes": 5815
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\catalog\\state.json.bak",
+        "bytes": 3476
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\files\\.udm-69944dd5f4c64d0c96021b2cf25adcd1.assembling",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\files\\.udm-69944dd5f4c64d0c96021b2cf25adcd1.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\catalog\\parts\\69944dd5f4c64d0c96021b2cf25adcd1\\69944dd5f4c64d0c96021b2cf25adcd1.data",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\catalog\\state.json",
+        "bytes": 5808
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\catalog\\state.json.bak",
+        "bytes": 3472
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\files\\.udm-5950ff719c5a40a992f309f1c4068945.assembling.moved",
+        "bytes": 131072
+      },
+      {
+        "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\catalog\\parts\\5950ff719c5a40a992f309f1c4068945\\5950ff719c5a40a992f309f1c4068945.data",
+        "bytes": 131072
+      }
+    ]
+  },
+  "nextWork": "Audit staging creation/reuse and transfer-level cleanup before prepared handoff; separately resolve successful finishing and exclusive availability performance gaps without deferred hidden work."
+}

@@ -1,0 +1,13 @@
+--- native/Duplicates.cpp
++++ diagnostic/Duplicates.cpp
+@@ -283,8 +283,8 @@
+   if(overlap){finalCommit->finishWriteback();checkpoint();timing("JoinWriteback");if(publicationObservation)publicationObservation("publication-writeback-protected");}
+   prepared.validateSourceName(staging);prepared.validateDirectories();
+   if(overlap){Lock guard(mutex);checkpoint();if(stopping||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during body writeback. Keep its file and recovery record.");}
+-  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+-  prepared.pinPublishedName(target);
++  UDM_FINISH_POINT("rename-begin");if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
++  prepared.pinPublishedName(target);UDM_FINISH_POINT("rename-pin-end");
+   timing("Rename");if(publicationObservation)publicationObservation("publication-file-moved");
+   lock.lock();
+   if((std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||str(job->data,"ReplacementOf")!=originalId||str(job->data,"ReplacementHash")!=replacementHash||str(job->data,"PreviousPath")!=previousPath||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during publication. Keep its file and recovery record.");

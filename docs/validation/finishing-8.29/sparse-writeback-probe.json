@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "name": "Actual NTFS fixture becomes sparse",
+      "passed": true
+    },
+    {
+      "name": "Production helper normalizes and flushes actual sparse file using write-only access",
+      "passed": true
+    },
+    {
+      "name": "Actual sparse flag clears while exact length remains",
+      "passed": true
+    },
+    {
+      "name": "Written prefix and zero-filled final byte survive actual normalization",
+      "passed": true
+    }
+  ],
+  "closeSeconds": 6.6e-05,
+  "error": "",
+  "flushSeconds": 0.0028272,
+  "normalizeSeconds": 0.0033101,
+  "openSeconds": 5.03e-05,
+  "passed": true,
+  "independentSha256": "D588CEA31926E7713F9EB65B9E42AD03C36EAE80FAF6778A8943A910BBC626A8",
+  "independentSha256Matches": true,
+  "productionHeaderSha256": "2D5313CBB6A8F03EE9F65E26AF367DC6D3DF42B0044E1A33782503BF5C16CBBB",
+  "supplemental": true
+}

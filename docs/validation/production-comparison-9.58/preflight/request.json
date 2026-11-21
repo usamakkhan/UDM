@@ -1,0 +1,24 @@
+{
+  "version": "9.58",
+  "cases": [
+    "single-4m",
+    "single-64m",
+    "split-64m"
+  ],
+  "trials": 1,
+  "apps": {
+    "current958": {
+      "path": "$REPOSITORY\\.media-cache\\owned-browser-integration-build-9.58\\release-native\\UDM.exe",
+      "sha256": "013638E7A4C7844879E77AC44875993FB7BB9AF6572BCDCE41B9477AA4E4DF73"
+    },
+    "installed868": {
+      "path": "C:\\Program Files\\UDM\\UDM.exe",
+      "sha256": "3E59C038040652A1B0606E19A33AFF24390C00B50D81BA82925541AE732CA95D"
+    }
+  },
+  "harnessSha256": "C5B71C42426DE2F9653F29C4896D888108F0B587E48E26C031DC11D6AC5C494A",
+  "originalHarnessSha256": "FCABE9959CCBADD46A2E304B9D9974E9A2AF6F2AD9B2A73E49E986326807A821",
+  "noIdmInteraction": true,
+  "notInstalledUpdate": true,
+  "diagnosticOnly": true
+}

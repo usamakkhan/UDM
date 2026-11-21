@@ -1,0 +1,106 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "version": "8.52",
+      "trial": 1,
+      "case": "single-4m",
+      "bytes": 4194304,
+      "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+      "hashMatches": true,
+      "processExitTailSeconds": 0.1870712999952957,
+      "processExitWallSeconds": 1.3597183999881963,
+      "firstAvailabilityTailSeconds": 0.1376012000037008,
+      "durableTailSeconds": 0.20278030000190483,
+      "postExitToDurableSeconds": 0.01570900000660913,
+      "postExitOperations": {
+        "openSeconds": 9.329999738838524e-05,
+        "flushSeconds": 0.00536149999970803,
+        "closeSeconds": 3.599999763537198e-05
+      },
+      "clockMappingErrorBoundSeconds": 1.8599999748403206e-05,
+      "clockDriftSeconds": 1.4300004697043178e-05,
+      "requests": 1,
+      "originBytes": 4194304,
+      "sourceExecutableSha256": "BEC435346FE7D08A50CC1DEF80F187D4127138C8575BF2FA18133A44C967373D",
+      "finishPhases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupPartsOrder": "after-final-publication-checkpoint",
+        "CommitStrategy": "prepared-final-checkpoint",
+        "ConfirmationWait": 2.6e-06,
+        "Content": 0.0002644,
+        "DirectSize": 2.92e-05,
+        "FlushPublished": 0.0348136,
+        "Hash": 6.2e-05,
+        "HashMode": "inline",
+        "PrePublicationMetadata": 0.0053933,
+        "PrefetchReceipt": 1.2e-06,
+        "PreparedTransferFinalizeSeconds": 0.0437443,
+        "PublishedCloseError": 0,
+        "PublishedFileClose": 6.25e-05,
+        "PublishedFileFlush": 0.0345906,
+        "PublishedFileOpen": 0.0001121,
+        "PublishedFlushError": 0,
+        "PublishedNormalizeError": 0,
+        "PublishedOpenError": 0,
+        "PublishedSparseNormalize": 0.0,
+        "PublishedWriteAccess": "write-only",
+        "Settle": 0.0031189,
+        "SettleDestination": 0.002543,
+        "SettleLengthQuery": 0.0003204,
+        "SettleLockWait": 3e-07,
+        "SettleRecoveryCheck": 0.000226,
+        "SettleSnapshot": 1.42e-05,
+        "SettleValidateFolder": 6e-07,
+        "SettleWriterReopen": false,
+        "SparseNormalization": "not-needed",
+        "StageMode": "hard-link",
+        "StageOutput": 0.0009444,
+        "TimingScope": "through-prepared-transfer-handoff",
+        "Unsparse": 0.0
+      },
+      "publicationPhases": {
+        "IntentOperations": {
+          "bytes-written": 0.0002943,
+          "directories-ready": 0.0009685,
+          "publish": 0.0013812,
+          "temporary-flushed": 0.0233322,
+          "temporary-opened": 0.0002649
+        },
+        "PrepareIntent": 0.0005274,
+        "PrepareSource": 0.0005367,
+        "Rename": 0.0010768,
+        "TimingScope": "through-rename-before-final-catalog-save",
+        "VerifyIdentity": 2.7e-06,
+        "WriteIntent": 0.0262484
+      },
+      "prefinishWriteback": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 1573405,
+        "Seconds": 0.10245970000000001
+      },
+      "applicationExitedNormally": true,
+      "instrumented": false,
+      "protectedFilesUnchanged": true
+    }
+  ],
+  "summary": {
+    "8.52": {
+      "medianProcessExitTailMs": 187.0712999952957,
+      "medianDurableTailMs": 202.78030000190483,
+      "processExitTailMs": [
+        187.0712999952957
+      ],
+      "durableTailMs": [
+        202.78030000190483
+      ]
+    }
+  },
+  "pairedIdmComparison": false,
+  "performanceParityVerified": false,
+  "scope": "One ordinary 4 MiB native-app lifecycle/hash smoke on D: after detached accepted cleanup and retained-source reservation. App exits normally after its own work, with a separate explicit output flush. Not an IDM comparison or performance claim.",
+  "allFinalPayloadsRemoved": true,
+  "comparisonUtilitySha256": "268F355F031F5E1E52FA26719CEEF7FE591DE67B299EBC7D1941CBB81D6E06EB"
+}

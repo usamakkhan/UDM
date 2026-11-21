@@ -1,0 +1,8 @@
+{
+  "changed": [
+    "native/CaptureAdmission.cpp",
+    "native/RecoveryCommandTests.cpp"
+  ],
+  "reason": "Final receipt-overlap guards and actual browser-receipt fixture cases added before qualification. Initial snapshot verification rejected changes; CaptureAdmission is explicitly rebuilt and command fixture relinked.",
+  "notQualifiedInitialLink": true
+}

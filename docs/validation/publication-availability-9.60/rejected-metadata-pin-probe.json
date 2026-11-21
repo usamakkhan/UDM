@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "observations": [
+    {
+      "access": "data-reader",
+      "exclusiveReaderAllowed": false,
+      "writerAllowed": false,
+      "renameAllowed": false,
+      "deleteAllowed": false
+    },
+    {
+      "access": "metadata-only",
+      "exclusiveReaderAllowed": true,
+      "writerAllowed": true,
+      "renameAllowed": true,
+      "deleteAllowed": true
+    }
+  ],
+  "rejectedAlternative": "Metadata-only pin permits mutation before durable acceptance and is not used by the product fix",
+  "payloadsRemoved": true,
+  "failedInitialProbeExcluded": true
+}

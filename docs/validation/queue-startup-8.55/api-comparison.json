@@ -1,0 +1,3489 @@
+{
+  "passed": true,
+  "sourceSha256": "909F33344D53D0DF3753408470A4FE6BB49E67ED40EA8589EEC251D52E0B4752",
+  "results": [
+    {
+      "trial": 1,
+      "version": "8.54",
+      "exeSha256": "9CBA6029B86DBF523D09AB3FC5DEA29D28E8CD03ACA3C4008FFE539990FC324E",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 6.92e-05,
+                "threadCycles": 229299,
+                "trial": 0
+              },
+              {
+                "seconds": 2.28e-05,
+                "threadCycles": 79372,
+                "trial": 1
+              },
+              {
+                "seconds": 1.78e-05,
+                "threadCycles": 62413,
+                "trial": 2
+              },
+              {
+                "seconds": 1.73e-05,
+                "threadCycles": 60717,
+                "trial": 3
+              },
+              {
+                "seconds": 1.73e-05,
+                "threadCycles": 60377,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 7.99e-05,
+                "threadCycles": 273734,
+                "trial": 0
+              },
+              {
+                "seconds": 3.23e-05,
+                "threadCycles": 111597,
+                "trial": 1
+              },
+              {
+                "seconds": 2.93e-05,
+                "threadCycles": 101421,
+                "trial": 2
+              },
+              {
+                "seconds": 2.89e-05,
+                "threadCycles": 99724,
+                "trial": 3
+              },
+              {
+                "seconds": 2.77e-05,
+                "threadCycles": 95654,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.24e-05,
+                "threadCycles": 78016,
+                "trial": 0
+              },
+              {
+                "seconds": 2.04e-05,
+                "threadCycles": 71232,
+                "trial": 1
+              },
+              {
+                "seconds": 2e-05,
+                "threadCycles": 69875,
+                "trial": 2
+              },
+              {
+                "seconds": 1.99e-05,
+                "threadCycles": 69197,
+                "trial": 3
+              },
+              {
+                "seconds": 1.95e-05,
+                "threadCycles": 68179,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.01e-05,
+                "threadCycles": 103795,
+                "trial": 0
+              },
+              {
+                "seconds": 2.78e-05,
+                "threadCycles": 95993,
+                "trial": 1
+              },
+              {
+                "seconds": 2.82e-05,
+                "threadCycles": 97690,
+                "trial": 2
+              },
+              {
+                "seconds": 3.01e-05,
+                "threadCycles": 104135,
+                "trial": 3
+              },
+              {
+                "seconds": 2.76e-05,
+                "threadCycles": 95654,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 2.18e-05,
+                "threadCycles": 75642,
+                "trial": 0
+              },
+              {
+                "seconds": 2.01e-05,
+                "threadCycles": 70554,
+                "trial": 1
+              },
+              {
+                "seconds": 2.01e-05,
+                "threadCycles": 70214,
+                "trial": 2
+              },
+              {
+                "seconds": 1.99e-05,
+                "threadCycles": 69196,
+                "trial": 3
+              },
+              {
+                "seconds": 2.01e-05,
+                "threadCycles": 70214,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0128441,
+                "threadCycles": 43192710,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0127318,
+                "threadCycles": 42577401,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0131666,
+                "threadCycles": 44060722,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0130934,
+                "threadCycles": 43427435,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0134729,
+                "threadCycles": 45243514,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0145375,
+                "threadCycles": 48966573,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0140561,
+                "threadCycles": 47049756,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0143538,
+                "threadCycles": 48165383,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0145591,
+                "threadCycles": 47932012,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0151382,
+                "threadCycles": 50372556,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0144401,
+                "threadCycles": 48713870,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0147443,
+                "threadCycles": 49100215,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0144684,
+                "threadCycles": 47937099,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0149633,
+                "threadCycles": 49624279,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0146946,
+                "threadCycles": 49352583,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0185428,
+                "threadCycles": 62102093,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0196536,
+                "threadCycles": 65671153,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0189448,
+                "threadCycles": 63735680,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0183945,
+                "threadCycles": 61835142,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0198389,
+                "threadCycles": 65862803,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0158532,
+                "threadCycles": 50059136,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0148985,
+                "threadCycles": 49655147,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0149265,
+                "threadCycles": 50149364,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0149784,
+                "threadCycles": 49372254,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0141564,
+                "threadCycles": 47539222,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0389497,
+                "threadCycles": 129571344,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0391722,
+                "threadCycles": 131044494,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0388802,
+                "threadCycles": 129632739,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0390897,
+                "threadCycles": 130426133,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0385258,
+                "threadCycles": 129099522,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0466372,
+                "threadCycles": 156585914,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0453262,
+                "threadCycles": 151978221,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0449459,
+                "threadCycles": 150950103,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0450438,
+                "threadCycles": 150749639,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0463259,
+                "threadCycles": 154173525,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0434259,
+                "threadCycles": 144538205,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0439493,
+                "threadCycles": 146595117,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0433071,
+                "threadCycles": 144660998,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0433955,
+                "threadCycles": 146322739,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0429074,
+                "threadCycles": 143425975,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0638376,
+                "threadCycles": 205959189,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0652551,
+                "threadCycles": 208397017,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0614785,
+                "threadCycles": 198246451,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0586157,
+                "threadCycles": 195427364,
+                "trial": 3
+              },
+              {
+                "seconds": 0.064411,
+                "threadCycles": 208885112,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0486431,
+                "threadCycles": 154144350,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0460716,
+                "threadCycles": 146570011,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0476755,
+                "threadCycles": 146820339,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0473138,
+                "threadCycles": 149839224,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0462939,
+                "threadCycles": 148433919,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": true
+          }
+        ],
+        "compiledVersion": "8.54",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    },
+    {
+      "trial": 1,
+      "version": "8.55",
+      "exeSha256": "66DD982FA5D9033D4AF20B0183140AABD3F714B2AB456B42EBD26BC5D9F0F6FD",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 6.76e-05,
+                "threadCycles": 233709,
+                "trial": 0
+              },
+              {
+                "seconds": 4.3e-06,
+                "threadCycles": 16621,
+                "trial": 1
+              },
+              {
+                "seconds": 3.8e-06,
+                "threadCycles": 14585,
+                "trial": 2
+              },
+              {
+                "seconds": 3.4e-06,
+                "threadCycles": 13228,
+                "trial": 3
+              },
+              {
+                "seconds": 3.4e-06,
+                "threadCycles": 13228,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 8.33e-05,
+                "threadCycles": 285268,
+                "trial": 0
+              },
+              {
+                "seconds": 3.51e-05,
+                "threadCycles": 121433,
+                "trial": 1
+              },
+              {
+                "seconds": 3.13e-05,
+                "threadCycles": 108205,
+                "trial": 2
+              },
+              {
+                "seconds": 3.06e-05,
+                "threadCycles": 105831,
+                "trial": 3
+              },
+              {
+                "seconds": 2.94e-05,
+                "threadCycles": 101760,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.38e-05,
+                "threadCycles": 82426,
+                "trial": 0
+              },
+              {
+                "seconds": 2.24e-05,
+                "threadCycles": 78016,
+                "trial": 1
+              },
+              {
+                "seconds": 2.16e-05,
+                "threadCycles": 74963,
+                "trial": 2
+              },
+              {
+                "seconds": 2.19e-05,
+                "threadCycles": 76659,
+                "trial": 3
+              },
+              {
+                "seconds": 2.19e-05,
+                "threadCycles": 76659,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 4.87e-05,
+                "threadCycles": 167565,
+                "trial": 0
+              },
+              {
+                "seconds": 3.13e-05,
+                "threadCycles": 108205,
+                "trial": 1
+              },
+              {
+                "seconds": 3.01e-05,
+                "threadCycles": 104134,
+                "trial": 2
+              },
+              {
+                "seconds": 3.67e-05,
+                "threadCycles": 126522,
+                "trial": 3
+              },
+              {
+                "seconds": 2.98e-05,
+                "threadCycles": 103117,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 2.39e-05,
+                "threadCycles": 82765,
+                "trial": 0
+              },
+              {
+                "seconds": 2.24e-05,
+                "threadCycles": 77677,
+                "trial": 1
+              },
+              {
+                "seconds": 2.17e-05,
+                "threadCycles": 75642,
+                "trial": 2
+              },
+              {
+                "seconds": 2.2e-05,
+                "threadCycles": 76659,
+                "trial": 3
+              },
+              {
+                "seconds": 2.17e-05,
+                "threadCycles": 75981,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 1.82e-05,
+                "threadCycles": 67501,
+                "trial": 0
+              },
+              {
+                "seconds": 1.31e-05,
+                "threadCycles": 51898,
+                "trial": 1
+              },
+              {
+                "seconds": 1.36e-05,
+                "threadCycles": 52576,
+                "trial": 2
+              },
+              {
+                "seconds": 1.34e-05,
+                "threadCycles": 54611,
+                "trial": 3
+              },
+              {
+                "seconds": 1.19e-05,
+                "threadCycles": 46131,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0034762,
+                "threadCycles": 11782112,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0038895,
+                "threadCycles": 12751547,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0037674,
+                "threadCycles": 12772237,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0035836,
+                "threadCycles": 12152859,
+                "trial": 3
+              },
+              {
+                "seconds": 0.003759,
+                "threadCycles": 12253599,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0028397,
+                "threadCycles": 9619712,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0031537,
+                "threadCycles": 10504347,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0029835,
+                "threadCycles": 10119353,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0032018,
+                "threadCycles": 10804876,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0030113,
+                "threadCycles": 10218400,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.010979,
+                "threadCycles": 34964400,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0108339,
+                "threadCycles": 35136031,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0106509,
+                "threadCycles": 34394537,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0093804,
+                "threadCycles": 30753228,
+                "trial": 3
+              },
+              {
+                "seconds": 0.009154,
+                "threadCycles": 30844473,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0035634,
+                "threadCycles": 12011750,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0033465,
+                "threadCycles": 11308928,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0034352,
+                "threadCycles": 11572826,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0033134,
+                "threadCycles": 11231591,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0043992,
+                "threadCycles": 14456365,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 1.79e-05,
+                "threadCycles": 66144,
+                "trial": 0
+              },
+              {
+                "seconds": 1.31e-05,
+                "threadCycles": 51219,
+                "trial": 1
+              },
+              {
+                "seconds": 1.21e-05,
+                "threadCycles": 47148,
+                "trial": 2
+              },
+              {
+                "seconds": 1.31e-05,
+                "threadCycles": 52576,
+                "trial": 3
+              },
+              {
+                "seconds": 1.32e-05,
+                "threadCycles": 51219,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0120812,
+                "threadCycles": 37843185,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0119126,
+                "threadCycles": 38632505,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0122286,
+                "threadCycles": 40594101,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0106001,
+                "threadCycles": 35901268,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0108884,
+                "threadCycles": 36365973,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.010412,
+                "threadCycles": 33344717,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0098899,
+                "threadCycles": 32016407,
+                "trial": 1
+              },
+              {
+                "seconds": 0.009101,
+                "threadCycles": 30651131,
+                "trial": 2
+              },
+              {
+                "seconds": 0.009416,
+                "threadCycles": 31310873,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0088295,
+                "threadCycles": 29836709,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0299288,
+                "threadCycles": 96501044,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0332302,
+                "threadCycles": 105200842,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0337259,
+                "threadCycles": 103317940,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0329923,
+                "threadCycles": 101736253,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0356667,
+                "threadCycles": 100841790,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0172205,
+                "threadCycles": 45789964,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0152829,
+                "threadCycles": 43056687,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0145274,
+                "threadCycles": 43795470,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0151456,
+                "threadCycles": 42802284,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0129371,
+                "threadCycles": 41823694,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": false
+          }
+        ],
+        "compiledVersion": "8.55",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    },
+    {
+      "trial": 2,
+      "version": "8.55",
+      "exeSha256": "66DD982FA5D9033D4AF20B0183140AABD3F714B2AB456B42EBD26BC5D9F0F6FD",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 3.23e-05,
+                "threadCycles": 115328,
+                "trial": 0
+              },
+              {
+                "seconds": 4.5e-06,
+                "threadCycles": 16960,
+                "trial": 1
+              },
+              {
+                "seconds": 3.9e-06,
+                "threadCycles": 14924,
+                "trial": 2
+              },
+              {
+                "seconds": 3.7e-06,
+                "threadCycles": 14246,
+                "trial": 3
+              },
+              {
+                "seconds": 3.5e-06,
+                "threadCycles": 13568,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 7.45e-05,
+                "threadCycles": 255078,
+                "trial": 0
+              },
+              {
+                "seconds": 3.61e-05,
+                "threadCycles": 124487,
+                "trial": 1
+              },
+              {
+                "seconds": 3.29e-05,
+                "threadCycles": 113971,
+                "trial": 2
+              },
+              {
+                "seconds": 3.21e-05,
+                "threadCycles": 110918,
+                "trial": 3
+              },
+              {
+                "seconds": 3.05e-05,
+                "threadCycles": 105491,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.5e-05,
+                "threadCycles": 86835,
+                "trial": 0
+              },
+              {
+                "seconds": 2.35e-05,
+                "threadCycles": 81747,
+                "trial": 1
+              },
+              {
+                "seconds": 2.25e-05,
+                "threadCycles": 78016,
+                "trial": 2
+              },
+              {
+                "seconds": 2.38e-05,
+                "threadCycles": 82765,
+                "trial": 3
+              },
+              {
+                "seconds": 2.24e-05,
+                "threadCycles": 78016,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.4e-05,
+                "threadCycles": 117024,
+                "trial": 0
+              },
+              {
+                "seconds": 3.16e-05,
+                "threadCycles": 109223,
+                "trial": 1
+              },
+              {
+                "seconds": 3.1e-05,
+                "threadCycles": 107187,
+                "trial": 2
+              },
+              {
+                "seconds": 3.06e-05,
+                "threadCycles": 106169,
+                "trial": 3
+              },
+              {
+                "seconds": 3.02e-05,
+                "threadCycles": 104473,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 2.82e-05,
+                "threadCycles": 97689,
+                "trial": 0
+              },
+              {
+                "seconds": 2.32e-05,
+                "threadCycles": 80730,
+                "trial": 1
+              },
+              {
+                "seconds": 2.25e-05,
+                "threadCycles": 78695,
+                "trial": 2
+              },
+              {
+                "seconds": 2.25e-05,
+                "threadCycles": 78695,
+                "trial": 3
+              },
+              {
+                "seconds": 2.23e-05,
+                "threadCycles": 77676,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 1.78e-05,
+                "threadCycles": 65126,
+                "trial": 0
+              },
+              {
+                "seconds": 1.43e-05,
+                "threadCycles": 53932,
+                "trial": 1
+              },
+              {
+                "seconds": 9.6e-06,
+                "threadCycles": 39686,
+                "trial": 2
+              },
+              {
+                "seconds": 1.41e-05,
+                "threadCycles": 54611,
+                "trial": 3
+              },
+              {
+                "seconds": 1.63e-05,
+                "threadCycles": 63430,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0027667,
+                "threadCycles": 9271354,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0024482,
+                "threadCycles": 8240526,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0033816,
+                "threadCycles": 11471744,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0026215,
+                "threadCycles": 8781210,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0024905,
+                "threadCycles": 8291405,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0044462,
+                "threadCycles": 10347296,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0045057,
+                "threadCycles": 10587450,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0041392,
+                "threadCycles": 9715028,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0041083,
+                "threadCycles": 10952090,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0040766,
+                "threadCycles": 10470763,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.020247,
+                "threadCycles": 30774262,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0105142,
+                "threadCycles": 31484206,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0259009,
+                "threadCycles": 31470980,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0420839,
+                "threadCycles": 31545943,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0097858,
+                "threadCycles": 31462837,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0055253,
+                "threadCycles": 13503553,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0047986,
+                "threadCycles": 13378387,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0046706,
+                "threadCycles": 13886848,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0049837,
+                "threadCycles": 13611077,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0094207,
+                "threadCycles": 14390896,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.68e-05,
+                "threadCycles": 100064,
+                "trial": 0
+              },
+              {
+                "seconds": 1.57e-05,
+                "threadCycles": 64109,
+                "trial": 1
+              },
+              {
+                "seconds": 1.32e-05,
+                "threadCycles": 51219,
+                "trial": 2
+              },
+              {
+                "seconds": 1.44e-05,
+                "threadCycles": 57664,
+                "trial": 3
+              },
+              {
+                "seconds": 1.39e-05,
+                "threadCycles": 53255,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0132386,
+                "threadCycles": 39337366,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0119198,
+                "threadCycles": 37301147,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0119937,
+                "threadCycles": 38731891,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0105081,
+                "threadCycles": 35506777,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0104991,
+                "threadCycles": 35310382,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0087893,
+                "threadCycles": 29515491,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0090511,
+                "threadCycles": 30290560,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0092992,
+                "threadCycles": 31038498,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0089477,
+                "threadCycles": 30125032,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0093409,
+                "threadCycles": 31344117,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0278553,
+                "threadCycles": 93308831,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0284205,
+                "threadCycles": 93228442,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0278831,
+                "threadCycles": 92996428,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0287368,
+                "threadCycles": 95984441,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0285313,
+                "threadCycles": 95441721,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0119172,
+                "threadCycles": 40226747,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0124971,
+                "threadCycles": 41980408,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0119961,
+                "threadCycles": 40235566,
+                "trial": 2
+              },
+              {
+                "seconds": 0.01237,
+                "threadCycles": 40933977,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0118673,
+                "threadCycles": 39950296,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": false
+          }
+        ],
+        "compiledVersion": "8.55",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    },
+    {
+      "trial": 2,
+      "version": "8.54",
+      "exeSha256": "9CBA6029B86DBF523D09AB3FC5DEA29D28E8CD03ACA3C4008FFE539990FC324E",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 4.8e-05,
+                "threadCycles": 168921,
+                "trial": 0
+              },
+              {
+                "seconds": 2.06e-05,
+                "threadCycles": 71571,
+                "trial": 1
+              },
+              {
+                "seconds": 1.93e-05,
+                "threadCycles": 67162,
+                "trial": 2
+              },
+              {
+                "seconds": 1.88e-05,
+                "threadCycles": 65465,
+                "trial": 3
+              },
+              {
+                "seconds": 1.85e-05,
+                "threadCycles": 64788,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 8.21e-05,
+                "threadCycles": 282553,
+                "trial": 0
+              },
+              {
+                "seconds": 3.74e-05,
+                "threadCycles": 128896,
+                "trial": 1
+              },
+              {
+                "seconds": 3.31e-05,
+                "threadCycles": 114311,
+                "trial": 2
+              },
+              {
+                "seconds": 3.14e-05,
+                "threadCycles": 108544,
+                "trial": 3
+              },
+              {
+                "seconds": 3.04e-05,
+                "threadCycles": 105152,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.34e-05,
+                "threadCycles": 81068,
+                "trial": 0
+              },
+              {
+                "seconds": 2.17e-05,
+                "threadCycles": 75302,
+                "trial": 1
+              },
+              {
+                "seconds": 2.13e-05,
+                "threadCycles": 74285,
+                "trial": 2
+              },
+              {
+                "seconds": 2.08e-05,
+                "threadCycles": 72588,
+                "trial": 3
+              },
+              {
+                "seconds": 2.09e-05,
+                "threadCycles": 72589,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.62e-05,
+                "threadCycles": 124826,
+                "trial": 0
+              },
+              {
+                "seconds": 5.56e-05,
+                "threadCycles": 137037,
+                "trial": 1
+              },
+              {
+                "seconds": 3.01e-05,
+                "threadCycles": 104134,
+                "trial": 2
+              },
+              {
+                "seconds": 2.93e-05,
+                "threadCycles": 101421,
+                "trial": 3
+              },
+              {
+                "seconds": 2.82e-05,
+                "threadCycles": 97689,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 2.22e-05,
+                "threadCycles": 77677,
+                "trial": 0
+              },
+              {
+                "seconds": 2.08e-05,
+                "threadCycles": 72588,
+                "trial": 1
+              },
+              {
+                "seconds": 2.09e-05,
+                "threadCycles": 72928,
+                "trial": 2
+              },
+              {
+                "seconds": 2.04e-05,
+                "threadCycles": 71232,
+                "trial": 3
+              },
+              {
+                "seconds": 2.07e-05,
+                "threadCycles": 72249,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0157475,
+                "threadCycles": 51266687,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0145741,
+                "threadCycles": 48403161,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0158233,
+                "threadCycles": 49723667,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0140319,
+                "threadCycles": 47220708,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0176827,
+                "threadCycles": 46608455,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0154499,
+                "threadCycles": 51368449,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0182772,
+                "threadCycles": 48603631,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0144857,
+                "threadCycles": 48407909,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0162267,
+                "threadCycles": 52268011,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0149616,
+                "threadCycles": 49634797,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0182822,
+                "threadCycles": 51512610,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0151064,
+                "threadCycles": 49543890,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0143269,
+                "threadCycles": 47550077,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0139107,
+                "threadCycles": 46659335,
+                "trial": 3
+              },
+              {
+                "seconds": 0.013782,
+                "threadCycles": 46542650,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0191076,
+                "threadCycles": 62613268,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0192674,
+                "threadCycles": 64310962,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0190088,
+                "threadCycles": 63111211,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0186398,
+                "threadCycles": 62722829,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0183429,
+                "threadCycles": 61511546,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0146428,
+                "threadCycles": 48474053,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0139367,
+                "threadCycles": 46599296,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0139935,
+                "threadCycles": 46980554,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0141598,
+                "threadCycles": 47417785,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0140539,
+                "threadCycles": 47221728,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.042906,
+                "threadCycles": 141497955,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0437851,
+                "threadCycles": 143114929,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0397562,
+                "threadCycles": 132064125,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0406352,
+                "threadCycles": 135064696,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0404462,
+                "threadCycles": 135358769,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.048959,
+                "threadCycles": 161470049,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0478483,
+                "threadCycles": 160095279,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0470969,
+                "threadCycles": 156984132,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0476743,
+                "threadCycles": 158905021,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0470496,
+                "threadCycles": 157761920,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0475983,
+                "threadCycles": 146184010,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0511247,
+                "threadCycles": 155081901,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0468699,
+                "threadCycles": 154812915,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0466845,
+                "threadCycles": 154466934,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0456949,
+                "threadCycles": 149512913,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0600014,
+                "threadCycles": 199898021,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0594125,
+                "threadCycles": 199227762,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0583485,
+                "threadCycles": 195672611,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0613248,
+                "threadCycles": 202203225,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0811727,
+                "threadCycles": 216410953,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0587741,
+                "threadCycles": 155700268,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0468907,
+                "threadCycles": 150515255,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0481783,
+                "threadCycles": 147402081,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0456807,
+                "threadCycles": 146604612,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0440819,
+                "threadCycles": 144839759,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": true
+          }
+        ],
+        "compiledVersion": "8.54",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    },
+    {
+      "trial": 3,
+      "version": "8.54",
+      "exeSha256": "9CBA6029B86DBF523D09AB3FC5DEA29D28E8CD03ACA3C4008FFE539990FC324E",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 5.03e-05,
+                "threadCycles": 176045,
+                "trial": 0
+              },
+              {
+                "seconds": 2.08e-05,
+                "threadCycles": 72589,
+                "trial": 1
+              },
+              {
+                "seconds": 2.01e-05,
+                "threadCycles": 70553,
+                "trial": 2
+              },
+              {
+                "seconds": 3.62e-05,
+                "threadCycles": 124486,
+                "trial": 3
+              },
+              {
+                "seconds": 2.71e-05,
+                "threadCycles": 93959,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 7.4e-05,
+                "threadCycles": 241510,
+                "trial": 0
+              },
+              {
+                "seconds": 3.39e-05,
+                "threadCycles": 116685,
+                "trial": 1
+              },
+              {
+                "seconds": 2.98e-05,
+                "threadCycles": 103117,
+                "trial": 2
+              },
+              {
+                "seconds": 2.95e-05,
+                "threadCycles": 102099,
+                "trial": 3
+              },
+              {
+                "seconds": 2.79e-05,
+                "threadCycles": 96332,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.29e-05,
+                "threadCycles": 79712,
+                "trial": 0
+              },
+              {
+                "seconds": 2.1e-05,
+                "threadCycles": 73267,
+                "trial": 1
+              },
+              {
+                "seconds": 2.03e-05,
+                "threadCycles": 70553,
+                "trial": 2
+              },
+              {
+                "seconds": 2.03e-05,
+                "threadCycles": 70554,
+                "trial": 3
+              },
+              {
+                "seconds": 2.07e-05,
+                "threadCycles": 72249,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.98e-05,
+                "threadCycles": 136697,
+                "trial": 0
+              },
+              {
+                "seconds": 2.88e-05,
+                "threadCycles": 99386,
+                "trial": 1
+              },
+              {
+                "seconds": 2.86e-05,
+                "threadCycles": 98708,
+                "trial": 2
+              },
+              {
+                "seconds": 2.82e-05,
+                "threadCycles": 98028,
+                "trial": 3
+              },
+              {
+                "seconds": 2.78e-05,
+                "threadCycles": 96332,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 2.65e-05,
+                "threadCycles": 91923,
+                "trial": 0
+              },
+              {
+                "seconds": 2.08e-05,
+                "threadCycles": 72589,
+                "trial": 1
+              },
+              {
+                "seconds": 2.08e-05,
+                "threadCycles": 72249,
+                "trial": 2
+              },
+              {
+                "seconds": 2.04e-05,
+                "threadCycles": 71232,
+                "trial": 3
+              },
+              {
+                "seconds": 2.04e-05,
+                "threadCycles": 71232,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.013997,
+                "threadCycles": 47213248,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0133144,
+                "threadCycles": 44324618,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0131816,
+                "threadCycles": 44105159,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0130637,
+                "threadCycles": 43936912,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0141636,
+                "threadCycles": 46341844,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0177098,
+                "threadCycles": 57996753,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0169205,
+                "threadCycles": 54698033,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0206448,
+                "threadCycles": 54438885,
+                "trial": 2
+              },
+              {
+                "seconds": 0.015599,
+                "threadCycles": 51782271,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0157344,
+                "threadCycles": 52807335,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0160298,
+                "threadCycles": 53266272,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0147334,
+                "threadCycles": 48795617,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0148552,
+                "threadCycles": 49017453,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0144257,
+                "threadCycles": 48622284,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0141867,
+                "threadCycles": 47972380,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0199993,
+                "threadCycles": 66825791,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0194014,
+                "threadCycles": 64683065,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0195807,
+                "threadCycles": 65414719,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0196294,
+                "threadCycles": 65699988,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0197916,
+                "threadCycles": 65995092,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0145752,
+                "threadCycles": 47990019,
+                "trial": 0
+              },
+              {
+                "seconds": 0.015089,
+                "threadCycles": 50224326,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0148741,
+                "threadCycles": 49314932,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0140937,
+                "threadCycles": 47144052,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0146656,
+                "threadCycles": 49419065,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0405011,
+                "threadCycles": 134977176,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0388532,
+                "threadCycles": 130090326,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0381656,
+                "threadCycles": 127974055,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0390881,
+                "threadCycles": 130380683,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0408842,
+                "threadCycles": 134599306,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0468153,
+                "threadCycles": 156576418,
+                "trial": 0
+              },
+              {
+                "seconds": 0.04565,
+                "threadCycles": 152791625,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0457302,
+                "threadCycles": 153069088,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0457537,
+                "threadCycles": 152493126,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0490239,
+                "threadCycles": 158130969,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0453362,
+                "threadCycles": 150713348,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0438829,
+                "threadCycles": 147266390,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0441881,
+                "threadCycles": 147958023,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0444427,
+                "threadCycles": 149151669,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0435264,
+                "threadCycles": 146353950,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0578965,
+                "threadCycles": 193738151,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0573342,
+                "threadCycles": 192138821,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0573334,
+                "threadCycles": 191764344,
+                "trial": 2
+              },
+              {
+                "seconds": 0.059305,
+                "threadCycles": 194241518,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0663715,
+                "threadCycles": 216546640,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.047784,
+                "threadCycles": 157799573,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0586738,
+                "threadCycles": 180190839,
+                "trial": 1
+              },
+              {
+                "seconds": 0.041701,
+                "threadCycles": 139251774,
+                "trial": 2
+              },
+              {
+                "seconds": 0.041567,
+                "threadCycles": 139652373,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0409705,
+                "threadCycles": 136054816,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": true
+          }
+        ],
+        "compiledVersion": "8.54",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    },
+    {
+      "trial": 3,
+      "version": "8.55",
+      "exeSha256": "66DD982FA5D9033D4AF20B0183140AABD3F714B2AB456B42EBD26BC5D9F0F6FD",
+      "results": {
+        "cases": [
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 0,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 3.26e-05,
+                "threadCycles": 115328,
+                "trial": 0
+              },
+              {
+                "seconds": 4.8e-06,
+                "threadCycles": 17978,
+                "trial": 1
+              },
+              {
+                "seconds": 3.9e-06,
+                "threadCycles": 14924,
+                "trial": 2
+              },
+              {
+                "seconds": 3.7e-06,
+                "threadCycles": 14247,
+                "trial": 3
+              },
+              {
+                "seconds": 3.7e-06,
+                "threadCycles": 14586,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 7.53e-05,
+                "threadCycles": 258131,
+                "trial": 0
+              },
+              {
+                "seconds": 3.77e-05,
+                "threadCycles": 130253,
+                "trial": 1
+              },
+              {
+                "seconds": 3.41e-05,
+                "threadCycles": 118041,
+                "trial": 2
+              },
+              {
+                "seconds": 3.35e-05,
+                "threadCycles": 115667,
+                "trial": 3
+              },
+              {
+                "seconds": 3.24e-05,
+                "threadCycles": 112276,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 2.58e-05,
+                "threadCycles": 89888,
+                "trial": 0
+              },
+              {
+                "seconds": 2.38e-05,
+                "threadCycles": 82765,
+                "trial": 1
+              },
+              {
+                "seconds": 2.34e-05,
+                "threadCycles": 81408,
+                "trial": 2
+              },
+              {
+                "seconds": 2.44e-05,
+                "threadCycles": 84800,
+                "trial": 3
+              },
+              {
+                "seconds": 2.34e-05,
+                "threadCycles": 81747,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.53e-05,
+                "threadCycles": 121433,
+                "trial": 0
+              },
+              {
+                "seconds": 2.99e-05,
+                "threadCycles": 103117,
+                "trial": 1
+              },
+              {
+                "seconds": 2.98e-05,
+                "threadCycles": 103117,
+                "trial": 2
+              },
+              {
+                "seconds": 2.92e-05,
+                "threadCycles": 101082,
+                "trial": 3
+              },
+              {
+                "seconds": 2.89e-05,
+                "threadCycles": 100064,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 0,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 3.16e-05,
+                "threadCycles": 109223,
+                "trial": 0
+              },
+              {
+                "seconds": 2.22e-05,
+                "threadCycles": 76998,
+                "trial": 1
+              },
+              {
+                "seconds": 2.15e-05,
+                "threadCycles": 74964,
+                "trial": 2
+              },
+              {
+                "seconds": 2.14e-05,
+                "threadCycles": 74624,
+                "trial": 3
+              },
+              {
+                "seconds": 2.13e-05,
+                "threadCycles": 74284,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 0
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 5120000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 1.43e-05,
+                "threadCycles": 54611,
+                "trial": 0
+              },
+              {
+                "seconds": 8.3e-06,
+                "threadCycles": 32224,
+                "trial": 1
+              },
+              {
+                "seconds": 1.23e-05,
+                "threadCycles": 48505,
+                "trial": 2
+              },
+              {
+                "seconds": 9.2e-06,
+                "threadCycles": 35616,
+                "trial": 3
+              },
+              {
+                "seconds": 1.27e-05,
+                "threadCycles": 49184,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.002057,
+                "threadCycles": 6710733,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0022889,
+                "threadCycles": 7761913,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0028128,
+                "threadCycles": 9532538,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0028275,
+                "threadCycles": 9579007,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0028629,
+                "threadCycles": 9712992,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0026231,
+                "threadCycles": 8895859,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0023086,
+                "threadCycles": 7827718,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0031813,
+                "threadCycles": 10153273,
+                "trial": 2
+              },
+              {
+                "seconds": 0.002634,
+                "threadCycles": 8835820,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0021455,
+                "threadCycles": 7274144,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0080309,
+                "threadCycles": 27218425,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0085956,
+                "threadCycles": 28818771,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0082224,
+                "threadCycles": 27042381,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0080074,
+                "threadCycles": 27046454,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0082167,
+                "threadCycles": 27648869,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 5120000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0027599,
+                "threadCycles": 9346318,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0034979,
+                "threadCycles": 11858770,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0032701,
+                "threadCycles": 11066060,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0036261,
+                "threadCycles": 12017178,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0030684,
+                "threadCycles": 10311341,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 2500
+          },
+          {
+            "catalogBatchDefersIo": false,
+            "historyDescriptionBytes": 15360000,
+            "mode": "no-startup",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 1.53e-05,
+                "threadCycles": 56647,
+                "trial": 0
+              },
+              {
+                "seconds": 1.22e-05,
+                "threadCycles": 46809,
+                "trial": 1
+              },
+              {
+                "seconds": 1.27e-05,
+                "threadCycles": 49863,
+                "trial": 2
+              },
+              {
+                "seconds": 2.84e-05,
+                "threadCycles": 103796,
+                "trial": 3
+              },
+              {
+                "seconds": 1.19e-05,
+                "threadCycles": 47148,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-start",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.0102395,
+                "threadCycles": 34346034,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0106823,
+                "threadCycles": 35177413,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0122528,
+                "threadCycles": 41087296,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0120123,
+                "threadCycles": 38962545,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0133515,
+                "threadCycles": 43798861,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "batch-stop",
+            "retainedHistoryQueue": "Archive",
+            "samples": [
+              {
+                "seconds": 0.012274,
+                "threadCycles": 38358426,
+                "trial": 0
+              },
+              {
+                "seconds": 0.010996,
+                "threadCycles": 35274421,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0119756,
+                "threadCycles": 39005622,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0105837,
+                "threadCycles": 35049535,
+                "trial": 3
+              },
+              {
+                "seconds": 0.009697,
+                "threadCycles": 32442785,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-start",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0275226,
+                "threadCycles": 91474100,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0273655,
+                "threadCycles": 92087712,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0270205,
+                "threadCycles": 90630851,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0271154,
+                "threadCycles": 90378827,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0283173,
+                "threadCycles": 94312526,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "catalogBatchDefersIo": true,
+            "historyDescriptionBytes": 15360000,
+            "mode": "main-batch-stop",
+            "retainedHistoryQueue": "Main queue",
+            "samples": [
+              {
+                "seconds": 0.0121667,
+                "threadCycles": 40744364,
+                "trial": 0
+              },
+              {
+                "seconds": 0.0126146,
+                "threadCycles": 41738562,
+                "trial": 1
+              },
+              {
+                "seconds": 0.0122665,
+                "threadCycles": 40966879,
+                "trial": 2
+              },
+              {
+                "seconds": 0.0120815,
+                "threadCycles": 40618519,
+                "trial": 3
+              },
+              {
+                "seconds": 0.0133482,
+                "threadCycles": 41675806,
+                "trial": 4
+              }
+            ],
+            "selectedRows": 2,
+            "unrelatedHistoryRows": 7500
+          },
+          {
+            "actualCatalogWriteRefused": true,
+            "jobRestored": true,
+            "mode": "failed-startup-prefetch",
+            "pauseHintLeaked": false
+          }
+        ],
+        "compiledVersion": "8.55",
+        "error": "",
+        "networkRequests": 0,
+        "passed": true,
+        "scope": "API-phase microbenchmark. Startup applied-once flag is reset between samples; manual start/stop use an actual catalog batch to defer persistence. Not full app launch, UI paint, installed behavior or IDM parity."
+      }
+    }
+  ],
+  "summary": [
+    {
+      "mode": "no-startup",
+      "unrelatedHistoryRows": 0,
+      "8.54": {
+        "medianMs": 0.0206,
+        "medianThreadCycles": 71571,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0039,
+        "medianThreadCycles": 14924,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "no-startup",
+      "unrelatedHistoryRows": 2500,
+      "8.54": {
+        "medianMs": 13.4729,
+        "medianThreadCycles": 45243514,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0134,
+        "medianThreadCycles": 52576,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "no-startup",
+      "unrelatedHistoryRows": 7500,
+      "8.54": {
+        "medianMs": 39.1722,
+        "medianThreadCycles": 131044494,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0132,
+        "medianThreadCycles": 52576,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-start",
+      "unrelatedHistoryRows": 0,
+      "8.54": {
+        "medianMs": 0.0314,
+        "medianThreadCycles": 108544,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0335,
+        "medianThreadCycles": 115667,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-start",
+      "unrelatedHistoryRows": 2500,
+      "8.54": {
+        "medianMs": 15.449900000000001,
+        "medianThreadCycles": 50372556,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 2.8275,
+        "medianThreadCycles": 9579007,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-start",
+      "unrelatedHistoryRows": 7500,
+      "8.54": {
+        "medianMs": 46.6372,
+        "medianThreadCycles": 156576418,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 11.919799999999999,
+        "medianThreadCycles": 37843185,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-stop",
+      "unrelatedHistoryRows": 0,
+      "8.54": {
+        "medianMs": 0.0208,
+        "medianThreadCycles": 72588,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0234,
+        "medianThreadCycles": 81747,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-stop",
+      "unrelatedHistoryRows": 2500,
+      "8.54": {
+        "medianMs": 14.694600000000001,
+        "medianThreadCycles": 48795617,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 3.1537,
+        "medianThreadCycles": 10153273,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "batch-stop",
+      "unrelatedHistoryRows": 7500,
+      "8.54": {
+        "medianMs": 44.1881,
+        "medianThreadCycles": 147266390,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 9.416,
+        "medianThreadCycles": 31344117,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-start",
+      "unrelatedHistoryRows": 0,
+      "8.54": {
+        "medianMs": 0.0288,
+        "medianThreadCycles": 99386,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0306,
+        "medianThreadCycles": 106169,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-start",
+      "unrelatedHistoryRows": 2500,
+      "8.54": {
+        "medianMs": 19.267400000000002,
+        "medianThreadCycles": 64310962,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 9.7858,
+        "medianThreadCycles": 30844473,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-start",
+      "unrelatedHistoryRows": 7500,
+      "8.54": {
+        "medianMs": 60.001400000000004,
+        "medianThreadCycles": 199227762,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 28.4205,
+        "medianThreadCycles": 94312526,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-stop",
+      "unrelatedHistoryRows": 0,
+      "8.54": {
+        "medianMs": 0.0207,
+        "medianThreadCycles": 72249,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 0.0223,
+        "medianThreadCycles": 77676,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-stop",
+      "unrelatedHistoryRows": 2500,
+      "8.54": {
+        "medianMs": 14.6428,
+        "medianThreadCycles": 48474053,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 3.5634,
+        "medianThreadCycles": 12011750,
+        "samples": 15
+      }
+    },
+    {
+      "mode": "main-batch-stop",
+      "unrelatedHistoryRows": 7500,
+      "8.54": {
+        "medianMs": 46.8907,
+        "medianThreadCycles": 147402081,
+        "samples": 15
+      },
+      "8.55": {
+        "medianMs": 12.497100000000001,
+        "medianThreadCycles": 41675806,
+        "samples": 15
+      }
+    }
+  ],
+  "scope": "API-phase controls with applied-once flag reset between samples and manual queue IO deferred by a real catalog batch. Not installed startup, paint or IDM parity."
+}

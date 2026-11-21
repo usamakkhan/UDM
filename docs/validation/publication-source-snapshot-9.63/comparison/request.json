@@ -1,0 +1,26 @@
+{
+  "args": [
+    "python",
+    "$REPOSITORY\\benchmarks\\speed\\compare-completion.py",
+    "--output-root",
+    "$REPOSITORY\\.media-cache\\owned-publication-snapshot-comparison-9.63",
+    "--udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-snapshot-build-9.63\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "F25165F41D9EAD8643B72D66806F22848D487838AB3EB66EBE89ED4BEC867597",
+    "--baseline-udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-pin-build-9.62\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "D375D13E38E9B5721C097AB7215C820B73C7F2E23809E2003CFFB65123909AFB",
+    "--label",
+    "9.63 pre-flush metadata capture with identity-bound recovery versus frozen 9.62 and IDM",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.63",
+  "baselineVersion": "9.62",
+  "status": "launching",
+  "qualificationFeatureDefine": null
+}

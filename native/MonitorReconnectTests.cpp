@@ -1,5 +1,6 @@
 // Compiles the real monitor implementation; only initial process launch is injected.
 #include "Network.cpp"
+#include "NetworkCaptureSession.hpp"
 #include <iostream>
 #include "../drivers/signed-network/DurableResponseSink.hpp"
 static std::string fixtureBody(){std::string body(256*1024,'x');for(size_t i=0;i<body.size();++i)body[i]=static_cast<char>((i*17+11)%251);return body;}
@@ -77,7 +78,7 @@ static int peer(DWORD parent,const std::wstring& nonce,const std::string& mode){
    if(mode=="partial"){unsigned char first=8;udmbroker::transfer(pipe.h,&first,1,true,1000,owner.h);Sleep(3500);}
    CloseHandle(pipe.h);pipe.h=INVALID_HANDLE_VALUE;if(mode=="legacy")return 0;udmbroker::reconnectHelper(pipe,nonce,owner.h);continue;
   }
-  udmbroker::Json capture={{"Session",udmbroker::nonceString(nonce)},{"Generation",uint64_t(7)},{"Observations",{{"Items",udmbroker::Json::array()}}},{"ResponseCreditsSupported",true}};
+  udmbroker::Json capture={{"Session",udmbroker::nonceString(nonce)},{"Generation",uint64_t(7)},{"Observations",{{"Items",udmbroker::Json::array()}}},{"ResponseCreditsSupported",true},{"ResponseAdmissionEnabled",true},{"PendingResponses",udmbroker::Json::array()},{"Responses",udmbroker::Json::array()}};
   if(mode=="body-controlled"){
    capture["ResponseAdmissionEnabled"]=true;capture["PendingResponses"]=udmbroker::Json::array();capture["Responses"]=udmbroker::Json::array();
    if(admissions)capture["Responses"].push_back({{"Id",uint64_t(1)},{"Received",written},{"State",completed?"Complete":cancelled?"Cancelled":"Receiving"},{"FlowControlled",true},{"GrantedBytes",written},{"TransferSeconds",0.1}});
@@ -179,6 +180,15 @@ int main(int argc,char** argv){using namespace udm;unsigned passed=0;try{
   check(num(job->data,"Received")==0&&num(manager.state,"QuotaBytes")==0&&!fs::exists(job->target()),"Stopping unknown controlled admission sends no data allowance and publishes no file");
  }
  for(const auto& mode:{"legacy","badreply"}){Monitor monitor;MonitorReconnectFixture::attach(monitor,mode);bool rejected=false;try{monitor.snapshot();}catch(...){rejected=true;}check(rejected&&!monitor.running(),"Legacy disconnect or invalid reply fails closed without automatic reconnection");monitor.watch({});}
+ // Exercise the real asynchronous session against an owned pipe peer only.
+ {auto root=fs::temp_directory_path()/wide("udm-network-session-"+guid());Manager manager(root);manager.state["Settings"]["DownloadFolder"]=utf8((root/L"downloads").wstring());manager.state["Settings"]["CategoryFolders"]=false;
+  auto backend=std::make_shared<NetworkCaptureBackend>(&manager,[]{return std::set<DWORD>{GetCurrentProcessId()};});backend->monitor=std::make_unique<Monitor>();auto helper=MonitorReconnectFixture::attach(*backend->monitor,"capture");backend->capturing=true;
+  NetworkCaptureOperations operations;operations.perform=[backend](NetworkCaptureAction action,bool fallback){return backend->perform(action,fallback);};operations.observe=[backend]{return backend->observe();};operations.release=[backend]{backend->release();};NetworkCaptureSession session(operations,&manager);
+  const auto settle=[&]{const auto deadline=GetTickCount64()+8000;while(!session.ready()&&GetTickCount64()<deadline)Sleep(1);if(!session.ready())throw std::runtime_error("The owned asynchronous monitor session did not settle");session.pollReady();};
+  check(session.requestPoll(true),"The asynchronous session accepts an owned real-monitor poll");settle();check(!session.view().error.empty()&&session.view().snapshot->monitorPresent&&!session.view().snapshot->monitoring,"Lost Capture acknowledgement reaches the cached view without launching or replaying a mutation");
+  check(session.requestPoll(),"The next explicit asynchronous poll can recover the retained helper");settle();check(session.view().error.empty()&&session.view().snapshot->monitoring&&session.view().snapshot->capturing,"Asynchronous polling reconnects the real Monitor and publishes its observed active state");
+  auto snapshot=backend->monitor->snapshot();check(snapshot.at("BrokerProcessId")==helper&&snapshot.at("CaptureRequests")==2,"The asynchronous session keeps the original helper and sends only the two explicit periodic Captures");session.stop();check(!session.busy()&&!backend->monitor,"Asynchronous session shutdown joins its real helper stop before Manager shutdown");manager.stop();
+ }
  // A new desktop process adopting the helper an earlier desktop left behind.
  {auto root=fs::temp_directory_path()/wide("udm-monitor-adopt-"+guid());fs::create_directories(root);auto record=root/L"network-helper.json";monitorRecordPath()=record;
   auto spawnDesktop=[&](const std::string& mode){

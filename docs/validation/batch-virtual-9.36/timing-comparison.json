@@ -1,0 +1,72 @@
+{
+  "baselineVersion": "9.35",
+  "currentVersion": "9.36",
+  "individualLocalRuns": true,
+  "repeatedMedian": false,
+  "installedComparison": false,
+  "idmComparison": false,
+  "includesNetworkProbing": false,
+  "readyClock": "Initial held-writer release to real complete list readiness",
+  "rows": [
+    {
+      "rows": 100,
+      "baseline": {
+        "firstPaintMs": 32.86930000036955,
+        "firstPaintUiCpuMs": 31.25,
+        "readyAfterReleaseMs": 409.9796000011265,
+        "readyUiCpuMs": 375.0,
+        "rows": 100
+      },
+      "current": {
+        "cachedCells": 252,
+        "firstPaintMs": 50.914200000464916,
+        "firstPaintUiCpuMs": 31.25,
+        "readyAfterReleaseMs": 333.990399999544,
+        "readyUiCpuMs": 203.125,
+        "rows": 100
+      },
+      "readySpeedup": 1.2275191143268975,
+      "firstFrameSlower": true
+    },
+    {
+      "rows": 2000,
+      "baseline": {
+        "firstPaintMs": 31.732499999925494,
+        "firstPaintUiCpuMs": 31.25,
+        "readyAfterReleaseMs": 2509.2729000002146,
+        "readyUiCpuMs": 1484.375,
+        "rows": 2000
+      },
+      "current": {
+        "cachedCells": 240,
+        "firstPaintMs": 22.179400000721216,
+        "firstPaintUiCpuMs": 15.625,
+        "readyAfterReleaseMs": 442.29589999839664,
+        "readyUiCpuMs": 218.75,
+        "rows": 2000
+      },
+      "readySpeedup": 5.673289985300137,
+      "firstFrameSlower": false
+    },
+    {
+      "rows": 10000,
+      "baseline": {
+        "firstPaintMs": 68.92599999904633,
+        "firstPaintUiCpuMs": 62.5,
+        "readyAfterReleaseMs": 10951.672399999574,
+        "readyUiCpuMs": 7156.25,
+        "rows": 10000
+      },
+      "current": {
+        "cachedCells": 240,
+        "firstPaintMs": 20.906099999323487,
+        "firstPaintUiCpuMs": 15.625,
+        "readyAfterReleaseMs": 1443.3698999993503,
+        "readyUiCpuMs": 250.0,
+        "rows": 10000
+      },
+      "readySpeedup": 7.587571557370362,
+      "firstFrameSlower": false
+    }
+  ]
+}

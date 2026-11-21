@@ -1,0 +1,126 @@
+{
+  "nativeVersion": "8.39",
+  "appFunctionalChange": false,
+  "installationPerformed": false,
+  "reaAnalysisCompleted": true,
+  "reaStartupDeadlineMs": 900000,
+  "previousStartupDeadlineMs": 330000,
+  "reaEvidence": [
+    {
+      "operation": "inspect_native_instruction",
+      "evidenceId": "ev_8f5a71703ebe96b12a37a5f4353feb713c15fc2257b6f8da91926ec18ef5c0a0",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.3"
+      },
+      "privateRecordSha256": "ACB2209C33BD018ACC6EF8180CA7E699F81FE59BCA1C0685E3E54233B8120790"
+    },
+    {
+      "operation": "procedure_callers",
+      "evidenceId": "ev_fc965dbdc3310c6dd404d0963be3000d3aece9c7b80afb765b6f7d3a2af6a01d",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.3"
+      },
+      "privateRecordSha256": "C71BE4DB862B24C97F907F2134636D57B0B5F678FA22EAD64F03F26D9B3CADC5"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "evidenceId": "ev_1fccbcb64327a8bdaf49eda6f898a31185f0f2bdea337281300b0e819fef90eb",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.3"
+      },
+      "privateRecordSha256": "3F18EA4F4346D66CB7ACBA9EEB2FBEB8ABC207798BCC12208D597A0F21CB62CB"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "evidenceId": "ev_ac19482de83e56ec9043ba4220d747d1f04906e6512ae833f4e7183e7489deb7",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.3"
+      },
+      "privateRecordSha256": "A7150F02A597ABC578A66BF51E8E5D9D07F60FDF7176BAFF8463E76F84E830F2"
+    },
+    {
+      "operation": "procedure_pseudo_code",
+      "evidenceId": "ev_39a35899130613df81a307eaf8841b49056e305af2c1d362c0ab950d44d27cae",
+      "provider": {
+        "id": "ghidra",
+        "name": "Ghidra",
+        "version": "12.1.3"
+      },
+      "privateRecordSha256": "F4B61856B37D0C1FB07197F7B1C039F09C8629326352CA8DF896A97C0CBEC72F"
+    }
+  ],
+  "staticFindings": [
+    "Ghidra decoded the FlushFileBuffers import call at 0x570294 and identified its containing procedure at 0x570290.",
+    "The observed wrapper reads a handle at object offset 0x14; its sole provider-resolved direct caller is 0x55ac20.",
+    "The two previously byte-verified buffered file opens are independently reflected in decompiled procedures at 0x570320 and 0x570470."
+  ],
+  "observer": {
+    "fridaVersion": "17.26.3",
+    "agentSha256": "3FA59ABE7A0F371B64D90FAFDB8D3476DF59B5D9AB0F9044301E63D9FF003FA2",
+    "fixtureArchitecture": "x64",
+    "fixtureBytes": 262144,
+    "fileHashMatched": true,
+    "apiCounts": {
+      "CreateFileW": 1,
+      "WriteFile": 1,
+      "FlushFileBuffers": 2,
+      "CreateFileMappingW": 1,
+      "MapViewOfFile": 1,
+      "CloseHandle": 2
+    },
+    "eventsDropped": 0,
+    "ownedHandlesRemaining": 0,
+    "normalTeardownPassed": true,
+    "failedAttemptsRetained": 2,
+    "failureCorrection": "Removed ReadFile interception; an unrelated pending pipe read had retained an onLeave callback during script unload.",
+    "actualIdmDownloadObserved": false,
+    "actualUdmDownloadObserved": false
+  },
+  "cleanup": {
+    "files": 5,
+    "logicalBytesRemoved": 971839,
+    "removed": [
+      {
+        "name": "41275a89378644779487427eaf36f27e.bin.done",
+        "bytes": 262144,
+        "sha256": "2E5A918C66117F8934D6FC5B5153F1AB1A0B29545FCCCD0AAECD44532226698C"
+      },
+      {
+        "name": "abb9400e33a74dd2a0e530ab2f9f15af.bin.done",
+        "bytes": 262144,
+        "sha256": "2E5A918C66117F8934D6FC5B5153F1AB1A0B29545FCCCD0AAECD44532226698C"
+      },
+      {
+        "name": "f6998f18ce41485b89ab99908630eb1e.bin.done",
+        "bytes": 262144,
+        "sha256": "2E5A918C66117F8934D6FC5B5153F1AB1A0B29545FCCCD0AAECD44532226698C"
+      },
+      {
+        "name": "user-io-fixture.exe",
+        "bytes": 126464,
+        "sha256": "AE3CF10F2501492AA143125304745D939508CC1D3B770A15B688BB153DDD4CA2"
+      },
+      {
+        "name": "user-io-fixture.obj",
+        "bytes": 58943,
+        "sha256": "0D4D267807449E064434641895D931C4743DD6F0C439A884BF1D0778A920DDBD"
+      }
+    ]
+  },
+  "rootCauseVerified": false,
+  "performanceParityVerified": false,
+  "limitations": [
+    "Static analysis does not establish benchmark-path reachability, runtime flush cadence or file identity.",
+    "The observer has passed only an owned x64 fixture; IDM x86 and live download coverage are unverified.",
+    "Interceptor callbacks add overhead and cannot supply an uninstrumented speed comparison.",
+    "Kernel disk queueing, filesystem/filter work and scheduling attribution remain open."
+  ]
+}

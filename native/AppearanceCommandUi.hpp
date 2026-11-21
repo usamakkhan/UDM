@@ -1,0 +1,25 @@
+// Included inside MainWindow. Persist intent before rendering an acknowledged value.
+ static bool appearanceMutation(UINT id){return id==CMD_TOOLBAR||id==CMD_TOOLBAR_DISCOVER||(id>=CMD_TOOLBAR_SMALL&&id<=CMD_TOOLBAR_3D)||(id>=31000&&id<31064)||id==CMD_DARK||id==CMD_HIDE_CATEGORIES||id==CMD_FONT||id==CMD_FONT_RESET||id==CMD_TRAY_COLOR||id==CMD_TRAY_SYSTEM||id==CMD_TRAY_HIDE;}
+ void startAppearanceCommand(AppearanceDraft draft){
+  std::optional<std::vector<int>> rollback;if(draft.change==AppearanceChange::ToolbarLayout)rollback=toolbarLayout(renderedAppearance);const bool reload=draft.change==AppearanceChange::ToolbarReload;
+  std::vector<BOOL> buttons;for(int i=0;i<ToolbarCommandCount;++i)buttons.push_back(toolbar.IsButtonEnabled(toolbarCommand(i)));
+#ifdef UDM_TOOLBAR_COMPONENT_TEST
+  appearanceCommandTask.start(manager,std::move(draft),maintenanceSignal->notifier(),appearanceCommandObserver);
+#else
+  appearanceCommandTask.start(manager,std::move(draft),maintenanceSignal->notifier());
+#endif
+  appearanceToolbarRollback=std::move(rollback);appearanceToolbarState=std::move(buttons);appearanceToolbarEnabled=toolbar.IsWindowEnabled()!=FALSE;toolbar.EnableWindow(FALSE);showStatus(reload?"Updating toolbar...":"Saving appearance settings...");updateToolbarCommands();
+ }
+ bool pollAppearanceCommand(){
+  if(!appearanceCommandTask.valid()){if(appearanceClosePending){appearanceClosePending=false;OnClose();return true;}return false;}if(!appearanceCommandTask.ready())return true;
+  auto result=appearanceCommandTask.take();const bool close=appearanceClosePending;appearanceClosePending=false;
+  for(int i=0;i<ToolbarCommandCount&&i<(int)appearanceToolbarState.size();++i)toolbar.EnableButton(toolbarCommand(i),appearanceToolbarState[i]);appearanceToolbarState.clear();toolbar.EnableWindow(appearanceToolbarEnabled);
+  if(!result.saved&&!result.refreshed){if(appearanceToolbarRollback)try{restoreToolbarLayoutOwned(result.toolbarRollback?*result.toolbarRollback:*appearanceToolbarRollback);}catch(const std::exception& error){showStatus(std::string("Could not restore the toolbar: ")+error.what());appearanceToolbarRollback.reset();quitting=false;recoveryOnClose=false;return true;}appearanceToolbarRollback.reset();quitting=false;recoveryOnClose=false;showStatus("Could not update appearance settings. Please retry your View choice.");return true;}
+  appearanceToolbarRollback.reset();
+  try{
+   struct PreparedScope{const AppearanceResult*& slot;const AppearanceResult* previous;~PreparedScope(){slot=previous;}} prepared{toolbarPreparedRead,toolbarPreparedRead};toolbarPreparedRead=&result;if(result.change==AppearanceChange::ToolbarReload)invalidateToolbarImages();
+   if(result.change==AppearanceChange::Tray){struct Restore{const Json*& slot;const Json* previous;~Restore(){slot=previous;}} restore{appearanceReadSnapshot,appearanceReadSnapshot};appearanceReadSnapshot=&result.settings;updateTray();renderedAppearance["TrayIcon"]=result.settings["TrayIcon"];}
+   else{applyAppearanceSnapshot(result.settings);if(result.change==AppearanceChange::ToggleCategories&&yes(result.settings,"HideCategories"))table.SetFocus();}
+  }catch(const std::exception& error){quitting=false;recoveryOnClose=false;showStatus(std::string(result.saved?"Appearance settings were saved, but could not be displayed: ":"Could not redraw the toolbar: ")+error.what());return true;}
+  showStatus("");if(close){appearanceClosePending=true;try{maintenanceSignal->notifier()();}catch(...){/* Timer retains the accepted close decision. */}}return true;
+ }

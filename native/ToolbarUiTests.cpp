@@ -51,26 +51,26 @@ static void CALLBACK modalTick(HWND,UINT,UINT_PTR,DWORD){
 class ToolbarComponentTest{
  static void customize(MainWindow& frame,std::function<void(HWND)> action){
   currentModal=nullptr;modalError.clear();modalAction=action;modalBegan=GetTickCount64();auto timer=SetTimer(nullptr,0,75,modalTick);
-  frame.command(CMD_TOOLBAR);KillTimer(nullptr,timer);modalAction={};if(!modalError.empty())throw std::runtime_error(modalError);
+  frame.command(CMD_TOOLBAR);KillTimer(nullptr,timer);modalAction={};{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Customization save acknowledgement deadline");}if(!modalError.empty())throw std::runtime_error(modalError);
  }
 public:static void run(Manager& manager,MainWindow& frame){
  frame.KillTimer(1);toolbarChecks(output/L"model");const auto initial=frame.preferences();const auto custom=std::vector<int>{10,-1,0,-1,8,9};
  expect(frame.currentToolbarLayout()==defaultToolbarLayout()&&frame.toolbar.GetButtonCount()==11,"Default native toolbar has the eleven IDM buttons");
  // IDM main-window parity: no status bar, collapsed Queues node, IDM cell formats.
  expect(!shown(frame.status.m_hWnd),"Status bar stays hidden like IDM until a message must be shown");
- {CRect client;frame.GetClientRect(&client);POINT origin{0,0};frame.ClientToScreen(&origin);expect(bounds(frame.table.m_hWnd).bottom==origin.y+client.bottom,"Download list reaches the window bottom without a status bar");}
+ {CRect client;frame.GetClientRect(&client);POINT origin{0,0};frame.ClientToScreen(&origin);expect(bounds(frame.table.m_hWnd).bottom==origin.y+client.bottom-MulDiv(2,frame.windowDpi(),120),"Download list retains the measured reference bottom inset without a status bar");}
  frame.showStatus("Saving downloads and closing...");expect(shown(frame.status.m_hWnd)&&bounds(frame.table.m_hWnd).bottom<=bounds(frame.status.m_hWnd).top,"A status message shows the bar below the download list");
  frame.showStatus("");expect(!shown(frame.status.m_hWnd),"Clearing the status message hides the bar again");
  {HTREEITEM queues=nullptr;for(auto item=frame.tree.GetRootItem();item;item=frame.tree.GetNextSiblingItem(item))if(frame.tree.GetItemText(item)==L"Queues")queues=item;
   expect(queues&&!(frame.tree.GetItemState(queues,TVIS_EXPANDED)&TVIS_EXPANDED)&&(frame.tree.GetItemState(frame.tree.GetRootItem(),TVIS_EXPANDED)&TVIS_EXPANDED),"Only All Downloads starts expanded like IDM");}
  {bool other=false;std::vector<std::wstring> names;for(auto item=frame.tree.GetChildItem(frame.tree.GetRootItem());item;item=frame.tree.GetNextSiblingItem(item)){names.push_back((LPCWSTR)frame.tree.GetItemText(item));other|=names.back()==L"Other";}
   expect(!other&&names.size()>=5&&names[0]==L"Compressed"&&names[1]==L"Documents"&&names[2]==L"Music"&&names[3]==L"Programs"&&names[4]==L"Video","All Downloads lists IDM's category nodes without the fallback Other node");}
- {CMenu context;frame.fillDownloadMenu(context);const wchar_t* order[]={L"Open",L"Open with...",L"Open folder",L"",L"Move/Rename (Ctrl-M)",L"",L"Redownload",L"",L"Resume Download",L"Stop Download",L"",L"Refresh download address",L"",L"Remove",L"",L"Add to queue",L"Delete from queue",L"",L"On Double click",L"",L"Properties",L"",L"More actions"};
+ {CMenu context;const auto selection=frame.selected(false);DownloadMenuView prepared;{Lock lock(manager.mutex);prepared=frame.captureDownloadMenu(selection);}frame.fillDownloadMenu(context,prepared);const wchar_t* order[]={L"Open",L"Open with...",L"Open folder",L"",L"Move/Rename (Ctrl-M)",L"",L"Redownload",L"",L"Resume Download",L"Stop Download",L"",L"Refresh download address",L"",L"Remove",L"",L"Add to queue",L"Delete from queue",L"",L"On Double click",L"",L"Properties",L"",L"More actions"};
   bool ordered=context.GetMenuItemCount()==(int)std::size(order);for(int i=0;ordered&&i<(int)std::size(order);++i){CString label;context.GetMenuString(i,label,MF_BYPOSITION);ordered=label==order[i];}
   expect(ordered,"Download context menu follows IDM's row menu order with UDM extras grouped at the end");
   const int at=frame.moveQueuePosition;CString membership;if(at>=0)context.GetMenuString(at,membership,MF_BYPOSITION);
   expect(at>=0&&context.GetSubMenu(at)&&membership==L"Add to queue"&&(context.GetMenuState(at,MF_BYPOSITION)&MF_GRAYED),"Move to queue is a submenu whose position is recorded for the membership label and state");
-  auto queueMenu=context.GetSubMenu(at);const auto names=queueNames(manager);bool listed=queueMenu->GetMenuItemCount()==(int)names.size();for(int i=0;listed&&i<(int)names.size();++i){CString label;queueMenu->GetMenuString(i,label,MF_BYPOSITION);listed=label==cs(names[i])&&queueMenu->GetMenuItemID(i)==34000+(UINT)i;}
+  auto queueMenu=context.GetSubMenu(at);const auto names=queueNames(manager);bool listed=queueMenu->GetMenuItemCount()==(int)names.size();for(int i=0;listed&&i<(int)names.size();++i){CString label;queueMenu->GetMenuString(i,label,MF_BYPOSITION);listed=label==cs(queueDisplayLabel(prepared.queueLabels,names[i]))&&queueMenu->GetMenuItemID(i)==34000+(UINT)i;}
   expect(listed&&!names.empty(),"Move to queue lists every queue directly like IDM");}
  expect(MainWindow::idmDuration(8)=="8 sec"&&MainWindow::idmDuration(1166)=="19 min 26 sec"&&MainWindow::idmDuration(7380)=="2 hour(s) 3 min"&&MainWindow::idmDuration(-1).empty(),"Time left uses IDM's sec/min/hour wording");
  const auto statusDecimal=downloadStatusDecimalSeparator();
@@ -122,12 +122,12 @@ public:static void run(Manager& manager,MainWindow& frame){
  expect(glyphPixels>=4,"Close glyph renders visibly inside category button");
  CString closeCaption;frame.categoryClose.GetWindowText(closeCaption);
  expect(closeCaption==L"Close categories"&&(frame.categoryClose.GetStyle()&WS_TABSTOP),"Category close button has an accessible name and keyboard focus stop");
- frame.categoryClose.SendMessage(BM_CLICK);
+ frame.categoryClose.SendMessage(BM_CLICK);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Appearance fixture deadline");}
  expect(yes(frame.preferences(),"HideCategories")&&!shown(frame.tree.m_hWnd)&&!shown(frame.categoryClose.m_hWnd),"Panel close button hides categories using the saved preference");
  POINT tableOrigin{0,0};frame.ClientToScreen(&tableOrigin);
- expect(bounds(frame.table.m_hWnd).left==tableOrigin.x,"Closing categories gives its width to the download list");
+ expect(bounds(frame.table.m_hWnd).left==tableOrigin.x+MulDiv(7,frame.windowDpi(),120),"Closing categories gives its width to the list while preserving the reference left inset");
  expect(GetFocus()==frame.table.m_hWnd,"Closing the category panel moves focus to the download list");
- frame.command(CMD_HIDE_CATEGORIES);
+ frame.command(CMD_HIDE_CATEGORIES);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Appearance fixture deadline");}
  expect(!yes(frame.preferences(),"HideCategories")&&shown(frame.tree.m_hWnd)&&shown(frame.categoryClose.m_hWnd),"View command restores categories and its close button");
  for(auto id:{CMD_STARTQUEUE,CMD_STOPQUEUE}){
   NMTOOLBARW notification{};notification.hdr={frame.toolbar.GetSafeHwnd(),506,TBN_DROPDOWN};notification.iItem=id;
@@ -167,38 +167,38 @@ public:static void run(Manager& manager,MainWindow& frame){
   CRect last;frame.toolbar.GetItemRect(frame.toolbar.GetButtonCount()-1,&last);
   expect(frame.currentToolbarLayout()==defaultToolbarLayout()&&last.bottom<=bounds(frame.toolbar.GetSafeHwnd()).Height(),"Size and caption mode preserve commands without vertical clipping");
  }
- manager.setSettings(initial);frame.applyAppearance();frame.command(CMD_TOOLBAR_HIDE);
+ manager.setSettings(initial);frame.applyAppearance();frame.command(CMD_TOOLBAR_HIDE);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}
  POINT origin{0,0};ClientToScreen(frame.GetSafeHwnd(),&origin);
- expect(!shown(frame.toolbar.GetSafeHwnd())&&bounds(frame.table.GetSafeHwnd()).top==origin.y,"Hide removes the toolbar and its occupied space");
- frame.command(CMD_TOOLBAR_HIDE);expect(shown(frame.toolbar.GetSafeHwnd()),"View command restores the toolbar");
- frame.toolbarSkins={fixture};frame.command(31000);int w=0,h=0;ImageList_GetIconSize(frame.toolbarNormal.GetSafeHandle(),&w,&h);int dpi=GetDpiForWindow(frame.GetSafeHwnd());
+ expect(!shown(frame.toolbar.GetSafeHwnd())&&bounds(frame.table.GetSafeHwnd()).top==origin.y+MulDiv(8,frame.windowDpi(),120),"Hide removes toolbar space and retains the measured reference list inset");
+ frame.command(CMD_TOOLBAR_HIDE);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}expect(shown(frame.toolbar.GetSafeHwnd()),"View command restores the toolbar");
+ frame.toolbarSkins={fixture};frame.command(31000);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}int w=0,h=0;ImageList_GetIconSize(frame.toolbarNormal.GetSafeHandle(),&w,&h);int dpi=GetDpiForWindow(frame.GetSafeHwnd());
  expect(frame.toolbarSkinError.empty()&&frame.toolbarSkinName=="UDM fixture"&&w==MulDiv(40,dpi,96)&&h==MulDiv(30,dpi,96),"External skin menu loads rectangular image strips at window DPI");
  captureComponent(frame.GetSafeHwnd(),output/L"toolbar-skin.png");
- frame.command(CMD_TOOLBAR_SMALL);ImageList_GetIconSize(frame.toolbarNormal.GetSafeHandle(),&w,&h);
+ frame.command(CMD_TOOLBAR_SMALL);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}ImageList_GetIconSize(frame.toolbarNormal.GetSafeHandle(),&w,&h);
  expect(w==MulDiv(16,dpi,96)&&h==MulDiv(16,dpi,96),"Small size selects the small skin strip");
  p=frame.preferences();p["ToolbarSkin"]=utf8((output/L"missing.tbi").wstring());manager.setSettings(p);frame.applyAppearance();
  expect(!frame.toolbarSkinError.empty()&&frame.toolbarNormal.GetImageCount()==12,"Missing saved skin falls back to usable UDM icons");
- frame.command(CMD_TOOLBAR_BUILTIN);expect(str(frame.preferences(),"ToolbarSkin").empty()&&frame.toolbarSkinError.empty(),"Built-in icon command clears the failed skin preference");
+ frame.command(CMD_TOOLBAR_BUILTIN);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}expect(str(frame.preferences(),"ToolbarSkin").empty()&&frame.toolbarSkinError.empty(),"Built-in icon command clears the failed skin preference");
  manager.setSettings(initial);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);
  expect(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR,MF_BYCOMMAND)!=0xffffffff,"View toolbar menu retains Customize after rebuilding");
  {// IDM's toolbar menu offers Neon and 3D Style looks and "Look for new toolbars"; UDM renders both looks from its own icons.
   auto labels=[&]{std::vector<std::wstring> items;for(int i=0;i<frame.toolbarMenu.GetMenuItemCount();++i){CString label;frame.toolbarMenu.GetMenuString(i,label,MF_BYPOSITION);items.push_back((LPCWSTR)label);}return items;};
   auto has=[&](const wchar_t* label){auto items=labels();return std::find(items.begin(),items.end(),label)!=items.end();};
-  expect(has(L"Neon")&&has(L"3D Style")&&has(L"Look for &new toolbars")&&!has(L"UDM icons")&&!has(L"Open toolbar folder"),"Toolbar menu lists Neon, 3D Style and Look for new toolbars like IDM");
-  {auto items=labels();size_t customize=std::find(items.begin(),items.end(),L"&Customize...")-items.begin(),large=std::find(items.begin(),items.end(),L"&Large Buttons")-items.begin(),look=std::find(items.begin(),items.end(),L"Look for &new toolbars")-items.begin(),neon=std::find(items.begin(),items.end(),L"Neon")-items.begin(),threeD=std::find(items.begin(),items.end(),L"3D Style")-items.begin();
+  expect(has(L"Neon")&&has(L"3D Style")&&has(L"Look for &new toolbars (IDM gallery)")&&!has(L"UDM icons")&&has(L"Open toolbar folder"),"Toolbar menu retains built-in looks and separates gallery discovery from the local folder");
+  {auto items=labels();size_t customize=std::find(items.begin(),items.end(),L"&Customize...")-items.begin(),large=std::find(items.begin(),items.end(),L"&Large Buttons")-items.begin(),look=std::find(items.begin(),items.end(),L"Look for &new toolbars (IDM gallery)")-items.begin(),neon=std::find(items.begin(),items.end(),L"Neon")-items.begin(),threeD=std::find(items.begin(),items.end(),L"3D Style")-items.begin();
    expect(customize<large&&large<look&&look<neon&&neon+1==threeD,"Toolbar menu keeps IDM's order: Customize, sizes, Look for new toolbars, Neon, 3D Style");}
   expect((frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)!=0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)==0,"Neon is the checked look by default");
   auto flat=toolbarFrame(loadBuiltInToolbarPng(appDir()/L"assets",0),0,1,32,32,0),raised=toolbarFrame(loadBuiltInToolbarPng(appDir()/L"assets",0),0,1,32,32,0,true);
   const size_t edge=((size_t)16*32+1)*4,corner=0;
   expect(flat[edge+3]==0&&raised[edge+3]==255&&raised[corner+3]==0&&raised!=flat,"3D Style draws the icon on an opaque raised tile with transparent corners");
-  frame.command(CMD_TOOLBAR_3D);frame.fillToolbarMenu(frame.toolbarMenu);
+  frame.command(CMD_TOOLBAR_3D);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}frame.fillToolbarMenu(frame.toolbarMenu);
   expect(str(frame.preferences(),"ToolbarLook")=="3D Style"&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)!=0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)==0,"Choosing 3D Style saves the look and checks it");
   captureComponent(frame.GetSafeHwnd(),output/L"toolbar-3d.png");
-  frame.command(CMD_TOOLBAR_NEON);frame.fillToolbarMenu(frame.toolbarMenu);
+  frame.command(CMD_TOOLBAR_NEON);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}frame.fillToolbarMenu(frame.toolbarMenu);
   expect(str(frame.preferences(),"ToolbarLook")=="Neon"&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)!=0,"Choosing Neon restores the flat look");
   p=frame.preferences();p["ToolbarSkin"]=utf8(fixture.wstring());manager.setSettings(p);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);
   expect((frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_NEON,MF_BYCOMMAND)&MF_CHECKED)==0&&(frame.toolbarMenu.GetMenuState(CMD_TOOLBAR_3D,MF_BYCOMMAND)&MF_CHECKED)==0,"An external skin unchecks both built-in looks");
-  frame.command(CMD_TOOLBAR_NEON);expect(str(frame.preferences(),"ToolbarSkin").empty(),"Choosing a look returns to UDM's own icons");
+  frame.command(CMD_TOOLBAR_NEON);{const auto deadline=GetTickCount64()+10000;while(frame.appearanceCommandTask.valid()&&GetTickCount64()<deadline){frame.pollAppearanceCommand();Sleep(1);}if(frame.appearanceCommandTask.valid())throw std::runtime_error("Toolbar fixture deadline");}expect(str(frame.preferences(),"ToolbarSkin").empty(),"Choosing a look returns to UDM's own icons");
   manager.setSettings(initial);frame.applyAppearance();frame.fillToolbarMenu(frame.toolbarMenu);}
  auto skin=loadToolbarSkin(fixture);auto alpha=toolbarFrame(skin.images.at("hdpi"),0,12,60,45);auto at=(size_t)(20*60+20)*4;
  expect(alpha[at+3]==128&&alpha[at]<128&&alpha[at+1]<128&&alpha[at+2]<128&&alpha[3]==0,"High-DPI alpha images convert to premultiplied pixels with transparent edges");
@@ -238,7 +238,7 @@ public:BOOL InitInstance()override{
  frame=new MainWindow(*manager);m_pMainWnd=frame;ToolbarComponentTest::run(*manager,*frame);resultCode=0;
  }catch(const std::exception& e){componentError=e.what();}
  if(!output.empty())atomicText(output/L"before-cleanup.json",Json{{"passed",resultCode==0},{"error",componentError},{"checks",outcomes}}.dump(2),false);
- if(frame){frame->SendMessage(WM_CLOSE);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
+ if(frame){closeOwnedMainWindow(frame);m_pMainWnd=nullptr;}manager.reset();if(argv)LocalFree(argv);
  if(!output.empty())atomicText(output/L"results.json",Json{{"passed",resultCode==0},{"error",componentError},{"checks",outcomes},{"details",details}}.dump(2),false);
  return FALSE;
  }

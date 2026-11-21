@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "Off remembers the live active rate",
+      "passed": true
+    },
+    {
+      "name": "Off preserves startup choice and limiter mode",
+      "passed": true
+    },
+    {
+      "name": "Repeated Off does not replace the remembered rate with zero",
+      "passed": true
+    },
+    {
+      "name": "On restores the remembered rate",
+      "passed": true
+    },
+    {
+      "name": "Repeated On preserves the active rate",
+      "passed": true
+    }
+  ],
+  "error": "Choose how the global speed limit applies.",
+  "passed": false
+}

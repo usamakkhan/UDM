@@ -1,0 +1,57 @@
+--- qualified-8.48/native/Duplicates.cpp
++++ instrumented-8.48/native/Duplicates.cpp
+@@ -352,10 +352,10 @@
+   throw std::runtime_error("The recovered destination changed during publication. Keep its file and recovery journal.");
+  return pinned;
+ }
+-static std::optional<RecoveredPublicationBytes> recoverReplacementBytes(const fs::path& path,const std::string& expected,bool restoring=false){
++static std::optional<RecoveredPublicationBytes> recoverReplacementBytes(const fs::path& path,const std::string& expected,bool restoring=false,const std::function<void(const char*)>& observer={}){
+  Handle file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|(restoring?FILE_SHARE_DELETE:0),nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));BY_HANDLE_FILE_INFORMATION info{};
+  if(!file||!GetFileInformationByHandle(file.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return {};
+- auto digest=fileHash(file.h);if(digest!=expected)return {};
++ auto digest=fileHash(file.h,[&]{if(observer)observer("recovery-hash-read");});if(digest!=expected)return {};
+  return RecoveredPublicationBytes(std::move(file),std::move(digest));
+ }
+ static std::optional<RecoveredPublicationBytes> recoverPublicationBytes(const Json& operation,const fs::path& path,const fs::path* destination=nullptr,const std::function<void(const char*)>& observer={}){
+@@ -369,7 +369,7 @@
+     !GetFileSizeEx(file.h,&size)||size.QuadPart!=num(operation.at("After"),"Size",-1))return rejected();
+  const auto expected=str(operation,"Hash");
+  if(expected.empty()&&stableFileIdentity(file.h)!=operation.at("StagedIdentity"))return rejected();
+- auto digest=fileHash(file.h);
++ auto digest=fileHash(file.h,[&]{if(observer)observer("recovery-hash-read");});
+  if(!expected.empty()&&digest!=expected)return rejected();
+  if(flushRequired){if(observer)observer("recovery-body-flush-begin");if(!FlushFileBuffers(file.h))throw std::runtime_error("The preserved publication body could not be flushed. Keep its file and recovery journal.");if(observer)observer("recovery-body-flush-end");}
+  // Never replace a file that appeared after the interrupted publication.
+@@ -524,7 +524,7 @@
+   auto expected=lower(str(data,"ExpectedSha256"));if(!expected.empty()&&expected!=hash)continue;
+   auto target=job->target();PublicationOwnership owner(*this,{job},recoveryPaths({job},{target}));owner.beginCommit();
+   std::error_code ec;Handle stableFile(CreateFileW(target.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));if(!stableFile||!fs::is_regular_file(target,ec)||ec)continue;auto length=fs::file_size(target,ec);if(ec||length!=static_cast<uint64_t>(num(data,"Size")))continue;
+-  try{if(fileHash(target)!=hash)continue;}catch(const std::exception&){continue;}
++  try{if(fileHash(target,[&]{if(catalogCheckpoint)catalogCheckpoint("recovery-hash-read");})!=hash)continue;}catch(const std::exception&){continue;}
+   if(catalogTransaction)throw std::runtime_error("Recover this completed file before starting a catalog batch.");
+   auto before=job->data;auto after=completeData(before,target,hash);after["Finished"]=before["Finished"];after["QueueMember"]=retainCompletedMembership(*this,before);after["PublicationRecovered"]=date();job->data=std::move(after);
+   prepareCompletionScan(job->data,state["Settings"]);job->data["CompletionActionArmed"]=false;
+@@ -556,8 +556,8 @@
+   const bool inCatalog=modelJob(job->id())==job,registered=std::find(jobs.begin(),jobs.end(),job)!=jobs.end();
+   if(modelJob(original->id())!=original)throw std::runtime_error("The recovered original history changed.");
+   PublicationOwnership owner(*this,{job,original},recoveryPaths({job,original},{target,previous,fs::path(wide(str(op,"Staging")))}));owner.beginCommit();
+-  auto newBytes=recoverReplacementBytes(target,str(op,"NewHash"));
+-  auto previousBytes=newBytes?recoverReplacementBytes(previous,str(op,"OldHash")):std::optional<RecoveredPublicationBytes>{};
++  auto newBytes=recoverReplacementBytes(target,str(op,"NewHash"),false,catalogCheckpoint);
++  auto previousBytes=newBytes?recoverReplacementBytes(previous,str(op,"OldHash"),false,catalogCheckpoint):std::optional<RecoveredPublicationBytes>{};
+   std::optional<RecoveredPublicationBytes> originalBytes;
+   Json recovered,recoveredOriginal;
+   const bool published=newBytes&&previousBytes;
+@@ -566,10 +566,10 @@
+    else if(ReplacementCommit::accepted(op,job->data,original->data)){recovered=job->data;recoveredOriginal=original->data;}
+    else{const bool currentFile=ReplacementCommit::rowAccepted(op.at("After"),job->data),currentOriginal=ReplacementCommit::rowAccepted(op.at("OriginalAfter"),original->data);recovered=currentFile?job->data:PublicationCommit::apply(op.at("Before"),op.at("After"),job->data);recoveredOriginal=currentOriginal?original->data:ReplacementCommit::applyOriginal(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);if(!currentFile){recovered["QueueMember"]=retainCompletedMembership(*this,job->data);if(findJob(job->id())==job)prepareRecoveredScan(recovered,job->data);recovered["CompletionActionArmed"]=false;}}
+   }
+-  else if((originalBytes=recoverReplacementBytes(target,str(op,"OldHash")))&&!fs::exists(previous)){
++  else if((originalBytes=recoverReplacementBytes(target,str(op,"OldHash"),false,catalogCheckpoint))&&!fs::exists(previous)){
+    recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";
+   }
+-  else if(!fs::exists(target)&&(originalBytes=recoverReplacementBytes(previous,str(op,"OldHash"),true))){
++  else if(!fs::exists(target)&&(originalBytes=recoverReplacementBytes(previous,str(op,"OldHash"),true,catalogCheckpoint))){
+    recovered=commitId.empty()?op.at("Before"):PublicationCommit::rollback(op.at("Before"),op.at("After"),job->data);recoveredOriginal=commitId.empty()?op.at("OriginalBefore"):PublicationCommit::rollback(op.at("OriginalBefore"),op.at("OriginalAfter"),original->data);recovered["Status"]="Paused";if(!MoveFileExW(previous.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Windows could not restore the original file.");
+    auto pinned=pinRecoveredDestination(*originalBytes->file,target);originalBytes=RecoveredPublicationBytes(std::move(pinned),std::move(originalBytes->digest));
+   }

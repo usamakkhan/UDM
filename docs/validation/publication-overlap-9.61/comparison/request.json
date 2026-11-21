@@ -1,0 +1,26 @@
+{
+  "args": [
+    "python",
+    "$REPOSITORY\\benchmarks\\speed\\compare-completion.py",
+    "--output-root",
+    "$REPOSITORY\\.media-cache\\owned-publication-overlap-comparison-9.61",
+    "--udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-overlap-build-9.61-epoch2\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "B774CEFDA63E08DF1A694DBC536939DA867AA1CB167D6D35CF8D7B1925B925EF",
+    "--baseline-udm",
+    "$REPOSITORY\\.media-cache\\owned-publication-availability-build-9.60\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "109A2317BEDFD444489451297D193A421A76210DC8D88A1514EA4E383B4B4284",
+    "--label",
+    "9.61 owned body-writeback/intent overlap versus frozen 9.60 and IDM",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.61",
+  "baselineVersion": "9.60",
+  "status": "launching",
+  "qualificationFeatureDefine": null
+}

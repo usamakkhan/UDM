@@ -1,0 +1,21 @@
+--- native/PublicationPreparation.hpp@9.60
++++ native/PublicationPreparation.hpp@9.59
+@@ -4,7 +4,7 @@
+ #include "GrabberDestinations.hpp"
+ namespace udm {
+ inline Json publicationDestinationInputs(const Json& data){Json result=Json::object();for(auto key:{"Folder","FileName","ProjectDestinationRoot"})if(data.contains(key))result[key]=data[key];return result;}
+-// Prepared on the publishing worker without the Manager lock. Prevent source writes until durable catalog acceptance; keep directory names pinned through cleanup.
++// Prepared on the publishing worker without the Manager lock. Prevent source writes and directory rename/deletion until publication finishes.
+ // Directory writes stay shared so normal child-file publication can proceed.
+ class PublicationPreparation {
+  Handle source;std::unique_ptr<Handle> publishedName;BY_HANDLE_FILE_INFORMATION identity{};std::vector<Handle> directories;std::vector<bool> belowRoots;
+@@ -37,9 +37,6 @@
+   if(!*pin||!GetFileInformationByHandle(pin->h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(pin->h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The published destination changed before catalog acceptance. Keep its file and recovery journal.");
+   publishedName=std::move(pin);
+  }
+- // Only the ordinary publication owner calls this after its exact completed
+- // catalog proof is accepted. Journal cleanup no longer needs the file pins.
+- void releaseAcceptedFile(){releaseSource();publishedName.reset();}
+  void releaseSource(){if(source){CloseHandle(source.h);source.h=INVALID_HANDLE_VALUE;}}
+ };
+ }

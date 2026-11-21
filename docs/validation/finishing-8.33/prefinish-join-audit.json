@@ -1,0 +1,300 @@
+{
+  "method": "Read-only audit of the nine retained original portable test catalogs, exact current qualified source and Windows storage associations; no new download or installation.",
+  "sampleCount": 9,
+  "timer": "GetTickCount64; nominal resolution 10-16 ms. Zero deltas are below timer resolution, not proof of zero work.",
+  "sourceHashes": [
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "C1416D6859CC60E986DDE4A9C20EB57850D6ABC73BF55F91CA16420C391E537D"
+    },
+    {
+      "path": "native/PrefinishWriteback.hpp",
+      "sha256": "DEE2D522B0DFFD8F0F0FB6A76BC8E08067BC728E1A8C017E95BB20E349997C06"
+    },
+    {
+      "path": "native/PublishedWriteback.hpp",
+      "sha256": "2D5313CBB6A8F03EE9F65E26AF367DC6D3DF42B0044E1A33782503BF5C16CBBB"
+    }
+  ],
+  "rows": [
+    {
+      "sample": "single-4m-udm-1",
+      "catalogSha256": "AC66820B4C1D6E63BB050AEEDB7402D38AFF65D70BAE284BFE99483F238E6CB1",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22514796,
+        "HttpStart": 22514687,
+        "Joined": 22515296,
+        "LastByte": 22515296,
+        "NetworkEnd": 22515296,
+        "PrefixHashStopped": 22515296,
+        "TransferStart": 22514671,
+        "WorkersJoined": 22515296
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 524288,
+        "Seconds": 0.0641436
+      }
+    },
+    {
+      "sample": "single-4m-udm-2",
+      "catalogSha256": "487426FB75C6F6F750CDCF23A0390C55E9FC6EF57DF3F32C31CB1E54F3539F0C",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22550328,
+        "HttpStart": 22550250,
+        "Joined": 22550968,
+        "LastByte": 22550812,
+        "NetworkEnd": 22550968,
+        "PrefixHashStopped": 22550968,
+        "TransferStart": 22550250,
+        "WorkersJoined": 22550859
+      },
+      "lastByteToWorkersJoinedMs": 47,
+      "workersJoinedToBoundaryEndMs": 109,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 2097152,
+        "Seconds": 0.3453376
+      }
+    },
+    {
+      "sample": "single-4m-udm-3",
+      "catalogSha256": "B74AC11E3BBA4F902115132DB99F90CDA80E8D5E5FA334B6E825F49CB1505D7F",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22587343,
+        "HttpStart": 22587265,
+        "Joined": 22587843,
+        "LastByte": 22587843,
+        "NetworkEnd": 22587843,
+        "PrefixHashStopped": 22587843,
+        "TransferStart": 22587265,
+        "WorkersJoined": 22587843
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 2,
+        "LeadBytes": 524288,
+        "Seconds": 0.0109221
+      }
+    },
+    {
+      "sample": "single-64m-udm-1",
+      "catalogSha256": "D1F8DA676556F336F444E64C42D2241437235A9EA14934EF90D4B29F5042957F",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22528078,
+        "HttpStart": 22528000,
+        "Joined": 22536468,
+        "LastByte": 22536437,
+        "NetworkEnd": 22536468,
+        "PrefixHashStopped": 22536468,
+        "TransferStart": 22528000,
+        "WorkersJoined": 22536468
+      },
+      "lastByteToWorkersJoinedMs": 31,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 4194304,
+        "Seconds": 0.113686
+      }
+    },
+    {
+      "sample": "single-64m-udm-2",
+      "catalogSha256": "D1A450E0B8D9648D611CC6534228A82E8ED9162B5B3A9D1BF43E77079784A51F",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22551968,
+        "HttpStart": 22551890,
+        "Joined": 22560328,
+        "LastByte": 22560328,
+        "NetworkEnd": 22560328,
+        "PrefixHashStopped": 22560328,
+        "TransferStart": 22551890,
+        "WorkersJoined": 22560328
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 13834516,
+        "Seconds": 2.8720936999999997
+      }
+    },
+    {
+      "sample": "single-64m-udm-3",
+      "catalogSha256": "50275E885678682C4307280361D8B7D6C0557CFD2E5B5C54502499DBF4E0C389",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22602453,
+        "HttpStart": 22602375,
+        "Joined": 22610812,
+        "LastByte": 22610812,
+        "NetworkEnd": 22610812,
+        "PrefixHashStopped": 22610812,
+        "TransferStart": 22602375,
+        "WorkersJoined": 22610812
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 0
+      },
+      "prefinish": {
+        "Adjustments": 1,
+        "Errors": 0,
+        "Flushes": 3,
+        "LeadBytes": 18981790,
+        "Seconds": 1.4578709
+      }
+    },
+    {
+      "sample": "split-64m-udm-1",
+      "catalogSha256": "CE27738D7DB58D153B8847EECBC5B6C615C7301403113FB51ECEBA31A17A1F65",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22537281,
+        "HttpStart": 22537203,
+        "Joined": 22538593,
+        "LastByte": 22538593,
+        "NetworkEnd": 22538593,
+        "PrefixHashStopped": 22538593,
+        "TransferStart": 22537203,
+        "WorkersJoined": 22538593
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 7
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 0.0757083
+      }
+    },
+    {
+      "sample": "split-64m-udm-2",
+      "catalogSha256": "FE417E4C481EDDD851FDD77BED16FF92B727384FD1412CA18F85153E639345DB",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22584750,
+        "HttpStart": 22584671,
+        "Joined": 22586359,
+        "LastByte": 22586359,
+        "NetworkEnd": 22586359,
+        "PrefixHashStopped": 22586359,
+        "TransferStart": 22584671,
+        "WorkersJoined": 22586359
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 8
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 0.0597573
+      }
+    },
+    {
+      "sample": "split-64m-udm-3",
+      "catalogSha256": "34D1A1C232FCBB8B3AE1E715B65055A9FB169F3A4F79D1681C67ADBA36E85471",
+      "destinationDrive": "C:",
+      "partStorage": "isolated catalog parts on C:",
+      "ticks": {
+        "FirstByte": 22612265,
+        "HttpStart": 22612171,
+        "Joined": 22616640,
+        "LastByte": 22616640,
+        "NetworkEnd": 22616640,
+        "PrefixHashStopped": 22616640,
+        "TransferStart": 22612171,
+        "WorkersJoined": 22616640
+      },
+      "lastByteToWorkersJoinedMs": 0,
+      "workersJoinedToBoundaryEndMs": 0,
+      "boundaryEndToHashStoppedMs": 0,
+      "boundaryChecks": {
+        "FromDisk": 0,
+        "FromWriteBuffer": 8
+      },
+      "prefinish": {
+        "Adjustments": 0,
+        "Errors": 0,
+        "Flushes": 1,
+        "LeadBytes": 58720256,
+        "Seconds": 2.384672
+      }
+    }
+  ],
+  "findings": [
+    "Every current portable destination and isolated parts catalog is on C:. These are not D: measurements.",
+    "The losing 4 MiB trial records 47 ms from last-byte credit to worker join, followed by 109 ms to boundary-check completion. There are zero HTTP boundary checks, and hash-thread stop is after this interval.",
+    "The 109 ms interval includes PrefinishWriteback::finish joining its worker, handle close and small bookkeeping; it is not an isolated high-resolution FlushFileBuffers span.",
+    "All other eight worker-join-to-boundary-end deltas are zero at tick resolution. Large cumulative early-flush durations can overlap download and must not be treated as finishing-tail durations."
+  ],
+  "runtimeKernelCauseVerified": false,
+  "productChanged": false,
+  "installedVersionChanged": false
+}

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "baselineTestSha256": "278831DC80EA5D166AF62DBDCAA762CFCE869DCE32B15B326DF8A3EA1239B04D",
+  "currentTestSha256": "6803C24DF2B87ED77F511390591F11D61F9D67D2AA7E174727DFB6BA4A25C9A3",
+  "onlyInsertion": "if(entry.fast)dpi(*form,entry.dpi);",
+  "lineEndingChange": "LF to CRLF",
+  "purpose": "Normalize the fast fixture to its requested DPI before its later column-width round trip; the failing loading-layout assertion is unchanged."
+}

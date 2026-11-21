@@ -1,0 +1,11 @@
+--- native/ToolbarUi.hpp@9.55
++++ native/ToolbarUi.hpp@9.54
+@@ -82,7 +82,7 @@
+  }
+  void rebuildToolbar(){
+   if(!toolbar.GetSafeHwnd())return;toolbarBuilding=true;
+-  try{themeTooltip((HWND)toolbar.SendMessage(TB_GETTOOLTIPS));if(reinterpret_cast<HFONT>(toolbar.SendMessage(WM_GETFONT))!=font.GetSafeHandle())toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(appearancePreferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
++  try{themeTooltip((HWND)toolbar.SendMessage(TB_GETTOOLTIPS));toolbar.SetFont(&font);loadToolbarImages();setToolbarButtons(toolbarLayout(appearancePreferences()));toolbarBuilding=false;}catch(...){toolbarBuilding=false;throw;}
+  }
+  int layoutToolbar(int width,const Json& settings){
+   if(!toolbar.GetSafeHwnd())return 0;const bool shown=!yes(settings,"HideToolbar")&&toolbar.GetButtonCount()>0;::ShowWindow(toolbar.GetSafeHwnd(),shown?SW_SHOW:SW_HIDE);

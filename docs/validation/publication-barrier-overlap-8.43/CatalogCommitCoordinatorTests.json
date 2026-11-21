@@ -1,0 +1,190 @@
+{
+  "checks": [
+    {
+      "name": "First successful commit reports the durable sequence",
+      "passed": true
+    },
+    {
+      "name": "Newer commit publishes its actual checkpoint bytes",
+      "passed": true
+    },
+    {
+      "name": "Repeating a durable sequence does not write again",
+      "passed": true
+    },
+    {
+      "name": "Older commit resolves as superseded without invoking its writer",
+      "passed": true
+    },
+    {
+      "name": "Failed write preserves the durable sequence and previous checkpoint",
+      "passed": true
+    },
+    {
+      "name": "A failed sequence can retry and retain the previous checkpoint backup",
+      "passed": true
+    },
+    {
+      "name": "Concurrent writers serialize and advance in the observed order",
+      "passed": true
+    },
+    {
+      "name": "Concurrent commit publication retains the newest file and immediate predecessor backup",
+      "passed": true
+    },
+    {
+      "name": "A newer successful commit prevents an obsolete writer from reporting a later false failure",
+      "passed": true
+    },
+    {
+      "name": "Invalid zero sequence cannot publish or change durable state",
+      "passed": true
+    },
+    {
+      "name": "Successful completion observation runs after the writer lock is released",
+      "passed": true
+    },
+    {
+      "name": "Failure releases the writer lock without publishing a durable sequence",
+      "passed": true
+    },
+    {
+      "name": "Already-published observation releases its lock and reports no new publication",
+      "passed": true
+    },
+    {
+      "name": "Incomplete model rows cannot reserve durable publication proof",
+      "passed": true
+    },
+    {
+      "name": "A second owner cannot replace a pending completion binding",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "Snapshots missing an exact pending completion field are rejected before capture",
+      "passed": true
+    },
+    {
+      "name": "An unrelated newer snapshot cannot silently omit a pending completion",
+      "passed": true
+    },
+    {
+      "name": "No captured successful snapshot provides no durable publication acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Resolution freezes late captures even after the failed writer count reaches zero",
+      "passed": true
+    },
+    {
+      "name": "Resolution waits for a captured writer and accepts only its explicit successful snapshot acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "A retired accepted owner does not block legitimate later catalog removal",
+      "passed": true
+    },
+    {
+      "name": "Retiring a failed or superseded capture without acknowledgement cannot prove durability",
+      "passed": true
+    },
+    {
+      "name": "Duplicate completion identities cannot provide ambiguous snapshot proof",
+      "passed": true
+    },
+    {
+      "name": "An exact internal child row supplies proof through its containing parent snapshot",
+      "passed": true
+    },
+    {
+      "name": "A different Manager's catalog does not inherit another Manager's pending proof",
+      "passed": true
+    },
+    {
+      "name": "Another Manager's successful write cannot acknowledge this publication",
+      "passed": true
+    },
+    {
+      "name": "A standalone internal file installs a private receipt without adding a visible download",
+      "passed": true
+    },
+    {
+      "name": "Repeating the same private receipt is idempotent",
+      "passed": true
+    },
+    {
+      "name": "A conflicting private receipt cannot replace the original operation binding",
+      "passed": true
+    },
+    {
+      "name": "A visible row cannot substitute for the required private receipt",
+      "passed": true
+    },
+    {
+      "name": "Private publication receipt does not create a user download row",
+      "passed": true
+    },
+    {
+      "name": "The exact persisted private receipt can acknowledge standalone file completion",
+      "passed": true
+    },
+    {
+      "name": "Only the matching operation can retire private receipt metadata",
+      "passed": true
+    },
+    {
+      "name": "A primary completion alone cannot acknowledge a paired replacement",
+      "passed": true
+    },
+    {
+      "name": "The original record alone cannot acknowledge the new file",
+      "passed": true
+    },
+    {
+      "name": "Changed original projection rejects paired proof before capture",
+      "passed": true
+    },
+    {
+      "name": "A paired owner also reserves its companion record against independent proof",
+      "passed": true
+    },
+    {
+      "name": "Only one exact containing snapshot acknowledges both replacement rows",
+      "passed": true
+    },
+    {
+      "name": "A private new-file receipt still requires its visible original companion",
+      "passed": true
+    },
+    {
+      "name": "A standalone replacement pairs its private receipt with the exact visible original row",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}
