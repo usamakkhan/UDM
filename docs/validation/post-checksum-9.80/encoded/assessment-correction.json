@@ -1,0 +1,9 @@
+{
+  "initialControllerSha256": "F8D6F1837B41A50A49269C952A7B81DEC0473FCEEC41193D05991329B0DEFDA6",
+  "resumedControllerSha256": "775252CB035ECB8E0FFE5A35ECC5F5E0FAEEC20E0F95BC544A8A37E97F448705",
+  "reason": "The old redirected path legitimately has no recorded ServerSha256: this is the missing-hasher defect being reproduced. The initial controller incorrectly required the field on its matching-checksum baseline control.",
+  "initialActorsAlreadyTerminal": 3,
+  "completedFlowsRerun": 0,
+  "remainingFlowsRun": 5,
+  "productCodeChanged": false
+}

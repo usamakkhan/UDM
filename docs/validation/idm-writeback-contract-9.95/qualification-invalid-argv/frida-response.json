@@ -1,0 +1,88 @@
+{
+  "result": {
+    "_meta": {
+      "provenance": {
+        "untrusted_content": true,
+        "source": "analysis_target"
+      }
+    },
+    "structuredContent": {
+      "evidence_id": "ev_ab097ed4fafff6821474c6088d0fda1e9bbc975aadc839c7369e8c346f2e1236",
+      "subject": null,
+      "provider": {
+        "id": "frida",
+        "name": "Frida",
+        "version": null
+      },
+      "analysis_profile": null,
+      "predicate_type": "rea.frida.instrumentation-observation",
+      "operation": "instrument_with_frida",
+      "parameters": {
+        "session_id": "51689ba3-f3f9-47df-9ba0-f4d7d96587f7",
+        "device_id": "local",
+        "mode": "spawn",
+        "program": "<research>\\release-native\\observer-control.exe",
+        "argv": [
+          "<research>\\release-native\\observer-control.exe",
+          "<research>\\qualification-9ddd3a1ad8a344748c339c7a8fbe929f\\4b1761288fa4.bin"
+        ]
+      },
+      "raw_result": null,
+      "normalized_result": {
+        "session_id": "51689ba3-f3f9-47df-9ba0-f4d7d96587f7",
+        "device_id": "local",
+        "state": "detached",
+        "target": "<research>\\release-native\\observer-control.exe",
+        "pid": 31060,
+        "mode": "spawn",
+        "scripts": [
+          {
+            "script_id": "9754396c-aa74-476f-8339-0f7553acb63d",
+            "name": "rea-9754396c-aa74-476f-8339-0f7553acb63d"
+          }
+        ],
+        "messages": [
+          {
+            "script_id": "9754396c-aa74-476f-8339-0f7553acb63d",
+            "type": "send",
+            "payload": {
+              "kind": "observer-ready",
+              "pid": 31060,
+              "architecture": "x64",
+              "hooks": [
+                "CreateFileA",
+                "CreateFileW",
+                "WriteFile",
+                "FlushFileBuffers",
+                "CloseHandle",
+                "NtWriteFile",
+                "NtFlushBuffersFile",
+                "NtFlushBuffersFileEx"
+              ],
+              "scope": "4b1761288fa4",
+              "changesArgumentsOrReturns": false,
+              "observesOnly": true
+            }
+          }
+        ],
+        "messages_truncated": false,
+        "source_kind": "inline",
+        "source_path": null,
+        "source_sha256": "b8f90e54712df9f653433e43445c7f680c37e804a6d63ee7e8bf9bf3a05c916e",
+        "cleanup_error": null
+      },
+      "confidence": "observed",
+      "authority": "external-service",
+      "environment": null,
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "The target operating system and architecture were not reported by this observation."
+      ],
+      "relationship_coverage": null,
+      "locations": [],
+      "evidence_links": []
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

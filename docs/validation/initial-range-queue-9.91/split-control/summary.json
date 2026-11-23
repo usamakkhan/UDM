@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "variant": "frozen",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 67305768,
+      "requests": 12,
+      "engineThroughJoinedStopMs": 2246.6402
+    },
+    {
+      "variant": "current",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 67265559,
+      "requests": 19,
+      "engineThroughJoinedStopMs": 2070.3832
+    },
+    {
+      "variant": "current",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 67257434,
+      "requests": 20,
+      "engineThroughJoinedStopMs": 1983.454
+    },
+    {
+      "variant": "frozen",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 67558665,
+      "requests": 14,
+      "engineThroughJoinedStopMs": 2371.7218
+    }
+  ],
+  "scope": "C: engine-only ABBA, two samples per variant, independent hash after timed joined stop; no normal App/IDM or speed acceptance."
+}

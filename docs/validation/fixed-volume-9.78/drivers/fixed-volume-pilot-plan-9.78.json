@@ -1,0 +1,37 @@
+{
+  "args": [
+    "C:\\Users\\Usama\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+    "[local-diagnostics]\\owned-pair-derived-fixed-volume-9.78.py",
+    "--output-root",
+    "[repo]\\.media-cache\\owned-fixed-volume-pilot-9.78",
+    "--udm",
+    "[repo]\\.media-cache\\owned-fixed-volume-build-9.78\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "84D984A0458773A25CB9CE277867F6F5C6397C3A7F04E5BFBA9BCCCAD5DCD3D2",
+    "--baseline-udm",
+    "[repo]\\.media-cache\\owned-live-dash-continuation-build-9.77\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "F60C3839D38CD67DB1DFEE54CCF5BB82DA8AFB3AB087933DC3FD28206FA71A60",
+    "--label",
+    "Normal 9.78 guarded opened-volume lookup versus frozen 9.77; one pilot pair per case, no IDM ranking",
+    "--trials",
+    "1",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "sourceDriverSha256": "7874BE200D34FBB9B77F3F6C28439350051738F9EDD4F36DCB295DDD22E9D993",
+  "derivedDriverSha256": "E32EE42A651D8ABF096C15CB20DB950C0A6708441770B3C97209FBC20E9532C7",
+  "change": {
+    "old": "for client in clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)]:",
+    "new": "for client in clients[(trial+cases.index((case,size,connections)))%len(clients):]+clients[:(trial+cases.index((case,size,connections)))%len(clients)]:"
+  },
+  "order": [
+    "4 MiB baseline then candidate",
+    "64 MiB candidate then baseline",
+    "64 MiB split baseline then candidate"
+  ],
+  "sampleCount": 6,
+  "normalProducts": true,
+  "preplannedPilotNotPromotionGate": true,
+  "idmSettingsNotReadOrChanged": true
+}

@@ -1,0 +1,389 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Explicit and real publication/finished dispatch return while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Busy admission retains intent without showing stale metadata",
+      "passed": true
+    },
+    {
+      "name": "Admission polling does not wait for the held writer",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Publication followed by Finished creates exactly one completion dialog",
+      "passed": true
+    },
+    {
+      "name": "Opening uses the current Unicode destination and size captured after contention",
+      "passed": true
+    },
+    {
+      "name": "A subsequent poll cannot replay a completed presentation",
+      "passed": true
+    },
+    {
+      "name": "Explicit and real publication/finished dispatch return while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Busy admission retains intent without showing stale metadata",
+      "passed": true
+    },
+    {
+      "name": "Repeated pending publication coalesces without reordering Finished",
+      "passed": true
+    },
+    {
+      "name": "Admission polling does not wait for the held writer",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Publication followed by Finished creates exactly one completion dialog",
+      "passed": true
+    },
+    {
+      "name": "Opening uses the current Unicode destination and size captured after contention",
+      "passed": true
+    },
+    {
+      "name": "A subsequent poll cannot replay a completed presentation",
+      "passed": true
+    },
+    {
+      "name": "Stale Started, Published and Finished retain their order without a UI lock wait",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "The complete event sequence shows one completion and no stale progress window",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Closing admission joins its cancelled reader without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "A cancelled pending presentation cannot replay on a later wake",
+      "passed": true
+    },
+    {
+      "name": "Explicit and real publication/finished dispatch return while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Busy admission retains intent without showing stale metadata",
+      "passed": true
+    },
+    {
+      "name": "Admission polling does not wait for the held writer",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Publication followed by Finished creates exactly one completion dialog",
+      "passed": true
+    },
+    {
+      "name": "Opening uses the current Unicode destination and size captured after contention",
+      "passed": true
+    },
+    {
+      "name": "A subsequent poll cannot replay a completed presentation",
+      "passed": true
+    },
+    {
+      "name": "Explicit and real publication/finished dispatch return while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Busy admission retains intent without showing stale metadata",
+      "passed": true
+    },
+    {
+      "name": "Repeated pending publication coalesces without reordering Finished",
+      "passed": true
+    },
+    {
+      "name": "Admission polling does not wait for the held writer",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Publication followed by Finished creates exactly one completion dialog",
+      "passed": true
+    },
+    {
+      "name": "Opening uses the current Unicode destination and size captured after contention",
+      "passed": true
+    },
+    {
+      "name": "A subsequent poll cannot replay a completed presentation",
+      "passed": true
+    },
+    {
+      "name": "Stale Started, Published and Finished retain their order without a UI lock wait",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "The complete event sequence shows one completion and no stale progress window",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Publication retains a busy request until current eligibility is readable",
+      "passed": true
+    },
+    {
+      "name": "Completion admission drains and joins its readiness reader",
+      "passed": true
+    },
+    {
+      "name": "Actual integer-only readiness wake dispatches through the main window without a timer poll",
+      "passed": true
+    },
+    {
+      "name": "Failed, suppressed and removed publications cannot open a stale completion",
+      "passed": true
+    },
+    {
+      "name": "Closing admission joins its cancelled reader without waiting for the model",
+      "passed": true
+    },
+    {
+      "name": "A cancelled pending presentation cannot replay on a later wake",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dispatchMs": 0,
+      "eventPath": false,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    },
+    {
+      "dark": false,
+      "milliseconds": 47,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": false,
+      "dispatchMs": 0,
+      "eventPath": true,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    },
+    {
+      "dark": false,
+      "milliseconds": 47,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": false,
+      "milliseconds": 78,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": false,
+      "milliseconds": 16,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": false,
+      "milliseconds": 31,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": false,
+      "milliseconds": 16,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "dispatchMs": 0,
+      "eventPath": false,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    },
+    {
+      "dark": true,
+      "milliseconds": 78,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "dispatchMs": 0,
+      "eventPath": true,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    },
+    {
+      "dark": true,
+      "milliseconds": 63,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "milliseconds": 79,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "milliseconds": 31,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "milliseconds": 16,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    },
+    {
+      "dark": true,
+      "milliseconds": 0,
+      "ownedWakes": 1,
+      "stage": "writer-release-to-owned-wake-return"
+    }
+  ],
+  "passed": true
+}

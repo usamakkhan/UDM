@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,os
+repo=Path('D:/UDM');area=Path(__file__).parent;public=repo/'docs/validation/dash-freshness-10.3';public.mkdir(exist_ok=False);snap=public/'source-snapshot';snap.mkdir();read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+def clean(value):
+ if isinstance(value,str):
+  for a,b in [(str(area),'<candidate>'),(str(repo),'<repository>'),(os.environ['USERPROFILE'],'<profile>'),('C:/Program Files/UDM','<host-install>'),('C:\\Program Files\\UDM','<host-install>')]:value=value.replace(a,b).replace(a.replace('\\','/'),b)
+  return value
+ if isinstance(value,list):return [clean(e) for e in value]
+ if isinstance(value,dict):return {k:clean(v) for k,v in value.items()}
+ return value
+def emit(name,value):(public/name).write_text(json.dumps(clean(value),indent=2),encoding='utf-8',newline='\n')
+for name in ['verification','comparison','phase-timings','reuse-experiment','build-result','control-build','timing-build','reuse-experiment-build']:
+ emit(name+'.json',read(area/(name+'.json')))
+for folder,label in [('baseline-01','baseline'),('current-01','current'),('baseline-clock-01','baseline-clock'),('current-clock-01','current-clock')]:
+ emit(label+'-qualification.json',read(area/folder/'qualification.json'));emit(label+'-results.json',read(area/folder/'results.json'))
+for folder,label in [('continuous-regression-01','production-continuous-failure'),('continuous-timing-01','timed-continuous-failure'),('continuous-reuse-experiment-01','private-reuse-continuous')]:
+ terminal=read(area/folder/'candidate-terminal.json');emit(label+'-terminal.json',terminal);emit(label+'-cases.json',[dict(case=e['case'],exitCode=e['exitCode'],result=read(Path(e['result']))) for e in terminal['records']]);(public/(label+'.log')).write_text(clean((area/(folder+'.log')).read_text(encoding='utf-8',errors='replace')),encoding='utf-8',newline='\n')
+emit('private-reuse-qualification.json',read(area/'continuous-reuse-experiment-01/qualification.json'))
+for folder,label in [('continuous-timing-01','timed-av-stages.log'),('continuous-reuse-experiment-01','reuse-av-stages.log')]:
+ (public/label).write_text(clean((area/folder/'av-record.log').read_text(encoding='utf-8-sig')),encoding='utf-8',newline='\n')
+for name in ['GaplessAacTailTests','RetiredDashBoundaryTests']:emit(name+'.json',read(area/('final-'+name)/'results.json'))
+prior=read(repo/'.media-cache/single-caption-session-build-10.2/build-result.json');emit('frozen-core-bindings.json',dict(version='10.2',coreObjects=prior['coreObjects']))
+emit('host-protection.json',read(repo/'docs/validation/completion-claim-9.92/host-protection.json'))
+sources=[]
+for name in ['native/DashManifest.cpp','native/Version.hpp','browser/chromium/manifest.json','browser/firefox/manifest.json','benchmarks/speed/dash_freshness_workflow.cpp','tests/dash-freshness.native-live.py','tests/dash-freshness-clock.native-live.py','tests/live-dash-continuous.native-live.py','benchmarks/speed/live_dash_continuous_workflow.cpp']:
+ target=snap/(name.replace('/','__')+'.txt');target.write_bytes((repo/name).read_bytes());sources.append(dict(path=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+for name in ['build.py','compile-control.py','compile-timing.py','compile-reuse-experiment.py','verify.py','DashManifest-Timing.cpp','DashManifest-ReuseExperiment.cpp','export.py']:
+ target=snap/(name+'.txt');target.write_bytes((area/name).read_bytes());sources.append(dict(recipe=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target),diagnosticNotProduct=name in ['DashManifest-Timing.cpp','DashManifest-ReuseExperiment.cpp']))
+old=area/'before-DashManifest.cpp';expected=next(e['sha256'] for e in prior['sources'] if e['path']=='native/DashManifest.cpp');assert sha(old)==expected;target=snap/'frozen-10.2-DashManifest.cpp.txt';target.write_bytes(old.read_bytes());sources.append(dict(path='native/DashManifest.cpp',version='10.2',snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+emit('source-provenance.json',dict(sources=sources,buildInputsStillMatch=True,clockFixturePinnedBeforeAndAfterItsRuns=True,unchangedContinuousFixtureSnapshotTakenAfterExecution=True,fullProductionAcceptancePassed=False,privatePrototypeIsNotShippingCode=True))
+files=[dict(path=p.relative_to(public).as_posix(),sha256=sha(p),bytes=p.stat().st_size) for p in sorted(public.rglob('*')) if p.is_file()];emit('manifest.json',dict(passed=True,records=files,binariesIncluded=False,ownedMediaIncluded=False,allTestAttemptsPassed=False,productionContinuousPassed=False))
+for e in files:assert sha(public/e['path'])==e['sha256']
+for p in public.rglob('*'):
+ if p.is_file() and p.parent!=snap:assert b'Usama' not in p.read_bytes(),p
+print(str(len(files))+' tracked metadata and source records verified')

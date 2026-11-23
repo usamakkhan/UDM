@@ -1,0 +1,9 @@
+{
+  "path": "native/backend-tests.json",
+  "before": "8400A02C80E7A99E63F3812AD7007B25E463427E7A1A255C9336999522A14599",
+  "after": "792971DB3799C67AA96935B5FAE481E7F5A0B9FAE1582E75648752B463B3EEC8",
+  "reason": "Register the already-qualified 17-check suppression task with the maintained backend suite runner. This registry is not a compiler input.",
+  "afterProductCompilation": true,
+  "afterProductAndUiQualification": true,
+  "compilerInputsUnchanged": true
+}

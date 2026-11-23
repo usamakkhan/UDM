@@ -367,15 +367,22 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
  frame.complete(job,true);
  const auto peer=frame.completions.back()->GetSafeHwnd();
  const auto peerSuppress=named(peer,L"Don't show this dialog again");
+ const auto settleSuppression=[&]{
+  const auto deadline=GetTickCount64()+5000;
+  while(!frame.completionSettingsTask.ready()&&GetTickCount64()<deadline)Sleep(1);
+  if(!frame.completionSettingsTask.ready())throw std::runtime_error("Completion preference deadline");
+  frame.pollCompletionSettings();
+ };
  {
   Handle locked(CreateFileW((manager.root/L"state.json.tmp").c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
   expect(static_cast<bool>(locked),"Hold the catalog write lock for a failed suppression change");
-  const auto warning=MissingWarning::observe(w,[&]{SendMessageW(suppress,BM_CLICK,0,0);});
+  const auto warning=MissingWarning::observe(w,[&]{SendMessageW(suppress,BM_CLICK,0,0);settleSuppression();});
   expect(!warning.title.empty()&&SendMessageW(suppress,BM_GETCHECK,0,0)==BST_UNCHECKED&&
    !yes(manager.state["Settings"],"SuppressCompletionDialog")&&IsWindow(w),
    "A failed suppression write restores the checkbox and keeps completion open");
  }
  SendMessageW(suppress,BM_CLICK,0,0);
+ settleSuppression();
  expect(IsWindow(w)&&IsWindow(peer)&&yes(manager.state["Settings"],"SuppressCompletionDialog"),
   "Checking Don't show again saves the preference before either completion dialog closes");
  {Manager reopened(manager.root);expect(yes(reopened.state["Settings"],"SuppressCompletionDialog"),
@@ -386,6 +393,7 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
  SendMessageW(peer,WM_TIMER,7,0);
  expect(SendMessageW(peerSuppress,BM_GETCHECK,0,0)==BST_CHECKED,"Another open completion reflects the shared preference");
  SendMessageW(peerSuppress,BM_CLICK,0,0);
+ settleSuppression();
  SendMessageW(w,WM_TIMER,7,0);
  expect(!yes(manager.state["Settings"],"SuppressCompletionDialog")&&SendMessageW(suppress,BM_GETCHECK,0,0)==BST_UNCHECKED,
   "Unchecking restores automatic completion and synchronizes the first dialog");
@@ -394,6 +402,7 @@ auto job=manager.add("https://example.invalid/completed.bin","","completed.bin",
  frame.completions.back()->SendMessage(WM_CLOSE);
  SetActiveWindow(w);
  SendMessageW(suppress,BM_CLICK,0,0);
+ settleSuppression();
  expect(yes(manager.state["Settings"],"SuppressCompletionDialog"),
   "The reactivated completion saves suppression again before Close");
  SendMessageW(named(w,L"Close"),BM_CLICK,0,0);

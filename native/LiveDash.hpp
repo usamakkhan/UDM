@@ -1,5 +1,7 @@
 #pragma once
 #include "DashManifest.hpp"
+#include "DashMetadataTransport.hpp"
+#include "DashResourceTransport.hpp"
 #include "MediaStorage.hpp"
 #include "MediaPublication.hpp"
 #include "BrowserRequest.hpp"
@@ -194,6 +196,8 @@ inline LiveDashProgress liveDashProgress(const Json& index){
 inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<Cancel>& cancel,const std::function<void(const Cancel&)>& connect){requirePublicationRecovered(manager,job);
  Json plan,prefs,cookies,captured;Headers common;std::string expectedHash,protectedPlan;int retries;
  {Lock lock(manager.mutex);protectedPlan=str(job->data,"ProtectedAdaptive");plan=Json::parse(reveal(protectedPlan));prefs=manager.state["Settings"];common=readHeaders(job->data);auto decode=[&](const char* field){auto value=str(job->data,field);return value.empty()?Json::object():Json::parse(reveal(value));};cookies=decode("ProtectedMediaCookies");captured=decode("ProtectedMediaHeaders");expectedHash=str(job->data,"ExpectedSha256");retries=manager.retries(str(job->data,"Queue"));}
+ DashMetadataTransportScope metadataTransport;
+ DashResourceTransportScope resourceTransport;
  validateLiveDashPlan(plan);const auto sessionFolder=mediaWorkingDirectory(manager,job)/L"live-dash";{Lock lock(manager.mutex);manager.save();}
  DashRecordingSession session(sessionFolder,plan,*cancel);
  const bool captions=std::any_of(plan["tracks"].begin(),plan["tracks"].end(),[](const Json& track){return str(track,"kind")=="subtitle";});
@@ -226,8 +230,35 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
   if(fs::exists(folder/L"recording.json")){index=reconcileDashRecording(folder,*cancel);if(index.contains("captureStart"))session.checkpoint(session.currentFolder(),index,*cancel);else if(session.hasPeriods())throw std::runtime_error("DASH session capture interval is missing from its recording index.");}else if(session.hasPeriods())throw std::runtime_error("DASH session recording index is missing; retained files were not rebound.");updateProgress();
   std::optional<DashPeriodTransition> transition;bool advance=false;
   if(!yes(index,"sealed")&&!session.saving()&&!finishRequested()&&index.is_object()&&index.contains("tracks")&&!index["tracks"].empty()){
-   const auto progress=liveDashProgress(index);const auto& first=index["tracks"].front();if(progress.ready&&first.contains("periodDuration")&&first["periodDuration"].is_number()&&progress.end+0.000001>=real(first,"periodDuration")){
-    const auto saved=loadLiveDashState(folder,capturePlan,index,*cancel);transition=planDashPeriodTransition(saved,saved.snapshot,*cancel);if(transition)session.beginAdvance(*cancel);else if(!saved.snapshot.manifest.dynamic){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
+   const auto progress=liveDashProgress(index);const auto& first=index["tracks"].front();const bool knownEnd=first.contains("periodDuration")&&first["periodDuration"].is_number();
+   const auto retainedEnd=knownEnd?std::optional<double>{}:dashRetainedPeriodEnd(index,*cancel);
+   if(progress.ready&&(knownEnd?progress.end+0.000001>=real(first,"periodDuration"):retainedEnd.has_value())){
+    try{
+     auto saved=loadLiveDashState(folder,capturePlan,index,*cancel);bool ended=!saved.snapshot.manifest.dynamic;
+     if(!ended){
+      // A completed retained Period can disappear from a sliding manifest.
+      // Plan its adjacent continuation before trying to rematch the old IDs.
+      connect(*capture);auto refreshed=refreshDashManifest(str(capturePlan,"manifest"),manifestHeaders,prefs,capture,&saved.snapshot,accountMetadata);
+      ended=!refreshed.manifest.dynamic;const auto absoluteRetainedEnd=retainedEnd?std::optional<double>{saved.tracks.front().addressing.period.start+*retainedEnd}:std::optional<double>{};
+      transition=planDashPeriodTransition(saved,refreshed,*capture,absoluteRetainedEnd);
+      if(transition&&!knownEnd&&std::abs(transition->previousEnd-saved.tracks.front().addressing.period.start-*retainedEnd)>0.000001)transition.reset();
+      if(!transition){
+       for(auto& track:saved.tracks)track=rematchDashTrack(refreshed,track,*capture);
+       saved.snapshot=std::move(refreshed);checkpointLiveDashRevision(folder,capturePlan,saved,*capture);preparedState=std::move(saved);
+      }
+     }else transition=planDashPeriodTransition(saved,saved.snapshot,*cancel);
+     if(transition){
+      if(!knownEnd){
+       const double boundary=transition->previousEnd-saved.tracks.front().addressing.period.start;
+       for(auto& track:saved.tracks)track.addressing.period.duration=boundary;
+       // Publish the protected origin/timing proof before updating the index.
+       // A crash between them can restore this revision and finish the checkpoint.
+       checkpointLiveDashRevision(folder,capturePlan,saved,*cancel);
+       index=checkpointDashPeriodEnd(folder,boundary,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);
+      }
+      session.beginAdvance(*cancel);
+     }else if(ended&&knownEnd){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
+    }catch(const Cancelled&){cancel->check();if(!finishRequested())throw;}
    }
   }
   if(session.advancing()&&!yes(index,"sealed")){const auto progress=liveDashProgress(index);if(!progress.ready||progress.end+0.000001<real(index["tracks"].front(),"periodDuration"))throw std::runtime_error("DASH transition boundary is not fully captured.");index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);}
@@ -256,7 +287,16 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
        if(index.is_object()&&index.contains("tracks")){const auto& track=index["tracks"][t];if(!track.contains("pendingInitialization")&&(!track.contains("initialization")||yes(track,"initializationVerified"))){std::map<i64,Json> ordered;for(const auto& record:track["segments"])ordered.emplace(num(record,"number"),record);for(const auto& entry:ordered){if(!yes(entry.second,"committed"))break;from=std::max(from,static_cast<double>(num(entry.second,"time")+num(entry.second,"duration")-address.presentationTimeOffset)/address.timescale);}}}
        auto ticks=[&](double seconds,bool upper){const long double value=static_cast<long double>(seconds)*address.timescale+address.presentationTimeOffset;if(value<0||value>9007199254740991.0L)throw std::runtime_error("Live DASH window exceeds supported precision.");return static_cast<i64>(upper?std::ceil(value):std::floor(value));};const double windowEnd=drainingStatic?std::min(horizon,from+30):horizon;ranges.emplace_back(ticks(from,false),ticks(std::max(windowEnd,from+1),true));
       }
-      auto next=updateDashLivePlan(state,ranges,manifestHeaders,prefs,capture,accountMetadata);
+      const auto retainedEnd=dashRetainedPeriodEnd(index,*capture);
+      const auto absoluteRetainedEnd=retainedEnd?std::optional<double>{state.tracks.front().addressing.period.start+*retainedEnd}:std::optional<double>{};
+      auto next=updateDashLivePlan(state,ranges,manifestHeaders,prefs,capture,accountMetadata,absoluteRetainedEnd);
+      if(next.transition){
+       auto previous=state;const double boundary=next.transition->previousEnd-previous.tracks.front().addressing.period.start;
+       for(auto& track:previous.tracks)track.addressing.period.duration=boundary;
+       checkpointLiveDashRevision(folder,capturePlan,previous,*capture);
+       index=checkpointDashPeriodEnd(folder,boundary,*capture);session.checkpoint(session.currentFolder(),index,*capture);
+       transition=std::move(next.transition);advance=true;break;
+      }
       if(next.state.snapshot.document!=state.snapshot.document||next.state.snapshot.url!=state.snapshot.url||next.state.snapshot.etag!=state.snapshot.etag||next.state.snapshot.modified!=state.snapshot.modified)checkpointLiveDashRevision(folder,capturePlan,next.state,*capture);
       state=next.state;
       if(auto planned=planDashPeriodTransition(state,state.snapshot,*capture))transition=std::move(planned);
@@ -301,7 +341,9 @@ inline void liveDashTransfer(Manager& manager,JobPtr job,const std::shared_ptr<C
                 {"Binding",session.publicationBinding()},{"MergeSeconds",live.mergeSeconds}};
   if(output.subtitleCues)receipt["SubtitleCueCount"]=*output.subtitleCues;
   manager.waitForPrefetchConfirmation(job,*cancel,output.bytes,receipt);
-  publishMediaOutput(manager,job,output.staging,output.sha256,cancel,&live);markZone(job->target());
+  if(!output.verifiedSource)throw std::runtime_error("The live DASH output lost its verification ownership. Its recording was retained.");
+  auto publicationSource=output.verifiedSource->clone();if(!publicationSource)throw std::runtime_error("Cannot retain the live DASH output for publication.");output.verifiedSource.reset();
+  publishMediaOutput(manager,job,output.staging,output.sha256,cancel,&live,std::move(publicationSource));markZone(job->target());
  }catch(...){if(receiving)updateProgress();Lock lock(manager.mutex);if(receiving)job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();throw;}
  {Lock lock(manager.mutex);job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();}
 }

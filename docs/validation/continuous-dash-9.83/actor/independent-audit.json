@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "case": "baseline-av",
+      "packetTimestampsAndDurationsMatch": true,
+      "audioPackets": 144,
+      "audioPcmBytes": 294912,
+      "audioPcmSha256": "e2b0dc68902be4e309812cc929e08880f6e91d69e325008fed07640bfb0ddf54",
+      "assembledBytes": 351173,
+      "finalBytes": 351173
+    },
+    {
+      "case": "av",
+      "packetTimestampsAndDurationsMatch": true,
+      "audioPackets": 144,
+      "audioPcmBytes": 294912,
+      "audioPcmSha256": "e2b0dc68902be4e309812cc929e08880f6e91d69e325008fed07640bfb0ddf54",
+      "assembledBytes": 351173,
+      "finalBytes": 351173
+    },
+    {
+      "case": "audio",
+      "packetTimestampsAndDurationsMatch": true,
+      "audioPackets": 144,
+      "audioPcmBytes": 294912,
+      "audioPcmSha256": "e2b0dc68902be4e309812cc929e08880f6e91d69e325008fed07640bfb0ddf54",
+      "assembledBytes": 26450,
+      "finalBytes": 26450
+    },
+    {
+      "case": "save",
+      "packetTimestampsAndDurationsMatch": true,
+      "audioPackets": 48,
+      "audioPcmBytes": 98304,
+      "audioPcmSha256": "4365e74c48597436b8aafbd0092dab9adbafa41c06d0fd7f93d6a95b4b22f789",
+      "assembledBytes": 97822,
+      "finalBytes": 97822
+    },
+    {
+      "case": "gap",
+      "all4RetainedResourceHashesMatchServedBodies": true,
+      "targetAbsent": true
+    },
+    {
+      "case": "short-audio",
+      "all4RetainedResourceHashesMatchServedBodies": true,
+      "targetAbsent": true
+    },
+    {
+      "case": "changed",
+      "all4RetainedResourceHashesMatchServedBodies": true,
+      "targetAbsent": true
+    }
+  ],
+  "sourceAudioTimestampPacketCount": 144,
+  "sourceAudioTimebase": "1/48000",
+  "all702CapturedInputsStillMatch": true
+}

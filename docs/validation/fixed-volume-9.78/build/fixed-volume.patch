@@ -1,0 +1,104 @@
+--- a/native/Transfer.cpp
++++ b/native/Transfer.cpp
+@@ -10,6 +10,7 @@
+ #include "PrefinishWriteback.hpp"
+ #include "DataOnlyWriteback.hpp"
+ #include "MediaStorage.hpp"
++#include "FixedVolume.hpp"
+ #include "MediaAssemblyVerification.hpp"
+ #include "MediaPublication.hpp"
+ #include "StreamCache.hpp"
+@@ -577,7 +578,7 @@
+ }
+ // True for a fixed local disk, where the cache's writeback after publication is reliable; a network share,
+ // removable disk or unknown volume reports write-behind failures only when flushed.
+-static bool fixedVolume(const fs::path& path){wchar_t root[MAX_PATH]{};const auto full=fs::absolute(path).wstring();if(!GetVolumePathNameW(full.c_str(),root,MAX_PATH))return false;return GetDriveTypeW(root)==DRIVE_FIXED;}
++static bool fixedVolume(const fs::path& path){return fileOnFixedVolume(path);}
+ static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");std::vector<char> buffer(assemblyBuffer);char* b=buffer.data();while(input){c.check();input.read(b,(std::streamsize)buffer.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
+ // A saved range plan must cover the resource exactly, independent of part-file IDs.
+ static bool completePlan(const Json& segments,i64 size){
+--- /dev/null
++++ b/native/FixedVolume.hpp
+@@ -0,0 +1,38 @@
++#pragma once
++#include "Core.hpp"
++namespace udm {
++struct FixedVolumeOps {
++ HANDLE open(const wchar_t* path){return CreateFileW(path,FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,nullptr);}
++ DWORD finalPath(HANDLE file,wchar_t* text,DWORD capacity){return GetFinalPathNameByHandleW(file,text,capacity,FILE_NAME_OPENED|VOLUME_NAME_GUID);}
++ UINT driveType(const wchar_t* root){return GetDriveTypeW(root);}
++ bool volumePath(const wchar_t* path,wchar_t* root,DWORD capacity){return GetVolumePathNameW(path,root,capacity)!=FALSE;}
++ void close(HANDLE file){CloseHandle(file);}
++};
++// Only accept the complete documented volume-GUID root. Never infer a local
++// disk from an arbitrary final name or a truncated/unsupported query result.
++inline bool fixedVolumeGuidRoot(const wchar_t* text,DWORD length){
++ if(length<49||_wcsnicmp(text,L"\\\\?\\Volume{",11)!=0||text[47]!=L'}'||text[48]!=L'\\')return false;
++ for(size_t i=0;i<36;++i){const auto c=text[11+i];
++  if(i==8||i==13||i==18||i==23){if(c!=L'-')return false;}
++  else if(!((c>=L'0'&&c<=L'9')||(c>=L'a'&&c<=L'f')||(c>=L'A'&&c<=L'F')))return false;
++ }return true;
++}
++template<class Ops> bool fileOnFixedVolume(const fs::path& path,Ops& ops){
++ const auto full=fs::absolute(path).wstring();
++ {
++  const auto file=ops.open(full.c_str());
++  if(file&&file!=INVALID_HANDLE_VALUE){
++   struct Owned {Ops& ops;HANDLE file;~Owned(){ops.close(file);}} owned{ops,file};
++   wchar_t finalName[32768]{};const auto length=ops.finalPath(file,finalName,32768);
++   if(length<32768&&fixedVolumeGuidRoot(finalName,length)){
++    finalName[49]=0;const auto type=ops.driveType(finalName);
++    if(type>=DRIVE_REMOVABLE&&type<=DRIVE_RAMDISK)return type==DRIVE_FIXED;
++   }
++  }
++ }
++ // Before creation, or for network/vendor/unsupported handles, retain the
++ // original path-based decision. No drive-letter or per-job result is cached.
++ wchar_t root[MAX_PATH]{};return ops.volumePath(full.c_str(),root,MAX_PATH)&&ops.driveType(root)==DRIVE_FIXED;
++}
++inline bool fileOnFixedVolume(const fs::path& path){FixedVolumeOps ops;return fileOnFixedVolume(path,ops);}
++}
+--- /dev/null
++++ b/native/FixedVolumeTests.cpp
+@@ -0,0 +1,41 @@
++#include "FixedVolume.hpp"
++#include <fstream>
++#include <iostream>
++using namespace udm;
++static Json checks=Json::array();
++static void check(bool passed,const char* name){checks.push_back({{"name",name},{"passed",passed}});if(!passed)throw std::runtime_error(name);}
++struct FakeOps {
++ std::wstring finalName=L"\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}\\file.bin";
++ DWORD reported=static_cast<DWORD>(finalName.size());UINT actualType=DRIVE_FIXED,legacyType=DRIVE_FIXED;
++ bool canOpen=true,canResolve=true;int opened=0,closed=0,legacy=0,queries=0;
++ HANDLE open(const wchar_t*){++opened;return canOpen?reinterpret_cast<HANDLE>(1):INVALID_HANDLE_VALUE;}
++ DWORD finalPath(HANDLE,wchar_t* text,DWORD capacity){++queries;std::copy_n(finalName.c_str(),std::min<size_t>(finalName.size()+1,capacity),text);return reported;}
++ UINT driveType(const wchar_t* text){return std::wstring(text)==L"X:\\"?legacyType:actualType;}
++ bool volumePath(const wchar_t*,wchar_t* text,DWORD){++legacy;wcscpy_s(text,MAX_PATH,L"X:\\");return canResolve;}
++ void close(HANDLE){++closed;}
++};
++int wmain(int argc,wchar_t** argv){
++ fs::path output;if(argc==2){output=fs::absolute(argv[1]);fs::create_directories(output);}
++ try{
++  const auto path=output/L"probe.bin";
++  {FakeOps ops;check(fileOnFixedVolume(path,ops)&&ops.legacy==0&&ops.closed==1,"Fixed file volume avoids path traversal and closes its attribute handle");}
++  for(UINT type:{DRIVE_REMOVABLE,DRIVE_REMOTE,DRIVE_CDROM,DRIVE_RAMDISK}){FakeOps ops;ops.actualType=type;check(!fileOnFixedVolume(path,ops)&&ops.legacy==0&&ops.closed==1,"A known non-fixed opened volume is never promoted through a fixed alias");}
++  for(UINT type:{DRIVE_UNKNOWN,DRIVE_NO_ROOT_DIR}){FakeOps ops;ops.actualType=type;check(fileOnFixedVolume(path,ops)&&ops.legacy==1&&ops.closed==1,"An unrecognized GUID route retains legacy path resolution");}
++  {FakeOps ops;ops.canOpen=false;check(fileOnFixedVolume(path,ops)&&ops.queries==0&&ops.closed==0&&ops.legacy==1,"A not-yet-created file keeps the original path-based policy");}
++  for(DWORD length:{0UL,32768UL,32769UL}){FakeOps ops;ops.reported=length;check(fileOnFixedVolume(path,ops)&&ops.legacy==1&&ops.closed==1,"Failed and oversized final-path queries fall back without trusting partial names");}
++  for(const auto* invalid:{L"\\\\server\\share\\file",L"\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdeg}\\file",L"\\\\?\\Volume{01234567_89ab-cdef-0123-456789abcdef}\\file",L"\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}file"}){
++   FakeOps ops;ops.finalName=invalid;ops.reported=static_cast<DWORD>(ops.finalName.size());check(fileOnFixedVolume(path,ops)&&ops.legacy==1&&ops.closed==1,"Malformed and non-GUID names cannot select the fast route");
++  }
++  {FakeOps ops;ops.reported=0;ops.legacyType=DRIVE_REMOTE;check(!fileOnFixedVolume(path,ops)&&ops.closed==1,"Unsupported network GUID queries preserve remote classification");}
++  {FakeOps ops;ops.canOpen=false;ops.canResolve=false;check(!fileOnFixedVolume(path,ops)&&ops.legacy==1,"Unresolvable paths remain conservative");}
++  if(!output.empty()){
++   std::ofstream file(path,std::ios::binary);file<<"owned volume classification probe";file.close();
++   wchar_t root[MAX_PATH]{};const bool legacy=GetVolumePathNameW(path.c_str(),root,MAX_PATH)&&GetDriveTypeW(root)==DRIVE_FIXED;
++   check(fileOnFixedVolume(path)==legacy,"The actual owned file agrees with legacy classification on this volume");
++   check(fileOnFixedVolume(output)==legacy,"Directory handles resolve the actual owned volume");
++   fs::remove(path);
++  }
++  if(!output.empty())atomicText(output/L"results.json",Json{{"passed",true},{"checks",checks}}.dump(2),false);
++  std::cout<<checks.size()<<" checks passed\n";return 0;
++ }catch(const std::exception& error){if(!output.empty())atomicText(output/L"results.json",Json{{"passed",false},{"error",error.what()},{"checks",checks}}.dump(2),false);std::cerr<<error.what();return 1;}
++}

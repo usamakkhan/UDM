@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "Production HTTP transfer completes",
+      "passed": true
+    },
+    {
+      "name": "Large response preserves its exact byte count",
+      "passed": true
+    },
+    {
+      "name": "Output and recorded digest match the independent origin digest",
+      "passed": true
+    },
+    {
+      "name": "Only proven sequential responses use the extended inline hash path",
+      "passed": true
+    },
+    {
+      "name": "Successful write accounting covers the complete representation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

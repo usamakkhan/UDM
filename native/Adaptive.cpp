@@ -599,8 +599,8 @@ void adaptiveTransfer(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cance
    }
    try{m.waitForPrefetchConfirmation(job,*cancel,verifiedSize,prepared);}catch(...){recordConfirmationWait();throw;}recordConfirmationWait();
    {Lock lock(m.mutex);job->data["MergeSeconds"]=mergeSeconds;}
-   verifiedOutput.releaseForPublication(staging);
-   publishMediaOutput(m,job,staging,digest,cancel);markZone(job->target());
+   auto publicationSource=verifiedOutput.releaseForPublication(staging);
+   publishMediaOutput(m,job,staging,digest,cancel,nullptr,std::move(publicationSource));markZone(job->target());
   }catch(...){bool retained;{Lock lock(m.mutex);retained=retainedMediaOutputPath(job->data)==staging;job->data.erase("PrefetchedFinalSize");}std::error_code ec;if(!retained&&!publicationNeedsRecovery(m,job))fs::remove(staging,ec);throw;}
   cleanParts();
  }catch(...){Lock lock(m.mutex);job->data["MediaPhase"]=cancel->cancelled()?"Paused":"Failed";job->data.erase("PrefetchedFinalSize");if(!networkFinished)job->data["TransferSeconds"]=priorTransfer+std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count();job->data["ElapsedSeconds"]=priorElapsed+std::max(0.0,std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()-confirmationSeconds);throw;}

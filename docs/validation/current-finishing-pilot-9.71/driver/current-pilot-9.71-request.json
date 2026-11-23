@@ -1,0 +1,53 @@
+{
+  "originalHarnessSha256": "FCABE9959CCBADD46A2E304B9D9974E9A2AF6F2AD9B2A73E49E986326807A821",
+  "derivedDriverSha256": "DB1ED1A2AB722D218E938B34A0F18BD66E75A3E92AF47BC2C7F2480431CBCF4F",
+  "transformations": [
+    [
+      "assert not idm_pids(),'Current-session IDM must be closed before starting';",
+      ""
+    ],
+    [
+      "clients=['udm','idm'];apps=",
+      "clients=['udm'];apps="
+    ],
+    [
+      "original=read_settings();save(work/'idm-settings-original.json',original)",
+      "original={};save(work/'idm-settings-original.json',{'notReadOrChanged':True})"
+    ],
+    [
+      "for client in (clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)] if args.baseline_udm else (['udm','idm']if(trial+(case=='single-64m'))%2 else['idm','udm'])):",
+      "for client in clients:"
+    ],
+    [
+      "finally:put_settings(original);save(work/'idm-settings-restored.json',{'matches':read_settings()==original})",
+      "finally:save(work/'idm-settings-restored.json',{'notReadOrChanged':True})"
+    ],
+    [
+      "'udmNotSlowerMedian':medians['udm']<=medians['idm'],",
+      "'idmComparisonPerformed':False,"
+    ],
+    [
+      "'settingsRestored':read_settings()==original",
+      "'idmSettingsNotReadOrChanged':True"
+    ]
+  ],
+  "args": [
+    "<user>\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+    "<development>\\current-pilot-derived-9.71.py",
+    "--output-root",
+    "<repo>\\.media-cache\\owned-current-finishing-pilot-9.71",
+    "--udm",
+    "<repo>\\.media-cache\\owned-relocation-ownership-build-9.71\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "FF649C95A1C9104FC1B97AA5E07179C2D3240DCB568A87483EF8D1EECBE25097",
+    "--label",
+    "9.71 normal-product pilot only; no IDM comparison; all three cases retained",
+    "--trials",
+    "1",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "idmNotLaunched": true,
+  "idmSettingsNotReadOrChanged": true,
+  "processesNotTerminated": true
+}

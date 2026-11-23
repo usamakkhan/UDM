@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "name": "Assembly receipt measures the exact held bytes",
+      "passed": true
+    },
+    {
+      "name": "Fresh and restored assembly outputs exclude writers after return",
+      "passed": false
+    },
+    {
+      "name": "Publication uses the verified bytes even after hashing reaches EOF",
+      "passed": false
+    },
+    {
+      "name": "Assembly receipt measures the exact held bytes",
+      "passed": true
+    },
+    {
+      "name": "Fresh and restored assembly outputs exclude writers after return",
+      "passed": false
+    },
+    {
+      "name": "Publication uses the verified bytes even after hashing reaches EOF",
+      "passed": false
+    }
+  ],
+  "error": "",
+  "passed": false
+}

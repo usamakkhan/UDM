@@ -1,0 +1,13 @@
+<Configuration>
+  <MemoryInMB>4096</MemoryInMB>
+  <Networking>Disable</Networking>
+  <ClipboardRedirection>Disable</ClipboardRedirection>
+  <AudioInput>Disable</AudioInput>
+  <VideoInput>Disable</VideoInput>
+  <PrinterRedirection>Disable</PrinterRedirection>
+  <MappedFolders>
+    <MappedFolder><HostFolder>[repo]\.media-cache\owned-sandbox-package-9.88-ready\input</HostFolder><SandboxFolder>C:\UdmTestPackage</SandboxFolder><ReadOnly>true</ReadOnly></MappedFolder>
+    <MappedFolder><HostFolder>[repo]\.media-cache\owned-sandbox-package-9.88-ready\results</HostFolder><SandboxFolder>C:\UdmTestResults</SandboxFolder><ReadOnly>false</ReadOnly></MappedFolder>
+  </MappedFolders>
+  <LogonCommand><Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\UdmTestPackage\sandbox-smoke.ps1</Command></LogonCommand>
+</Configuration>

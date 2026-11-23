@@ -1,0 +1,4196 @@
+{
+  "result": {
+    "_meta": {
+      "provenance": {
+        "untrusted_content": true,
+        "source": "analysis_target"
+      }
+    },
+    "structuredContent": {
+      "evidence_id": "ev_0345749ca5808ffef50e7b62f301ef994ccdbca714c811e61aa5767fec670fbd",
+      "subject": null,
+      "provider": {
+        "id": "frida",
+        "name": "Frida",
+        "version": null
+      },
+      "analysis_profile": null,
+      "predicate_type": "rea.frida.instrumentation-observation",
+      "operation": "instrument_with_frida",
+      "parameters": {
+        "session_id": "adc73388-a594-4b23-bac6-087c08f79b82",
+        "device_id": "local",
+        "mode": "spawn",
+        "program": "<idm-install>\\IDMan.exe",
+        "argv": [
+          "/d",
+          "http://127.0.0.1:62625/bench/file.bin?owned-io=c6b5f1e9",
+          "/p",
+          "<development>\\rea-idm-c-slow1m-c6b5f1e9",
+          "/f",
+          "c6b5f1e9.bin",
+          "/n",
+          "/q"
+        ]
+      },
+      "raw_result": null,
+      "normalized_result": {
+        "session_id": "adc73388-a594-4b23-bac6-087c08f79b82",
+        "device_id": "local",
+        "state": "detached",
+        "target": "<idm-install>\\IDMan.exe",
+        "pid": 25296,
+        "mode": "spawn",
+        "scripts": [
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "name": "rea-40c685d7-fab4-48e5-b798-3ad1fae056f3"
+          }
+        ],
+        "messages": [
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "observer-ready",
+              "pid": 25296,
+              "architecture": "ia32",
+              "hooks": [
+                "CreateFileA",
+                "CreateFileW",
+                "WriteFile",
+                "FlushFileBuffers",
+                "CloseHandle",
+                "NtWriteFile",
+                "NtFlushBuffersFile",
+                "NtFlushBuffersFileEx",
+                "file-part-flush",
+                "file-part-close",
+                "file-part-open",
+                "MoveFileA",
+                "MoveFileExA",
+                "CopyFileA",
+                "CopyFileExA",
+                "MoveFileW",
+                "MoveFileExW",
+                "CopyFileW",
+                "CopyFileExW"
+              ],
+              "scope": "c6b5f1e9",
+              "changesArgumentsOrReturns": false,
+              "observesOnly": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 1,
+              "pid": 25296,
+              "api": "candidate-part-adopted",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "reason": "sole fresh owned spawn first DwnlData file part",
+              "tid": 29472,
+              "begin": 1795371878184,
+              "end": 1795371878184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 2,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 2,
+              "flags": 0,
+              "begin": 1795371878184,
+              "tid": 29472,
+              "end": 1795371878184,
+              "handle": "0x1570",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 3,
+              "pid": 25296,
+              "api": "file-part-open",
+              "begin": 1795371878183,
+              "tid": 29472,
+              "matchedScope": true,
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "end": 1795371878184,
+              "returnCode": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 4,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891283,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891283,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 5,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891283,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891283,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 6,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "access": 2147483648,
+              "share": 3,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371891292,
+              "tid": 29472,
+              "end": 1795371891299,
+              "handle": "0x1574",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 7,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1574",
+              "begin": 1795371891300,
+              "tid": 29472,
+              "end": 1795371891300,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 8,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "access": 2147483648,
+              "share": 3,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371891300,
+              "tid": 29472,
+              "end": 1795371891300,
+              "handle": "0x1574",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 9,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1574",
+              "begin": 1795371891300,
+              "tid": 29472,
+              "end": 1795371891300,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 10,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891300,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891300,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 11,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891300,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891300,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 12,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891301,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 13,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891301,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 14,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891301,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 15,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891301,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 16,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891301,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 17,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891301,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 18,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891302,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 19,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891301,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891302,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 20,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891302,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 21,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891302,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 22,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891302,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 23,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891302,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 24,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891302,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 25,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891302,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 26,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891303,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 27,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891302,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891303,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 28,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891303,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 29,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891303,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 30,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891303,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 31,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891303,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 32,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891303,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 33,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891303,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891304,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 34,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891304,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891304,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 35,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891304,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891304,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 36,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891304,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891304,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 37,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891304,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891304,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 38,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891305,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 39,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891305,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 40,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891305,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 41,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891305,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 42,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891305,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 43,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891305,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891305,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 44,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891306,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891306,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 45,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891306,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891306,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 46,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891307,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891307,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 47,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891307,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891309,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 48,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891309,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891309,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 49,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891309,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891309,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 50,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891309,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371891309,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 51,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891309,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371891310,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 52,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891310,
+              "tid": 29472,
+              "requested": 5184,
+              "end": 1795371891310,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 53,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371891310,
+              "tid": 29472,
+              "requested": 5184,
+              "overlapped": false,
+              "end": 1795371891310,
+              "ok": true,
+              "error": 0,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 54,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904390,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904390,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 55,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904390,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904390,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 56,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904397,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904398,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 57,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904397,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904398,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 58,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904398,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 59,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904398,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 60,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904398,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 61,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904398,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 62,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904398,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 63,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904398,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904398,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 64,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904399,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 65,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904399,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 66,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904399,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 67,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904399,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 68,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904399,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 69,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904399,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904400,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 70,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904400,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904400,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 71,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904400,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904400,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 72,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904401,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 73,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904401,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 74,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904401,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 75,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904401,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 76,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904401,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 77,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904401,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904402,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 78,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904402,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 79,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904402,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 80,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904402,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 81,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904402,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 82,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904402,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 83,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904402,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904403,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 84,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904403,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 85,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904403,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 86,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904403,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 87,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904403,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 88,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904403,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 89,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904403,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904403,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 90,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904404,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 91,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904404,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 92,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904404,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 93,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904404,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 94,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904404,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 95,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904404,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 96,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371904405,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 97,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904404,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371904405,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 98,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904405,
+              "tid": 29472,
+              "requested": 5184,
+              "end": 1795371904405,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 99,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371904405,
+              "tid": 29472,
+              "requested": 5184,
+              "overlapped": false,
+              "end": 1795371904405,
+              "ok": true,
+              "error": 0,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 100,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917497,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917497,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 101,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917497,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917497,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 102,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917504,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 103,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917504,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 104,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917504,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 105,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917504,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 106,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917504,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 107,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917504,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 108,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917504,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 109,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917504,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 110,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917504,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 111,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917504,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 112,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917506,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 113,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 114,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917506,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 115,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 116,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917506,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 117,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 118,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917506,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 119,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 120,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917506,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 121,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917506,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917506,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 122,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 123,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 124,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 125,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 126,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 127,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 128,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 129,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 130,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 131,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 132,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 133,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 134,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 135,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 136,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 137,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 138,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 139,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 140,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 141,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 142,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 143,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 144,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 5184,
+              "end": 1795371917508,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 145,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371917508,
+              "tid": 29472,
+              "requested": 5184,
+              "overlapped": false,
+              "end": 1795371917508,
+              "ok": true,
+              "error": 0,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 146,
+              "pid": 25296,
+              "api": "NtFlushBuffersFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371920519,
+              "tid": 29472,
+              "end": 1795371920520,
+              "status": 0,
+              "pending": false,
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 147,
+              "pid": 25296,
+              "api": "FlushFileBuffers",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371920519,
+              "tid": 29472,
+              "end": 1795371920520,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 148,
+              "pid": 25296,
+              "api": "file-part-flush",
+              "begin": 1795371920519,
+              "tid": 29472,
+              "handle": "0x1570",
+              "matchedScope": true,
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "end": 1795371920520
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 149,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930604,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930604,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 150,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930604,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930604,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 151,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 152,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 153,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 154,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 155,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 156,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 157,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 158,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 159,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 160,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 161,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930609,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 162,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930609,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930609,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 163,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 164,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 165,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 166,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 167,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 168,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 169,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 170,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 171,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 172,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 173,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 174,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930612,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 175,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930612,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 176,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930612,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930614,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 177,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930614,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 178,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930614,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 179,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930614,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 180,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930614,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 181,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930614,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 182,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930614,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930614,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 183,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930615,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 184,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930615,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 185,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930615,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 186,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930615,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 187,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930615,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 188,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930615,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 189,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930615,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 190,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930615,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 191,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "end": 1795371930615,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 192,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930615,
+              "tid": 29472,
+              "requested": 11680,
+              "overlapped": false,
+              "end": 1795371930617,
+              "ok": true,
+              "error": 0,
+              "completed": 11680
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 193,
+              "pid": 25296,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930617,
+              "tid": 29472,
+              "requested": 5184,
+              "end": 1795371930617,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 194,
+              "pid": 25296,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930617,
+              "tid": 29472,
+              "requested": 5184,
+              "overlapped": false,
+              "end": 1795371930617,
+              "ok": true,
+              "error": 0,
+              "completed": 5184
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 195,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "handle": "0x1570",
+              "begin": 1795371930618,
+              "tid": 29472,
+              "end": 1795371930619,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 196,
+              "pid": 25296,
+              "api": "file-part-close",
+              "begin": 1795371930618,
+              "tid": 29472,
+              "handle": "0x1570",
+              "matchedScope": true,
+              "path": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "end": 1795371930620
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 197,
+              "pid": 25296,
+              "api": "MoveFileW",
+              "from": "<idm-cache>\\127_0_0_1_751\\127_0_0_1",
+              "to": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "begin": 1795371930632,
+              "tid": 29472,
+              "end": 1795371930632,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 198,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371930632,
+              "tid": 29472,
+              "end": 1795371930634,
+              "handle": "0x1544",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 199,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "handle": "0x1544",
+              "begin": 1795371930635,
+              "tid": 29472,
+              "end": 1795371930635,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 200,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371930636,
+              "tid": 29472,
+              "end": 1795371930636,
+              "handle": "0x1544",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 201,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin.tmp",
+              "handle": "0x1544",
+              "begin": 1795371930636,
+              "tid": 29472,
+              "end": 1795371930636,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 202,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371930636,
+              "tid": 29472,
+              "end": 1795371930636,
+              "handle": "0x8b0",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 203,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "handle": "0x8b0",
+              "begin": 1795371930636,
+              "tid": 29472,
+              "end": 1795371930636,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 204,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371930676,
+              "tid": 29472,
+              "end": 1795371930676,
+              "handle": "0x364",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 205,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin.tmp",
+              "handle": "0x364",
+              "begin": 1795371930676,
+              "tid": 29472,
+              "end": 1795371930676,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 206,
+              "pid": 25296,
+              "api": "CreateFileW",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371930676,
+              "tid": 29472,
+              "end": 1795371930676,
+              "handle": "0x364",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "40c685d7-fab4-48e5-b798-3ad1fae056f3",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 207,
+              "pid": 25296,
+              "api": "CloseHandle",
+              "path": "<development>\\rea-idm-c-slow1m-c6b5f1e9\\c6b5f1e9.bin",
+              "handle": "0x364",
+              "begin": 1795371930676,
+              "tid": 29472,
+              "end": 1795371930676,
+              "ok": true,
+              "error": 0
+            }
+          }
+        ],
+        "messages_truncated": false,
+        "source_kind": "inline",
+        "source_path": null,
+        "source_sha256": "4841ada40d17198668493753ed0b53bcdbf20e62b63ad8fad5af5e89ff7192fa",
+        "cleanup_error": null
+      },
+      "confidence": "observed",
+      "authority": "external-service",
+      "environment": null,
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "The target operating system and architecture were not reported by this observation."
+      ],
+      "relationship_coverage": null,
+      "locations": [],
+      "evidence_links": []
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

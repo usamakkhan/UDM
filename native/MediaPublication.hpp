@@ -1,5 +1,6 @@
 #pragma once
 #include "PublicationRecovery.hpp"
+#include "ScopedPublicationSource.hpp"
 
 namespace udm {
 std::string retainedYouTubeOutputBinding(const Job& job);
@@ -42,7 +43,7 @@ inline void discardRetainedMediaOutput(const Json& data)noexcept{try{
  std::error_code ignored;fs::remove(path,ignored);
 }catch(...) {}}
 // Keep the measured file open without write or delete sharing across
-// confirmation. Release it before passing the path to Windows publication.
+// confirmation, then transfer protection to an identity-matched reader.
 struct VerifiedMediaFile {
  Handle file;
  BY_HANDLE_FILE_INFORMATION identity{};
@@ -57,16 +58,13 @@ struct VerifiedMediaFile {
    throw std::runtime_error("Cannot verify the assembled media file.");
   size=length.QuadPart;
  }
- void releaseForPublication(const fs::path& path){
-  Handle current(CreateFileW(path.c_str(),FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,
-                            OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
-  BY_HANDLE_FILE_INFORMATION named{};
-  if(!current||!GetFileInformationByHandle(current.h,&named)||
-     named.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||
-     named.nFileIndexHigh!=identity.nFileIndexHigh||named.nFileIndexLow!=identity.nFileIndexLow)
+ std::unique_ptr<PublicationSourcePin> releaseForPublication(const fs::path& path){
+  auto pin=PublicationSourcePin::openReadFrom(path,file.h);
+  if(!pin)
    throw std::runtime_error("The prepared media file changed before publication. Resume to verify it again.");
   CloseHandle(file.h);
   file.h=INVALID_HANDLE_VALUE;
+  return pin;
  }
 };
 // The size comes from the held assembled file. Confirmation and retained-output
@@ -95,43 +93,53 @@ public:
 // Keep the verified source until publication commits. A sibling on the selected
 // volume lets the existing publication journal retain its atomic rename boundary.
 inline void publishMediaOutput(Manager& manager,JobPtr job,const fs::path& source,
-                               const std::string& digest,const std::shared_ptr<Cancel>& cancel,const LivePublicationDetails* live=nullptr){
+                               const std::string& digest,const std::shared_ptr<Cancel>& cancel,const LivePublicationDetails* live=nullptr,std::unique_ptr<PublicationSourcePin> verifiedSource={}){
  cancel->check();requirePublicationRecovered(manager,job);
+ auto sourcePin=verifiedSource?std::move(verifiedSource):PublicationSourcePin::openRead(source);if(!sourcePin)throw std::runtime_error("Cannot keep the verified file stable for publication. Its source was retained.");
+ CreatedStagingFile sourceProof;sourcePin->captureCleanup(sourceProof);
+ auto sourceLifetime=sourcePin->duplicate();if(!sourceLifetime)throw std::runtime_error("Cannot retain the verified source object. Its source was retained.");
  const auto folder=job->target().parent_path();
  if(folder.lexically_normal()==source.parent_path().lexically_normal()){
-  manager.publishFile(job,source,digest,cancel.get(),live);return;
+  ScopedPublicationSource handoff(manager,job,source,std::move(sourcePin));manager.publishFile(job,source,digest,cancel.get(),live);return;
  }
  fs::create_directories(folder);
  const auto staging=folder/(L".udm-"+wide(job->id())+L"-"+wide(guid())+L".publishing");
- bool ownsStaging=false;
+ bool ownsStaging=false;CreatedStagingFile stageProof;std::optional<Handle> stageLifetime,nameGuard;
  try{
-  // A hard link preserves file identity and avoids copying on the same volume.
   ownsStaging=CreateHardLinkW(staging.c_str(),source.c_str(),nullptr)!=FALSE;
-  if(!ownsStaging){
-   Handle input(CreateFileW(source.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
-   if(!input)throw std::runtime_error("Cannot read the verified media file.");
-   Handle output(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
-   if(!output)throw std::runtime_error("Cannot prepare media in the selected folder.");
-   ownsStaging=true;
-   std::vector<char> bytes(1024*1024);DWORD count=0;
-   for(;;){
-    cancel->check();
-    if(!ReadFile(input.h,bytes.data(),(DWORD)bytes.size(),&count,nullptr))throw std::runtime_error("Cannot read the verified media file.");
-    if(!count)break;
-    DWORD written=0;if(!WriteFile(output.h,bytes.data(),count,&written,nullptr)||written!=count)throw std::runtime_error("Cannot copy media to the selected folder.");
+  std::unique_ptr<PublicationSourcePin> publicationPin;
+  if(ownsStaging){stageProof=sourceProof;publicationPin=std::move(sourcePin);}
+  else{
+   auto input=sourcePin->duplicate();if(!input)throw std::runtime_error("Cannot read the verified media file.");
+   LARGE_INTEGER beginning{};if(!SetFilePointerEx(input.h,beginning,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the verified media file for copying.");
+   {
+    Handle output(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,CREATE_NEW,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
+    if(!output)throw std::runtime_error("Cannot prepare media in the selected folder.");
+    ownsStaging=true;stageProof.capture(output.h);
+    HANDLE retained=INVALID_HANDLE_VALUE;if(!DuplicateHandle(GetCurrentProcess(),output.h,GetCurrentProcess(),&retained,0,FALSE,DUPLICATE_SAME_ACCESS))throw std::runtime_error("Cannot retain the created media file.");stageLifetime.emplace(retained);
+    std::vector<char> bytes(1024*1024);DWORD count=0;
+    for(;;){cancel->check();if(!ReadFile(input.h,bytes.data(),(DWORD)bytes.size(),&count,nullptr))throw std::runtime_error("Cannot read the verified media file.");if(!count)break;
+     DWORD written=0;if(!WriteFile(output.h,bytes.data(),count,&written,nullptr)||written!=count)throw std::runtime_error("Cannot copy media to the selected folder.");}
+    cancel->check();if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush media in the selected folder.");
+    nameGuard.emplace(CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    if(!*nameGuard||!stageProof.matches(nameGuard->h,stageLifetime->h))throw std::runtime_error("The created media name changed. Its source was retained.");
    }
-   cancel->check();
-   if(!FlushFileBuffers(output.h))throw std::runtime_error("Cannot flush media in the selected folder.");
-   if(fileHash(output.h,[&]{cancel->check();})!=digest)throw std::runtime_error("The copied media failed verification. Source tracks were retained.");
+   // Keep the name protected while the last writer closes and its metadata
+   // settles, then acquire a reader that excludes all subsequent writers.
+   stageLifetime.reset();
+   // Move the existing one-pass copy verification onto a strict read pin after
+   // the writer closes. Its identity must still match the newly created file.
+   publicationPin=PublicationSourcePin::openRead(staging);
+   if(!publicationPin||!publicationPin->matches(stageProof,nameGuard->h))throw std::runtime_error("The copied media source changed. Its source was retained.");
+   stageLifetime.emplace(publicationPin->duplicate());if(!*stageLifetime)throw std::runtime_error("Cannot retain the copied media object.");nameGuard.reset();
+   if(publicationPin->hash([&]{cancel->check();})!=digest)throw std::runtime_error("The copied media failed verification. Source tracks were retained.");
   }
-  cancel->check();manager.publishFile(job,staging,digest,cancel.get(),live);
- }catch(...){
-  std::error_code ec;
-  if(ownsStaging&&!publicationNeedsRecovery(manager,job))fs::remove(staging,ec);
-  throw;
- }
- std::error_code ec;fs::remove(source,ec);
+  if(!stageLifetime){stageLifetime.emplace(publicationPin->duplicate());if(!*stageLifetime)throw std::runtime_error("Cannot retain the publication source object.");}
+  cancel->check();ScopedPublicationSource handoff(manager,job,staging,std::move(publicationPin));manager.publishFile(job,staging,digest,cancel.get(),live);
+ }catch(...){if(ownsStaging&&!publicationNeedsRecovery(manager,job))stageProof.removeOwned(staging,stageLifetime?stageLifetime->h:INVALID_HANDLE_VALUE);throw;}
+ sourcePin.reset();sourceProof.removeOwned(source,sourceLifetime.h);
 }
+
 template<class Binding>
 inline bool publishRetainedMediaOutput(Manager& manager,const JobPtr& job,const std::shared_ptr<Cancel>& cancel,Binding selectionBinding){
  Json data;std::string binding;
@@ -172,7 +180,9 @@ inline bool publishRetainedMediaOutput(Manager& manager,const JobPtr& job,const 
      job->data["MergeSeconds"]=real(receipt,"MergeSeconds");
     }
     const LivePublicationDetails details{real(receipt,"MergeSeconds"),real(data,"ElapsedSeconds"),subtitleCues};
-    publishMediaOutput(manager,job,path,digest,cancel,live?&details:nullptr);
+    auto publicationSource=PublicationSourcePin::openReadFrom(path,input.h);
+    if(!publicationSource)throw std::runtime_error("The verified media source changed before publication. Its files were preserved.");
+    publishMediaOutput(manager,job,path,digest,cancel,live?&details:nullptr,std::move(publicationSource));
     markZone(job->target());
     return true;
    }

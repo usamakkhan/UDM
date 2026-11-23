@@ -1,0 +1,20 @@
+{
+  "reason": "Retry CLI Exit immediately from the actual deferred readiness wake; replace its blocking catalog read and rearm the owned availability reader when busy. Qualify deferred Finished and direct busy exit with no main timer.",
+  "changes": [
+    {
+      "path": "native/App.cpp",
+      "before": "7221106A4B8CA15FA76E78E9983921619783DF75D20C904A84E2D5A39F96571E",
+      "after": "3422527554B8BE2EDBFFCDFE37B5883D2C3B7CF7D8811EE4AF3E9D1002C71E3A"
+    },
+    {
+      "path": "native/CompletionAdmissionUiTests.cpp",
+      "before": "2198C81BE41014E30705E3A55C0D4BD615BCE4C5FBB211286D5B9181EA1DC519",
+      "after": "7FE864BB137AB85078EF131828A1901701C7CE68C080D906000492AFEAF99729"
+    }
+  ],
+  "currentSourcesCapturedBeforeCorrectedAppAndUiCompilation": true,
+  "otherFourProductsAnd42CoreObjectsUnchanged": true,
+  "priorUiResultsRetainedAsPreCorrection": true,
+  "initialCorrectionDriverStoppedBeforeCompilationOnCrLfHashMismatch": true,
+  "frozenPreCorrectionAppSourceReconstructedAndVerifiedAgainstOriginalRawHash": true
+}

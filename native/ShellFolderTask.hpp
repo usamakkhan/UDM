@@ -1,0 +1,43 @@
+#pragma once
+#define UDM_SHELL_FOLDER_TASK_AVAILABLE
+#include <windows.h>
+#include <shellapi.h>
+#include <filesystem>
+#include <functional>
+#include <future>
+#include <stdexcept>
+#include <string>
+#include <thread>
+namespace udm {
+struct ShellFolderResult {std::filesystem::path path;std::string error;};
+// Owns the Windows handoff, not the Explorer process. No HWND, model object or
+// UI callback enters the launcher. Accepted work is joined before app shutdown.
+class ShellFolderTask {
+ std::future<ShellFolderResult> future;std::thread worker;
+public:
+ using Launcher=std::function<void(const std::filesystem::path&)>;
+ ShellFolderTask()=default;ShellFolderTask(const ShellFolderTask&)=delete;ShellFolderTask& operator=(const ShellFolderTask&)=delete;
+ ~ShellFolderTask(){finish();}
+ bool valid()const noexcept{return future.valid();}
+ bool ready()const{return valid()&&future.wait_for(std::chrono::seconds(0))==std::future_status::ready;}
+ static void launch(const std::filesystem::path& path){
+  const auto initialized=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED|COINIT_DISABLE_OLE1DDE);
+  if(FAILED(initialized))throw std::runtime_error("Windows could not initialize the folder handoff.");
+  struct Apartment{~Apartment(){CoUninitialize();}}apartment;
+  SHELLEXECUTEINFOW info{sizeof(info)};info.fMask=SEE_MASK_NOASYNC|SEE_MASK_FLAG_NO_UI;info.lpVerb=L"open";info.lpFile=path.c_str();info.nShow=SW_SHOWNORMAL;
+  if(!ShellExecuteExW(&info))throw std::runtime_error("Windows could not open the folder (error "+std::to_string(GetLastError())+").");
+ }
+ void start(std::filesystem::path path,std::function<void()> notify={},Launcher launcher={}){
+  if(valid()||worker.joinable())throw std::runtime_error("A folder handoff is already active.");
+  if(path.empty()||!path.is_absolute())throw std::runtime_error("The destination folder must be an absolute path.");
+  std::promise<ShellFolderResult> promise;future=promise.get_future();
+  try{worker=std::thread([path=std::move(path),notify=std::move(notify),launcher=std::move(launcher),promise=std::move(promise)]()mutable{
+   ShellFolderResult result;result.path=path;
+   try{if(launcher)launcher(path);else launch(path);}catch(const std::exception& e){result.error=e.what();}catch(...){result.error="Windows could not open the folder.";}
+   promise.set_value(std::move(result));if(notify)try{notify();}catch(...){}
+  });}catch(...){future={};throw;}
+ }
+ ShellFolderResult take(){if(!ready())throw std::runtime_error("The folder handoff is not ready.");auto result=future.get();if(worker.joinable())worker.join();return result;}
+ ShellFolderResult finish()noexcept{if(worker.joinable())worker.join();ShellFolderResult result;if(future.valid())try{result=future.get();}catch(...){}future={};return result;}
+};
+}

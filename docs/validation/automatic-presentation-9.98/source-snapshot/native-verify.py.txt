@@ -1,0 +1,25 @@
+from pathlib import Path
+import os,json,hashlib,subprocess
+repo=Path('D:/UDM');area=repo/'.media-cache/owned-auto-presentation-build-9.98';base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+record=json.loads((area/'build-result.json').read_text(encoding='utf-8'));assert record['version']=='9.98'
+assert len(record['sources'])==731 and all(sha(repo/e['path'])==e['sha256'] for e in record['sources'])
+assert len(record['outputs'])==21 and all(sha(Path(e['path']))==e['sha256'] for e in record['coreObjects']+record['outputs'])
+prior=json.loads((repo/'.media-cache/owned-manual-exit-build-9.97/build-result.json').read_text(encoding='utf-8'));old={Path(e['path']).stem:e['sha256'] for e in prior['coreObjects']};changed=[Path(e['path']).stem for e in record['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert changed==['Bridge']
+suites=json.loads((area/'suite-results.json').read_text(encoding='utf-8'));assert suites['passed'] and len(suites['suites'])==16
+for suite in suites['suites']:
+ assert suite['passed'] and suite['exitCode']==0
+ folder=area/'runs-attempt-02'/suite['suite']
+ r=json.loads((folder/'results.json').read_text(encoding='utf-8-sig'));assert r['passed'] and len(r['checks'])==suite['checks'] and all(c['passed'] is True for c in r['checks'])
+ assert sha(area/'release-native'/(suite['suite']+'.exe'))==suite['sha256']
+frozen=area/'frozen-9.97';proof=json.loads((frozen/'source-proof.json').read_text(encoding='utf-8'));assert sha(frozen/'App.cpp')==proof['sha256'];assert sha(frozen/'AutomaticPresentationUiTests.cpp')==sha(repo/'native/AutomaticPresentationUiTests.cpp')
+protected=json.loads((repo/'docs/validation/completion-claim-9.92/host-protection.json').read_text(encoding='utf-8'))['files']
+for e in protected:assert sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256'],e['path']
+assert all(json.loads((repo/'browser'/b/'manifest.json').read_text(encoding='utf-8'))['version']=='0.73.62' for b in ('chromium','firefox'))
+assert len(record['coreObjects'])==42
+assert proof['sha256']==next(e['sha256'] for e in prior['sources'] if e['path']=='native/App.cpp')
+productPaths=[e['path'] for e in record['outputs'] if e['kind']=='product'];assert len(productPaths)==5
+for path in productPaths:
+ command="(Get-Item -LiteralPath '"+path.replace("'","''")+"').VersionInfo.ProductVersion"
+ version=subprocess.check_output(['powershell.exe','-NoProfile','-Command',command],text=True).strip();assert version=='9.98',version
+result={'passed':True,'version':'9.98','sourceExtensionVersions':['0.73.62','0.73.62'],'verifiedSources':len(record['sources']),'verifiedCoreObjects':len(record['coreObjects']),'changedCoreObjects':changed,'verifiedOutputCount':len(record['outputs']),'normalProducts':[{k:e[k] for k in ('name','sha256')} for e in record['outputs'] if e['kind']=='product'],'hostProtectedFilesUnchanged':len(protected),'backendChecks':sum(e['checks'] for e in suites['suites'] if e['kind']=='backend'),'uiChecks':sum(e['checks'] for e in suites['suites'] if e['kind']=='ui'),'frozenControlChecks':sum(e['checks'] for e in suites['suites'] if e['kind']=='frozen-ui'),'suites':suites['suites'],'installed':False,'installerCreated':False,'liveIdmComparison':False,'fullParityProven':False,'cleanupCompleted':False}
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps({k:result[k] for k in ('passed','version','verifiedSources','verifiedOutputCount','backendChecks','uiChecks','frozenControlChecks','hostProtectedFilesUnchanged')}))

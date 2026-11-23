@@ -1,0 +1,69 @@
+{
+  "records": [
+    {
+      "case": "once",
+      "counts": {
+        "manifest": 4,
+        "clock": 0
+      },
+      "exitCode": 1,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 1908.3425,
+        "error": "DASH manifest expired during all three bounded freshness attempts.",
+        "events": [
+          {
+            "bytes": 655,
+            "callback": 1,
+            "endMs": 1186.9557,
+            "requestedHoldMs": 0,
+            "startMs": 1186.954
+          },
+          {
+            "bytes": 655,
+            "callback": 2,
+            "endMs": 1524.4268,
+            "requestedHoldMs": 0,
+            "startMs": 1524.4249
+          },
+          {
+            "bytes": 655,
+            "callback": 3,
+            "endMs": 1906.7797,
+            "requestedHoldMs": 0,
+            "startMs": 1906.7778
+          }
+        ],
+        "initialFetchAndParseMs": 900.7897,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 3
+      }
+    }
+  ],
+  "requests": [
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 1,
+      "responseMs": 0.2167999919038266
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 2,
+      "responseMs": 0.2077999961329624
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 3,
+      "responseMs": 1.0498000046936795
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 4,
+      "responseMs": 0.19090001296717674
+    }
+  ]
+}

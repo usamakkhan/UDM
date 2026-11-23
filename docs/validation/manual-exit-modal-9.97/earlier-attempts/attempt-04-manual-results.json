@@ -1,0 +1,161 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Manual Exit fixture uses a real UDM progress owner",
+      "passed": true
+    },
+    {
+      "name": "Native secondary modality disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "A prepared close preserves the native or MFC modal's current main ownership",
+      "passed": true
+    },
+    {
+      "name": "The secondary dialog outlives a manual close request without integration shutdown",
+      "passed": true
+    },
+    {
+      "name": "Manual Exit and stale prepared close preserve the open secondary interaction",
+      "passed": true
+    },
+    {
+      "name": "The owned native modal closes normally",
+      "passed": true
+    },
+    {
+      "name": "Modal release restores both original windows",
+      "passed": true
+    },
+    {
+      "name": "Normal accepted Exit defers layout merge while a model writer owns the catalog",
+      "passed": true
+    },
+    {
+      "name": "Exit's own main disable does not masquerade as secondary modality",
+      "passed": false
+    }
+  ],
+  "error": "Owned main Exit did not complete.",
+  "observations": [
+    {
+      "closePreparedDuringSecondaryModal": false,
+      "dark": false,
+      "integrationStopsDuringModal": 0,
+      "mainEnabledDuringModal": true,
+      "mainVisibilityPreserved": true,
+      "mode": "blocked",
+      "progressEnabledDuringModal": false,
+      "wakesDuringModal": 0
+    },
+    {
+      "allBlocked": true,
+      "phase": "layout-owner-diagnostic",
+      "secondaryBlocked": true,
+      "windows": [
+        {
+          "class": "tooltips_class32",
+          "enabled": true,
+          "extendedStyle": 524448,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "main",
+          "style": 2214592512,
+          "title": "",
+          "visible": false
+        },
+        {
+          "class": "tooltips_class32",
+          "enabled": true,
+          "extendedStyle": 524448,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "main",
+          "style": 2214592514,
+          "title": "",
+          "visible": false
+        },
+        {
+          "class": "#32770",
+          "enabled": false,
+          "extendedStyle": 65793,
+          "isMain": false,
+          "isProgress": true,
+          "owner": "main",
+          "style": 2630484164,
+          "title": "100% manual-exit.bin",
+          "visible": true
+        },
+        {
+          "class": "Afx:<opaque-owned-class>",
+          "enabled": false,
+          "extendedStyle": 768,
+          "isMain": true,
+          "isProgress": false,
+          "owner": "none",
+          "style": 483328000,
+          "title": "UDM 9.97",
+          "visible": true
+        },
+        {
+          "class": "tooltips_class32",
+          "enabled": true,
+          "extendedStyle": 524448,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "none",
+          "style": 2214592770,
+          "title": "",
+          "visible": false
+        },
+        {
+          "class": "ComboLBox",
+          "enabled": false,
+          "extendedStyle": 128,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "none",
+          "style": 1283489857,
+          "title": "",
+          "visible": false
+        },
+        {
+          "class": "tooltips_class32",
+          "enabled": true,
+          "extendedStyle": 524448,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "none",
+          "style": 2214592770,
+          "title": "",
+          "visible": false
+        },
+        {
+          "class": "MSCTFIME UI",
+          "enabled": false,
+          "extendedStyle": 0,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "other",
+          "style": 2348810240,
+          "title": "MSCTFIME UI",
+          "visible": false
+        },
+        {
+          "class": "IME",
+          "enabled": false,
+          "extendedStyle": 0,
+          "isMain": false,
+          "isProgress": false,
+          "owner": "progress",
+          "style": 2348810240,
+          "title": "Default IME",
+          "visible": false
+        }
+      ]
+    }
+  ],
+  "passed": false
+}

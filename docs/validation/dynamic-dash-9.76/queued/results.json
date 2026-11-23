@@ -1,0 +1,87 @@
+{
+  "checks": [
+    {
+      "name": "Actual adaptive admission identifies the live DASH recording",
+      "passed": true
+    },
+    {
+      "name": "Live worker finishes within the owned test deadline",
+      "passed": true
+    },
+    {
+      "name": "Dynamic live recording completes: ",
+      "passed": false
+    }
+  ],
+  "error": "Dynamic live recording completes: ",
+  "finalBytes": -1,
+  "frames": [],
+  "observations": [],
+  "passed": false,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "savedJob": {
+    "Added": "/Date(1795273782692)/",
+    "Audio": null,
+    "Category": "Video",
+    "Connections": 8,
+    "Description": "",
+    "Error": "",
+    "ExpectedSha256": "",
+    "FileName": "dynamic.mp4",
+    "Folder": "<development>\\owned-dynamic-dash-workflow-9.76-C",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "Id": "c0e0173b2f714d81be62109364c3333f",
+    "IndividualStart": true,
+    "LimitKbps": 0,
+    "LiveRecording": true,
+    "MediaPixelHeight": 360,
+    "PostAttempted": false,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "E1A88DCFF7DD15DAB2DA744B033643F1964D551D32A3CD5BB5ED1A26F2674BF5",
+      "characters": 636
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "BAB51427C9F87C26005C953611EFF705AF33672F6C5C36D8F0D360CD1639D21C",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "714D0C610995BE838FAFA2D41A6944411A4BEFF77DB617C2C1C15979F0126A1A",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "9E29F57FC6F62E358B20016778C4E46E8492C4FB14D29CB7BDCDDA83E5C74CF2",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": true,
+    "QueueOrigin": false,
+    "Received": 0,
+    "Segments": [],
+    "Sha256": "",
+    "Size": -1,
+    "Status": "Queued",
+    "Url": "https://example.invalid/owned-live-video",
+    "Video": null
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "sources": [
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "CB15340FDA8D2445D0737BDD3ECD2C6357D3B5480B3623F196D7384F3C1EED53"
+    },
+    {
+      "path": "native/DashPendingVersion.hpp",
+      "snapshot": "source-snapshot/native__DashPendingVersion.hpp.txt",
+      "sha256": "C95E9686A0B4108B39FA4868A7CC367BC35F240CB2ADD456E58D35C2D9600D1F"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "625BCEF4DD2BA56FEF46AB9BA93790AD3ED33C45C171CB6E7F2E5D656DFE5F71"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "6E1869512E1C82C3CFC5CED9FAA1A334F6F25ADF486468996C17AD6AF1BC8A2E"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "498E4030CC768D761EBAF9411B982D8F5F6569477D1CB4DE30CE81BD2CC1AE81"
+    },
+    {
+      "path": "benchmarks/speed/dash_pending_alias_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_pending_alias_workflow.cpp.txt",
+      "sha256": "B537FB5F75EBAF9704DE51A9C21E21257557675F59C39600B6314819C6CD9A65"
+    },
+    {
+      "path": "tests/dash-pending-alias.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-pending-alias.native-live.py.txt",
+      "sha256": "28E2429FDAB62B23853D17D53636EC17D90CDFAAA07E4E546FE8DC8784F977A0"
+    },
+    {
+      "path": "tests/dash-single-pass-crash.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-single-pass-crash.native-live.py.txt",
+      "sha256": "0F62935284277C94464D8FD1CEF807357D3A2958FB78378025E097F683082844"
+    },
+    {
+      "path": "tests/dash-single-pass-shared-url.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-single-pass-shared-url.native-live.py.txt",
+      "sha256": "57E4F91579F41A5D4786963AF0D0AF547CCE2CC40293AF18EB228F09D2545AED"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "19241B27003270F63F721436ABF51189FDDF0984268B009C7549C4D8B087C92A"
+    },
+    {
+      "recipe": "build-alias.py",
+      "snapshot": "source-snapshot/build-alias.py.txt",
+      "sha256": "A7A9DBCA33D65C7EB3E2FD59D4AE90DABF5A389F36237927BE2F55A9233B3DE8"
+    },
+    {
+      "recipe": "raw-validation.py",
+      "snapshot": "source-snapshot/raw-validation.py.txt",
+      "sha256": "F14DF0917C4344F1A440EE47FD92F9CC19BD5E7ED76A8C1567AEE38F4C15F292"
+    },
+    {
+      "recipe": "media-validation.py",
+      "snapshot": "source-snapshot/media-validation.py.txt",
+      "sha256": "277886EB0BB86C9354E5C9A669AC1095FF4345072B64D811DAE78C6A57AE9E0E"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "408E166A4724D03C19C94199E58C448B34B5926C7116E335DF4AA82D452940F4"
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "2792CA257E73BB24336BAEAF7B2247CD8EAE5546B3B57C9DDB17E7AC1ECEFA4B"
+    }
+  ],
+  "frozenSourceReference": "../dash-single-pass-10.6/source-snapshot/native__DashManifest.cpp.txt",
+  "frozenSourceSha256": "DC377B0B22863CB08938CB7F8AA9440858D32D9CC33A4B40D5D0B23B909C268C",
+  "compiledSourcesUnchanged": true,
+  "runtimeRecipesUnchangedDuringFinalRuns": true,
+  "reusedCoreCount": 40,
+  "rebuiltCoreNames": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "supplementalControlUsesCurrentActorWithFrozen10_6Core": true,
+  "finalTechnicalChecksPassed": true,
+  "buildVolumeReservePassed": true,
+  "workspaceReservePassed": false,
+  "releaseQualified": false
+}

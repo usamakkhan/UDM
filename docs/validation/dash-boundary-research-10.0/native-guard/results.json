@@ -1,0 +1,43 @@
+{
+  "actualNativeDurationGuard": true,
+  "cases": [
+    {
+      "case": "dash-boundary-clipping-10.0/packet-aligned",
+      "decodedOracleExact": false,
+      "error": "",
+      "guardAccepted": true
+    },
+    {
+      "case": "dash-boundary-clipping-10.0/aac-crossing",
+      "decodedOracleExact": false,
+      "error": "",
+      "guardAccepted": true
+    },
+    {
+      "case": "dash-boundary-clipping-10.0/both-crossing",
+      "decodedOracleExact": false,
+      "error": "",
+      "guardAccepted": true
+    },
+    {
+      "case": "dash-boundary-continuous-10.0/packet-aligned",
+      "decodedOracleExact": true,
+      "error": "",
+      "guardAccepted": true
+    },
+    {
+      "case": "dash-boundary-continuous-10.0/aac-crossing",
+      "decodedOracleExact": false,
+      "error": "",
+      "guardAccepted": true
+    },
+    {
+      "case": "dash-boundary-continuous-10.0/both-crossing",
+      "decodedOracleExact": false,
+      "error": "",
+      "guardAccepted": true
+    }
+  ],
+  "fullRecordingWorkflow": false,
+  "investigationCompleted": true
+}

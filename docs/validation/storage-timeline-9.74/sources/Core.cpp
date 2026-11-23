@@ -1,0 +1,1293 @@
+#include <optional>
+#include "PreparedTransferCommit.hpp"
+#include "ServerConnections.hpp"
+#include "BrowserProxy.hpp"
+#include "BrowserSession.hpp"
+#include "QueueWake.hpp"
+#include "Scanner.hpp"
+#include "Core.hpp"
+#include "ManagedModelWork.hpp"
+#include "PinnedCatalogRead.hpp"
+#include "PropertiesRequestDraft.hpp"
+#ifdef UDM_FINISH_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#define UDM_FINISH_POINT(stage) nativeUiTraceRecord(stage)
+#else
+#define UDM_FINISH_POINT(stage) ((void)0)
+#endif
+
+#include "PublicationOwnership.hpp"
+#include "CatalogCommitCoordinator.hpp"
+#include "PublicationCatalogProof.hpp"
+#include "CatalogAdmissionRegistry.hpp"
+#include "CatalogDiskCredit.hpp"
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+#include "ProductionUiTiming.hpp"
+#endif
+#include "StreamProgress.hpp"
+#include "PostBodyStore.hpp"
+#include "QueueStop.hpp"
+#include "QueueRetry.hpp"
+#include "DefaultQueues.hpp"
+#include "QueueMembership.hpp"
+#include "CapturePresentation.hpp"
+#include "MediaPublication.hpp"
+#include "DirectMediaRefresh.hpp"
+#include "BrowserRequest.hpp"
+#include "ProxyPolicy.hpp"
+#include "SocksProxy.hpp"
+#include "SiteLogins.hpp"
+#include "DialUp.hpp"
+#include "OfflineSite.hpp"
+#include "BrowserSettings.hpp"
+#include "OptionsModel.hpp"
+#include "ToolbarModel.hpp"
+#include "GrabberDestinations.hpp"
+#include "GrabberProject.hpp"
+#include "GrabberRenderedStore.hpp"
+#include "PacProxy.hpp"
+#include "GuiModels.hpp"
+#include <wincrypt.h>
+#include <bcrypt.h>
+#include <shlobj.h>
+#include <shlwapi.h>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <regex>
+#include <algorithm>
+#include <cwctype>
+#include <limits>
+#include <unordered_set>
+namespace udm {
+std::wstring wide(const std::string& s){if(s.empty())return {};int n=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,s.data(),(int)s.size(),nullptr,0);if(!n)throw std::runtime_error("Invalid UTF-8 text.");std::wstring r(n,0);MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,s.data(),(int)s.size(),r.data(),n);return r;}
+std::string utf8(const std::wstring& s){if(s.empty())return {};int n=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,s.data(),(int)s.size(),nullptr,0,nullptr,nullptr);if(!n)throw std::runtime_error("Invalid Unicode text.");std::string r(n,0);WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,s.data(),(int)s.size(),r.data(),n,nullptr,nullptr);return r;}
+std::string lower(std::string s){for(char& c:s)c=(char)tolower((unsigned char)c);return s;}
+std::string trim(std::string s){size_t a=s.find_first_not_of(" \t\r\n"),b=s.find_last_not_of(" \t\r\n");return a==std::string::npos?"":s.substr(a,b-a+1);}
+std::string str(const Json& j,const char* k,std::string d){return j.contains(k)&&j[k].is_string()?j[k].get<std::string>():d;}
+i64 num(const Json& j,const char* k,i64 d){return j.contains(k)&&j[k].is_number_integer()?j[k].get<i64>():d;}
+double real(const Json& j,const char* k,double d){return j.contains(k)&&j[k].is_number()?j[k].get<double>():d;}
+bool yes(const Json& j,const char* k,bool d){return j.contains(k)&&j[k].is_boolean()?j[k].get<bool>():d;}
+std::string guid(){GUID g{};if(FAILED(CoCreateGuid(&g)))throw std::runtime_error("Cannot create a download identifier.");wchar_t b[40];StringFromGUID2(g,b,40);std::string s=lower(utf8(b));s.erase(std::remove_if(s.begin(),s.end(),[](char c){return c=='{'||c=='}'||c=='-';}),s.end());return s;}
+std::string safeName(std::string s){auto w=wide(s);auto slash=w.find_last_of(L"/\\");if(slash!=std::wstring::npos)w=w.substr(slash+1);for(auto& c:w)if(c<32||wcschr(L"<>:\"/\\|?*",c))c=L'_';while(!w.empty()&&(w.back()==L'.'||iswspace(w.back())))w.pop_back();while(!w.empty()&&iswspace(w.front()))w.erase(w.begin());if(w.empty())w=L"download.bin";static const std::regex reservedName("^(con|prn|aux|nul|com[1-9]|lpt[1-9])([.]|$)");if(std::regex_search(lower(utf8(w)),reservedName))w=L"_"+w;if(w.size()>160){auto ext=fs::path(w).extension().wstring();const auto prefix=[](const std::wstring& value,size_t limit){auto clipped=value.substr(0,limit);if(!clipped.empty()&&clipped.back()>=0xD800&&clipped.back()<=0xDBFF)clipped.pop_back();return clipped;};w=prefix(w,140)+prefix(ext,19);}return utf8(w);}
+std::vector<std::string> words(const std::string& v){std::vector<std::string> out;std::regex re("[^\\s,;]+");for(auto i=std::sregex_iterator(v.begin(),v.end(),re);i!=std::sregex_iterator();++i){auto s=lower(i->str());if(std::find(out.begin(),out.end(),s)==out.end())out.push_back(s);}return out;}
+std::string category(const std::string& f){auto ext=lower(utf8(fs::path(wide(f)).extension().wstring()));const std::pair<const char*,const char*> rules[]={{"Archives",".zip .7z .rar .gz .tar .iso"},{"Video",".mp4 .mkv .webm .mov .avi .ts"},{"Music",".mp3 .flac .wav .ogg .m4a .aac"},{"Programs",".exe .msi .msix .apk"},{"Images",".jpg .jpeg .png .svg .webp .gif"},{"Documents",".pdf .doc .docx .xlsx .txt .epub .pptx .csv"}};for(auto r:rules)for(auto x:words(r.second))if(x==ext)return r.first;return "Other";}
+std::string bytes(double n){if(n<0)return "Unknown";const char* u[]={"Bytes","KB","MB","GB","TB"};int i=0;while(n>=1024&&i<4){n/=1024;++i;}std::ostringstream s;s<<std::fixed<<std::setprecision(i?2:0)<<n<<' '<<u[i];return s.str();}
+std::string b64(const Bytes& b){if(b.empty())return {};DWORD n=0;CryptBinaryToStringA(b.data(),(DWORD)b.size(),CRYPT_STRING_BASE64|CRYPT_STRING_NOCRLF,nullptr,&n);std::string s(n,0);if(!CryptBinaryToStringA(b.data(),(DWORD)b.size(),CRYPT_STRING_BASE64|CRYPT_STRING_NOCRLF,s.data(),&n))throw std::runtime_error("Base64 encoding failed.");s.resize(n);return s;}
+Bytes unb64(const std::string& s){if(s.empty())return {};DWORD n=0;if(!CryptStringToBinaryA(s.data(),(DWORD)s.size(),CRYPT_STRING_BASE64,nullptr,&n,nullptr,nullptr))throw std::runtime_error("Invalid base64 data.");Bytes b(n);if(!CryptStringToBinaryA(s.data(),(DWORD)s.size(),CRYPT_STRING_BASE64,b.data(),&n,nullptr,nullptr))throw std::runtime_error("Invalid base64 data.");b.resize(n);return b;}
+std::string protect(const std::string& s){if(s.empty())return {};DATA_BLOB in{(DWORD)s.size(),(BYTE*)s.data()},out{};if(!CryptProtectData(&in,L"UDM",nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))throw std::runtime_error("Windows could not encrypt the setting.");Bytes b(out.pbData,out.pbData+out.cbData);SecureZeroMemory(out.pbData,out.cbData);LocalFree(out.pbData);return b64(b);}
+std::string reveal(const std::string& s){if(s.empty())return {};Bytes b=unb64(s);DATA_BLOB in{(DWORD)b.size(),b.data()},out{};if(!CryptUnprotectData(&in,nullptr,nullptr,nullptr,nullptr,CRYPTPROTECT_UI_FORBIDDEN,&out))throw std::runtime_error("This encrypted setting cannot be opened by the current Windows account.");std::string r((char*)out.pbData,out.cbData);SecureZeroMemory(out.pbData,out.cbData);LocalFree(out.pbData);return r;}
+Json dictionary(const Json& j){if(j.is_object())return j;Json d=Json::object();if(j.is_array())for(const auto& v:j)if(v.contains("Key"))d[str(v,"Key")]=v.value("Value",Json());return d;}
+Json legacyDictionary(const Json& j){Json a=Json::array();for(auto it=j.begin();it!=j.end();++it)a.push_back({{"Key",it.key()},{"Value",it.value()}});return a;}
+Headers readHeaders(const Json& j){auto s=reveal(str(j,"ProtectedHeaders"));Headers h;if(!s.empty()){auto d=dictionary(Json::parse(s));for(auto it=d.begin();it!=d.end();++it)if(it.value().is_string())h[it.key()]=it.value().get<std::string>();}validateHeaders(h);return h;}
+void validateHeaders(const Headers& h){for(const auto& [k,v]:h){auto key=lower(k);if((key!="authorization"&&key!="cookie"&&key!="referer"&&key!="user-agent"&&key!="accept"&&key!="accept-language"&&key!="origin")||v.size()>16384||std::any_of(v.begin(),v.end(),[](unsigned char c){return (c<32&&c!=9)||c==127;}))throw std::runtime_error("Invalid request header.");}}
+Json validatePostRequest(const Json& input,const std::string& address){
+ if(input.is_object()&&input.empty())return Json::object();
+ if(!input.is_object()||str(input,"method")!="POST"||input.contains("body")==input.contains("bodyFile"))throw std::runtime_error("Unsupported browser download request.");
+ Url url(address);if(url.scheme!="http"&&url.scheme!="https")throw std::runtime_error("Form downloads require HTTP or HTTPS.");
+ auto type=str(input,"contentType");
+ if(type.empty()||type.size()>256||std::any_of(type.begin(),type.end(),[](unsigned char c){return c<32||c==127;}))throw std::runtime_error("Invalid form download content type or body size.");
+ if(input.contains("url")&&str(input,"url")!=address)throw std::runtime_error("This form request belongs to a different address. Capture it again in the browser.");
+ if(input.contains("bodyFile")){ // a body above the inline limit was staged in chunks; the record keeps its token, size and SHA-256 (PostBodyStore.hpp)
+  if(!input["bodyFile"].is_string()||!std::regex_match(str(input,"bodyFile"),std::regex("[0-9a-f]{32}"))||!input.contains("bodySize")||!input["bodySize"].is_number_integer()||!std::regex_match(str(input,"bodySha256"),std::regex("[0-9a-f]{64}")))throw std::runtime_error("Invalid staged form download body.");
+  auto size=input["bodySize"].get<i64>();if(size<=(i64)MaxBrowserPostBytes||size>(i64)MaxStagedPostBytes)throw std::runtime_error("Invalid staged form download body size.");
+  return {{"method","POST"},{"url",address},{"contentType",type},{"bodyFile",str(input,"bodyFile")},{"bodySize",size},{"bodySha256",str(input,"bodySha256")}};
+ }
+ if(!input["body"].is_string())throw std::runtime_error("Unsupported browser download request.");
+ auto encoded=str(input,"body");if(encoded.size()>((MaxBrowserPostBytes+2)/3)*4)throw std::runtime_error("Invalid form download content type or body size.");
+ auto body=encoded.empty()?Bytes{}:unb64(encoded);if(body.size()>MaxBrowserPostBytes||b64(body)!=encoded)throw std::runtime_error("Invalid form download body.");
+ return {{"method","POST"},{"url",address},{"contentType",type},{"body",encoded}};
+}
+Json readPostRequest(const Json& data){auto encoded=str(data,"ProtectedRequest");if(encoded.empty())return Json::object();return validatePostRequest(Json::parse(reveal(encoded)),str(data,"Url"));}
+
+i64 epoch(){return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();}
+std::string date(i64 ms){return "/Date("+std::to_string(ms?ms:epoch())+")/";}
+i64 parseDate(const Json& j){
+ if(j.is_null())return 0;
+ if(!j.is_string())throw std::runtime_error("Invalid saved date.");
+ auto s=j.get<std::string>();
+ if(s.rfind("/Date(",0)==0){try{return std::stoll(s.substr(6));}catch(...){throw std::runtime_error("Invalid saved date.");}}
+ std::smatch m;
+ static const std::regex isoDate("([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(?:[.]([0-9]{1,7}))?(Z|[+-][0-9]{2}:[0-9]{2})");
+ if(!std::regex_match(s,m,isoDate))throw std::runtime_error("Unsupported saved date.");
+ SYSTEMTIME t{};t.wYear=(WORD)std::stoi(m[1]);t.wMonth=(WORD)std::stoi(m[2]);t.wDay=(WORD)std::stoi(m[3]);t.wHour=(WORD)std::stoi(m[4]);t.wMinute=(WORD)std::stoi(m[5]);t.wSecond=(WORD)std::stoi(m[6]);
+ auto fraction=m[7].str()+"000";t.wMilliseconds=(WORD)std::stoi(fraction.substr(0,3));FILETIME f{};
+ if(!SystemTimeToFileTime(&t,&f))throw std::runtime_error("Invalid saved date.");
+ ULARGE_INTEGER value{};value.LowPart=f.dwLowDateTime;value.HighPart=f.dwHighDateTime;i64 result=(i64)(value.QuadPart/10000)-11644473600000LL;
+ auto zone=m[8].str();if(zone!="Z"){int hours=std::stoi(zone.substr(1,2)),minutes=std::stoi(zone.substr(4,2));if(hours>23||minutes>59)throw std::runtime_error("Invalid date time zone.");result+=(zone[0]=='+'?-1:1)*(hours*60LL+minutes)*60000;}
+ return result;
+}
+std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)throw std::runtime_error("File exceeds the supported size.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot read file.");std::string s((std::istreambuf_iterator<char>(f)),{});if(s.rfind("\xEF\xBB\xBF",0)==0)s.erase(0,3);return s;}
+void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){DiagnosticSpan total(p.filename()==L"state.json"?"cat-atomic-begin":"journal-atomic-begin",p.filename()==L"state.json"?"cat-atomic-end":"journal-atomic-end");
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-atomic-entry");
+ nativeUiTraceSaveRecord("save-atomic-entry");
+#endif
+fs::create_directories(p.parent_path());auto temp=p;temp+=L".tmp";if(checkpoint)checkpoint("directories-ready");
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-dirs-ready");
+ nativeUiTraceSaveRecord("save-dirs-ready");
+#endif
+{UDM_FINISH_POINT("atomic-open-begin");Handle f(CreateFileW(temp.c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr));
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-file-opened");
+ nativeUiTraceSaveRecord("save-file-opened");
+#endif
+UDM_FINISH_POINT("atomic-open-end");if(!f)throw std::runtime_error("Cannot write state temporary file.");if(checkpoint)checkpoint("temporary-opened");DWORD n=0;
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size())throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)checkpoint("bytes-written");
+if(checkpoint)nativeUiTraceRecord("save-bytes-written");
+ nativeUiTraceSaveRecord("save-bytes-written");
+UDM_FINISH_POINT("atomic-flush-begin");if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");
+UDM_FINISH_POINT("atomic-flush-end");if(checkpoint)nativeUiTraceRecord("save-buffer-flushed");
+ nativeUiTraceSaveRecord("save-buffer-flushed");
+#else
+if(!WriteFile(f.h,s.data(),(DWORD)s.size(),&n,nullptr)||n!=s.size())throw std::runtime_error("Could not flush the state file.");
+if(checkpoint)checkpoint("bytes-written");
+UDM_FINISH_POINT("atomic-flush-begin");if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");UDM_FINISH_POINT("atomic-flush-end");
+#endif
+{DiagnosticSpan close("atomic-close-begin","atomic-close-end");CloseHandle(f.h);f.h=INVALID_HANDLE_VALUE;}
+}if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
+ if([&]{DiagnosticSpan replace("atomic-replace-begin","atomic-replace-end");return ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr);}())break;
+ const DWORD code=GetLastError();
+ // Readers of the catalog or its existing backup may briefly omit FILE_SHARE_DELETE.
+ // ReplaceFile error 1175 retains both filenames; 1176/1177 can change them and are not retried.
+ if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION&&code!=ERROR_UNABLE_TO_REMOVE_REPLACED))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
+ {DiagnosticSpan retry("atomic-backoff-begin","atomic-backoff-end");Sleep(25*(attempt+1));}
+}}else if(![&]{DiagnosticSpan move("atomic-move-begin","atomic-move-end");return MoveFileExW(temp.c_str(),p.c_str(),MOVEFILE_WRITE_THROUGH);}())throw std::runtime_error("Could not publish the saved state.");}
+void writeBytes(const fs::path& p,const Bytes& b){std::ofstream f(p,std::ios::binary|std::ios::trunc);f.write((const char*)b.data(),(std::streamsize)b.size());f.flush();if(!f)throw std::runtime_error("Could not write file.");}
+fs::path appDir(){wchar_t p[32768];DWORD n=GetModuleFileNameW(nullptr,p,32768);return fs::path(std::wstring(p,n)).parent_path();}
+fs::path configuredData(const fs::path& installation,const fs::path& fallback){
+ auto config=installation/L"udm-data.json";if(!fs::exists(config))return fallback;
+ auto settings=Json::parse(readText(config,4096));auto value=str(settings,"dataDirectory");
+ if(!settings.is_object()||value.empty()||value.size()>32700||value.find_first_of("\r\n")!=std::string::npos||value.find('\0')!=std::string::npos)throw std::runtime_error("Invalid UDM data location. Check udm-data.json beside the app.");
+ auto target=fs::path(wide(value));if(target.is_relative())target=installation/target;
+ target=fs::absolute(target).lexically_normal();if(target==target.root_path())throw std::runtime_error("UDM data must use its own folder, not a drive root.");
+ return target;
+}
+fs::path defaultData(){PWSTR p=nullptr;if(FAILED(SHGetKnownFolderPath(FOLDERID_LocalAppData,0,nullptr,&p)))throw std::runtime_error("Cannot locate the Windows data folder.");fs::path r=fs::path(p)/L"UDM";CoTaskMemFree(p);return configuredData(appDir(),r);}
+std::wstring quote(const std::wstring& s){std::wstring r=L"\"";size_t n=0;for(auto c:s){if(c==L'\\'){++n;continue;}if(c==L'\"')r.append(n*2+1,L'\\');else r.append(n,L'\\');r+=c;n=0;}r.append(n*2,L'\\');return r+L'\"';}
+void Cancel::wait(int ms)const{while(ms>0){check();int n=std::min(ms,50);Sleep(n);ms-=n;}check();}
+static std::chrono::steady_clock::time_point reserveRate(Rate& rate,size_t n,i64 kbps){
+ std::lock_guard<std::mutex> lock(rate.mutex);
+ if(kbps<=0){rate.next={};return {};}
+ const auto now=std::chrono::steady_clock::now();if(rate.next<now)rate.next=now;
+ rate.next+=std::chrono::microseconds((i64)(n*1000000.0/(kbps*1024.0)));return rate.next;
+}
+static void waitForRate(std::chrono::steady_clock::time_point until,const Cancel& cancel){
+ cancel.check();while(std::chrono::steady_clock::now()<until)cancel.wait((int)std::min<i64>(50,std::chrono::duration_cast<std::chrono::milliseconds>(until-std::chrono::steady_clock::now()).count()+1));
+}
+void Rate::wait(size_t n,i64 kbps,const Cancel& c){c.check();waitForRate(reserveRate(*this,n,kbps),c);}
+std::string unescape(const std::string& s){std::string r;for(size_t i=0;i<s.size();++i){if(s[i]=='%'&&i+2<s.size()&&isxdigit((unsigned char)s[i+1])&&isxdigit((unsigned char)s[i+2])){r+=(char)std::stoi(s.substr(i+1,2),nullptr,16);i+=2;}else r+=s[i];}return r;}
+Url::Url(const std::string& value):full(value){if(value.size()>32768||value.find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Invalid URL.");auto w=wide(value);URL_COMPONENTS u{};u.dwStructSize=sizeof(u);u.dwSchemeLength=u.dwHostNameLength=u.dwUrlPathLength=u.dwExtraInfoLength=u.dwUserNameLength=u.dwPasswordLength=(DWORD)-1;if(lower(value.substr(0,6))=="ftp://"||!WinHttpCrackUrl(w.c_str(),(DWORD)w.size(),0,&u)){
+ // FTP must use its own grammar even when WinHttpCrackUrl accepts the scheme.
+ std::smatch m;if(!std::regex_match(value,m,std::regex("^(ftp)://([^/@:#?]+)(?::([0-9]{1,5}))?(/[^#]*)?$",std::regex::icase)))throw std::runtime_error("Use a complete HTTP, HTTPS or FTP URL without credentials.");scheme="ftp";host=lower(m[2]);auto ftpPort=m[3].matched?std::stoi(m[3]):21;if(ftpPort<1||ftpPort>65535)throw std::runtime_error("FTP port must be 1-65535.");port=(INTERNET_PORT)ftpPort;path=m[4].matched?m[4].str():"/";origin="ftp://"+host+(port==21?"":":"+std::to_string(port));return;}
+ scheme=lower(utf8(std::wstring(u.lpszScheme,u.dwSchemeLength)));host=lower(utf8(std::wstring(u.lpszHostName,u.dwHostNameLength)));port=u.nPort;if(host.empty()||(scheme!="http"&&scheme!="https")||u.dwUserNameLength||u.dwPasswordLength)throw std::runtime_error("Use a complete HTTP or HTTPS URL without credentials.");path=utf8(std::wstring(u.lpszUrlPath,u.dwUrlPathLength));if(path.empty())path="/";if(u.dwExtraInfoLength)query=utf8(std::wstring(u.lpszExtraInfo,u.dwExtraInfoLength));auto fragment=query.find('#');if(fragment!=std::string::npos)query.resize(fragment);origin=scheme+"://"+host+(((scheme=="http"&&port==80)||(scheme=="https"&&port==443))?"":":"+std::to_string(port));}
+std::string combineUrl(const std::string& base,const std::string& relative){auto a=wide(base),b=wide(relative);DWORD n=32768;std::wstring r(n,0);if(FAILED(UrlCombineW(a.c_str(),b.c_str(),r.data(),&n,0)))throw std::runtime_error("Invalid redirect URL.");r.resize(n);auto s=utf8(r);auto hash=s.find('#');if(hash!=std::string::npos)s.resize(hash);return s;}
+bool hostIs(const std::string& h,const std::string& d){return h==d||(h.size()>d.size()&&h.compare(h.size()-d.size()-1,d.size()+1,"."+d)==0);}
+std::map<std::string,std::string> query(const std::string& s){std::map<std::string,std::string> r;auto q=Url(s).query;if(!q.empty()&&q[0]=='?')q.erase(0,1);std::stringstream in(q);std::string p;while(std::getline(in,p,'&')){auto e=p.find('=');if(e!=std::string::npos)r[unescape(p.substr(0,e))]=unescape(p.substr(e+1));}return r;}
+std::vector<std::string> expand(const std::string& text){
+ std::vector<std::string> result;std::istringstream lines(text);std::string line;
+ const std::regex range("\\[([0-9]{1,6}|[A-Za-z])-([0-9]{1,6}|[A-Za-z])\\]");
+ while(std::getline(lines,line)){
+  line=trim(line);if(line.empty()||line[0]=='#')continue;
+  std::vector<std::string> pending{line};
+  for(;;){
+   bool found=false;std::vector<std::string> expanded;
+   for(const auto& candidate:pending){
+    std::smatch match;
+    if(!std::regex_search(candidate,match,range)){expanded.push_back(candidate);continue;}
+    found=true;std::string firstText=match[1],lastText=match[2];
+    bool firstLetter=std::isalpha((unsigned char)firstText[0])!=0;
+    bool lastLetter=std::isalpha((unsigned char)lastText[0])!=0;
+    if(firstLetter!=lastLetter||
+       (firstLetter&&std::isupper((unsigned char)firstText[0])!=std::isupper((unsigned char)lastText[0])))
+     throw std::runtime_error("Use numeric endpoints or letters of the same case.");
+    int first=firstLetter?firstText[0]:std::stoi(firstText);
+    int last=lastLetter?lastText[0]:std::stoi(lastText);
+    if(last<first||last-first>999||expanded.size()+static_cast<size_t>(last-first+1)>1000)
+     throw std::runtime_error("A batch can contain at most 1,000 URLs.");
+    for(int value=first;value<=last;++value){
+     std::ostringstream replacement;
+     if(firstLetter)replacement<<(char)value;
+     else replacement<<std::setfill('0')<<std::setw(firstText[0]=='0'?(int)firstText.size():1)<<value;
+     expanded.push_back(match.prefix().str()+replacement.str()+match.suffix().str());
+    }
+   }
+   pending=std::move(expanded);
+   if(!found)break;
+  }
+  for(const auto& address:pending){
+   Url valid(address);
+   if(std::find(result.begin(),result.end(),address)==result.end())result.push_back(address);
+   if(result.size()>1000)throw std::runtime_error("Add at most 1,000 URLs at a time.");
+  }
+ }
+ return result;
+}
+std::string fileHash(const fs::path& path,const std::function<void()>& checkpoint,
+                     const std::function<void(i64)>& onRead){
+ BCRYPT_ALG_HANDLE algorithm=nullptr;
+ BCRYPT_HASH_HANDLE hash=nullptr;
+ if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)
+  throw std::runtime_error("Cannot initialize SHA-256.");
+ try{
+  if(BCryptCreateHash(algorithm,&hash,nullptr,0,nullptr,0,0)<0)
+   throw std::runtime_error("Cannot initialize SHA-256.");
+  std::ifstream input(path,std::ios::binary);
+  if(!input)throw std::runtime_error("Cannot open file for verification.");
+  std::vector<char> buffer(1024*1024);
+  while(input){
+   if(checkpoint)checkpoint();
+   input.read(buffer.data(),static_cast<std::streamsize>(buffer.size()));
+   const auto count=input.gcount();
+   if(!count)break;
+   if(BCryptHashData(hash,reinterpret_cast<PUCHAR>(buffer.data()),static_cast<ULONG>(count),0)<0)
+    throw std::runtime_error("SHA-256 failed.");
+   if(onRead)onRead(count);
+  }
+  if(!input.eof())throw std::runtime_error("Cannot read file for verification.");
+  BYTE digest[32];
+  if(BCryptFinishHash(hash,digest,32,0)<0)throw std::runtime_error("SHA-256 failed.");
+  BCryptDestroyHash(hash);hash=nullptr;
+  BCryptCloseAlgorithmProvider(algorithm,0);algorithm=nullptr;
+  std::ostringstream result;
+  for(auto byte:digest)result<<std::hex<<std::setfill('0')<<std::setw(2)<<static_cast<int>(byte);
+  return result.str();
+ }catch(...){
+  if(hash)BCryptDestroyHash(hash);
+  if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);
+  throw;
+ }
+}
+std::string fileHash(HANDLE file,const std::function<void()>& checkpoint){
+ LARGE_INTEGER zero{};if(!SetFilePointerEx(file,zero,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek file for verification.");
+ BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;
+ if(BCryptOpenAlgorithmProvider(&algorithm,BCRYPT_SHA256_ALGORITHM,nullptr,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");
+ try{
+  if(BCryptCreateHash(algorithm,&hash,nullptr,0,nullptr,0,0)<0)throw std::runtime_error("Cannot initialize SHA-256.");
+  std::vector<BYTE> bytes(1024*1024);DWORD count=0;
+  for(;;){if(checkpoint)checkpoint();if(!ReadFile(file,bytes.data(),(DWORD)bytes.size(),&count,nullptr))throw std::runtime_error("Cannot read file for verification.");if(!count)break;if(BCryptHashData(hash,bytes.data(),count,0)<0)throw std::runtime_error("SHA-256 failed.");}
+  BYTE digest[32];if(BCryptFinishHash(hash,digest,32,0)<0)throw std::runtime_error("SHA-256 failed.");
+  BCryptDestroyHash(hash);hash=nullptr;BCryptCloseAlgorithmProvider(algorithm,0);algorithm=nullptr;
+  std::ostringstream result;for(auto byte:digest)result<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)byte;return result.str();
+ }catch(...){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);throw;}
+}
+void markZone(const fs::path& p){DiagnosticSpan metadata("zone-begin","zone-end");Handle f(CreateFileW((p.wstring()+L":Zone.Identifier").c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(f){const char s[]="[ZoneTransfer]\r\nZoneId=3\r\n";DWORD n;WriteFile(f.h,s,sizeof(s)-1,&n,nullptr);}}
+Json defaultSettings(){PWSTR p=nullptr;std::string folder;if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads,0,nullptr,&p))){folder=utf8((fs::path(p)/L"UDM").wstring());CoTaskMemFree(p);}return {{"FindQuery",normalizedFindQuery()},{"UseTls13",true},{"UseHttp3",true},{"IgnoreLastModified",false},{"ProxyAutoConfigUrl",""},{"BrowserDownloadLater",false},{"QueuePromptLater",true},{"QueuePromptBatch",true},{"CategoryRememberLast",Json::object()},{"ClipboardMode","Show a suggestion"},{"ClipboardOnlyFileTypes",true},{"GlobalLimitMode","Total across downloads"},{"UserAgent",""},{"FtpPassive",true},{"DialEnabled",false},{"DialEntry",""},{"DialPhonebook",""},{"DialAttempts",3},{"DialRetrySeconds",10},{"DialTimeoutSeconds",120},{"DownloadFolder",folder},{"Parallel",3},{"Connections",8},{"Retries",3},{"ServerResponseTimeoutSeconds",defaultServerResponseSeconds},{"LimitKbps",0},{"QuotaMb",0},{"QuotaHours",1},{"ServerConnections",Json::array()},{"TemporaryFolder",""},{"UseServerDate",false},{"StopOnWebPage",true},{"FtpProxyType","CONNECT"},{"WindowsLoginIntranet",true},{"CorrectFileExtensions",true},{"DuplicatePolicy","Ask"},{"PrefetchFileInfo",true},{"CompletedDoubleClick","Properties"},{"DarkMode",false},{"HideCategories",false},{"TrayIcon","Color"},{"FontName","Tahoma"},{"FontHeight",11},{"FontWeight",400},{"QueueProgressMinimized",true},{"CategoryFolders",true},{"ClipboardMonitor",false},{"CloseToTray",false},{"Sound",true},{"SkipBrowserFileInfo",false},{"SuppressProgressDialog",false},{"SuppressCompletionDialog",false},{"CategoryPaths",Json::array()},{"CustomCategories",Json::array()},{"CategoryRules",Json::array()},{"SiteLogins",Json::array()},{"CaptureExtensions",
+ "zip 7z rar tar gz bz2 xz zst iso img exe msi msix appx apk dmg deb rpm "
+ "pdf doc docx xls xlsx ppt pptx odt ods odp epub "
+ "mp4 mkv webm mov avi mp3 m4a flac opus wav "
+ "gguf safetensors onnx parquet arrow npy blend glb"},{"CaptureExcludedHosts",""},{"CaptureRules",""},{"Proxy",""},{"ProxyUser",""},{"ProxySecret",""},{"ProxyAuthMode","Automatic"},{"ScanProgram",""},{"ScanArguments","\"{file}\""},{"ScanTimeoutSeconds",300}};}
+Json defaultQueue(std::string name,int parallel){return {{"Name",name},{"Enabled",true},{"Parallel",parallel},{"Scheduled",false},{"StartMinute",0},{"StopMinute",1440},{"Days",127},{"RunOnce",false},{"OnceStarted",false},{"WakeComputer",false},{"StartOnStartup",false},{"StartOnceUtc",nullptr},{"StopOnceUtc",nullptr},{"Retries",nullptr},{"FileRetries",0},{"RetryDelaySeconds",30},{"RepeatMinutes",0},{"Synchronize",false},{"FinishAction","None"},{"FinishDelaySeconds",30}};}
+bool inWindow(const Json& q,i64 now,bool manual){if(!yes(q,"Enabled",true))return false;if(!now)now=epoch();if(independentStopExpired(q,now))return false;if(yes(q,"RunOnce")){i64 a=parseDate(q.value("StartOnceUtc",Json())),b=parseDate(q.value("StopOnceUtc",Json()));return (manual||(a&&now>=a))&&(!b||now<b);}if(dailyRunsToCompletion(q)&&yes(q,"DailyRunUntilComplete"))return true;if(manual)return !dailyManualStopExpired(q,now);if(!yes(q,"Scheduled"))return true;time_t sec=now/1000;tm t{};localtime_s(&t,&sec);int m=t.tm_hour*3600+t.tm_min*60+t.tm_sec,d=t.tm_wday,a=(int)(num(q,"StartMinute")*60+num(q,"StartSecond")),b=dailyStopSecond(q);if(a>b&&m<b)d=(d+6)%7;if(!(num(q,"Days",127)&(1LL<<d)))return false;return a==b||(a<b?m>=a&&m<b:m>=a||m<b);}
+Job::Job(Json j):data(std::move(j)){if(data.contains("Video")&&data["Video"].is_object())video=std::make_shared<Job>(data["Video"]);if(data.contains("Audio")&&data["Audio"].is_object())audio=std::make_shared<Job>(data["Audio"]);auto id=str(data,"Id");if(id.size()!=32||!std::all_of(id.begin(),id.end(),[](unsigned char ch){return (ch>='0'&&ch<='9')||(ch>='a'&&ch<='f')||(ch>='A'&&ch<='F');}))throw std::runtime_error("Invalid saved download identifier.");data["FileName"]=safeName(str(data,"FileName"));if(!data.contains("Segments")||!data["Segments"].is_array())data["Segments"]=Json::array();std::set<i64> seen;for(const auto& s:data["Segments"])if(num(s,"Index",-1)<0||num(s,"Index")>100000||!seen.insert(num(s,"Index")).second||num(s,"Start")<0||num(s,"Done")<0)throw std::runtime_error("Invalid saved download segment.");}
+Json Job::snapshot()const{auto j=data;j["Video"]=video?video->snapshot():Json();j["Audio"]=audio?audio->snapshot():Json();return j;}
+void Job::syncTrackProgress(){
+ if(!video&&!audio)return;
+ constexpr auto maxBytes=std::numeric_limits<i64>::max();
+ i64 received=0,transferred=0,total=0;
+ bool known=true;
+ for(const auto& track:{video,audio})if(track){
+  const auto length=num(track->data,"Size",-1);
+  known&=length>=0&&length<=maxBytes-total;
+  if(known)total+=length;
+  received+=std::clamp<i64>(num(track->data,"Received"),0,maxBytes-received);
+  transferred+=std::clamp<i64>(num(track->data,"TransferredBytes"),0,maxBytes-transferred);
+ }
+ data["Received"]=received;
+ data["TransferredBytes"]=transferred;
+ // During assembly, Size can already describe the output instead of the tracks.
+ if(str(data,"Status")=="Downloading")data["Size"]=known?total:-1;
+}
+void Job::samplePrefetchRate(std::chrono::steady_clock::time_point now,bool finished){
+ if(!prefetchSampleTime||!yes(data,"ConfirmationPending"))return;
+ const auto elapsed=now-*prefetchSampleTime;
+ const auto current=std::max<i64>(0,num(data,"TransferredBytes"));
+ // A buffer credited just before Start must not turn a tiny timer slice into
+ // the peak. Short transfers can still show an average if no sample exists.
+ if(current>prefetchSampleBytes&&elapsed>std::chrono::steady_clock::duration::zero()&&
+    (elapsed>=std::chrono::milliseconds(100)||(finished&&prefetchPeakRate==0))){
+  const auto seconds=std::chrono::duration<double>(elapsed).count();
+  prefetchPeakRate=std::max(prefetchPeakRate,downloadListIntegerRate((current-prefetchSampleBytes)/seconds));
+  prefetchSampleBytes=current;
+  prefetchSampleTime=now;
+ }else if(current<prefetchSampleBytes){
+  prefetchSampleBytes=current;
+  prefetchSampleTime=now;
+ }
+ if(finished)prefetchSampleTime.reset();
+}
+fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
+Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){if(!nativeUiTraceSink.view&&!nativeUiTraceInitialize())throw std::runtime_error("Owned trace initialization failed");nativeUiTraceRecord("diag-manager-entry");fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(auto& j:state["Downloads"]){auto job=std::make_shared<Job>(std::move(j));recoverScanner(job->data);auto status=str(job->data,"Status");
+  if(status=="Pausing"){
+   const auto response=job->data.find("OriginalResponse");
+   if(response!=job->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing"))job->data["ResponseSaveDeferred"]=true;
+  }
+  if((status=="Downloading"||status=="Verifying")&&(yes(job->data,"SynchronizationReplacement")||yes(job->data,"SynchronizationRestoration")))interruptedSyncTransfers.push_back(job);if(status=="Downloading"||status=="Pausing"||status=="Verifying"||status=="Merging"||status=="Resolving"||status=="Awaiting confirmation")job->data["Status"]="Paused";job->data["ConfirmationPending"]=false;if(!str(job->data,"ProtectedAdaptive").empty()||!str(job->data,"SourceUrl").empty()){auto recovered=str(job->data,"Status");if(recovered=="Complete")job->data["MediaPhase"]="Complete";else{job->data.erase("PrefetchedFinalSize");if(recovered=="Paused"||recovered=="Failed"||recovered=="Queued")job->data["MediaPhase"]=recovered;}}if(!job->data.contains("QueueMember"))job->data["QueueMember"]=status!="Complete";jobs.push_back(job);}
+ // Parsed records are adopted by jobs, avoiding a second deep history copy.
+ // Snapshots serialize those jobs back into Downloads.
+ state["Downloads"].clear();
+ recoverFileOperation();recoverReplacements();recoverRestarts();recoverSynchronizationWork(interruptedSyncTransfers);recoverLinkConversions();startupResponseRecoveryPending=recovery==StartupRecovery::Desktop;if(!startupResponseRecoveryPending)recoverOriginalResponses();pruneStagedPostBodies(*this);}
+void Manager::retainModelWork(const std::shared_ptr<ManagedModelWork>& work){
+ if(!work)throw std::invalid_argument("Missing model work owner.");std::lock_guard<std::mutex> lock(callbackState->mutex);
+ if(callbackState->owner!=this||callbackState->modelWorkClosing)throw std::runtime_error("The download manager is closing.");
+ if(std::find(callbackState->modelWork.begin(),callbackState->modelWork.end(),work)!=callbackState->modelWork.end())throw std::logic_error("The model worker is already retained.");
+ work->bindOwner(this);callbackState->modelWork.push_back(work);
+}
+void Manager::releaseModelWork(const std::shared_ptr<ManagedModelWork>& work){
+ if(!work||!work->joined())throw std::logic_error("Join model work before releasing its owner.");
+ std::lock_guard<std::mutex> lock(callbackState->mutex);auto& owned=callbackState->modelWork;owned.erase(std::remove(owned.begin(),owned.end(),work),owned.end());
+}
+size_t Manager::pendingModelWork()const{std::lock_guard<std::mutex> lock(callbackState->mutex);return callbackState->modelWork.size();}
+void Manager::drainModelWork(){
+ if(ManagedModelWork::executingFor(this))throw std::logic_error("A model worker cannot stop its own manager.");
+ std::vector<std::shared_ptr<ManagedModelWork>> owned;
+ {std::lock_guard<std::mutex> lock(callbackState->mutex);callbackState->modelWorkClosing=true;owned.swap(callbackState->modelWork);}
+ for(const auto& work:owned)work->cancel();
+ try{for(const auto& work:owned)work->join();}catch(...){std::lock_guard<std::mutex> lock(callbackState->mutex);owned.swap(callbackState->modelWork);if(callbackState->owner)callbackState->modelWorkClosing=false;throw;}
+}
+Manager::~Manager(){
+ {std::unique_lock<std::mutex> lock(callbackState->mutex);callbackState->owner=nullptr;callbackState->modelWorkClosing=true;callbackState->finished.wait(lock,[&]{return callbackState->active==0;});}
+ try{drainModelWork();}catch(...){std::terminate();}
+ // OnClose already verified or wrote a final save. Avoid a duplicate write only
+ // after all work stopped and the actual, pinned catalog still matches that
+ // exact durable checkpoint. Pending overlays/outcomes must get a fresh save.
+ bool alreadySaved=false;
+ try{
+  Lock lock(mutex);
+  if(stopping&&threads.empty()&&active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+   auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+   }
+  }
+ }catch(...){/* A failed recheck keeps the original forced-save path. */}
+ if(!alreadySaved)try{stop();}catch(...) {}
+ CatalogDiskCredit::forget(*this);
+}
+std::function<void(const Json&)> Manager::browserSessionPersistence(JobPtr job,Json expected,std::shared_ptr<const Cancel> cancel){
+ if(expected.empty())return {};
+ return [lifetime=callbackState,job=std::move(job),expected=std::move(expected),cancel=std::move(cancel)](const Json& session)mutable{
+  if(cancel)cancel->check();
+  Manager* manager=nullptr;
+  {std::lock_guard<std::mutex> lock(lifetime->mutex);if(!lifetime->owner)throw Cancelled();manager=lifetime->owner;++lifetime->active;}
+  struct Lease {
+   std::shared_ptr<CallbackState> state;
+   ~Lease(){std::lock_guard<std::mutex> lock(state->mutex);if(!--state->active)state->finished.notify_all();}
+  } lease{lifetime};
+  Lock lock(manager->mutex);if(manager->stopping)throw Cancelled();
+  if(cancel)cancel->check();
+  if(std::find(manager->jobs.begin(),manager->jobs.end(),job)==manager->jobs.end()||readBrowserSession(job->data)!=expected)throw std::runtime_error("The website session changed during this request. Retry using the current session.");
+  auto updated=protect(session.dump());
+  if(cancel)cancel->check();
+  auto previous=job->data["ProtectedBrowserSession"];job->data["ProtectedBrowserSession"]=std::move(updated);
+  try{manager->save();}catch(...){job->data["ProtectedBrowserSession"]=previous;throw;}expected=session;
+ };
+}
+Json Manager::snapshot()const{Lock l(mutex);auto s=state;s["Downloads"]=Json::array();for(auto j:jobs)s["Downloads"].push_back(j->snapshot());return s;}
+void Manager::save(){saveCatalog(false);}
+void Manager::saveCatalog(bool changedOnly,const std::function<void(const char*)>* observation){
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ NativeUiTraceSaveScope traceSave(changedOnly);
+#endif
+ // Snapshot under the manager lock; serialization and file IO run on the caller
+ // outside this function's lock. Periodic callers use an owned worker. Explicit
+ // callers remain synchronous and may hold an outer lock. Older writes are skipped.
+ std::string serialized;Json current;unsigned long long sequence=0;std::function<void(const char*)> checkpoint;
+ CatalogAdmissionRegistry::Publication publication;PublicationCatalogProof::Publication publicationProof;CatalogDiskCredit::Publication diskCredit;
+ {Lock l(mutex);if(changedOnly&&stopping)return;if(catalogTransaction){if(catalogCheckpoint)catalogCheckpoint("deferred-save");return;}
+  // Recheck automatic checkpoint necessity in the same lock as its snapshot.
+  // An explicit commit can supersede a worker's earlier dirty observation.
+  // Forced saves and retries after a storage failure still perform durable IO.
+  try{if(changedOnly&&storageError.empty()&&!CatalogDiskCredit::active(*this)&&!checkpointChanged())return;current=snapshot();diskCredit=CatalogDiskCredit::capture(*this,current,[&](const std::string& id,const Cancel* c){auto it=active.find(id);return it!=active.end()&&it->second.get()==c;});publication=admissionRegistry->overlay(current);publicationProof=PublicationCatalogProof::capture(*this,current);if(changedOnly&&storageError.empty()&&diskCredit&&!publication&&!publicationProof&&current==checkpointState)return;}catch(const std::exception& e){storageError=e.what();throw;}
+  if(changedOnly&&storageError.empty()&&!publication&&!publicationProof&&PreparedTransferCommit::defersAutomatic(*this,active)){UDM_FINISH_POINT("auto-deferred-finalization");return;}
+  sequence=++catalogSequence;checkpoint=observation?*observation:catalogCheckpoint;}
+
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-snapshot-ready");
+ nativeUiTraceSaveRecord("save-snapshot-ready");
+#endif
+ // JSON serialization reads only the detached snapshot. Keep this CPU work off
+ // the manager lock during periodic saves, just like the subsequent disk write.
+ try{serialized=current.dump();if(serialized.size()>32*1024*1024)throw std::runtime_error("Download history has reached its 32 MB storage limit. Export and remove older records before adding more downloads.");}
+ catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
+
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-serialized");
+ nativeUiTraceSaveRecord("save-serialized");
+#endif
+ // Publish the cached checkpoint only after its file replacement succeeds.
+ // The manager lock is never taken while the write mutex is held: a worker that
+ // saves under the manager lock may be waiting for this write to finish.
+ try{
+ if(checkpoint)checkpoint("snapshot-prepared");
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+ if(checkpoint)nativeUiTraceRecord("save-write-wait");
+ nativeUiTraceSaveRecord("save-write-wait");
+#endif
+ CatalogCommitCoordinator coordinator(catalogWriteMutex,catalogWritten);
+ const auto result=coordinator.commit(sequence,[&]{atomicText(root/L"state.json",serialized,true,checkpoint);},[&](CatalogCommitStage stage)noexcept{
+#ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  const auto label=stage==CatalogCommitStage::Acquired?"save-write-acquired":stage==CatalogCommitStage::Published?"save-file-published":"save-write-released";
+  if(checkpoint&&stage!=CatalogCommitStage::Released)nativeUiTraceRecord(label);
+  nativeUiTraceSaveRecord(label);
+#else
+  (void)stage;
+#endif
+ });
+ if(!result.published())return;
+ publication.published(sequence);
+ if(publicationProof&&checkpoint)checkpoint("publication-catalog-written");
+ publicationProof.published(sequence);
+Lock l(mutex);if(sequence==catalogSequence){checkpointState=std::move(current);checkpointText=std::move(serialized);checkpointSequence=sequence;storageError.clear();}}
+ catch(const std::exception& e){Lock l(mutex);if(sequence==catalogSequence)storageError=e.what();throw;}
+}
+bool Manager::jobMatchesCheckpoint(const Job& job,const Json& saved){
+ if(!saved.is_object()||saved.size()!=job.data.size()+!job.data.contains("Video")+!job.data.contains("Audio"))return false;
+ for(auto it=job.data.begin();it!=job.data.end();++it){
+  if(it.key()=="Video"||it.key()=="Audio")continue;
+  if(!saved.contains(it.key())||it.value()!=saved[it.key()])return false;
+ }
+ auto matchesChild=[&](const char* key,const JobPtr& child){
+  if(!saved.contains(key))return false;
+  return child?jobMatchesCheckpoint(*child,saved[key]):saved[key].is_null();
+ };
+ return matchesChild("Video",job.video)&&matchesChild("Audio",job.audio);
+}
+const Json* Manager::latestDownloadCheckpoint(const Job& job)const{
+ // Caller holds mutex. An in-flight or failed write cannot prove durability.
+ if(catalogTransaction||!storageError.empty()||!checkpointSequence||checkpointSequence!=catalogSequence)return nullptr;
+ const auto downloads=checkpointState.find("Downloads");
+ if(downloads==checkpointState.end()||!downloads->is_array())return nullptr;
+ const auto id=job.id();
+ for(auto saved=downloads->rbegin();saved!=downloads->rend();++saved)
+  if(str(*saved,"Id")==id)return &*saved;
+ return nullptr;
+}
+bool Manager::prefetchCheckpointMatches(const Job& job)const{
+ const auto segments=job.data.find("Segments");
+ if(str(job.data,"Status")!="Awaiting confirmation"||yes(job.data,"ConfirmationPending")||
+    num(job.data,"Received")!=0||segments==job.data.end()||!segments->is_array()||!segments->empty())return false;
+ const auto saved=latestDownloadCheckpoint(job);
+ return saved&&jobMatchesCheckpoint(job,*saved);
+}
+bool Manager::checkpointChanged()const{
+ if(!checkpointState.is_object()||state.size()!=checkpointState.size())return true;
+ for(auto it=state.begin();it!=state.end();++it)
+  if(it.key()!="Downloads"&&(!checkpointState.contains(it.key())||it.value()!=checkpointState[it.key()]))return true;
+ if(!checkpointState.contains("Downloads"))return true;
+ const auto& saved=checkpointState["Downloads"];
+ if(!saved.is_array()||saved.size()!=jobs.size())return true;
+ for(size_t i=0;i<jobs.size();++i)if(!jobMatchesCheckpoint(*jobs[i],saved[i]))return true;
+ return false;
+}
+bool Manager::completionSaved(JobPtr job)const{
+ Lock lock(mutex);if(!job||!storageError.empty()||catalogTransaction||!checkpointSequence)return false;
+ const auto& saved=checkpointState;
+ if(!saved.is_object()||!saved.contains("Downloads")||!saved["Downloads"].is_array())return false;
+ for(const auto& record:saved["Downloads"])if(str(record,"Id")==job->id())return str(record,"Status")=="Complete"&&scannerAllowsCompletion(record)&&jobMatchesCheckpoint(*job,record);
+ return false;
+}
+std::vector<std::string> Manager::categories()const{Lock l(mutex);return optionCategories(state["Settings"]);}
+static std::wstring downloadPathKey(const fs::path& path){
+ return windowsPath::key(path);
+}
+bool Manager::downloadDestinationReserved(const fs::path& path,const JobPtr& owner)const{
+ Lock lock(mutex);
+ if(PublicationOwnership::reserved(*this,path,owner))return true;
+ const auto key=downloadPathKey(path);
+ const auto original=owner?str(owner->data,"ReplacementOf"):std::string{};
+ for(const auto& other:jobs){
+  if(other==owner)continue;
+  if(windowsPath::equal(downloadPathKey(other->target()),key)&&(original.empty()||other->id()!=original))return true;
+  const auto previous=str(other->data,"PreviousPath");
+  if(!previous.empty()&&windowsPath::equal(downloadPathKey(fs::path(wide(previous))),key))return true;
+ }
+ return admissionRegistry->reserves(path,owner?owner->id():std::string{});
+}
+bool Manager::pendingMediaAdmission(const std::string& token)const{Lock lock(mutex);return admissionRegistry->lookup(token).phase!=CatalogAdmissionRegistry::Phase::Missing;}
+bool Manager::pendingMediaDestination(const fs::path& path,const JobPtr& owner)const{Lock lock(mutex);return admissionRegistry->reserves(path,owner?owner->id():std::string{});}
+// The caller holds the catalog lock while choosing and adding the destination.
+static std::string availableDownloadName(const Manager& manager,const fs::path& folder,const std::string& filename){
+ const auto original=fs::path(wide(filename));
+ const auto first=folder/original;
+ const auto firstKey=downloadPathKey(first);
+ const auto publications=PublicationOwnership::destinations(manager);
+ const auto reservedOnDisk=[&](const fs::path& path){return publications.count(PublicationOwnership::pathKey(path))||fs::exists(path)||manager.relocationReserves(path)||manager.pendingMediaDestination(path);};
+ if(!reservedOnDisk(first)&&std::none_of(manager.jobs.begin(),manager.jobs.end(),[&](const auto& job){
+     const auto previous=str(job->data,"PreviousPath");
+     return windowsPath::equal(downloadPathKey(job->target()),firstKey)||
+            (!previous.empty()&&windowsPath::equal(downloadPathKey(fs::path(wide(previous))),firstKey));
+    }))return filename;
+
+ // Check catalog reservations once for the entire numbered-name search.
+ windowsPath::Keys reserved;
+ for(const auto& job:manager.jobs){
+  reserved.insert(downloadPathKey(job->target()));
+  const auto backup=str(job->data,"PreviousPath");
+  if(!backup.empty())reserved.insert(downloadPathKey(fs::path(wide(backup))));
+ }
+ const auto stem=original.stem().wstring(),extension=original.extension().wstring();
+ for(size_t i=1;;++i){
+  const auto numbered=stem+L" ("+std::to_wstring(i)+L")"+extension;
+  const auto candidate=folder/numbered;
+  if(!reservedOnDisk(candidate)&&!reserved.count(downloadPathKey(candidate)))return utf8(numbered);
+ }
+}
+JobPtr Manager::add(std::string address,std::string folder,std::string name,std::string queue,bool paused,Headers h,std::string expected,const Json& request,const Json& browserProxy,const Json& browserSession){auto session=browserDownloadSession(browserSession,address,h);auto proxy=validateBrowserProxy(browserProxy,address);auto post=validatePostRequest(request,address);Url u(address);validateHeaders(h);if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("SHA-256 must contain 64 hexadecimal characters.");Lock l(mutex);if(stopping)throw std::runtime_error("UDM is closing.");auto& p=state["Settings"];auto filename=safeName(name.empty()?unescape(u.path):name);auto cat=downloadCategory(filename,u.host,p);if(folder.empty())folder=categoryFolder(p,cat);const auto destinationFolder=fs::absolute(fs::path(wide(folder)));folder=utf8(destinationFolder.wstring());if(relocationReserves(destinationFolder))throw std::runtime_error("That folder is reserved by a file move.");bool found=false;for(auto q:state["Queues"])found|=str(q,"Name")==queue;if(!found)queue=str(state["Queues"][0],"Name");filename=availableDownloadName(*this,destinationFolder,filename);auto j=std::make_shared<Job>(Json{{"Id",guid()},{"Url",address},{"FileName",filename},{"Folder",folder},{"Category",cat},{"Queue",queue},{"Status",paused?"Paused":"Queued"},{"Error",""},{"Size",-1},{"Received",0},{"Connections",std::clamp<i64>(num(p,"Connections",8),1,32)},{"QueueMember",true},{"LimitKbps",0},{"ExpectedSha256",expected},{"Sha256",""},{"ProtectedHeaders",h.empty()?"":protect(legacyDictionary(Json(h)).dump())},{"ProtectedRequest",post.empty()?"":protect(post.dump())},{"ProtectedBrowserProxy",proxy.empty()?"":protect(proxy.dump())},{"Added",date()},{"Segments",Json::array()},{"Description",""}});j->data["Connections"]=connectionsForUrl(p,u);if(!session.empty())j->data["ProtectedBrowserSession"]=protect(session.dump());jobs.push_back(j);try{save();}catch(...){jobs.pop_back();throw;}return j;}
+bool Manager::isActive(JobPtr j)const{Lock l(mutex);return active.count(j->id())!=0||PublicationOwnership::treeOwned(*this,j)||(j->data.contains("OriginalResponse")&&(str(j->data["OriginalResponse"],"State")=="Receiving"||str(j->data["OriginalResponse"],"State")=="Reserved"));}
+void Manager::resume(JobPtr j){resumeIf(j,{});}
+bool Manager::resumeIf(JobPtr j,const std::function<bool()>& allowed){
+ {Lock lock(mutex);if(!j)throw std::runtime_error("This download is no longer in the list.");
+  if(allowed&&!allowed())return false;
+  if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
+  if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");}
+ recoverReplacements(j,true);
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");
+ if(allowed&&!allowed())return false;
+ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(isActive(j)){if(j->prefetchDeferring&&str(j->data,"Status")=="Paused")queueIndividualResume(j);return true;}
+ resumeAfterRecovery(j);return true;
+}
+// Caller owns the model lease and has already reconciled this publication tree.
+void Manager::resumeAfterRecovery(JobPtr j){
+ const auto response=j->data.find("OriginalResponse");
+ if(response!=j->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing")){
+  startOriginalResponseSave(j);return;
+ }
+ if(response!=j->data.end()&&str(*response,"State")!="Published"){
+  recoverOriginalResponses();
+  auto next=j->data;
+  stageOriginalResponseResume(j,next);
+  j->data.swap(next);
+  try{queueIndividualResume(j);}catch(...){j->data.swap(next);throw;}
+  return;
+ }
+ if(str(j->data,"Status")=="Complete"){
+  if(!yes(j->data,"SyncRetryFailed")||!canRequestLogin(j->data))return;
+  validateQueueMembership(*this,j,true,str(j->data,"Queue"));
+  auto before=j->data;
+  j->data["IndividualStart"]=true;j->data["QueueOrigin"]=false;j->data["SyncPending"]=true;j->data["NotBefore"]=nullptr;j->data["AuthenticationPromptPending"]=false;
+  try{save();}catch(...){j->data=before;throw;}return;
+ }
+ queueIndividualResume(j);
+}
+// Caller holds the manager lock and has already resolved publication recovery.
+void Manager::queueIndividualResume(JobPtr j){
+ readBrowserSession(j->data);
+ if(yes(j->data,"RequiresRequestCapture"))throw std::runtime_error("This form download needs its original request. Submit the download form again in your browser.");
+ if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("This imported video needs fresh browser links. Open its page and choose a quality from the UDM video panel.");
+ if(yes(j->data,"SabrSessionRefreshRequired"))throw SabrSessionRefreshRequired(num(j->data.value("SabrSessionRejection",Json()),"part")==46);
+ if(!str(j->data,"DuplicateOf").empty())throw std::runtime_error("Choose how to handle this duplicate first.");
+ auto before=j->data;auto oldLimit=j->sessionLimit;auto oldPaused=schedulePaused;auto captures=state.value("BrowserCaptures",Json());
+ // A Resume of a completed response is not permission to submit its form
+ // again. If verification rejects it, a later explicit Restart rearms POST.
+ const bool savedPost=completedPostResponseCandidate(j->data);
+ if(yes(j->data,"PostResponseComplete")&&!savedPost){
+  j->data.erase("PostResponseComplete");j->data.erase("CompletedPrefetch");j->data.erase("ReusedCompletedPrefetch");
+  j->data.erase("PostResponseRequestSha256");j->data.erase("ProtectedPostGetUrl");j->data.erase("ProtectedPostGetHeaders");
+  j->data["HttpPartsResetPending"]=true;j->data["Segments"]=Json::array();j->data["Size"]=-1;j->data["Received"]=0;
+  j->data.erase("PrefetchedFinalSize");j->data["HttpDecodedSize"]=-1;j->data["HttpDecodedReceived"]=0;
+ }
+ j->data["PostAttempted"]=savedPost;j->data["IndividualStart"]=true;j->sessionLimit.reset();j->data["QueueMember"]=true;j->data["QueueOrigin"]=false;j->data["QueueAttempts"]=0;j->data["Status"]="Queued";j->data["Error"]="";schedulePaused.erase(j->id());eraseCapturePresentations(state,j->id());
+ try{save();}catch(...){j->data=before;j->sessionLimit=oldLimit;schedulePaused=oldPaused;restoreCaptureRows(state,captures);throw;}
+}
+void Manager::pause(JobPtr j){
+ Lock l(mutex);
+ if(PublicationOwnership::treeCommitting(*this,j)||(PublicationOwnership::treeOwned(*this,j)&&!active.count(j->id())))throw std::runtime_error("Wait for the file publication to finish before pausing this download.");
+ const auto response=j->data.find("OriginalResponse");
+ const auto responseState=response==j->data.end()?std::string{}:str(*response,"State");
+ if(responseState=="Receiving"||responseState=="Reserved"){
+  requestOriginalResponsePause(j,true);return;
+ }
+ auto it=active.find(j->id());auto pendingStop=it==active.end()?std::shared_ptr<Cancel>():it->second;
+ if(str(j->data,"Status")=="Complete"){
+  // An idle completed job has nothing to persist; an active scanner wait can
+  // still be canceled without changing the completed download's metadata.
+  const bool checking=pendingStop&&(yes(j->data,"SyncCheckInProgress")||str(j->data,"SyncStatus")=="Checking for updates");
+  if(checking||yes(j->data,"SyncPending")||j->data.contains("IndividualStart")){
+   auto before=j->data;j->data["SyncPending"]=false;j->data.erase("IndividualStart");
+   if(checking){j->data.erase("SyncCheckInProgress");j->data["SyncStatus"]="Check canceled";}
+   try{save();}catch(...){j->data=before;throw;}
+  }
+  schedulePaused.erase(j->id());
+  if(pendingStop)pendingStop->stop=true;return;
+ }
+ auto before=j->data;auto previousPaused=schedulePaused;auto previousFailures=cycleFailed;auto captures=state.value("BrowserCaptures",Json());
+ try{
+  j->data["GrabberImmediate"]=false;j->data.erase("IndividualStart");cycleFailed[str(j->data,"Queue")]=true;j->data["SyncPending"]=false;schedulePaused.erase(j->id());
+  if(responseState=="Ready"||responseState=="Publishing")j->data["ResponseSaveDeferred"]=true;
+  j->data["Status"]=pendingStop?"Pausing":"Paused";eraseCapturePresentations(state,j->id());save();
+ }catch(...){j->data=before;schedulePaused=previousPaused;cycleFailed=previousFailures;restoreCaptureRows(state,captures);throw;}
+ // Cancellation cannot be rolled back. Publish the saved pause decision first.
+ if(pendingStop)pendingStop->stop=true;existingOffers.erase(j->id());
+}
+void Manager::remove(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
+ {Lock lock(mutex);
+  if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+  if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
+  recoverFileOperation(j);
+ }
+ // Keep the selected record until publication recovery has accepted its files.
+ recoverReplacements(j,true);
+ removeAfterRecovery(j,expectedComplete,cleanupPrefetch);
+}
+// Caller has reconciled publication; repeated mutation validation remains atomic.
+void Manager::removeAfterRecovery(JobPtr j,std::optional<bool> expectedComplete,bool cleanupPrefetch){
+ Lock l(mutex);
+ if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("Select a download that is still in the list.");
+ if(isActive(j))throw std::runtime_error("Pause the download and wait until it stops before removing it.");
+ if(expectedComplete&&(std::find(jobs.begin(),jobs.end(),j)==jobs.end()||(str(j->data,"Status")=="Complete")!=*expectedComplete))throw std::runtime_error("The selected download changed during recovery. Review the selection before removing it.");
+ for(auto other:jobs)if(str(other->data,"ReplacementOf")==j->id())throw std::runtime_error("A pending replacement depends on this record. Remove that replacement first.");
+ auto old=jobs;auto captures=state.value("BrowserCaptures",Json());jobs.erase(std::remove(jobs.begin(),jobs.end(),j),jobs.end());eraseCapturePresentations(state,j->id());
+ try{save();existingOffers.erase(j->id());}catch(...){jobs=old;restoreCaptureRows(state,captures);throw;}
+ discardRetainedMediaOutput(j->data);
+ if(cleanupPrefetch)discardCancelledPrefetch(j);
+ pruneStagedPostBodies(*this);
+}
+bool Manager::cancelUnconfirmedOffer(JobPtr job,OfferCancellation policy,const std::function<bool()>& allowed){
+ bool removed=false;
+ const auto member=[&]{return job&&std::find(jobs.begin(),jobs.end(),job)!=jobs.end();};
+ const auto eligible=[&](bool recovered){
+  if(!member()||yes(job->data,"IndividualStart")||isActive(job))return false;
+  const auto status=str(job->data,"Status");
+  return policy==OfferCancellation::AwaitingOnly?(status=="Awaiting confirmation"||(recovered&&status=="Paused")):!job->data.contains("OriginalResponse")&&(status=="Awaiting confirmation"||status=="Paused"||status=="Failed");
+ };
+ // Before/after execute under recovery's own lease. No other UI command can
+ // accept the recovered Paused row between owner release and guarded removal.
+ recoverReplacementsWithContinuation(job,true,[&]{
+  if(allowed&&!allowed())return false;
+  if(!eligible(false)){
+   if(policy==OfferCancellation::FileInfo&&member()&&!yes(job->data,"IndividualStart"))pause(job);
+   return false;
+  }
+  recoverFileOperation(job);return true;
+ },[&]{if((!allowed||allowed())&&eligible(true)){removeAfterRecovery(job,false,true);removed=true;}});
+ return removed;
+}
+int Manager::retries(const std::string& queue)const{Lock l(mutex);for(auto q:state["Queues"])if(str(q,"Name")==queue)return (int)std::clamp<i64>(num(q,"Retries",num(state["Settings"],"Retries",3)),0,10);return 3;}
+static i64 quotaPeriodStart(const Json& state){
+ try{return parseDate(state.value("QuotaStart",Json()));}catch(const std::exception&){return 0;}
+}
+// Persist the byte watermark with quota usage so repeated broker snapshots and
+// receipt recovery cannot charge the captured prefix twice.
+void Manager::accountOriginalResponseBytes(JobPtr job,i64 received){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!job->data["OriginalResponse"].is_object()||received<0||(num(job->data,"Size",-1)>=0&&received>num(job->data,"Size")))throw std::runtime_error("Invalid captured response accounting.");
+ auto accounted=num(job->data["OriginalResponse"],"AccountedBytes",0);
+ if(accounted<0||(yes(job->data["OriginalResponse"],"FlowControlled")&&received>num(job->data["OriginalResponse"],"GrantedBytes")))throw std::runtime_error("Invalid captured byte watermark or exceeded allowance.");
+ if(received<=accounted)return;
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state);auto period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  if(start<=0||start>now||now-start>=period){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto used=std::max<i64>(0,num(state,"QuotaBytes")),delta=received-accounted;
+  if(used>std::numeric_limits<i64>::max()-delta)throw std::runtime_error("Captured transfer quota counter overflow.");
+  state["QuotaBytes"]=used+delta;job->data["OriginalResponse"]["AccountedBytes"]=received;job->data["Received"]=received;save();
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
+i64 Manager::capturedQuotaReserved()const{
+ Lock lock(mutex);i64 total=0;
+ for(auto job:jobs){auto it=job->data.find("OriginalResponse");if(it==job->data.end()||!yes(*it,"FlowControlled")||str(*it,"State")!="Receiving")continue;
+  auto granted=num(*it,"GrantedBytes"),accounted=num(*it,"AccountedBytes");
+  if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+  auto pending=granted-accounted;if(total>std::numeric_limits<i64>::max()-pending)return std::numeric_limits<i64>::max();total+=pending;
+ }return total;
+}
+uint64_t Manager::reserveOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end()||!job->data.contains("OriginalResponse")||!yes(job->data["OriginalResponse"],"FlowControlled")||windowBytes>uint64_t(INT64_MAX))throw std::runtime_error("Invalid response credit reservation.");
+ auto& record=job->data["OriginalResponse"];auto granted=num(record,"GrantedBytes"),accounted=num(record,"AccountedBytes");
+ if(granted<0||accounted<0||accounted>granted)throw std::runtime_error("Invalid captured quota reservation.");
+ if(str(record,"State")!="Receiving"||yes(record,"PauseRequested"))return static_cast<uint64_t>(granted);
+ auto before=job->data,oldStart=state.value("QuotaStart",Json()),oldBytes=state.value("QuotaBytes",Json());auto oldNotice=quotaNoticeToken;
+ try{
+  auto now=epoch(),start=quotaPeriodStart(state),period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+  bool reset=start<=0||start>now||now-start>=period;if(reset){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+  auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024,used=std::max<i64>(0,num(state,"QuotaBytes"));
+  auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+  available-=std::min(available,capturedQuotaReserved());
+  auto room=std::max<i64>(0,static_cast<i64>(windowBytes)-(granted-accounted));
+  auto length=num(job->data,"Size",-1);room=std::min(room,std::max<i64>(0,(length<0?std::numeric_limits<i64>::max():length)-granted));
+  auto extra=std::min(room,available);if(extra){record["GrantedBytes"]=granted+extra;save();}else if(reset)save();
+  return static_cast<uint64_t>(granted+extra);
+ }catch(...){job->data=before;state["QuotaStart"]=oldStart;state["QuotaBytes"]=oldBytes;quotaNoticeToken=oldNotice;throw;}
+}
+uint64_t Manager::scheduledOriginalResponseCredits(JobPtr job,size_t windowBytes){
+ Lock lock(mutex);
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Invalid captured download.");
+ auto& schedule=captureCreditSchedules[job->id()];auto now=std::chrono::steady_clock::now();
+ auto global=num(state["Settings"],"LimitKbps"),per=job->sessionLimit.value_or(num(job->data,"LimitKbps"));
+ if(str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download"){
+  if(global>0)per=per>0?std::min(global,per):global;global=0;
+ }
+ // Match Rate::wait: a disabled global limiter must not retain obsolete debt.
+ // Otherwise turning it back on can stall new credits behind the old queue.
+ if(global<=0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);globalRate.next={};}
+ // Turning every effective limit off must release already-paid credits now.
+ // Quota reservations remain intact; no new allowance bypasses the quota.
+ if(global<=0&&per<=0){schedule.released=schedule.scheduled;schedule.localNext={};}
+ else if(global<=0)schedule.ready=schedule.localNext;
+ else if(per<=0){schedule.ready=schedule.globalReady;schedule.localNext={};}
+ // A reserved time slot is paid once, even if the helper acknowledgement is lost.
+ if(schedule.scheduled>schedule.released){
+  if(now<schedule.ready)return schedule.released;
+  schedule.released=schedule.scheduled;
+ }
+ // Cover a normal poll plus bounded lateness from catalog writes and UI updates.
+ auto late=schedule.scheduled?std::clamp<i64>(std::chrono::duration_cast<std::chrono::microseconds>(now-schedule.ready).count(),0,1000000):0;
+ auto horizon=500000+late;
+ for(auto limit:{global,per})if(limit>0)windowBytes=std::min<size_t>(windowBytes,static_cast<size_t>(std::clamp<i64>(limit,1,1000000))*1024*static_cast<size_t>(horizon)/1000000);
+ auto bufferedWindow=windowBytes;
+ if(global>0||per>0){
+  auto accounted=static_cast<uint64_t>(std::max<i64>(0,num(job->data["OriginalResponse"],"AccountedBytes")));
+  auto releasedPending=schedule.released>accounted?schedule.released-accounted:0;
+  if(releasedPending>static_cast<uint64_t>(INT64_MAX)-bufferedWindow)throw std::runtime_error("Captured bandwidth window overflow.");
+  bufferedWindow+=static_cast<size_t>(releasedPending);
+ }
+ auto total=reserveOriginalResponseCredits(job,bufferedWindow);
+ if(total<schedule.scheduled)throw std::runtime_error("Captured allowance moved backwards.");
+ auto extra=total-schedule.scheduled;
+ if(!extra)return schedule.released;
+ auto due=now;auto earliest=schedule.scheduled?now-std::chrono::microseconds(late):now;
+ if(global>0){std::lock_guard<std::mutex> rateLock(globalRate.mutex);
+  globalRate.next=std::max(globalRate.next,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(global*1024.0))));schedule.globalReady=globalRate.next;due=std::max(due,schedule.globalReady);
+ }
+ if(per>0){schedule.localNext=std::max(schedule.localNext,earliest)+std::chrono::microseconds(static_cast<i64>(std::ceil(extra*1000000.0/(per*1024.0))));due=std::max(due,schedule.localNext);}
+ schedule.scheduled=total;schedule.ready=due;
+ // Persisting the allowance may itself consume the reserved time interval.
+ // Recheck after the durable save instead of imposing another polling delay.
+ if(due<=std::chrono::steady_clock::now())schedule.released=total;
+ return schedule.released;
+}
+// Quota reservations share the manager lock across all jobs and transport workers.
+i64 Manager::effectiveLimitKbps(JobPtr j)const{
+ // Either limit mode resolves to the tighter of the two limits when both are set; the clamp matches charge().
+ Lock l(mutex);
+ i64 global=std::clamp<i64>(num(state["Settings"],"LimitKbps"),0,1000000),per=std::clamp<i64>(j->sessionLimit.value_or(num(j->data,"LimitKbps")),0,1000000);
+ return global>0&&per>0?std::min(global,per):std::max(global,per);
+}
+void Manager::charge(size_t n,const Cancel& c,Rate& local,JobPtr j){
+ // Re-read limits between short reservations. Reserving the entire network
+ // block at a very low rate otherwise keeps an obsolete limit for seconds or
+ // minutes after the user changes it. The shared Rate objects still serialize
+ // all workers; this does not create a per-connection bandwidth allowance.
+ size_t unpaced=n;
+ do{
+  c.check();i64 global=0,per=0;bool perDownload=false;
+  {Lock l(mutex);perDownload=str(state["Settings"],"GlobalLimitMode","Total across downloads")=="Each download";global=num(state["Settings"],"LimitKbps");per=j->sessionLimit.value_or(num(j->data,"LimitKbps"));}
+  if(perDownload){if(global>0)per=per>0?std::min(global,per):global;global=0;}
+  size_t portion=unpaced;
+  for(auto limit:{global,per})if(limit>0){
+   const auto quantum=static_cast<size_t>(std::max<i64>(1,std::clamp<i64>(limit,1,1000000)*1024/20));
+   portion=std::min(portion,quantum);
+  }
+  // Both caps constrain the same bytes in the same interval. Waiting for
+  // them serially adds their delays and can halve the requested speed.
+  const auto globalDue=reserveRate(globalRate,portion,global);
+  const auto localDue=reserveRate(local,portion,per);
+  waitForRate(std::max(globalDue,localDue),c);
+  unpaced-=portion;
+ }while(unpaced);
+ bool waiting=false;
+ auto clear=[&]{Lock l(mutex);if(waiting){auto it=quotaWaiters.find(j);if(it!=quotaWaiters.end()&&--it->second==0)quotaWaiters.erase(it);waiting=false;}};
+ try{size_t remaining=n;do{
+  c.check();
+  {Lock l(mutex);auto now=epoch(),start=quotaPeriodStart(state);auto period=std::clamp<i64>(num(state["Settings"],"QuotaHours",1),1,168)*3600000;
+   if(start<=0||start>now||now-start>=period){state["QuotaStart"]=date(now);state["QuotaBytes"]=0;quotaNoticeToken.clear();}
+   auto maximum=std::clamp<i64>(num(state["Settings"],"QuotaMb"),0,100000000)*1024*1024;
+   auto used=std::max<i64>(0,num(state,"QuotaBytes"));
+   auto available=maximum>0?std::max<i64>(0,maximum-used):std::numeric_limits<i64>::max()-used;
+   available-=std::min(available,capturedQuotaReserved());
+   auto reserved=std::min<size_t>(remaining,(size_t)available);
+   state["QuotaBytes"]=used+(i64)reserved;remaining-=reserved;
+   if(!remaining){clear();return;}
+   if(!waiting){++quotaWaiters[j];waiting=true;}
+  }
+  c.wait(100);
+ }while(true);}catch(...){clear();throw;}
+}
+static bool capturedQuotaWaiting(JobPtr candidate){
+ auto field=candidate->data.find("OriginalResponse");if(field==candidate->data.end())return false;
+ const auto& record=*field;auto received=num(candidate->data,"Received"),size=num(candidate->data,"Size",-1);
+ return yes(record,"FlowControlled")&&str(record,"State")=="Receiving"&&!yes(record,"PauseRequested")&&num(record,"GrantedBytes")<=received&&(size<0||received<size);
+}
+Json Manager::quotaStatus(JobPtr job)const{
+ Lock lock(mutex);const auto& prefs=state["Settings"];auto limit=std::clamp<i64>(num(prefs,"QuotaMb"),0,100000000)*1024*1024;
+ auto hours=std::clamp<i64>(num(prefs,"QuotaHours",1),1,168),start=quotaPeriodStart(state),until=start+hours*3600000,now=epoch();
+ bool waiting=false;for(auto& item:quotaWaiters)if(!job||item.first==job||item.first==job->video||item.first==job->audio){waiting=true;break;}
+ const auto reserved=capturedQuotaReserved();
+ for(auto candidate:jobs)if((!job||candidate==job)&&capturedQuotaWaiting(candidate))waiting=true;
+ waiting=waiting&&limit>0&&num(state,"QuotaBytes")>=std::max<i64>(0,limit-reserved)&&start>0&&start<=now&&now<until;
+ return {{"Waiting",waiting},{"LimitBytes",limit},{"Bytes",num(state,"QuotaBytes")},{"ReservedBytes",reserved},{"Hours",hours},{"PeriodStart",start},{"ResumeAt",until},{"Seconds",std::max<i64>(0,(until-now+999)/1000)}};
+}
+std::set<JobPtr> Manager::quotaWaitingJobs()const{
+ Lock lock(mutex);std::set<JobPtr> waiting;if(!yes(quotaStatus(),"Waiting"))return waiting;
+ for(auto job:jobs)if(quotaWaiters.count(job)||(job->video&&quotaWaiters.count(job->video))||(job->audio&&quotaWaiters.count(job->audio))||capturedQuotaWaiting(job))waiting.insert(job);
+ return waiting;
+}
+Json Manager::takeQuotaWarning(){
+ Lock lock(mutex);auto value=quotaStatus();if(!yes(value,"Waiting")||!yes(state["Settings"],"WarnQuota",true))return Json::object();
+ auto token=std::to_string(num(value,"PeriodStart"))+":"+std::to_string(num(value,"Hours"))+":"+std::to_string(num(value,"LimitBytes"));
+ if(token==quotaNoticeToken)return Json::object();quotaNoticeToken=token;return value;
+}
+std::string quotaWaitText(const Json& value){
+ if(!yes(value,"Waiting"))return "";auto seconds=num(value,"Seconds");
+ return "Download limit reached. Resuming automatically in "+std::to_string(seconds/3600)+" hr "+std::to_string((seconds/60)%60)+" min "+std::to_string(seconds%60)+" sec.";
+}
+
+void Manager::progress(JobPtr j,size_t n,size_t segment,Worker* worker,bool accountNetwork){Lock l(mutex);auto& s=j->data["Segments"][segment];s["Done"]=num(s,"Done")+n;j->data["Received"]=num(j->data,"Received")+n;if(accountNetwork)j->data["TransferredBytes"]=num(j->data,"TransferredBytes")+n;if(worker){worker->received+=n;worker->position=num(s,"Start")+num(s,"Done");worker->state="Receiving data";}}
+void Manager::ensureConnection(JobPtr j,const Cancel& c){Json prefs;{Lock l(mutex);prefs=state["Settings"];}ensureDialConnection(prefs,c,[this,j](const std::string& message){Lock l(mutex);if(message.empty())j->data.erase("ConnectionStatus");else j->data["ConnectionStatus"]=message;});}
+void requestLiveHlsFinish(Manager& manager,JobPtr job,const std::function<bool()>& allowed){
+ std::unique_lock<std::recursive_mutex> lock(manager.mutex);if(allowed&&!allowed())return;if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()||!yes(job->data,"LiveRecording")||str(job->data,"Status")=="Complete"||str(job->data,"Status")=="Awaiting confirmation")throw std::runtime_error("There is no active or retained live recording to save.");
+ auto before=job->data;job->data["LiveStopRequested"]=true;try{manager.save();}catch(...){job->data=before;throw;}
+ if(job->liveCapture)job->liveCapture->stop=true;else if(!manager.isActive(job)){lock.unlock();manager.resumeIf(job,[&]{return std::find(manager.jobs.begin(),manager.jobs.end(),job)!=manager.jobs.end()&&yes(job->data,"LiveRecording")&&yes(job->data,"LiveStopRequested")&&str(job->data,"Status")!="Complete"&&str(job->data,"Status")!="Awaiting confirmation";});}
+}
+void Manager::start(JobPtr j){if(yes(j->data,"SabrSessionRefreshRequired"))return;if(j->data.contains("OriginalResponse")&&str(j->data["OriginalResponse"],"State")!="Published")return;if(stopping||isActive(j)||str(j->data,"Status")=="Complete"||!str(j->data,"DuplicateOf").empty())return;periodicCheckpoint.start();state["CompletionWorkEpoch"]=guid();auto c=std::make_shared<Cancel>();active[j->id()]=c;j->prefetchConfirmedAt.reset();j->prefetchPeakDisplayUntil.reset();j->data["Status"]="Downloading";j->httpFailureNoticePending=false;j->data["LastAttempt"]=date();j->data["Error"]="";j->data.erase("WebPageReceived");j->data.erase("ContentPrefixPending");j->data["LastHttpStatus"]=0;j->data["LastFtpStatus"]=0;clearServerRetry(j->data);j->data["AuthenticationPromptPending"]=false;j->data.erase("AuthenticationOrigin");j->data.erase("AuthenticationScheme");j->speedMeter.reset(num(j->data,"TransferredBytes"));const bool prefetch=yes(j->data,"ConfirmationPending");threads.emplace_back([this,j,c,prefetch]{CatalogDiskCredit::WorkerScope diskGeneration(*this,j,c);std::optional<PreparedTransferCommit> finalCommitOwner(std::in_place,*this,j,c,!prefetch);auto& finalCommit=*finalCommitOwner;bool complete=false,showFailedPreparedSave=false;try{if(yes(j->data,"RequiresMediaCapture"))throw std::runtime_error("Fresh browser-captured media is required.");if(event&&!prefetch)event(j,false);if(j->data.contains("OfflineProject")){ensureConnection(j,*c);offlineTransfer(*this,j,c);}else if(!str(j->data,"ProtectedAdaptive").empty())adaptiveTransfer(*this,j,c);else if(str(j->data,"SourceUrl").empty())transfer(*this,j,c);else mediaTransfer(*this,j,c);if(finalCommit.prepared()){{Lock lock(mutex);finalCommit.protectIndependentFinish();j->data.erase("IndividualStart");j->data.erase("ConnectionStatus");j->speed=0;schedulePaused.erase(j->id());}UDM_FINISH_POINT("worker-commit-begin");finalCommit.commit();UDM_FINISH_POINT("worker-commit-end");}complete=true;{Lock l(mutex);j->data["QueueMember"]=retainCompletedMembership(*this,j->data);}}catch(const std::exception& e){finalCommitOwner.reset();complete=false;Lock l(mutex);if(c->cancelled()){if(!j->prefetchDeferring)j->data["Status"]=takeScheduledPause(j)?"Queued":"Paused";}else{j->data["Status"]="Failed";showFailedPreparedSave=prefetch&&!yes(j->data,"ConfirmationPending")&&yes(j->data,"ReusedPrefetchedOutput")&&j->data.contains("RetainedMediaOutput");}j->data["Error"]=c->cancelled()?"":e.what();if(auto http=dynamic_cast<const HttpRejected*>(&e)){j->data["LastHttpStatus"]=http->status;recordServerRetry(j->data,*http);j->httpFailureNoticePending=(http->status==403||dynamic_cast<const BrowserVerificationRequired*>(http))&&!c->cancelled()&&!yes(j->data,"ConfirmationPending")&&!yes(j->data,"QueueOrigin")&&!j->data.contains("OfflineProject")&&str(j->data,"SourceUrl").empty()&&str(j->data,"ProtectedAdaptive").empty();}if(dynamic_cast<const WebPageReceived*>(&e))j->data["WebPageReceived"]=true;if(dynamic_cast<const ContentPrefixDetected*>(&e))j->data["ContentPrefixPending"]=true;if(auto auth=dynamic_cast<const AuthenticationRequired*>(&e)){j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]=auth->scheme;j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}if(auto auth=dynamic_cast<const FtpAuthenticationRequired*>(&e)){j->data["LastFtpStatus"]=530;j->data["AuthenticationOrigin"]=auth->origin;j->data["AuthenticationScheme"]="FTP";j->data["AuthenticationPromptPending"]=canRequestLogin(j->data);}}if(complete)scanCompleted(j,*c);
+  std::function<void(const char*)> completedCheckpoint;
+  {
+   Lock lock(mutex);
+   const bool resumeRequested=j->prefetchDeferring&&yes(j->data,"IndividualStart");
+   if(j->prefetchDeferring){
+    j->prefetchDeferring=false;
+    const bool queued=resumeRequested||takeScheduledPause(j,true);
+    j->data["Status"]=queued?"Queued":"Paused";
+    if(capturedMedia(j->data))j->data["MediaPhase"]=queued?"Queued":"Paused";
+   }
+   if(!complete)active.erase(j->id());
+   if(!resumeRequested)j->data.erase("IndividualStart");
+   schedulePaused.erase(j->id());
+   j->data.erase("ConnectionStatus");
+   j->speed=0;
+   if(complete)completedCheckpoint=catalogCheckpoint;
+   else try{save();}catch(...) {}
+  }
+  if(complete){
+   // Keep this worker's active ownership until its checkpoint attempt settles,
+   // but do not retain the model mutex across serialization or durable IO.
+   try{
+    bool alreadySaved=false;
+    if(finalCommit.committed())try{
+     Lock lock(mutex);
+     if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+      auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+      if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+       if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+      }
+     }
+    }catch(...){/* Missing proof retains the final forced checkpoint. */}
+    UDM_FINISH_POINT("worker-final-proof-done");if(alreadySaved){}else if(completedCheckpoint){
+     std::function<void(const char*)> observe=[checkpoint=std::move(completedCheckpoint)](const char* point){if(std::string_view(point)=="snapshot-prepared")checkpoint("completed-transfer-checkpoint");checkpoint(point);};
+     saveCatalog(false,&observe);
+    }else save();
+   }catch(...){} // Publication is already committed; retain storageError.
+   {Lock lock(mutex);auto owner=active.find(j->id());if(owner!=active.end()&&owner->second==c)active.erase(owner);}
+  }
+  if(prefetch)prefetchConfirmed.notify_all();
+  UDM_FINISH_POINT("worker-notify-begin");if((complete||showFailedPreparedSave)&&event)event(j,complete);UDM_FINISH_POINT("worker-notify-end");
+ });
+}
+void Manager::checkpointPeriodic(){
+ // Do not hold an outer manager lock across save's serialization or disk IO.
+ // Check and snapshot atomically; save reports failures with its sequence guard.
+ try{saveCatalog(true);}catch(...){}
+}
+void Manager::tick(){Lock l(mutex);if(stopping)return;recoverDesktopOriginalResponses();auto now=std::chrono::steady_clock::now();double seconds=std::max(.000001,std::chrono::duration<double>(now-lastTick).count());lastTick=now;for(auto j:jobs){if(str(j->data,"Status")=="Complete"&&!isActive(j)&&j->speed==0){
+ if(!catalogTransaction&&!pendingScanRunning){
+  const auto result=j->data.find("ScanResult");
+  if(result!=j->data.end()&&str(*result,"Status")=="Pending"){
+   j->data["CompletionActionArmed"]=false;
+   launchCompletedScan(j,ScanLaunch::Recovery);
+  }
+ }
+ continue;
+}if(str(j->data,"Status")=="Downloading")j->syncTrackProgress();const bool measuring=isActive(j)&&str(j->data,"Status")=="Downloading"&&j->savedDataCheck.total==0;j->speed=j->speedMeter.update(num(j->data,"TransferredBytes"),seconds,measuring);if(measuring){
+ j->data["LastTransferRate"]=downloadListIntegerRate(j->speed);
+ j->samplePrefetchRate(now);
+}if(j->speedMeter.instant>real(j->data,"PeakSpeed"))j->data["PeakSpeed"]=j->speedMeter.instant;}queueTick(epoch());projectLinksTick();updateWakeTimer(epoch());++ticks;try{periodicCheckpoint.start();}catch(const std::exception& e){storageError=e.what();throw;}}
+void Manager::stop(){if(ManagedModelWork::executingFor(this))throw std::logic_error("A model worker cannot stop its own manager.");try{drainModelWork();UDM_FINISH_POINT("stop-entry");{Lock l(mutex);stopping=true;if(wakeTimer)wakeTimer->stop();for(auto& [id,c]:active)c->stop=true;}UDM_FINISH_POINT("stop-periodic-begin");periodicCheckpoint.stop();UDM_FINISH_POINT("stop-periodic-end");{std::unique_lock<std::recursive_mutex> waitLock(mutex);relocationFinished.wait(waitLock,[&]{return relocationId.empty();});}for(auto& t:threads)if(t.joinable())t.join();threads.clear();UDM_FINISH_POINT("stop-joins-done");PublicationOwnership::waitUntilIdle(*this);UDM_FINISH_POINT("stop-publications-done");
+ // All workers and publication owners have settled. Reuse only an exact,
+ // acknowledged checkpoint whose real catalog is pinned against replacement
+ // and writes during validation. Explicit save() remains a forced barrier.
+ bool alreadySaved=false;
+ try{
+  Lock lock(mutex);
+  if(active.empty()&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+   auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+   if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+    const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+    if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+   }
+  }
+ }catch(...){/* Any missing proof retains a real durable shutdown write. */}
+ UDM_FINISH_POINT("stop-proof-done");if(!alreadySaved)try{UDM_FINISH_POINT("stop-save-begin");save();UDM_FINISH_POINT("stop-save-end");}catch(...){Lock l(mutex);stopping=false;throw;}UDM_FINISH_POINT("stop-return");}catch(...){std::lock_guard<std::mutex> lock(callbackState->mutex);if(callbackState->owner)callbackState->modelWorkClosing=false;throw;}}
+int retryAfterDelay(const std::string& header,i64 now){
+ auto first=header.find_first_not_of(" \t"),last=header.find_last_not_of(" \t");if(first==std::string::npos)return -1;
+ auto value=header.substr(first,last-first+1);
+ if(value.find_first_not_of("0123456789")==std::string::npos){
+  unsigned seconds=0;for(char c:value){seconds=seconds*10+(c-'0');if(seconds>300)return -2;}return (int)seconds*1000;
+ }
+ // WinHTTP's date parser accepts incomplete strings; require a full HTTP-date first.
+ static const std::regex httpDate(R"(^(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} [0-2][0-9]:[0-5][0-9]:[0-5][0-9] GMT|(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), [0-9]{2}-(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9] GMT|(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (?: [0-9]|[0-9]{2}) [0-2][0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4})$)");
+ if(!std::regex_match(value,httpDate))return -1;
+ SYSTEMTIME system{};FILETIME file{};if(!WinHttpTimeToSystemTime(wide(value).c_str(),&system)||!SystemTimeToFileTime(&system,&file))return -1;
+ ULARGE_INTEGER stamp{};stamp.LowPart=file.dwLowDateTime;stamp.HighPart=file.dwHighDateTime;
+ i64 delay=(i64)(stamp.QuadPart/10000)-11644473600000LL-now;if(delay<=0)return 0;if(delay>300000)return -2;return (int)delay;
+}
+HttpRejected::HttpRejected(DWORD code,const std::string& retryAfter):HttpRejected(code,retryAfter,epoch()){}
+HttpRejected::HttpRejected(DWORD code,const std::string& retryAfter,i64 receivedAt):runtime_error("The server rejected the download URL (HTTP "+std::to_string(code)+")."+(code==401?" This server requires authentication. Enter its login and password, or sign in through the browser.":code==407?" The proxy requires authentication. Check Options > Proxy.":(code==403||code==410)?" The link or session may have expired. Use Refresh download address to obtain a fresh link; saved parts are retained.":"")+(retryAfterDelay(retryAfter,receivedAt)==-2?" The server requested a wait longer than five minutes. Try again later; saved parts are retained.":"")),status(code),retryAfterMs(retryAfterDelay(retryAfter,receivedAt)),retryAfterUntilUtc(retryAfterMs>=0?receivedAt+retryAfterMs:0){}
+HttpRejected::HttpRejected(const std::string& message,DWORD code)
+ :runtime_error(message),status(code),retryAfterMs(-1),retryAfterUntilUtc(0){}
+BrowserVerificationRequired::BrowserVerificationRequired(DWORD code)
+ :HttpRejected("The website requires browser verification. Complete the check in your browser, then retry from the website.",code){}
+bool HttpRejected::transientStatus()const{
+ return !dynamic_cast<const BrowserVerificationRequired*>(this)&&
+  (status==408||status==425||status==429||status==500||status==502||status==503||status==504);
+}
+bool HttpRejected::retryable()const{return retryAfterMs!=-2&&transientStatus();}
+int HttpRejected::delay(int attempt)const{return std::max(retryAfterMs,std::min(10000,500*(1<<std::clamp(attempt,0,4))));}
+
+std::string recoveryPage(const Json& data){
+ auto source=str(data,"DownloadPage");if(source.empty()){auto h=readHeaders(data);for(const auto& [key,value]:h)if(lower(key)=="referer")source=value;}
+ if(!source.empty())try{Url page(source);if(page.scheme=="http"||page.scheme=="https")return source;}catch(...){}
+ try{Url u(str(data,"Url"));if(hostIs(u.host,"microsoft.com")&&u.path.find("Win11_")!=std::string::npos)return "https://www.microsoft.com/en-us/software-download/windows11";}catch(...){}
+ return "";
+}
+bool Manager::canRefreshAddress(JobPtr job)const{
+ Lock lock(mutex);if(!job||job->data.contains("OfflineProject")||!str(job->data,"ProtectedRequest").empty()||yes(job->data,"RequiresRequestCapture")||isActive(job)||str(job->data,"Status")=="Complete"||(!str(job->data,"SourceUrl").empty()&&str(job->data,"ProtectedSabr").empty()&&!directMediaJob(job))||yes(job->data,"LiveRecording"))return false;
+ try{if(!str(job->data,"ProtectedAdaptive").empty()&&yes(Json::parse(reveal(str(job->data,"ProtectedAdaptive"))),"live"))return false;Url u(str(job->data,"Url"));return u.scheme=="http"||u.scheme=="https"||u.scheme=="ftp";}catch(...){return false;}
+}
+void Manager::beginAddressRefresh(JobPtr job,bool preserveCaptured){
+ Lock lock(mutex);if(!canRefreshAddress(job))throw std::runtime_error("Pause an unfinished download before refreshing its address. For video captures, use the browser's video panel.");
+ if(!refreshId.empty()&&refreshId!=job->id()&&refreshUntil>epoch())throw std::runtime_error("Another download is already waiting for a replacement address.");
+ const bool ftp=Url(str(job->data,"Url")).scheme=="ftp";
+ auto marker=!ftp&&!str(job->data,"ProtectedSabr").empty()?guid():std::string{};
+ auto previous=job->data;
+ if(!yes(job->data,"ConfirmationPending"))job->data["Status"]="Paused";
+ if(ftp||((!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())&&(!preserveCaptured||addressRefreshCandidate(job).is_null())))job->data.erase("ProtectedRefreshOffer");try{save();}catch(...){job->data=previous;throw;}
+ if(ftp)cancelAddressRefresh(job);
+ else{refreshId=job->id();refreshUntil=epoch()+10*60*1000;streamRefreshToken=std::move(marker);}
+}
+void Manager::cancelAddressRefresh(JobPtr job){
+ Lock lock(mutex);
+ if(job&&refreshId==job->id()){refreshId.clear();streamRefreshToken.clear();refreshUntil=0;}
+}
+std::string Manager::streamingRefreshMarker(const JobPtr& job)const{
+ Lock lock(mutex);
+ if(!job||str(job->data,"ProtectedSabr").empty())return {};
+ if(refreshId!=job->id()||streamRefreshToken.empty()||refreshUntil<epoch())
+  throw std::runtime_error("Open media session recovery again before refreshing playback.");
+ const bool audioOnly=str(job->data,"MediaOutput")=="audio";
+ const auto offer=Json::parse(reveal(str(job->data,"ProtectedSabr")));
+ const auto format=str(offer.at(audioOnly?"audio":"video"),"id");
+ if(!std::regex_match(format,std::regex("[0-9]{1,6}")))
+  throw std::runtime_error("The saved stream format is missing.");
+ return "#udm-stream-refresh="+streamRefreshToken+"."+(audioOnly?"a":"v")+format;
+}
+static i64 verifiedStreamingPrefix(const Json& data){
+ const auto duration=num(data,"StreamDurationMs");
+ const auto count=num(data,"SabrConnections");
+ const auto ranges=data.find("SabrRanges");
+ if(duration<=0||count<1||count>8||ranges==data.end()||!ranges->is_array()||
+    ranges->size()!=static_cast<size_t>(count))return 0;
+ i64 prefix=0,total=0;
+ for(size_t index=0;index<ranges->size();++index){
+  const auto& range=(*ranges)[index];
+  const auto start=num(range,"Start",-1);
+  const auto next=index+1<ranges->size()?num((*ranges)[index+1],"Start",-1):duration;
+  const auto done=num(range,"Done",-1);
+  if((index==0&&start!=0)||start<0||next<=start||next>duration||done<0||done>next-start||
+     (range.contains("End")&&num(range,"End",-1)!=next-1))return 0;
+  if(prefix==start)prefix+=done;
+  total+=done;
+ }
+ return total==num(data,"StreamCompletedMs")?prefix:0;
+}
+std::string Manager::mediaRefreshPage(const JobPtr& job)const{
+ Lock lock(mutex);
+ const auto& data=job->data;
+ auto address=str(data,"SourceUrl",str(data,"Url"));
+ const auto marker=streamingRefreshMarker(job);
+ if(marker.empty())return address;
+ if(const auto fragment=address.find('#');fragment!=std::string::npos)address.resize(fragment);
+ const auto cursor=verifiedStreamingPrefix(data);
+ if(yes(data,"SabrSessionRefreshRequired")&&num(data,"SabrRetainedBytes")>0&&
+    cursor>=1000&&cursor<num(data,"StreamDurationMs")){
+  const auto source=Url(address);
+  const auto id=source.host=="youtu.be"?source.path.substr(1):query(address)["v"];
+  if(std::regex_match(id,std::regex("[A-Za-z0-9_-]{11}")))
+   address="https://www.youtube.com/watch?v="+id+"&t="+std::to_string(cursor/1000)+"s";
+ }
+ return address+marker;
+}
+bool addressRefreshCandidateCurrent(const Json& offer,i64 now){
+ if(!offer.is_object()||num(offer,"received")<now-10*60*1000)return false;
+ if(str(offer,"kind")=="sabr"){
+  const auto& session=offer.at("message").at("sabr");auto captured=real(session,"capturedAt");
+  return std::isfinite(captured)&&captured>=now-300000&&captured<=now+30000;
+ }
+ return true;
+}
+Json Manager::addressRefreshCandidate(JobPtr job)const{
+ Lock lock(mutex);
+ const auto value=job->data.find("ProtectedRefreshOffer");
+ if(value==job->data.end()||!value->is_string()||value->get_ref<const std::string&>().empty())return Json();
+ auto offer=Json::parse(reveal(value->get_ref<const std::string&>()));
+ if(!addressRefreshCandidateCurrent(offer,epoch()))return Json();
+ return offer;
+}
+AddressRefreshMatch addressRefreshMatch(const Json& data,const Url& original,const Url& next,const std::string& name,
+ const std::string& reportedName,const std::string& sourcePage,bool explicitPage){
+ const auto filename=lower(safeName(name.empty()?unescape(next.path):name));
+ const auto local=lower(str(data,"FileName")),urlName=lower(safeName(unescape(original.path)));
+ if(filename==local||filename==urlName)return AddressRefreshMatch::Name;
+
+ bool samePage=false;
+ try{
+  const auto savedPage=recoveryPage(data);
+  if(!savedPage.empty()&&!sourcePage.empty()){
+   const Url saved(savedPage),source(sourcePage);
+   // A reduced cross-origin Referer cannot identify the recovery page.
+   const bool identifiesPage=explicitPage||source.origin==next.origin||source.path!="/"||!source.query.empty();
+   samePage=identifiesPage&&source.origin==saved.origin&&source.path==saved.path&&source.query==saved.query;
+  }
+ }catch(const std::exception&){}
+
+ if(samePage||original.origin==next.origin){
+  const auto reported=!reportedName.empty()&&reportedName.size()<=1024&&reportedName.find('\0')==std::string::npos?
+   lower(safeName(reportedName)):std::string{};
+  const auto nativeName=str(data,"ResponseFileNameUrl")==original.full?lower(str(data,"ResponseFileName")):std::string{};
+  const auto browserName=lower(str(data,"BrowserReportedFileName"));
+  if((!reported.empty()&&(reported==local||reported==urlName))||
+     (!nativeName.empty()&&(nativeName==filename||nativeName==reported))||
+     (!browserName.empty()&&(browserName==filename||browserName==reported)))return AddressRefreshMatch::Name;
+ }
+ return samePage?AddressRefreshMatch::Page:AddressRefreshMatch::None;
+}
+JobPtr Manager::captureAddressRefresh(const std::string& address,const Headers& headers,const std::string& name,const std::string& page,
+ const std::string& reportedName,bool explicitPage){
+ Lock lock(mutex);if(refreshId.empty()||refreshUntil<epoch())return {};
+ JobPtr job;for(auto j:jobs)if(j->id()==refreshId)job=j;if(!canRefreshAddress(job)||!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())return {};
+ Url old(str(job->data,"Url")),next(address);if(old.scheme=="ftp"||(next.scheme!="http"&&next.scheme!="https"))return {};
+ if(addressRefreshMatch(job->data,old,next,name,reportedName,page,explicitPage)!=AddressRefreshMatch::Name)return {};
+ validateHeaders(headers);Json offer={{"url",address},{"headers",Json(headers)},{"page",page},{"received",epoch()}};
+ auto before=job->data;job->data["ProtectedRefreshOffer"]=protect(offer.dump());try{save();}catch(...){job->data=before;throw;}return job;
+}
+static void invalidateBrowserAddressContext(Json& data,const Url& old,const Url& next){
+ if(old.full==next.full)return;
+ // Captured proxy decisions are bound to the exact request URL. A manual
+ // address edit must not silently bypass a browser route.
+ if(!str(data,"ProtectedBrowserProxy").empty()){
+  data.erase("ProtectedBrowserProxy");
+  data["RequiresBrowserProxyCapture"]=true;
+ }
+ if(old.origin!=next.origin)data.erase("ProtectedBrowserSession");
+}
+void Manager::refreshAddress(JobPtr job,const std::string& address,std::optional<Headers> supplied,const std::string& sourcePage){
+ Lock lock(mutex);if(!canRefreshAddress(job))throw std::runtime_error("This download cannot refresh its address while active or complete.");
+ if(std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("Unknown download.");
+ if(!str(job->data,"SourceUrl").empty()||!str(job->data,"ProtectedAdaptive").empty())throw std::runtime_error("Refresh this media session using the browser panel and review the captured streams.");
+ Url old(str(job->data,"Url")),next(trim(address));
+ if(old.scheme=="ftp"){
+  if(next.scheme!="ftp")throw std::runtime_error("Enter a replacement FTP address.");
+ }else if(next.scheme!="http"&&next.scheme!="https")throw std::runtime_error("The new address must use HTTP or HTTPS.");
+ auto headers=supplied?*supplied:readHeaders(job->data);
+ if(!supplied&&old.origin!=next.origin)for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="cookie"||key=="authorization"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}
+ validateHeaders(headers);if(!sourcePage.empty()){Url page(sourcePage);if(page.scheme!="http"&&page.scheme!="https")throw std::runtime_error("The download page must use HTTP or HTTPS.");}
+ auto before=job->data;auto updated=before;auto captures=state.value("BrowserCaptures",Json());
+ const auto captured=addressRefreshCandidate(job);
+ const bool matched=captured.is_object()&&str(captured,"url")==next.full;
+ invalidateBrowserAddressContext(updated,old,next);
+ if(matched&&captured.contains("browserProxy")){
+  const auto route=validateBrowserProxy(captured["browserProxy"],next.full);
+  updated["ProtectedBrowserProxy"]=route.empty()?"":protect(route.dump());updated.erase("RequiresBrowserProxyCapture");
+ }
+ if(supplied){
+  const auto session=matched?browserDownloadSession(captured.value("browserSession",Json::object()),next.full,headers):Json::object();
+  if(session.empty())updated.erase("ProtectedBrowserSession");else updated["ProtectedBrowserSession"]=protect(session.dump());
+  updated.erase("RequiresBrowserSessionCapture");
+ }
+ updated["Url"]=next.full;updated.erase("ProtectedResolvedUrl");updated.erase("AuthenticationOrigin");updated.erase("AuthenticationScheme");updated["AuthenticationPromptPending"]=false;
+ updated["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());
+ updated.erase("BrowserReportedDirectSize");updated.erase("BrowserReportedFileName");
+ updated["RefreshPendingValidation"]=true;updated["Status"]="Paused";updated["Error"]="";updated["LastHttpStatus"]=0;clearServerRetry(updated);
+ updated["AddressRefreshed"]=date();updated.erase("ProtectedRefreshOffer");if(!sourcePage.empty())updated["DownloadPage"]=sourcePage;
+ job->data=std::move(updated);
+ eraseCapturePresentations(state,job->id());try{save();}catch(...){job->data=before;restoreCaptureRows(state,captures);throw;}cancelAddressRefresh(job);
+}
+void Manager::recoverBeforeConfigure(JobPtr j,bool beforeStart){
+ {Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");if(isActive(j)||str(j->data,"Status")=="Complete")return;if(!beforeStart&&!publicationNeedsRecovery(*this,j))return;}
+ recoverReplacements(j,true);
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");if(std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(str(j->data,"Status")=="Complete")throw std::runtime_error("The saved file was recovered at its previous destination. Use Move in File Properties to change its location.");
+}
+void Manager::configure(JobPtr j,const Json& edit){
+ recoverBeforeConfigure(j);
+ Lock lock(mutex);if(!j||std::find(jobs.begin(),jobs.end(),j)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ auto next=configuredDownload(j,edit,false);
+ j->data.swap(next);
+ try{save();}catch(...){j->data.swap(next);throw;}
+}
+void Manager::configureProperties(JobPtr job,const Json& edit,const PropertiesHeaderPatch& headers){
+ recoverBeforeConfigure(job);
+ Lock lock(mutex);if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ auto changes=edit;headers.apply(changes,job->data);auto next=configuredDownload(job,changes,false);
+ job->data.swap(next);try{save();}catch(...){job->data.swap(next);throw;}
+}
+// Completed Properties uses the same owned logical patch as unfinished saves.
+// Membership, closing and the current session are checked on the worker, not
+// trusted from the dialog's earlier capture or a completed relocation.
+void Manager::configureCompletedProperties(JobPtr job,const Json& edit,const PropertiesHeaderPatch& headers){
+ Lock lock(mutex);if(stopping)throw std::runtime_error("UDM is closing.");
+ if(!job||std::find(jobs.begin(),jobs.end(),job)==jobs.end())throw std::runtime_error("This download is no longer in the list.");
+ if(catalogTransaction)throw std::runtime_error("Finish the catalog batch before saving download properties.");
+ auto changes=edit;headers.apply(changes,job->data);updateCompleted(job,changes);
+}
+// The caller holds the manager lock until the edited record is saved.
+Json Manager::configuredDownload(JobPtr j,const Json& edit,bool prefetchedTransfer){
+ const auto response=j->data.find("OriginalResponse");
+ if(response!=j->data.end()&&str(*response,"State")=="Publishing")
+  for(const auto* key:{"Folder","FileName","ExpectedSha256"})
+   if(edit.contains(key)&&edit.at(key)!=j->data.value(key,Json()))
+    throw std::runtime_error("Resume the saved browser response to resolve its pending save before changing the destination or checksum.");
+ if(prefetchedTransfer&&(!isActive(j)||!yes(j->data,"ConfirmationPending")))throw std::runtime_error("The prefetch is no longer active.");
+ if((isActive(j)&&!prefetchedTransfer)||str(j->data,"Status")=="Complete")throw std::runtime_error("Stop the download before changing its properties.");auto next=j->data;for(auto it=edit.begin();it!=edit.end();++it)next[it.key()]=it.value();readPostRequest(next);if(j->data.contains("OfflineProject")&&str(next,"Url")!=str(j->data,"Url"))throw std::runtime_error("Change the starting page in Site Grabber and create a new offline project.");Url u(str(next,"Url"));if((!str(j->data,"SourceUrl").empty()||!str(j->data,"ProtectedAdaptive").empty())&&str(next,"Url")!=str(j->data,"Url"))throw std::runtime_error("Refresh video streams using the browser panel.");auto target=fs::path(wide(str(next,"Folder")))/wide(str(next,"FileName"));if(!target.is_absolute()||safeName(str(next,"FileName"))!=str(next,"FileName"))throw std::runtime_error("Choose a complete destination and valid file name.");if(!str(j->data,"ReplacementOf").empty()&&target.lexically_normal()!=j->target().lexically_normal())throw std::runtime_error("A replacement keeps the original file location. Choose a numbered copy to save elsewhere.");if(downloadDestinationReserved(target,j))throw std::runtime_error("That destination belongs to another download.");if(relocationReserves(target))throw std::runtime_error("That destination is reserved by a file move.");if(fs::exists(target)&&target!=j->target())throw std::runtime_error("Destination already exists.");auto expected=str(next,"ExpectedSha256");if(!expected.empty()&&!std::regex_match(expected,std::regex("[a-fA-F0-9]{64}")))throw std::runtime_error("Invalid SHA-256.");if(num(next,"Connections",8)<1||num(next,"Connections",8)>32||num(next,"LimitKbps")<0||num(next,"LimitKbps")>1000000)throw std::runtime_error("Invalid connection or speed limit.");if(str(next,"Url")!=str(j->data,"Url")){
+ next.erase("BrowserReportedDirectSize");next.erase("BrowserReportedFileName");
+ next["RefreshPendingValidation"]=true;next.erase("ProtectedResolvedUrl");next.erase("AuthenticationOrigin");next.erase("AuthenticationScheme");next["AuthenticationPromptPending"]=false;
+ const Url old(str(j->data,"Url"));
+ invalidateBrowserAddressContext(next,old,u);
+ if(u.origin!=old.origin){auto headers=readHeaders(next);for(auto it=headers.begin();it!=headers.end();){auto key=lower(it->first);if(key=="cookie"||key=="authorization"||key=="referer"||key=="origin")it=headers.erase(it);else ++it;}next["ProtectedHeaders"]=headers.empty()?"":protect(legacyDictionary(Json(headers)).dump());}
+ }
+ if(str(next,"ProtectedHeaders")!=str(j->data,"ProtectedHeaders")){
+  next.erase("BrowserReportedDirectSize");next.erase("BrowserReportedFileName");
+ }
+ if(str(next,"Folder")!=str(j->data,"Folder"))next.erase("ProjectDestinationRoot");validateGrabberFolder(next);
+ validateFileMetadata(next);if(edit.contains("Queue")){bool found=false;for(auto& q:state["Queues"])found|=str(q,"Name")==str(next,"Queue");if(!found)throw std::runtime_error("Choose an existing queue.");}if(edit.contains("Category")){auto cats=categories();if(std::find(cats.begin(),cats.end(),str(next,"Category"))==cats.end())throw std::runtime_error("Choose an existing category.");}if(!yes(next,"QueueMember",true)&&str(next,"Status")=="Queued")next["Status"]="Paused";return next;
+}
+void Manager::setFindQuery(const Json& query){
+ validateFindQuery(query);Lock lock(mutex);auto& settings=state["Settings"];
+ const auto existing=settings.find("FindQuery");
+ const bool had=existing!=settings.end();Json previous=had?*existing:Json();
+ settings["FindQuery"]=query;
+ try{save();}catch(...){if(had)settings["FindQuery"].swap(previous);else settings.erase("FindQuery");throw;}
+}
+void Manager::setSettings(const Json& p){
+ if(p.contains("FindQuery"))validateFindQuery(p["FindQuery"]);
+ validateBrowserSettings(p);validateOptionsModel(p);validateToolbarSettings(p);validatePacSettings(p);validateSiteLogins(p);validateDialSettings(p);validateScannerSettings(p);auto agent=str(p,"UserAgent");if(agent.size()>1024||std::any_of(agent.begin(),agent.end(),[](unsigned char ch){return ch<32||ch==127;}))throw std::runtime_error("User-Agent must be one line of at most 1024 bytes without control characters.");
+ validateProtocolProxies(p);
+ auto proxyMode=str(p,"ProxyMode",str(p,"Proxy").empty()?"Use Windows proxy / PAC settings":"Use a proxy server");if(proxyMode!="Use Windows proxy / PAC settings"&&proxyMode!="Connect directly"&&proxyMode!="Use a proxy server"&&proxyMode!="Use a SOCKS5 proxy"&&proxyMode!="Use a SOCKS4 / 4a proxy"&&!usesPacScript(p))throw std::runtime_error("Choose a valid proxy mode.");if(isSocksProxy(p))validateSocksSettings(p);if(proxyMode=="Use a proxy server"&&trim(str(p,"Proxy")).empty())throw std::runtime_error("Enter a proxy server.");for(const char* field:{"Proxy","ProxyBypass"})if(str(p,field).find_first_of("\r\n")!=std::string::npos)throw std::runtime_error("Proxy settings must be on one line.");
+ auto limitMode=str(p,"GlobalLimitMode","Total across downloads"),clipboardMode=str(p,"ClipboardMode","Show a suggestion");if(limitMode!="Total across downloads"&&limitMode!="Each download")throw std::runtime_error("Choose how the global speed limit applies.");if(clipboardMode!="Show a suggestion"&&clipboardMode!="Open Download File Info")throw std::runtime_error("Choose a clipboard capture mode.");
+ if(const auto timeout=p.find("ServerResponseTimeoutSeconds");timeout!=p.end()&&
+    (!timeout->is_number_integer()||*timeout!=serverResponseSeconds(p)))
+  throw std::runtime_error("Enter a server response wait from 1 to 300 seconds.");
+ if(p.contains("WarnQuota")&&!p["WarnQuota"].is_boolean())throw std::runtime_error("Choose whether download-limit warnings are enabled.");
+ auto duplicate=str(p,"DuplicatePolicy","Ask");if(duplicate!="Ask"&&duplicate!="Numbered"&&duplicate!="Existing"&&duplicate!="Replace")throw std::runtime_error("Choose a valid duplicate-link policy.");
+ if(num(p,"QuotaHours",1)<1||num(p,"QuotaHours",1)>168)throw std::runtime_error("Quota period must be 1 to 168 hours.");
+ if(!str(p,"TemporaryFolder").empty()&&!fs::path(wide(str(p,"TemporaryFolder"))).is_absolute())throw std::runtime_error("Choose an absolute temporary-files folder.");
+ if(p.contains("ServerConnections")){if(!p["ServerConnections"].is_array()||p["ServerConnections"].size()>100)throw std::runtime_error("Too many server connection rules.");for(const auto& rule:p["ServerConnections"])validateConnectionRule(rule);}
+ if(num(p,"FontHeight",11)<8||num(p,"FontHeight",11)>24||str(p,"FontName","Tahoma").size()>31)throw std::runtime_error("Choose a font size from 8 to 24 pixels.");
+ if(num(p,"Parallel")<1||num(p,"Parallel")>16||num(p,"Connections")<1||num(p,"Connections")>32||num(p,"Retries")<0||num(p,"Retries")>10||num(p,"LimitKbps")<0||num(p,"LimitKbps")>1000000||num(p,"QuotaMb")<0||num(p,"QuotaMb")>100000000)throw std::runtime_error("Invalid connection, retry or bandwidth setting.");if(!fs::path(wide(str(p,"DownloadFolder"))).is_absolute())throw std::runtime_error("Choose an absolute download folder.");for(auto ext:words(str(p,"CaptureExtensions")))if(!std::regex_match(ext,std::regex("[a-z0-9_-]{1,30}")))throw std::runtime_error("Use extensions separated by spaces.");Lock l(mutex);auto old=state["Settings"];state["Settings"]=p;if(num(p,"LimitKbps")>0)state["Settings"]["GlobalLimitRememberedKbps"]=num(p,"LimitKbps");try{save();}catch(...){state["Settings"]=old;throw;}if(!yes(p,"OfferCaptureExclusions",true)){lastCancelledCaptureHost.clear();captureCancellationCount=0;}}
+
+std::string Manager::queueDeletionError(const std::string& name)const{
+ Lock lock(mutex);
+ const auto& queues=state["Queues"];
+ const auto found=std::find_if(queues.begin(),queues.end(),[&](const Json& queue){return str(queue,"Name")==name;});
+ if(found==queues.end())return "That queue no longer exists.";
+ const auto role=str(*found,"DefaultQueueRole");
+ if(role=="Download"||role=="Synchronization")return "Built-in queues cannot be deleted.";
+ if(queues.size()<2)return "Keep at least one queue.";
+ for(const auto& job:jobs)if(str(job->data,"Queue")==name&&isActive(job))return "Stop this queue first.";
+ return {};
+}
+void Manager::deleteQueue(const std::string& name){
+ Lock lock(mutex);
+ if(const auto issue=queueDeletionError(name);!issue.empty())throw std::runtime_error(issue);
+ const auto& queues=state["Queues"];
+ const auto found=std::find_if(queues.begin(),queues.end(),[&](const Json& queue){return str(queue,"Name")==name;});
+ const bool sync=yes(*found,"Synchronize");
+ auto previous=state["Queues"],next=previous;next.erase(std::remove_if(next.begin(),next.end(),[&](const Json& q){return str(q,"Name")==name;}),next.end());
+ const Json* destination=nullptr;for(const auto& q:next)if(yes(q,"Synchronize")==sync){if(!destination)destination=&q;if(str(q,"DefaultQueueRole")==std::string(sync?"Synchronization":"Download")||(!sync&&str(q,"Name")=="Main queue")){destination=&q;break;}}
+ if(!destination)destination=&next.front();const auto target=str(*destination,"Name");const bool targetSync=yes(*destination,"Synchronize");std::vector<std::pair<JobPtr,Json>> records;
+ for(auto job:jobs)if(str(job->data,"Queue")==name)records.emplace_back(job,job->data);
+ try{
+  state["Queues"]=next;for(auto& entry:records){auto& data=entry.first->data;data["Queue"]=target;data["SyncPending"]=false;if(str(data,"Status")=="Complete"&&!targetSync)data["QueueMember"]=false;if(str(data,"Status")=="Queued")data["Status"]="Paused";}
+  save();
+ }catch(...){state["Queues"].swap(previous);for(auto& entry:records)entry.first->data.swap(entry.second);throw;}
+ queueActivity(name,false);manualQueues.erase(name);cyclingQueues.erase(name);openWindows.erase(name);cycleFailed.erase(name);finishedQueues.erase(std::remove_if(finishedQueues.begin(),finishedQueues.end(),[&](const Json& q){return str(q,"Queue")==name;}),finishedQueues.end());for(auto& entry:records)schedulePaused.erase(entry.first->id());updateWakeTimer(epoch());
+}
+void Manager::saveProject(const Json& incoming){
+ Lock l(mutex);auto p=incoming;
+ // A cancelled or replaced sign-in must not be revived by an older wizard draft.
+ if(yes(p,"BrowserLogin"))for(const auto& saved:state["Projects"]){
+  if(str(saved,"Id")!=str(p,"Id")||str(saved,"StartUrl")!=str(p,"StartUrl")||num(saved,"BrowserLoginGeneration")<=num(p,"BrowserLoginGeneration"))continue;
+  for(const char* key:{"BrowserLoginGeneration","PendingBrowserLogin","ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"}){
+   if(saved.contains(key))p[key]=saved[key];else p.erase(key);
+  }
+  p.erase("ExploreState");break;
+ }
+ // A browser handoff can finish between the wizard collecting its draft and
+ // saving it. Preserve that exact ticket's receipt instead of resurrecting it.
+ if(yes(p,"BrowserLogin")&&p.contains("PendingBrowserLogin")){
+  auto pending=p["PendingBrowserLogin"];auto ticket=str(pending,"Token");
+  for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id")&&!ticket.empty()&&!saved.contains("PendingBrowserLogin")&&str(saved,"LastBrowserLoginTicket")==ticket&&yes(saved,"BrowserLogin")&&str(saved,"StartUrl")==str(p,"StartUrl")){
+   for(const char* key:{"ProtectedBrowserSession","LastBrowserLoginTicket","BrowserLoginSaved"})if(saved.contains(key))p[key]=saved[key];
+   p.erase("PendingBrowserLogin");p.erase("ExploreState");break;
+  }
+ }
+ validateGrabberProject(p,state["Settings"]);validateGrabberActions(p);auto old=state["Projects"];bool found=false;
+ for(auto& item:state["Projects"])if(str(item,"Id")==str(p,"Id")){item=p;found=true;break;}if(!found)state["Projects"].push_back(p);
+ try{save();}catch(...){state["Projects"].swap(old);throw;}
+}
+int Manager::addProject(const Json& project,const std::string& queue,bool paused,bool immediate,bool resumeExisting){
+ std::unique_lock<std::recursive_mutex> l(mutex);if(catalogTransaction)throw std::runtime_error("A project is already being added.");
+ auto p=project;validateGrabberProject(p,state["Settings"]);validateGrabberActions(p);GrabberFilters filters(p);
+ std::map<std::string,JobPtr> existingLinks;for(auto j:jobs)if(str(j->data,"ProjectId")==str(p,"Id"))existingLinks[str(j->data,"Url")]=j;
+ // Recovery must commit before the batch defers saves. Otherwise resume could
+ // remove a recovery journal while its recovered catalog state is still staged.
+ if(immediate&&resumeExisting&&str(p,"Template")!="Offline website (ZIP)"){
+  std::vector<JobPtr> recover;std::map<std::string,JobPtr> selected;std::set<const Job*> seen;
+  for(const auto& link:p["Links"])if(yes(link,"Selected",true)){auto url=str(link,"Url");auto found=existingLinks.find(url);auto job=found==existingLinks.end()?JobPtr{}:found->second;selected[url]=job;if(job&&!isActive(job)&&str(job->data,"Status")!="Complete"&&seen.insert(job.get()).second)recover.push_back(job);}
+  if(!recover.empty()){
+   Json savedProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))savedProject=saved;
+   l.unlock();for(const auto& job:recover)recoverReplacements(job,true);l.lock();
+   Json currentProject;for(const auto& saved:state["Projects"])if(str(saved,"Id")==str(p,"Id"))currentProject=saved;
+   if(currentProject!=savedProject)throw std::runtime_error("The saved project changed during recovery. Reopen it before adding downloads.");
+   if(stopping||catalogTransaction)throw std::runtime_error("The project changed while preparing recovery. Retry the project command.");
+   auto checked=p;validateGrabberProject(checked,state["Settings"]);validateGrabberActions(checked);if(checked!=p)throw std::runtime_error("Project settings changed during recovery. Review the project before adding it.");
+   existingLinks.clear();for(auto job:jobs)if(str(job->data,"ProjectId")==str(p,"Id"))existingLinks[str(job->data,"Url")]=job;
+   for(const auto& item:selected){auto found=existingLinks.find(item.first);auto current=found==existingLinks.end()?JobPtr{}:found->second;if(current!=item.second)throw std::runtime_error("The selected project downloads changed during recovery. Review the project before retrying.");}
+  }
+ }
+ auto oldJobs=jobs;auto oldProjects=state["Projects"],oldScheduled=Json(schedulePaused);int count=0;
+ std::vector<Json> oldData;std::vector<std::optional<i64>> oldLimits;for(auto j:jobs){oldData.push_back(j->data);oldLimits.push_back(j->sessionLimit);}
+ auto startMatched=[&](JobPtr job){if(!immediate||isActive(job)||str(job->data,"Status")=="Complete")return;resumeAfterRecovery(job);job->data["GrabberImmediate"]=true;job->data["GrabberParallel"]=num(p,"DownloadParallel",2);job->data["SuppressProgressDialog"]=true;job->data["SuppressCompletionDialog"]=true;};
+ // No worker can observe the staged jobs while this lock is held. The only
+ // persistent write contains both the complete selection and its saved project.
+ catalogTransaction=true;
+ try{
+  if(str(p,"Template")=="Offline website (ZIP)"){
+   const auto rendered=loadRenderedGrabberSnapshot(*this,p);
+   const auto ticket=rendered.empty()?std::string{}:str(rendered,"ticket");
+   bool found=false;for(auto j:jobs)if(str(j->data,"ProjectId")==str(p,"Id")&&j->data.contains("OfflineProject")){
+    // The same captured page is idempotent; a fresh browser capture is a new
+    // archive, retaining the old job and its immutable captured-page snapshot.
+    found|=ticket.empty()||str(j->data["OfflineProject"],"RenderedTicket")==ticket;
+   }
+   if(!found){addOfflineProject(p,queue,paused);++count;}
+  }else for(auto& link:p["Links"])if(yes(link,"Selected",true)){
+   auto found=existingLinks.find(str(link,"Url"));if(found!=existingLinks.end()){link["DownloadId"]=found->second->id();if(resumeExisting)startMatched(found->second);continue;}
+   if(!filters.legacy&&(!filters.fileLocationAllowed(str(link,"Url"))||!filters.nameAllowed(str(link,"DiscoveredUrl",str(link,"Url")),str(link,"FileName",grabberFileName(str(link,"Url"))))||!filters.sizeAllowed(num(link,"Size",-1))))throw std::runtime_error("A selected file no longer matches the project filters. Explore again or change the selection.");
+   auto dest=grabberDestination(p,state["Settings"],str(link,"Url"),grabberCollectedName(p,link));
+
+   auto j=add(str(link,"Url"),dest.folder,dest.name,queue,paused,grabberRequestHeaders(p,str(link,"Referrer"),str(link,"Url")));j->data["ProjectId"]=str(p,"Id");if(yes(p,"BrowserLogin"))j->data["ProtectedBrowserSession"]=protect(grabberBrowserSession(p).dump());j->data["Description"]=yes(p,"UseLinkDescriptions",true)?str(link,"Description"):"";if(yes(p,"ConvertLinks"))j->data["SuppressCompletionDialog"]=true;if(!str(link,"ContentType").empty())j->data["GrabberContentType"]=str(link,"ContentType");if(!str(link,"DiscoveredUrl").empty())j->data["GrabberDiscoveredUrl"]=str(link,"DiscoveredUrl");if(!str(link,"Referrer").empty())j->data["DownloadPage"]=str(link,"Referrer");
+   if(!dest.category.empty())j->data["Category"]=dest.category;
+   if(!dest.root.empty())j->data["ProjectDestinationRoot"]=dest.root;
+   validateGrabberFolder(j->data);startMatched(j);existingLinks[str(link,"Url")]=j;link["DownloadId"]=j->id();++count;
+  }
+  validateGrabberPlan(jobs,oldJobs.size());saveProject(p);catalogTransaction=false;save();return count;
+ }catch(...){catalogTransaction=false;jobs.swap(oldJobs);state["Projects"].swap(oldProjects);schedulePaused=oldScheduled.get<std::set<std::string>>();for(size_t i=0;i<jobs.size();++i){jobs[i]->data=oldData[i];jobs[i]->sessionLimit=oldLimits[i];}throw;}
+}
+}

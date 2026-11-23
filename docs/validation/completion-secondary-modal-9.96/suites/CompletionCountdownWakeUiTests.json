@@ -1,0 +1,165 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "The actual countdown fallback timer is disabled for this owned comparison",
+      "passed": true
+    },
+    {
+      "name": "The active dialog has an owned generation-checked wake route",
+      "passed": true
+    },
+    {
+      "name": "Completion and stale-dialog wake bursts cannot create extra scheduler work",
+      "passed": true
+    },
+    {
+      "name": "An explicitly expired pulse stays cancellable while its final tick waits for the model",
+      "passed": true
+    },
+    {
+      "name": "The owned modal is destroyed after the final-tick hold without a writer watchdog expiry",
+      "passed": true
+    },
+    {
+      "name": "The fixture consumes only its owned Exit command without executing it",
+      "passed": true
+    },
+    {
+      "name": "Current countdown consumes its final acknowledgement and performs once without another timer pulse",
+      "passed": true
+    },
+    {
+      "name": "Closing the modal clears its wake route before another dialog can bind",
+      "passed": true
+    },
+    {
+      "name": "The actual countdown fallback timer is disabled for this owned comparison",
+      "passed": true
+    },
+    {
+      "name": "The active dialog has an owned generation-checked wake route",
+      "passed": true
+    },
+    {
+      "name": "Completion and stale-dialog wake bursts cannot create extra scheduler work",
+      "passed": true
+    },
+    {
+      "name": "An explicitly expired pulse stays cancellable while its final tick waits for the model",
+      "passed": true
+    },
+    {
+      "name": "The owned modal is destroyed after the final-tick hold without a writer watchdog expiry",
+      "passed": true
+    },
+    {
+      "name": "Current countdown consumes its final acknowledgement and performs once without another timer pulse",
+      "passed": true
+    },
+    {
+      "name": "Closing the modal clears its wake route before another dialog can bind",
+      "passed": true
+    },
+    {
+      "name": "The actual countdown fallback timer is disabled for this owned comparison",
+      "passed": true
+    },
+    {
+      "name": "The active dialog has an owned generation-checked wake route",
+      "passed": true
+    },
+    {
+      "name": "Completion and stale-dialog wake bursts cannot create extra scheduler work",
+      "passed": true
+    },
+    {
+      "name": "An explicitly expired pulse stays cancellable while its final tick waits for the model",
+      "passed": true
+    },
+    {
+      "name": "The owned modal is destroyed after the final-tick hold without a writer watchdog expiry",
+      "passed": true
+    },
+    {
+      "name": "The fixture consumes only its owned Exit command without executing it",
+      "passed": true
+    },
+    {
+      "name": "Current countdown consumes its final acknowledgement and performs once without another timer pulse",
+      "passed": true
+    },
+    {
+      "name": "Closing the modal clears its wake route before another dialog can bind",
+      "passed": true
+    },
+    {
+      "name": "The actual countdown fallback timer is disabled for this owned comparison",
+      "passed": true
+    },
+    {
+      "name": "The active dialog has an owned generation-checked wake route",
+      "passed": true
+    },
+    {
+      "name": "Completion and stale-dialog wake bursts cannot create extra scheduler work",
+      "passed": true
+    },
+    {
+      "name": "An explicitly expired pulse stays cancellable while its final tick waits for the model",
+      "passed": true
+    },
+    {
+      "name": "The owned modal is destroyed after the final-tick hold without a writer watchdog expiry",
+      "passed": true
+    },
+    {
+      "name": "Current countdown consumes its final acknowledgement and performs once without another timer pulse",
+      "passed": true
+    },
+    {
+      "name": "Closing the modal clears its wake route before another dialog can bind",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "baseline": false,
+      "cancellationWatchdogRequired": false,
+      "dark": false,
+      "fallbackTimerDisabled": true,
+      "performed": 1,
+      "queue": false,
+      "releaseToReturnMs": 15
+    },
+    {
+      "baseline": false,
+      "cancellationWatchdogRequired": false,
+      "dark": false,
+      "fallbackTimerDisabled": true,
+      "performed": 1,
+      "queue": true,
+      "releaseToReturnMs": 16
+    },
+    {
+      "baseline": false,
+      "cancellationWatchdogRequired": false,
+      "dark": true,
+      "fallbackTimerDisabled": true,
+      "performed": 1,
+      "queue": false,
+      "releaseToReturnMs": 16
+    },
+    {
+      "baseline": false,
+      "cancellationWatchdogRequired": false,
+      "dark": true,
+      "fallbackTimerDisabled": true,
+      "performed": 1,
+      "queue": true,
+      "releaseToReturnMs": 0
+    }
+  ],
+  "passed": true
+}

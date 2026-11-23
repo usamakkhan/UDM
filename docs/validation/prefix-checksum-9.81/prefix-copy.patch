@@ -1,0 +1,158 @@
+--- 9.80/native/Transfer.cpp
++++ 9.81/native/Transfer.cpp
+@@ -556,23 +556,30 @@
+ };
+ // Copy the retained tail and hash exactly the bytes written to staging.
+ static void copyFileTail(const fs::path& path,HANDLE output,const Cancel& cancel,i64& skip,
+-                         StreamHash& digest,std::vector<char>& buffer,HANDLE verified=INVALID_HANDLE_VALUE){
++                         StreamHash& digest,std::vector<char>& buffer,HANDLE verified=INVALID_HANDLE_VALUE,
++                         StreamHash* original=nullptr){
+  Handle opened(verified==INVALID_HANDLE_VALUE
+-  ?CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr)
++  ?CreateFileW(path.c_str(),GENERIC_READ,original?FILE_SHARE_READ:FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_SEQUENTIAL_SCAN,nullptr)
+   :INVALID_HANDLE_VALUE);
+  const auto input=opened?opened.h:verified;
+  if(input==INVALID_HANDLE_VALUE)throw std::runtime_error("A required partial file is missing.");
+  const auto length=fileLength(input);
+- i64 offset=std::clamp<i64>(skip,0,length);
+- skip-=offset;
++ const i64 prefix=std::clamp<i64>(skip,0,length);
++ skip-=prefix;
++ // A server checksum covers the received body, including discarded bytes.
++ // Hash those bytes during this copy rather than reopening the original later.
++ i64 offset=original?0:prefix;
+  while(offset<length){
+   cancel.check();
+   const auto count=(DWORD)std::min<i64>((i64)buffer.size(),length-offset);
+   if(readAt(input,buffer.data(),count,offset)!=count)throw std::runtime_error("Could not read a partial file.");
++  if(original)original->update(buffer.data(),count);
++  const auto omitted=(DWORD)std::clamp<i64>(prefix-offset,0,count);
++  const auto retained=count-omitted;
+   DWORD written=0;
+-  if(!WriteFile(output,buffer.data(),count,&written,nullptr)||written!=count)
++  if(retained&&(!WriteFile(output,buffer.data()+omitted,retained,&written,nullptr)||written!=retained))
+    throw std::runtime_error("Could not assemble the download.");
+-  digest.update(buffer.data(),count);
++  if(retained)digest.update(buffer.data()+omitted,retained);
+   offset+=count;
+  }
+ }
+@@ -2473,7 +2480,7 @@
+  folder=fs::path(wide(str(j,"Folder")));fs::create_directories(folder);phases["SettleDestination"]=settleElapsed();
+  requirePublicationRecovered(m,job);phases["SettleRecoveryCheck"]=settleElapsed();
+  auto staging=folder/(L".udm-"+wide(job->id())+L".assembling");bool stageHandedOff=false,stageCreated=false;struct StagingCleanup{Manager& manager;JobPtr job;fs::path path;bool& handedOff;bool& created;const fs::path& data;bool hardLink=false;CreatedStagingFile proof;~StagingCleanup(){if(handedOff||!created)return;try{if(!publicationNeedsRecovery(manager,job)){if(hardLink)retireOwnedStagingLink(path,data);else proof.removeOwned(path);}}catch(...){/* Uncertain recovery state retains staging. */}}} cleanup{m,job,staging,stageHandedOff,stageCreated,data};
+- i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest;bool deferredHash=false,copiedAcrossVolumes=false,keepParts=false,partsCleared=false;i64 complete=0;
++ i64 skip=yes(j,"StripContentPrefix")?num(j,"ContentPrefixBytes"):0;const i64 stripped=skip;std::string digest,originalDigest;bool deferredHash=false,copiedAcrossVolumes=false,keepParts=false,partsCleared=false;i64 complete=0;
+  const Bytes* stagedMedium=nullptr;
+   const auto serverSha256=single?str(j,"ServerSha256"):std::string{};
+  if(single){
+@@ -2507,7 +2514,13 @@
+   // The sparse attribute is cleared after publication: on a nearly full or mechanical disk
+   // NTFS can take many seconds over it (12 s measured for 384 MiB), and the file is complete
+   // and readable with the attribute still set.
+-  if(skip>0){StreamHash assembled;{Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE|FILE_READ_ATTRIBUTES,0,nullptr,CREATE_NEW,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file without replacing an existing staging item. Keep its files and choose another destination.");stageCreated=true;cleanup.proof.capture(output.h);std::vector<char> buffer(assemblyBuffer);copyFileTail(data,output.h,*cancel,skip,assembled,buffer);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}digest=assembled.finish();}
++  if(skip>0){
++   StreamHash assembled;std::optional<StreamHash> original;
++   if(!serverSha256.empty())original.emplace();
++   {Handle output(CreateFileW(staging.c_str(),GENERIC_WRITE|FILE_READ_ATTRIBUTES,0,nullptr,CREATE_NEW,0,nullptr));if(!output)throw std::runtime_error("Cannot create the assembled file without replacing an existing staging item. Keep its files and choose another destination.");stageCreated=true;cleanup.proof.capture(output.h);std::vector<char> buffer(assemblyBuffer);copyFileTail(data,output.h,*cancel,skip,assembled,buffer,INVALID_HANDLE_VALUE,original?&*original:nullptr);if(!FlushFileBuffers(output.h))throw std::runtime_error("Could not flush the assembled file.");}
++   digest=assembled.finish();
++   if(original){originalDigest=original->finish();phases["ServerHashMode"]="prefix-copy";}
++  }
+   else{
+    complete=PrefixHasher::contiguous(j["Segments"],0);
+     const bool mustVerify=!serverSha256.empty()||!str(j,"ExpectedSha256").empty()||!str(j,"ReplacementOf").empty();
+@@ -2540,7 +2553,7 @@
+  }
+   if(!serverSha256.empty()){
+    // The server hashed the original body, even when the user opted to strip a prefix.
+-   const auto original=stripped>0?fileHash(data,[&]{cancel->check();}):digest;
++   const auto& original=stripped>0?originalDigest:digest;
+    if(original!=serverSha256)throw std::runtime_error("The server's SHA-256 checksum did not match. The file was not published.");
+   }
+   phases["Hash"]=phase(mark);if(!phases.contains("HashMode"))phases["HashMode"]=single?"assembled":"parts";{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+--- 9.80/native/HttpPostIdentityTests.cpp
++++ 9.81/native/HttpPostIdentityTests.cpp
+@@ -18,7 +18,27 @@
+   const auto start=[&](Manager& m,const JobPtr& j){m.resume(j);m.tick();return wait(m,j);};
+   const auto exact=[&](const JobPtr& j,const std::string& hash){return str(j->data,"Status")=="Complete"&&fs::is_regular_file(j->target())&&fileHash(j->target())==hash;};
+   const auto retain=[&](Manager& m,const JobPtr& j){j->data["ExpectedSha256"]=std::string(64,'0');check(start(m,j)&&str(j->data,"Status")=="Failed"&&!fs::exists(j->target()),"A final verification failure retains an unpublished complete plain form response");check(completedPostResponseCandidate(j->data)&&yes(j->data,"PostAttempted"),"Failure checkpoints a request-bound response instead of requiring form resubmission");check(str(j->data,"Error").find("SHA-256 mismatch")!=std::string::npos,"Response retention preserves the original verification error");j->data["ExpectedSha256"]="";m.save();};
+-  if(argc==6){
++  if(argc==6&&utf8(argv[5])=="prefix-all"){
++   for(const std::string route:{"prefix-digest-good","prefix-digest-bad","prefix-domain-bad","prefix-output-bad"}){
++    auto job=make(manager,route);check(start(manager,job)&&str(job->data,"Status")=="Failed"&&yes(job->data,"ContentPrefixPending")&&completedPostResponseCandidate(job->data),"A prefixed checksum response waits for an explicit removal choice");
++    const auto raw=manager.root/L"parts"/wide(job->id())/(wide(job->id())+L".data");const auto rawHash=fileHash(raw);const auto wireBytes=fs::file_size(raw);
++    check(str(job->data,"ServerSha256")==(route=="prefix-digest-bad"?std::string(64,'0'):route=="prefix-domain-bad"?pdfHash:rawHash),"The retained server digest is bound to the declared byte domain");
++    job->data["StripContentPrefix"]=true;job->data["ContentPrefixPending"]=false;job->data["ExpectedSha256"]=route=="prefix-output-bad"?std::string(64,'0'):pdfHash;manager.save();
++    check(manager.beginPrefetch(job)==PrefetchAdmission::Started&&wait(manager,job,true),"Prefix removal verifies saved bytes and reaches confirmation without another POST");
++    const auto announced=num(job->data,"PrefetchedFinalSize",-1);check(announced>0&&announced<static_cast<i64>(wireBytes)&&!fs::exists(job->target()),"The pre-Start size excludes only the approved prefix");
++    check(manager.confirmPrefetchedDownload(job,Json::object())&&wait(manager,job),"Confirmation finishes the retained response worker");
++    const bool good=route=="prefix-digest-good";
++    if(good){
++     check(exact(job,pdfHash)&&fs::file_size(job->target())==static_cast<uintmax_t>(announced),"One-pass server hashing preserves exact final bytes and pre-Start size");
++     check(str(job->data.at("FinishPhases"),"ServerHashMode")=="prefix-copy","The raw server checksum is computed during the existing tail copy");
++    }else{
++     check(str(job->data,"Status")=="Failed"&&!fs::exists(job->target())&&fileHash(raw)==rawHash,"Wrong raw-domain or final-output checksums block publication and preserve received bytes");
++     check(start(manager,job)&&str(job->data,"Status")=="Failed"&&!fs::exists(job->target())&&fileHash(raw)==rawHash&&yes(job->data,"ReusedCompletedPrefetch"),"A checksum retry reuses and rejects the same bytes without resubmission");
++    }
++    observations.push_back({{"route",route},{"passed",true},{"status",str(job->data,"Status")},{"serverSha256",str(job->data,"ServerSha256")},{"rawSha256",rawHash},{"rawBytes",wireBytes},{"announcedBytes",announced},{"published",fs::is_regular_file(job->target())},{"publishedSha256",good?fileHash(job->target()):""},{"error",str(job->data,"Error")},{"phases",job->data.value("FinishPhases",Json::object())}});
++   }
++   manager.stop();
++  }else if(argc==6){
+    const auto selected=utf8(argv[5]);bool chosen=false;
+    for(const std::string route:{"digest-repr-good","digest-repr-bad","digest-content-good","digest-content-bad","digest-legacy-good","digest-legacy-bad","digest-redirect-repr-good","digest-redirect-repr-bad","digest-repost-repr-good","digest-repost-repr-bad","digest-empty-content-good","digest-empty-content-bad","digest-unknown-repr-good","digest-unknown-repr-bad","digest-created-repr-good","digest-created-repr-bad","digest-nocontent-repr-good","digest-nocontent-content-good","digest-nocontent-content-bad","digest-reset-repr-good","digest-nocontent-legacy-good"}){
+     if(selected!="all"&&selected!=route)continue;chosen=true;const bool bad=route.find("-bad")!=std::string::npos,empty=route.find("-empty-")!=std::string::npos||route.find("-nocontent-")!=std::string::npos||route.find("-reset-")!=std::string::npos;
+--- 9.80/tests/http-post-identity.native-live.cjs
++++ 9.81/tests/http-post-identity.native-live.cjs
+@@ -1,7 +1,7 @@
+ 'use strict';
+ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
+ const root=path.resolve(process.argv[2]),exe=process.env.UDM_POST_IDENTITY_TEST_EXE,digestCase=process.env.UDM_POST_DIGEST_CASE||'';assert(exe,'Set UDM_POST_IDENTITY_TEST_EXE');assert(!fs.existsSync(root),'Use fresh results');
+-const payload=Buffer.from('UDM owned complete identity form response.\r\n'.repeat(2000)),pdf=Buffer.from('%PDF-1.7\n'+ 'owned file content\n'.repeat(20)+'%%EOF\n'),prefix=Buffer.from('<html><body>Your download will start shortly.</body></html>\n');
++const payload=Buffer.from('UDM owned complete identity form response.\r\n'.repeat(2000)),pdf=Buffer.from('%PDF-1.7\n'+ 'owned file content\n'.repeat(process.env.UDM_POST_PREFIX_LARGE==='1'?240000:20)+'%%EOF\n'),prefix=Buffer.from('<html><body>Your download will start shortly.</body></html>\n');
+ const body=Buffer.from([102,111,114,109,0,255,43,38,61,13,10]),hash=b=>crypto.createHash('sha256').update(b).digest('hex'),requests=[];let server,child;
+ (async()=>{
+  fs.mkdirSync(root,{recursive:true});server=http.createServer((req,res)=>{const chunks=[];req.on('data',b=>chunks.push(b));req.on('end',()=>{
+@@ -10,9 +10,10 @@
+   if(route.startsWith('digest-redirect-')&&req.method==='POST'){res.writeHead(303,{'Location':'/'+route+'-get','Content-Length':0});res.end();return;}
+   if(route.startsWith('digest-repost-')&&!route.endsWith('-post')){res.writeHead(307,{'Location':'/'+route+'-post','Content-Length':0});res.end();return;}
+   const noRepresentation=route.includes('-nocontent-')||route.includes('-reset-');
+-  const output=route==='empty'||route.includes('-empty-')||noRepresentation?Buffer.alloc(0):route==='prefix'?Buffer.concat([prefix,pdf]):payload;
++  const output=route==='empty'||route.includes('-empty-')||noRepresentation?Buffer.alloc(0):route==='prefix'||route.startsWith('prefix-')?Buffer.concat([prefix,pdf]):payload;
+   const headers={'Content-Type':'application/octet-stream'};if(route!=='unknown'&&!route.includes('-unknown-'))headers['Content-Length']=output.length;
+   if(route.startsWith('digest-')){const value=route.includes('-bad')?Buffer.alloc(32):crypto.createHash('sha256').update(noRepresentation&&!route.includes('-content-')?payload:output).digest();const legacy=route.includes('-legacy-');headers[legacy?'Digest':route.includes('-content-')?'Content-Digest':'Repr-Digest']='sha-256='+(legacy?'':':')+value.toString('base64')+(legacy?'':':');}
++  if(route.startsWith('prefix-'))headers['Repr-Digest']='sha-256=:'+(route==='prefix-digest-bad'?Buffer.alloc(32):crypto.createHash('sha256').update(route==='prefix-domain-bad'?pdf:output).digest()).toString('base64')+':';
+   res.writeHead(route.includes('-nocontent-')?204:route.includes('-reset-')?205:route.includes('-created-')?201:200,headers);res.end(output);
+  });});
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const args=[path.join(root,'native'),'http://127.0.0.1:'+server.address().port,hash(payload),hash(pdf)];if(digestCase)args.push(digestCase);child=spawn(exe,args,{windowsHide:true,stdio:['ignore','pipe','pipe']});let output='';for(const s of [child.stdout,child.stderr])s.on('data',b=>{output+=b;process.stdout.write(b);});
+--- 9.80/native/Version.hpp
++++ 9.81/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 9,80,0,0
+-#define UDM_VERSION_STRING "9.80"
+-#define UDM_VERSION_WSTRING L"9.80"
++#define UDM_VERSION_TUPLE 9,81,0,0
++#define UDM_VERSION_STRING "9.81"
++#define UDM_VERSION_WSTRING L"9.81"
+--- 9.80/browser/chromium/manifest.json
++++ 9.81/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.44",
++  "version": "0.73.45",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- 9.80/browser/firefox/manifest.json
++++ 9.81/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.44",
++  "version": "0.73.45",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",

@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "positiveOriginalAccepted": true,
+  "negativeControls": [
+    {
+      "mode": "changed-launch-data-dir",
+      "rejected": true
+    },
+    {
+      "mode": "duplicate-case",
+      "rejected": true
+    },
+    {
+      "mode": "invented-span",
+      "rejected": true
+    },
+    {
+      "mode": "changed-binary",
+      "rejected": true
+    },
+    {
+      "mode": "false-payload-receipt",
+      "rejected": true
+    },
+    {
+      "mode": "extra-catalog-transaction",
+      "rejected": true
+    },
+    {
+      "mode": "corrupt-encoded-trace",
+      "rejected": true
+    },
+    {
+      "mode": "lost-events-with-valid-encoding-hash",
+      "rejected": true
+    }
+  ],
+  "targetsLaunched": 0,
+  "payloadFilesCreated": 0,
+  "sourceSha256": "29B981480767CDA8C332C82AF52DCED348F787FDF32E5259EDF3B13EDC361F79"
+}

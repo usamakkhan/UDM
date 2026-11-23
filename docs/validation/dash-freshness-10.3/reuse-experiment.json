@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "productCodeChanged": false,
+  "unsafeThreadCacheNotForShipping": true,
+  "allSevenWorkflowCasesPassed": true,
+  "originalFailedTrace": {
+    "count": 4,
+    "allHeaderStageMs": [
+      81.9909,
+      589.9097,
+      234.9374,
+      208.2119
+    ],
+    "minMs": 81.9909,
+    "medianMs": 221.57465000000002,
+    "maxMs": 589.9097
+  },
+  "reuseExperimentTrace": {
+    "count": 6,
+    "allHeaderStageMs": [
+      17.8463,
+      60.4674,
+      19.4828,
+      12.7969,
+      5.8798,
+      2.9021
+    ],
+    "minMs": 2.9021,
+    "medianMs": 15.3216,
+    "maxMs": 60.4674
+  },
+  "experimentalSourceSha256": "e0a1ed6c1eb892124bd99a59b3e162ee8861833a4ad2c3f0049cd3b130db165f",
+  "actor": {
+    "passed": true,
+    "diagnosticOnly": true,
+    "sourceSha256": "E0A1ED6C1EB892124BD99A59B3E162EE8861833A4AD2C3F0049CD3B130DB165F",
+    "actorSourceSha256": "CF5DFAEB583777C2A9CA83DCEAF48516942488EAFCF5426B193C942C5A28FBB2",
+    "path": "<candidate>\\release-native\\Udm.ContinuousDashWorkflow-ReuseExperiment.exe",
+    "sha256": "F5C504363A1DE6C9C934ABC3CE5100AC6D8FC9F2BA76A1E12BC3BBD46EF05CAB"
+  },
+  "performanceCausalityLimit": "Separate runs under changing host load, not a paired benchmark or isolation of one WinHTTP internal call.",
+  "nextProductRequirement": "Bounded transfer-owned scope; per-origin/settings separation, credential/cookie isolation, cancellation, normal and exceptional cleanup."
+}

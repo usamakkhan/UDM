@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "version": "10.1",
+  "sourceExtensionVersion": "0.73.65",
+  "buildSourceEntries": 738,
+  "unchangedBuildSourceEntries": 737,
+  "noncompiledFixtureRecipeChanges": [
+    {
+      "path": "tests/gapless-aac-tail.native-live.py",
+      "buildRecordedSha256": "D4E6187E22B2A199EF3772F844C3545189247B8A0FCEC7A62D0FFE674E0225C6",
+      "validationSha256": "948DB6406D3F8EA0DDDC0345B5C7A62EBB0384368545EA882AA421CC4344371C"
+    }
+  ],
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "verifiedOutputs": 10,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native\\UDM.exe",
+      "sha256": "F9AA5BB3BA9A5AFB0D02C4550EC1100AF2F74C8E0516CA3F4AE1805BE2BD8319"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native\\Udm.NativeHost.exe",
+      "sha256": "31A2CAB7ECDF43527DF4121AD4E9C724DC3EF2CF45983892386252237BD55FD7"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native\\Udm.Monitor.exe",
+      "sha256": "7AF449A0F5111DA14822C0C9FA880E93BBFD99C97D2C14B8CE24CDDD3EC93F8C"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "AB9B3209DD921CAE26BFC894A7048002E27C638A50672020FB5C9C464EC081FE"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native\\Udm.Automation.exe",
+      "sha256": "D901E78A75900FDF918BDBFC10790B39C6A00575A9B9F4B28440C0D95EF58F40"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "GaplessAacTailTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "RetiredDashBoundaryTests",
+      "checks": 42,
+      "passed": true
+    }
+  ],
+  "distinctBackendAssertions": 62,
+  "ownedCapturePublicationCases": 5,
+  "continuousRegressionCases": 7,
+  "strictNegativeCases": 3,
+  "hostProtectedFilesUnchanged": 9,
+  "tools": [
+    {
+      "name": "ffmpeg.exe",
+      "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3"
+    },
+    {
+      "name": "ffprobe.exe",
+      "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F"
+    }
+  ],
+  "ownedBuildAreaBytesExcludingSharedTools": 79306779,
+  "fullBuildEntrypointExecuted": false,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false,
+  "knownDiagnostics": [
+    "First driver missed Windows entry point; corrected before qualification.",
+    "First caption fixture used unsupported standalone text/vtt; corrected in fresh five-case run.",
+    "Held-response cancellation produced a server-side connection-reset diagnostic after successful Save."
+  ]
+}

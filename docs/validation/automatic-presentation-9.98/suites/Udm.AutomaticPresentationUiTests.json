@@ -1,0 +1,1573 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real MFC blocker opens normally",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "A replacement operation retains its newer supplied metadata",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "A failed prepared dialog retains its view without a self-scheduling retry loop",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "The real MFC blocker opens normally",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "A replacement operation retains its newer supplied metadata",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "No automatic presenter dispatches while another modal invocation is owned",
+      "passed": true
+    },
+    {
+      "name": "Blocked admission consumes neither offers, batch cohorts nor review reset intent",
+      "passed": true
+    },
+    {
+      "name": "Deferred prompts are not marked seen",
+      "passed": true
+    },
+    {
+      "name": "Both prepared authentication owners remain retained",
+      "passed": true
+    },
+    {
+      "name": "Update, clipboard and integration-settings intent survive modal admission",
+      "passed": true
+    },
+    {
+      "name": "Blocked presentation preserves in-flight media preparation without cancellation",
+      "passed": true
+    },
+    {
+      "name": "The accepted browser receipt remains discoverable while its dialog is deferred",
+      "passed": true
+    },
+    {
+      "name": "A failed prepared dialog retains its view without a self-scheduling retry loop",
+      "passed": true
+    },
+    {
+      "name": "Prepared presentation retains its original immutable operation and supplied size",
+      "passed": true
+    },
+    {
+      "name": "Accepted browser presentation retains its exact job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "The real release wake drains all retained automatic work without the main timer",
+      "passed": true
+    },
+    {
+      "name": "Integration settings are posted once after modal release",
+      "passed": true
+    },
+    {
+      "name": "Presented offers, batch and prepared views retire through their owned paths",
+      "passed": true
+    },
+    {
+      "name": "Seen and review-reset state advance only after allowed presentation",
+      "passed": true
+    },
+    {
+      "name": "Queued clipboard intent is revalidated and retired with monitoring disabled",
+      "passed": true
+    },
+    {
+      "name": "Later wakes cannot duplicate an acknowledged automatic presentation",
+      "passed": true
+    },
+    {
+      "name": "Automatic replay preserves the existing main-window visibility for these owned presenters",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "reserved",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "native",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "stale-enable",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": false,
+      "mode": "mfc",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "hidden",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "replacement",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "failure",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "reserved",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "native",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "stale-enable",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": false,
+      "mode": "mfc",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "hidden",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "replacement",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    },
+    {
+      "automaticLoginCallsDuringModal": 0,
+      "batchCallsDuringModal": 0,
+      "confirmationCallsDuringModal": 0,
+      "dark": true,
+      "mainEnabledDuringModal": true,
+      "mode": "failure",
+      "requestedLoginCallsDuringModal": 0,
+      "reviewCallsDuringModal": 0
+    }
+  ],
+  "passed": true
+}

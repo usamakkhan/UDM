@@ -1,0 +1,31 @@
+{
+  "capturedBeforeCompilation": true,
+  "changedSources": [
+    "native/CompletionCountdownUiTests.cpp"
+  ],
+  "sourceSha256": "E556DD311CC8013BAC86E5068D6568CC6FF137499523BD4273D1FDB6BEB77F18",
+  "previousSha256": "8ADF9888804A06A2FDE7A7BECFA25D10B28C02BF40AC82C847F8F90CEF9FB1A0",
+  "reason": "EndDialog destroys modal window only after callback return; verify disappearance after DoModal unwinds while the writer remains held.",
+  "normalProductsUnchanged": [
+    {
+      "name": "UDM.exe",
+      "sha256": "1E2047C25BB6EB856A3D161FF38E0CF2D1978E12EA15B95B01C97334BE18FA1A"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "6334D6811AC059B3BD147A2FC69928C033635AFB59BE1024C4448784D41D3473"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "E6744152742196F613F8AE85B50E52658262A9766A67EC3917019FE814062781"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "sha256": "7064086ED986ECC8B5E0B1B712B9B61F29FDD7297E8B1355EDD65C8871701293"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "sha256": "56FC0E1997AEBE18A4B5C8288618716AC354DE1BBA37A2CF32217185D14090F0"
+    }
+  ]
+}

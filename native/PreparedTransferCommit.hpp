@@ -5,6 +5,7 @@
 #include "PublicationSourcePin.hpp"
 #include <future>
 namespace udm {
+struct AdvisoryHashResult {std::string digest;double seconds=0,bodyReleaseSeconds=0;};
 // Same-thread handoff from an ordinary transfer to its owning Manager worker.
 // The owning worker joins final body writeback before publication. No detached
 // work or persisted acceptance token; publishFile owns the durable transaction.
@@ -14,6 +15,7 @@ class PreparedTransferCommit {
  PreparedTransferCommit* previous;Manager& manager;JobPtr job;std::shared_ptr<Cancel> cancel;bool allowed;
  bool ready=false,inCommit=false,accepted=false,keepParts=false;
  std::unique_ptr<PublicationSourcePin> writebackPin;std::future<PublishedWritebackResult> writeback;
+ std::future<AdvisoryHashResult> advisoryHash;std::shared_ptr<Cancel> advisoryCancel;
  fs::path staging,parts,target;Json destination,cleanupIdentity;std::string digest;
  struct Finalizing {std::mutex mutex;std::map<const Manager*,std::set<const Cancel*>> owners;std::map<const Manager*,std::map<const Cancel*,std::pair<const Job*,const PreparedTransferCommit*>>> independent;};
  static Finalizing& finalizing(){static auto* value=new Finalizing;return *value;}
@@ -45,6 +47,23 @@ public:
  std::unique_ptr<PublicationSourcePin> takeWritebackPin()noexcept{return std::move(writebackPin);}
  void releaseWritebackPin()noexcept{writebackPin.reset();}
  bool pendingWriteback()const noexcept{return writeback.valid();}
+ // Only a value-owned task may outlive transfer(). Its body/hash state must
+ // not refer to the transfer stack. Required checksums never use this handoff.
+ void adoptAdvisoryHash(std::future<AdvisoryHashResult> task,std::shared_ptr<Cancel> token){
+  if(!allowed||ready||inCommit||accepted||advisoryHash.valid()||!writebackPin||!task.valid()||!token)throw std::logic_error("Invalid advisory hash handoff.");
+  {Lock lock(manager.mutex);if(!str(job->data,"ExpectedSha256").empty()||!str(job->data,"ReplacementOf").empty())throw std::logic_error("A required checksum cannot use advisory publication.");}
+  advisoryHash=std::move(task);advisoryCancel=std::move(token);
+ }
+ bool pendingAdvisoryHash()const noexcept{return advisoryHash.valid();}
+ std::string finishAdvisoryHash(){
+  if(!advisoryHash.valid())return {};
+  const auto began=std::chrono::steady_clock::now();AdvisoryHashResult result;
+  try{result=advisoryHash.get();}catch(...){/* Advisory failure leaves no digest. */}
+  advisoryCancel.reset();
+  if(!result.digest.empty()&&!std::regex_match(result.digest,std::regex("[a-f0-9]{64}")))result.digest.clear();
+  {Lock lock(manager.mutex);auto& phases=job->data["FinishPhases"];phases["AdvisoryHashSeconds"]=result.seconds;phases["AdvisoryHashBufferRelease"]=result.bodyReleaseSeconds;phases["AdvisoryHashOwnerJoin"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();phases["AdvisoryHashIntentOverlap"]=true;}
+  return result.digest;
+ }
  void joinWriteback()noexcept{if(writeback.valid())try{writeback.wait();}catch(...){}}
  void finishWriteback(){
   if(!writeback.valid())return;
@@ -86,6 +105,7 @@ public:
  static bool defersAutomatic(Manager& manager,const std::map<std::string,std::shared_ptr<Cancel>>& active)noexcept{try{Lock lock(manager.mutex);if(!manager.storageError.empty()||active.empty())return false;auto& state=finalizing();std::lock_guard<std::mutex> guard(state.mutex);const auto found=state.owners.find(&manager);if(found==state.owners.end()||found->second.size()!=active.size())return false;for(const auto& item:active)if(item.second->cancelled()||!found->second.count(item.second.get()))return false;return true;}catch(...){return false;}}
  void prepare(const fs::path& stage,const fs::path& work,const std::string& hash,bool retain){
   if(!allowed||ready||inCommit||accepted||!stage.is_absolute()||!work.is_absolute()||stage.filename()!=L".udm-"+wide(job->id())+L".assembling")throw std::runtime_error("Invalid prepared download handoff.");
+  if(advisoryHash.valid()&&!hash.empty())throw std::logic_error("A pending advisory hash cannot replace a known publication digest.");
   // Do not query the synchronous file object while its body flush is active.
   // The owned pin already captured this identity before launching writeback.
   Json identity;
@@ -109,6 +129,8 @@ public:
   if(manager.filePublished)try{manager.filePublished(job);}catch(...){/* Accepted output must not fail due to a UI callback. */}
  }
  ~PreparedTransferCommit(){
+  if(advisoryCancel)advisoryCancel->stop=true;
+  if(advisoryHash.valid())try{advisoryHash.wait();}catch(...){}
   joinWriteback(); // Never delete staging or retire ownership while IO is live.
   endFinalization();
   if(ready&&!accepted)try{if(!publicationNeedsRecovery(manager,job)&&!cleanupIdentity.is_null()){

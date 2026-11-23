@@ -1,0 +1,32 @@
+{
+  "samples": 48128,
+  "wanted": 48000,
+  "exact": false,
+  "assembly": {
+    "bytes": 46563,
+    "checks": [
+      {
+        "name": "Capture uses a fresh owned folder",
+        "passed": true
+      },
+      {
+        "name": "Owned manifest selects media tracks",
+        "passed": true
+      },
+      {
+        "name": "Captured resources seal before assembly",
+        "passed": true
+      },
+      {
+        "name": "Assembly owns a verified complete file",
+        "passed": true
+      }
+    ],
+    "duration": 1.0,
+    "error": "",
+    "passed": true,
+    "path": "<candidate>\\workflow-attempt-02\\av48\\assembled-bd14fe1bc1ea47f199d364eaf6766ef1.mp4",
+    "reused": false,
+    "sha256": "88bb8c798707ad9bc95a7c22727f0fc79540803b73290ecc84d063717354210f"
+  }
+}

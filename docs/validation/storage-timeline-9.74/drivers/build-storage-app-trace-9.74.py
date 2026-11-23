@@ -1,0 +1,11 @@
+from pathlib import Path
+import os,json,subprocess
+base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development';area=Path('<repo>/.media-cache/owned-storage-timeline-9.74');scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(area/'source'),'/I'+str(native),'/I'+str(native/'vendor/brotli/c/include'),'/DUDM_FINISH_TIMING_TEST'];env={**env,'TEMP':str(area/'temp'),'TMP':str(area/'temp')}
+record=area/'build.json';old=json.loads(record.read_text());assert old['passed'] and old['diagnosticOnly'];assert not (area/'build-initial.json').exists();(area/'build-initial.json').write_bytes(record.read_bytes());source=area/'source/App.cpp';source.write_bytes((native/'App.cpp').read_bytes());assert sha(source)==sha(native/'App.cpp');objects=[Path(r['path']) for r in old['coreObjects']]
+for r in old['coreObjects']:assert sha(Path(r['path']))==r['sha256']
+def invoke(args,name):
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:p=subprocess.run(args,cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+ if p.returncode:print((area/(name+'.log')).read_text(encoding='utf-8',errors='replace')[-3000:],flush=True)
+ assert p.returncode==0,name
+args=[str(compiler),*common,'/c',str(source),'/Fo'+str(out/'AppTrace.obj')];(area/'app-trace-inputs.json').write_text(json.dumps(dict(sourceSha256=sha(source),args=args,sourceCopiedWithoutEdits=True,finishTimingEnabled=True,productionUiTestModeEnabled=False,initialBinaryNeverLaunched=True),indent=2),encoding='utf-8');invoke(args,'AppTrace')
+exe=release/'UDM.AppTrace.exe';resource=root/'.media-cache/owned-advisory-intent-build-9.74/App.res';invoke([str(compiler),'/nologo',str(out/'AppTrace.obj'),*map(str,objects),str(resource),'/Fe'+str(exe),'/link',*system,'/ENTRY:wWinMainCRTStartup','/SUBSYSTEM:WINDOWS','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA','/INCREMENTAL:NO','/MANIFEST:NO'],'link-AppTrace');old.update(binary=str(exe),sha256=sha(exe),appEntryRecompiledWithFinishTimingOnly=True,appEntrySourceSha256=sha(source),initialBuildSupersededForShutdownCoverage=True);record.write_text(json.dumps(old,indent=2),encoding='utf-8');print('Owned diagnostic now covers existing app-close and ExitInstance points',flush=True)

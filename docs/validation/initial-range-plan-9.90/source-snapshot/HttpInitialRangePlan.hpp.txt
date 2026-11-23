@@ -1,0 +1,24 @@
+#pragma once
+#include <cstdint>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+namespace udm {
+// Inclusive spans, established only after the helper proves representation identity.
+// Request ends then match ownership instead of repeatedly shortening live responses.
+inline std::vector<std::pair<std::int64_t,std::int64_t>> initialHttpRangePlan(
+ std::int64_t size,int workers){
+ if(size<=0||workers<1||workers>32||size<workers)
+  throw std::invalid_argument("Invalid initial HTTP range plan.");
+ std::vector<std::pair<std::int64_t,std::int64_t>> spans;
+ spans.reserve(workers);
+ const auto width=size/workers,remainder=size%workers;
+ std::int64_t at=0;
+ for(int n=0;n<workers;++n){
+  const auto length=width+(n<remainder?1:0);
+  spans.emplace_back(at,at+length-1);at+=length;
+ }
+ return spans;
+}
+}

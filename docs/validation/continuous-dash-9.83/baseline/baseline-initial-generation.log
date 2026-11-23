@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "[repo]\tests\live-dash-continuous.native-live.py", line 111, in <module>
+    split_movie(audio, 'a', 3)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "[repo]\tests\live-dash-continuous.native-live.py", line 88, in split_movie
+    assert len(fragments) == expected, (kind, len(fragments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('a', 4)

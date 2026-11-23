@@ -1,0 +1,11 @@
+--- native/ProductionUiTiming.hpp
++++ diagnostic/ProductionUiTiming.hpp
+@@ -7,7 +7,7 @@
+ };
+ struct NativeUiTraceEvent {volatile LONG ready;DWORD threadId;LONGLONG counter,finished;char stage[40];};
+ #ifdef UDM_FINISH_TIMING_TEST
+-inline constexpr LONG nativeUiTraceCapacity=2048;
++inline constexpr LONG nativeUiTraceCapacity=8192;
+ #else
+ inline constexpr LONG nativeUiTraceCapacity=128;
+ #endif

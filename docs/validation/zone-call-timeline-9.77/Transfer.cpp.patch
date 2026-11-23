@@ -1,0 +1,18 @@
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -1,3 +1,4 @@
++#include "DiagnosticSpan.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "CreatedStagingFile.hpp"
+ #include "PublishedWriteback.hpp"
+@@ -2638,8 +2639,8 @@
+  // end. Required server/user/replacement digests were already checked above.
+  if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());stageHandedOff=true;phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+  else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+- {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+- const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
++ {DiagnosticSpan snapshot("finish-snapshot-begin","finish-snapshot-end");Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
++ {DiagnosticSpan metadata("metadata-block-begin","metadata-block-end");const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}}
+  // The file and its catalog entry are published. Let the UI present completion
+  // before NTFS normalization and advisory hashing. The worker remains active,
+  // so opening the file, scans and completion actions keep their existing gates.

@@ -1,0 +1,264 @@
+param([switch]$CompactIntermediateObjects,[switch]$ProductionOnly,[switch]$OmitDebugSymbols,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$ProductionUiTimingTestsOnly,[switch]$PendingFileInfoUiTestsOnly,[switch]$ScheduleDownloadWizardUiTestsOnly,[switch]$ProgressLimiterUiTestsOnly,[switch]$ProgressCompletionUiTestsOnly,[switch]$ProgressMenuUiTestsOnly,[switch]$ProgressPreferencesUiTestsOnly,[switch]$StartupFontUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
+$ErrorActionPreference='Stop'
+if($CompactIntermediateObjects -and (!$OmitDebugSymbols -or $CoreOnly)){throw 'CompactIntermediateObjects requires OmitDebugSymbols and at least one linked target.'}
+if($ProgressLimiterUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressLimiterUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressLimiterUiTestsOnly separately.'}
+if($ProgressCompletionUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressCompletionUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressCompletionUiTestsOnly separately.'}
+if($ProgressMenuUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressMenuUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressMenuUiTestsOnly separately.'}
+if($ProgressPreferencesUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressPreferencesUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressPreferencesUiTestsOnly separately.'}
+if($ScheduleDownloadWizardUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ScheduleDownloadWizardUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ScheduleDownloadWizardUiTestsOnly separately.'}
+if($PendingFileInfoUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'PendingFileInfoUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -PendingFileInfoUiTestsOnly separately.'}
+if($StartupFontUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'StartupFontUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -StartupFontUiTestsOnly separately.'}
+if($ProductionUiTimingTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProductionUiTimingTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProductionUiTimingTestsOnly separately.'}
+if($OmitDebugSymbols -and !$DialCredentialsUiTestsOnly -and !$OptionsTabsUiTestsOnly -and !$ProductionOnly -and !$ProductionUiTimingTestsOnly -and !$StartupFontUiTestsOnly -and !$PendingFileInfoUiTestsOnly -and !$ScheduleDownloadWizardUiTestsOnly -and !$ProgressLimiterUiTestsOnly -and !$ProgressCompletionUiTestsOnly -and !$ProgressMenuUiTestsOnly -and !$ProgressPreferencesUiTestsOnly){throw 'Use -OmitDebugSymbols with -DialCredentialsUiTestsOnly, -OptionsTabsUiTestsOnly, -ProductionOnly, -ProductionUiTimingTestsOnly, -StartupFontUiTestsOnly -PendingFileInfoUiTestsOnly -ScheduleDownloadWizardUiTestsOnly or -ProgressLimiterUiTestsOnly or -ProgressCompletionUiTestsOnly or -ProgressMenuUiTestsOnly or -ProgressPreferencesUiTestsOnly.'}
+if($ProductionOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProductionOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProductionOnly without test or other target selectors.'}
+if($AboutUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'AboutUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -AboutUiTestsOnly separately.'}
+if($GrabberWizardUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'GrabberWizardUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -GrabberWizardUiTestsOnly separately.'}
+if($OptionsTabsUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'OptionsTabsUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -OptionsTabsUiTestsOnly separately.'}
+if($BatchDialogUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'BatchDialogUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -BatchDialogUiTestsOnly separately.'}
+if($SchedulerNumberUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'SchedulerNumberUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -SchedulerNumberUiTestsOnly separately.'}
+if($ServerControlsUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ServerControlsUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ServerControlsUiTestsOnly separately.'}
+if($ColumnControlsUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ColumnControlsUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ColumnControlsUiTestsOnly separately.'}
+if($FilenamePreviewUiTestsOnly -and ($AppOnly -or $TestsOnly -or $Test -or $CoreOnly -or $BackendTestsOnly -or $SchedulerNumberUiTestsOnly -or $CapturePresentationUiTestsOnly)){throw 'Use -FilenamePreviewUiTestsOnly separately.'}
+if($CompletionDialogUiTestsOnly -and ($ProgressDialogUiTestsOnly -or $PropertiesDialogUiTestsOnly -or $FindDialogUiTestsOnly -or $MenuStateTestsOnly -or $BackendTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -CompletionDialogUiTestsOnly separately.'}
+if($ProgressDialogUiTestsOnly -and ($PropertiesDialogUiTestsOnly -or $FindDialogUiTestsOnly -or $MenuStateTestsOnly -or $BackendTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -ProgressDialogUiTestsOnly separately.'}
+if($PropertiesDialogUiTestsOnly -and ($FindDialogUiTestsOnly -or $MenuStateTestsOnly -or $BackendTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -PropertiesDialogUiTestsOnly separately.'}
+if($FindDialogUiTestsOnly -and ($MenuStateTestsOnly -or $BackendTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -FindDialogUiTestsOnly separately.'}
+
+if($MenuStateTestsOnly -and ($BackendTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -MenuStateTestsOnly separately.'}
+if($BackendTestNames.Count -and !$BackendTestsOnly){throw 'BackendTestNames requires -BackendTestsOnly.'}
+if($BackendTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly -or $CapturePresentationUiTestsOnly -or $DialCredentialsUiTestsOnly -or $TransportPoolTestsOnly)){throw 'Use -BackendTestsOnly separately.'}
+if($DialCredentialsUiTestsOnly -and ($TransportPoolTestsOnly -or $CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -DialCredentialsUiTestsOnly separately.'}
+if($TransportPoolTestsOnly -and ($CapturePresentationUiTestsOnly -or $Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -TransportPoolTestsOnly separately.'}
+if($CapturePresentationUiTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly -or $CaptureExclusionUiTestsOnly)){throw 'Use -CapturePresentationUiTestsOnly separately.'}
+if($CaptureExclusionUiTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly -or $QueueExportUiTestsOnly)){throw 'Use -CaptureExclusionUiTestsOnly separately.'}
+if($QueueExportUiTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly -or $ToolbarUiTestsOnly)){throw 'Use -QueueExportUiTestsOnly separately.'}
+if($ToolbarUiTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly -or $ZipUiTestsOnly)){throw 'Use -ToolbarUiTestsOnly separately for the native toolbar harness.'}
+if($ZipUiTestsOnly -and ($Test -or $CoreOnly -or $AppOnly -or $TestsOnly)){throw 'Use -ZipUiTestsOnly separately for the isolated dialog component harness.'}
+if($AppOnly -and ($Test -or $TestsOnly)){throw 'Use -AppOnly for UI compilation, or -TestsOnly -Test for the native suite; do not combine them.'}
+$udmRoot=Split-Path $PSScriptRoot -Parent
+$udmCache=if($ToolchainRoot){$ToolchainRoot}else{Join-Path $udmRoot '.media-cache\driver-toolchain'}
+$udmVc='Contents\VC\Tools\MSVC\14.44.35207'
+$udmBin=Join-Path $udmCache ('Microsoft.VC.14.44.17.14.Tools.HostX64.TargetX64.base\'+$udmVc+'\bin\Hostx64\x64')
+$udmSdk=Join-Path $udmCache 'microsoft.windows.sdk.cpp\c'
+$udmSdkLib=Join-Path $udmCache 'microsoft.windows.sdk.cpp.x64\c'
+$udmIncludes=@(
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.CRT.Headers.base\'+$udmVc+'\include')),
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.ATL.Headers.base\'+$udmVc+'\atlmfc\include')),
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.MFC.Headers.base\'+$udmVc+'\atlmfc\include')),
+ (Join-Path $udmSdk 'Include\10.0.26100.0\ucrt'),(Join-Path $udmSdk 'Include\10.0.26100.0\um'),(Join-Path $udmSdk 'Include\10.0.26100.0\shared')
+)
+$udmLibraries=@(
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.CRT.x64.Desktop.base\'+$udmVc+'\lib\x64')),
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.CRT.x64.Store.base\'+$udmVc+'\lib\x64')),
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.ATL.X64.base\'+$udmVc+'\atlmfc\lib\x64')),
+ (Join-Path $udmCache ('Microsoft.VC.14.44.17.14.MFC.X64.base\'+$udmVc+'\atlmfc\lib\x64')),
+ (Join-Path $udmSdkLib 'ucrt\x64'),(Join-Path $udmSdkLib 'um\x64')
+)
+$udmSavedInclude=$env:INCLUDE
+$udmSavedLib=$env:LIB
+$udmCompiler=Join-Path $udmBin 'cl.exe'
+$udmResourceCompiler=Join-Path $udmSdk 'bin\10.0.26100.0\x64\rc.exe'
+if($UseInstalledToolchain -or !(Test-Path -LiteralPath $udmCompiler)){
+ $udmCl=Get-Command cl.exe -ErrorAction SilentlyContinue
+ $udmRc=Get-Command rc.exe -ErrorAction SilentlyContinue
+ if(!$udmCl -or !$udmRc -or !$env:INCLUDE -or !$env:LIB){throw 'Open an x64 Native Tools PowerShell for Visual Studio 2022 with Desktop C++, MFC/ATL and a Windows SDK installed, then run build.ps1 again.'}
+ $udmCompiler=$udmCl.Source
+ $udmResourceCompiler=$udmRc.Source
+ if($env:VSCMD_ARG_TGT_ARCH -and $env:VSCMD_ARG_TGT_ARCH -ne 'x64'){throw 'Select the x64 Visual Studio developer environment.'}
+}else{
+ foreach($udmPath in @($udmIncludes)+@($udmLibraries)){if(!(Test-Path -LiteralPath $udmPath)){throw ('Missing cached compiler dependency: '+$udmPath+'. Use -UseInstalledToolchain in a Visual Studio x64 developer environment.')}}
+ $env:INCLUDE=$udmIncludes -join ';'
+ $env:LIB=$udmLibraries -join ';'
+}
+$udmCompactTargetLock=$null
+Push-Location -LiteralPath $udmRoot
+try {
+$udmOut=Join-Path $PSScriptRoot 'out'
+$udmRelease=Join-Path $udmRoot 'release-native'
+if($OutputRoot){
+ if(![IO.Path]::IsPathRooted($OutputRoot)){throw 'OutputRoot must be an absolute path.'}
+ $udmOut=Join-Path $OutputRoot 'out'
+ $udmRelease=Join-Path $OutputRoot 'release-native'
+}
+if($OmitDebugSymbols){$udmOut+='-nosymbols'}
+New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
+if($CompactIntermediateObjects){
+ # One owned scratch slot; exclude other compact writers for this output root.
+ $udmCompactTargetLock=[IO.File]::Open((Join-Path $udmOut 'compact-target.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+}
+$env:VCTIP_NOOPTIN='1'
+$env:VSCMD_SKIP_SENDTELEMETRY='1'
+$udmCommon=@('/nologo','/bigobj','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus')
+$udmLinkDebug=@()
+if(!$OmitDebugSymbols){
+ $udmCommon+=@('/Zi',('/Fd'+(Join-Path $udmOut 'native.pdb')))
+ $udmLinkDebug+=@('/DEBUG:FULL')
+}
+$udmCurl=Join-Path $PSScriptRoot 'vendor\curl'
+if(!(Test-Path -LiteralPath (Join-Path $udmCurl 'lib\libcurl.lib'))){throw 'Missing native/vendor/curl static library. See vendor/curl/README.md for the reproducible build.'}
+$udmNg=Join-Path $PSScriptRoot 'vendor\nghttp2'
+if(!(Test-Path -LiteralPath (Join-Path $udmNg 'lib\nghttp2_static.lib'))){throw 'Missing native/vendor/nghttp2 static library. Rebuild the pinned HTTP dependencies with native/build-curl.ps1.'}
+$udmCommon+=@('/DCURL_STATICLIB',('/I'+(Join-Path $udmCurl 'include')),('/I'+$udmOut))
+# Download automation: the type library and generated headers come from the IDL.
+$udmMidl=Join-Path (Split-Path $udmResourceCompiler) 'midl.exe'
+if(!(Test-Path -LiteralPath $udmMidl)){$udmMidlCommand=Get-Command midl.exe -ErrorAction SilentlyContinue;if($udmMidlCommand){$udmMidl=$udmMidlCommand.Source}}
+if(!(Test-Path -LiteralPath $udmMidl)){throw 'Missing midl.exe for the automation type library.'}
+& $udmMidl /nologo /env x64 /cpp_cmd $udmCompiler /out $udmOut /h 'Udm.Automation_h.h' /iid 'Udm.Automation_i.c' /tlb (Join-Path $udmRelease 'Udm.Automation.tlb') (Join-Path $PSScriptRoot 'Udm.Automation.idl')
+if($LASTEXITCODE){throw 'Automation type library compilation failed.'}
+$udmCommon+=@(('/I'+(Join-Path $PSScriptRoot 'vendor\brotli\c\include')))
+$udmCore=@('Core','PacProxy','Queue','FileWorkflows','Duplicates','Transfer','Grabber','GrabberLinks','Streaming','Adaptive','DashManifest','YouTubePlayer','Bridge','Network','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner','CaptureExclusions','CaptureAdmission')
+if($CoreOnly){$udmCore=@('Core','PacProxy','Transfer','Grabber','GrabberLinks','SocksProxy','OfflineSite','DialUp','Ftp','DownloadPreview','ZipPreview','QueueWake','Scanner')}
+foreach($udmName in $udmCore){
+ $udmSource=Join-Path $PSScriptRoot ($udmName+'.cpp')
+ $udmObject=Join-Path $udmOut ($udmName+'.obj')
+ $udmHeaderDate=@(Get-ChildItem -LiteralPath $PSScriptRoot -File | Where-Object {$_.Extension -in @('.hpp','.h')} | Select-Object -ExpandProperty LastWriteTimeUtc)+(Get-Item (Join-Path $udmRoot 'drivers\signed-network\BrokerProtocol.hpp')).LastWriteTimeUtc
+ $udmHeaderDate+=@(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'vendor\zlib') -Filter *.h | Select-Object -ExpandProperty LastWriteTimeUtc)
+ if($udmName -eq 'Streaming'){$udmHeaderDate+=@(Get-ChildItem (Join-Path $PSScriptRoot 'vendor\brotli') -Filter *.h -Recurse | Select-Object -ExpandProperty LastWriteTimeUtc)}
+ $udmHeaderDate=$udmHeaderDate | Sort-Object -Descending | Select-Object -First 1
+ if((Test-Path -LiteralPath $udmObject) -and (Get-Item $udmObject).LastWriteTimeUtc -gt (Get-Item $udmSource).LastWriteTimeUtc -and (Get-Item $udmObject).LastWriteTimeUtc -gt $udmHeaderDate){continue}
+ & $udmCompiler @udmCommon /c $udmSource ('/Fo'+$udmObject)
+ if($LASTEXITCODE){throw ('C++ compilation failed: '+$udmName)}
+}
+if($CoreOnly){return}
+$udmZlib=Join-Path $PSScriptRoot 'vendor\zlib'
+$udmZlibObjects=@()
+$udmZlibDate=(Get-ChildItem -LiteralPath $udmZlib -File | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+foreach($udmName in @('adler32','crc32','inffast','inflate','inftrees','zutil')){
+ $udmObject=Join-Path $udmOut ('zlib-'+$udmName+'.obj')
+ if(!(Test-Path $udmObject) -or (Get-Item $udmObject).LastWriteTimeUtc -le $udmZlibDate){
+  & $udmCompiler /nologo /TC /O2 /MT /W3 /D_CRT_SECURE_NO_WARNINGS /c (Join-Path $udmZlib ($udmName+'.c')) ('/Fo'+$udmObject)
+  if($LASTEXITCODE){throw ('zlib compilation failed: '+$udmName)}
+ }
+ $udmZlibObjects+=$udmObject
+}
+$udmBrotli=Join-Path $PSScriptRoot 'vendor\brotli'
+$udmBrotliObjects=@()
+$udmBrotliDate=(Get-ChildItem -LiteralPath $udmBrotli -Recurse -File | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).LastWriteTimeUtc
+foreach($udmSource in Get-ChildItem (Join-Path $udmBrotli 'c\common'),(Join-Path $udmBrotli 'c\dec') -Filter *.c){
+ $udmObject=Join-Path $udmOut ('brotli-'+$udmSource.Directory.Name+'-'+$udmSource.BaseName+'.obj')
+ if(!(Test-Path $udmObject) -or (Get-Item $udmObject).LastWriteTimeUtc -le $udmBrotliDate){
+  & $udmCompiler /nologo /TC /O2 /MT /W3 /D_CRT_SECURE_NO_WARNINGS /DBROTLI_STATIC_COMPILATION ('/I'+(Join-Path $udmBrotli 'c\include')) /c $udmSource.FullName ('/Fo'+$udmObject)
+  if($LASTEXITCODE){throw ('Brotli compilation failed: '+$udmSource.Name)}
+ }
+ $udmBrotliObjects+=$udmObject
+}
+$udmObjects=@($udmCore|ForEach-Object {Join-Path $udmOut ($_+'.obj')})+$udmZlibObjects+$udmBrotliObjects
+$udmSystem=@((Join-Path $udmCurl 'lib\libcurl.lib'),(Join-Path $udmNg 'lib\nghttp2_static.lib'),'secur32.lib','normaliz.lib','winhttp.lib','wininet.lib','crypt32.lib','bcrypt.lib','shell32.lib','shlwapi.lib','xmllite.lib','ole32.lib','oleaut32.lib','advapi32.lib','user32.lib','gdi32.lib','comctl32.lib','ws2_32.lib','iphlpapi.lib','uuid.lib','winmm.lib','uxtheme.lib','powrprof.lib','rasapi32.lib','rasdlg.lib')
+& $udmResourceCompiler /nologo ('/fo'+(Join-Path $udmOut 'App.res')) (Join-Path $PSScriptRoot 'App.rc')
+if($LASTEXITCODE){throw 'Resource compilation failed'}
+$udmTargets=@(@('App','UDM','WINDOWS'),@('HostMain','Udm.NativeHost','CONSOLE'),@('MonitorMain','Udm.Monitor','CONSOLE'),@('SetupMain','Udm.SetupHelper','CONSOLE'),@('AutomationMain','Udm.Automation','WINDOWS'),@('Tests','Udm.NativeTests','CONSOLE'))
+if($ProductionOnly){$udmTargets=@($udmTargets | Where-Object {$_[0] -ne 'Tests'})}
+if($FindDialogUiTestsOnly){$udmTargets=,@('FindDialogUiTests','Udm.FindDialogUiTests','WINDOWS')}
+if($AboutUiTestsOnly){$udmTargets=,@('AboutUiTests','Udm.AboutUiTests','WINDOWS')}
+if($GrabberWizardUiTestsOnly){$udmTargets=,@('GrabberWizardUiTests','Udm.GrabberWizardUiTests','WINDOWS')}
+if($DarkGroupsUiTestsOnly){$udmTargets=,@('DarkGroupsUiTests','Udm.DarkGroupsUiTests','WINDOWS')}
+if($ColumnControlsUiTestsOnly){$udmTargets=,@('ColumnControlsUiTests','Udm.ColumnControlsUiTests','WINDOWS')}
+if($OptionsTabsUiTestsOnly){$udmTargets=,@('OptionsTabsUiTests','Udm.OptionsTabsUiTests','WINDOWS')}
+if($BatchDialogUiTestsOnly){$udmTargets=,@('BatchDialogUiTests','Udm.BatchDialogUiTests','WINDOWS')}
+if($PropertiesDialogUiTestsOnly){$udmTargets=,@('PropertiesDialogUiTests','Udm.PropertiesDialogUiTests','WINDOWS')}
+if($ProgressDialogUiTestsOnly){$udmTargets=,@('ProgressDialogUiTests','Udm.ProgressDialogUiTests','WINDOWS')}
+if($CompletionDialogUiTestsOnly){$udmTargets=,@('CompletionDialogUiTests','Udm.CompletionDialogUiTests','WINDOWS')}
+if($MenuStateTestsOnly){$udmTargets=,@('MenuStateTests','Udm.MenuStateTests','WINDOWS')}
+if($TransportPoolTestsOnly){$udmTargets=,@('TransportPoolProbe','Udm.TransportPoolProbe','CONSOLE')}
+if($DialCredentialsUiTestsOnly){$udmTargets=,@('DialCredentialsUiTests','Udm.DialCredentialsUiTests','WINDOWS')}
+if($AppOnly){$udmTargets=,@('App','UDM','WINDOWS')}
+if($TestsOnly){$udmTargets=,@('Tests','Udm.NativeTests','CONSOLE')}
+if($ZipUiTestsOnly){$udmTargets=,@('ZipPreviewUiTests','Udm.ZipPreviewUiTests','WINDOWS')}
+if($ToolbarUiTestsOnly){$udmTargets=,@('ToolbarUiTests','Udm.ToolbarUiTests','WINDOWS')}
+if($ColumnControlsUiTestsOnly){$udmTargets=,@('ColumnControlsUiTests','Udm.ColumnControlsUiTests','WINDOWS')}
+if($ServerControlsUiTestsOnly){$udmTargets=,@('ServerControlsUiTests','Udm.ServerControlsUiTests','WINDOWS')}
+if($FilenamePreviewUiTestsOnly){$udmTargets=,@('FilenamePreviewUiTests','Udm.FilenamePreviewUiTests','WINDOWS')}
+if($SchedulerNumberUiTestsOnly){$udmTargets=,@('SchedulerNumberUiTests','Udm.SchedulerNumberUiTests','WINDOWS')}
+if($QueueExportUiTestsOnly){$udmTargets=,@('QueueExportUiTests','Udm.QueueExportUiTests','WINDOWS')}
+if($CaptureExclusionUiTestsOnly){$udmTargets=,@('CaptureExclusionUiTests','Udm.CaptureExclusionUiTests','WINDOWS')}
+if($CapturePresentationUiTestsOnly){$udmTargets=,@('CapturePresentationUiTests','Udm.CapturePresentationUiTests','WINDOWS')}
+if($ProductionUiTimingTestsOnly){$udmTargets=,@('ProductionUiTimingTests','Udm.ProductionUiTimingTests','WINDOWS')}
+if($StartupFontUiTestsOnly){$udmTargets=,@('StartupFontUiTests','Udm.StartupFontUiTests','WINDOWS')}
+if($PendingFileInfoUiTestsOnly){$udmTargets=,@('PendingFileInfoUiTests','Udm.PendingFileInfoUiTests','WINDOWS')}
+if($ScheduleDownloadWizardUiTestsOnly){$udmTargets=,@('ScheduleDownloadWizardUiTests','Udm.ScheduleDownloadWizardUiTests','WINDOWS')}
+if($ProgressLimiterUiTestsOnly){$udmTargets=,@('ProgressLimiterUiTests','Udm.ProgressLimiterUiTests','WINDOWS')}
+if($ProgressCompletionUiTestsOnly){$udmTargets=,@('ProgressCompletionUiTests','Udm.ProgressCompletionUiTests','WINDOWS')}
+if($ProgressMenuUiTestsOnly){$udmTargets=,@('ProgressMenuUiTests','Udm.ProgressMenuUiTests','WINDOWS')}
+if($ProgressPreferencesUiTestsOnly){$udmTargets=,@('ProgressPreferencesUiTests','Udm.ProgressPreferencesUiTests','WINDOWS')}
+if($BackendTestsOnly){
+ $udmBackendCases=Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'backend-tests.json') | ConvertFrom-Json
+ $udmBackendNames=@($udmBackendCases.source | Sort-Object -Unique)
+ # This manual probe needs an explicitly chosen second volume; do not run it
+ # in the default backend suite on machines with only one writable volume.
+ if('MediaCopyCancellationTests' -in $BackendTestNames){$udmBackendNames+='MediaCopyCancellationTests'}
+ # The Python runner supplies this integration fixture's live loopback origin.
+ if('RenderedOfflineTests' -in $BackendTestNames){$udmBackendNames+='RenderedOfflineTests'}
+ # This integration fixture also requires a runner-owned loopback origin.
+ if('HttpGzipTransferTests' -in $BackendTestNames){$udmBackendNames+='HttpGzipTransferTests'}
+ if('HttpSequentialHashTests' -in $BackendTestNames){$udmBackendNames+='HttpSequentialHashTests'}
+ if('HttpPostGzipTests' -in $BackendTestNames){$udmBackendNames+='HttpPostGzipTests'}
+ if('HttpPostIdentityTests' -in $BackendTestNames){$udmBackendNames+='HttpPostIdentityTests'}
+ foreach($udmRequested in $BackendTestNames){if($udmRequested -notin $udmBackendNames){throw ('Unknown backend test: '+$udmRequested)}}
+ if($BackendTestNames.Count){$udmBackendNames=@($udmBackendNames|Where-Object{$_ -in $BackendTestNames})}
+ $udmTargets=@(foreach($udmName in $udmBackendNames){
+  if($udmName -notmatch '^[A-Za-z][A-Za-z0-9]*Tests$' -or !(Test-Path -LiteralPath (Join-Path $PSScriptRoot ($udmName+'.cpp')))){throw 'Invalid backend test source.'}
+  ,@($udmName,('Udm.'+$udmName),'CONSOLE')
+ })
+}
+if($CompactIntermediateObjects){
+function Get-UdmTargetDigest([string]$Path){
+ $udmHash=[Security.Cryptography.SHA256]::Create();$udmInput=$null
+ try{$udmInput=[IO.File]::OpenRead($Path);return ([BitConverter]::ToString($udmHash.ComputeHash($udmInput))).Replace('-','')}
+ finally{if($udmInput){$udmInput.Dispose()};$udmHash.Dispose()}
+}
+$udmTargetObjectRecords=[Collections.Generic.List[object]]::new()
+$udmTargetObjectManifest=[ordered]@{schema=1;runId=[Guid]::NewGuid().ToString('N');passed=$false;compact=[bool]$CompactIntermediateObjects;scope='Top-level target objects; shared core and diagnostic variants remain separate.';targets=$udmTargetObjectRecords}
+$udmTargetObjectManifestPath=Join-Path $udmOut 'target-objects.json'
+[IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+}
+foreach($udmTarget in $udmTargets){
+ $udmTargetObject=Join-Path $udmOut $(if($CompactIntermediateObjects){'target-scratch.obj'}else{$udmTarget[0]+'.obj'})
+ # The reconnect fixture includes Network.cpp to exercise its private session state.
+ $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
+ # Keep diagnostic admission/save hooks out of the shared production object cache.
+ if($udmTarget[0] -eq 'ProductionUiTimingTests'){
+  $udmTraceObjects=@()
+  foreach($udmTraceStem in @('Bridge','Core')){
+   $udmTraceObject=Join-Path $udmOut ('ProductionUiTiming'+$udmTraceStem+'.obj')
+   & $udmCompiler @udmCommon /DUDM_PRODUCTION_UI_TIMING_TEST /c (Join-Path $PSScriptRoot ($udmTraceStem+'.cpp')) ('/Fo'+$udmTraceObject)
+   if($LASTEXITCODE){throw ('Production UI timing compilation failed: '+$udmTraceStem)}
+   $udmTraceObjects+=$udmTraceObject
+  }
+  $udmLinkObjects=@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -notin @('Bridge.obj','Core.obj')})+$udmTraceObjects
+ }
+ $udmEntry=@();if($udmTarget[0] -in @('AboutUiTests','GrabberWizardUiTests','DarkGroupsUiTests','FilenamePreviewUiTests','AutomationMain','CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','ColumnControlsUiTests','OptionsTabsUiTests','BatchDialogUiTests','ServerControlsUiTests','SchedulerNumberUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests','ProductionUiTimingTests','StartupFontUiTests','PendingFileInfoUiTests','ScheduleDownloadWizardUiTests','ProgressLimiterUiTests','ProgressCompletionUiTests','ProgressMenuUiTests','ProgressPreferencesUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
+ & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+$udmTargetObject) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA @udmLinkDebug /INCREMENTAL:NO /MANIFEST:NO
+ if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
+ if($CompactIntermediateObjects){
+ $udmTargetObjectRecords.Add([ordered]@{source=$udmTarget[0]+'.cpp';target=$udmTarget[1]+'.exe';objectPath=$udmTargetObject;objectBytes=([IO.FileInfo]::new($udmTargetObject)).Length;objectSha256=(Get-UdmTargetDigest $udmTargetObject);executableSha256=(Get-UdmTargetDigest (Join-Path $udmRelease ($udmTarget[1]+'.exe')))})
+ [IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+ }
+}
+if($CompactIntermediateObjects){
+$udmTargetObjectManifest.passed=$true
+[IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+}
+Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'third_party\mime-db-LICENSE.txt') -Destination (Join-Path $udmRelease 'mime-db-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $udmZlib 'LICENSE') -Destination (Join-Path $udmRelease 'zlib-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $udmCurl 'LICENSE.txt') -Destination (Join-Path $udmRelease 'curl-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $udmNg 'LICENSE.txt') -Destination (Join-Path $udmRelease 'nghttp2-LICENSE.txt')
+Copy-Item -LiteralPath (Join-Path $udmRoot 'assets') -Destination $udmRelease -Recurse -Force
+if($Test){
+ $udmTestTools=Join-Path $udmRelease 'tools'
+ foreach($udmMedia in @('ffmpeg.exe','ffprobe.exe','FFmpeg-LICENSE.txt')){
+  $udmSourceMedia=Join-Path $udmRoot ('release\tools\'+$udmMedia)
+  if((Test-Path -LiteralPath $udmSourceMedia) -and !(Test-Path -LiteralPath (Join-Path $udmTestTools $udmMedia))){
+   New-Item -ItemType Directory -Force -Path $udmTestTools | Out-Null
+   Copy-Item -LiteralPath $udmSourceMedia -Destination $udmTestTools
+  }
+ }
+}
+if($Test){& (Join-Path $udmRelease 'Udm.NativeTests.exe');if($LASTEXITCODE){throw 'Native tests failed'}}
+Write-Output ('Native C++/MFC binaries: '+$udmRelease)
+} finally {
+ if($udmCompactTargetLock){$udmCompactTargetLock.Dispose()}
+ Pop-Location
+ $env:INCLUDE=$udmSavedInclude
+ $env:LIB=$udmSavedLib
+}

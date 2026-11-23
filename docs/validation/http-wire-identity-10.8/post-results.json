@@ -1,0 +1,221 @@
+{
+  "checks": [
+    {
+      "name": "Fresh forms still do not submit on File Info open",
+      "passed": true
+    },
+    {
+      "name": "Successful plain POST still publishes exact bytes",
+      "passed": true
+    },
+    {
+      "name": "Successful plain POST adds no saved-response receipt pass and keeps inline hashing",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Reopened File Info verifies retained plain response without submitting again",
+      "passed": true
+    },
+    {
+      "announcedBytes": 88000,
+      "name": "Retained plain response supplies verified size before Start",
+      "passed": true
+    },
+    {
+      "name": "Published plain form file matches the size shown before Start",
+      "passed": true
+    },
+    {
+      "name": "Completion discards the obsolete form response receipt",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Unknown-length and redirected plain responses reuse their complete saved body",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "A retained empty response reports verified zero before Start",
+      "passed": true
+    },
+    {
+      "name": "The retained empty response publishes an empty final file",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Retained plain response reaches confirmation before Download Later",
+      "passed": true
+    },
+    {
+      "name": "Download Later leaves the plain form target unpublished",
+      "passed": true
+    },
+    {
+      "name": "Later resumes plain saved bytes instead of submitting again",
+      "passed": true
+    },
+    {
+      "name": "A destination collision preserves both the existing file and the complete form response",
+      "passed": true
+    },
+    {
+      "name": "Changing destination after failure publishes saved bytes without overwriting the old file",
+      "passed": true
+    },
+    {
+      "name": "A real catalog failure after publication retains its recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Failure retention leaves pending publication recovery intact rather than creating a competing response receipt",
+      "passed": true
+    },
+    {
+      "name": "Resume completes pending publication recovery without another form submission",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Failure retention never rebinds an old response to a changed form request",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Damaged saved plain bytes fail Resume without becoming a new response receipt",
+      "passed": true
+    },
+    {
+      "name": "A separate explicit Restart is required before resubmitting the damaged plain form",
+      "passed": true
+    },
+    {
+      "name": "Inserted text before a plain form file waits for a choice with a retained response",
+      "passed": true
+    },
+    {
+      "name": "An approved prefix-removal choice verifies retained form bytes before Start",
+      "passed": true
+    },
+    {
+      "announcedBytes": 395,
+      "name": "Prefix removal reports final output size rather than retained response length",
+      "passed": true
+    },
+    {
+      "name": "The published prefix-stripped form exactly matches pre-Start size and original file hash",
+      "passed": true
+    },
+    {
+      "name": "Completed range display describes the final form file while preserving response byte counts",
+      "passed": true
+    },
+    {
+      "name": "A final verification failure retains an unpublished complete plain form response",
+      "passed": true
+    },
+    {
+      "name": "Failure checkpoints a request-bound response instead of requiring form resubmission",
+      "passed": true
+    },
+    {
+      "name": "Response retention preserves the original verification error",
+      "passed": true
+    },
+    {
+      "name": "Plain form response receipt survives a catalog reopen",
+      "passed": true
+    },
+    {
+      "name": "Reopened catalog publishes retained plain form bytes without resubmission",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [],
+  "passed": true
+}

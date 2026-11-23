@@ -1,0 +1,70 @@
+{
+  "target": "Installed IDM 6.43.10.2",
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "targetUnchanged": true,
+  "analysisOnly": true,
+  "liveAppInstrumented": false,
+  "provider": "Existing local Ghidra 12.1.3 via REA 6.5.0",
+  "observations": [
+    {
+      "query": "io-procedures",
+      "code": "provider_timeout",
+      "operation": "search_procedures",
+      "timeoutMs": 330000,
+      "failureKind": "timeout",
+      "failureMessage": "Ghidra startup deadline elapsed",
+      "rawResponseSha256": "2ADAA29B1159853F1E9476E5B8236B6F63F7213138D8E24C0903115FFC1E2D96"
+    },
+    {
+      "query": "001-flush-callers",
+      "code": "provider_timeout",
+      "operation": "procedure_callers",
+      "timeoutMs": 330000,
+      "failureKind": "timeout",
+      "failureMessage": "Ghidra startup deadline elapsed",
+      "rawResponseSha256": "312AC2C7917CD2712E40CEE3716765118B3754314798559E2D3461435B81EBCD"
+    },
+    {
+      "query": "002-createfilew-callers",
+      "code": "provider_timeout",
+      "operation": "procedure_callers",
+      "timeoutMs": 330000,
+      "failureKind": "timeout",
+      "failureMessage": "Ghidra startup deadline elapsed",
+      "rawResponseSha256": "65323DCBEA8A0AFA81CD0463F9E56338853B22606365E6DBA69BBE1D95A3D895"
+    }
+  ],
+  "binaryCloseResponse": {
+    "result": {
+      "_meta": {
+        "provenance": {
+          "untrusted_content": true,
+          "source": "analysis_target"
+        }
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"result\":null}"
+        }
+      ],
+      "structuredContent": {
+        "result": null
+      }
+    },
+    "jsonrpc": "2.0",
+    "id": 15
+  },
+  "fourthQueuedQueryWithdrawn": true,
+  "orchestratorExitCode": 1,
+  "orchestratorExitReason": "Withdrawing the final queued request produced FileNotFoundError; its finally block closed the analysis target and server stdin. This is not a successful static analysis.",
+  "reaStartupConfigurationObserved": {
+    "environmentName": "REA_GHIDRA_STARTUP_TIMEOUT_MS",
+    "defaultMs": 330000,
+    "applicationGlobalConfigurationChanged": false,
+    "providerCodeChanged": false
+  },
+  "openFlagsEstablished": false,
+  "flushCallersEstablished": false,
+  "nextGate": "One bounded session with a larger provider startup budget after verifying available storage; do not repeat the same default-deadline queries."
+}

@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "qualificationScope": "Single-Period caption-session final mux, exact media, metadata, receipt and publication; not general timing parity.",
+  "allAttemptsPassed": false,
+  "version": "10.2",
+  "sourceExtensionVersion": "0.73.66",
+  "verifiedSourceInputs": 738,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "verifiedOutputs": 11,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native\\UDM.exe",
+      "sha256": "DD8FC43FA91A412D87AA2040789B36EBE7EA031BCF6DA4DFEB34463AC8BAC7C1"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native\\Udm.NativeHost.exe",
+      "sha256": "100688924C85DF2DF62FEA93C07612E2726044E5BF8BF16AB7D292F8023AA858"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native\\Udm.Monitor.exe",
+      "sha256": "D7A53E8C367E3AA0E4A170202991B2A6E4390E6C593835FDBA35989DDECA92CE"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "F25E50210F7736B3DEF02749163424DF2CBA796A1A6909D1D3043FE454D168AD"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native\\Udm.Automation.exe",
+      "sha256": "FB5D4389E0B363BBD081D9376F7C4C1ECE0979C931EC33918AF6A3A7EFB21ADB"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "GaplessAacTailTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "RetiredDashBoundaryTests",
+      "checks": 42,
+      "passed": true
+    }
+  ],
+  "distinctBackendAssertions": 62,
+  "captionSessionPublicationCases": 4,
+  "directPublicationRegressionCases": 5,
+  "negativeSelectionCases": 3,
+  "continuousRegressionFreshPassingCases": 7,
+  "priorContinuousAttemptFailedAt": "av: DASH manifest expired while synchronizing its clock.",
+  "priorContinuousAttemptPublishedFiles": 0,
+  "priorContinuousAttemptRetained": true,
+  "timingFailureCauseProven": false,
+  "strictTimingBoundsRelaxed": false,
+  "sourceUnchangedBetweenContinuousAttempts": true,
+  "hostProtectedFilesUnchanged": 9,
+  "ownedBuildAreaBytesExcludingSharedTools": 77387220,
+  "fullBuildEntrypointExecuted": false,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false
+}

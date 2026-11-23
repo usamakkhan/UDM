@@ -1,0 +1,27 @@
+--- native/PreparedTransferCommit.hpp
++++ diagnostic/PreparedTransferCommit.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticSpan.hpp"
+ #include "PublicationRecovery.hpp"
+ #include "PublishedWriteback.hpp"
+ #include "PublicationSourcePin.hpp"
+@@ -55,7 +56,7 @@
+   advisoryHash=std::move(task);advisoryCancel=std::move(token);
+  }
+  bool pendingAdvisoryHash()const noexcept{return advisoryHash.valid();}
+- std::string finishAdvisoryHash(){
++ std::string finishAdvisoryHash(){DiagnosticSpan join("hash-join-begin","hash-join-end");
+   if(!advisoryHash.valid())return {};
+   const auto began=std::chrono::steady_clock::now();AdvisoryHashResult result;
+   try{result=advisoryHash.get();}catch(...){/* Advisory failure leaves no digest. */}
+@@ -65,7 +66,7 @@
+   return result.digest;
+  }
+  void joinWriteback()noexcept{if(writeback.valid())try{writeback.wait();}catch(...){}}
+- void finishWriteback(){
++ void finishWriteback(){DiagnosticSpan join("body-join-begin","body-join-end");
+   if(!writeback.valid())return;
+   const auto began=std::chrono::steady_clock::now();const auto result=writeback.get();
+   {Lock lock(manager.mutex);auto& phases=job->data["FinishPhases"];

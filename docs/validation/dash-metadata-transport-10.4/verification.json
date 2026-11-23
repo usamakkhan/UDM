@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "version": "10.4",
+  "sourceExtensionVersion": "0.73.68",
+  "verifiedSourceInputs": 745,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "Adaptive",
+    "DashManifest",
+    "Bridge"
+  ],
+  "verifiedBuildOutputs": 14,
+  "verifiedSupplementalCancellationActor": true,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native\\UDM.exe",
+      "sha256": "D1BF355E28B117B0952475BCA80EE5C181614EBE58502EA0DD5E5369EA1219EC"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native\\Udm.NativeHost.exe",
+      "sha256": "C870B03C43DE0ADEA3FCD7780C1A64CFC62B951C6081489E6430795832395F9E"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native\\Udm.Monitor.exe",
+      "sha256": "B49B9E2063484F3E9A8C6AC39930F085E85F268316505562B70A4E574226F0F1"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "13A2753C113BB480049FADCDB595BF12569AC1E2A03A8A0E7ABCD96F0E21F1C2"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native\\Udm.Automation.exe",
+      "sha256": "E705CF7BD1A02A33D77131974FB41E6D8D9DED1D24CF32124A9C7E1B7C1712F3"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "DashMetadataTransportTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "GaplessAacTailTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "RetiredDashBoundaryTests",
+      "checks": 42,
+      "passed": true
+    }
+  ],
+  "distinctBackendAssertions": 82,
+  "wireRequests": 9,
+  "wireActorChecks": 5,
+  "freshnessControls": 8,
+  "fullContinuousRegressionPassed": true,
+  "continuousCases": 7,
+  "publishedFiles": [
+    {
+      "case": "av",
+      "bytes": 351173,
+      "sha256": "5148A911238626CE0F9BFE51732B7738A9B1D36FC20652A360873492DF87C814"
+    },
+    {
+      "case": "video",
+      "bytes": 324776,
+      "sha256": "F4E564AD0FA6C9E1743AF201B765AE2ECA5CDAC844B05B8F468C9C7D44D65D1C"
+    },
+    {
+      "case": "audio",
+      "bytes": 26450,
+      "sha256": "6403995E71D9CB9D8AF67C3D9B4D9083F786053324B3C649B022FA3783BDD53B"
+    },
+    {
+      "case": "save",
+      "bytes": 97822,
+      "sha256": "9D9362E150F24A2B62B0B67884C448DA7F26FB26D675D6509A57E044095C7694"
+    }
+  ],
+  "strictNegativeCases": 3,
+  "heldResponseCancelToUnwindMs": 31,
+  "recordingCookieAndCredentialIsolationVerified": true,
+  "cacheCapacity": 16,
+  "cacheKeyByteLimit": 1048576,
+  "normalAndExceptionalScopeReleaseVerified": true,
+  "buildAttemptsAllPassed": false,
+  "retainedBuildFailures": [
+    "Missing test-helper include.",
+    "New Adaptive object mixed with an old planner in the initial frozen control."
+  ],
+  "runtimeQualificationAllPassed": true,
+  "hostProtectedFilesUnchanged": 9,
+  "frozenControlCoreSets": [
+    {
+      "version": "10.0",
+      "verifiedCoreObjects": 42
+    },
+    {
+      "version": "10.1",
+      "verifiedCoreObjects": 42
+    }
+  ],
+  "ownedBuildAreaBytesExcludingSharedTools": 98181745,
+  "fullBuildEntrypointExecuted": false,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false
+}

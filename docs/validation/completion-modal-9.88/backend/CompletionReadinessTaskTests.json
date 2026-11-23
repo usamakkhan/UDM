@@ -1,0 +1,58 @@
+{
+  "checks": [
+    {
+      "name": "Waiting for the model does not block admission's caller",
+      "passed": true
+    },
+    {
+      "name": "Duplicate start preserves the original readiness operation",
+      "passed": true
+    },
+    {
+      "name": "Cancelling joins before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "Availability waits for an accepted model decision",
+      "passed": true
+    },
+    {
+      "name": "Read cancellation does not release another owner's decision",
+      "passed": true
+    },
+    {
+      "name": "A wake-up failure cannot discard an available result",
+      "passed": true
+    },
+    {
+      "name": "Available result is published after model unlock and joined on acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "An availability exception reaches a terminal result",
+      "passed": true
+    },
+    {
+      "name": "An availability failure is reported and consumed for retry",
+      "passed": true
+    },
+    {
+      "name": "A failed preparation permits a fresh readiness request",
+      "passed": true
+    },
+    {
+      "name": "Releasing the actual model writer produces readiness without a UI timer wait",
+      "passed": true
+    },
+    {
+      "name": "Repeated readiness cleanup is safe and owns no decision guard",
+      "passed": true
+    },
+    {
+      "name": "Readiness neither consumes completion actions nor changes the model or catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

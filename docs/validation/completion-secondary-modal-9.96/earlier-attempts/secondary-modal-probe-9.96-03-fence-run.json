@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "An unattached fence allows work",
+      "passed": true
+    },
+    {
+      "name": "Own-thread notification hook starts",
+      "passed": true
+    },
+    {
+      "name": "Enabled owned windows allow work",
+      "passed": true
+    },
+    {
+      "name": "Disabled foreign window is excluded",
+      "passed": true
+    },
+    {
+      "name": "Disabled secondary owner blocks completion",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled secondary owner wakes and releases the fence",
+      "passed": true
+    },
+    {
+      "name": "A disabled nested owner is included",
+      "passed": true
+    },
+    {
+      "name": "Releasing inner ownership cannot bypass a disabled outer owner",
+      "passed": true
+    },
+    {
+      "name": "All modal ownership must be released",
+      "passed": true
+    },
+    {
+      "name": "Destroy case starts blocked",
+      "passed": true
+    },
+    {
+      "name": "Destroying a disabled owned window wakes pending work",
+      "passed": true
+    },
+    {
+      "name": "A disabled main owner retains its original guard",
+      "passed": true
+    },
+    {
+      "name": "Main owner release restores admission",
+      "passed": true
+    },
+    {
+      "name": "A second frame has an independent ownership fence",
+      "passed": true
+    },
+    {
+      "name": "Another frame's disabled state does not block this frame",
+      "passed": true
+    },
+    {
+      "name": "Shared thread notification routes to the matching owner",
+      "passed": true
+    },
+    {
+      "name": "Detach removes callbacks before root destruction",
+      "passed": true
+    },
+    {
+      "name": "A throwing wake starts with retained work",
+      "passed": true
+    },
+    {
+      "name": "Wake exceptions do not cross the Windows hook boundary",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

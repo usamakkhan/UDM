@@ -1,0 +1,26 @@
+{
+  "args": [
+    "<user>\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+    "<development>\\owned-pair-derived-9.74.py",
+    "--output-root",
+    "<repo>\\.media-cache\\owned-advisory-pair-9.74",
+    "--udm",
+    "<repo>\\.media-cache\\owned-advisory-intent-build-9.74\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "DAB5AE020AB63C61C8A2EF4B5AA8022E282E67D149E2BA6D05540AD50FC398AA",
+    "--baseline-udm",
+    "<repo>\\.media-cache\\owned-advisory-intent-build-9.73\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "22D810746794199DA901CA59E91AB54C1CB9532BCEDCDF8C06A328C7AA0928D4",
+    "--label",
+    "Normal 9.74 early completed-buffer release versus frozen 9.73; no IDM comparison",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.74",
+  "baselineVersion": "9.73",
+  "noIdmComparison": true,
+  "noPrivateProductInstrumentation": true
+}

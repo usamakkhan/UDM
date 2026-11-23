@@ -1,0 +1,83 @@
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -1,3 +1,4 @@
++#include "DiagnosticSpan.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "CreatedStagingFile.hpp"
+ #include "PublishedWriteback.hpp"
+@@ -577,7 +578,7 @@
+ }
+ // True for a fixed local disk, where the cache's writeback after publication is reliable; a network share,
+ // removable disk or unknown volume reports write-behind failures only when flushed.
+-static bool fixedVolume(const fs::path& path){wchar_t root[MAX_PATH]{};const auto full=fs::absolute(path).wstring();if(!GetVolumePathNameW(full.c_str(),root,MAX_PATH))return false;return GetDriveTypeW(root)==DRIVE_FIXED;}
++static bool fixedVolume(const fs::path& path){DiagnosticSpan total("fixed-volume-begin","fixed-volume-end");wchar_t root[MAX_PATH]{};const auto full=fs::absolute(path).wstring();if(![&]{DiagnosticSpan call("volume-path-begin","volume-path-end");return GetVolumePathNameW(full.c_str(),root,MAX_PATH);}())return false;return [&]{DiagnosticSpan call("drive-type-begin","drive-type-end");return GetDriveTypeW(root)==DRIVE_FIXED;}();}
+ static void copyFileTo(const fs::path& path,HANDLE output,const Cancel& c){std::ifstream input(path,std::ios::binary);if(!input)throw std::runtime_error("A required partial file is missing.");std::vector<char> buffer(assemblyBuffer);char* b=buffer.data();while(input){c.check();input.read(b,(std::streamsize)buffer.size());auto n=input.gcount();if(n){DWORD written=0;if(!WriteFile(output,b,(DWORD)n,&written,nullptr)||written!=n)throw std::runtime_error("Could not assemble the download.");}}if(!input.eof())throw std::runtime_error("Could not read a partial download.");}
+ // A saved range plan must cover the resource exactly, independent of part-file IDs.
+ static bool completePlan(const Json& segments,i64 size){
+@@ -2537,6 +2538,7 @@
+    if(original!=serverSha256)throw std::runtime_error("The server's SHA-256 checksum did not match. The file was not published.");
+   }
+   phases["Hash"]=phase(mark);if(!phases.contains("HashMode"))phases["HashMode"]=single?"assembled":"parts";{Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
++ nativeUiTraceRecord("posthash-validation-begin");
+  if(stripped>0){Lock lock(m.mutex);job->data["StrippedPrefixBytes"]=stripped;}
+  if(yes(j,"StripContentPrefix")&&num(j,"ContentPrefixBytes")>0){Bytes head(contentSniffReadLimit);std::ifstream verify(staging,std::ios::binary);verify.read(reinterpret_cast<char*>(head.data()),(std::streamsize)head.size());head.resize((size_t)verify.gcount());auto verdict=sniffContent(head.data(),head.size(),true);if(verdict.verdict!=SniffVerdict::Match||verdict.prefixLength)throw std::runtime_error("Removing the inserted text did not leave a recognizable file. Nothing was published; the received data is kept.");}
+  if(!str(j,"ExpectedSha256").empty()&&lower(str(j,"ExpectedSha256"))!=digest)throw std::runtime_error("SHA-256 mismatch. The file was not published.");cancel->check();
+@@ -2546,6 +2548,7 @@
+   job->data.erase("AudioMetadata");
+   if(!audio.title.empty()||!audio.artist.empty()||!audio.album.empty())job->data["AudioMetadata"]={{"Source",audio.source},{"Title",audio.title},{"Artist",audio.artist},{"Album",audio.album}};
+  }
++ nativeUiTraceRecord("posthash-validation-end");nativeUiTraceRecord("stage-output-begin");
+  auto stageMark=std::chrono::steady_clock::now();
+  if(single&&stripped<=0){
+   // Publish the verified file itself. A second link in the destination folder
+@@ -2583,11 +2586,12 @@
+    stageCreated=true;cleanup.hardLink=true;phases["StageMode"]="hard-link";
+   }
+  }
+- phases["StageOutput"]=phase(stageMark);
++ phases["StageOutput"]=phase(stageMark);nativeUiTraceRecord("stage-output-end");nativeUiTraceRecord("final-eligibility-begin");
+  auto finalCommit=PreparedTransferCommit::available(m,job,cancel);
+  struct JoinFinalWriteback {PreparedTransferCommit* owner;bool& handedOff;~JoinFinalWriteback(){if(owner&&!handedOff){owner->joinWriteback();owner->releaseWritebackPin();}}} joinFinalWriteback{finalCommit,stageHandedOff};
+  const bool prepareFinal=finalCommit&&ownsConnection&&single&&stripped<=0&&!copiedAcrossVolumes&&!post&&!ftp&&!yes(j,"SparseDataFile",true)&&num(j,"Size")>0&&num(j,"Size")<=64*1048576&&str(j,"ReplacementOf").empty()&&fixedVolume(data);
+ 
++ nativeUiTraceRecord("final-eligibility-end");nativeUiTraceRecord("advisory-setup-begin");
+  std::shared_ptr<Cancel> advisoryCancel;std::future<AdvisoryHashResult> advisoryHash;bool ownedAdvisory=false;
+  struct StopAdvisory {std::shared_ptr<Cancel>& token;~StopAdvisory(){if(token)token->stop=true;}} stopAdvisory{advisoryCancel};
+  phases["AdvisoryHashOverlap"]=false;
+@@ -2600,9 +2604,9 @@
+   if(prepareFinal&&memoryBody){
+    // Transfer the existing budgeted allocation and hash state, without a body
+    // copy. This task may then outlive this transfer stack under its commit owner.
+-   auto body=mediumStage.releaseStorage();auto state=std::move(hasher);hasher.valid=false;
++   nativeUiTraceRecord("cache-transfer-begin");auto body=mediumStage.releaseStorage();auto state=std::move(hasher);hasher.valid=false;nativeUiTraceRecord("cache-transfer-end");nativeUiTraceRecord("async-submit-begin");
+    advisoryHash=std::async(std::launch::async,[state=std::move(state),body=std::move(body),lifetime=advisoryCancel]()mutable{
+-    AdvisoryHashResult result;const auto began=std::chrono::steady_clock::now();
++    DiagnosticSpan task("advisory-body-begin","advisory-body-end");AdvisoryHashResult result;const auto began=std::chrono::steady_clock::now();
+     try{
+      const auto& bytes=body->bytes();
+      if(!state.valid||state.hashed<0||static_cast<uint64_t>(state.hashed)>bytes.size())state.reset();
+@@ -2615,7 +2619,7 @@
+     const auto releasing=std::chrono::steady_clock::now();body.reset();
+     result.bodyReleaseSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-releasing).count();
+     result.seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-began).count();return result;
+-   });ownedAdvisory=true;
++   });nativeUiTraceRecord("async-submit-end");ownedAdvisory=true;
+   }else advisoryHash=std::async(std::launch::async,[&hasher,data,complete,memoryBody,lifetime=advisoryCancel]{
+    AdvisoryHashResult result;const auto began=std::chrono::steady_clock::now();const auto checkpoint=[&]{lifetime->check();};
+    try{
+@@ -2634,12 +2638,13 @@
+   });
+   phases["AdvisoryHashOverlap"]=true;
+  }catch(...){/* Resource exhaustion retains the existing serial fallback. */}
++ nativeUiTraceRecord("advisory-setup-end");
+  // The future joins on every unwind before staging cleanup and hasher lifetime
+  // end. Required server/user/replacement digests were already checked above.
+  if(!prepareFinal){m.publishFile(job,staging,digest,cancel.get());stageHandedOff=true;phases["CommitOutput"]=phase(stageMark);phases["Publish"]=phase(mark);phases["Total"]=std::chrono::duration<double>(mark-networkEnd).count()-confirmationSeconds;}
+  else{phases["CommitStrategy"]="prepared-final-checkpoint";phases["TimingScope"]="through-prepared-transfer-handoff";}
+- {Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
+- const auto metadataTarget=prepareFinal?staging:job->target();markZone(metadataTarget);if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
++ {DiagnosticSpan snapshot("finish-snapshot-begin","finish-snapshot-end");Lock lock(m.mutex);job->data["FinishPhases"]=phases;}
++ const auto metadataTarget=prepareFinal?staging:job->target();{DiagnosticSpan zone("mark-zone-begin","mark-zone-end");markZone(metadataTarget);}if(yes(prefs,"UseServerDate")){SYSTEMTIME system{};FILETIME stamp{};auto modified=wide(str(j,"Modified"));if(!modified.empty()&&WinHttpTimeToSystemTime(modified.c_str(),&system)&&SystemTimeToFileTime(&system,&stamp)){Handle f(CreateFileW(metadataTarget.c_str(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr));if(f)SetFileTime(f.h,&stamp,nullptr,&stamp);}}
+  // The file and its catalog entry are published. Let the UI present completion
+  // before NTFS normalization and advisory hashing. The worker remains active,
+  // so opening the file, scans and completion actions keep their existing gates.

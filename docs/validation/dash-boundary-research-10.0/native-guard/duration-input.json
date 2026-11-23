@@ -1,0 +1,62 @@
+[
+  {
+    "case": "dash-boundary-clipping-10.0/packet-aligned",
+    "probe": {
+      "format": {
+        "duration": "3.840000"
+      }
+    },
+    "expectedSeconds": 3.84,
+    "decodedOracleExact": false
+  },
+  {
+    "case": "dash-boundary-clipping-10.0/aac-crossing",
+    "probe": {
+      "format": {
+        "duration": "3.002667"
+      }
+    },
+    "expectedSeconds": 3.0,
+    "decodedOracleExact": false
+  },
+  {
+    "case": "dash-boundary-clipping-10.0/both-crossing",
+    "probe": {
+      "format": {
+        "duration": "3.060000"
+      }
+    },
+    "expectedSeconds": 3.0300000000000002,
+    "decodedOracleExact": false
+  },
+  {
+    "case": "dash-boundary-continuous-10.0/packet-aligned",
+    "probe": {
+      "format": {
+        "duration": "3.840000"
+      }
+    },
+    "expectedSeconds": 3.84,
+    "decodedOracleExact": true
+  },
+  {
+    "case": "dash-boundary-continuous-10.0/aac-crossing",
+    "probe": {
+      "format": {
+        "duration": "2.997333"
+      }
+    },
+    "expectedSeconds": 3.0,
+    "decodedOracleExact": false
+  },
+  {
+    "case": "dash-boundary-continuous-10.0/both-crossing",
+    "probe": {
+      "format": {
+        "duration": "3.037333"
+      }
+    },
+    "expectedSeconds": 3.0300000000000002,
+    "decodedOracleExact": false
+  }
+]

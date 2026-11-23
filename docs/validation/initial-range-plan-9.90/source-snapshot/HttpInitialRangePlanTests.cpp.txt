@@ -1,0 +1,33 @@
+#include "Core.hpp"
+#include "HttpInitialRangePlan.hpp"
+#include <iostream>
+using namespace udm;
+int wmain(int argc,wchar_t** argv){
+ if(argc!=2||fs::exists(argv[1]))return 2;
+ const auto root=fs::absolute(argv[1]);fs::create_directories(root);
+ Json checks=Json::array();std::string error;
+ auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
+ try{
+  const auto spans=initialHttpRangePlan(64*1048576LL,8);
+  check(spans.size()==8&&spans[0]==std::make_pair<i64,i64>(0,8*1048576-1),"Retained full response receives one initial share");
+  check(spans[1]==std::make_pair<i64,i64>(8*1048576,16*1048576-1),"The initial helper request ends before later workers' assignments");
+  check(spans.back().second==64*1048576-1,"Last helper owns the exact final byte");
+  bool valid=true;
+  for(int workers=1;workers<=32;++workers)for(i64 size:{i64(workers),i64(workers)+1,67'108'867LL,std::numeric_limits<i64>::max()}){
+   const auto plan=initialHttpRangePlan(size,workers);i64 at=0,low=INT64_MAX,high=0;
+   valid&=plan.size()==static_cast<size_t>(workers);
+   for(const auto& span:plan){valid&=span.first==at&&span.second>=span.first&&span.second<size;const auto length=span.second-span.first+1;low=std::min(low,length);high=std::max(high,length);at=span.second+1;}
+   valid&=at==size&&high-low<=1;
+  }
+  check(valid,"Worker-count and signed-limit matrix has disjoint complete balanced coverage without overflow");
+  const auto odd=initialHttpRangePlan(23,3);
+  check(odd==std::vector<std::pair<i64,i64>>{{0,7},{8,15},{16,22}},"Odd size and worker count keep all remainder bytes");
+  check(initialHttpRangePlan(1,1)==std::vector<std::pair<i64,i64>>{{0,0}},"Single-byte single-worker ownership stays exact");
+  for(auto input:std::vector<std::pair<i64,int>>{{0,1},{-1,1},{9,0},{64,33},{2,3}}){
+   bool rejected=false;try{initialHttpRangePlan(input.first,input.second);}catch(const std::invalid_argument&){rejected=true;}
+   check(rejected,"Invalid initial range size or worker count is rejected");
+  }
+ }catch(const std::exception& problem){error=problem.what();}
+ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);
+ std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+}

@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "name": "A checksum-bearing form reaches a terminal worker state",
+      "passed": true
+    },
+    {
+      "name": "A matching server checksum permits the complete form file",
+      "passed": true
+    },
+    {
+      "name": "The requested checksum case exists",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "error": "",
+      "published": true,
+      "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "route": "digest-redirect-repr-good",
+      "serverSha256": "",
+      "status": "Complete"
+    }
+  ],
+  "passed": true
+}

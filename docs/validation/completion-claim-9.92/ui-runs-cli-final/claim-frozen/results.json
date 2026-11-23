@@ -1,0 +1,23 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Frozen UI completion waits for the armed-action checkpoint before creating its dialog",
+      "passed": true
+    },
+    {
+      "name": "Frozen checkpoint eventually permits completion presentation",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "checkpointWatchdogExpired": true,
+      "completionDispatchMs": 593,
+      "dark": false,
+      "dialogsAfterDispatch": 1
+    }
+  ],
+  "passed": true
+}

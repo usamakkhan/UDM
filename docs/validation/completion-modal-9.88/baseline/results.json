@@ -1,0 +1,57 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Frozen ready completion appears while Properties or the ordinary modal still owns the disabled main window",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Frozen ready completion appears while Properties or the ordinary modal still owns the disabled main window",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 1,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": false,
+      "mode": "properties-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 1,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": false,
+      "mode": "modal-ready",
+      "prematureCliExit": false
+    }
+  ],
+  "passed": true
+}

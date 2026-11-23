@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "Duplicate explicit legacy offers transfer to one owned presentation reservation",
+      "passed": true
+    },
+    {
+      "name": "Successful discovery captures ready reviews and authentication with the confirmation cohort",
+      "passed": true
+    },
+    {
+      "name": "Discovery does not mark a confirmation seen or clear an authentication challenge",
+      "passed": true
+    },
+    {
+      "name": "Unpresented UI reservations survive the next discovery pass",
+      "passed": true
+    },
+    {
+      "name": "Previously handled automatic confirmations are not repeated",
+      "passed": true
+    },
+    {
+      "name": "An explicit legacy request remains presentable even when the job was seen earlier",
+      "passed": true
+    },
+    {
+      "name": "Capture-only discovery avoids new automatic confirmations and authentication",
+      "passed": true
+    },
+    {
+      "name": "Capture-only wake-ups retain already-owned unpresented reservations",
+      "passed": true
+    },
+    {
+      "name": "A durable browser presentation owns its legacy duplicate without a second dialog",
+      "passed": true
+    },
+    {
+      "name": "Fresh receipt ownership invalidates an older legacy reservation before presentation",
+      "passed": true
+    },
+    {
+      "name": "An automatic candidate whose status changed is not presented",
+      "passed": true
+    },
+    {
+      "name": "Removed jobs cannot be resurrected by a UI reservation",
+      "passed": true
+    },
+    {
+      "name": "Already handled capture IDs suppress same-pass legacy duplicates",
+      "passed": true
+    },
+    {
+      "name": "Large reservation cohorts retain FIFO order while deduplicating repeated offers",
+      "passed": true
+    },
+    {
+      "name": "Indexed membership validation excludes removed jobs without changing explicit-offer ownership",
+      "passed": true
+    },
+    {
+      "name": "Discovery validation failure cannot consume the original model-owned offer",
+      "passed": true
+    },
+    {
+      "name": "A failed durable authentication claim restores its exact pending flag",
+      "passed": true
+    },
+    {
+      "name": "A successful authentication claim acknowledges the challenge only after saving",
+      "passed": true
+    },
+    {
+      "name": "The claimed authentication flag is present in the real saved catalog",
+      "passed": true
+    },
+    {
+      "name": "A previously claimed challenge cannot be claimed twice",
+      "passed": true
+    },
+    {
+      "name": "Queue-origin authentication remains owned by its existing progress workflow",
+      "passed": true
+    },
+    {
+      "name": "Current suppression settings gate discovery and the eventual claim",
+      "passed": true
+    },
+    {
+      "name": "An independent writer holds the model before automatic discovery",
+      "passed": true
+    },
+    {
+      "name": "Busy automatic discovery returns while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Candidate revalidation is nonblocking and distinguishes busy from obsolete",
+      "passed": true
+    },
+    {
+      "name": "A busy authentication claim remains unacknowledged",
+      "passed": true
+    },
+    {
+      "name": "Busy batch discovery preserves the recovery signal and pending work",
+      "passed": true
+    },
+    {
+      "name": "Busy reads consume neither legacy offers, browser batches nor authentication intent",
+      "passed": true
+    },
+    {
+      "name": "The File Info acknowledgement guard also defers automatic discovery and claims",
+      "passed": true
+    },
+    {
+      "name": "A successful batch handoff moves exactly one FIFO cohort with its request metadata",
+      "passed": true
+    },
+    {
+      "name": "An available empty batch queue is distinct from a busy snapshot",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

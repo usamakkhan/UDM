@@ -1,0 +1,39 @@
+{
+  "payloadBytes": 88000,
+  "payloadSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+  "pdfBytes": 395,
+  "pdfSha256": "89ea2eefb182434c553b72c9e7607c65693c24a8e113d6f9ce1e59a903c6424e",
+  "prefixBytes": 60,
+  "requestBodyBytes": 11,
+  "requestBodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+  "requests": [
+    {
+      "route": "prefix-digest-good",
+      "method": "POST",
+      "bytes": 11,
+      "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+      "range": ""
+    },
+    {
+      "route": "prefix-digest-bad",
+      "method": "POST",
+      "bytes": 11,
+      "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+      "range": ""
+    },
+    {
+      "route": "prefix-domain-bad",
+      "method": "POST",
+      "bytes": 11,
+      "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+      "range": ""
+    },
+    {
+      "route": "prefix-output-bad",
+      "method": "POST",
+      "bytes": 11,
+      "bodySha256": "c481b0afc7255573abbf8cd2e7d10270ecffd20cd11124c7a7139f5d6a62fe87",
+      "range": ""
+    }
+  ]
+}

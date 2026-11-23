@@ -1,0 +1,38 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "The actual countdown fallback timer is disabled for this owned comparison",
+      "passed": true
+    },
+    {
+      "name": "Completion and stale-dialog wake bursts cannot create extra scheduler work",
+      "passed": true
+    },
+    {
+      "name": "An explicitly expired pulse stays cancellable while its final tick waits for the model",
+      "passed": true
+    },
+    {
+      "name": "The owned modal is destroyed after the final-tick hold without a writer watchdog expiry",
+      "passed": true
+    },
+    {
+      "name": "Frozen 9.94 waits for the disabled timer and requires the owned cancellation watchdog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "baseline": true,
+      "cancellationWatchdogRequired": true,
+      "dark": false,
+      "fallbackTimerDisabled": true,
+      "performed": 0,
+      "queue": false,
+      "releaseToReturnMs": 812
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "case": "baseline-D-large",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\baseline-D-large",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 28,
+      "requests": 4,
+      "binarySha256": "D7219D4EF9C5BE723FA1E865E49CAB02E6E23DDD7D103F6D4AA5584FEFD9CDB9",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\baseline-D-large\\native\\results.json",
+      "exactRequestCounts": true,
+      "cases": 4
+    },
+    {
+      "case": "current-D-small",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\current-D-small",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 28,
+      "requests": 4,
+      "binarySha256": "C7194F775CE01F3FA63045EE1C8C4BAA04CB9F3A14692A52DA237343B705D41B",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\current-D-small\\native\\results.json",
+      "exactRequestCounts": true,
+      "cases": 4
+    },
+    {
+      "case": "current-D-large",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\current-D-large",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 28,
+      "requests": 4,
+      "binarySha256": "C7194F775CE01F3FA63045EE1C8C4BAA04CB9F3A14692A52DA237343B705D41B",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\current-D-large\\native\\results.json",
+      "exactRequestCounts": true,
+      "cases": 4
+    },
+    {
+      "case": "current-C-large",
+      "root": "[local-diagnostics]\\owned-prefix-checksum-qualification-9.81-C",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 28,
+      "requests": 4,
+      "binarySha256": "C7194F775CE01F3FA63045EE1C8C4BAA04CB9F3A14692A52DA237343B705D41B",
+      "result": "[local-diagnostics]\\owned-prefix-checksum-qualification-9.81-C\\native\\results.json",
+      "exactRequestCounts": true,
+      "cases": 4
+    },
+    {
+      "case": "existing-identity",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\existing-identity",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 53,
+      "requests": 14,
+      "binarySha256": "C7194F775CE01F3FA63045EE1C8C4BAA04CB9F3A14692A52DA237343B705D41B",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\existing-identity\\native\\results.json"
+    },
+    {
+      "case": "existing-post-gzip",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\existing-post-gzip",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 49,
+      "requests": 12,
+      "binarySha256": "054A52C20DA9B636A2C86175D59A58A87D0062DDA34DCD3AEC8557EBAB842778",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\existing-post-gzip\\native\\results.json"
+    },
+    {
+      "case": "digest-D",
+      "root": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\digest-D",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 88,
+      "requests": 25,
+      "binarySha256": "C7194F775CE01F3FA63045EE1C8C4BAA04CB9F3A14692A52DA237343B705D41B",
+      "result": "[repo]\\.media-cache\\owned-prefix-checksum-qualification-9.81\\digest-D\\native\\results.json",
+      "exactRequestCounts": true,
+      "cases": 21
+    }
+  ]
+}

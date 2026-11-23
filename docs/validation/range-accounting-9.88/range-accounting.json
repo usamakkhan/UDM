@@ -1,0 +1,1025 @@
+{
+  "rows": [
+    {
+      "case": "split-64m",
+      "client": "udm",
+      "trial": 1,
+      "sentBytes": 70629573,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 3520709,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 11558848,
+          "endExclusive": 12320735,
+          "multiplicity": 2
+        },
+        {
+          "start": 18104256,
+          "endExclusive": 18104320,
+          "multiplicity": 2
+        },
+        {
+          "start": 26238912,
+          "endExclusive": 27262898,
+          "multiplicity": 2
+        },
+        {
+          "start": 33554368,
+          "endExclusive": 33554432,
+          "multiplicity": 2
+        },
+        {
+          "start": 44255008,
+          "endExclusive": 45088639,
+          "multiplicity": 2
+        },
+        {
+          "start": 50331584,
+          "endExclusive": 50331648,
+          "multiplicity": 2
+        },
+        {
+          "start": 58867648,
+          "endExclusive": 59768661,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 12320735,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=33554368-67108863",
+          "start": 33554368,
+          "declaredEnd": 67108863,
+          "sent": 11534271,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=50331584-67108863",
+          "start": 50331584,
+          "declaredEnd": 67108863,
+          "sent": 9437077,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=18104256-33554431",
+          "start": 18104256,
+          "declaredEnd": 33554431,
+          "sent": 9158642,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=58867648-67108863",
+          "start": 58867648,
+          "declaredEnd": 67108863,
+          "sent": 8241216,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=26238912-33554431",
+          "start": 26238912,
+          "declaredEnd": 33554431,
+          "sent": 7315520,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=11558848-18104319",
+          "start": 11558848,
+          "declaredEnd": 18104319,
+          "sent": 6545472,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=44255008-50331647",
+          "start": 44255008,
+          "declaredEnd": 50331647,
+          "sent": 6076640,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    },
+    {
+      "case": "split-64m",
+      "client": "idm",
+      "trial": 1,
+      "sentBytes": 68642569,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 1533705,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 116800,
+          "endExclusive": 378944,
+          "multiplicity": 2
+        },
+        {
+          "start": 13581997,
+          "endExclusive": 13631449,
+          "multiplicity": 2
+        },
+        {
+          "start": 16596644,
+          "endExclusive": 16777168,
+          "multiplicity": 2
+        },
+        {
+          "start": 17202551,
+          "endExclusive": 17202615,
+          "multiplicity": 2
+        },
+        {
+          "start": 29785427,
+          "endExclusive": 29884332,
+          "multiplicity": 2
+        },
+        {
+          "start": 33618671,
+          "endExclusive": 33618735,
+          "multiplicity": 2
+        },
+        {
+          "start": 46671081,
+          "endExclusive": 46923644,
+          "multiplicity": 2
+        },
+        {
+          "start": 50094252,
+          "endExclusive": 50331504,
+          "multiplicity": 2
+        },
+        {
+          "start": 50381287,
+          "endExclusive": 50381351,
+          "multiplicity": 2
+        },
+        {
+          "start": 63176619,
+          "endExclusive": 63438668,
+          "multiplicity": 2
+        },
+        {
+          "start": 66918048,
+          "endExclusive": 67108672,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 13631449,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=116800-67108863",
+          "start": 116800,
+          "declaredEnd": 67108863,
+          "sent": 262144,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=33618671-67108863",
+          "start": 33618671,
+          "declaredEnd": 67108863,
+          "sent": 13304973,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=50381287-67108863",
+          "start": 50381287,
+          "declaredEnd": 67108863,
+          "sent": 13057381,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=17202551-33618734",
+          "start": 17202551,
+          "declaredEnd": 33618734,
+          "sent": 12681781,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=63176619-67108863",
+          "start": 63176619,
+          "declaredEnd": 67108863,
+          "sent": 3932245,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=29785427-33618734",
+          "start": 29785427,
+          "declaredEnd": 33618734,
+          "sent": 3833308,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=46671081-50381350",
+          "start": 46671081,
+          "declaredEnd": 50381350,
+          "sent": 3710270,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 9,
+          "range": "bytes=13581997-17202614",
+          "start": 13581997,
+          "declaredEnd": 17202614,
+          "sent": 3620618,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 10,
+          "range": "bytes=16596644-17202614",
+          "start": 16596644,
+          "declaredEnd": 17202614,
+          "sent": 180524,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 11,
+          "range": "bytes=66715553-67108863",
+          "start": 66715553,
+          "declaredEnd": 67108863,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 12,
+          "range": "bytes=16899597-17202614",
+          "start": 16899597,
+          "declaredEnd": 17202614,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 13,
+          "range": "bytes=50094252-50381350",
+          "start": 50094252,
+          "declaredEnd": 50381350,
+          "sent": 237252,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 14,
+          "range": "bytes=66918048-67108863",
+          "start": 66918048,
+          "declaredEnd": 67108863,
+          "sent": 190624,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 15,
+          "range": "bytes=33455432-33618734",
+          "start": 33455432,
+          "declaredEnd": 33618734,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 16,
+          "range": "bytes=17056913-17202614",
+          "start": 17056913,
+          "declaredEnd": 17202614,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 17,
+          "range": "bytes=50237769-50381350",
+          "start": 50237769,
+          "declaredEnd": 50381350,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    },
+    {
+      "case": "split-64m",
+      "client": "idm",
+      "trial": 2,
+      "sentBytes": 68380237,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 1271373,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 116800,
+          "endExclusive": 378944,
+          "multiplicity": 2
+        },
+        {
+          "start": 14226781,
+          "endExclusive": 14417881,
+          "multiplicity": 2
+        },
+        {
+          "start": 17181401,
+          "endExclusive": 17181465,
+          "multiplicity": 2
+        },
+        {
+          "start": 30571856,
+          "endExclusive": 30670761,
+          "multiplicity": 2
+        },
+        {
+          "start": 33618671,
+          "endExclusive": 33618735,
+          "multiplicity": 2
+        },
+        {
+          "start": 47341748,
+          "endExclusive": 47447929,
+          "multiplicity": 2
+        },
+        {
+          "start": 50094252,
+          "endExclusive": 50331504,
+          "multiplicity": 2
+        },
+        {
+          "start": 50381287,
+          "endExclusive": 50381351,
+          "multiplicity": 2
+        },
+        {
+          "start": 63849498,
+          "endExclusive": 63962953,
+          "multiplicity": 2
+        },
+        {
+          "start": 66715553,
+          "endExclusive": 66977697,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 14417881,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=116800-67108863",
+          "start": 116800,
+          "declaredEnd": 67108863,
+          "sent": 262144,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=33618671-67108863",
+          "start": 33618671,
+          "declaredEnd": 67108863,
+          "sent": 13829258,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=50381287-67108863",
+          "start": 50381287,
+          "declaredEnd": 67108863,
+          "sent": 13581666,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=17181401-33618734",
+          "start": 17181401,
+          "declaredEnd": 33618734,
+          "sent": 13489360,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=63849498-67108863",
+          "start": 63849498,
+          "declaredEnd": 67108863,
+          "sent": 3259366,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=30571856-33618734",
+          "start": 30571856,
+          "declaredEnd": 33618734,
+          "sent": 3046879,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=47341748-50381350",
+          "start": 47341748,
+          "declaredEnd": 50381350,
+          "sent": 3039603,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 9,
+          "range": "bytes=14226781-17181464",
+          "start": 14226781,
+          "declaredEnd": 17181464,
+          "sent": 2954684,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 10,
+          "range": "bytes=66715553-67108863",
+          "start": 66715553,
+          "declaredEnd": 67108863,
+          "sent": 262144,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 11,
+          "range": "bytes=50094252-50381350",
+          "start": 50094252,
+          "declaredEnd": 50381350,
+          "sent": 237252,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 12,
+          "range": "bytes=16979284-17181464",
+          "start": 16979284,
+          "declaredEnd": 17181464,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 13,
+          "range": "bytes=66918048-67108863",
+          "start": 66918048,
+          "declaredEnd": 67108863,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 14,
+          "range": "bytes=33461272-33618734",
+          "start": 33461272,
+          "declaredEnd": 33618734,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 15,
+          "range": "bytes=50243609-50381350",
+          "start": 50243609,
+          "declaredEnd": 50381350,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    },
+    {
+      "case": "split-64m",
+      "client": "udm",
+      "trial": 2,
+      "sentBytes": 71472029,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 4363165,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 11270763,
+          "endExclusive": 12320735,
+          "multiplicity": 2
+        },
+        {
+          "start": 17824818,
+          "endExclusive": 17824882,
+          "multiplicity": 2
+        },
+        {
+          "start": 26303408,
+          "endExclusive": 27000757,
+          "multiplicity": 2
+        },
+        {
+          "start": 33554368,
+          "endExclusive": 33554432,
+          "multiplicity": 2
+        },
+        {
+          "start": 44635023,
+          "endExclusive": 45612927,
+          "multiplicity": 2
+        },
+        {
+          "start": 48677271,
+          "endExclusive": 49545075,
+          "multiplicity": 2
+        },
+        {
+          "start": 50331584,
+          "endExclusive": 50331648,
+          "multiplicity": 2
+        },
+        {
+          "start": 58736576,
+          "endExclusive": 59506520,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 12320735,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=33554368-67108863",
+          "start": 33554368,
+          "declaredEnd": 67108863,
+          "sent": 12058559,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=50331584-67108863",
+          "start": 50331584,
+          "declaredEnd": 67108863,
+          "sent": 9174936,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=17824818-33554431",
+          "start": 17824818,
+          "declaredEnd": 33554431,
+          "sent": 9175939,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=58736576-67108863",
+          "start": 58736576,
+          "declaredEnd": 67108863,
+          "sent": 8372288,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=26303408-33554431",
+          "start": 26303408,
+          "declaredEnd": 33554431,
+          "sent": 7251024,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=11270763-17824881",
+          "start": 11270763,
+          "declaredEnd": 17824881,
+          "sent": 6554119,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=44635023-50331647",
+          "start": 44635023,
+          "declaredEnd": 50331647,
+          "sent": 4910052,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 9,
+          "range": "bytes=48677271-50331647",
+          "start": 48677271,
+          "declaredEnd": 50331647,
+          "sent": 1654377,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    },
+    {
+      "case": "split-64m",
+      "client": "udm",
+      "trial": 3,
+      "sentBytes": 71399827,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 4290963,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 11750848,
+          "endExclusive": 12582876,
+          "multiplicity": 2
+        },
+        {
+          "start": 17970112,
+          "endExclusive": 17970176,
+          "multiplicity": 2
+        },
+        {
+          "start": 26827200,
+          "endExclusive": 27525042,
+          "multiplicity": 2
+        },
+        {
+          "start": 32101294,
+          "endExclusive": 32767907,
+          "multiplicity": 2
+        },
+        {
+          "start": 33554368,
+          "endExclusive": 33554432,
+          "multiplicity": 2
+        },
+        {
+          "start": 43282291,
+          "endExclusive": 44040066,
+          "multiplicity": 2
+        },
+        {
+          "start": 48061005,
+          "endExclusive": 48758646,
+          "multiplicity": 2
+        },
+        {
+          "start": 50331584,
+          "endExclusive": 50331648,
+          "multiplicity": 2
+        },
+        {
+          "start": 58867648,
+          "endExclusive": 59506520,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 12582876,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=33554368-67108863",
+          "start": 33554368,
+          "declaredEnd": 67108863,
+          "sent": 10485698,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=50331584-67108863",
+          "start": 50331584,
+          "declaredEnd": 67108863,
+          "sent": 9174936,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=17970112-33554431",
+          "start": 17970112,
+          "declaredEnd": 33554431,
+          "sent": 9554930,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=58867648-67108863",
+          "start": 58867648,
+          "declaredEnd": 67108863,
+          "sent": 8241216,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=48061005-50331647",
+          "start": 48061005,
+          "declaredEnd": 50331647,
+          "sent": 2270643,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=43282291-50331647",
+          "start": 43282291,
+          "declaredEnd": 50331647,
+          "sent": 5476355,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=26827200-33554431",
+          "start": 26827200,
+          "declaredEnd": 33554431,
+          "sent": 5940707,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=11750848-17970175",
+          "start": 11750848,
+          "declaredEnd": 17970175,
+          "sent": 6219328,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 9,
+          "range": "bytes=32101294-33554431",
+          "start": 32101294,
+          "declaredEnd": 33554431,
+          "sent": 1453138,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    },
+    {
+      "case": "split-64m",
+      "client": "idm",
+      "trial": 3,
+      "sentBytes": 69076002,
+      "uniqueBytes": 67108864,
+      "repeatedBytes": 1967138,
+      "holes": [],
+      "overlap": [
+        {
+          "start": 116800,
+          "endExclusive": 378944,
+          "multiplicity": 2
+        },
+        {
+          "start": 17181401,
+          "endExclusive": 17301456,
+          "multiplicity": 2
+        },
+        {
+          "start": 33079736,
+          "endExclusive": 33292195,
+          "multiplicity": 2
+        },
+        {
+          "start": 33349203,
+          "endExclusive": 33483936,
+          "multiplicity": 2
+        },
+        {
+          "start": 33483936,
+          "endExclusive": 33554336,
+          "multiplicity": 3
+        },
+        {
+          "start": 33618671,
+          "endExclusive": 33618735,
+          "multiplicity": 2
+        },
+        {
+          "start": 49974860,
+          "endExclusive": 50237004,
+          "multiplicity": 2
+        },
+        {
+          "start": 50381287,
+          "endExclusive": 50593648,
+          "multiplicity": 2
+        },
+        {
+          "start": 66453410,
+          "endExclusive": 66584387,
+          "multiplicity": 2
+        },
+        {
+          "start": 66781136,
+          "endExclusive": 66944999,
+          "multiplicity": 2
+        },
+        {
+          "start": 66944999,
+          "endExclusive": 67108672,
+          "multiplicity": 3
+        },
+        {
+          "start": 67108672,
+          "endExclusive": 67108864,
+          "multiplicity": 2
+        }
+      ],
+      "requests": [
+        {
+          "connection": 1,
+          "range": null,
+          "start": 0,
+          "declaredEnd": 67108863,
+          "sent": 17301456,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 2,
+          "range": "bytes=116800-67108863",
+          "start": 116800,
+          "declaredEnd": 67108863,
+          "sent": 262144,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 3,
+          "range": "bytes=33618671-67108863",
+          "start": 33618671,
+          "declaredEnd": 67108863,
+          "sent": 16974977,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 4,
+          "range": "bytes=50381287-67108863",
+          "start": 50381287,
+          "declaredEnd": 67108863,
+          "sent": 16203100,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 5,
+          "range": "bytes=17181401-33618734",
+          "start": 17181401,
+          "declaredEnd": 33618734,
+          "sent": 16110794,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 6,
+          "range": "bytes=66453410-67108863",
+          "start": 66453410,
+          "declaredEnd": 67108863,
+          "sent": 655454,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 7,
+          "range": "bytes=33079736-33618734",
+          "start": 33079736,
+          "declaredEnd": 33618734,
+          "sent": 538999,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 8,
+          "range": "bytes=49974860-50381350",
+          "start": 49974860,
+          "declaredEnd": 50381350,
+          "sent": 262144,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 9,
+          "range": "bytes=66781136-67108863",
+          "start": 66781136,
+          "declaredEnd": 67108863,
+          "sent": 327728,
+          "outcome": "complete",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 10,
+          "range": "bytes=33349203-33618734",
+          "start": 33349203,
+          "declaredEnd": 33618734,
+          "sent": 205133,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 11,
+          "range": "bytes=66944999-67108863",
+          "start": 66944999,
+          "declaredEnd": 67108863,
+          "sent": 163673,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 12,
+          "range": "bytes=33483936-33618734",
+          "start": 33483936,
+          "declaredEnd": 33618734,
+          "sent": 70400,
+          "outcome": "",
+          "serverHandlerClosed": true
+        },
+        {
+          "connection": 13,
+          "range": "bytes=67026931-67108863",
+          "start": 67026931,
+          "declaredEnd": 67108863,
+          "sent": 0,
+          "outcome": "",
+          "serverHandlerClosed": true
+        }
+      ],
+      "allServerHandlersClosedAtSnapshot": true
+    }
+  ],
+  "scope": "Owned origin socket-send intervals at saved snapshot",
+  "clientDiscardOrRetentionMeasured": false,
+  "laterServerActivityMeasured": false,
+  "rangeAccountingComplete": true
+}

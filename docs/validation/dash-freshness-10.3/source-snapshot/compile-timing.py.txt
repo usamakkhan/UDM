@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,os,subprocess
+repo=Path('D:/UDM');area=Path(__file__).parent;scope={'__file__':str(area/'config.py')};exec((Path(os.environ['LOCALAPPDATA'])/'UDM-Development/finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+baseline=json.loads((repo/'.media-cache/single-caption-session-build-10.2/build-result.json').read_text(encoding='utf-8'));objects=[str(out/(Path(e['path']).stem+'.obj')) if Path(e['path']).stem in ['Bridge','DashManifest'] else e['path'] for e in baseline['coreObjects']]
+source=area/'DashManifest-Timing.cpp';pin=sha(source)
+with (area/'compile-timing-core.log').open('w',encoding='utf-8') as log:r=subprocess.run([str(compiler),*common,'/c',str(source),'/Fo'+str(out/'DashManifest-Timing.obj')],stdout=log,stderr=subprocess.STDOUT,env=env)
+assert r.returncode==0,(area/'compile-timing-core.log').read_text(encoding='utf-8')[-2500:]
+objects=[str(out/'DashManifest-Timing.obj') if Path(p).stem=='DashManifest' else p for p in objects];target=release/'Udm.ContinuousDashWorkflow-Timing.exe';actor=repo/'benchmarks/speed/live_dash_continuous_workflow.cpp'
+with (area/'compile-timing-actor.log').open('w',encoding='utf-8') as log:r=subprocess.run([str(compiler),*common,str(actor),*objects,str(out/'App.res'),*system,'/Fo'+str(out/'timing-actor.obj'),'/Fe'+str(target),'/link','/SUBSYSTEM:CONSOLE','/INCREMENTAL:NO','/MANIFEST:NO','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA'],stdout=log,stderr=subprocess.STDOUT,env=env)
+assert r.returncode==0,(area/'compile-timing-actor.log').read_text(encoding='utf-8')[-2500:];assert sha(source)==pin
+(area/'timing-build.json').write_text(json.dumps(dict(passed=True,diagnosticOnly=True,sourceSha256=pin,actorSourceSha256=sha(actor),path=str(target),sha256=sha(target)),indent=2),encoding='utf-8');print('Separate timing actor built')

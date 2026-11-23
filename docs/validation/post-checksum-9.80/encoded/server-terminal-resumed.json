@@ -1,0 +1,45 @@
+{
+  "stopped": true,
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/redirect-bad",
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "method": "GET",
+      "path": "/final/redirect-bad",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "POST",
+      "path": "/direct-good",
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "method": "POST",
+      "path": "/direct-bad",
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "method": "POST",
+      "path": "/redirect-good",
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "method": "GET",
+      "path": "/final/redirect-good",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "POST",
+      "path": "/redirect-bad",
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "method": "GET",
+      "path": "/final/redirect-bad",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

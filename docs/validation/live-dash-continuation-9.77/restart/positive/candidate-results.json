@@ -1,0 +1,169 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "Resume completes: ",
+      "passed": true
+    },
+    {
+      "name": "Fresh-process Resume publishes exactly once",
+      "passed": true
+    },
+    {
+      "name": "Resumed output matches exact assembled size and checksum",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the retired first Period and appends the adjacent continuation",
+      "passed": true
+    },
+    {
+      "name": "Resumed recording decodes all twenty original frames through EOF",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": 3848,
+  "frames": [
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c"
+  ],
+  "passed": true,
+  "prePublicationBytes": 3848,
+  "publications": 1,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "savedJob": {
+    "AdaptiveAssemblyReused": false,
+    "AdaptiveCompletedSegments": 2,
+    "AdaptiveMetadataBytes": 4447,
+    "AdaptiveTotalSegments": 2,
+    "Added": "/Date(1795274765642)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "ConfirmationPending": false,
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 5.1861566,
+    "Error": "",
+    "ExpectedSha256": "",
+    "FileName": "restart.mp4",
+    "Finished": "/Date(1795275404730)/",
+    "Folder": "<development>\\owned-live-dash-restart-9.76-C\\positive",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "GrabberImmediate": false,
+    "Id": "7faf97fac2d048b3a780912f723d7b21",
+    "LastAttempt": "/Date(1795275400552)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCaptureSealed": true,
+    "LiveCapturedSeconds": 2.0,
+    "LiveRecording": true,
+    "LiveSaveReady": false,
+    "MediaFolder": "<repo>\\.media-cache\\owned-live-dash-restart-9.76\\positive\\temporary\\UDM-media\\7faf97fac2d048b3a780912f723d7b21",
+    "MediaPhase": "Complete",
+    "MediaPixelHeight": 360,
+    "MediaTracksReady": false,
+    "MergeSeconds": 1.1983911,
+    "PostAttempted": false,
+    "PrefetchedFinalSize": 3848,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "8528019B56A83616B80445D10D99401A5333721E4F8C4B3599ABE39E9DE1C066",
+      "characters": 656
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "3C81FDE4FDA6B271C5A714DA96966B5A767461BA73821368B47EE5E9064395FD",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "B670758D6B3E1F0485AFB433E80DCD247C61C41057EC50093B26AA81B3D76405",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "B16627695A5922FC360391ABB660EBDE163AD7827A99CE9C640646575DD0D04C",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "PublicationCommitId": "41adc367c80a4ffc86444c3b8e0c77eb",
+    "PublicationPhases": {
+      "AcceptCatalog": 6.83e-05,
+      "IntentOperations": {
+        "bytes-written": 0.0001444,
+        "directories-ready": 0.0030723,
+        "publish": 0.0022229,
+        "temporary-flushed": 0.0204365,
+        "temporary-opened": 0.0001706
+      },
+      "PrepareCatalog": 0.0005229,
+      "PrepareIntent": 0.0018156,
+      "PrepareSource": 3.03e-05,
+      "ReleaseAcceptedFile": 4.26e-05,
+      "ReleasePins": 0.0002003,
+      "RemoveJournal": 0.000475,
+      "Rename": 0.0026696,
+      "VerifyIdentity": 2.04e-05,
+      "WriteCatalog": 0.1572082,
+      "WriteIntent": 0.0260574
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": false,
+    "QueueOrigin": false,
+    "Received": 3848,
+    "SabrRetainedBytes": 0,
+    "Segments": [],
+    "Sha256": "ebc9d447bcb9c17286958ec0fc2758bf9c70cd47c700c93d7d1b88a0036b968c",
+    "Size": 3848,
+    "Status": "Complete",
+    "SyncPending": false,
+    "TransferSeconds": 3.7100394999999997,
+    "TransferredBytes": 9133,
+    "Url": "https://example.invalid/owned-restart",
+    "Video": null
+  }
+}

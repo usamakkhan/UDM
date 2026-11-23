@@ -1,0 +1,77 @@
+{
+  "sources": [
+    {
+      "path": "native/GaplessAacTail.hpp",
+      "snapshot": "source-snapshot/native__GaplessAacTail.hpp.txt",
+      "sha256": "C5464A49B0EA6BA7C68A3D520060A98887DB3E1C8FF6EFED4CD91BF505AE4823"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "64272CDD661C12384D992B3A03B00733B06E372CA8395D73523BB9AAD5D6C8A2"
+    },
+    {
+      "path": "native/DashManifest.hpp",
+      "snapshot": "source-snapshot/native__DashManifest.hpp.txt",
+      "sha256": "6E585C9934ABE143BE67CFD0A04CC3A23131A33BCB0BE8C41EA593459BDE4068"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "CF47378E93BD07ABCF360BFBFEFF9C951215E60D6B479B449FB3E83BC75FF651"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "B03A4A46D3F63A194225846336A666308E80E8337C2AB3D2C2F714CC4FFEB3D5"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "5301B9496BD071F979470823AEA93604946F7C9AB255066C488D0CABACFCC38C"
+    },
+    {
+      "path": "benchmarks/speed/gapless_aac_tail_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__gapless_aac_tail_workflow.cpp.txt",
+      "sha256": "B816F232C76F8828F29F1D643D7C9D8AC9200C3588D611BFEB5FAE8BF15605D8"
+    },
+    {
+      "path": "tests/gapless-aac-tail.native-live.py",
+      "snapshot": "source-snapshot/tests__gapless-aac-tail.native-live.py.txt",
+      "sha256": "5ADD8AC8ADF83C82A88CC06E0668A8C14035996E9A02D5E536FD0BD1DD5EB4AA"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "C2E9A9C38CB4EA117CDB96E6930CC158B0B8805677700FAEB09A3B5C1C88253C"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "032446ACED5D5702683B98E4B33DFA87A1E6554BA98E771E733242FF0D1AE930"
+    },
+    {
+      "recipe": "packet-oracle.py",
+      "snapshot": "source-snapshot/packet-oracle.py.txt",
+      "sha256": "D9D1E54329A2B9BC3BF9C016EDE92568B9A246BC5BBA0A0693DB1E9C34E817A3"
+    },
+    {
+      "recipe": "negative-controls.py",
+      "snapshot": "source-snapshot/negative-controls.py.txt",
+      "sha256": "13B3481639C708621BD7F07D10F4142F6CD8B39115A0EE50E47C0233E73B3B70"
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "3E29FE620C2DEAD9D4D71B5423D905499D0E53605B8B27A8433DBEDEAAEA99DB"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "version": "10.1",
+      "snapshot": "source-snapshot/frozen-10.1-DashManifest.cpp.txt",
+      "sha256": "78AC72530EDAEB3DCAB0369C52C0DD2320B4496927AE817B1B7264890DDB9542"
+    }
+  ],
+  "allBuildInputsStillMatch": true,
+  "currentScope": "Single-Period caption sessions; no full installed IDM equivalence claim."
+}

@@ -1,0 +1,425 @@
+{
+  "checks": [
+    {
+      "name": "Origin admission ignores file paths and normalizes header names",
+      "passed": true
+    },
+    {
+      "name": "Different origin ports have separate admission contexts",
+      "passed": true
+    },
+    {
+      "name": "Different website cookies isolate capacity evidence",
+      "passed": true
+    },
+    {
+      "name": "Different server credentials isolate capacity evidence",
+      "passed": true
+    },
+    {
+      "name": "Non-UTF-8 header bytes remain distinct in admission identity",
+      "passed": true
+    },
+    {
+      "name": "Duplicate header names retain every value in admission identity",
+      "passed": true
+    },
+    {
+      "name": "Direct and explicit proxy routes remain separate",
+      "passed": true
+    },
+    {
+      "name": "Different resolved proxy endpoints remain separate",
+      "passed": true
+    },
+    {
+      "name": "Different proxy credentials remain separate",
+      "passed": true
+    },
+    {
+      "name": "The credential fixture uses independently randomized DPAPI blobs",
+      "passed": true
+    },
+    {
+      "name": "The same proxy credential shares admission after independent encryption",
+      "passed": true
+    },
+    {
+      "name": "Different proxy usernames remain isolated with the same password",
+      "passed": true
+    },
+    {
+      "name": "A changed proxy password cannot reuse the old account's capacity evidence",
+      "passed": true
+    },
+    {
+      "name": "An unreadable protected credential never collapses to an empty identity",
+      "passed": true
+    },
+    {
+      "name": "Only refused or reset opens qualify as connection-cap evidence",
+      "passed": true
+    },
+    {
+      "name": "Timeouts, DNS errors and authentication failures cannot establish a connection cap",
+      "passed": true
+    },
+    {
+      "name": "A lost post-challenge proxy response is a receive disconnect rather than a terminal authentication rejection",
+      "passed": true
+    },
+    {
+      "name": "A lost Digest authentication continuation retains receive-disconnect classification",
+      "passed": true
+    },
+    {
+      "name": "A complete terminal proxy rejection remains available to authentication policy",
+      "passed": true
+    },
+    {
+      "name": "Rejected proxy credentials do not become transient capacity evidence",
+      "passed": true
+    },
+    {
+      "name": "A proxy authentication response timeout retains its receive-timeout identity",
+      "passed": true
+    },
+    {
+      "name": "Digest continuation timeouts remain receive failures instead of credential rejection",
+      "passed": true
+    },
+    {
+      "name": "An interrupted terminal policy response keeps its existing body/status path",
+      "passed": true
+    },
+    {
+      "name": "A header-parser failure takes priority over authentication transport retry",
+      "passed": true
+    },
+    {
+      "name": "Receive timeout and actual disconnect exceptions carry distinct admission evidence",
+      "passed": true
+    },
+    {
+      "name": "A receive timeout preserves existing protocol fallback eligibility",
+      "passed": true
+    },
+    {
+      "name": "The first POST request is admitted before transport submission",
+      "passed": true
+    },
+    {
+      "name": "A fresh proxy rejection permits one authentication continuation",
+      "passed": true
+    },
+    {
+      "name": "A lost continuation cannot replay an empty or nonempty POST",
+      "passed": true
+    },
+    {
+      "name": "Replay prevention propagates an explicit submission-recovery error",
+      "passed": true
+    },
+    {
+      "name": "A fresh Digest rejection permits its authenticated POST continuation",
+      "passed": true
+    },
+    {
+      "name": "The Digest rejection cannot authorize another submission after response loss",
+      "passed": true
+    },
+    {
+      "name": "Non-submission request retry policy stays with the GET transport",
+      "passed": true
+    },
+    {
+      "name": "A terminal policy response cannot authorize POST replay",
+      "passed": true
+    },
+    {
+      "name": "An unproven automatic route cannot join a shared context",
+      "passed": true
+    },
+    {
+      "name": "Opaque Windows route sessions cannot share learned capacity",
+      "passed": true
+    },
+    {
+      "name": "Browser session scope is part of admission identity",
+      "passed": true
+    },
+    {
+      "name": "Connection policy changes isolate admission evidence",
+      "passed": true
+    },
+    {
+      "name": "Default proxy mode selects Windows while explicit direct mode does not",
+      "passed": true
+    },
+    {
+      "name": "An implicit configured fixed proxy does not become Windows automatic mode",
+      "passed": true
+    },
+    {
+      "name": "A Windows direct result becomes an explicit direct transport",
+      "passed": true
+    },
+    {
+      "name": "A direct route drops proxy credentials",
+      "passed": true
+    },
+    {
+      "name": "A pinned route cannot recursively resolve stale proxy configuration",
+      "passed": true
+    },
+    {
+      "name": "Resolved Windows direct routes share evidence across independent sessions",
+      "passed": true
+    },
+    {
+      "name": "A Windows HTTPS proxy result preserves scheme and IPv6 endpoint",
+      "passed": true
+    },
+    {
+      "name": "A selected proxy retains its configured credential context",
+      "passed": true
+    },
+    {
+      "name": "Resolved Windows routes still isolate different proxy credentials",
+      "passed": true
+    },
+    {
+      "name": "Windows bypass results are pinned to direct transport",
+      "passed": true
+    },
+    {
+      "name": "A malformed selected proxy never silently becomes a direct route",
+      "passed": true
+    },
+    {
+      "name": "An unsupported selected proxy scheme never silently becomes a direct route",
+      "passed": true
+    },
+    {
+      "name": "Response headers alone do not establish productive capacity",
+      "passed": true
+    },
+    {
+      "name": "Earlier refusals become capacity evidence only after a matching peer delivers payload",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "A new independent connection waits while proven capacity is occupied",
+      "passed": true
+    },
+    {
+      "name": "Cancel promptly wakes an admission waiter",
+      "passed": true
+    },
+    {
+      "name": "Cancellation leaves the admission queue without opening a connection",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "An occupied origin keeps a new transport queued",
+      "passed": true
+    },
+    {
+      "name": "Drained keepalive responses retain capacity while their transport is alive",
+      "passed": true
+    },
+    {
+      "name": "The same transport reuses its idle slot without admitting another transport",
+      "passed": true
+    },
+    {
+      "name": "Releasing an idle transport frees capacity for a queued download",
+      "passed": true
+    },
+    {
+      "name": "The queued connection receives the released slot",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "Multiple independent waiters respect the learned bound",
+      "passed": true
+    },
+    {
+      "name": "One released slot admits exactly one waiter",
+      "passed": true
+    },
+    {
+      "name": "The next waiter advances after the first releases its slot",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "An existing transfer retains its own worker admission policy",
+      "passed": true
+    },
+    {
+      "name": "An existing producer's optional worker uses within-transfer refusal recovery",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "A refusal after a productive close retains shared recovery instead of spending ordinary retries",
+      "passed": true
+    },
+    {
+      "name": "Recovery opens are paced during the server's close transition",
+      "passed": true
+    },
+    {
+      "name": "One transient refusal cannot lower a proven two-connection bound",
+      "passed": true
+    },
+    {
+      "name": "A newly proven successful open invalidates older lower-capacity observations",
+      "passed": true
+    },
+    {
+      "name": "A later close transition requires fresh evidence before lowering capacity",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "Sustained fresh refusals can establish a genuinely reduced server capacity",
+      "passed": true
+    },
+    {
+      "name": "A confirmed lower bound prevents repeated excess opens",
+      "passed": true
+    },
+    {
+      "name": "A lower-capacity waiter advances when its productive peer releases the slot",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "A retry can immediately reuse its own transport's idle connection",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "A multiplexed stream failure does not establish an origin connection cap",
+      "passed": true
+    },
+    {
+      "name": "A multiplexed transport still occupies one independent origin slot",
+      "passed": true
+    },
+    {
+      "name": "Multiple streams on one transport count as one occupied connection",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "Closing an unread multiplexed stream retains its reusable transport slot",
+      "passed": true
+    },
+    {
+      "name": "Closing the multiplexed transport releases its retained slot",
+      "passed": true
+    },
+    {
+      "name": "One refused open does not establish capacity",
+      "passed": true
+    },
+    {
+      "name": "Repeated refusal with productive peers establishes capacity",
+      "passed": true
+    },
+    {
+      "name": "Expired capacity evidence permits a bounded recovery probe",
+      "passed": true
+    },
+    {
+      "name": "Only one capacity probe can be outstanding above the learned bound",
+      "passed": true
+    },
+    {
+      "name": "A successful probe restores admission when server capacity increases",
+      "passed": true
+    },
+    {
+      "name": "The bounded context cache admits its supported live contexts",
+      "passed": true
+    },
+    {
+      "name": "The context cache falls back without exceeding its live-context bound",
+      "passed": true
+    },
+    {
+      "name": "An unused context can be evicted for a new origin",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

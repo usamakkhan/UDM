@@ -1,0 +1,163 @@
+{
+  "exitCode": 0,
+  "result": {
+    "accountedBytes": 8192,
+    "bodyObservations": 2,
+    "checks": [
+      {
+        "name": "Fixture selects bounded actual manifest tracks",
+        "passed": true
+      },
+      {
+        "name": "Strong response identity is checkpointed before body accounting",
+        "passed": true
+      },
+      {
+        "name": "Strong response identity is checkpointed before body accounting",
+        "passed": true
+      },
+      {
+        "name": "Recovery verifies the accepted resource receipt",
+        "passed": true
+      },
+      {
+        "name": "Stored bytes and SHA-256 match the durable receipt",
+        "passed": true
+      },
+      {
+        "name": "Recovery verifies the accepted resource receipt",
+        "passed": true
+      },
+      {
+        "name": "Stored bytes and SHA-256 match the durable receipt",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "index": {
+      "captureEnd": 1.0,
+      "captureStart": 0.0,
+      "schema": 2,
+      "selection": "b01a2cfe7235897357141b18f29b10bfd56923a67c83fa928dd6cdcb35ca0b2a",
+      "staticPresentation": true,
+      "tracks": [
+        {
+          "identity": {
+            "adaptation": "v",
+            "format": {
+              "audioSamplingRate": "",
+              "codecs": "avc1.42c01e",
+              "contentType": "",
+              "descriptors": [],
+              "frameRate": "",
+              "height": "90",
+              "lang": "",
+              "mimeType": "video/mp4",
+              "sar": "",
+              "scanType": "",
+              "width": "160"
+            },
+            "period": "p",
+            "periodStart": 0.0,
+            "presentation": "e65c35826794ece3330de9e311e88bdd8601bd22942f523556d4fde844527a8c",
+            "presentationTimeOffset": 0,
+            "representation": "v1",
+            "schema": 1,
+            "timescale": 1000
+          },
+          "initializationVerified": false,
+          "periodDuration": 1.0,
+          "segments": {
+            "1": {
+              "binding": "0e3118691664bc5e949266ed6eff88fe89a69be266376095fe409480cad9a629",
+              "committed": true,
+              "duration": 1000,
+              "number": 1,
+              "resource": {
+                "bytes": 4096,
+                "file": "0e3118691664bc5e949266ed6eff88fe89a69be266376095fe409480cad9a629.part",
+                "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+              },
+              "resourceVersion": {
+                "etag": "\"original\"",
+                "total": 4096,
+                "url": "http://127.0.0.1:58372/shared.bin"
+              },
+              "time": 0,
+              "urls": [
+                "http://127.0.0.1:58372/shared.bin"
+              ],
+              "versionRequired": true
+            }
+          }
+        },
+        {
+          "identity": {
+            "adaptation": "a",
+            "format": {
+              "audioSamplingRate": "48000",
+              "codecs": "mp4a.40.2",
+              "contentType": "",
+              "descriptors": [],
+              "frameRate": "",
+              "height": "",
+              "lang": "",
+              "mimeType": "audio/mp4",
+              "sar": "",
+              "scanType": "",
+              "width": ""
+            },
+            "period": "p",
+            "periodStart": 0.0,
+            "presentation": "e65c35826794ece3330de9e311e88bdd8601bd22942f523556d4fde844527a8c",
+            "presentationTimeOffset": 0,
+            "representation": "a1",
+            "schema": 1,
+            "timescale": 1000
+          },
+          "initialization": {
+            "binding": "8b5f648d7f9f3c1ac65d1df33e2eef2b2722cab1f57b15e294e18b05b2730aa6",
+            "bytes": 4096,
+            "file": "8b5f648d7f9f3c1ac65d1df33e2eef2b2722cab1f57b15e294e18b05b2730aa6.part",
+            "resourceVersion": {
+              "etag": "\"original\"",
+              "total": 4096,
+              "url": "http://127.0.0.1:58372/shared.bin"
+            },
+            "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+            "urls": [
+              "http://127.0.0.1:58372/shared.bin"
+            ],
+            "versionRequired": true
+          },
+          "initializationVerified": true,
+          "periodDuration": 1.0,
+          "segments": {
+            "1": {
+              "binding": "367d549440db27aa33587bc2a33b50fd67bfa1479b0eef19822a2576303efbb9",
+              "committed": true,
+              "duration": 1000,
+              "number": 1,
+              "resource": {
+                "bytes": 4096,
+                "file": "367d549440db27aa33587bc2a33b50fd67bfa1479b0eef19822a2576303efbb9.part",
+                "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+              },
+              "resourceVersion": {
+                "etag": "\"original\"",
+                "total": 4096,
+                "url": "http://127.0.0.1:58372/audio.bin"
+              },
+              "time": 0,
+              "urls": [
+                "http://127.0.0.1:58372/audio.bin"
+              ],
+              "versionRequired": true
+            }
+          }
+        }
+      ]
+    },
+    "passed": true
+  }
+}

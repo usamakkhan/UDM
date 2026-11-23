@@ -1,0 +1,8 @@
+from pathlib import Path
+import os,subprocess,json
+root=Path('D:/UDM');area=Path(__file__).parent;release=area/'release-native'
+assert not (release/'tools').exists()
+r=subprocess.run(['cmd.exe','/d','/c','mklink','/J',str(release/'tools'),'C:/Program Files/UDM/tools'],capture_output=True,text=True);assert r.returncode==0,r.stdout+r.stderr
+for name in ['GaplessAacTailTests','RetiredDashBoundaryTests']:
+ run=area/('final-'+name);p=subprocess.run([str(release/('Udm.'+name+'.exe')),str(run)],capture_output=True,timeout=60);(area/(name+'-run.log')).write_bytes(p.stdout+p.stderr);result=json.loads((run/'results.json').read_text(encoding='utf-8-sig'));assert p.returncode==0 and result['passed'],result;print(name+': '+str(len(result['checks']))+' passed',flush=True)
+p=subprocess.run(['python',str(root/'tests/gapless-aac-tail.native-live.py'),str(area/'workflow-attempt-01'),str(release/'Udm.GaplessTailWorkflow.exe'),str(release/'Udm.GaplessTailWorkflow-Control10.0.exe')],cwd=root,capture_output=True);(area/'workflow-attempt-01.log').write_bytes(p.stdout+p.stderr);print('Workflow exit '+str(p.returncode),flush=True);assert p.returncode==0,(p.stdout+p.stderr).decode(errors='replace')

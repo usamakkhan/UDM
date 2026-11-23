@@ -1,0 +1,29 @@
+{
+  "passed": false,
+  "suites": [
+    {
+      "suite": "Udm.CompletionModalFenceTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 31,
+      "sha256": "8E30F5CFF187A8A5C6F5F71ED535C683C7FBFD6D0FC8FEE989CE18E96C17F36A"
+    },
+    {
+      "suite": "Udm.AutomaticPromptSnapshotTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 31,
+      "sha256": "A9132F1BF2D74E2F1E456CD02131E9AE3040610B9270B501EA4C7AC1008F2BFC"
+    },
+    {
+      "suite": "Udm.AutomaticPresentationUiTests",
+      "kind": "ui",
+      "exitCode": 1,
+      "passed": false,
+      "checks": 29,
+      "sha256": "C4F4F62A3ECFC1F10C343DE27D7E30F9CFD52070AD9887CC5692BB7B95875678"
+    }
+  ]
+}

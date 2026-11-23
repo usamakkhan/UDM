@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "name": "A fresh full-resource intent requires its first version",
+      "passed": true
+    },
+    {
+      "name": "A bound intent can verify only its versioned receipt",
+      "passed": true
+    },
+    {
+      "name": "Legacy resources retain their original recovery policy",
+      "passed": true
+    },
+    {
+      "name": "An unbound intent cannot claim committed data",
+      "passed": true
+    },
+    {
+      "name": "An unbound intent cannot import an unversioned resource record",
+      "passed": true
+    },
+    {
+      "name": "An unbound initialization cannot adopt an unversioned file",
+      "passed": true
+    },
+    {
+      "name": "Ranged resources cannot enter full-response discovery",
+      "passed": true
+    },
+    {
+      "name": "Nonboolean version policy is rejected",
+      "passed": true
+    },
+    {
+      "name": "Missing pending resource locations are rejected",
+      "passed": true
+    },
+    {
+      "name": "Empty pending locations cannot authorize a body",
+      "passed": true
+    },
+    {
+      "name": "Nonstrings cannot become resource locations",
+      "passed": true
+    },
+    {
+      "name": "Pending URL alternatives retain their bound",
+      "passed": true
+    },
+    {
+      "name": "A pending initialization cannot reuse an unversioned receipt",
+      "passed": true
+    },
+    {
+      "name": "A checkpointed initialization version permits verified recovery",
+      "passed": true
+    },
+    {
+      "name": "Already accepted initialization cannot acquire its first version",
+      "passed": true
+    },
+    {
+      "name": "Initialization ranges retain preflight validation",
+      "passed": true
+    },
+    {
+      "name": "A dangling initialization policy is invalid",
+      "passed": true
+    },
+    {
+      "name": "A deferred initialization requires actual locations",
+      "passed": true
+    },
+    {
+      "name": "Schema 2 admits a structurally valid pending intent",
+      "passed": true
+    },
+    {
+      "name": "Pending resource semantics cannot be smuggled into a legacy schema",
+      "passed": true
+    },
+    {
+      "name": "Unknown recording policies fail explicitly",
+      "passed": true
+    },
+    {
+      "name": "Legacy schema remains readable without new policy fields",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

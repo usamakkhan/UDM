@@ -1,0 +1,78 @@
+{
+  "checks": [
+    {
+      "name": "The active countdown owns its wake route",
+      "passed": true
+    },
+    {
+      "name": "A competing owner cannot replace or clear the active route",
+      "passed": true
+    },
+    {
+      "name": "Duplicate binding preserves the original notifier",
+      "passed": true
+    },
+    {
+      "name": "Explicit modal completion clears the route",
+      "passed": true
+    },
+    {
+      "name": "Leaving the countdown scope clears its notifier",
+      "passed": true
+    },
+    {
+      "name": "Exception unwinding cannot retain a closed countdown route",
+      "passed": true
+    },
+    {
+      "name": "A wake can refresh eligibility without scheduling a tick",
+      "passed": true
+    },
+    {
+      "name": "A passive wake leaves idle maintenance idle",
+      "passed": true
+    },
+    {
+      "name": "A real timer pulse still starts and acknowledges scheduler work",
+      "passed": true
+    },
+    {
+      "name": "Repeated completion notifications remain read-only wakes",
+      "passed": true
+    },
+    {
+      "name": "A hundred completion wakes cannot create a self-sustaining tick loop",
+      "passed": true
+    },
+    {
+      "name": "Subsequent actual timer pulses continue scheduling normally",
+      "passed": true
+    },
+    {
+      "name": "An expired wake requests the one required fresh final tick",
+      "passed": true
+    },
+    {
+      "name": "The final scheduler acknowledgement is consumable without another timer pulse",
+      "passed": true
+    },
+    {
+      "name": "Repeated final wakes cannot repeat accepted scheduler work",
+      "passed": true
+    },
+    {
+      "name": "A stopped worker cannot authorize a countdown from a wake",
+      "passed": true
+    },
+    {
+      "name": "A passive expired wake still requires an acknowledgement from a failing worker",
+      "passed": true
+    },
+    {
+      "name": "A failed final acknowledgement rejects execution and preserves the error without a timer",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,441 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "The ready close-to-tray decision hides the main window first",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Resuming completion leaves the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "A real owned close/readiness wake is queued",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "The ready close-to-tray decision hides the main window first",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Resuming completion leaves the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "A cancelled close policy is acknowledged ahead of blocked presentation work",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "Accepted Exit stops exactly once without presenting a pending completion",
+      "passed": true
+    },
+    {
+      "name": "Exit retains concurrent settings and the completed catalog record",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "The ready close-to-tray decision hides the main window first",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Resuming completion leaves the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "A real owned close/readiness wake is queued",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "The ready close-to-tray decision hides the main window first",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Resuming completion leaves the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "A cancelled close policy is acknowledged ahead of blocked presentation work",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "The first close decision dispatch creates no completion window",
+      "passed": true
+    },
+    {
+      "name": "Cancelled or failed close preparation restores usable presentation ownership",
+      "passed": true
+    },
+    {
+      "name": "A subsequent real owned wake resumes one completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A later admission poll cannot replay completion or start shutdown",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Direct admission yields to pending close preparation without creating a dialog",
+      "passed": true
+    },
+    {
+      "name": "Accepted Exit stops exactly once without presenting a pending completion",
+      "passed": true
+    },
+    {
+      "name": "Exit retains concurrent settings and the completed catalog record",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-timer"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-wake"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "cancel-policy"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "failed-policy"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "failed-layout"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": true,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-timer"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": true,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-wake"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": true,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "cancel-policy"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": true,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "failed-policy"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": true,
+      "dialogsAtFirstCloseDispatch": 0,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": true,
+      "mode": "failed-layout"
+    }
+  ],
+  "passed": true
+}

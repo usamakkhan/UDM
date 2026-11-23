@@ -1,0 +1,33 @@
+# UDM 9.84: keep completion file actions responsive during catalog writes
+
+UDM 9.84 removes a blocking catalog-lock wait from the completion dialog's Open, Open with and Open folder commands. A busy catalog now queues one action, keeps Close usable and validates the current destination before dispatch. All five native programs build as **9.84**; both extension source manifests advance to **0.73.48**, with browser JavaScript unchanged. This candidate is **uninstalled**. Overall IDM speed and visual parity remain open.
+
+## Reproduced cause and implementation
+
+The frozen 9.83 dialog takes the model mutex synchronously in its file-action and drag-path resolver. In an owned test, another thread holds that mutex until its 500 ms watchdog expires. Clicking Open blocks the UI for **579 ms** and reaches the normal missing-file warning only after the writer releases. This measures a command handler, not download completion or whole-process lifetime. [Frozen result](validation/completion-actions-9.84/baseline/results.json).
+
+In [App.cpp](../native/App.cpp), the dialog now keeps a small pending-action state. It disables duplicate file actions while one is queued, attempts a nonblocking live snapshot, and retries through its existing timer when the catalog becomes available. Dispatch uses the current path and open eligibility, rather than a stale copy from dialog creation. Close cancels pending work; a destroyed dialog cannot replay it. A dispatch guard prevents a nested modal message loop from launching the same action again. The existing shell and missing-file helpers remain responsible for the actual action. Drag resolution returns immediately without a path if live validation is unavailable.
+
+This adds no worker or deferred shell task. The initial completion snapshot, suppression-setting persistence, filesystem checks, icon resolution and shell calls can still take time; this change does not make the entire dialog asynchronous or establish faster first paint. [Isolated implementation and maintained test delta](validation/completion-actions-9.84/completion-actions.patch).
+
+## Qualification
+
+The maintained [contention UI fixture](../native/CompletionActionContentionUiTests.cpp) includes the real App.cpp and uses an isolated catalog, its own windows and a held writer. All **42 assertions** pass in light and dark modes. Open/Open with handlers return in **0â€“16 ms** while that writer is still held, without waiting for its watchdog. The clock is coarse; zero is not a zero-latency guarantee. The same missing-file path remains the canonical warning behavior after release.
+
+The fixture checks renamed Unicode destinations, coalesced duplicate clicks, timer reentrancy, cancellation of all three queued file/folder actions, no replay after Close, and an intervening scanner state that must prevent Open. The timing result does not measure an existing document launch or a real Explorer window opening. [All checks and timings](validation/completion-actions-9.84/ui/contention-results.json).
+
+The focused backend qualification passes **197 assertions in two suites**: completed-checkpoint behavior (145) and publication availability (52). The previous 1,601-check backend run belongs to 9.83 and is not reported as a fresh 9.84 run. [Current backend summary](validation/completion-actions-9.84/build/suite-results.json).
+
+The existing completion-dialog reference regression passes all **274 assertions** separately against [tracked IDM control metadata](reference/completion-dialog.json). Its result covers geometry, labels, read-only controls, tab order, light/dark Enter handling, suppression persistence and rollback, publication notification, rename/drag behavior, and expanded scanner diagnostics at multiple DPI settings. It is a retained-reference comparison, not a fresh timed IDM run. [Reference result](validation/completion-actions-9.84/ui/reference-results.json).
+
+The reference-fixture compilation was interrupted when its tool session disappeared. No compiler or linker remained, and no source failure was observed. Its partial binary hash and original log are preserved. Only that unfinished fixture is rebuilt; the already-passing 42 contention checks are reused without rerunning. [Interruption record](validation/completion-actions-9.84/ui/interrupted-build.json).
+
+## Build, desktop status and remaining work
+
+All **704 source inputs** were captured before compilation. Bridge is rebuilt for the version change; **41 other core objects** are retained. The current set has 42 objects, five products and one resource. The final audit verifies their hashes, Windows versions and the two source manifests. [Build record](validation/completion-actions-9.84/build/build-result.json), [final audit](validation/completion-actions-9.84/final-audit.json).
+
+The updated Windows helper now lists windows and opens IDM 6.43 successfully. After activation its real main window is visible; accessibility text is unavailable. Menu clicks and its keyboard menu shortcut produce no response, including after a fresh window binding. Windows reports IDM unresponsive. It is left running without a forced stop; no paired download is launched. Window capture working does not establish working app input. The first capture before activation showed the covering browser, so it is not used as IDM evidence. No new completion-dialog timing or browser download comparison is claimed. Private window lists and desktop screenshots are not exported. [Desktop observation](validation/completion-actions-9.84/desktop-observation.json).
+
+Sanitized build/test logs and results are retained before removing **125 individually path/type/hash-checked files totaling 420,705,321 logical bytes**. Five superseded helper/object artifacts are retired. Cleanup preserves the current 48 build artifacts, the frozen previous App, installed programs/manifests, both personal catalogs and shared FFmpeg/FFprobe. It reports logical bytes, without claiming measured physical space reclaimed. [Cleanup receipt](validation/completion-actions-9.84/cleanup-receipt.json), [retired artifacts](validation/completion-actions-9.84/retired-artifacts.json).
+
+Next, restore a responsive IDM reference and qualify desktop input before a fresh paired completion/download comparison with explicit start and end boundaries, including process shutdown and final background work. Keep prior losing speed cases open. Separately address the remaining synchronous dialog initialization/settings paths and non-aligned live DASH chapter ends. No installer, installation, administrator prompt, commit, push or release occurs in this increment.

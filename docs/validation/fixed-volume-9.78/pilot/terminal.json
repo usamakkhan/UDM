@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "label": "Normal 9.78 guarded opened-volume lookup versus frozen 9.77; one pilot pair per case, no IDM ranking",
+  "transfers": 6,
+  "idmSettingsNotReadOrChanged": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 148.304,
+        "baseline": 159.284
+      },
+      "udmNotSlowerMedianThanBaseline": true,
+      "processExitTailMs": {
+        "udm": [
+          148.304
+        ],
+        "baseline": [
+          159.284
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 194.027,
+        "baseline": 176.786
+      },
+      "udmNotSlowerMedianThanBaseline": false,
+      "processExitTailMs": {
+        "udm": [
+          194.027
+        ],
+        "baseline": [
+          176.786
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 364.763,
+        "baseline": 335.313
+      },
+      "udmNotSlowerMedianThanBaseline": false,
+      "processExitTailMs": {
+        "udm": [
+          364.763
+        ],
+        "baseline": [
+          335.313
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

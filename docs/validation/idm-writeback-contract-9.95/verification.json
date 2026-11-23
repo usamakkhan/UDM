@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "readOnlyVerifierTests": 8,
+  "publicQualifiedReplays": 3,
+  "incompleteCaptureRejected": true,
+  "normalAppVersion": "9.95",
+  "sourceExtensions": [
+    "0.73.59",
+    "0.73.59"
+  ],
+  "appCodeOrProductsChanged": false,
+  "productionOptimizationAdmitted": false,
+  "fullParityProven": false,
+  "cleanupCompleted": false,
+  "sources": [
+    {
+      "path": "benchmarks/speed/analyze_idm_io.py",
+      "sha256": "5C0F1193A6FDF22A731DFA46BEB85B34C0ADB4E798B09EDA35DF027D5C3384FB"
+    },
+    {
+      "path": "benchmarks/speed/test_idm_io_analysis.py",
+      "sha256": "DD48E52C02DDDD1EA856081F2FBE2A9ECD88966E75674DA205FD1F90D2BD4D35"
+    }
+  ]
+}

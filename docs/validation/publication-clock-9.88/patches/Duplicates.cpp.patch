@@ -1,0 +1,16 @@
+--- native/Duplicates.cpp
++++ diagnostic/Duplicates.cpp
+@@ -1,3 +1,4 @@
++#include "DiagnosticSpan.hpp"
+ #include "ScopedPublicationSource.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "Core.hpp"
+@@ -296,7 +297,7 @@
+   }
+   prepared.validateSourceName(staging);prepared.validateDirectories();
+   if(overlap){Lock guard(mutex);checkpoint();if(stopping||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during body writeback. Keep its file and recovery record.");}
+-  if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
++  if(![&]{DiagnosticSpan rename("rename-begin","rename-end");return MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH);}())throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");
+   prepared.pinPublishedName(target);
+   timing("Rename");if(publicationObservation)publicationObservation("publication-file-moved");
+   lock.lock();

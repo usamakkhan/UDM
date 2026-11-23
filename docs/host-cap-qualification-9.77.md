@@ -1,0 +1,13 @@
+# UDM 9.77: independent downloads against a connection cap
+
+The unchanged normal 9.77 desktop product completed four concurrent jobs against an owned loopback origin limited to two connections. Each file was 2,097,152 bytes, served at 262,144 bytes per second per connection. Every published file matched the independently computed SHA-256. The origin recorded four successful GET requests, 8,388,608 body bytes, six rejected connection attempts, no dropped responses and a peak of two accepted connections.
+
+This checks the current shared admission path instead of treating the much older connection-pressure observations as current behavior. It does not establish that six refusals are optimal, that split workers behave identically, or that IDM is slower. Existing producer-session exceptions and five-second capacity probes remain unchanged; removing them without controls would trade known recovery behavior for an unproven optimization.
+
+The fixture observed all four jobs Complete and verified their files, then terminated its private primary process. Its 16.949-second observation includes startup and the rate-limited transfers, but **does not measure graceful shutdown or all final background work**. It is not a completion-speed benchmark and cannot close the outstanding performance gate.
+
+No production source, version, installation or installer changed. The source versions remain UDM 9.77 and both extensions 0.73.41. The installed app remains separate. A fresh IDM process comparison is still unavailable: its session-2 background process remains present despite the reported window closure, and supported Windows control has failed to initialize. Neither IDM session was stopped by this qualification.
+
+The maintained driver is [host_concurrency.py](../benchmarks/speed/host_concurrency.py). [Results](validation/host-cap-qualification-9.77/results.json), [source/product checks and limits](validation/host-cap-qualification-9.77/qualification.json), and [export hashes](validation/host-cap-qualification-9.77/export-manifest.json) are retained. The driver removed its four output payloads; the final check found no `.bin`, `.part` or `.data` payloads under the fresh owned work folder. Compact diagnostic catalogs remain private. Current five products and all 42 referenced core objects still match the build hashes.
+
+Next, qualify split-worker pressure separately, including refusal evidence before headers, cancellation of waiting jobs, and capacity recovery. Resume actual IDM full-lifetime measurements only with a genuinely fresh current-session process and working observation; retain both winning and losing cases.

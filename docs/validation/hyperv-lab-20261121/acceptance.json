@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "date": "2026-11-21",
+  "coreLabSetupVerified": true,
+  "allRequestedWorkComplete": false,
+  "vmName": "UDM-Lab",
+  "guestAdministration": {
+    "traceContentsValidated": false,
+    "kernelTraceStartStop": true,
+    "probeBytesRemoved": 131072,
+    "compactOsConfirmed": true,
+    "machineRegistryWrite": true,
+    "programFilesWrite": true,
+    "checkedAtUtc": "2026-11-22T07:22:36.9274622Z",
+    "administrator": true
+  },
+  "applications": {
+    "baseInstallerVersion": "9.67",
+    "browserMatchesOfficialArchive": true,
+    "idmVersion": "6, 43, 18, 2",
+    "browserVersion": "158.0.8127.36",
+    "nativeProducts": [
+      {
+        "name": "UDM.exe",
+        "version": "9.88",
+        "sha256": "3966AFD612EBAFE35865DBA44AAB1511345DC455CD22576F686F4094F29776BC"
+      },
+      {
+        "name": "Udm.NativeHost.exe",
+        "version": "9.88",
+        "sha256": "5E2760244B77C31A50681BAF81D41CDCA04CDA836098E2EBBEA91451A330CD3E"
+      },
+      {
+        "name": "Udm.Monitor.exe",
+        "version": "9.88",
+        "sha256": "4510578476FEC90F5F2436027482AE9037393A23071F54F3CB2EFD2327C42178"
+      },
+      {
+        "name": "Udm.SetupHelper.exe",
+        "version": "9.88",
+        "sha256": "54BA9E925F12C8E023CEDA3C17EA7C8FA5164E5F326ED5E3D8C749D0AF928DF7"
+      },
+      {
+        "name": "Udm.Automation.exe",
+        "version": "9.88",
+        "sha256": "29E9783BEBA88C153E9FBB165AF6D6C002AC9595EB84548E15889D8D6D4F3FB1"
+      }
+    ],
+    "newInstallerBuilt": false,
+    "labOverlay": true,
+    "idmSignature": "Valid",
+    "personalProfilesCopied": false,
+    "nativeVersion": "9.88",
+    "browserSignature": "NotSigned",
+    "extensionVersion": "0.73.52"
+  },
+  "desktop": {
+    "finalVisualRecheckPending": true,
+    "bothApplicationsOpened": true,
+    "currentHostControlError": "GetCursorPos: Access is denied; refreshed capture black; user asked to check/unlock PC",
+    "mouseInputVerified": true
+  },
+  "browser": {
+    "backgroundToDesktopPing": true,
+    "earlierHeadedPassUtc": "2026-11-22T07:11:21.6131158Z",
+    "loopbackControl": true,
+    "postRestartHeadedRecheckCompleted": false,
+    "functionalCheckedAtUtc": "2026-11-22T07:40:10.8722581Z",
+    "nativeVersion": "9.88",
+    "functionalMode": "headless on demand, same binaries, separate profile",
+    "extensionVersion": "0.73.52",
+    "directLoopbackTransport": true,
+    "currentFunctionalPass": true,
+    "protocol": 1,
+    "ownedInputVerified": true,
+    "earlierHeadedPass": true
+  },
+  "cleanup": {
+    "guestLogicalBytesDeleted": 308817201.0,
+    "reason": "Hyper-V DVD edits hang offline and elevated; attached media retained intact",
+    "encryptedCredentialRetainedOutsideGit": true,
+    "hostBytesDeleted": 231974807.0,
+    "applicationSetupCleanupPassed": true,
+    "plaintextHostAndGuestAnswerXmlRemoved": true,
+    "allSetupFilesRemoved": false,
+    "virtualDiskCompacted": false,
+    "attachedMediaBytesRetained": 5112905728.0
+  },
+  "remaining": [
+    "Restore host desktop access and complete the final visual recheck",
+    "Repair the host Hyper-V DVD edit failure before removing attached ISO files"
+  ],
+  "performanceParityClaimed": false,
+  "mediaDownloadAcceptanceClaimed": false,
+  "recordedUtc": "2026-11-22T07:43:18.1077069Z"
+}

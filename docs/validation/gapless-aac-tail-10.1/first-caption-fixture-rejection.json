@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "name": "Capture uses a fresh owned folder",
+      "passed": true
+    },
+    {
+      "name": "Owned manifest selects media tracks",
+      "passed": true
+    },
+    {
+      "name": "Captured resources seal before assembly",
+      "passed": true
+    }
+  ],
+  "error": "Unsupported or conflicting DASH media kind.",
+  "passed": false
+}

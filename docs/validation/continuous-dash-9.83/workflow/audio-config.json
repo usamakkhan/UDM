@@ -1,0 +1,24 @@
+{
+  "plan": {
+    "type": "dash",
+    "live": true,
+    "manifest": "http://127.0.0.1:61188/audio/manifest.mpd",
+    "container": "m4a",
+    "audioOnly": true,
+    "audioExpected": true,
+    "height": 0,
+    "tracks": [
+      {
+        "kind": "audio",
+        "periodId": "p0",
+        "adaptationId": "a",
+        "representationId": "r",
+        "credentialUrls": []
+      }
+    ]
+  },
+  "destination": "[local-diagnostics]\\owned-continuous-dash-workflow-9.83-C\\audio",
+  "expectedPeriods": 3,
+  "saveExpected": false,
+  "saveTrigger": ""
+}

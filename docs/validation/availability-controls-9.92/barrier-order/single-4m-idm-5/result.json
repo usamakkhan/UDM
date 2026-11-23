@@ -1,0 +1,32 @@
+{
+  "label": "9.92-private-barrier-order-control",
+  "trial": 5,
+  "case": "single-4m",
+  "client": "idm",
+  "bytes": 4194304,
+  "configuredConnections": 1,
+  "firstAvailabilityTailSeconds": 0.0630267999949865,
+  "processExitTailSeconds": 0.42612229999213014,
+  "processExitWallSeconds": 2.138875699994969,
+  "firstAvailabilityWallSeconds": 1.7757801999978255,
+  "exitAfterFirstAvailabilitySeconds": 0.36309549999714363,
+  "clockMappingErrorBoundSeconds": 8.499999239575118e-06,
+  "clockDriftSeconds": 4.950002287618105e-06,
+  "trackedProcesses": 1,
+  "requests": 1,
+  "originConnections": 1,
+  "peakConcurrent": 1,
+  "originBytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 0.4743229999949108,
+  "durableWallSeconds": 2.18707639999775,
+  "postExitToDurableSeconds": 0.04820070000278065,
+  "postExitOperations": {
+    "openSeconds": 0.00015390000044135377,
+    "flushSeconds": 0.020417399995494634,
+    "closeSeconds": 6.710000161547214e-05
+  }
+}

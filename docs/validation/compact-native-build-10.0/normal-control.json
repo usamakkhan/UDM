@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "defaultModeCreatesNoCompactMetadata": true,
+  "targetObjectFiles": 2,
+  "suites": [
+    {
+      "suite": "Udm.ShellFolderTaskTests",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 11
+    },
+    {
+      "suite": "Udm.CompletionCountdownTests",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 20
+    }
+  ],
+  "outputs": [
+    {
+      "path": "<build>\\new-normal-control-attempt-03\\release-native\\Udm.ShellFolderTaskTests.exe",
+      "sha256": "A4E20AEAD172973D2ACB011AC3E2E4F3A0B4B0B7A20EB0E4C843F92E59E65935",
+      "kind": "backend",
+      "mode": "new-normal",
+      "name": "Udm.ShellFolderTaskTests.exe"
+    },
+    {
+      "path": "<build>\\new-normal-control-attempt-03\\release-native\\Udm.CompletionCountdownTests.exe",
+      "sha256": "A8533C1038310D49CEC171F86027E066745B3015D52F2C82BC82BC3B4F60490E",
+      "kind": "backend",
+      "mode": "new-normal",
+      "name": "Udm.CompletionCountdownTests.exe"
+    }
+  ]
+}

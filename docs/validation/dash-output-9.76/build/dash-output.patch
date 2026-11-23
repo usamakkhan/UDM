@@ -1,0 +1,119 @@
+--- native/DashManifest.cpp@9.75
++++ native/DashManifest.cpp@9.76
+@@ -1355,18 +1355,18 @@
+   if(captions){if(!saved["subtitleCues"].is_number_integer()||num(saved,"subtitleCues",-1)<0||num(saved,"subtitleCues")>100000)return {};result.subtitleCues=num(saved,"subtitleCues");}
+   if(session&&saved["inputs"].size()!=((result.subtitleCues&&*result.subtitleCues>0)?2U:1U))return {};
+   for(const auto& input:saved["inputs"]){if(!input.is_string())return {};const auto file=input.get<std::string>();if(!std::regex_match(file,std::regex(session?(result.temporaryInputs.empty()?"session-[0-9a-f]{32}\\.ffconcat":"session-[0-9a-f]{32}\\.vtt"):"assembly-[0-9a-f]{32}-[0-2]\\.bin")))return {};result.temporaryInputs.push_back(folder/wide(file));}
+-  Handle source(CreateFileW(result.staging.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!source)return {};
++  auto verifiedSource=PublicationSourcePin::openRead(result.staging);if(!verifiedSource)return {};auto source=verifiedSource->duplicate();if(!source)return {};
+   BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&size)||size.QuadPart!=result.bytes||dashAssemblyHash(source.h,cancel)!=result.sha256)return {};
+-  cancel.check();result.reused=true;return result;
++  cancel.check();result.reused=true;result.verifiedSource=std::move(verifiedSource);return result;
+  }catch(const Cancelled&){throw;}catch(const std::exception&){cancel.check();return {};}
+ }
+ void checkpointDashAssembly(const fs::path& folder,const Json& index,DashRecordingOutput& output,const Cancel& cancel,bool session=false){
+  cancel.check();dashAssemblyReceiptPaths(folder,session);
+  if(output.staging.parent_path()!=folder||!std::regex_match(utf8(output.staging.filename().wstring()),std::regex("assembled-[0-9a-f]{32}\\.(mp4|m4a)")))throw std::runtime_error("Invalid DASH assembly checkpoint path.");
+  // Flush the completed media before committing a receipt that claims it exists.
+- Handle source(CreateFileW(output.staging.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));if(!source)throw std::runtime_error("Cannot lock the DASH assembly checkpoint.");
++ auto verifiedSource=PublicationSourcePin::openReadWrite(output.staging);if(!verifiedSource)throw std::runtime_error("Cannot lock the DASH assembly checkpoint.");auto source=verifiedSource->duplicate();if(!source)throw std::runtime_error("Cannot retain the DASH assembly checkpoint.");
+  BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&size)||size.QuadPart!=output.bytes||!FlushFileBuffers(source.h))throw std::runtime_error("DASH assembled output changed before checkpoint.");
+- output.sha256=dashAssemblyHash(source.h,cancel);if(!yes(index,"sealed"))return;
++ output.sha256=dashAssemblyHash(source.h,cancel);output.verifiedSource=std::move(verifiedSource);if(!yes(index,"sealed"))return;
+  Json inputs=Json::array();for(const auto& input:output.temporaryInputs){if(input.parent_path()!=folder)throw std::runtime_error("Invalid DASH assembly input checkpoint.");inputs.push_back(utf8(input.filename().wstring()));}
+  Json saved={{"schema",1},{"recording",dashAssemblyRecordingDigest(index,session)},{"file",utf8(output.staging.filename().wstring())},{"bytes",output.bytes},{"sha256",output.sha256},{"start",output.start},{"duration",output.duration},{"inputs",inputs}};
+  if(output.subtitleCues)saved["subtitleCues"]=*output.subtitleCues;
+@@ -1476,8 +1476,10 @@
+   }
+   if(captionTracks!=(captions?1U:0U))throw std::runtime_error("DASH session is missing its selected caption track.");
+   auto output=assembleDashRecordingIndex(partFolder,mediaIndex,cancel);if(std::abs(output.start-begin)>0.000001||std::abs(output.duration-(end-begin))>0.000001)throw std::runtime_error("DASH session assembly interval changed.");
+-  Handle locked(CreateFileW(output.staging.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!locked)throw std::runtime_error("Cannot lock a DASH session Period output.");
+-  BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER size{};if(!GetFileInformationByHandle(locked.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(locked.h,&size)||size.QuadPart!=output.bytes||dashAssemblyHash(locked.h,cancel)!=lower(output.sha256))throw std::runtime_error("DASH session Period output changed.");
++  if(!output.verifiedSource)throw std::runtime_error("DASH session Period lost its verified source.");
++  Handle locked(CreateFileW(output.staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_SEQUENTIAL_SCAN,nullptr));if(!locked)throw std::runtime_error("Cannot lock a DASH session Period output.");
++  auto referenceFile=output.verifiedSource->duplicate();CreatedStagingFile proof;output.verifiedSource->captureCleanup(proof);
++  LARGE_INTEGER size{};if(!referenceFile||!proof.matches(locked.h,referenceFile.h)||!GetFileSizeEx(locked.h,&size)||size.QuadPart!=output.bytes)throw std::runtime_error("DASH session Period output changed.");
+   const auto probe=dashAssemblyProbe(output.staging,cancel);const auto signature=dashAssemblyStreams(probe,selection,false);dashAssemblyDuration(probe,output.duration);if(p==0)reference=signature;else if(reference!=signature)throw std::runtime_error("DASH session codec configuration or time base changed; stream-copy joining is unavailable.");
+   const auto relative=(name=="."?std::string{}:name+"/")+utf8(output.staging.filename().wstring());list<<"file '"<<relative<<"'\nduration "<<std::fixed<<std::setprecision(9)<<output.duration<<"\n";
+   locks.push_back(std::move(locked));outputs.push_back(std::move(output));lastEnd=absoluteEnd;lastPeriodStart=periodStart;lastPeriodEnd=duration?std::optional<double>{periodStart+*duration}:std::optional<double>{};
+--- native/DashManifest.hpp@9.75
++++ native/DashManifest.hpp@9.76
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "PublicationSourcePin.hpp"
+ 
+ namespace udm {
+ // Decode one retained MP4 WebVTT track, clip to a Period-local capture interval,
+@@ -239,6 +240,8 @@
+  std::vector<fs::path> temporaryInputs;
+  i64 bytes=0;std::string sha256;double start=0,duration=0;bool reused=false;
+  std::optional<i64> subtitleCues;// Present for a selected caption track, including a verified silent interval.
++ // Own the actual hashed object until its publication handoff, including reuse.
++ std::shared_ptr<PublicationSourcePin> verifiedSource;
+ };
+ // Produces a verified local staging file; sealed recordings can reuse an atomic
+ // output receipt after binding/size/hash checks. The job owns publication/cleanup.
+--- native/LiveDash.hpp@9.75
++++ native/LiveDash.hpp@9.76
+@@ -301,7 +301,9 @@
+                 {"Binding",session.publicationBinding()},{"MergeSeconds",live.mergeSeconds}};
+   if(output.subtitleCues)receipt["SubtitleCueCount"]=*output.subtitleCues;
+   manager.waitForPrefetchConfirmation(job,*cancel,output.bytes,receipt);
+-  publishMediaOutput(manager,job,output.staging,output.sha256,cancel,&live);markZone(job->target());
++  if(!output.verifiedSource)throw std::runtime_error("The live DASH output lost its verification ownership. Its recording was retained.");
++  auto publicationSource=output.verifiedSource->clone();if(!publicationSource)throw std::runtime_error("Cannot retain the live DASH output for publication.");output.verifiedSource.reset();
++  publishMediaOutput(manager,job,output.staging,output.sha256,cancel,&live,std::move(publicationSource));markZone(job->target());
+  }catch(...){if(receiving)updateProgress();Lock lock(manager.mutex);if(receiving)job->data["TransferSeconds"]=previousTransfer+std::chrono::duration<double>(Clock::now()-started).count();job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();throw;}
+  {Lock lock(manager.mutex);job->data["ElapsedSeconds"]=previousElapsed+std::chrono::duration<double>(Clock::now()-started).count();}
+ }
+--- native/PublicationSourcePin.hpp@9.75
++++ native/PublicationSourcePin.hpp@9.76
+@@ -12,8 +12,9 @@
+ public:
+  PublicationSourcePin(const PublicationSourcePin&)=delete;
+  const Json& capturedIdentity()const noexcept{return stable;}
+- static std::unique_ptr<PublicationSourcePin> open(const fs::path& path){return openMode(path,false);}
+- static std::unique_ptr<PublicationSourcePin> openRead(const fs::path& path){return openMode(path,true);}
++ static std::unique_ptr<PublicationSourcePin> open(const fs::path& path){return openMode(path,false,true);}
++ static std::unique_ptr<PublicationSourcePin> openRead(const fs::path& path){return openMode(path,true,false);}
++ static std::unique_ptr<PublicationSourcePin> openReadWrite(const fs::path& path){return openMode(path,true,true);}
+  // Acquire the publication reader while the verified reader still excludes
+  // writes. Identity comes from that actual object, never a caller snapshot.
+  static std::unique_ptr<PublicationSourcePin> openReadFrom(const fs::path& path,HANDLE verified){
+@@ -30,10 +31,10 @@
+  bool matches(const CreatedStagingFile& proof,HANDLE reference=INVALID_HANDLE_VALUE)const noexcept{return proof.matches(file.h,reference);}
+  std::string hash(const std::function<void()>& checkpoint={})const{if(!readAccess)throw std::runtime_error("The publication source is not readable.");return fileHash(file.h,checkpoint);}
+ private:
+- static std::unique_ptr<PublicationSourcePin> openMode(const fs::path& path,bool read){
++ static std::unique_ptr<PublicationSourcePin> openMode(const fs::path& path,bool read,bool write){
+   auto pin=std::unique_ptr<PublicationSourcePin>(new PublicationSourcePin);
+-  pin->readAccess=read;pin->writeAccess=!read;
+-  pin->file.h=CreateFileW(path.c_str(),(read?GENERIC_READ:GENERIC_WRITE)|FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);
++  pin->readAccess=read;pin->writeAccess=write;
++  pin->file.h=CreateFileW(path.c_str(),(read?GENERIC_READ:0)|(write?GENERIC_WRITE:0)|FILE_READ_ATTRIBUTES,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);
+   if(!pin->file||!GetFileInformationByHandle(pin->file.h,&pin->information)||(pin->information.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))return {};
+   const auto size=(static_cast<uint64_t>(pin->information.nFileSizeHigh)<<32)|pin->information.nFileSizeLow;
+   if(size>static_cast<uint64_t>(std::numeric_limits<i64>::max()))return {};
+@@ -42,6 +43,11 @@
+   return pin;
+  }
+ public:
++ std::unique_ptr<PublicationSourcePin> clone()const{
++  auto copy=std::unique_ptr<PublicationSourcePin>(new PublicationSourcePin);HANDLE handle=INVALID_HANDLE_VALUE;
++  if(!DuplicateHandle(GetCurrentProcess(),file.h,GetCurrentProcess(),&handle,0,FALSE,DUPLICATE_SAME_ACCESS))return {};
++  copy->file.h=handle;copy->information=information;copy->stable=stable;copy->readAccess=readAccess;copy->writeAccess=writeAccess;return copy;
++ }
+  Handle duplicate()const{
+   HANDLE value=INVALID_HANDLE_VALUE;if(!DuplicateHandle(GetCurrentProcess(),file.h,GetCurrentProcess(),&value,0,FALSE,DUPLICATE_SAME_ACCESS))return Handle{};return Handle(value);
+  }
+--- native/MediaPublication.hpp@9.75
++++ native/MediaPublication.hpp@9.76
+@@ -111,6 +111,7 @@
+   if(ownsStaging){stageProof=sourceProof;publicationPin=std::move(sourcePin);}
+   else{
+    auto input=sourcePin->duplicate();if(!input)throw std::runtime_error("Cannot read the verified media file.");
++   LARGE_INTEGER beginning{};if(!SetFilePointerEx(input.h,beginning,nullptr,FILE_BEGIN))throw std::runtime_error("Cannot seek the verified media file for copying.");
+    {
+     Handle output(CreateFileW(staging.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,CREATE_NEW,FILE_FLAG_SEQUENTIAL_SCAN,nullptr));
+     if(!output)throw std::runtime_error("Cannot prepare media in the selected folder.");

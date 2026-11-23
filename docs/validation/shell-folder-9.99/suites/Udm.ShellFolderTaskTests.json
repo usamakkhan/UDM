@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "name": "A fresh handoff has no active worker",
+      "passed": true
+    },
+    {
+      "name": "Relative targets are rejected before worker admission",
+      "passed": true
+    },
+    {
+      "name": "A held Windows handoff leaves its caller free on a different thread",
+      "passed": true
+    },
+    {
+      "name": "An active handoff rejects replacement instead of losing accepted work",
+      "passed": true
+    },
+    {
+      "name": "The owned Unicode destination survives until joined acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Finish joins the notifier and retires exactly one result",
+      "passed": true
+    },
+    {
+      "name": "Shell failure is returned despite a failed notification",
+      "passed": true
+    },
+    {
+      "name": "Unknown launcher failures still produce an acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Successful completion is pollable without a blocking wait",
+      "passed": true
+    },
+    {
+      "name": "Take joins and retires the successful worker",
+      "passed": true
+    },
+    {
+      "name": "Retired results cannot be taken twice",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

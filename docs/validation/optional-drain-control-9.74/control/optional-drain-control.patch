@@ -1,0 +1,11 @@
+--- native/Transfer.cpp@9.74
++++ control/Transfer.cpp
+@@ -1122,7 +1122,7 @@
+    }
+    job->workers.assign(connections,Worker{});for(int i=0;i<connections;++i)job->workers[i].number=i+1;
+   }
+-  if(size>=1048576&&(connections==1||(connections<=8&&size>=32*1048576LL&&size<=64*1048576LL))&&fixedVolume(dataFile))try{
++  if(connections==1&&size>=1048576&&fixedVolume(dataFile))try{
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(prefinishFile){
+     const auto dataFlush=connections>1?dataOnlyFlush():nullptr;

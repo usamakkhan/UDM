@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "mode": "single",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 4194304,
+      "requests": 1
+    },
+    {
+      "mode": "split",
+      "passed": true,
+      "checks": 5,
+      "bytesSent": 69703302,
+      "requests": 9
+    },
+    {
+      "mode": "resume",
+      "passed": true,
+      "checks": 7,
+      "bytesSent": 73271042,
+      "requests": 20
+    }
+  ],
+  "scope": "Engine correctness and wire accounting; no GUI, IDM, or speed acceptance."
+}

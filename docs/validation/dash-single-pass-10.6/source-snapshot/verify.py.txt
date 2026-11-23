@@ -1,0 +1,50 @@
+from pathlib import Path
+import json,hashlib,subprocess,shutil,os
+repo=Path('D:/UDM');area=Path(__file__).parent
+read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+b=read(area/'build-result.json');assert b['passed'] and b['version']=='10.6' and len(b['coreObjects'])==42 and len(b['outputs'])==17
+assert all(sha(repo/e['path'])==e['sha256'] for e in b['sources'])
+assert all(sha(Path(e['path']))==e['sha256'] for e in b['coreObjects']+b['outputs'])
+old={Path(e['path']).stem:e['sha256'] for e in read(repo/'.media-cache/dash-discovery-roles-build-10.5/build-result.json')['coreObjects']}
+changed=[Path(e['path']).stem for e in b['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert set(changed)=={'DashManifest','Bridge'}
+assert b['coreObjects']==read(area/'early-core-record.json')['coreObjects']
+rb=read(area/'recovery-build.json');assert rb['passed'] and rb['sourceSha256']==sha(repo/'benchmarks/speed/dash_single_pass_recovery.cpp');assert all(sha(Path(e['path']))==e['sha256'] for e in rb['outputs'])
+products=[e for e in b['outputs'] if e['name'] in ['UDM','Udm.NativeHost','Udm.Monitor','Udm.SetupHelper','Udm.Automation']]
+for e in products:
+ cmd="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',cmd],text=True).strip()=='10.6'
+assert len(products)==5
+assert all(read(repo/'browser'/f/'manifest.json')['version']=='0.73.70' for f in ['chromium','firefox'])
+pins=read(area/'runtime-source-pins.json');assert all(sha(repo/e['path'])==e['sha256'] for e in pins)
+suites=[]
+for folder in ['pending-qualified','qualified-DashMetadataTransportTests','qualified-GaplessAacTailTests','qualified-RetiredDashBoundaryTests']:
+ r=read(area/folder/'results.json');assert r['passed'] and all(e['passed'] for e in r['checks']);suites.append(dict(name=folder,checks=len(r['checks'])))
+assert sum(e['checks'] for e in suites)==107
+single=read(area/'single-pass-qualified/qualification.json');assert single['passed'] and single['cases']==17 and len(single['recovery'])==3
+assert single['actorSha256'].upper()==next(e['sha256'] for e in b['outputs'] if e['name']=='Udm.DashSinglePassWorkflow')
+assert single['recipeSha256'].upper()==sha(repo/'tests/dash-single-pass.native-live.py')
+for e in single['results']:assert e['result']['passed']==e['expectedSuccess'] and all(c['passed'] for c in e['result']['checks'])
+for e in single['recovery']:assert e['result']['passed'] and all(c['passed'] for c in e['result']['checks'])
+wire=read(area/'wire-qualified/qualification.json');assert wire['passed'] and wire['requestCount']==14 and all(c['passed'] for c in wire['actorChecks'])
+cancel=read(area/'cancellation-qualified/qualification.json');assert cancel['passed'] and cancel['headersStillHeldWhenActorExited'] and cancel['result']['transportReleased']
+for folder,count in [('freshness-qualified',6),('freshness-clock-final',2)]:
+ q=read(area/folder/'qualification.json');assert q['passed'] and q['cases']==count
+q=read(area/'continuous-final/qualification.json');assert q['passed'];terminal=read(area/'continuous-final/candidate-terminal.json');assert terminal['allActorsTerminal'] and terminal['originClosed'] and len(terminal['records'])==7
+published=[]
+for e in terminal['records']:
+ r=read(Path(e['result']));assert e['exitCode']==(1 if e['case'] in ['gap','short-audio','changed'] else 0)
+ if e['exitCode']==0:
+  assert r['passed'] and r['publications']==1 and r['assembledBytes']==r['finalBytes'];files=[p for p in (area/'continuous-final/downloads'/e['case']).rglob('*') if p.is_file()];assert len(files)==1;f=files[0];assert f.stat().st_size==r['finalBytes'] and sha(f).lower()==r['sha256'];published.append(dict(case=e['case'],bytes=f.stat().st_size,sha256=sha(f)))
+ else:assert r['publications']==0
+for folder in ['direct-qualified','caption-qualified']:
+ assert read(area/folder/'passed.json')['passed']
+ for e in read(area/folder/'results.json')['records']:
+  publication=e['publication'];f=Path(publication['path']);assert f.stat().st_size==publication['bytes'] and sha(f).lower()==publication['sha256'] and e['sizeAndHashExact']
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files']
+assert all(sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256'] for e in protected)
+size=0
+for folder,dirs,files in os.walk(area):
+ dirs[:]=[d for d in dirs if not (Path(folder)/d).is_junction() and not (Path(folder)/d).is_symlink()];size+=sum((Path(folder)/f).stat().st_size for f in files)
+assert size<700*1024**2
+free=shutil.disk_usage(area).free;storageGate=free>1024**3
+result=dict(passed=storageGate,technicalChecksPassed=True,storageReservePassed=storageGate,requiredFreeBytes=1024**3,observedFreeBytes=free,releaseQualified=False,version='10.6',sourceExtensionVersion='0.73.70',verifiedSourceInputs=len(b['sources']),verifiedCoreObjects=42,changedCoreObjects=changed,mainBuildExecutables=17,supplementalRecoveryExecutables=2,products=products,backendSuites=suites,distinctBackendAssertions=107,singlePassWorkflowCases=17,recoveryCases=3,wireRequests=14,freshnessControls=8,continuousCases=7,publishedFiles=published,directMediaCases=5,captionSessionCases=4,hostProtectedFilesUnchanged=len(protected),ownedBuildAreaBytesExcludingSharedTools=size,initialClockFailureRetained=True,initialContinuousSetupFailureRetained=True,initialRecoveryCompileFailureRetained=True,allFinalRuntimesPassed=True,installed=False,installerCreated=False,actualBrowserTest=False,actualIdmComparison=False,fullIdmParityProven=False,temporaryFilesExplicitlyDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

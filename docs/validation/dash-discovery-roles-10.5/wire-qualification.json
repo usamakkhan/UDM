@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "actorChecks": [
+    {
+      "name": "Actual manifest uses the recording-owned transport",
+      "passed": true
+    },
+    {
+      "name": "A repeated manifest remains bound to its source document",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP clock synchronization succeeds through sanitized preferences",
+      "passed": true
+    },
+    {
+      "name": "Identical sanitized settings still isolate clock and discovery roles",
+      "passed": true
+    },
+    {
+      "name": "HEAD fallback preserves the same strong version and full resource length",
+      "passed": true
+    },
+    {
+      "name": "Repeated version discovery retains its role-owned session",
+      "passed": true
+    },
+    {
+      "name": "Cross-origin redirect completes with its independently scoped transport",
+      "passed": true
+    },
+    {
+      "name": "Fully closed requests do not retain the recording's pool after scope exit",
+      "passed": true
+    }
+  ],
+  "requestCount": 14,
+  "rotatedCookieReused": true,
+  "nextRecordingCookieIsolated": true,
+  "authorizationIsRequestLocal": true,
+  "clockAndRedirectCredentialsIsolated": true,
+  "recipeSha256": "7efe41336655ea50e5351300627f434bfd2bed1681988655c695cbb6ae62d451",
+  "actorSha256": "2b22ca2f21d0e71806af9c1e7fca1036de3fc861ace632317120e9e3fcd85c95"
+}

@@ -1,0 +1,425 @@
+{
+  "case": "sequential-4m",
+  "passed": true,
+  "componentOnly": true,
+  "normalProductSpeedComparison": false,
+  "normalSourceVersion": "9.77",
+  "bytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "normalExit": true,
+  "bodyToActorExitMs": 100.51015000499319,
+  "actorLifetimeIncludesFixtureReceiptWrite": true,
+  "explicitPostExitFlush": {
+    "openSeconds": 7.860000187065452e-05,
+    "flushSeconds": 0.022253499999351334,
+    "closeSeconds": 5.889999738428742e-05
+  },
+  "finishPhases": {
+    "AdvisoryHashOverlap": false,
+    "CleanupPartsOrder": "after-final-publication-checkpoint",
+    "CommitStrategy": "prepared-final-checkpoint",
+    "ConfirmationWait": 1.7e-06,
+    "Content": 0.0003994,
+    "DirectSize": 2.11e-05,
+    "FlushPublished": 0.042076499999999996,
+    "Hash": 7.32e-05,
+    "HashMode": "inline",
+    "PrePublicationMetadata": 0.0043014,
+    "PrefetchReceipt": 1.1e-06,
+    "PreparedTransferFinalizeSeconds": 0.0059343,
+    "PublishedCloseError": 0,
+    "PublishedFileClose": 4.5e-06,
+    "PublishedFileFlush": 0.0419289,
+    "PublishedFileOpen": 0.0001431,
+    "PublishedFlushError": 0,
+    "PublishedNormalizeError": 0,
+    "PublishedOpenError": 0,
+    "PublishedSparseNormalize": 0.0,
+    "PublishedWriteAccess": "write-only",
+    "PublishedWritebackJoin": 1.52e-05,
+    "PublishedWritebackOverlap": true,
+    "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+    "Settle": 0.000904,
+    "SettleDestination": 0.0006746,
+    "SettleLengthQuery": 7.94e-05,
+    "SettleLockWait": 0.0,
+    "SettleRecoveryCheck": 0.0001222,
+    "SettleSnapshot": 1.2e-05,
+    "SettleValidateFolder": 5e-07,
+    "SettleWriterReopen": false,
+    "SparseNormalization": "not-needed",
+    "StageMode": "hard-link",
+    "StageOutput": 0.0002606,
+    "TimingScope": "through-prepared-transfer-handoff",
+    "Unsparse": 0.0
+  },
+  "publicationPhases": {
+    "IntentOperations": {
+      "bytes-written": 0.0001498,
+      "directories-ready": 0.0008913,
+      "publish": 0.0010733,
+      "temporary-flushed": 0.0408024,
+      "temporary-opened": 0.0002161
+    },
+    "JoinWriteback": 3.98e-05,
+    "PrepareIntent": 0.0003549,
+    "PrepareSource": 9.7e-06,
+    "Rename": 0.0010201,
+    "TimingScope": "through-rename-before-final-catalog-save",
+    "VerifyIdentity": 7.9e-06,
+    "WriteIntent": 0.0431377
+  },
+  "origin": {
+    "connections": 1,
+    "rejected_connections": 0,
+    "requests": 1,
+    "bytes_sent": 4194304,
+    "drops": 0,
+    "peak_concurrent": 1,
+    "detail": [
+      {
+        "id": 1,
+        "opened": 0.2968115999974543,
+        "closed": 2.320570099996985,
+        "peer_port": 52570,
+        "rejected": false,
+        "bytes": 4194304,
+        "requests": [
+          {
+            "at": 0.29728959999920335,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": null,
+            "status": 200,
+            "start": 0,
+            "end": 4194303,
+            "sent": 4194304,
+            "finished": 2.3187189000018407,
+            "outcome": "complete",
+            "headers_sent": 0.317997899997863,
+            "first_body_sent": 0.35004340000159573,
+            "last_body_sent": 2.3187158000000636
+          }
+        ],
+        "drops": 0,
+        "rate": 2097152,
+        "drop_after": 0
+      }
+    ]
+  },
+  "trace": {
+    "events": [
+      {
+        "stage": "actor-manager-begin",
+        "thread": 31472,
+        "counter": 468530892614,
+        "finished": 468530892618,
+        "afterLastOriginByteMs": -2157.7754500103765
+      },
+      {
+        "stage": "actor-manager-end",
+        "thread": 31472,
+        "counter": 468532088993,
+        "finished": 468532088993,
+        "afterLastOriginByteMs": -2038.1375500073773
+      },
+      {
+        "stage": "fixed-volume-begin",
+        "thread": 1444,
+        "counter": 468532475950,
+        "finished": 468532475952,
+        "afterLastOriginByteMs": -1999.4418500064057
+      },
+      {
+        "stage": "volume-path-begin",
+        "thread": 1444,
+        "counter": 468532475975,
+        "finished": 468532475976,
+        "afterLastOriginByteMs": -1999.4393500091974
+      },
+      {
+        "stage": "volume-path-end",
+        "thread": 1444,
+        "counter": 468532500013,
+        "finished": 468532500016,
+        "afterLastOriginByteMs": -1997.0355500045116
+      },
+      {
+        "stage": "drive-type-begin",
+        "thread": 1444,
+        "counter": 468532500017,
+        "finished": 468532500018,
+        "afterLastOriginByteMs": -1997.0351500087418
+      },
+      {
+        "stage": "drive-type-end",
+        "thread": 1444,
+        "counter": 468532500028,
+        "finished": 468532500029,
+        "afterLastOriginByteMs": -1997.0340500076418
+      },
+      {
+        "stage": "fixed-volume-end",
+        "thread": 1444,
+        "counter": 468532500034,
+        "finished": 468532500035,
+        "afterLastOriginByteMs": -1997.033450010349
+      },
+      {
+        "stage": "posthash-validation-begin",
+        "thread": 1444,
+        "counter": 468552503444,
+        "finished": 468552503445,
+        "afterLastOriginByteMs": 3.307549995952286
+      },
+      {
+        "stage": "posthash-validation-end",
+        "thread": 1444,
+        "counter": 468552503477,
+        "finished": 468552503478,
+        "afterLastOriginByteMs": 3.3108499919762835
+      },
+      {
+        "stage": "stage-output-begin",
+        "thread": 1444,
+        "counter": 468552503478,
+        "finished": 468552503479,
+        "afterLastOriginByteMs": 3.310949992737733
+      },
+      {
+        "stage": "stage-output-end",
+        "thread": 1444,
+        "counter": 468552506089,
+        "finished": 468552506090,
+        "afterLastOriginByteMs": 3.572049994545523
+      },
+      {
+        "stage": "final-eligibility-begin",
+        "thread": 1444,
+        "counter": 468552506092,
+        "finished": 468552506092,
+        "afterLastOriginByteMs": 3.5723499895539135
+      },
+      {
+        "stage": "fixed-volume-begin",
+        "thread": 1444,
+        "counter": 468552506117,
+        "finished": 468552506118,
+        "afterLastOriginByteMs": 3.5748499940382317
+      },
+      {
+        "stage": "volume-path-begin",
+        "thread": 1444,
+        "counter": 468552506142,
+        "finished": 468552506142,
+        "afterLastOriginByteMs": 3.5773499912465923
+      },
+      {
+        "stage": "volume-path-end",
+        "thread": 1444,
+        "counter": 468552530726,
+        "finished": 468552530730,
+        "afterLastOriginByteMs": 6.035749989678152
+      },
+      {
+        "stage": "drive-type-begin",
+        "thread": 1444,
+        "counter": 468552530733,
+        "finished": 468552530734,
+        "afterLastOriginByteMs": 6.036449995008297
+      },
+      {
+        "stage": "drive-type-end",
+        "thread": 1444,
+        "counter": 468552530746,
+        "finished": 468552530747,
+        "afterLastOriginByteMs": 6.037749990355223
+      },
+      {
+        "stage": "fixed-volume-end",
+        "thread": 1444,
+        "counter": 468552530755,
+        "finished": 468552530755,
+        "afterLastOriginByteMs": 6.03864998993231
+      },
+      {
+        "stage": "final-eligibility-end",
+        "thread": 1444,
+        "counter": 468552530757,
+        "finished": 468552530759,
+        "afterLastOriginByteMs": 6.0388499914552085
+      },
+      {
+        "stage": "advisory-setup-begin",
+        "thread": 1444,
+        "counter": 468552530759,
+        "finished": 468552530759,
+        "afterLastOriginByteMs": 6.039049992978107
+      },
+      {
+        "stage": "advisory-setup-end",
+        "thread": 1444,
+        "counter": 468552530781,
+        "finished": 468552530782,
+        "afterLastOriginByteMs": 6.041249995178077
+      },
+      {
+        "stage": "finish-snapshot-begin",
+        "thread": 1444,
+        "counter": 468552530927,
+        "finished": 468552530928,
+        "afterLastOriginByteMs": 6.055849989934359
+      },
+      {
+        "stage": "finish-snapshot-end",
+        "thread": 1444,
+        "counter": 468552530998,
+        "finished": 468552530998,
+        "afterLastOriginByteMs": 6.062949993065558
+      },
+      {
+        "stage": "mark-zone-begin",
+        "thread": 1444,
+        "counter": 468552531002,
+        "finished": 468552531002,
+        "afterLastOriginByteMs": 6.063349996111356
+      },
+      {
+        "stage": "mark-zone-end",
+        "thread": 1444,
+        "counter": 468552546392,
+        "finished": 468552546394,
+        "afterLastOriginByteMs": 7.602349993248936
+      },
+      {
+        "stage": "actor-stop-begin",
+        "thread": 31472,
+        "counter": 468553437662,
+        "finished": 468553437663,
+        "afterLastOriginByteMs": 96.72934999252902
+      },
+      {
+        "stage": "actor-stop-end",
+        "thread": 31472,
+        "counter": 468553444077,
+        "finished": 468553444078,
+        "afterLastOriginByteMs": 97.37084999505896
+      },
+      {
+        "stage": "actor-terminal",
+        "thread": 31472,
+        "counter": 468553449661,
+        "finished": 468553449662,
+        "afterLastOriginByteMs": 97.92924999055685
+      }
+    ],
+    "spans": [
+      {
+        "stage": "actor-manager",
+        "thread": 31472,
+        "durationMs": 119.6379,
+        "startMs": -2157.7754500103765,
+        "endMs": -2038.1375500073773
+      },
+      {
+        "stage": "volume-path",
+        "thread": 1444,
+        "durationMs": 2.4038000000000004,
+        "startMs": -1999.4393500091974,
+        "endMs": -1997.0355500045116
+      },
+      {
+        "stage": "drive-type",
+        "thread": 1444,
+        "durationMs": 0.0011,
+        "startMs": -1997.0351500087418,
+        "endMs": -1997.0340500076418
+      },
+      {
+        "stage": "fixed-volume",
+        "thread": 1444,
+        "durationMs": 2.4084000000000003,
+        "startMs": -1999.4418500064057,
+        "endMs": -1997.033450010349
+      },
+      {
+        "stage": "posthash-validation",
+        "thread": 1444,
+        "durationMs": 0.0033,
+        "startMs": 3.307549995952286,
+        "endMs": 3.3108499919762835
+      },
+      {
+        "stage": "stage-output",
+        "thread": 1444,
+        "durationMs": 0.2611,
+        "startMs": 3.310949992737733,
+        "endMs": 3.572049994545523
+      },
+      {
+        "stage": "volume-path",
+        "thread": 1444,
+        "durationMs": 2.4583999999999997,
+        "startMs": 3.5773499912465923,
+        "endMs": 6.035749989678152
+      },
+      {
+        "stage": "drive-type",
+        "thread": 1444,
+        "durationMs": 0.0013,
+        "startMs": 6.036449995008297,
+        "endMs": 6.037749990355223
+      },
+      {
+        "stage": "fixed-volume",
+        "thread": 1444,
+        "durationMs": 2.4638,
+        "startMs": 3.5748499940382317,
+        "endMs": 6.03864998993231
+      },
+      {
+        "stage": "final-eligibility",
+        "thread": 1444,
+        "durationMs": 2.4665,
+        "startMs": 3.5723499895539135,
+        "endMs": 6.0388499914552085
+      },
+      {
+        "stage": "advisory-setup",
+        "thread": 1444,
+        "durationMs": 0.0022,
+        "startMs": 6.039049992978107,
+        "endMs": 6.041249995178077
+      },
+      {
+        "stage": "finish-snapshot",
+        "thread": 1444,
+        "durationMs": 0.0070999999999999995,
+        "startMs": 6.055849989934359,
+        "endMs": 6.062949993065558
+      },
+      {
+        "stage": "mark-zone",
+        "thread": 1444,
+        "durationMs": 1.539,
+        "startMs": 6.063349996111356,
+        "endMs": 7.602349993248936
+      },
+      {
+        "stage": "actor-stop",
+        "thread": 31472,
+        "durationMs": 0.6415000000000001,
+        "startMs": 96.72934999252902,
+        "endMs": 97.37084999505896
+      }
+    ],
+    "dropped": 0,
+    "qpcMappingBoundSeconds": 1.2749998859362677e-05
+  },
+  "losslessTrace": {
+    "rawSha256": "3057D17BBE566D7D082D9839EE671499BAB1C8029B8EB368F7E21ED247710212",
+    "headerHex": "55444d5549543100010000000008000080969800000000008c7200001d0000000000000040000000210f9e166d00000069b31614d579dd010000000000000000",
+    "usedRecordsHex": "01000000f07a0000460f9e166d0000004a0f9e166d0000006163746f722d6d616e616765722d626567696e00000000000000000000000000000000000000000001000000f07a0000a150b0166d000000a150b0166d0000006163746f722d6d616e616765722d656e64000000000000000000000000000000000000000000000001000000a40500002e38b6166d0000003038b6166d00000066697865642d766f6c756d652d626567696e0000000000000000000000000000000000000000000001000000a40500004738b6166d0000004838b6166d000000766f6c756d652d706174682d626567696e000000000000000000000000000000000000000000000001000000a40500002d96b6166d0000003096b6166d000000766f6c756d652d706174682d656e640000000000000000000000000000000000000000000000000001000000a40500003196b6166d0000003296b6166d00000064726976652d747970652d626567696e00000000000000000000000000000000000000000000000001000000a40500003c96b6166d0000003d96b6166d00000064726976652d747970652d656e64000000000000000000000000000000000000000000000000000001000000a40500004296b6166d0000004396b6166d00000066697865642d766f6c756d652d656e6400000000000000000000000000000000000000000000000001000000a405000094d0e7176d00000095d0e7176d000000706f7374686173682d76616c69646174696f6e2d626567696e00000000000000000000000000000001000000a4050000b5d0e7176d000000b6d0e7176d000000706f7374686173682d76616c69646174696f6e2d656e64000000000000000000000000000000000001000000a4050000b6d0e7176d000000b7d0e7176d00000073746167652d6f75747075742d626567696e0000000000000000000000000000000000000000000001000000a4050000e9dae7176d000000eadae7176d00000073746167652d6f75747075742d656e6400000000000000000000000000000000000000000000000001000000a4050000ecdae7176d000000ecdae7176d00000066696e616c2d656c69676962696c6974792d626567696e000000000000000000000000000000000001000000a405000005dbe7176d00000006dbe7176d00000066697865642d766f6c756d652d626567696e0000000000000000000000000000000000000000000001000000a40500001edbe7176d0000001edbe7176d000000766f6c756d652d706174682d626567696e000000000000000000000000000000000000000000000001000000a4050000263be8176d0000002a3be8176d000000766f6c756d652d706174682d656e640000000000000000000000000000000000000000000000000001000000a40500002d3be8176d0000002e3be8176d00000064726976652d747970652d626567696e00000000000000000000000000000000000000000000000001000000a40500003a3be8176d0000003b3be8176d00000064726976652d747970652d656e64000000000000000000000000000000000000000000000000000001000000a4050000433be8176d000000433be8176d00000066697865642d766f6c756d652d656e6400000000000000000000000000000000000000000000000001000000a4050000453be8176d000000473be8176d00000066696e616c2d656c69676962696c6974792d656e640000000000000000000000000000000000000001000000a4050000473be8176d000000473be8176d00000061647669736f72792d73657475702d626567696e000000000000000000000000000000000000000001000000a40500005d3be8176d0000005e3be8176d00000061647669736f72792d73657475702d656e640000000000000000000000000000000000000000000001000000a4050000ef3be8176d000000f03be8176d00000066696e6973682d736e617073686f742d626567696e0000000000000000000000000000000000000001000000a4050000363ce8176d000000363ce8176d00000066696e6973682d736e617073686f742d656e6400000000000000000000000000000000000000000001000000a40500003a3ce8176d0000003a3ce8176d0000006d61726b2d7a6f6e652d626567696e0000000000000000000000000000000000000000000000000001000000a40500005878e8176d0000005a78e8176d0000006d61726b2d7a6f6e652d656e6400000000000000000000000000000000000000000000000000000001000000f07a0000de11f6176d000000df11f6176d0000006163746f722d73746f702d626567696e00000000000000000000000000000000000000000000000001000000f07a0000ed2af6176d000000ee2af6176d0000006163746f722d73746f702d656e64000000000000000000000000000000000000000000000000000001000000f07a0000bd40f6176d000000be40f6176d0000006163746f722d7465726d696e616c0000000000000000000000000000000000000000000000000000",
+    "zeroTailBytes": 129216
+  }
+}

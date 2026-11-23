@@ -1,0 +1,713 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Modal CLI fixture begins with its final catalog saved",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for modal release and is posted after retained completion work",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Modal CLI fixture begins with its final catalog saved",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for modal release and is posted after retained completion work",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "A stale enable wake observes the current disabled owner",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "A stale enable wake observes the current disabled owner",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Modal CLI fixture begins with its final catalog saved",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "Actual File Properties is observed and cancelled normally",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for modal release and is posted after retained completion work",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Modal CLI fixture begins with its final catalog saved",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for modal release and is posted after retained completion work",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "A stale enable wake observes the current disabled owner",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "The ready-notification scenario begins with an owned deferred intent",
+      "passed": true
+    },
+    {
+      "name": "A stale enable wake observes the current disabled owner",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closes through its normal handler",
+      "passed": true
+    },
+    {
+      "name": "The isolated capture owner retains main-window ownership until destruction",
+      "passed": true
+    },
+    {
+      "name": "The actual modal disables its main owner and restores it on closing",
+      "passed": true
+    },
+    {
+      "name": "Disabled ownership preserves completion intent or inbox events without a popup or CLI Exit",
+      "passed": true
+    },
+    {
+      "name": "An actual re-enable wake resumes exactly one allowed completion without a main timer tick",
+      "passed": true
+    },
+    {
+      "name": "Re-enabling the capture owner keeps the main download list hidden",
+      "passed": true
+    },
+    {
+      "name": "A subsequent admission poll cannot replay a modal-deferred completion",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-cli",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-cli",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 2,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-reenable",
+      "prematureCliExit": false
+    },
+    {
+      "dark": false,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 2,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-reenable",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-ready",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-inbox",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 0,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "properties-cli",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 1,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-cli",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 2,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "modal-reenable",
+      "prematureCliExit": false
+    },
+    {
+      "dark": true,
+      "dialogsWhileOwnerDisabled": 0,
+      "disabledWakesDelivered": 2,
+      "intentOrEventRetainedWhileDisabled": true,
+      "mode": "capture-reenable",
+      "prematureCliExit": false
+    }
+  ],
+  "passed": true
+}

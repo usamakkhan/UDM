@@ -1,0 +1,40 @@
+from pathlib import Path
+import json,hashlib,subprocess,os,shutil
+repo=Path('D:/UDM');area=Path(__file__).parent;read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+build=read(area/'build-result.json');assert build['passed'] and build['version']=='10.5' and len(build['coreObjects'])==42 and len(build['outputs'])==15
+assert all(sha(repo/e['path'])==e['sha256'] for e in build['sources']);assert all(sha(Path(e['path']))==e['sha256'] for e in build['coreObjects']+build['outputs'])
+prior=read(repo/'.media-cache/dash-metadata-transport-build-10.4/build-result.json');old={Path(e['path']).stem:e['sha256'] for e in prior['coreObjects']};changed=[Path(e['path']).stem for e in build['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert set(changed)=={'Adaptive','Bridge','DashManifest'}
+products=[e for e in build['outputs'] if e['name'] in ['UDM','Udm.NativeHost','Udm.Monitor','Udm.SetupHelper','Udm.Automation']];assert len(products)==5
+for e in products:
+ cmd="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',cmd],text=True).strip()=='10.5'
+assert all(read(repo/'browser'/f/'manifest.json')['version']=='0.73.69' for f in ['chromium','firefox'])
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files']
+for e in protected:assert sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256']
+suites=[]
+for name in ['DashMetadataTransportTests','GaplessAacTailTests','RetiredDashBoundaryTests']:
+ r=read(area/('qualified-'+name)/'results.json');assert r['passed'] and all(e['passed'] for e in r['checks']);suites.append(dict(name=name,checks=len(r['checks']),passed=True))
+wire=read(area/'wire-qualified/qualification.json');assert wire['passed'] and all(e['passed'] for e in wire['actorChecks']) and wire['requestCount']==14 and all(wire[k] for k in ['rotatedCookieReused','nextRecordingCookieIsolated','authorizationIsRequestLocal','clockAndRedirectCredentialsIsolated'])
+assert wire['recipeSha256'].upper()==sha(repo/'tests/dash-metadata-transport.native-live.py')
+cancel=read(area/'cancellation-qualified/qualification.json');assert cancel['passed'] and cancel['headersStillHeldWhenActorExited'] and cancel['result']['transportReleased'] and cancel['result']['cancelToUnwindMs']<3000
+cancelActor=next(e for e in build['outputs'] if e['name']=='Udm.DashMetadataCancellation');assert cancel['actorSha256'].upper()==cancelActor['sha256'] and cancel['recipeSha256'].upper()==sha(repo/'tests/dash-metadata-cancellation.native-live.py');assert build['adaptiveHeaderDependencyRebuilt'] and build['initialCacheSelectionSuperseded']
+dependency=read(area/'adaptive-dependency.json');assert sha(Path(dependency['retainedPath']))==dependency['newSha256']
+for folder,count in [('freshness-qualified',6),('freshness-clock-qualified',2)]:
+ q=read(area/folder/'qualification.json');assert q['passed'] and q['cases']==count
+q=read(area/'continuous-qualified/qualification.json');assert q['passed'] and all(v for k,v in q.items() if k!='resumedBaseline')
+terminal=read(area/'continuous-qualified/candidate-terminal.json');assert terminal['allActorsTerminal'] and terminal['originClosed'] and len(terminal['records'])==7
+published=[]
+for e in terminal['records']:
+ assert e['exitCode']==(1 if e['case'] in ['gap','short-audio','changed'] else 0)
+ r=read(Path(e['result']))
+ if e['exitCode']==0:
+  assert r['passed'] and r['publications']==1 and r['assembledBytes']==r['finalBytes'];files=[p for p in (area/'continuous-qualified/downloads'/e['case']).rglob('*') if p.is_file()];assert len(files)==1;f=files[0];assert f.stat().st_size==r['finalBytes'] and sha(f).lower()==r['sha256'];published.append(dict(case=e['case'],bytes=f.stat().st_size,sha256=sha(f)))
+ else:assert r['publications']==0
+frozen=[]
+for version,folder in [('10.0','compact-native-build-10.0'),('10.1','gapless-aac-tail-build-10.1')]:
+ r=read(repo/'.media-cache'/folder/'build-result.json');assert all(sha(Path(e['path']))==e['sha256'] for e in r['coreObjects']);frozen.append(dict(version=version,verifiedCoreObjects=42))
+size=0
+for folder,dirs,files in os.walk(area):
+ dirs[:]=[d for d in dirs if not (Path(folder)/d).is_junction() and not (Path(folder)/d).is_symlink()];size+=sum((Path(folder)/f).stat().st_size for f in files)
+assert size<700*1024**2 and shutil.disk_usage(area).free>1024**3
+result=dict(passed=True,version='10.5',sourceExtensionVersion='0.73.69',verifiedSourceInputs=len(build['sources']),verifiedCoreObjects=42,changedCoreObjects=changed,verifiedBuildOutputs=15,adaptiveHeaderDependencyRebuilt=True,initialCacheSelectionSuperseded=True,products=products,backendSuites=suites,distinctBackendAssertions=sum(e['checks'] for e in suites),wireRequests=14,wireActorChecks=len(wire['actorChecks']),freshnessControls=8,fullContinuousRegressionPassed=True,continuousCases=7,publishedFiles=published,strictNegativeCases=3,heldResponseCancelToUnwindMs=cancel['result']['cancelToUnwindMs'],recordingCookieAndCredentialIsolationVerified=True,cacheCapacity=16,cacheKeyByteLimit=1048576,normalAndExceptionalScopeReleaseVerified=True,allCompilerInvocationsPassed=True,allQualifiedRuntimesPassed=True,runtimeQualificationAllPassed=True,hostProtectedFilesUnchanged=len(protected),frozenControlCoreSets=frozen,ownedBuildAreaBytesExcludingSharedTools=size,fullBuildEntrypointExecuted=False,installed=False,installerCreated=False,actualBrowserTest=False,actualIdmComparison=False,fullIdmParityProven=False,temporaryFilesExplicitlyDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

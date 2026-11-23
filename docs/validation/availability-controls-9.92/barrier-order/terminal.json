@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "label": "9.92-private-barrier-order-control",
+  "transfers": 15,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 84.198,
+        "baseline": 76.419,
+        "idm": 416.505
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          80.294,
+          80.177,
+          84.198,
+          86.549,
+          97.064
+        ],
+        "baseline": [
+          74.585,
+          76.419,
+          74.731,
+          85.177,
+          78.292
+        ],
+        "idm": [
+          445.072,
+          403.635,
+          410.077,
+          416.505,
+          426.122
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

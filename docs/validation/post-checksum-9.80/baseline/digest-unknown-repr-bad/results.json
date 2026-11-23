@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "name": "A checksum-bearing form reaches a terminal worker state",
+      "passed": true
+    },
+    {
+      "name": "A mismatched server checksum blocks form publication",
+      "passed": false
+    }
+  ],
+  "error": "A mismatched server checksum blocks form publication",
+  "observations": [
+    {
+      "error": "",
+      "published": true,
+      "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+      "route": "digest-unknown-repr-bad",
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Complete"
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "Resume completes: DASH selected Period disappeared before its end was known; retained coverage does not reach the next Period.",
+      "passed": false
+    }
+  ],
+  "error": "Resume completes: DASH selected Period disappeared before its end was known; retained coverage does not reach the next Period.",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": false,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "ownedJob": {
+    "Status": "Failed",
+    "Error": "DASH selected Period disappeared before its end was known; retained coverage does not reach the next Period.",
+    "Sha256": "",
+    "Size": -1,
+    "Received": 106375,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "TransferredBytes": 107909,
+    "AdaptiveMetadataBytes": 1534,
+    "TransferSeconds": 0.6053947000000001,
+    "ElapsedSeconds": 0.6053976,
+    "MediaPhase": "Paused"
+  }
+}

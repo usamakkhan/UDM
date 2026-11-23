@@ -1,0 +1,112 @@
+"""Parallel version admission and origin-scoped full-response redirects.
+
+Arbitrary owned bytes test resource storage only; complete-media decoding is a
+separate qualification. No installation or user-browser state is touched.
+"""
+from pathlib import Path
+import hashlib,http.server,json,os,subprocess,sys,threading
+root=Path(sys.argv[1]).resolve();actor=Path(sys.argv[2]).resolve()
+assert not root.exists();root.mkdir(parents=True)
+payload=bytes(range(256))*16;records=[];states={};cases=[];lock=threading.Lock()
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+actor_pin=sha(actor);recipe_pin=sha(Path(__file__))
+class State:
+    def __init__(self,parallel=False):
+        self.phase='initial';self.parallel=parallel;self.barrier=threading.Barrier(3) if parallel else None
+        self.active=0;self.peak=0;self.requests=0;self.version=None
+def manifest(case):
+    state=states[case];tracks=[('v','video/mp4','avc1.42c01e',' width="160" height="90"')]
+    if state.parallel:tracks += [('a','audio/mp4','mp4a.40.2',' audioSamplingRate="48000"'),('s','application/mp4','wvtt',' lang="en"')]
+    text=f'<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" id="owned-{case}" type="static" mediaPresentationDuration="PT1S"><Period id="p" duration="PT1S">'
+    for key,mime,codec,attrs in tracks:
+        bases=f'<BaseURL>{origin_a}/{case}/bad/</BaseURL><BaseURL>{origin_b}/{case}/good/</BaseURL>' if case=='alternatives' else ''
+        source='segment.bin' if bases else f'/{case}/source'
+        text+=f'<AdaptationSet id="{key}" mimeType="{mime}" codecs="{codec}"{attrs}><Representation id="r" bandwidth="100000">{bases}<SegmentList timescale="1000" duration="1000"><SegmentURL media="{source}"/></SegmentList></Representation></AdaptationSet>'
+    return (text+'</Period></MPD>').encode()
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self,*args):pass
+    def do_GET(self):
+        case,leaf=self.path.strip('/').split('/',1);state=states[case]
+        row=dict(origin=self.server.label,path=self.path,authorization=self.headers.get('Authorization'),cookie=self.headers.get('Cookie'),range=self.headers.get('Range'),ifMatch=self.headers.get('If-Match'),acceptEncoding=self.headers.get('Accept-Encoding'))
+        with lock:records.append(row)
+        if leaf=='manifest.mpd':
+            data=manifest(case);self.send_response(200);self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data);return
+        if leaf=='bad/segment.bin':self.send_response(404);self.send_header('Content-Length','0');self.end_headers();return
+        if leaf=='source' and case.startswith('redirect-'):
+            self.send_response(302);self.send_header('Location',f'{origin_b}/{case}/object');self.send_header('Set-Cookie','fixture-a-redirect=do-not-forward; Path=/');self.send_header('Content-Length','0');self.end_headers();return
+        with lock:
+            state.active+=1;state.peak=max(state.peak,state.active);state.requests+=1;ordinal=state.requests
+        try:
+            if state.parallel and state.phase=='initial':state.barrier.wait(timeout=12)
+            tag='"one"';size=len(payload)
+            if state.phase=='restore':tag=state.version['etag'];size=state.version['total']
+            elif case=='etag-conflict' and ordinal>1:tag='"two"'
+            elif case=='length-conflict' and ordinal>1:size*=2
+            data=(payload*2)[:size];row.update(etag=tag,total=size)
+            if self.headers.get('If-Match') and self.headers['If-Match']!=tag:
+                self.send_response(412);self.send_header('Content-Length','0');self.end_headers();return
+            self.send_response(200);self.send_header('Content-Length',str(size));self.send_header('ETag',tag);self.send_header('Content-Type','video/mp4');self.send_header('Connection','close');self.end_headers()
+            try:self.wfile.write(data);row['serverBodyBytesWritten']=len(data)
+            except (ConnectionError,OSError):row['peerClosed']=True
+        finally:
+            with lock:state.active-=1
+            self.close_connection=True
+servers=[]
+for label in ['a','b']:
+    server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler);server.label=label;servers.append(server);threading.Thread(target=server.serve_forever,daemon=True).start()
+origin_a,origin_b=[f'http://127.0.0.1:{s.server_port}' for s in servers]
+env=os.environ.copy();env.update(TEMP=str(root),TMP=str(root))
+def invoke(case,mode='capture',success=True,headers=False,foreign=False):
+    config={'workers':3 if states[case].parallel else 1}
+    if headers:
+        own={'Authorization':'Bearer owned-origin-a','Cookie':'fixture=a'}
+        config.update(origins={origin_a:own},manifestHeaders={'Authorization':own['Authorization'],'Cookie':own['Cookie']})
+        if foreign:config['origins'][origin_b]={'Authorization':'Bearer owned-origin-b','Cookie':'fixture=b'}
+    path=root/(case+'-config.json');path.write_text(json.dumps(config),encoding='utf-8');folder=root/case;start=len(records)
+    p=subprocess.run([str(actor),str(folder),f'{origin_a}/{case}/manifest.mpd',mode,str(path)],env=env,capture_output=True,timeout=35)
+    (root/(case+'-'+mode+'-'+str(start)+'.log')).write_bytes(p.stdout+p.stderr)
+    r=json.loads((folder/(mode+'-results.json')).read_text(encoding='utf-8-sig'))
+    assert p.returncode==(0 if success else 1) and r['passed']==success,r
+    return r,records[start:]
+def verify_physical(case,result):
+    resources=[]
+    for track in result['index']['tracks']:
+        for entry in track['segments'].values():
+            assert entry['committed'];resource=entry['resource'];f=root/case/resource['file'];expected=(payload*2)[:resource['bytes']]
+            assert f.read_bytes()==expected and sha(f)==resource['sha256'];resources.append(dict(bytes=resource['bytes'],sha256=resource['sha256'],version=entry['resourceVersion']))
+    return resources
+try:
+    for case in ['same-version','etag-conflict','length-conflict']:
+        state=states[case]=State(True)
+        first,wire=invoke(case,success=case=='same-version')
+        assert state.peak==3 and state.active==0,(case,state.peak,state.active)
+        media=[r for r in wire if not r['path'].endswith('.mpd')];assert len(media)==3 and all(r['range'] is None and r['ifMatch'] is None for r in media)
+        if case=='same-version':
+            physical=verify_physical(case,first);assert first['accountedBytes']==3*len(payload)
+            cases.append(dict(case=case,passed=True,peakActiveResourceRequests=state.peak,resources=physical));continue
+        assert 'different versions of a shared resource' in first['error'] or 'conflicting saved versions' in first['error'],first
+        recovered,_=invoke(case,'reconcile');entries=[t['segments']['1'] for t in recovered['index']['tracks']]
+        known=[e['resourceVersion'] for e in entries if e.get('resourceVersion') is not None];assert known and all(v==known[0] for v in known)
+        accepted={e['resource']['file']:sha(root/case/e['resource']['file']) for e in entries if e['committed']}
+        remaining=sum(not e['committed'] for e in entries);state.phase='restore';state.version=known[0]
+        restored,wire=invoke(case);media=[r for r in wire if not r['path'].endswith('.mpd')]
+        assert len(media)==remaining and all(r['ifMatch']==state.version['etag'] for r in media)
+        physical=verify_physical(case,restored);assert all(sha(root/case/f)==digest for f,digest in accepted.items())
+        cases.append(dict(case=case,passed=True,initialError=first['error'],peakActiveResourceRequests=state.peak,acceptedResourcesBeforeRetry=len(accepted),retryResourceRequests=len(media),pinnedVersion=state.version,resources=physical))
+    for case in ['redirect-anonymous','redirect-scoped','alternatives']:
+        state=states[case]=State();foreign=case!='redirect-anonymous'
+        cancelled,initial=invoke(case,'cancel',headers=True,foreign=foreign)
+        assert not list((root/case).glob('*.receipt.json'))
+        restored,retry=invoke(case,headers=True,foreign=foreign);physical=verify_physical(case,restored)
+        for rows,retried in [(initial,False),(retry,True)]:
+            a=[r for r in rows if r['origin']=='a' and not r['path'].endswith('.mpd')];b=[r for r in rows if r['origin']=='b']
+            assert len(a)==len(b)==1,(case,rows)
+            assert a[0]['authorization']=='Bearer owned-origin-a' and a[0]['cookie']=='fixture=a' and a[0]['range'] is None and a[0]['ifMatch'] is None
+            assert b[0]['authorization']==('Bearer owned-origin-b' if foreign else None) and b[0]['cookie']==('fixture=b' if foreign else None)
+            assert b[0]['range'] is None and b[0]['ifMatch']==('"one"' if retried else None) and all(v.strip()=='identity' for v in b[0]['acceptEncoding'].split(','))
+        cases.append(dict(case=case,passed=True,credentialsScoped=True,validatorOnlyAtPinnedOrigin=True,resources=physical))
+    assert sha(actor)==actor_pin and sha(Path(__file__))==recipe_pin
+    (root/'qualification.json').write_text(json.dumps(dict(passed=True,cases=cases,actorSha256=actor_pin,recipeSha256=recipe_pin,maxWorkersTested=3,requestHeaderIdentityCanonical=all(r['acceptEncoding']=='identity' for r in records),completeMediaDecodeTest=False,installed=False),indent=2),encoding='utf-8')
+finally:
+    for server in servers:server.shutdown();server.server_close()
+    (root/'requests.json').write_text(json.dumps(records,indent=2),encoding='utf-8')

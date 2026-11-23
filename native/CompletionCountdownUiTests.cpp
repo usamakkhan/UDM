@@ -1,0 +1,50 @@
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+#include <condition_variable>
+namespace udm {
+static fs::path output;static Json checks=Json::array(),observations=Json::array();static std::string failure;
+static void check(bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);}
+struct CountdownHold {
+ std::mutex mutex;std::condition_variable wake;bool released=false;std::atomic_bool held=false,expired=false;std::thread worker;
+ explicit CountdownHold(Manager& manager){worker=std::thread([this,&manager]{Lock modelLock(manager.mutex);held=true;std::unique_lock waiting(mutex);expired=!wake.wait_for(waiting,std::chrono::seconds(4),[&]{return released;});});while(!held)Sleep(1);}
+ void open(){{std::lock_guard lock(mutex);released=true;}wake.notify_all();if(worker.joinable())worker.join();}
+ ~CountdownHold(){open();}
+};
+class ToolbarComponentTest {
+ static inline MainWindow* current=nullptr;static inline std::unique_ptr<CountdownHold> hold;static inline unsigned phase=0;static inline ULONGLONG begun=0;static inline HWND dialog=nullptr;static inline std::string callbackError;
+ static HWND findButton(HWND parent){for(auto child=GetWindow(parent,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){wchar_t text[128]{};GetWindowTextW(child,text,128);if(!wcscmp(text,L"Cancel action"))return child;}return nullptr;}
+ static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){
+  try{
+   if(!dialog)EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM)->BOOL{wchar_t title[128]{};GetWindowTextW(window,title,128);if(!wcscmp(title,L"Download completion action")){dialog=window;return FALSE;}return TRUE;},0);
+   if(!dialog)return;
+   if(phase==0){hold=std::make_unique<CountdownHold>(current->manager);begun=GetTickCount64();phase=1;return;}
+   if(phase!=1||GetTickCount64()-begun<1100)return;
+   const auto started=GetTickCount64();SendMessageW(dialog,WM_TIMER,Form::pulseTimer,0);const auto elapsed=GetTickCount64()-started;
+   check(elapsed<200&&hold->held&&!hold->expired,"Expired countdown pulse returns before a held model writer releases");
+   check(IsWindow(dialog)&&IsWindowEnabled(findButton(dialog)),"A busy eligibility read keeps the expired countdown cancellable");
+   RedrawWindow(dialog,nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW);check(IsWindow(dialog)&&!hold->expired,"Countdown repaint does not wait for the model");
+   phase=2;const auto closing=GetTickCount64();SendMessageW(findButton(dialog),BM_CLICK,0,0);check(GetTickCount64()-closing<200&&!hold->expired,"The Cancel click returns before the held writer releases");
+   observations.push_back({{"pulseMs",elapsed},{"cancelMs",GetTickCount64()-closing},{"pastDeadlineMs",GetTickCount64()-begun},{"writerWatchdogExpired",hold->expired.load()}});
+  }catch(const std::exception& e){callbackError=e.what();if(dialog)PostMessageW(dialog,WM_CLOSE,0,0);if(hold)hold->open();phase=3;}
+ }
+public:static void run(MainWindow& frame,bool dark){
+  current=&frame;frame.modelMaintenance.stop();frame.modelMaintenance.restart();uiDark=dark;dialog=nullptr;phase=0;callbackError.clear();
+  auto job=frame.manager.add("https://example.invalid/countdown-ui","","owned.bin","Main queue",true);job->data["Status"]="Complete";frame.manager.save();Json spec={{"WaitForOthers",false},{"Action","None"},{"Actions",Json::array()},{"DelaySeconds",1}};
+  frame.fileActions.emplace_back(job,spec);
+  {CountdownHold writer(frame.manager);const auto started=GetTickCount64();frame.fileCompletionActions();check(GetTickCount64()-started<200&&frame.fileActions.size()==1&&!writer.expired,"Busy initial admission preserves the queued file action and returns promptly");}
+  auto timer=SetTimer(nullptr,0,10,tick);if(!timer)throw std::runtime_error("Cannot create owned countdown timer");
+  try{frame.fileCompletionActions();}catch(...){KillTimer(nullptr,timer);if(hold)hold->open();hold.reset();throw;}
+  KillTimer(nullptr,timer);if(callbackError.empty()){check(!IsWindow(dialog)&&hold&&hold->held&&!hold->expired,"The modal loop closes the window before the held writer releases");}if(hold)hold->open();hold.reset();frame.modelMaintenance.stop();frame.modelMaintenance.restart();
+  if(!callbackError.empty())throw std::runtime_error(callbackError);check(phase==2&&frame.fileActions.empty()&&!frame.handlingQueueAction,"Cancellation consumes the accepted action once and releases modal ownership");
+  check(!frame.manager.fileInfoDecisionPending,"Countdown cancellation owns no File Info decision");
+ }
+};
+class CountdownApplication:public CWinApp {
+ int result=1;
+public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);
+ try{if(!args||argc!=2)throw std::runtime_error("Pass fresh output");output=fs::absolute(args[1]);if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh output required");}fs::create_directories(output);
+  for(bool dark:{false,true}){Manager manager(output/(dark?L"dark":L"light"));auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8((manager.root/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ClipboardMonitor"]=false;prefs["CloseToTray"]=false;prefs["Sound"]=false;manager.setSettings(prefs);auto frame=new MainWindow(manager);m_pMainWnd=frame;frame->KillTimer(1);try{ToolbarComponentTest::run(*frame,dark);}catch(...){m_pMainWnd=nullptr;closeOwnedMainWindow(frame);throw;}m_pMainWnd=nullptr;closeOwnedMainWindow(frame);manager.stop();}result=0;
+ }catch(const std::exception& e){failure=e.what();}if(args)LocalFree(args);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"checks",checks},{"observations",observations},{"error",failure}}.dump(2),false);return FALSE;}
+ int ExitInstance()override{AfxOleTerm(FALSE);return result;}
+};CountdownApplication application;
+}

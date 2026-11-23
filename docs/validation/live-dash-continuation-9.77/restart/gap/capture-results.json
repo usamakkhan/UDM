@@ -1,0 +1,103 @@
+{
+  "checks": [
+    {
+      "name": "A verified one-second prefix is captured before pausing",
+      "passed": true
+    },
+    {
+      "name": "Pause preserves a nonpublished recording",
+      "passed": true
+    },
+    {
+      "name": "Actual saved resources retain the verified unsealed prefix",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": true,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": 1.0,
+  "retainedPeriodDuration": 1.0,
+  "savedJob": {
+    "AdaptiveCompletedSegments": 1,
+    "AdaptiveMetadataBytes": 770,
+    "AdaptiveTotalSegments": 1,
+    "Added": "/Date(1795275406923)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 0.533299,
+    "Error": "",
+    "ExpectedSha256": "",
+    "FileName": "restart.mp4",
+    "Folder": "<development>\\owned-live-dash-restart-9.76-C\\gap",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "GrabberImmediate": false,
+    "Id": "9a5c6e1829864bc6871ae9732a745ceb",
+    "LastAttempt": "/Date(1795275407106)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "LiveSaveReady": true,
+    "MediaFolder": "<repo>\\.media-cache\\owned-live-dash-restart-9.76\\gap\\temporary\\UDM-media\\9a5c6e1829864bc6871ae9732a745ceb",
+    "MediaPhase": "Waiting for live DASH segments",
+    "MediaPixelHeight": 360,
+    "PostAttempted": false,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "00F5217696D7A28FD8D0A2F581629D4C092275C78B0619C4ED3E809F058EDAA5",
+      "characters": 656
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "9A03268ABCB87567B6DABE7A7397A3D2F22D368DB155563419F32175DDCB899D",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "46306EF5A338C679101AE75B7F4BED34191ED5CFBB9353E0E8D0506FB7F64CB6",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "13AA1E5266FF958257195B957FB2235C5C1FB82F1A205AA30D8A5986E14BB8DB",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": true,
+    "QueueOrigin": false,
+    "Received": 2343,
+    "Segments": [],
+    "Sha256": "",
+    "Size": -1,
+    "Status": "Paused",
+    "SyncPending": false,
+    "TransferSeconds": 0.5332976,
+    "TransferredBytes": 3113,
+    "Url": "https://example.invalid/owned-restart",
+    "Video": null
+  }
+}

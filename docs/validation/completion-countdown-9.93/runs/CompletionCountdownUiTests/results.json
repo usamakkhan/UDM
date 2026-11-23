@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "name": "Busy initial admission preserves the queued file action and returns promptly",
+      "passed": true
+    },
+    {
+      "name": "Expired countdown pulse returns before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "A busy eligibility read keeps the expired countdown cancellable",
+      "passed": true
+    },
+    {
+      "name": "Countdown repaint does not wait for the model",
+      "passed": true
+    },
+    {
+      "name": "Cancel closes the countdown before the held writer releases",
+      "passed": false
+    }
+  ],
+  "error": "Cancel closes the countdown before the held writer releases",
+  "observations": [],
+  "passed": false
+}

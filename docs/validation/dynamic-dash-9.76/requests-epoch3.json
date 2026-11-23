@@ -1,0 +1,105 @@
+{
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/manifest.mpd",
+      "stage": 1,
+      "status": 200,
+      "range": null,
+      "bytes": 786
+    },
+    {
+      "method": "HEAD",
+      "path": "/p0/init.mp4",
+      "stage": 1,
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "method": "HEAD",
+      "path": "/p0/segment.m4s",
+      "stage": 1,
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    },
+    {
+      "method": "GET",
+      "path": "/p0/init.mp4",
+      "stage": 1,
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "method": "GET",
+      "path": "/p0/segment.m4s",
+      "stage": 1,
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    },
+    {
+      "method": "GET",
+      "path": "/manifest.mpd",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 1211
+    },
+    {
+      "method": "GET",
+      "path": "/manifest.mpd",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 1211
+    },
+    {
+      "method": "HEAD",
+      "path": "/p1/init.mp4",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "method": "HEAD",
+      "path": "/p1/segment.m4s",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    },
+    {
+      "method": "GET",
+      "path": "/p1/init.mp4",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "method": "GET",
+      "path": "/p1/segment.m4s",
+      "stage": 2,
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    },
+    {
+      "method": "GET",
+      "path": "/manifest.mpd",
+      "stage": 3,
+      "status": 200,
+      "range": null,
+      "bytes": 1012
+    }
+  ],
+  "state": {
+    "p0": true,
+    "p1": true
+  },
+  "originClosed": true
+}

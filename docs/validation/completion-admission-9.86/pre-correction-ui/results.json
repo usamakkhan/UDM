@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "fixture": "CompletionAdmissionUiTests",
+      "mode": "admission",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 70,
+      "result": "[repo]\\.media-cache\\owned-completion-admission-9.86-D-admission\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-admission-ui-9.86\\release-native\\Udm.CompletionAdmissionUiTests.exe",
+      "binarySha256": "4DAC4E3EA8525DD1D856785D628EBB48963F4B8AA2287E77BBEBEE997F8C630E",
+      "sourceSha256": "2198C81BE41014E30705E3A55C0D4BD615BCE4C5FBB211286D5B9181EA1DC519"
+    },
+    {
+      "fixture": "CompletionSuppressionUiTests",
+      "mode": "suppression",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 24,
+      "result": "[repo]\\.media-cache\\owned-completion-admission-9.86-D-suppression\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-admission-ui-9.86\\release-native\\Udm.CompletionSuppressionUiTests.exe",
+      "binarySha256": "8B4F81C6BB9FA3B284A75AD43E316343C90512A01C8C3C560A2796C85D9636DA",
+      "sourceSha256": "AD2FD0ED5235789AB55227C1D54A5278C3ECA6641C20032EA931E7078E9462B8"
+    },
+    {
+      "fixture": "CompletionActionContentionUiTests",
+      "mode": "contention",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 42,
+      "result": "[repo]\\.media-cache\\owned-completion-admission-9.86-D-contention\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-admission-ui-9.86\\release-native\\Udm.CompletionActionContentionUiTests.exe",
+      "binarySha256": "E035520E7667E767C66A637AF52741AE3EB9FBBC9AFD86593023DFD8E869F5E9",
+      "sourceSha256": "1D3DCEB30FEFC71CC1613770F522D7F1AF0EE2817A8FA2075D7082D0A765B2E8"
+    },
+    {
+      "fixture": "CompletionDialogUiTests",
+      "mode": "reference",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 274,
+      "result": "[repo]\\.media-cache\\owned-completion-admission-9.86-D-reference\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-admission-ui-9.86\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "binarySha256": "7026E48BD9CF8661C89DFCCC993E9E2C3EC87261FD3B77DA757421B39E5672A0",
+      "sourceSha256": "921D572C81B4EAC822038AEDA6BE3EC6851F80313E1D14F82D56C6B3B86432CE"
+    }
+  ]
+}

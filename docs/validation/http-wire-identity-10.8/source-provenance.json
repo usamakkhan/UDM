@@ -1,0 +1,108 @@
+{
+  "sources": [
+    {
+      "path": "native/Transfer.cpp",
+      "snapshot": "source-snapshot/native__Transfer.cpp.txt",
+      "sha256": "148BD38BE8A2FDAC0C9AB654F9A634F165E4123E717E6011865473EAC5AA5AFA"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "E4E7581194029B76DE9DE6CAAB95972109D11F1D68EEAAE9579401B9556A9A39"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "D5652C05AFFDDD845C62821E671B93BE89BD99BC1913528F90454AC308E675EE"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "6119D584F626FC033DBF7C4C9980A4ABB891F89BB8A6E3543A08800A64B02CBC"
+    },
+    {
+      "path": "benchmarks/speed/http_identity_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__http_identity_workflow.cpp.txt",
+      "sha256": "356B271149F12C227A6EAB6BE4158303D8273A3DE2A6D3B5E66B7DE6870B5B48"
+    },
+    {
+      "path": "tests/http-identity.native-live.py",
+      "snapshot": "source-snapshot/tests__http-identity.native-live.py.txt",
+      "sha256": "C6613C466D5CA9C0FA3679EA205AFD112056F72E093A87EB7510955389A8A5E9"
+    },
+    {
+      "path": "benchmarks/speed/dash_parallel_admission_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_parallel_admission_workflow.cpp.txt",
+      "sha256": "3F979A5279A3536CD9A7B6D7947F511387CC119E885C24BC9EA5E6FA1F5B6055"
+    },
+    {
+      "path": "tests/dash-parallel-admission.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-parallel-admission.native-live.py.txt",
+      "sha256": "9DEFA57356F0851BD74915DD90E345EBB75DE07AC0FE4B265301028C7903CB95"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "12B730320021BEB31DB5175AD06209EF829FD166F6E611BD90A245EF18026EB9"
+    },
+    {
+      "recipe": "build-control.py",
+      "snapshot": "source-snapshot/build-control.py.txt",
+      "sha256": "789296B158966D6AE4A039439C21B9A8E2F82CB3078CDDD11C3BC862CBB7C94C"
+    },
+    {
+      "recipe": "build-http-units.py",
+      "snapshot": "source-snapshot/build-http-units.py.txt",
+      "sha256": "EA5B8236CB91A2BC59F50A8BAFD2A5F2471B2DBB0369FB97D6C9DEB6E7B308D5"
+    },
+    {
+      "recipe": "build-alias.py",
+      "snapshot": "source-snapshot/build-alias.py.txt",
+      "sha256": "87511A4045BB933A4F667F0D4215662820F5ED1338D33DB6F486BCD1685BEBDF"
+    },
+    {
+      "recipe": "raw-validation.py",
+      "snapshot": "source-snapshot/raw-validation.py.txt",
+      "sha256": "6EBD7FC624B07FE221DBD2DF0C50BC318C55E783B37154A85FAE93E672690364"
+    },
+    {
+      "recipe": "media-validation.py",
+      "snapshot": "source-snapshot/media-validation.py.txt",
+      "sha256": "D4B78B6D3D1BC9B9A8B3909C38B4AC532B45D55258E0D00EA5B38A6C41E80849"
+    },
+    {
+      "recipe": "metadata-validation.py",
+      "snapshot": "source-snapshot/metadata-validation.py.txt",
+      "sha256": "9F3E7ADE28F5DB3B5289EF3E4565E1DB32E423E7767F713E1B52561A7D7C2CA9"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "F3EDB77333C0EDAFCCC6959A22979D8C4FFDAC74C5402A54FCCEB40E107628ED"
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "B0F599B522E565A58527FE049EE401D67FD9183E45560D434075D3ECFA869527"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "version": "10.7",
+      "snapshot": "source-snapshot/frozen-10.7-Transfer.cpp.txt",
+      "sha256": "48DD67932AF4DC4A00E19C6CA7CE840E147D80B864A0334E49C45493B7137DE3"
+    }
+  ],
+  "compiledSourcesUnchanged": true,
+  "runtimeRecipesUnchangedDuringFinalRuns": true,
+  "reusedCoreCount": 40,
+  "rebuiltCoreNames": [
+    "Transfer",
+    "Bridge"
+  ],
+  "frozenWireControlUsesCurrentActorWithComplete10_7Core": true,
+  "pilotFailuresRetained": true,
+  "finalTechnicalChecksPassed": true,
+  "buildVolumeReservePassed": true,
+  "workspaceReservePassed": false,
+  "releaseQualified": false
+}

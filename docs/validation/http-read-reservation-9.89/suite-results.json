@@ -1,0 +1,61 @@
+{
+  "passed": true,
+  "checks": 116,
+  "suites": [
+    {
+      "suite": "HttpReadReservationTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "4A7E1684093263BC14F6A555D5289FBA74654C54A938900919DC3AB87778DC5F",
+      "result": "<build>\\runs\\HttpReadReservationTests\\results.json"
+    },
+    {
+      "suite": "StagingAdmissionTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 12,
+      "binarySha256": "26F0A5CC368EBEF94DA7A34565DD03E78CBFA2B0B9E8B973661E7335A501D63D",
+      "result": "<build>\\runs\\StagingAdmissionTests\\results.json"
+    },
+    {
+      "suite": "StagingLinkReuseTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 6,
+      "binarySha256": "9593C212C0941960C21442B4430A877E6F8E4D63C5FC6B906CC55727538F2182",
+      "result": "<build>\\runs\\StagingLinkReuseTests\\results.json"
+    },
+    {
+      "suite": "TransferStageCleanupTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 18,
+      "binarySha256": "BA5E4450DE408BE5F666D7ECB5FE50C0D6DE655148807F34A7711A11262A29F1",
+      "result": "<build>\\runs\\TransferStageCleanupTests\\results.json"
+    },
+    {
+      "suite": "PublicationAvailabilityTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 52,
+      "binarySha256": "FBAEA4C1445E69BCDB4C78043DFCB2C21DB8D92508B21FAB26B162BAAC24DAB4",
+      "result": "<build>\\runs\\PublicationAvailabilityTests\\results.json"
+    },
+    {
+      "suite": "PreparedCleanupTests",
+      "drive": "C",
+      "passed": true,
+      "checks": 14,
+      "binarySha256": "3F02A02579C43AAFA86A140B01C5D86C14EB064BED992D724FBDE23C85CC7D33",
+      "result": "<build>\\runs\\PreparedCleanupTests\\results.json"
+    }
+  ],
+  "metadataCorrection": {
+    "originalDriveLabel": "D",
+    "actualRunVolume": "C",
+    "assertionsRerun": false,
+    "binaryBytesChanged": false,
+    "reason": "The new build and fixtures are intentionally on C: because D: was nearly full."
+  }
+}

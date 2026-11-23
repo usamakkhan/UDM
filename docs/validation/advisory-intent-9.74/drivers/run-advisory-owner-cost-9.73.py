@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,subprocess,os,hashlib
+base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development';area=Path('<repo>/.media-cache/owned-advisory-owner-cost-9.73');area.mkdir(exist_ok=False);scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native)]
+source=root/'benchmarks/speed/advisory_owner_cost.cpp';exe=release/'advisory-owner-cost.exe';obj=out/'advisory-owner-cost.obj';args=[str(compiler),*common,str(source),'/Fo'+str(obj),'/Fe'+str(exe),'/link','bcrypt.lib','/SUBSYSTEM:CONSOLE','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA','/INCREMENTAL:NO','/MANIFEST:NO']
+inputs=dict(args=args,sources=[dict(path=str(p.relative_to(root)),sha256=sha(p)) for p in [source,native/'BodyBufferStorage.hpp',native/'StreamHash.hpp']],msvcFutureSha256=sha(includes[0]/'future'),noCoreObjectsLinked=True,noDiskPayload=True)
+(area/'inputs.json').write_text(json.dumps(inputs,indent=2),encoding='utf-8')
+with (area/'compile.log').open('w',encoding='utf-8') as log:p=subprocess.run(args,cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+assert p.returncode==0,(area/'compile.log').read_text()[-2500:]
+pattern=bytes((i*37+17)%256 for i in range(256));oracle=hashlib.sha256(pattern*(64*1048576//256)).hexdigest();destination=area/'cases';p=subprocess.run([str(exe),str(destination),oracle],cwd=root,env=env,timeout=90);data=json.loads((destination/'results.json').read_text());record=dict(passed=p.returncode==0 and data['passed'],checks=len(data['checks']),binarySha256=sha(exe),sourceSha256=sha(source),oracleSha256=oracle,bodyBytes=64*1048576,sourceVersionUnchanged='9.73');(area/'terminal.json').write_text(json.dumps(record,indent=2),encoding='utf-8');assert record['passed'],data;print(json.dumps(record,indent=2))

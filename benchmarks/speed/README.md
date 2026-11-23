@@ -347,3 +347,92 @@ The subsequent [real MFC-app I/O observation](../../docs/app-io-observation-8.65
 ## Metadata write-through research on 9.64
 
 `intent_write_through_probe.cpp` measures cached, buffered write-through and aligned unbuffered metadata transactions. `catalog_padding_reuse_probe.cpp` verifies exact physical catalog text and counts writes through stop/destruction. `write_through_recovery_probe.cpp` terminates an owned seed process at publication boundaries and verifies recovery in a fresh process. These are diagnostic fixtures, not production policy. The aligned prototype failed the all-pairs speed gate. See [results and preserved experimental patches](../../docs/metadata-write-through-investigation-9.64.md).
+
+## Copied ordinary-transfer acceptance on 9.68
+
+`transfer_copy_success.cpp` runs an owned 128 KiB loopback HTTP download with separate fresh output/catalog and temporary-data roots. Its arguments are two new absolute folders on different volumes, output first and temporary data second. It checks real copy mode, exact final bytes/hash, absence of stale staging and saved completion. The native `TransferStageCleanupTests` fixture takes a new test root and an optional new temporary-data root on another volume; it tests actual failed publication before handoff. See [recorded qualification and control corrections](../../docs/transfer-stage-cleanup-9.68.md).
+
+## Publication ownership probes (9.71)
+
+`pinned_publication_scope.cpp` exercises real Manager single-use source handoff binding. `legacy_cleanup_identity.cpp` is standalone: compile it without Core objects because its Win32 query wrappers belong to that translation unit only. It forces the 128-bit identity query unsupported and checks real fallback handles, including retention when no live reference remains. These are correctness probes, not throughput measurements or qualification on a legacy filesystem. See [records and limitations](../../docs/relocation-ownership-9.71.md).
+
+## Advisory/intent overlap candidate 9.73
+
+The normal-product comparison uses an explicitly recorded derivation of `compare-completion.py` selecting 9.73 and frozen 9.71 only, alternating order and performing the same post-exit output flush. It does not read/change IDM settings or include IDM runs. All eighteen transfers verify, but the all-pairs no-regression gate fails; do not treat it as an installation-ready speed fix. The native `AdvisoryPublicationTests` fixture independently holds optional hashing across durable intent and checks cancellation, required-digest rejection and recovery. [All samples, ownership and cleanup](../../docs/advisory-intent-9.73.md).
+
+## Completed task storage release (9.74)
+
+`advisory_owner_cost.cpp` links no Core objects and compares actual budgeted 64 MiB storage retained by completed MSVC async captures against explicit worker release. Weak references, competing reservations and an independent CNG/Python digest oracle qualify the lifetime observation. Its sixteen bodies remain in memory rather than becoming download payload files. The normal 9.74/9.73 matrix independently records worker release and actual owner retrieval. The full no-regression gate fails despite the targeted owner-wait reduction. [All samples and remaining gates](../../docs/advisory-buffer-release-9.74.md).
+
+## Read-only source-operation timeline validation
+
+`analyze_storage_timeline.py <owned-capture> <report.json>` reconstructs lossless rings, checks native endpoints and controlled launch/data/output paths, and summarizes file and shutdown intervals. The default accepts the four initial cases; `--case split-64m` selects the separately expanded drainage scope. It launches no target and deletes no file. Eight corrupted-evidence controls reject invalid records. [Collection, source deltas, limitations and cleanup](../../docs/storage-finishing-timeline-9.74.md).
+
+## Retained media ownership control
+
+`retained_media_handoff.cpp` links to the native core and accepts a fresh owned output root. It verifies healthy retained publication and replaces the source name at the real post-verification selection recheck. The current core must reject the replacement and preserve both files. The `UDM_BASELINE_MEDIA_HANDOFF` compile selector is fixture-only and requires the captured old header; it reproduces the 9.74 failure without altering production. [Build identity, old/new results and cleanup](../../docs/verified-media-handoff-9.75.md).
+
+## DASH output ownership control
+
+`dash_output_ownership.cpp` includes the actual DashManifest.cpp checkpoint/reuse implementation. Link the other 41 core objects, omitting DashManifest.obj. It accepts a fresh owned output root and optional destination on another volume. The optional UDM_DASH_BASELINE_SOURCE fixture selector includes the captured old source; production never uses it. Synthetic tiny payloads qualify ownership and copying, not complete live capture. [Results and real-media mechanics](../../docs/dash-output-ownership-9.76.md).
+
+## Real offline DASH assembly workflow
+
+`dash_assembly_workflow.cpp` links all 42 normal core objects. Its controller supplies a two-Period owned MPD, strong ETags/range handling, generated MP4 fragments and an origin-shutdown handshake. It accepts a fresh test root, MPD URL and separate-volume destination. Capture/seal uses the real native APIs, then assembly/cache reuse/publication run offline. Final decoded frames are compared against independent source-frame hashes. This is static assembly qualification, not the complete dynamic live controller. [Evidence and retained fixture corrections](../../docs/dash-assembly-acceptance-9.76.md).
+
+## Dynamic DASH worker workflow
+
+`dynamic_dash_workflow.cpp` links all 42 normal core objects and accepts fresh catalog/output root, controlled MPD URL and separate-volume destination. It uses real adaptive admission, public Resume and queue dispatch. The controller origin adds Period 2 only after Period 1 is fetched, then becomes static after Period 2. A source-frame oracle verifies the full final video. The 45-second owned deadline pauses/joins its own job on failure. [Fixture corrections, scope and evidence](../../docs/dynamic-dash-acceptance-9.76.md).
+
+## Live DASH restart and refresh-cancellation workflows
+
+`live_dash_restart_workflow.cpp` uses actual admission, public Resume/dispatch, pause, normal close and fresh-process catalog reload. It accepts capture/baseline/candidate stage, fresh owned root, MPD URL and separate-volume destination. The controller retires a completed old Period, verifies byte retention, and checks adjacent continuation versus incomplete/gap rejection. A still-visible variant exercises the prepared current state; an animated source gives twenty distinct frame hashes. `live_dash_finish_refresh.cpp` reopens an owned prefix and requests Save while fresh MPD headers remain withheld, checking cancellation and ten-frame output. Link all 42 current core objects. [Build identities, old/fixed controls, scope and cleanup](../../docs/live-dash-continuation-9.77.md).
+
+## Completion origin-range accounting
+
+`compare-completion.py` now saves `origin.json` in each owned run on success or failure. Analyze a retained comparison before cleanup with:
+
+```powershell
+python benchmarks/speed/analyze_range_accounting.py <owned-comparison-root> --output <report.json>
+python -m unittest discover -s benchmarks/speed -p test_range_accounting.py -v
+```
+
+The analyzer reconciles socket-send intervals, unique coverage, repeated bytes and holes with the saved harness totals. It does not infer client retention or completed server-handler teardown. Keep original availability/exit/flush endpoints and losing trials. [9.88 repeated split evidence](../../docs/range-accounting-9.88.md).
+
+## Current publication-clock analyzer
+
+`analyze_publication_clock.py <owned-or-exported-area> --output <report.json>` verifies the lossless trace hash, event endpoints, clock-derived spans and catalog-resolution/file-pin ordering. It separates file-pin close cost from preceding body/intent/catalog work and retains overlapping slow body writes. It reads records only; it never launches or cleans applications. [9.88 diagnostic and limits](../../docs/publication-clock-9.88.md).
+
+## Engine data-drain control analyzer
+
+`analyze_data_drain_control.py <owned-or-exported-area> --output <report.json>` verifies the ABBA binary identity, lossless trace/event/span records, physical versus suppressed callback counts, final-flush success and payload receipts. It reports total/availability/exit tradeoffs and cannot accept a production change from an engine-only control. [9.88 rejected suppression control](../../docs/data-drain-control-9.88.md).
+
+## Bounded HTTP work queue — 9.91
+
+`http_read_ownership.cpp` exercises real transfer workers, saved Complete/checksum state and joined shutdown with an independently hashed owned origin. `http-initial-range-plan.py` covers even/odd worker sets, bounded helper headers, unadvertised/ignored ranges, connection limits, a primary head start and Pause/Resume. `analyze_read_ownership.py` attributes surplus to boundary prefixes and delivery beyond final owners; it rejects unknown retry offsets or nonreconciling coverage. Six verifier tests pass. These are distinct from normal App/IDM availability/exit/post-exit-flush acceptance.
+
+[9.91 implementation and complete retained results](../../docs/initial-range-queue-9.91.md) · [Rejected 9.90 intermediate policy](../../docs/initial-range-plan-9.90.md). No cleanup is claimed: automatic approval review blocked fixture deletion.
+
+## Explicit catalog/output placement and rejected controls — 9.92
+
+`compare-completion.py --catalog-root <fresh-absolute-folder>` places synthetic UDM catalogs/cache independently of the owned output root. Existing, equal or nested roots are refused before app launch or IDM settings changes; the default layout remains unchanged. Results record actual catalog/output drives. `completion_layout.py` owns validation; five read-only tests cover it.
+
+`analyze_barrier_order.py <comparison-results.json> --output <report.json>` validates the private same-binary serial/overlap markers, binary identity and complete paired trials. It retains losses across all five endpoints and never admits production automatically. Six corruption/regression checks pass. It launches or deletes nothing.
+
+[57 transfers, mixed-volume coverage, all rejected proposals, exact old/new runner snapshots and limitations](../../docs/availability-controls-9.92.md). These research changes do not increment the application or extension version. Cleanup remains blocked by automatic approval review.
+
+## Read-only IDM part-writeback validation — 9.95 research
+
+`analyze_idm_io.py <owned-or-exported-trace-folder> --output <report.json>` validates one scoped single-part trace, exact body byte totals, native write envelopes, observer/target identity, writer close and the move to the exact owned output. It rejects incomplete/foreign/truncated observations and does not infer whole-app flush absence or physical-device completion. It rehashes a retained payload if present; exported records omit payloads and report that distinction. Optional derived `volume-roles.json` preserves drive labels after path sanitization. Eight corrupted/positive evidence tests pass. No process is launched or file deleted by the analyzer.
+
+[Fresh REA results, runtime collector qualification, corrected opaque-path scope, periodic-flush positive case and limitations](../../docs/idm-writeback-contract-9.95.md). These are research tools; native/source-browser versions remain 9.95 / 0.73.59.
+
+`analyze_request_gaps.py <qualified-phase-report.json>` partitions retained linked-request coverage and observed off-CPU overlap without launching a workload. See `docs/writeback-request-gaps-9.95.md`; uncovered request time never proves device idleness or a kernel cause.
+
+Secondary-window completion ownership is qualified separately from storage timing: `native/CompletionModalFenceTests.cpp` and `native/CompletionSecondaryModalUiTests.cpp` use owned windows/catalogs, no browser or network transfer. See `docs/completion-secondary-modal-9.96.md`.
+
+## DASH sample-boundary assembly probe — unchanged 10.0 products
+
+`dash_boundary_clipping.py --root <new absolute root> --tools <existing tools directory>` preserves a bounded three-chapter cut/concat experiment. Add `--continuous-source` for the continuous encoder control. It generates media and launches the explicitly supplied existing FFmpeg tools; it never installs or deletes files.
+
+`analyze_dash_boundary.py <report root> --require-media` only checks evidence and rehashes retained artifacts. Exported text-only evidence can be checked without that flag; absent media is reported rather than described as rehashed. Run `python benchmarks/speed/test_dash_boundary_analysis.py` for ten corruption/positive evidence tests. Neither script changes native admission or proves downloader/IDM parity. [Observed failures, native guard and implementation stages](../../docs/dash-boundary-research-10.0.md).

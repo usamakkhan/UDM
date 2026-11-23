@@ -1,0 +1,53 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "Frozen dispatch opens completion before applying the ready hide-to-tray decision",
+      "passed": true
+    },
+    {
+      "name": "Publication is retained while the catalog is held",
+      "passed": true
+    },
+    {
+      "name": "Close preparation returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A real owned close/readiness wake is queued",
+      "passed": true
+    },
+    {
+      "name": "Frozen dispatch opens completion before applying the ready hide-to-tray decision",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 1,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-timer"
+    },
+    {
+      "closePolicyStillPending": false,
+      "dark": false,
+      "dialogsAtFirstCloseDispatch": 1,
+      "layoutStillPending": false,
+      "mainVisibleAfterFirstDispatch": false,
+      "mode": "tray-wake"
+    }
+  ],
+  "passed": true
+}

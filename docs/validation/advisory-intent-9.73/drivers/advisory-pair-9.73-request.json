@@ -1,0 +1,26 @@
+{
+  "args": [
+    "<user>\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+    "<development>\\owned-pair-derived-9.73.py",
+    "--output-root",
+    "<repo>\\.media-cache\\owned-advisory-pair-9.73",
+    "--udm",
+    "<repo>\\.media-cache\\owned-advisory-intent-build-9.73\\release-native\\UDM.exe",
+    "--expected-udm-sha256",
+    "22D810746794199DA901CA59E91AB54C1CB9532BCEDCDF8C06A328C7AA0928D4",
+    "--baseline-udm",
+    "<repo>\\.media-cache\\owned-relocation-ownership-build-9.71\\release-native\\UDM.exe",
+    "--expected-baseline-sha256",
+    "FF649C95A1C9104FC1B97AA5E07179C2D3240DCB568A87483EF8D1EECBE25097",
+    "--label",
+    "Normal 9.73 value-owned advisory/intent overlap versus frozen 9.71; no IDM comparison",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "currentVersion": "9.73",
+  "baselineVersion": "9.71",
+  "noIdmComparison": true,
+  "noPrivateProductInstrumentation": true
+}

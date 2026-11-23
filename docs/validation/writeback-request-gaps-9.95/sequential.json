@@ -1,0 +1,93 @@
+{
+  "passed": true,
+  "sourceScope": "retained linked requests on measured flush thread",
+  "nativeFlushMs": 83.8555,
+  "linkedRequestUnionMs": 82.6586,
+  "noRetainedLinkedRequestMs": 1.1969,
+  "gapCount": 12,
+  "gapObservedOffCpuMs": 0.1855,
+  "largestGaps": [
+    {
+      "beginAfterNativeStartMs": 23.9277,
+      "durationMs": 0.1821,
+      "observedOffCpuMs": 0.0141,
+      "notClassifiedOffCpuMs": 0.168
+    },
+    {
+      "beginAfterNativeStartMs": 19.1139,
+      "durationMs": 0.172,
+      "observedOffCpuMs": 0.0125,
+      "notClassifiedOffCpuMs": 0.1595
+    },
+    {
+      "beginAfterNativeStartMs": 50.5024,
+      "durationMs": 0.1676,
+      "observedOffCpuMs": 0.0778,
+      "notClassifiedOffCpuMs": 0.0898
+    },
+    {
+      "beginAfterNativeStartMs": 0.0,
+      "durationMs": 0.1646,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.1646
+    },
+    {
+      "beginAfterNativeStartMs": 46.3464,
+      "durationMs": 0.1509,
+      "observedOffCpuMs": 0.0105,
+      "notClassifiedOffCpuMs": 0.1404
+    },
+    {
+      "beginAfterNativeStartMs": 3.9363,
+      "durationMs": 0.1218,
+      "observedOffCpuMs": 0.0107,
+      "notClassifiedOffCpuMs": 0.1111
+    },
+    {
+      "beginAfterNativeStartMs": 3.0344,
+      "durationMs": 0.0939,
+      "observedOffCpuMs": 0.0135,
+      "notClassifiedOffCpuMs": 0.0804
+    },
+    {
+      "beginAfterNativeStartMs": 0.5461,
+      "durationMs": 0.0418,
+      "observedOffCpuMs": 0.012,
+      "notClassifiedOffCpuMs": 0.0298
+    },
+    {
+      "beginAfterNativeStartMs": 50.8698,
+      "durationMs": 0.0347,
+      "observedOffCpuMs": 0.021,
+      "notClassifiedOffCpuMs": 0.0137
+    },
+    {
+      "beginAfterNativeStartMs": 83.8224,
+      "durationMs": 0.0331,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.0331
+    },
+    {
+      "beginAfterNativeStartMs": 0.7709,
+      "durationMs": 0.0292,
+      "observedOffCpuMs": 0.0134,
+      "notClassifiedOffCpuMs": 0.0158
+    },
+    {
+      "beginAfterNativeStartMs": 83.6284,
+      "durationMs": 0.0052,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.0052
+    }
+  ],
+  "rawCounterReplay": false,
+  "newCapture": false,
+  "payloadIntegrityReverified": false,
+  "deviceIdleProven": false,
+  "kernelCauseVerified": false,
+  "performanceComparison": false,
+  "productionChangeAdmitted": false,
+  "limitations": "Reanalysis of exported decimal milliseconds. Only requests retained by the source join, wholly inside the native call and attributed to its issuing thread, are included. Other threads, crossing requests, filesystem/filter work and complete device activity are outside this partition. Off-CPU overlap is observed scheduling evidence, not exclusive wait-cause or exact CPU accounting.",
+  "inputSha256": "6245C3202DE1693ACC3E3F92B66CA4B5456A740B7FCA8E0818CB48F9E4ED7DE8",
+  "inputPath": "docs/validation/scheduling-filter-8.65/app-sequential-phase.json"
+}

@@ -1,0 +1,205 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Completion command returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "No path or shell command is used before live validation",
+      "passed": true
+    },
+    {
+      "name": "Pending file action disables duplicates and leaves Close usable",
+      "passed": true
+    },
+    {
+      "name": "Queued duplicate notifications and timer paint do not wait for the writer",
+      "passed": true
+    },
+    {
+      "name": "The queued command resolves the latest Unicode destination after release",
+      "passed": true
+    },
+    {
+      "name": "Exactly one canonical file action runs and its missing-file dialog remains usable",
+      "passed": true
+    },
+    {
+      "name": "A later pulse cannot replay the completed command",
+      "passed": true
+    },
+    {
+      "name": "Completion command returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "No path or shell command is used before live validation",
+      "passed": true
+    },
+    {
+      "name": "Pending file action disables duplicates and leaves Close usable",
+      "passed": true
+    },
+    {
+      "name": "Queued duplicate notifications and timer paint do not wait for the writer",
+      "passed": true
+    },
+    {
+      "name": "The queued command resolves the latest Unicode destination after release",
+      "passed": true
+    },
+    {
+      "name": "Exactly one canonical file action runs and its missing-file dialog remains usable",
+      "passed": true
+    },
+    {
+      "name": "A later pulse cannot replay the completed command",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "A scan accepted during contention invalidates the queued Open instead of launching stale bytes",
+      "passed": true
+    },
+    {
+      "name": "Completion command returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "No path or shell command is used before live validation",
+      "passed": true
+    },
+    {
+      "name": "Pending file action disables duplicates and leaves Close usable",
+      "passed": true
+    },
+    {
+      "name": "Queued duplicate notifications and timer paint do not wait for the writer",
+      "passed": true
+    },
+    {
+      "name": "The queued command resolves the latest Unicode destination after release",
+      "passed": true
+    },
+    {
+      "name": "Exactly one canonical file action runs and its missing-file dialog remains usable",
+      "passed": true
+    },
+    {
+      "name": "A later pulse cannot replay the completed command",
+      "passed": true
+    },
+    {
+      "name": "Completion command returns while the model writer remains held",
+      "passed": true
+    },
+    {
+      "name": "No path or shell command is used before live validation",
+      "passed": true
+    },
+    {
+      "name": "Pending file action disables duplicates and leaves Close usable",
+      "passed": true
+    },
+    {
+      "name": "Queued duplicate notifications and timer paint do not wait for the writer",
+      "passed": true
+    },
+    {
+      "name": "The queued command resolves the latest Unicode destination after release",
+      "passed": true
+    },
+    {
+      "name": "Exactly one canonical file action runs and its missing-file dialog remains usable",
+      "passed": true
+    },
+    {
+      "name": "A later pulse cannot replay the completed command",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "Close cancels each pending file action while the writer remains held",
+      "passed": true
+    },
+    {
+      "name": "A destroyed completion cannot replay a queued file or folder action",
+      "passed": true
+    },
+    {
+      "name": "A scan accepted during contention invalidates the queued Open instead of launching stale bytes",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "action": "Open",
+      "dark": false,
+      "dispatchMs": 16,
+      "writerStillHeld": true,
+      "writerWatchdogExpired": false
+    },
+    {
+      "action": "Open with...",
+      "dark": false,
+      "dispatchMs": 0,
+      "writerStillHeld": true,
+      "writerWatchdogExpired": false
+    },
+    {
+      "action": "Open",
+      "dark": true,
+      "dispatchMs": 16,
+      "writerStillHeld": true,
+      "writerWatchdogExpired": false
+    },
+    {
+      "action": "Open with...",
+      "dark": true,
+      "dispatchMs": 0,
+      "writerStillHeld": true,
+      "writerWatchdogExpired": false
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,115 @@
+{
+  "passed": true,
+  "version": "10.5",
+  "sourceExtensionVersion": "0.73.69",
+  "verifiedSourceInputs": 747,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "Adaptive",
+    "DashManifest",
+    "Bridge"
+  ],
+  "verifiedBuildOutputs": 15,
+  "adaptiveHeaderDependencyRebuilt": true,
+  "initialCacheSelectionSuperseded": true,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native-final\\UDM.exe",
+      "sha256": "5DC1B6E9018756FA2DEE2B6B532B07B155597F7702A4824ED792E56313EF4467"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native-final\\Udm.NativeHost.exe",
+      "sha256": "324FB4C463CF2B9902439C7D834F4317ECBE59D9A2430C48ACF262E0E88B252C"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native-final\\Udm.Monitor.exe",
+      "sha256": "A1D4F4758F817FA2111DA80D672BBA5A045C624983C758277532F7F6A12E95BD"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native-final\\Udm.SetupHelper.exe",
+      "sha256": "0980622AD67678C16C9ABABD482244FAC3D5C064C4A4747838DF2092D98CDD27"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native-final\\Udm.Automation.exe",
+      "sha256": "8972F4C315A2392C64D4AF0B8E2141E27AE206D83DAD868D3003FA385EE547E9"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "DashMetadataTransportTests",
+      "checks": 23,
+      "passed": true
+    },
+    {
+      "name": "GaplessAacTailTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "RetiredDashBoundaryTests",
+      "checks": 42,
+      "passed": true
+    }
+  ],
+  "distinctBackendAssertions": 85,
+  "wireRequests": 14,
+  "wireActorChecks": 8,
+  "freshnessControls": 8,
+  "fullContinuousRegressionPassed": true,
+  "continuousCases": 7,
+  "publishedFiles": [
+    {
+      "case": "av",
+      "bytes": 351173,
+      "sha256": "5148A911238626CE0F9BFE51732B7738A9B1D36FC20652A360873492DF87C814"
+    },
+    {
+      "case": "video",
+      "bytes": 324776,
+      "sha256": "F4E564AD0FA6C9E1743AF201B765AE2ECA5CDAC844B05B8F468C9C7D44D65D1C"
+    },
+    {
+      "case": "audio",
+      "bytes": 26450,
+      "sha256": "6403995E71D9CB9D8AF67C3D9B4D9083F786053324B3C649B022FA3783BDD53B"
+    },
+    {
+      "case": "save",
+      "bytes": 97822,
+      "sha256": "9D9362E150F24A2B62B0B67884C448DA7F26FB26D675D6509A57E044095C7694"
+    }
+  ],
+  "strictNegativeCases": 3,
+  "heldResponseCancelToUnwindMs": 63,
+  "recordingCookieAndCredentialIsolationVerified": true,
+  "cacheCapacity": 16,
+  "cacheKeyByteLimit": 1048576,
+  "normalAndExceptionalScopeReleaseVerified": true,
+  "allCompilerInvocationsPassed": true,
+  "allQualifiedRuntimesPassed": true,
+  "runtimeQualificationAllPassed": true,
+  "hostProtectedFilesUnchanged": 9,
+  "frozenControlCoreSets": [
+    {
+      "version": "10.0",
+      "verifiedCoreObjects": 42
+    },
+    {
+      "version": "10.1",
+      "verifiedCoreObjects": 42
+    }
+  ],
+  "ownedBuildAreaBytesExcludingSharedTools": 141523413,
+  "fullBuildEntrypointExecuted": false,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false
+}

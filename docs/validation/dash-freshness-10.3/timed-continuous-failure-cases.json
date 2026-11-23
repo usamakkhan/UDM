@@ -1,0 +1,26 @@
+[
+  {
+    "case": "av",
+    "exitCode": 1,
+    "result": {
+      "assembledBytes": -1,
+      "capturedSeconds": 1.024,
+      "checks": [
+        {
+          "name": "Continuous recording completes: DASH manifest expired during all three bounded freshness attempts.",
+          "passed": false
+        }
+      ],
+      "error": "DASH manifest expired during all three bounded freshness attempts.",
+      "fixtureError": "Continuous recording completes: DASH manifest expired during all three bounded freshness attempts.",
+      "mediaFolder": "<candidate>\\continuous-timing-01\\av\\temporary\\UDM-media\\03bac41be33240998c07b2179658b436",
+      "passed": false,
+      "publications": 0,
+      "saveRequested": false,
+      "saveToFinishMs": null,
+      "sha256": "",
+      "size": -1,
+      "status": "Failed"
+    }
+  }
+]

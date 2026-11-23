@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "folder": "<research>\\idm-8k-0c8eb55a",
+  "toolError": false,
+  "outputExists": true,
+  "currentSessionIdmRemaining": [],
+  "targetPid": 5164,
+  "counts": {
+    "candidate-part-adopted": 1,
+    "CreateFileW": 8,
+    "file-part-open": 1,
+    "NtWriteFile": 1,
+    "WriteFile": 1,
+    "CloseHandle": 8,
+    "file-part-close": 1,
+    "MoveFileW": 1
+  },
+  "unknownFilePartEvents": 0,
+  "readyArchitectures": [
+    "ia32"
+  ],
+  "scriptErrors": [],
+  "truncated": false,
+  "cleanupError": null,
+  "bytes": 8192,
+  "sha256": "094B813A73BA6ABE4E2594A1788DB519B777F604EA5D9A8E61950959FDC14EB8",
+  "hashMatches": true,
+  "postExitExplicitFlushMs": 30.015299998922274,
+  "postExitFlushOperations": {
+    "openSeconds": 0.00017810000281315297,
+    "flushSeconds": 0.029768100001092535,
+    "closeSeconds": 6.0500002291519195e-05
+  },
+  "targetBinaryUnchanged": true,
+  "settingsRestored": true,
+  "serverExitCode": 0
+}

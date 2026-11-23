@@ -1,0 +1,81 @@
+{
+  "checks": [
+    {
+      "name": "Fixed file volume avoids path traversal and closes its attribute handle",
+      "passed": true
+    },
+    {
+      "name": "A known non-fixed opened volume is never promoted through a fixed alias",
+      "passed": true
+    },
+    {
+      "name": "A known non-fixed opened volume is never promoted through a fixed alias",
+      "passed": true
+    },
+    {
+      "name": "A known non-fixed opened volume is never promoted through a fixed alias",
+      "passed": true
+    },
+    {
+      "name": "A known non-fixed opened volume is never promoted through a fixed alias",
+      "passed": true
+    },
+    {
+      "name": "An unrecognized GUID route retains legacy path resolution",
+      "passed": true
+    },
+    {
+      "name": "An unrecognized GUID route retains legacy path resolution",
+      "passed": true
+    },
+    {
+      "name": "A not-yet-created file keeps the original path-based policy",
+      "passed": true
+    },
+    {
+      "name": "Failed and oversized final-path queries fall back without trusting partial names",
+      "passed": true
+    },
+    {
+      "name": "Failed and oversized final-path queries fall back without trusting partial names",
+      "passed": true
+    },
+    {
+      "name": "Failed and oversized final-path queries fall back without trusting partial names",
+      "passed": true
+    },
+    {
+      "name": "Malformed and non-GUID names cannot select the fast route",
+      "passed": true
+    },
+    {
+      "name": "Malformed and non-GUID names cannot select the fast route",
+      "passed": true
+    },
+    {
+      "name": "Malformed and non-GUID names cannot select the fast route",
+      "passed": true
+    },
+    {
+      "name": "Malformed and non-GUID names cannot select the fast route",
+      "passed": true
+    },
+    {
+      "name": "Unsupported network GUID queries preserve remote classification",
+      "passed": true
+    },
+    {
+      "name": "Unresolvable paths remain conservative",
+      "passed": true
+    },
+    {
+      "name": "The actual owned file agrees with legacy classification on this volume",
+      "passed": true
+    },
+    {
+      "name": "Directory handles resolve the actual owned volume",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

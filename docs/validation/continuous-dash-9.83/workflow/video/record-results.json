@@ -1,0 +1,123 @@
+{
+  "assembledBytes": 324776,
+  "capturedSeconds": 3.072,
+  "checks": [
+    {
+      "name": "Continuous recording completes: ",
+      "passed": true
+    },
+    {
+      "name": "Continuous recording publishes exactly once",
+      "passed": true
+    },
+    {
+      "name": "Assembled size, final size and saved SHA-256 match",
+      "passed": true
+    },
+    {
+      "name": "All expected chapters belong to the durable recording session",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": 324776,
+  "fixtureError": "",
+  "mediaFolder": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\video\\temporary\\UDM-media\\ea302bfed18040898f3eba9643a8cff3",
+  "passed": true,
+  "periodFolders": [
+    ".",
+    "period-0001",
+    "period-0002"
+  ],
+  "probe": {
+    "format": {
+      "bit_rate": "845770",
+      "duration": "3.072000",
+      "filename": "[local-diagnostics]\\owned-continuous-dash-workflow-9.83-C\\video\\continuous.mp4",
+      "format_long_name": "QuickTime / MOV",
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "nb_programs": 0,
+      "nb_stream_groups": 0,
+      "nb_streams": 1,
+      "probe_score": 100,
+      "size": "324776",
+      "start_time": "0.000000",
+      "tags": {
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf63.1.101",
+        "major_brand": "isom",
+        "minor_version": "512"
+      }
+    },
+    "streams": [
+      {
+        "avg_frame_rate": "125/16",
+        "bit_rate": "843281",
+        "bits_per_raw_sample": "8",
+        "chroma_location": "left",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "codec_name": "h264",
+        "codec_tag": "0x31637661",
+        "codec_tag_string": "avc1",
+        "codec_type": "video",
+        "coded_height": 360,
+        "coded_width": 640,
+        "display_aspect_ratio": "16:9",
+        "disposition": {
+          "attached_pic": 0,
+          "captions": 0,
+          "clean_effects": 0,
+          "comment": 0,
+          "default": 1,
+          "dependent": 0,
+          "descriptions": 0,
+          "dub": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "karaoke": 0,
+          "lyrics": 0,
+          "metadata": 0,
+          "multilayer": 0,
+          "non_diegetic": 0,
+          "original": 0,
+          "still_image": 0,
+          "timed_thumbnails": 0,
+          "visual_impaired": 0
+        },
+        "duration": "3.072000",
+        "duration_ts": 49152,
+        "extradata_size": 40,
+        "field_order": "progressive",
+        "has_b_frames": 0,
+        "height": 360,
+        "id": "0x1",
+        "index": 0,
+        "is_avc": "true",
+        "level": 30,
+        "mime_codec_string": "avc1.42c01e",
+        "nal_length_size": "4",
+        "nb_frames": "24",
+        "pix_fmt": "yuv420p",
+        "profile": "Constrained Baseline",
+        "r_frame_rate": "125/16",
+        "sample_aspect_ratio": "1:1",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "tags": {
+          "encoder": "Lavc63.1.101 libx264",
+          "handler_name": "VideoHandler",
+          "language": "und"
+        },
+        "time_base": "1/16000",
+        "width": 640
+      }
+    ]
+  },
+  "publications": 1,
+  "saveRequested": false,
+  "saveToFinishMs": null,
+  "sha256": "f4e564ad0fa6c9e1743af201b765ae2eca5cdac844b05b8f468c9c7d44d65d1c",
+  "size": 324776,
+  "status": "Complete",
+  "videoFrameMd5": "#format: frame checksums\n#version: 2\n#hash: MD5\n#software: Lavf63.1.101\n#tb 0: 16/125\n#media_type 0: video\n#codec_id 0: rawvideo\n#dimensions 0: 640x360\n#sar 0: 1/1\n#stream#, dts,        pts, duration,     size, hash\n0,          0,          0,        1,   345600, b2889702d8dd3be845fc9a6562a6e055\n0,          1,          1,        1,   345600, 66ba05fa9e7d30c6979b9753c8bef59b\n0,          2,          2,        1,   345600, b677f9f18e44083fa7b1159626769002\n0,          3,          3,        1,   345600, 41e4ea62413c231007a1a53be9cf7ebe\n0,          4,          4,        1,   345600, 34b107c7f114a8634ec0de24dd4443eb\n0,          5,          5,        1,   345600, 3c4b0fafd50cb98cb93c47850f4df9e2\n0,          6,          6,        1,   345600, c5cef8fab2b5f837ba5e0f4038ced3ac\n0,          7,          7,        1,   345600, 5802485f598cd1d8ef936d49ef24f108\n0,          8,          8,        1,   345600, 290964701e9bce831dedb1e8682ba1ff\n0,          9,          9,        1,   345600, a5a1fa058147d47db92df98fdcd79112\n0,         10,         10,        1,   345600, a8c00e0c13eb70d2a46fd2c8eab308e6\n0,         11,         11,        1,   345600, 5a65123ced053c2a44096d07854c545b\n0,         12,         12,        1,   345600, fb776b9ef855c613a6d72651a984b9dd\n0,         13,         13,        1,   345600, cfe400d321211bef6e2d53b560385a97\n0,         14,         14,        1,   345600, 55ddba6529deddacb4670e4e942c602b\n0,         15,         15,        1,   345600, 2f25f2e3b725cc16ef653f71f50b7d5c\n0,         16,         16,        1,   345600, ed16e6bdedcb924512f1e728fb326e44\n0,         17,         17,        1,   345600, 5d3f5c628f67d813faa4b361243ef691\n0,         18,         18,        1,   345600, 1a8f3afd09c2b73f93ffa0bc47fb568b\n0,         19,         19,        1,   345600, 9b014d199db7c24f4401779f13be22c7\n0,         20,         20,        1,   345600, 4b5d269a9bad4b59208ae180957b9c7f\n0,         21,         21,        1,   345600, 2469eb96ceeefee62b5ccd87f63ee821\n0,         22,         22,        1,   345600, b87a8b26bf8cda3f0fea2b1c071adaa6\n0,         23,         23,        1,   345600, 5939601b55a36bba64180fbc10a7ede1\n"
+}

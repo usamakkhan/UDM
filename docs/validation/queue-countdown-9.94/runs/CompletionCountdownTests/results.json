@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "Current completed file supplies an owned presentation snapshot",
+      "passed": true
+    },
+    {
+      "name": "A foreign model writer returns Busy without waiting for release",
+      "passed": true
+    },
+    {
+      "name": "An accepted File Info decision defers the countdown",
+      "passed": true
+    },
+    {
+      "name": "A read cannot release a foreign accepted decision",
+      "passed": true
+    },
+    {
+      "name": "Fresh eligibility resumes after the accepted owner settles",
+      "passed": true
+    },
+    {
+      "name": "A completion that became paused cannot execute",
+      "passed": true
+    },
+    {
+      "name": "A newly pending scanner rejects completion actions",
+      "passed": true
+    },
+    {
+      "name": "WaitForOthers retains an action behind queued work",
+      "passed": true
+    },
+    {
+      "name": "Explicit independent completion does not wait for another queued file",
+      "passed": true
+    },
+    {
+      "name": "Inactive paused work does not postpone the action",
+      "passed": true
+    },
+    {
+      "name": "A removed file invalidates its countdown",
+      "passed": true
+    },
+    {
+      "name": "An absent job cannot become an action",
+      "passed": true
+    },
+    {
+      "name": "Only the explicit second add above changes the saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Repeated eligibility reads neither tick the scheduler nor write the catalog",
+      "passed": true
+    },
+    {
+      "name": "Expiry requests a fresh tick instead of executing from a stale scheduler view",
+      "passed": true
+    },
+    {
+      "name": "Held final scheduler work leaves the deadline poll nonblocking",
+      "passed": true
+    },
+    {
+      "name": "Successful fresh scheduler acknowledgement releases the final eligibility read",
+      "passed": true
+    },
+    {
+      "name": "Stopped maintenance never grants an action",
+      "passed": true
+    },
+    {
+      "name": "A new deadline requires its own scheduler acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Failed scheduler work rejects the action and preserves its error",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

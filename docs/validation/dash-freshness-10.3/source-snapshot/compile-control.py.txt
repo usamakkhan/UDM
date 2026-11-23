@@ -1,0 +1,8 @@
+from pathlib import Path
+import json,os,subprocess
+repo=Path('D:/UDM');area=Path(__file__).parent;scope={'__file__':str(area/'config.py')};exec((Path(os.environ['LOCALAPPDATA'])/'UDM-Development/finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+baseline=json.loads((repo/'.media-cache/single-caption-session-build-10.2/build-result.json').read_text(encoding='utf-8'));objects=[e['path'] for e in baseline['coreObjects']]
+for e in baseline['coreObjects']:assert sha(Path(e['path']))==e['sha256']
+source=repo/'benchmarks/speed/dash_freshness_workflow.cpp';pin=sha(source);target=release/'Udm.DashFreshness-Control10.2.exe'
+with (area/'compile-control.log').open('w',encoding='utf-8') as log:r=subprocess.run([str(compiler),*common,str(source),*objects,str(repo/'.media-cache/single-caption-session-build-10.2/objects/App.res'),*system,'/Fo'+str(out/'control.obj'),'/Fe'+str(target),'/link','/SUBSYSTEM:CONSOLE','/INCREMENTAL:NO','/MANIFEST:NO','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA'],stdout=log,stderr=subprocess.STDOUT,env=env)
+assert r.returncode==0,(area/'compile-control.log').read_text(encoding='utf-8')[-2000:];assert sha(source)==pin;(area/'control-build.json').write_text(json.dumps(dict(passed=True,sourceSha256=pin,path=str(target),sha256=sha(target)),indent=2),encoding='utf-8');print('Frozen 10.2 diagnostic actor built')

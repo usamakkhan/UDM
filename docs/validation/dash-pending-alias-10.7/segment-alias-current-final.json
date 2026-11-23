@@ -1,0 +1,88 @@
+{
+  "exitCode": 0,
+  "result": {
+    "checks": [],
+    "error": "",
+    "index": {
+      "captureEnd": 1.0,
+      "captureStart": 0.0,
+      "schema": 2,
+      "selection": "6c28ad63f5cbbe4abf3fddd1036c935123d0cbd5b712a00a42e478a48942efbd",
+      "staticPresentation": true,
+      "tracks": [
+        {
+          "identity": {
+            "adaptation": "v",
+            "format": {
+              "audioSamplingRate": "",
+              "codecs": "avc1.42c01e",
+              "contentType": "",
+              "descriptors": [],
+              "frameRate": "",
+              "height": "90",
+              "lang": "",
+              "mimeType": "video/mp4",
+              "sar": "",
+              "scanType": "",
+              "width": "160"
+            },
+            "period": "p",
+            "periodStart": 0.0,
+            "presentation": "31d1832b510012aae792ac6a6fb1a97cb7d00a15059bd123dc98117d6cfb77a3",
+            "presentationTimeOffset": 0,
+            "representation": "r",
+            "schema": 1,
+            "timescale": 1000
+          },
+          "initializationVerified": false,
+          "periodDuration": 1.0,
+          "segments": {
+            "1": {
+              "binding": "b9a452270902040d733190d27181743df9d367901e5d4651b9894d1affaa4cc6",
+              "committed": true,
+              "duration": 500,
+              "number": 1,
+              "resource": {
+                "bytes": 4096,
+                "file": "b9a452270902040d733190d27181743df9d367901e5d4651b9894d1affaa4cc6.part",
+                "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+              },
+              "resourceVersion": {
+                "etag": "\"original\"",
+                "total": 4096,
+                "url": "http://127.0.0.1:64022/shared.bin"
+              },
+              "time": 0,
+              "urls": [
+                "http://127.0.0.1:64022/shared.bin"
+              ],
+              "versionRequired": true
+            },
+            "2": {
+              "binding": "949874ec73bc5992fcd38c1727d2265d735560ba0f47271cc46e9381c57bdd9a",
+              "committed": true,
+              "duration": 500,
+              "number": 2,
+              "resource": {
+                "bytes": 4096,
+                "file": "949874ec73bc5992fcd38c1727d2265d735560ba0f47271cc46e9381c57bdd9a.part",
+                "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+              },
+              "resourceVersion": {
+                "etag": "\"original\"",
+                "total": 4096,
+                "url": "http://127.0.0.1:64022/shared.bin"
+              },
+              "time": 500,
+              "urls": [
+                "http://127.0.0.1:64022/shared.bin"
+              ],
+              "versionRequired": true
+            }
+          }
+        }
+      ]
+    },
+    "passed": true
+  }
+}

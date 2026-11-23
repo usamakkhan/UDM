@@ -1,0 +1,264 @@
+{
+  "checks": [
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Reserved encoding normalization still rejects header injection",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "Live request URL selects the intended WinHTTP or curl route",
+      "passed": true
+    },
+    {
+      "name": "Identity policy preserves the response status",
+      "passed": true
+    },
+    {
+      "name": "The complete unencoded response bytes remain exact",
+      "passed": true
+    },
+    {
+      "name": "Reserved encoding normalization still rejects header injection",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "requests": [
+    {
+      "backend": "winhttp",
+      "case": "default"
+    },
+    {
+      "backend": "winhttp",
+      "case": "identity"
+    },
+    {
+      "backend": "winhttp",
+      "case": "lowercase"
+    },
+    {
+      "backend": "winhttp",
+      "case": "mixed-case"
+    },
+    {
+      "backend": "winhttp",
+      "case": "conflicting"
+    },
+    {
+      "backend": "winhttp",
+      "case": "post"
+    },
+    {
+      "backend": "winhttp",
+      "case": "head"
+    },
+    {
+      "backend": "winhttp",
+      "case": "range"
+    },
+    {
+      "backend": "curl",
+      "case": "default"
+    },
+    {
+      "backend": "curl",
+      "case": "identity"
+    },
+    {
+      "backend": "curl",
+      "case": "lowercase"
+    },
+    {
+      "backend": "curl",
+      "case": "mixed-case"
+    },
+    {
+      "backend": "curl",
+      "case": "conflicting"
+    },
+    {
+      "backend": "curl",
+      "case": "post"
+    },
+    {
+      "backend": "curl",
+      "case": "head"
+    },
+    {
+      "backend": "curl",
+      "case": "range"
+    }
+  ]
+}

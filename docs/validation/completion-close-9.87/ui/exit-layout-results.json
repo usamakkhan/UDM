@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "name": "Actual CMD_EXIT returns while its layout writer still owns Manager",
+      "passed": true
+    },
+    {
+      "name": "One owned layout stage disables new input before stopping integration",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Exit Close Show timer and paint preserve the pending owner without waiting",
+      "passed": true
+    },
+    {
+      "name": "Exit preparation does not add an early catalog save",
+      "passed": true
+    },
+    {
+      "name": "Prepared layout continues the real shutdown exactly once",
+      "passed": true
+    },
+    {
+      "name": "The final canonical checkpoint contains the captured layout and concurrent settings",
+      "passed": true
+    },
+    {
+      "name": "Actual CMD_EXIT returns while its layout writer still owns Manager",
+      "passed": true
+    },
+    {
+      "name": "One owned layout stage disables new input before stopping integration",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Exit Close Show timer and paint preserve the pending owner without waiting",
+      "passed": true
+    },
+    {
+      "name": "Exit preparation does not add an early catalog save",
+      "passed": true
+    },
+    {
+      "name": "A layout failure restores usable input before any shutdown work",
+      "passed": true
+    },
+    {
+      "name": "A failed merge preserves the prior layout and saved catalog",
+      "passed": true
+    },
+    {
+      "name": "Retry completes actual Exit and stops integration exactly once",
+      "passed": true
+    },
+    {
+      "name": "Retry saves the newest layout and retains the concurrent settings change",
+      "passed": true
+    },
+    {
+      "name": "Actual CMD_EXIT returns while its layout writer still owns Manager",
+      "passed": true
+    },
+    {
+      "name": "One owned layout stage disables new input before stopping integration",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Exit Close Show timer and paint preserve the pending owner without waiting",
+      "passed": true
+    },
+    {
+      "name": "Exit preparation does not add an early catalog save",
+      "passed": true
+    },
+    {
+      "name": "Direct destruction returns while Manager retains the cancelled acquisition",
+      "passed": true
+    },
+    {
+      "name": "A cancelled unaccepted layout stage neither merges nor runs shutdown integration",
+      "passed": true
+    }
+  ],
+  "diagnostics": {
+    "busy-exit": {
+      "exitAndManagerStopMs": 114.4719000000041,
+      "exitReturnMs": 13.03469999996014,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    },
+    "destroy-pending": {
+      "exitReturnMs": 12.979099999996834,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    },
+    "failure-retry": {
+      "exitAndManagerStopMs": 128.4603000000352,
+      "exitReturnMs": 11.356700000003912,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    }
+  },
+  "error": "",
+  "passed": true
+}

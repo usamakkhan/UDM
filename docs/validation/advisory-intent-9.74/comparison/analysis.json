@@ -1,0 +1,197 @@
+{
+  "currentVersion": "9.74",
+  "baselineVersion": "9.73",
+  "newIdmComparison": false,
+  "allSamplesRetained": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 126.4627999989898,
+          "baseline": 113.30009999801405
+        },
+        "processExitTailSeconds": {
+          "udm": 173.46949999773642,
+          "baseline": 165.60499999468448
+        },
+        "processExitWallSeconds": {
+          "udm": 1023.167100000137,
+          "baseline": 1033.108199997514
+        },
+        "durableTailSeconds": {
+          "udm": 196.38490000215825,
+          "baseline": 198.04179999482585
+        },
+        "durableWallSeconds": {
+          "udm": 1050.919099994644,
+          "baseline": 1064.8721999968984
+        }
+      }
+    },
+    {
+      "case": "single-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 200.46369999909075,
+          "baseline": 183.6302000010619
+        },
+        "processExitTailSeconds": {
+          "udm": 248.43070000497391,
+          "baseline": 232.53829999885056
+        },
+        "processExitWallSeconds": {
+          "udm": 8963.482300008764,
+          "baseline": 8943.605999993451
+        },
+        "durableTailSeconds": {
+          "udm": 269.37660000112373,
+          "baseline": 259.91910000448115
+        },
+        "durableWallSeconds": {
+          "udm": 8984.428200004913,
+          "baseline": 8970.986799999082
+        }
+      }
+    },
+    {
+      "case": "split-64m",
+      "mediansMs": {
+        "firstAvailabilityTailSeconds": {
+          "udm": 240.57400000310736,
+          "baseline": 350.2970000045025
+        },
+        "processExitTailSeconds": {
+          "udm": 289.9470000047586,
+          "baseline": 400.92474999983096
+        },
+        "processExitWallSeconds": {
+          "udm": 2360.6631999937235,
+          "baseline": 2452.299500000663
+        },
+        "durableTailSeconds": {
+          "udm": 317.70890000188956,
+          "baseline": 424.13170000509126
+        },
+        "durableWallSeconds": {
+          "udm": 2380.766500005848,
+          "baseline": 2471.4671000037924
+        }
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "case": "single-4m",
+      "trial": 1,
+      "wins": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 2,
+      "wins": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-4m",
+      "trial": 3,
+      "wins": {
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 1,
+      "wins": {
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 2,
+      "wins": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "case": "single-64m",
+      "trial": 3,
+      "wins": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 1,
+      "wins": {
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 2,
+      "wins": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": false,
+        "durableWallSeconds": true
+      }
+    },
+    {
+      "case": "split-64m",
+      "trial": 3,
+      "wins": {
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "processExitWallSeconds": true,
+        "durableTailSeconds": true,
+        "durableWallSeconds": true
+      }
+    }
+  ],
+  "winsOfNine": {
+    "firstAvailabilityTailSeconds": 4,
+    "processExitTailSeconds": 5,
+    "processExitWallSeconds": 6,
+    "durableTailSeconds": 5,
+    "durableWallSeconds": 6
+  },
+  "allPairsNoRegressionGatePassed": false,
+  "samplesPerCasePerClient": 3,
+  "allPayloadsVerifiedAndRemoved": true,
+  "removedLogicalPayloadBytes": 830472192,
+  "sourcePolicyNotPromotedForInstallation": true,
+  "fullIdmParityProven": false
+}

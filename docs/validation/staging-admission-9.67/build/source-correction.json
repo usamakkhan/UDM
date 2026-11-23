@@ -1,0 +1,8 @@
+{
+  "path": "native/StagingLinkReuseTests.cpp",
+  "beforeSha256": "3BCA6EF1F239FCB1ECC5EAF60402BEFEC4C9FF0CAC277110EFE0B857CAE98E3F",
+  "afterSha256": "F033BD48B287BFAFDB62FCCC54921AC5C53FDE44A6A306FC0B5A33405ADE9A94",
+  "reason": "Initial test omitted a valid ETag/range/segment resume plan, causing correct transport reset of its seeded partial file. Corrected fixture retains the intended file identity under a real valid resume.",
+  "capturedBeforeCorrectedCompilation": true,
+  "noProductionSourceChanged": true
+}

@@ -1,0 +1,24 @@
+from pathlib import Path
+from fractions import Fraction
+import json,subprocess,struct,hashlib
+area=Path(__file__).parent;w=area/'caption-workflow-01';read=lambda p:json.loads(p.read_text(encoding='utf-8'));old=read(w/'frozen-control.json');rows=read(w/'results.json')['records'];probe='C:/Program Files/UDM/tools/ffprobe.exe'
+def packets(path,kind=None,data=False):
+ args=[probe,'-v','error','-show_streams','-show_packets','-show_data_hash','sha256','-of','json']
+ if kind:args+=['-select_streams',kind]
+ if data:args+=['-show_data','-read_intervals','%+#1']
+ return json.loads(subprocess.check_output(args+[str(path)]))
+def hashes(p):return {s['codec_type']:[x['data_hash'] for x in p['packets'] if x['stream_index']==s['index']] for s in p['streams']}
+def video(path):
+ p=packets(path,'v:0');scale=Fraction(p['streams'][0]['time_base']);return dict(extra=p['streams'][0]['extradata_hash'],packets=[dict(hash=x['data_hash'],pts=str(int(x['pts'])*scale),dts=str(int(x['dts'])*scale),duration=str(int(x['duration'])*scale)) for x in p['packets']])
+def nals(path):
+ text=packets(path,'v:0',True)['packets'][0]['data'];raw=b''.join(bytes.fromhex(line.split(': ',1)[1].split('  ',1)[0]) for line in text.splitlines() if line.strip());at=0;result=[]
+ while at<len(raw):
+  size=struct.unpack_from('>I',raw,at)[0];at+=4;assert size>0 and at+size<=len(raw);payload=raw[at:at+size];result.append(dict(type=payload[0]&31,sha256=hashlib.sha256(payload).hexdigest(),bytes=size));at+=size
+ return result
+source=video(w/'assets/video.mp4');videoChecks=[]
+for row in rows:
+ v=video(row['publication']['path']);assert v['extra']==source['extra'] and v['packets']==source['packets'][:25];videoChecks.append(dict(case=row['case'],sourceVideoPacketsAndTimingExact=True,packets=len(v['packets'])))
+a,b=map(packets,[old['assembly']['path'],rows[0]['publication']['path']]);ha,hb=map(hashes,[a,b]);assert ha['audio']==hb['audio'] and ha['subtitle']==hb['subtitle'];oa,nb=map(nals,[old['assembly']['path'],rows[0]['publication']['path']]);added=[e for e in oa if e['type'] in [7,8]];assert [e for e in oa if e['type'] not in [7,8]]==nb and len(added)==2 and sum(e['bytes']+4 for e in added)==36
+previous=area/'encoded-payload-control.json';(area/'initial-combined-payload-equality-rejected.json').write_bytes(previous.read_bytes())
+result=dict(passed=True,oldSamples=old['samples'],newSamples=rows[0]['samples'],expectedSamples=rows[0]['wanted'],audioEncodedPacketsIdentical=True,audioPackets=len(ha['audio']),captionEncodedPacketsIdentical=True,sourceVideoOracles=videoChecks,oldFirstVideoNalTypes=[e['type'] for e in oa],newFirstVideoNalTypes=[e['type'] for e in nb],oldExtraConfigurationNalBytes=36,combinedMdatBytesIdentical=False,reason='The old concat pass adds SPS/PPS NAL units to the first H.264 packet; the new packets exactly match the source payloads and normalized PTS/DTS/duration.',oldFileBytes=old['assembly']['bytes'],newFileBytes=rows[0]['publication']['bytes'])
+previous.write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

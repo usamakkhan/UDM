@@ -1,0 +1,21 @@
+{
+  "beforeVersion": "9.68",
+  "afterVersion": "9.69",
+  "sameOwnershipFixtureSha256": "C6399B68EAAF85D4E80E5569AB9CD023ADB01A642990E5152A03BDF4E94A972E",
+  "beforeChecks": 57,
+  "beforeFailedAssertions": 17,
+  "afterOwnershipChecksPerDrive": 57,
+  "precheckNotDoubleCounted": true,
+  "integrationAssertions": 43,
+  "oneResponseRoutes": {
+    "known": 1,
+    "unknown": 1,
+    "concatenated": 1,
+    "empty": 1,
+    "prefetch": 1,
+    "relocated": 1,
+    "deferred": 1
+  },
+  "resumedRequests": 1,
+  "noNewBrowserOrIdmTimingClaim": true
+}

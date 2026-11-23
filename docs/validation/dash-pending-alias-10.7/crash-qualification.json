@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "before-headers",
+      "passed": true,
+      "ownedProcessId": 33376,
+      "injectedExitCode": 1,
+      "partialFilesAtStop": [],
+      "versionPinnedBeforeStop": false,
+      "recoveredUncommitted": true,
+      "changedVersionRejected": false,
+      "finalBytes": 131072,
+      "finalSha256": "59f410ae5e17962412e2aed4f815918f634932f2abf084f00bb638c4db017850",
+      "clientAccountedBytes": 131072,
+      "serverFinalBodyBytesWritten": 131072,
+      "successfulResumeMediaRequests": 1
+    },
+    {
+      "case": "after-admission",
+      "passed": true,
+      "ownedProcessId": 27520,
+      "injectedExitCode": 1,
+      "partialFilesAtStop": [
+        {
+          "name": "3b76b45b604c3bde511e6f1d4abc0576c7837d35ca18d878e619478a26546f16.part.tmp",
+          "bytes": 0
+        }
+      ],
+      "versionPinnedBeforeStop": true,
+      "recoveredUncommitted": true,
+      "changedVersionRejected": true,
+      "finalBytes": 131072,
+      "finalSha256": "59f410ae5e17962412e2aed4f815918f634932f2abf084f00bb638c4db017850",
+      "clientAccountedBytes": 131072,
+      "serverFinalBodyBytesWritten": 131072,
+      "successfulResumeMediaRequests": 1
+    },
+    {
+      "case": "mid-body",
+      "passed": true,
+      "ownedProcessId": 18760,
+      "injectedExitCode": 1,
+      "partialFilesAtStop": [
+        {
+          "name": "58330fba8de4e557adbeef6885cf2bd83fcee6c316f20cd00dc67857b96350a7.part.tmp",
+          "bytes": 65536
+        }
+      ],
+      "versionPinnedBeforeStop": true,
+      "recoveredUncommitted": true,
+      "changedVersionRejected": true,
+      "finalBytes": 131072,
+      "finalSha256": "59f410ae5e17962412e2aed4f815918f634932f2abf084f00bb638c4db017850",
+      "clientAccountedBytes": 131072,
+      "serverFinalBodyBytesWritten": 131072,
+      "successfulResumeMediaRequests": 1
+    }
+  ],
+  "actorSha256": "7e1a928f1966a235534e1c9c9043b57850c1057167015849bf8c078f4a3d8b48",
+  "recipeSha256": "0f62935284277c94464d8fd1cef807357d3a2958fb78378025e097f683082844",
+  "processCrashTest": true,
+  "powerLossTest": false,
+  "receiptCommitTransitionsCovered": false,
+  "installed": false
+}

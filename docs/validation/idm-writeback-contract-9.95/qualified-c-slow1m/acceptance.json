@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "folder": "<development>\\rea-idm-c-slow1m-c6b5f1e9",
+  "toolError": false,
+  "outputExists": true,
+  "currentSessionIdmRemaining": [],
+  "targetPid": 25296,
+  "counts": {
+    "candidate-part-adopted": 1,
+    "CreateFileW": 8,
+    "file-part-open": 1,
+    "NtWriteFile": 92,
+    "WriteFile": 92,
+    "CloseHandle": 8,
+    "NtFlushBuffersFile": 1,
+    "FlushFileBuffers": 1,
+    "file-part-flush": 1,
+    "file-part-close": 1,
+    "MoveFileW": 1
+  },
+  "unknownFilePartEvents": 0,
+  "readyArchitectures": [
+    "ia32"
+  ],
+  "scriptErrors": [],
+  "truncated": false,
+  "cleanupError": null,
+  "bytes": 1048576,
+  "sha256": "EADC2887A7996EEF5D464EDDFC00ECAD073778E141AC4113BE136EACE8661B03",
+  "hashMatches": true,
+  "postExitExplicitFlushMs": 1.728499999444466,
+  "postExitFlushOperations": {
+    "openSeconds": 0.0003802999999606982,
+    "flushSeconds": 0.0012915999977849424,
+    "closeSeconds": 4.780000017490238e-05
+  },
+  "targetBinaryUnchanged": true,
+  "settingsRestored": true,
+  "serverExitCode": 0
+}

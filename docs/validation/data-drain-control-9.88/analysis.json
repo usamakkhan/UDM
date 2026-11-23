@@ -1,0 +1,80 @@
+{
+  "diagnosticOnly": true,
+  "engineHarnessNotNormalApp": true,
+  "sameBinaryAllFourRuns": true,
+  "runs": [
+    {
+      "name": "normal-a",
+      "suppressed": false,
+      "wallSeconds": 2.9153274999998757,
+      "exitTailMs": 369.60670000007667,
+      "availabilityTailMs": 325.86859999992157,
+      "explicitFlushTailMs": 390.3036000001521,
+      "physicalOptionalFlushCalls": 7,
+      "suppressedCallbacks": 0,
+      "requiredFinalFlushMs": 184.1304,
+      "slowBodyWritesAtLeast20Ms": 151,
+      "longestBodyWriteMs": 276.5585,
+      "slowWritesOverlapCountMeansCallbackScopeNotNecessarilyPhysicalIo": true
+    },
+    {
+      "name": "suppressed-b",
+      "suppressed": true,
+      "wallSeconds": 2.427115800000138,
+      "exitTailMs": 748.4793000003265,
+      "availabilityTailMs": 707.4013000001287,
+      "explicitFlushTailMs": 775.9993999998187,
+      "physicalOptionalFlushCalls": 0,
+      "suppressedCallbacks": 7,
+      "requiredFinalFlushMs": 645.7392,
+      "slowBodyWritesAtLeast20Ms": 19,
+      "longestBodyWriteMs": 251.6818,
+      "slowWritesOverlapCountMeansCallbackScopeNotNecessarilyPhysicalIo": true
+    },
+    {
+      "name": "suppressed-c",
+      "suppressed": true,
+      "wallSeconds": 2.511063150001064,
+      "exitTailMs": 795.9123500004353,
+      "availabilityTailMs": 750.3952999995818,
+      "explicitFlushTailMs": 819.4610000000466,
+      "physicalOptionalFlushCalls": 0,
+      "suppressedCallbacks": 7,
+      "requiredFinalFlushMs": 511.0374,
+      "slowBodyWritesAtLeast20Ms": 49,
+      "longestBodyWriteMs": 294.6661,
+      "slowWritesOverlapCountMeansCallbackScopeNotNecessarilyPhysicalIo": true
+    },
+    {
+      "name": "normal-d",
+      "suppressed": false,
+      "wallSeconds": 2.7775255500009735,
+      "exitTailMs": 308.8888500005851,
+      "availabilityTailMs": 278.2213000000411,
+      "explicitFlushTailMs": 326.8470000002708,
+      "physicalOptionalFlushCalls": 7,
+      "suppressedCallbacks": 0,
+      "requiredFinalFlushMs": 189.5619,
+      "slowBodyWritesAtLeast20Ms": 131,
+      "longestBodyWriteMs": 358.2243,
+      "slowWritesOverlapCountMeansCallbackScopeNotNecessarilyPhysicalIo": true
+    }
+  ],
+  "groupMeans": {
+    "False": {
+      "wallSeconds": 2.8464265250004246,
+      "exitTailMs": 339.2477750003309,
+      "availabilityTailMs": 302.0449499999813
+    },
+    "True": {
+      "wallSeconds": 2.469089475000601,
+      "exitTailMs": 772.1958250003809,
+      "availabilityTailMs": 728.8982999998552
+    }
+  },
+  "suppressionFinishingRegresses": true,
+  "suppressionEligibleForProduction": false,
+  "engineControlAloneCannotAcceptProductionChange": true,
+  "slowWritesRemainWithoutPhysicalOptionalFlush": true,
+  "normalAppOrIdmSpeedGateAccepted": false
+}

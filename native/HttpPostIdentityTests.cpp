@@ -5,8 +5,8 @@
 #include <iostream>
 using namespace udm;
 int wmain(int argc,wchar_t** argv){
- if(argc!=5)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
- Json checks=Json::array();bool passed=false;std::string error;
+ if(argc!=5&&argc!=6)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);
+ Json checks=Json::array(),observations=Json::array();bool passed=false;std::string error;
  const auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
  try{
   WSADATA sockets{};if(WSAStartup(MAKEWORD(2,2),&sockets))throw std::runtime_error("WSA startup");
@@ -18,6 +18,49 @@ int wmain(int argc,wchar_t** argv){
   const auto start=[&](Manager& m,const JobPtr& j){m.resume(j);m.tick();return wait(m,j);};
   const auto exact=[&](const JobPtr& j,const std::string& hash){return str(j->data,"Status")=="Complete"&&fs::is_regular_file(j->target())&&fileHash(j->target())==hash;};
   const auto retain=[&](Manager& m,const JobPtr& j){j->data["ExpectedSha256"]=std::string(64,'0');check(start(m,j)&&str(j->data,"Status")=="Failed"&&!fs::exists(j->target()),"A final verification failure retains an unpublished complete plain form response");check(completedPostResponseCandidate(j->data)&&yes(j->data,"PostAttempted"),"Failure checkpoints a request-bound response instead of requiring form resubmission");check(str(j->data,"Error").find("SHA-256 mismatch")!=std::string::npos,"Response retention preserves the original verification error");j->data["ExpectedSha256"]="";m.save();};
+  if(argc==6&&utf8(argv[5])=="prefix-all"){
+   for(const std::string route:{"prefix-digest-good","prefix-digest-bad","prefix-domain-bad","prefix-output-bad"}){
+    auto job=make(manager,route);check(start(manager,job)&&str(job->data,"Status")=="Failed"&&yes(job->data,"ContentPrefixPending")&&completedPostResponseCandidate(job->data),"A prefixed checksum response waits for an explicit removal choice");
+    const auto raw=manager.root/L"parts"/wide(job->id())/(wide(job->id())+L".data");const auto rawHash=fileHash(raw);const auto wireBytes=fs::file_size(raw);
+    check(str(job->data,"ServerSha256")==(route=="prefix-digest-bad"?std::string(64,'0'):route=="prefix-domain-bad"?pdfHash:rawHash),"The retained server digest is bound to the declared byte domain");
+    job->data["StripContentPrefix"]=true;job->data["ContentPrefixPending"]=false;job->data["ExpectedSha256"]=route=="prefix-output-bad"?std::string(64,'0'):pdfHash;manager.save();
+    check(manager.beginPrefetch(job)==PrefetchAdmission::Started&&wait(manager,job,true),"Prefix removal verifies saved bytes and reaches confirmation without another POST");
+    const auto announced=num(job->data,"PrefetchedFinalSize",-1);check(announced>0&&announced<static_cast<i64>(wireBytes)&&!fs::exists(job->target()),"The pre-Start size excludes only the approved prefix");
+    check(manager.confirmPrefetchedDownload(job,Json::object())&&wait(manager,job),"Confirmation finishes the retained response worker");
+    const bool good=route=="prefix-digest-good";
+    if(good){
+     check(exact(job,pdfHash)&&fs::file_size(job->target())==static_cast<uintmax_t>(announced),"One-pass server hashing preserves exact final bytes and pre-Start size");
+     check(str(job->data.at("FinishPhases"),"ServerHashMode")=="prefix-copy","The raw server checksum is computed during the existing tail copy");
+    }else{
+     check(str(job->data,"Status")=="Failed"&&!fs::exists(job->target())&&fileHash(raw)==rawHash,"Wrong raw-domain or final-output checksums block publication and preserve received bytes");
+     check(start(manager,job)&&str(job->data,"Status")=="Failed"&&!fs::exists(job->target())&&fileHash(raw)==rawHash&&yes(job->data,"ReusedCompletedPrefetch"),"A checksum retry reuses and rejects the same bytes without resubmission");
+    }
+    observations.push_back({{"route",route},{"passed",true},{"status",str(job->data,"Status")},{"serverSha256",str(job->data,"ServerSha256")},{"rawSha256",rawHash},{"rawBytes",wireBytes},{"announcedBytes",announced},{"published",fs::is_regular_file(job->target())},{"publishedSha256",good?fileHash(job->target()):""},{"error",str(job->data,"Error")},{"phases",job->data.value("FinishPhases",Json::object())}});
+   }
+   manager.stop();
+  }else if(argc==6){
+   const auto selected=utf8(argv[5]);bool chosen=false;
+   for(const std::string route:{"digest-repr-good","digest-repr-bad","digest-content-good","digest-content-bad","digest-legacy-good","digest-legacy-bad","digest-redirect-repr-good","digest-redirect-repr-bad","digest-repost-repr-good","digest-repost-repr-bad","digest-empty-content-good","digest-empty-content-bad","digest-unknown-repr-good","digest-unknown-repr-bad","digest-created-repr-good","digest-created-repr-bad","digest-nocontent-repr-good","digest-nocontent-content-good","digest-nocontent-content-bad","digest-reset-repr-good","digest-nocontent-legacy-good"}){
+    if(selected!="all"&&selected!=route)continue;chosen=true;const bool bad=route.find("-bad")!=std::string::npos,empty=route.find("-empty-")!=std::string::npos||route.find("-nocontent-")!=std::string::npos||route.find("-reset-")!=std::string::npos;
+    const auto state=root/wide(route)/L"state";std::string id,retainedHash;fs::path retained;
+    {Manager owner(state);configure(owner);auto job=make(owner,route);id=job->id();check(start(owner,job),"A checksum-bearing form reaches a terminal worker state");
+     const bool published=fs::is_regular_file(job->target());observations.push_back({{"route",route},{"status",str(job->data,"Status")},{"serverSha256",str(job->data,"ServerSha256")},{"published",published},{"publishedSha256",published?fileHash(job->target()):""},{"error",str(job->data,"Error")}});
+     if(bad){
+      check(str(job->data,"Status")=="Failed"&&!published&&str(job->data,"Error").find("checksum")!=std::string::npos,"A mismatched server checksum blocks form publication");
+      check(completedPostResponseCandidate(job->data)&&yes(job->data,"PostAttempted"),"Checksum rejection retains the complete request-bound form response");
+      const auto parts=str(job->data,"PartsFolder").empty()?owner.root/L"parts"/wide(id):fs::path(wide(str(job->data,"PartsFolder")));retained=parts/(wide(id)+L".data");retainedHash=fileHash(retained);
+      check(empty?fs::file_size(retained)==0:retainedHash==expected,"Rejected response bytes remain intact for explicit recovery");
+     }else check(str(job->data,"Status")=="Complete"&&published&&(empty?fs::file_size(job->target())==0:fileHash(job->target())==expected),"A matching server checksum permits the complete form file");
+     owner.stop();
+    }
+    if(bad){Manager reopened(state);JobPtr job;for(auto candidate:reopened.jobs)if(candidate->id()==id)job=candidate;
+     check(job&&completedPostResponseCandidate(job->data),"A rejected form checksum and its receipt survive catalog reopening");
+     check(start(reopened,job)&&str(job->data,"Status")=="Failed"&&!fs::exists(job->target())&&str(job->data,"Error").find("checksum")!=std::string::npos,"Resume rechecks the saved response checksum instead of publishing it");
+     check(fileHash(retained)==retainedHash&&yes(job->data,"ReusedCompletedPrefetch"),"Checksum recheck preserves and reuses retained bytes without another form submission");reopened.stop();
+    }
+   }
+   check(chosen,"The requested checksum case exists");manager.stop();
+  }else{
   auto fresh=make(manager,"fresh");check(manager.beginPrefetch(fresh)==PrefetchAdmission::Unavailable&&!yes(fresh->data,"PostAttempted"),"Fresh forms still do not submit on File Info open");
   auto normal=make(manager,"success");std::atomic_int receiptWrites=0;
   CapturedResponseTestAccess::saveCheckpoint(manager,[&](const char* point){if(std::string_view(point)=="temporary-flushed"&&normal->data.contains("CompletedPrefetch"))++receiptWrites;});
@@ -56,7 +99,8 @@ int wmain(int argc,wchar_t** argv){
   manager.stop();std::string id;const auto reopenedRoot=root/L"reopened"/L"state";
   {Manager first(reopenedRoot);configure(first);auto j=make(first,"reopened");retain(first,j);id=j->id();first.stop();}
   {Manager second(reopenedRoot);JobPtr j;for(auto item:second.jobs)if(item->id()==id)j=item;check(j&&completedPostResponseCandidate(j->data),"Plain form response receipt survives a catalog reopen");check(start(second,j)&&exact(j,expected),"Reopened catalog publishes retained plain form bytes without resubmission");second.stop();}
+  }
   passed=true;
  }catch(const std::exception& e){error=e.what();}
- atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
+ atomicText(root/L"results.json",Json{{"passed",passed},{"error",error},{"checks",checks},{"observations",observations}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(passed?"passed":error)<<"\n";return passed?0:1;
 }

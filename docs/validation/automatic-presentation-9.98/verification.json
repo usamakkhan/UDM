@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "version": "9.98",
+  "sourceExtensionVersions": [
+    "0.73.62",
+    "0.73.62"
+  ],
+  "verifiedSources": 731,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "Bridge"
+  ],
+  "verifiedOutputCount": 21,
+  "normalProducts": [
+    {
+      "name": "UDM.exe",
+      "sha256": "95F267C661E332D2E4F11A8B50951FC12FEEFE0824B237DAF302C6B860C18D08"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "D182DF87D679103255474D3B7459919DEC768375C500A0B4E9ABD060887D47E9"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "4CBEA8803D56CDE368EBCF85DD86AA58FA062DF113D7C6052426DF5BD4A94EEA"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "sha256": "D76C33A016A97B4FBC5E8A0C92F30D8BAB5A2D6BB2BE08AE357C6F447F261893"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "sha256": "8B91C5238D3E08071B5D70681C2573C563686496C39FBB15BF593595876BA07E"
+    }
+  ],
+  "hostProtectedFilesUnchanged": 9,
+  "backendChecks": 116,
+  "uiChecks": 1077,
+  "frozenControlChecks": 20,
+  "suites": [
+    {
+      "suite": "Udm.CompletionModalFenceTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 31,
+      "sha256": "3E30828434DD2D2FDA1871C0EDE582A4BD69B342E87B9DBD864D5D8B14050BDF"
+    },
+    {
+      "suite": "Udm.AutomaticPromptSnapshotTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 31,
+      "sha256": "505FAE573AA8974E40AF1A0191CCDA871E9085F4A73C6A19A6308852523435F1"
+    },
+    {
+      "suite": "Udm.AutomaticPresentationUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 356,
+      "sha256": "6F2822D5BF3B6A1B726C2E5F3B4FA65C61F7C46F6C0523B5CA55476CE43E0667"
+    },
+    {
+      "suite": "Udm.AutomaticPresentationFrozenUiTests",
+      "kind": "frozen-ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 20,
+      "sha256": "E097D47E83BE3396F0D60DB607F3002903EEE2F022B1DBB815E3DAB33C0CCA15"
+    },
+    {
+      "suite": "Udm.CompletionCountdownWakeTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 18,
+      "sha256": "DC6D79313FC74E45562E41C9B55C5F816AF54795F54124165BAA682A3162C36F"
+    },
+    {
+      "suite": "Udm.QueueCompletionCountdownTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 16,
+      "sha256": "968BDC2E31D0D94224D529FB3132A7D2AB2A504EA8DDD1EA96112DD8CCFD300B"
+    },
+    {
+      "suite": "Udm.CompletionCountdownTests",
+      "kind": "backend",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 20,
+      "sha256": "FB887F0A5CB81797DE05D9FDE861A1F769972FED18C9020ADAE6D4E2F8EB95D6"
+    },
+    {
+      "suite": "Udm.CompletionManualExitUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 250,
+      "sha256": "E9F6D15C3E50603B77B1E4FFB4BBCA63C00868483DBC20D7D2CCC75EC7011937"
+    },
+    {
+      "suite": "Udm.CompletionSecondaryModalUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 162,
+      "sha256": "3FDA9312D576EF94F060ED2B28F6625D596AC077F94BED0B7CE80054EA7AF450"
+    },
+    {
+      "suite": "Udm.CompletionModalOwnerUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 136,
+      "sha256": "0E87B4867367AA98CDD688C9C28DCBD7BF280B1E26B076E8837777AABF04F358"
+    },
+    {
+      "suite": "Udm.MainExitLayoutUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 20,
+      "sha256": "2370838FFFB8B007D4FFE0F8868FF305D1F916BB09E19235482C611D511B2E21"
+    },
+    {
+      "suite": "Udm.MainClosePolicyUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 23,
+      "sha256": "A08A8334D71D324D55FE422DDCE8294716A2C803EB85A7946CB56440727F4494"
+    },
+    {
+      "suite": "Udm.CompletionCountdownWakeUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 30,
+      "sha256": "64BF652EFC4BC93E98BC87E628B0580CEAF40C63706E697B24776356AFA4552C"
+    },
+    {
+      "suite": "Udm.QueueCompletionCountdownUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 34,
+      "sha256": "A2A552DF4EEDDBBD8B42B93A000BF8AE2D4386B1835FD4AD7DF5E4798CEE8C86"
+    },
+    {
+      "suite": "Udm.CompletionCountdownUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 16,
+      "sha256": "6F5708C384912D585FD0347C93026FA4691CF25AE727265BF9B75594A220F7FF"
+    },
+    {
+      "suite": "Udm.CompletionClaimUiTests",
+      "kind": "ui",
+      "exitCode": 0,
+      "passed": true,
+      "checks": 50,
+      "sha256": "C1D9A341ED64F2973363E85AD3CBDB7FE843BB5ED654D1A874CECD055956BC58"
+    }
+  ],
+  "installed": false,
+  "installerCreated": false,
+  "liveIdmComparison": false,
+  "fullParityProven": false,
+  "cleanupCompleted": false
+}

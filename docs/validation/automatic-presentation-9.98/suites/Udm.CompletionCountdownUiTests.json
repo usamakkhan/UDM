@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "name": "Busy initial admission preserves the queued file action and returns promptly",
+      "passed": true
+    },
+    {
+      "name": "Expired countdown pulse returns before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "A busy eligibility read keeps the expired countdown cancellable",
+      "passed": true
+    },
+    {
+      "name": "Countdown repaint does not wait for the model",
+      "passed": true
+    },
+    {
+      "name": "The Cancel click returns before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "The modal loop closes the window before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "Cancellation consumes the accepted action once and releases modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Countdown cancellation owns no File Info decision",
+      "passed": true
+    },
+    {
+      "name": "Busy initial admission preserves the queued file action and returns promptly",
+      "passed": true
+    },
+    {
+      "name": "Expired countdown pulse returns before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "A busy eligibility read keeps the expired countdown cancellable",
+      "passed": true
+    },
+    {
+      "name": "Countdown repaint does not wait for the model",
+      "passed": true
+    },
+    {
+      "name": "The Cancel click returns before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "The modal loop closes the window before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "Cancellation consumes the accepted action once and releases modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Countdown cancellation owns no File Info decision",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "cancelMs": 0,
+      "pastDeadlineMs": 1109,
+      "pulseMs": 0,
+      "writerWatchdogExpired": false
+    },
+    {
+      "cancelMs": 15,
+      "pastDeadlineMs": 1125,
+      "pulseMs": 0,
+      "writerWatchdogExpired": false
+    }
+  ],
+  "passed": true
+}

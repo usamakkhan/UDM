@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.hpp"
+#include "PublicationSourcePin.hpp"
 
 namespace udm {
 // Decode one retained MP4 WebVTT track, clip to a Period-local capture interval,
@@ -166,21 +167,25 @@ struct DashLiveState {
  std::vector<DashSelectedTrack> tracks;
  std::optional<DashClockSample> clock;
 };
+struct DashPeriodTransition {DashLiveState state;double previousEnd=0;};
 struct DashLiveUpdate {
  DashLiveState state;
  std::vector<DashResourceWindow> windows;
  bool staticPresentation=false;
+ // A verified successor has no current-Period windows. The caller must
+ // checkpoint/seal the retained Period before capturing this transition.
+ std::optional<DashPeriodTransition> transition;
 };
-struct DashPeriodTransition {DashLiveState state;double previousEnd=0;};
 // Plans only an adjacent nonempty Period with compatible selected track metadata.
 // The caller must finish/seal the previous Period and own durable session joining.
 std::optional<DashPeriodTransition> planDashPeriodTransition(const DashLiveState&,
- const DashManifestSnapshot& refreshed,const Cancel&);
+ const DashManifestSnapshot& refreshed,const Cancel&,std::optional<double> verifiedRetainedEnd={});
 DashLiveState createDashLiveState(const DashManifestSnapshot&,const std::vector<size_t>&,const Cancel&);
 // Windows are per-track media ticks. The caller commits returned state only on
 // success and owns polling, segment receipts, Period transitions and finalization.
 DashLiveUpdate updateDashLivePlan(const DashLiveState&,const std::vector<std::pair<i64,i64>>&,
- const Headers&,const Json&,const std::shared_ptr<Cancel>&,const DashMetadataAccounting& onBytes={});
+ const Headers&,const Json&,const std::shared_ptr<Cancel>&,const DashMetadataAccounting& onBytes={},
+ std::optional<double> verifiedRetainedEnd={});
 struct DashStoredResource {fs::path path;i64 bytes=0;std::string sha256;bool reused=false;};
 // Explicit credentials per canonical HTTP(S) origin. Missing origins are anonymous;
 // manifest headers must never implicitly become CDN credentials.
@@ -200,6 +205,12 @@ std::optional<DashStoredResource> inspectDashResource(const fs::path&,const Json
 // Offline reconciliation: promotes verified receipts and clears stale completion
 // claims, retaining committed media. Returns the protected index's decoded content.
 Json reconcileDashRecording(const fs::path&,const Cancel&);
+// Accept only complete, contiguous reconciled tracks with the same exact end.
+// This is a coverage proof, not evidence that a live Period has actually ended.
+std::optional<double> dashRetainedPeriodEnd(const Json&,const Cancel&);
+// Persist a server-established end before declaring a session ready to advance.
+// Reconcile and recheck coverage again; leave sealing and session intent to caller.
+Json checkpointDashPeriodEnd(const fs::path&,double,const Cancel&);
 // Freeze the complete common interval after Stop. Excluded tail records and all
 // resource files are retained; an explicit requested end must be fully covered.
 Json sealDashRecording(const fs::path&,const Cancel&);
@@ -239,6 +250,8 @@ struct DashRecordingOutput {
  std::vector<fs::path> temporaryInputs;
  i64 bytes=0;std::string sha256;double start=0,duration=0;bool reused=false;
  std::optional<i64> subtitleCues;// Present for a selected caption track, including a verified silent interval.
+ // Own the actual hashed object until its publication handoff, including reuse.
+ std::shared_ptr<PublicationSourcePin> verifiedSource;
 };
 // Produces a verified local staging file; sealed recordings can reuse an atomic
 // output receipt after binding/size/hash checks. The job owns publication/cleanup.

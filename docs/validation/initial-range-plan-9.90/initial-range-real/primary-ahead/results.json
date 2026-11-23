@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 4,
+    "dynamicSplits": 0,
+    "engineThroughJoinedStopMs": 2003.9788,
+    "finishPhases": {
+      "AdvisoryHashBufferRelease": 0.0008371,
+      "AdvisoryHashCommitHandoff": true,
+      "AdvisoryHashInput": "write-buffer",
+      "AdvisoryHashIntentOverlap": true,
+      "AdvisoryHashOverlap": true,
+      "AdvisoryHashOwnerJoin": 7.27e-05,
+      "AdvisoryHashSeconds": 0.0182777,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 3.7e-06,
+      "Content": 0.0003789,
+      "DirectSize": 1.37e-05,
+      "FlushPublished": 0.9129803,
+      "Hash": 1.88e-05,
+      "HashMode": "deferred",
+      "PrePublicationMetadata": 0.0021716,
+      "PrefetchReceipt": 1.1e-06,
+      "PreparedTransferFinalizeSeconds": 0.0045792,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 4.7e-06,
+      "PublishedFileFlush": 0.9126768,
+      "PublishedFileOpen": 0.0002988,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.7845734,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0016296,
+      "SettleDestination": 0.0014683,
+      "SettleLengthQuery": 4.35e-05,
+      "SettleLockWait": 1e-07,
+      "SettleRecoveryCheck": 9.04e-05,
+      "SettleSnapshot": 1.56e-05,
+      "SettleValidateFolder": 5e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.000273,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 16777216,
+    "savedHash": "684b38382481e9062a4836bbe46f53e63d5ef7f8d22b8a6eccafed18e891d97b",
+    "segments": [
+      {
+        "Done": 16777216,
+        "End": 16777215,
+        "Index": 0,
+        "Start": 0
+      }
+    ],
+    "size": 16777216,
+    "transferredBytes": 16777216
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "scope": "Owned x64 observer positive control; not x86 full-coverage proof",
+  "counts": {
+    "CreateFileW": 1,
+    "NtWriteFile": 1,
+    "WriteFile": 1,
+    "NtFlushBuffersFile": 1,
+    "FlushFileBuffers": 1,
+    "CloseHandle": 1
+  },
+  "bytes": 8192,
+  "hashMatches": true,
+  "targetPid": 24404,
+  "noCaptureTruncation": true,
+  "noScriptErrors": true,
+  "sourceSha256": "47dbd2d8ba261f2c9f952fe808b6713cc295bd73fcf38a2a47c4e9ad58509e0c"
+}

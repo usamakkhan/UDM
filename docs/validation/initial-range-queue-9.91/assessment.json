@@ -1,0 +1,48 @@
+{
+  "nativeAssertionsPassed": 244,
+  "pythonAccountingTestsPassed": 6,
+  "normalComparison": [
+    {
+      "case": "single-4m",
+      "allSixFilesHashed": true,
+      "udmLowerObserved": {
+        "processExitWallSeconds": true,
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "durableWallSeconds": true,
+        "durableTailSeconds": true
+      }
+    },
+    {
+      "case": "single-64m",
+      "allSixFilesHashed": true,
+      "udmLowerObserved": {
+        "processExitWallSeconds": true,
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "durableWallSeconds": true,
+        "durableTailSeconds": true
+      }
+    },
+    {
+      "case": "split-64m",
+      "allSixFilesHashed": true,
+      "udmLowerObserved": {
+        "processExitWallSeconds": true,
+        "firstAvailabilityTailSeconds": true,
+        "processExitTailSeconds": true,
+        "durableWallSeconds": true,
+        "durableTailSeconds": true
+      }
+    }
+  ],
+  "volume": "C:",
+  "pairsPerCase": 1,
+  "fullIdmParityGatePassed": false,
+  "reason": "Only one pair per case on C:; D: distribution, installed browser/UI and media matrix remain open.",
+  "installed": false,
+  "released": false,
+  "cleanupCompleted": false,
+  "cleanupReason": "Earlier automatic approval review rejected both fixture and narrower payload deletion: blocked by policy. No alternative deletion attempted.",
+  "labState": "Off"
+}

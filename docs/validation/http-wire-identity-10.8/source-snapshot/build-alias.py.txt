@@ -1,0 +1,11 @@
+from pathlib import Path
+import os,json,subprocess,hashlib
+repo=Path('D:/UDM');area=Path(__file__).parent
+scope={'__file__':str(area/'config.py')};exec((Path(os.environ['LOCALAPPDATA'])/'UDM-Development/finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+records=[]
+for name,record in [('Udm.DashPendingAliasWorkflow',area/'early-core-record.json')]:
+ b=json.loads(record.read_text());objects=[e['path'] for e in b['coreObjects']];assert all(sha(Path(e['path']))==e['sha256'] for e in b['coreObjects']);target=release/(name+'.exe')
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:r=subprocess.run([str(compiler),*common,str(repo/'benchmarks/speed/dash_pending_alias_workflow.cpp'),*objects,str(out/'App.res'),*system,'/Fo'+str(out/'recovery-scratch.obj'),'/Fe'+str(target),'/link','/SUBSYSTEM:CONSOLE','/INCREMENTAL:NO','/MANIFEST:NO','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA'],cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT)
+ assert r.returncode==0,name
+ records.append(dict(path=str(target),sha256=sha(target),coreRecord=str(record)))
+(area/'alias-build.json').write_text(json.dumps(dict(passed=True,sourceSha256=sha(repo/'benchmarks/speed/dash_pending_alias_workflow.cpp'),outputs=records),indent=2),encoding='utf-8')

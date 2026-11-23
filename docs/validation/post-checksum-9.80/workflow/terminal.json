@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "case": "digest-D",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 88,
+      "requests": 25,
+      "root": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\digest-D",
+      "binarySha256": "129CF88D55C1C9F69CAB628760FE1B84A4805BF5FCF8184571EB56BF80861681",
+      "result": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\digest-D\\native\\results.json",
+      "exactRequestCounts": true,
+      "selectedCases": 21
+    },
+    {
+      "case": "digest-C",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 88,
+      "requests": 25,
+      "root": "[local-diagnostics]\\owned-post-checksum-qualification-9.80-C",
+      "binarySha256": "129CF88D55C1C9F69CAB628760FE1B84A4805BF5FCF8184571EB56BF80861681",
+      "result": "[local-diagnostics]\\owned-post-checksum-qualification-9.80-C\\native\\results.json",
+      "exactRequestCounts": true,
+      "selectedCases": 21
+    },
+    {
+      "case": "existing-identity",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 53,
+      "requests": 14,
+      "root": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\existing-identity",
+      "binarySha256": "129CF88D55C1C9F69CAB628760FE1B84A4805BF5FCF8184571EB56BF80861681",
+      "result": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\existing-identity\\native\\results.json"
+    },
+    {
+      "case": "existing-post-gzip",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 49,
+      "requests": 12,
+      "root": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\existing-post-gzip",
+      "binarySha256": "F1437DFE117A78A420B9B22046CCF12C722E604031E80AD5F250544AA55763E7",
+      "result": "[repo]\\.media-cache\\owned-post-checksum-qualification-9.80\\existing-post-gzip\\native\\results.json"
+    }
+  ],
+  "allChildProcessesTerminal": true,
+  "allRunnerServersClosed": true,
+  "allCompiledInputsStillMatch": true
+}

@@ -1,0 +1,39 @@
+#include "DashManifest.hpp"
+#include <iostream>
+using namespace udm;
+static Json readIndex(const fs::path& root){return Json::parse(reveal(str(Json::parse(readText(root/L"recording.json")),"protected")));}
+int wmain(int argc,wchar_t** argv){
+ if(argc!=4&&argc!=5)return 2;auto root=fs::absolute(argv[1]);const auto mode=utf8(argv[3]);fs::create_directories(root);Json checks=Json::array(),result;std::string error;
+ WSADATA sockets{};WSAStartup(MAKEWORD(2,2),&sockets);CoInitializeEx(nullptr,COINIT_MULTITHREADED);
+ auto check=[&](bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);};
+ try{
+  const auto config=argc==5?Json::parse(readText(fs::absolute(argv[4]))):Json::object();
+  const auto workers=num(config,"workers",3);check(workers>=1&&workers<=3,"Fixture worker count is bounded");
+  const auto originHeaders=config.value("origins",Json::object()).get<DashResourceHeaders>();const auto manifestHeaders=config.value("manifestHeaders",Json::object()).get<Headers>();const auto prefs=config.value("preferences",Json::object());
+  auto cancel=std::make_shared<Cancel>();
+  if(mode=="reconcile")result["index"]=reconcileDashRecording(root,*cancel);
+  else{
+   auto snapshot=refreshDashManifest(utf8(argv[2]),manifestHeaders,prefs,cancel);DashLiveUpdate update;update.state.snapshot=snapshot;update.staticPresentation=true;
+   for(size_t n=0;n<snapshot.manifest.nodes.size();++n)if(snapshot.manifest.nodes[n].name=="Representation"){auto track=selectDashTrack(snapshot,n,*cancel);update.windows.push_back(planDashTemplateWindow(track.addressing,0,1000,*cancel));update.state.tracks.push_back(std::move(track));}
+   check(!update.state.tracks.empty()&&update.state.tracks.size()<=3,"Fixture selects bounded actual manifest tracks");
+   size_t accounted=0,observations=0;std::mutex observationMutex;
+   auto observe=[&](size_t slot,size_t bytes,const Cancel& token){
+    std::lock_guard<std::mutex> lock(observationMutex);Json index;bool loaded=false;
+    for(int retry=0;retry<200&&!loaded;++retry){token.check();try{index=readIndex(root);loaded=true;}catch(const std::exception&){if(retry==199)throw;token.wait(5);}}
+    const auto& track=index["tracks"][slot];bool pinned=false;
+    if(track.contains("pendingInitializationVersion"))pinned=!track["pendingInitializationVersion"].is_null();
+    for(const auto& record:track["segments"])if(!record.value("resourceVersion",Json()).is_null()&&!yes(record,"committed"))pinned=true;
+    check(pinned,"Strong response identity is checkpointed before body accounting");++observations;accounted+=bytes;
+    if(mode=="cancel"){cancel->stop=true;throw Cancelled();}
+   };
+   bool cancelled=false;try{result["index"]=captureDashWindow(root,update,originHeaders,prefs,cancel,observe,DashCaptureInterval{0,1},static_cast<size_t>(workers));}catch(const Cancelled&){if(mode!="cancel")throw;cancelled=true;result["index"]=readIndex(root);}
+   if(mode=="cancel")check(cancelled&&observations==1,"Cancellation occurs after durable version admission and before body write");
+   else{
+    const auto index=reconcileDashRecording(root,*cancel);for(const auto& track:index["tracks"])for(const auto& record:track["segments"]){check(yes(record,"committed"),"Recovery verifies the accepted resource receipt");const auto& resource=record["resource"];auto path=root/wide(str(resource,"file"));check(fs::file_size(path)==num(resource,"bytes")&&fileHash(path)==str(resource,"sha256"),"Stored bytes and SHA-256 match the durable receipt");}
+    result["index"]=index;
+   }
+   result["accountedBytes"]=accounted;result["bodyObservations"]=observations;
+  }
+ }catch(const std::exception& e){error=e.what();}
+ result["passed"]=error.empty();result["error"]=error;result["checks"]=checks;atomicText(root/(wide(mode)+L"-results.json"),result.dump(2),false);std::cout<<result.dump()<<"\n";CoUninitialize();WSACleanup();return error.empty()?0:1;
+}

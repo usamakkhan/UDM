@@ -1,0 +1,40 @@
+{
+  "originalHarnessSha256": "FCABE9959CCBADD46A2E304B9D9974E9A2AF6F2AD9B2A73E49E986326807A821",
+  "derivedDriverSha256": "7874BE200D34FBB9B77F3F6C28439350051738F9EDD4F36DCB295DDD22E9D993",
+  "transformations": [
+    [
+      "assert not idm_pids(),'Current-session IDM must be closed before starting';",
+      ""
+    ],
+    [
+      "clients=['udm','idm'];apps=",
+      "clients=['udm'];apps="
+    ],
+    [
+      "clients=['udm','baseline','idm']",
+      "clients=['udm','baseline']"
+    ],
+    [
+      "original=read_settings();save(work/'idm-settings-original.json',original)",
+      "original={};save(work/'idm-settings-original.json',{'notReadOrChanged':True})"
+    ],
+    [
+      "for client in (clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)] if args.baseline_udm else (['udm','idm']if(trial+(case=='single-64m'))%2 else['idm','udm'])):",
+      "for client in clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)]:"
+    ],
+    [
+      "finally:put_settings(original);save(work/'idm-settings-restored.json',{'matches':read_settings()==original})",
+      "finally:save(work/'idm-settings-restored.json',{'notReadOrChanged':True})"
+    ],
+    [
+      "'udmNotSlowerMedian':medians['udm']<=medians['idm'],",
+      "'udmNotSlowerMedianThanBaseline':medians['udm']<=medians['baseline'],"
+    ],
+    [
+      "'settingsRestored':read_settings()==original",
+      "'idmSettingsNotReadOrChanged':True"
+    ]
+  ],
+  "noIdmComparison": true,
+  "settingsNotReadOrChanged": true
+}

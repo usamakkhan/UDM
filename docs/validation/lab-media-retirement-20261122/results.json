@@ -1,0 +1,347 @@
+{
+  "mediaRetirement": {
+    "vmId": "86ccf599-1723-4d50-b37b-d5414b1b8a54",
+    "vmWasOff": true,
+    "guestSystemDiskChanged": false,
+    "dvdConfigurationChanged": false,
+    "originalMediaRetired": true,
+    "rows": [
+      {
+        "path": "<repo>-Lab\\media\\Windows11-Enterprise-LTSC-2024-eval-x64.iso",
+        "originalBytes": 5112850432,
+        "replacementBytes": 53248,
+        "replacementSha256": "7D89CA8EF7447F365A6CFAD8B72945E37D8B11535B38EEB2111D2BDA2B89104F",
+        "role": "Non-bootable retired-media placeholder",
+        "containsSetupOrCredentials": false
+      },
+      {
+        "path": "<repo>-Lab\\bootstrap\\answer.iso",
+        "originalBytes": 55296,
+        "replacementBytes": 53248,
+        "replacementSha256": "7D89CA8EF7447F365A6CFAD8B72945E37D8B11535B38EEB2111D2BDA2B89104F",
+        "role": "Non-bootable retired-media placeholder",
+        "containsSetupOrCredentials": false
+      }
+    ],
+    "startedUtc": "2026-11-22T14:39:32.5883801Z",
+    "hostFreeBytesBefore": 502136832,
+    "hostFreeBytesAfter": 5614600192,
+    "completedUtc": "2026-11-22T14:40:19.3013526Z"
+  },
+  "mediaCopyCleanup": {
+    "removedCount": 50,
+    "logicalBytesRemoved": 5137715200.0,
+    "hostFreeBytesBefore": 5614469120,
+    "hostFreeBytesAfter": 5614469120,
+    "canonicalToolsVerifiedUnchanged": true,
+    "removed": [
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-079-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-079-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-079-browser-0531-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-079-browser-0531-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-browser-0531-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-browser-0531-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-browser-0530-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-browser-0530-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-browser-0522-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-browser-0522-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-078-browser-0521-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-078-browser-0521-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-077-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-077-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-077-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-077-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-076-package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-076-package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\release-076-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\release-076-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\live-hls-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\live-hls-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-session-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-session-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-session-build-20260928\\package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-session-build-20260928\\package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-links-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-links-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-filters-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-filters-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-context-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-context-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-context-build-20260928\\package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-context-build-20260928\\package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\grabber-actions-build-20260928\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\grabber-actions-build-20260928\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\capture-transaction-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\capture-transaction-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\capture-presentation-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\capture-presentation-build\\release-native\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\capture-lifecycle-20260928\\package\\release\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\capture-lifecycle-20260928\\package\\release\\tools\\ffprobe.exe"
+      },
+      {
+        "sha256": "72A489ECCD008C2EC2C0A5856C5C75BC3D8BBFA90166C4566865C246445E6AA3",
+        "canonical": "<repo>\\release\\tools\\ffmpeg.exe",
+        "bytes": 102856192,
+        "path": "<repo>\\.media-cache\\capture-atomic-build\\release-native\\tools\\ffmpeg.exe"
+      },
+      {
+        "sha256": "19202B23C0043F15AD1B7BCE2344F406FD52BD6EFD8F995CE02E7392A1CEC52F",
+        "canonical": "<repo>\\release\\tools\\ffprobe.exe",
+        "bytes": 102652416,
+        "path": "<repo>\\.media-cache\\capture-atomic-build\\release-native\\tools\\ffprobe.exe"
+      }
+    ],
+    "kept": [],
+    "completedUtc": "2026-11-22T14:49:08.9017154Z"
+  },
+  "vmState": "Off",
+  "bootAfterReplacementVerified": false,
+  "powerOffReason": "Emergency protection of nearly exhausted host D: drive; not a graceful guest shutdown.",
+  "physicalFreeGainFromMediaBytes": 5112463360,
+  "physicalFreeGainFromToolCopiesBytes": 0
+}

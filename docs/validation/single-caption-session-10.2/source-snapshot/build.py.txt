@@ -1,0 +1,34 @@
+from pathlib import Path
+import os,json,subprocess,hashlib,shutil
+repo=Path('D:/UDM');area=Path(__file__).parent
+scope={'__file__':str(area/'config.py')};exec((Path(os.environ['LOCALAPPDATA'])/'UDM-Development/finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+prior=json.loads((repo/'.media-cache/gapless-aac-tail-build-10.1/build-result.json').read_text(encoding='utf-8'))
+assert shutil.disk_usage(area).free>1024**3
+sources=[dict(path=e['path'],sha256=sha(repo/e['path'])) for e in prior['sources']]
+for name in ['native/GaplessAacTail.hpp','native/GaplessAacTailTests.cpp','benchmarks/speed/gapless_aac_tail_workflow.cpp','tests/gapless-aac-tail.native-live.py']:
+ if not any(e['path']==name for e in sources):sources.append(dict(path=name,sha256=sha(repo/name)))
+for e in prior['coreObjects']:assert sha(Path(e['path']))==e['sha256']
+def invoke(args,name):
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:r=subprocess.run(args,cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT)
+ if r.returncode:print((area/(name+'.log')).read_text(encoding='utf-8',errors='replace')[-5000:],flush=True)
+ assert r.returncode==0,name
+objects=[]
+for e in prior['coreObjects']:
+ name=Path(e['path']).stem
+ if name in ['Bridge','DashManifest']:
+  target=out/(name+'.obj');invoke([str(compiler),*common,'/c',str(native/(name+'.cpp')),'/Fo'+str(target)],'compile-'+name);objects.append(str(target))
+ else:objects.append(e['path'])
+invoke([str(cache/'microsoft.windows.sdk.cpp/c/bin/10.0.26100.0/x64/rc.exe'),'/nologo','/fo'+str(out/'App.res'),str(native/'App.rc')],'resources')
+outputs=[]
+targets=[('App','UDM','WINDOWS'),('HostMain','Udm.NativeHost','CONSOLE'),('MonitorMain','Udm.Monitor','CONSOLE'),('SetupMain','Udm.SetupHelper','CONSOLE'),('AutomationMain','Udm.Automation','WINDOWS'),('GaplessAacTailTests','Udm.GaplessAacTailTests','CONSOLE'),('RetiredDashBoundaryTests','Udm.RetiredDashBoundaryTests','CONSOLE'),('../benchmarks/speed/gapless_aac_tail_workflow','Udm.GaplessTailWorkflow','CONSOLE'),('../benchmarks/speed/live_dash_continuous_workflow','Udm.ContinuousDashWorkflow','CONSOLE')]
+targets=targets[5:]+targets[:5]
+for src,name,subsystem in targets:
+ target=release/(name+'.exe');invoke([str(compiler),*common,str(native/(src+'.cpp')),*objects,str(out/'App.res'),*system,'/Fo'+str(out/'target-scratch.obj'),'/Fe'+str(target),'/link',*(['/ENTRY:wWinMainCRTStartup'] if src in ['App','AutomationMain'] else []),'/SUBSYSTEM:'+subsystem,'/INCREMENTAL:NO','/MANIFEST:NO','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA'],'link-'+name);outputs.append(dict(name=name,path=str(target),sha256=sha(target)));print('Built '+name,flush=True)
+ if name=='Udm.GaplessTailWorkflow':
+  for version,previous in [('10.1',prior),('10.0',json.loads((repo/'.media-cache/compact-native-build-10.0/build-result.json').read_text(encoding='utf-8')))]:
+   old=[next(e['path'] for e in previous['coreObjects'] if Path(e['path']).stem=='DashManifest') if Path(p).stem=='DashManifest' else p for p in objects]
+   target=release/('Udm.GaplessTailWorkflow-Control'+version+'.exe');invoke([str(compiler),*common,str(native/(src+'.cpp')),*old,str(out/'App.res'),*system,'/Fo'+str(out/'target-scratch.obj'),'/Fe'+str(target),'/link','/SUBSYSTEM:CONSOLE','/INCREMENTAL:NO','/MANIFEST:NO','/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA'],'link-control'+version);outputs.append(dict(name='Control'+version,path=str(target),sha256=sha(target)))
+
+for e in sources:assert sha(repo/e['path'])==e['sha256']
+record=dict(passed=True,version='10.2',extensionVersion='0.73.66',sources=sources,coreObjects=[dict(path=p,sha256=sha(Path(p))) for p in objects],outputs=outputs,fullBuildEntrypointExecuted=False,installerCreated=False,installed=False)
+(area/'build-result.json').write_text(json.dumps(record,indent=2),encoding='utf-8');print('Build complete',flush=True)

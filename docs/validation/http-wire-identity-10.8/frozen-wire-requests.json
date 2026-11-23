@@ -1,0 +1,203 @@
+[
+  {
+    "path": "/winhttp/default",
+    "method": "GET",
+    "encoding": [
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/identity",
+    "method": "GET",
+    "encoding": [
+      "identity, identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/lowercase",
+    "method": "GET",
+    "encoding": [
+      "identity, identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/mixed-case",
+    "method": "GET",
+    "encoding": [
+      "identity, identity, identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/conflicting",
+    "method": "GET",
+    "encoding": [
+      "identity, identity, gzip"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/post",
+    "method": "POST",
+    "encoding": [
+      "identity, identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "application/vnd.yt-ump",
+    "contentType": "application/x-protobuf",
+    "bodyHex": "000102ff"
+  },
+  {
+    "path": "/winhttp/head",
+    "method": "HEAD",
+    "encoding": [
+      "identity, identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/winhttp/range",
+    "method": "GET",
+    "encoding": [
+      "identity, identity"
+    ],
+    "range": "bytes=0-4",
+    "ifRange": "\"owned\"",
+    "accept": null,
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/default",
+    "method": "GET",
+    "encoding": [
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/identity",
+    "method": "GET",
+    "encoding": [
+      "identity",
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/lowercase",
+    "method": "GET",
+    "encoding": [
+      "identity",
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/mixed-case",
+    "method": "GET",
+    "encoding": [
+      "identity",
+      "identity",
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/conflicting",
+    "method": "GET",
+    "encoding": [
+      "identity",
+      "identity",
+      "gzip"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/post",
+    "method": "POST",
+    "encoding": [
+      "identity",
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "application/vnd.yt-ump",
+    "contentType": "application/x-protobuf",
+    "bodyHex": "000102ff"
+  },
+  {
+    "path": "/curl/head",
+    "method": "HEAD",
+    "encoding": [
+      "identity",
+      "identity"
+    ],
+    "range": null,
+    "ifRange": null,
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  },
+  {
+    "path": "/curl/range",
+    "method": "GET",
+    "encoding": [
+      "identity",
+      "identity"
+    ],
+    "range": "bytes=0-4",
+    "ifRange": "\"owned\"",
+    "accept": "*/*",
+    "contentType": null,
+    "bodyHex": ""
+  }
+]

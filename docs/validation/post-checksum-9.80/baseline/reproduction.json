@@ -1,0 +1,168 @@
+{
+  "counterexamples": 7,
+  "positiveControls": 2,
+  "runs": [
+    {
+      "case": "digest-repr-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-repr-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-content-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-content-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-legacy-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-legacy-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-redirect-repr-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-redirect-repr-bad",
+          "serverSha256": "",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 2,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-repost-repr-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-repost-repr-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 2,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-empty-content-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "route": "digest-empty-content-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-unknown-repr-bad",
+      "expectedFailureReproduced": true,
+      "positiveControlPassed": false,
+      "exitCode": 1,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-unknown-repr-bad",
+          "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-repr-good",
+      "expectedFailureReproduced": false,
+      "positiveControlPassed": true,
+      "exitCode": 0,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-repr-good",
+          "serverSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 1,
+      "baselineVersion": "9.79"
+    },
+    {
+      "case": "digest-redirect-repr-good",
+      "expectedFailureReproduced": false,
+      "positiveControlPassed": true,
+      "exitCode": 0,
+      "observations": [
+        {
+          "error": "",
+          "published": true,
+          "publishedSha256": "bdbc6526516d45414505d651f99025e60c0268589ffbd2af12119561ac89691f",
+          "route": "digest-redirect-repr-good",
+          "serverSha256": "",
+          "status": "Complete"
+        }
+      ],
+      "requestCount": 2,
+      "baselineVersion": "9.79"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "scope": "Owned x64 observer positive control; not yet x86 IDM runtime acceptance",
+  "events": 6,
+  "counts": {
+    "CreateFileW": 1,
+    "NtWriteFile": 1,
+    "WriteFile": 1,
+    "NtFlushBuffersFile": 1,
+    "FlushFileBuffers": 1,
+    "CloseHandle": 1
+  },
+  "payloadBytes": 8192,
+  "hashMatches": true,
+  "noScriptErrors": true,
+  "noCaptureTruncation": true,
+  "targetPid": 29204,
+  "sourceSha256": "05607cae63f818d8e1c64817e7b21d4e436e8da74bc341e8ba772cbcd70749c8",
+  "ownedPayloadRetained": true
+}

@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,hashlib,os
+repo=Path('D:/UDM');area=Path(__file__).parent;public=repo/'docs/validation/single-caption-session-10.2';public.mkdir(exist_ok=False);snap=public/'source-snapshot';snap.mkdir()
+read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+def clean(value):
+ if isinstance(value,str):
+  for a,b in [(str(area),'<candidate>'),(str(repo),'<repository>'),(os.environ['USERPROFILE'],'<profile>'),('C:/Program Files/UDM','<host-install>'),('C:\\Program Files\\UDM','<host-install>')]:value=value.replace(a,b).replace(a.replace('\\','/'),b)
+  return value
+ if isinstance(value,list):return [clean(e) for e in value]
+ if isinstance(value,dict):return {k:clean(v) for k,v in value.items()}
+ return value
+def emit(name,value):(public/name).write_text(json.dumps(clean(value),indent=2),encoding='utf-8',newline='\n')
+records=[('verification.json','verification.json'),('build-result.json','build.json'),('encoded-payload-control.json','encoded-payload-control.json'),('initial-combined-payload-equality-rejected.json','rejected-whole-payload-hypothesis.json'),('negative-controls.json','negative-controls.json'),('caption-workflow-01/results.json','caption-workflow.json'),('caption-workflow-01/passed.json','caption-owned-assets.json'),('caption-workflow-01/frozen-control.json','frozen-10.1-assembler.json'),('direct-regression-01/results.json','direct-regression.json'),('direct-regression-01/passed.json','direct-owned-assets.json'),('direct-regression-01/frozen-control.json','frozen-10.0-assembler.json'),('continuous-regression-02/qualification.json','continuous-regression.json'),('continuous-regression-02/candidate-terminal.json','continuous-terminal.json'),('continuous-regression-01/candidate-terminal.json','continuous-first-terminal.json'),('continuous-regression-01/av/record-results.json','continuous-first-failure.json'),('final-GaplessAacTailTests/results.json','gapless-structural.json'),('final-RetiredDashBoundaryTests/results.json','strict-boundary.json')]
+for source,name in records:emit(name,read(area/source))
+emit('continuous-case-results.json',[dict(case=e['case'],exitCode=e['exitCode'],result=read(Path(e['result']))) for e in read(area/'continuous-regression-02/candidate-terminal.json')['records']])
+emit('host-protection.json',read(repo/'docs/validation/completion-claim-9.92/host-protection.json'))
+for name in ['continuous-regression-01.log','continuous-regression-02.log']:(public/name).write_text(clean((area/name).read_text(encoding='utf-8',errors='replace')),encoding='utf-8',newline='\n')
+sources=[]
+for name in ['native/GaplessAacTail.hpp','native/DashManifest.cpp','native/DashManifest.hpp','native/Version.hpp','browser/chromium/manifest.json','browser/firefox/manifest.json','benchmarks/speed/gapless_aac_tail_workflow.cpp','tests/gapless-aac-tail.native-live.py']:
+ target=snap/(name.replace('/','__')+'.txt');target.write_bytes((repo/name).read_bytes());sources.append(dict(path=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+for name in ['build.py','verify.py','packet-oracle.py','negative-controls.py','export.py']:
+ target=snap/(name+'.txt');target.write_bytes((area/name).read_bytes());sources.append(dict(recipe=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+old=area/'before-DashManifest.cpp';expected=next(e['sha256'] for e in read(repo/'.media-cache/gapless-aac-tail-build-10.1/build-result.json')['sources'] if e['path']=='native/DashManifest.cpp');assert sha(old)==expected;frozen=snap/'frozen-10.1-DashManifest.cpp.txt';frozen.write_bytes(old.read_bytes());sources.append(dict(path='native/DashManifest.cpp',version='10.1',snapshot=frozen.relative_to(public).as_posix(),sha256=sha(frozen)))
+emit('source-provenance.json',dict(sources=sources,allBuildInputsStillMatch=True,currentScope='Single-Period caption sessions; no full installed IDM equivalence claim.'))
+files=[dict(path=p.relative_to(public).as_posix(),sha256=sha(p),bytes=p.stat().st_size) for p in sorted(public.rglob('*')) if p.is_file()];emit('manifest.json',dict(passed=True,records=files,binariesIncluded=False,ownedMediaIncluded=False,allTestAttemptsPassed=False))
+for e in files:assert sha(public/e['path'])==e['sha256']
+for p in public.rglob('*'):
+ if p.is_file() and p.parent!=snap:assert b'Usama' not in p.read_bytes(),p
+print(str(len(files))+' tracked metadata/source records verified')

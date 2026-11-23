@@ -1,0 +1,145 @@
+"""Compare complete CLI download lifetimes, including final worker work and /q shutdown.
+Windows only. Uses an owned loopback origin; restores IDM connection values/types.
+Only explicitly requested, verified owned payloads are deleted. No process is
+terminated and no GUI input is injected.
+"""
+from pathlib import Path
+import argparse,ctypes,json,os,statistics,subprocess,sys,time,uuid,winreg
+from ctypes import wintypes as W
+sys.path.insert(0,r'<repo>\benchmarks\speed')
+from origin import Origin,Options,expected_sha256
+import hashlib
+
+def sha(p):
+ with p.open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest().upper()
+def save(p,v):p.write_text(json.dumps(v,indent=2)+'\n',encoding='utf-8')
+def load(p):return json.loads(p.read_text(encoding='utf-8-sig'))
+k=ctypes.WinDLL('kernel32',use_last_error=True)
+class Entry(ctypes.Structure):
+ _fields_=[('size',W.DWORD),('usage',W.DWORD),('pid',W.DWORD),('heap',ctypes.c_size_t),('module',W.DWORD),('threads',W.DWORD),('parent',W.DWORD),('priority',W.LONG),('flags',W.DWORD),('exe',W.WCHAR*260)]
+k.CreateToolhelp32Snapshot.argtypes=[W.DWORD,W.DWORD];k.CreateToolhelp32Snapshot.restype=W.HANDLE
+k.Process32FirstW.argtypes=[W.HANDLE,ctypes.POINTER(Entry)];k.Process32NextW.argtypes=[W.HANDLE,ctypes.POINTER(Entry)]
+k.OpenProcess.argtypes=[W.DWORD,W.BOOL,W.DWORD];k.OpenProcess.restype=W.HANDLE
+k.CloseHandle.argtypes=[W.HANDLE];k.WaitForSingleObject.argtypes=[W.HANDLE,W.DWORD]
+k.GetProcessTimes.argtypes=[W.HANDLE,*([ctypes.POINTER(W.FILETIME)]*4)]
+k.ProcessIdToSessionId.argtypes=[W.DWORD,ctypes.POINTER(W.DWORD)]
+k.GetSystemTimePreciseAsFileTime.argtypes=[ctypes.POINTER(W.FILETIME)]
+k.CreateFileW.argtypes=[W.LPCWSTR,W.DWORD,W.DWORD,ctypes.c_void_p,W.DWORD,W.DWORD,W.HANDLE];k.CreateFileW.restype=W.HANDLE
+invalid=ctypes.c_void_p(-1).value
+sid=W.DWORD();assert k.ProcessIdToSessionId(os.getpid(),ctypes.byref(sid));session=sid.value
+
+def ticks(ft):return (ft.dwHighDateTime<<32)|ft.dwLowDateTime
+def anchor():
+ before=time.perf_counter();ft=W.FILETIME();k.GetSystemTimePreciseAsFileTime(ctypes.byref(ft));after=time.perf_counter();return ((before+after)/2,ticks(ft),after-before)
+def idm_pids():
+ h=k.CreateToolhelp32Snapshot(2,0)
+ if h==invalid:raise ctypes.WinError(ctypes.get_last_error())
+ found=[]
+ try:
+  e=Entry();e.size=ctypes.sizeof(e);ok=k.Process32FirstW(h,ctypes.byref(e))
+  while ok:
+   if e.exe.lower()=='idman.exe':
+    s=W.DWORD()
+    if k.ProcessIdToSessionId(e.pid,ctypes.byref(s))and s.value==session:found.append(e.pid)
+   ok=k.Process32NextW(h,ctypes.byref(e))
+ finally:k.CloseHandle(h)
+ return found
+
+def available(path):
+ h=k.CreateFileW(str(path),0x80000000,0,None,3,0x80,None)
+ if h==invalid:return False
+ k.CloseHandle(h);return True
+
+def exit_ticks(handle):
+ if k.WaitForSingleObject(handle,0)!=0:return None
+ values=[W.FILETIME()for _ in range(4)]
+ if not k.GetProcessTimes(handle,*[ctypes.byref(v)for v in values]):raise ctypes.WinError(ctypes.get_last_error())
+ return ticks(values[1])
+regpath=r'Software\DownloadManager';regnames=['MaxConnectionsNumber','ConnectionsNumber']
+def read_settings():
+ with winreg.OpenKey(winreg.HKEY_CURRENT_USER,regpath)as key:
+  result={}
+  for name in regnames:
+   try:result[name]=list(winreg.QueryValueEx(key,name))
+   except FileNotFoundError:result[name]=None
+  return result
+
+def put_settings(values):
+ with winreg.OpenKey(winreg.HKEY_CURRENT_USER,regpath,0,winreg.KEY_SET_VALUE)as key:
+  for name,value in values.items():
+   if value is None:
+    try:winreg.DeleteValue(key,name)
+    except FileNotFoundError:pass
+   else:winreg.SetValueEx(key,name,0,value[1],value[0])
+
+k.FlushFileBuffers.argtypes=[W.HANDLE];k.FlushFileBuffers.restype=W.BOOL
+def durable_output(output):
+ began=time.perf_counter();h=k.CreateFileW(str(output),0x40000000,0,None,3,0x00200000,None);opened=time.perf_counter()
+ if h==invalid:raise ctypes.WinError(ctypes.get_last_error())
+ try:
+  if not k.FlushFileBuffers(h):raise ctypes.WinError(ctypes.get_last_error())
+  flushed=time.perf_counter()
+ finally:
+  if not k.CloseHandle(h):raise ctypes.WinError(ctypes.get_last_error())
+ closed=time.perf_counter()
+ return closed,{'openSeconds':opened-began,'flushSeconds':flushed-opened,'closeSeconds':closed-flushed}
+
+def main():
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--output-root',type=Path,required=True);ap.add_argument('--udm',type=Path,default=Path('C:/Program Files/UDM/UDM.exe'));ap.add_argument('--idm',type=Path,default=Path('C:/Program Files (x86)/Internet Download Manager/IDMan.exe'));ap.add_argument('--expected-udm-sha256',required=True);ap.add_argument('--label',required=True);ap.add_argument('--trials',type=int,default=3);ap.add_argument('--case',choices=['single-4m','single-64m','split-64m'],help='Restrict a diagnostic to one paired case; default retains all three cases.');ap.add_argument('--baseline-udm',type=Path);ap.add_argument('--expected-baseline-sha256');ap.add_argument('--remove-owned-payloads',action='store_true');ap.add_argument('--flush-after-exit',action='store_true',help='Also record a symmetric explicit completed-output flush after app exit; retain original exit metrics.');args=ap.parse_args();work=args.output_root.resolve();assert not work.exists();assert 1<=args.trials<=5;assert sha(args.udm)==args.expected_udm_sha256.upper();assert not idm_pids(),'Current-session IDM must be closed before starting';assert bool(args.baseline_udm)==bool(args.expected_baseline_sha256),'Baseline path/hash pair required';clients=['udm','idm'];apps={'udm':args.udm,'idm':args.idm};
+ if args.baseline_udm:
+  assert sha(args.baseline_udm)==args.expected_baseline_sha256.upper();clients=['udm','baseline','idm'];apps['baseline']=args.baseline_udm
+ work.mkdir(parents=True);(work/'.udm-completion-comparison').write_text('owned comparison');original=read_settings();save(work/'idm-settings-original.json',original);results=[];payloads=[]
+ cases=[('single-4m',4*1024**2,1),('single-64m',64*1024**2,1),('split-64m',64*1024**2,8)]
+ if args.case:cases=[case for case in cases if case[0]==args.case]
+ try:
+  for trial in range(1,args.trials+1):
+   for case,size,connections in cases:
+    for client in (clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)] if args.baseline_udm else (['udm','idm']if(trial+(case=='single-64m'))%2 else['idm','udm'])):
+     folder=work/(case+'-'+client+'-'+str(trial));folder.mkdir();destination=folder/'files';destination.mkdir();output=destination/'sample.bin';data=folder/'catalog';state=data/'state.json'
+     if client!='idm':
+      data.mkdir();save(state,{'Schema':1,'Settings':{'Connections':connections,'Parallel':1,'DownloadFolder':str(destination),'CategoryFolders':False,'SuppressProgressDialog':True,'SuppressCompletionDialog':True,'Sound':False,'ShowTipsOnStartup':False,'ClipboardMonitor':False,'PrefetchFileInfo':False,'StopOnWebPage':False,'DuplicatePolicy':'Add'},'Downloads':[],'Queues':[]})
+     else:assert not idm_pids();put_settings({n:[connections,winreg.REG_DWORD]for n in regnames})
+     origin=Origin(Options(size=size,rate=8_000_000,latency_ms=20,no_range=connections==1,accept_ranges='none'if connections==1 else None,seed=20261113));url=origin.url+'?completion='+uuid.uuid4().hex;command=([str(apps[client]),'--instance-tag','complete-compare-'+uuid.uuid4().hex[:12],'--data-dir',str(data)]if client!='idm'else[str(args.idm)])+['/d',url,'/p',str(destination),'/f',output.name,'/n','/q'];clock=anchor();start=time.perf_counter();control_env=os.environ.copy();control_env.pop('UDM_PUBLICATION_BARRIER_CONTROL',None);control_env.update({'UDM_PUBLICATION_BARRIER_CONTROL':'serial' if client=='udm' else 'overlap'} if client!='idm' else {});p=subprocess.Popen(command,cwd=apps[client].parent,env=control_env);save(folder/'process.json',{'pid':p.pid,'client':client});handles={p.pid:int(p._handle)};owned=[];exits={};first=None;last_scan=0
+     try:
+      while time.perf_counter()-start<120:
+       now=time.perf_counter()
+       if client=='idm'and now-last_scan>=.01:
+        current=idm_pids();last_scan=now
+        for pid in current:
+         if pid not in handles:
+          h=k.OpenProcess(0x100000|0x1000,False,pid)
+          if h:handles[pid]=h;owned.append(h)
+          elif pid in idm_pids():raise ctypes.WinError(ctypes.get_last_error())
+       for pid,h in handles.items():
+        if pid not in exits:
+         end=exit_ticks(h)
+         if end is not None:exits[pid]=end
+       if first is None and output.exists()and output.stat().st_size==size and available(output):first=time.perf_counter()
+       if len(exits)==len(handles)and(client!='idm'or not idm_pids()):
+        assert first is not None,'Process exited before a complete available output';break
+       time.sleep(.002)
+      else:raise TimeoutError('Inspect recorded owned processes before any retry; no process was killed')
+      p.wait(timeout=3);completed=clock[0]+(max(exits.values())-clock[1])/1e7;after=anchor();drift=(after[0]-clock[0])-(after[1]-clock[1])/1e7;assert abs(drift)<.005,'System-clock drift invalidates exact process-exit mapping';snapshot=origin.snapshot();last=max(r['last_body_sent']for c in snapshot['detail']for r in c['requests']if r.get('last_body_sent')is not None);last_perf=origin.epoch+last;assert completed>=last_perf;assert output.stat().st_size==size and available(output);durability=durable_output(output)if args.flush_after_exit else None;digest=sha(output);assert digest==expected_sha256(size,20261113).upper();row=load(state)['Downloads'][0]if client!='idm'else None
+      if row:assert row['Status']=='Complete'and row.get('Sha256','').upper()==digest
+      item={'label':args.label,'trial':trial,'case':case,'client':client,'bytes':size,'configuredConnections':connections,'firstAvailabilityTailSeconds':first-last_perf,'processExitTailSeconds':completed-last_perf,'processExitWallSeconds':completed-start,'firstAvailabilityWallSeconds':first-start,'exitAfterFirstAvailabilitySeconds':completed-first,'clockMappingErrorBoundSeconds':clock[2]/2,'clockDriftSeconds':drift,'trackedProcesses':len(handles),'requests':snapshot['requests'],'originConnections':snapshot['connections'],'peakConcurrent':snapshot['peak_concurrent'],'originBytes':snapshot['bytes_sent'],'sha256':digest,'hashMatches':True,'launcherExitCode':p.returncode,'sourceExecutableSha256':sha(apps[client])}
+      if durability:item.update({'durableTailSeconds':durability[0]-last_perf,'durableWallSeconds':durability[0]-start,'postExitToDurableSeconds':durability[0]-completed,'postExitOperations':durability[1]})
+      if row:item.update({'finishPhases':row.get('FinishPhases'),'publicationPhases':row.get('PublicationPhases'),'networkTailSeconds':row.get('NetworkTailSeconds'),'prefinishWriteback':row.get('PrefinishWriteback'),'finalSha256':row.get('Sha256')})
+      results.append(item);payloads.append({'path':str(output),'bytes':size,'sha256':digest});save(folder/'result.json',item);save(work/'results.json',{'results':results,'payloads':payloads});print(json.dumps({'trial':trial,'case':case,'client':client,'fullExitTailMs':round(item['processExitTailSeconds']*1000,3),'firstTailMs':round(item['firstAvailabilityTailSeconds']*1000,3),'processes':len(handles),'hashMatches':True}),flush=True)
+      if args.remove_owned_payloads:
+       assert output.parent==destination and destination.parent==folder and folder.parent==work and (work/'.udm-completion-comparison').is_file()
+       for node in (work,folder,destination,output):assert not node.lstat().st_file_attributes&0x400
+       assert output.stat().st_nlink==1 and sha(output)==digest
+       output.unlink();payloads[-1]['removed']=True;save(work/'results.json',{'results':results,'payloads':payloads})
+     finally:
+      # Retain range/body accounting even when a run fails. This is the owned
+      # synthetic origin, never browser traffic or a user's download history.
+      save(folder/'origin.json',origin.snapshot())
+      for h in owned:k.CloseHandle(h)
+      origin.close()
+      if client=='idm':put_settings(original)
+ finally:put_settings(original);save(work/'idm-settings-restored.json',{'matches':read_settings()==original})
+ assert len(results)==args.trials*len(cases)*len(clients);summary=[]
+ for case,_,_ in cases:
+  rows={c:[x for x in results if x['case']==case and x['client']==c]for c in clients};medians={c:statistics.median(x['processExitTailSeconds']for x in v)*1000 for c,v in rows.items()};summary.append({'case':case,'medianProcessExitTailMs':{c:round(v,3)for c,v in medians.items()},'udmNotSlowerMedian':medians['udm']<=medians['idm'],'processExitTailMs':{c:[round(x['processExitTailSeconds']*1000,3)for x in v]for c,v in rows.items()}})
+ save(work/'terminal.json',{'passed':True,'label':args.label,'transfers':len(results),'settingsRestored':read_settings()==original,'flushAfterExit':args.flush_after_exit,'summary':summary,'primaryMetric':'Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services.'});print(json.dumps({'summary':summary}),flush=True)
+if __name__=='__main__':main()

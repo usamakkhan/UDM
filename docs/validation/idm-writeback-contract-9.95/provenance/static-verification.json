@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "machine": "x86",
+  "imageBase": "0x400000",
+  "peImportsIndependentlyParsed": true,
+  "rawCreateArgumentAndCallBytesVerified": true,
+  "rawPartFlushHandleOffsetAndImportCallVerified": true,
+  "rawCallerRelativeTargetVerified": true,
+  "partCreate": {
+    "procedure": "0x56fc40",
+    "access": 3221225472,
+    "share": 1,
+    "disposition": 2,
+    "flags": 0,
+    "iat": "0x6944a0"
+  },
+  "partFlush": {
+    "procedure": "0x570290",
+    "handleOffset": 20,
+    "iat": "0x6943a8"
+  },
+  "directFlushCallerAddresses": [
+    "0x455d10",
+    "0x570290",
+    "0x61e776",
+    "0x6550a6"
+  ],
+  "staticCoverageDoesNotProveAllRuntimePaths": true,
+  "existingArtifactHashes": {
+    "all-functions.c": "D3F85865619373C7F7F407BDE16BCDCC696B6A627CB18F42D2795C4B5D7CA6CB",
+    "functions.tsv": "FB45B9927B41964F4FD2C9EF34FAE371DA931AE9FEFDA3B8D74E1B0139F106A1",
+    "instructions.asm": "BBE8077E82A6E36FE05D6CB0A7648A1AEBE5A70807C1CC28AC3CAD5123CEBB3B",
+    "summary.json": "30C2948E7028B6C9790C41F7F55C4A53034FAF4A0C53ADEB67DB5CC89558C3DA"
+  },
+  "providerSessionClosed": true,
+  "globalOrInstalledProgramChanged": false
+}

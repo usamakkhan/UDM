@@ -1,0 +1,82 @@
+{
+  "allActorsTerminal": true,
+  "originClosed": true,
+  "records": [
+    {
+      "case": "positive",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "EB65F8302EE1057196088C8B8937F11837BDEFAFABBBC56B64291CC8DCE4A6FF",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\positive\\capture-results.json"
+    },
+    {
+      "case": "positive",
+      "stage": "baseline",
+      "exitCode": 1,
+      "binarySha256": "EB65F8302EE1057196088C8B8937F11837BDEFAFABBBC56B64291CC8DCE4A6FF",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\positive\\baseline-results.json"
+    }
+  ],
+  "requests": [
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 759
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "positive",
+      "step": "baseline",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    }
+  ]
+}

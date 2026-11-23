@@ -1,0 +1,1205 @@
+{
+  "passed": true,
+  "cases": 17,
+  "results": [
+    {
+      "case": "fresh",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "ec516d6707b1f720a7093a23f650be3c303b233958111148bd8beb1f354f5a6e",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "e79ecb4bd1750063ec859c05c6f38769ed415e3623e0af903a5baa8f927527cb",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "edb2e9c8d5d35490fb412e3df63ddbbbafa729072eb56e7ddd95039b0985a67e",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "edb2e9c8d5d35490fb412e3df63ddbbbafa729072eb56e7ddd95039b0985a67e.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/fresh/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/fresh/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/fresh/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/fresh/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "head-supported",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "184aec42a2be0bc5ced8981566bfc2423eb7f1b670ee5b5f8ea0b4ab7a15a388",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "3e4860941f774b5d6e82ee5dba9eb39b3fc21b402bcf3cbec56c15f36929d0b4",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "386b97a2f15968f176f0b8cad1610daffa0547591179ddef39b8ecf3b59577f5",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "386b97a2f15968f176f0b8cad1610daffa0547591179ddef39b8ecf3b59577f5.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/head-supported/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/head-supported/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/head-supported/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/head-supported/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "init",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 8192,
+        "bodyObservations": 2,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "f64e78d4e3848a83a3c2d6b70db2ad916138702ec08bc19affe0dfdbccf72624",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "1a862cab0e0ad1a3929ba80a008016c58eebbc9cd50a102eef4f334b8668f8e2",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initialization": {
+                "binding": "1811a4e6e233c9b4beed48e36bdaee17a0e95bf6328488ca59bf396ea552819d",
+                "bytes": 4096,
+                "file": "1811a4e6e233c9b4beed48e36bdaee17a0e95bf6328488ca59bf396ea552819d.part",
+                "resourceVersion": {
+                  "etag": "\"first\"",
+                  "total": 4096,
+                  "url": "http://127.0.0.1:55699/init/init.bin"
+                },
+                "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+                "urls": [
+                  "http://127.0.0.1:55699/init/init.bin"
+                ],
+                "versionRequired": true
+              },
+              "initializationVerified": true,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "32927e9a3ea1271b0323bab7e23c51d1f790ecbd175b73e4a086f8adfc77a91b",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "32927e9a3ea1271b0323bab7e23c51d1f790ecbd175b73e4a086f8adfc77a91b.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/init/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/init/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/init/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/init/init.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/init/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "ranged",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 1,
+          "selection": "ee86d35ec5af5196315641d22c63a369e8feeb500f5d29a97dfcdb56ef37e8f3",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "22a5e2b6dfdcc7511cbbaa3059658e0e63b038a3039650715b6d5ed61f024118",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "def8c690d6c6747010d8c55b64f30a23c4be4e84b37bc4b3a445fa173417f40d",
+                  "byteRange": {
+                    "length": 4096,
+                    "start": 0
+                  },
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "def8c690d6c6747010d8c55b64f30a23c4be4e84b37bc4b3a445fa173417f40d.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/ranged/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/ranged/segment.bin"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/ranged/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/ranged/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/ranged/segment.bin",
+          "range": "bytes=0-4095",
+          "ifMatch": "\"first\""
+        }
+      ]
+    },
+    {
+      "case": "fresh",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 0,
+        "bodyObservations": 0,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "ec516d6707b1f720a7093a23f650be3c303b233958111148bd8beb1f354f5a6e",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "e79ecb4bd1750063ec859c05c6f38769ed415e3623e0af903a5baa8f927527cb",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "edb2e9c8d5d35490fb412e3df63ddbbbafa729072eb56e7ddd95039b0985a67e",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "edb2e9c8d5d35490fb412e3df63ddbbbafa729072eb56e7ddd95039b0985a67e.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/fresh/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/fresh/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/fresh/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "html",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "DASH discovery did not return a plain full resource.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/html/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/html/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "encoding",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "DASH discovery did not return a plain full resource.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/encoding/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/encoding/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "content-range",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "DASH discovery did not return a plain full resource.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/content-range/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/content-range/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "duplicate",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "Ambiguous DASH full-resource metadata.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/duplicate/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/duplicate/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "weak",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "DASH resource version requires a size and strong entity tag.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/weak/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/weak/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/weak/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/weak/segment.bin",
+          "range": "bytes=0-0",
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "missing-tag",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "DASH resource version requires a size and strong entity tag.",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/missing-tag/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/missing-tag/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/missing-tag/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/missing-tag/segment.bin",
+          "range": "bytes=0-0",
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "chunked",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "ad9e514dc27c498232f30405a940e1fe6851534eb86b9e4c5b03e5fc8337c2cf",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "1b86c44c86d7c191ebe48e8b3011c815fc978d0874f77716f54aefefba1fc080",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "df7747bfe8915d0ce9a8b9d8bfd947205edcb1e72d58af9b3907235a77413868",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "df7747bfe8915d0ce9a8b9d8bfd947205edcb1e72d58af9b3907235a77413868.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/chunked/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/chunked/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/chunked/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/chunked/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "HEAD",
+          "path": "/chunked/segment.bin",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/chunked/segment.bin",
+          "range": null,
+          "ifMatch": "\"first\""
+        }
+      ]
+    },
+    {
+      "case": "cancel",
+      "mode": "cancel",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Cancellation occurs after durable version admission and before body write",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "72ca67359136e4b9a431ca7132f7987917c882591b3d600faf3bf309de3c1fbf",
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "c02181469f30182f585d5d68123d3a4ab7b77453adf80ba01f9d2a3b3b893ef4",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "14d36c339a38946abb4b12597771ef669c89ad5f4869adeed06f26554db2216f",
+                  "committed": false,
+                  "duration": 1000,
+                  "number": 1,
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/cancel/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/cancel/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/cancel/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/cancel/segment.bin",
+          "range": null,
+          "ifMatch": null
+        }
+      ]
+    },
+    {
+      "case": "cancel",
+      "mode": "reconcile",
+      "expectedSuccess": true,
+      "result": {
+        "checks": [],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "72ca67359136e4b9a431ca7132f7987917c882591b3d600faf3bf309de3c1fbf",
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "c02181469f30182f585d5d68123d3a4ab7b77453adf80ba01f9d2a3b3b893ef4",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "14d36c339a38946abb4b12597771ef669c89ad5f4869adeed06f26554db2216f",
+                  "committed": false,
+                  "duration": 1000,
+                  "number": 1,
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/cancel/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/cancel/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": []
+    },
+    {
+      "case": "cancel",
+      "mode": "capture",
+      "expectedSuccess": false,
+      "result": {
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          }
+        ],
+        "error": "The server rejected the download URL (HTTP 412).",
+        "passed": false
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/cancel/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/cancel/segment.bin",
+          "range": null,
+          "ifMatch": "\"first\""
+        }
+      ]
+    },
+    {
+      "case": "cancel",
+      "mode": "reconcile",
+      "expectedSuccess": true,
+      "result": {
+        "checks": [],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "72ca67359136e4b9a431ca7132f7987917c882591b3d600faf3bf309de3c1fbf",
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "c02181469f30182f585d5d68123d3a4ab7b77453adf80ba01f9d2a3b3b893ef4",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "14d36c339a38946abb4b12597771ef669c89ad5f4869adeed06f26554db2216f",
+                  "committed": false,
+                  "duration": 1000,
+                  "number": 1,
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/cancel/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/cancel/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": []
+    },
+    {
+      "case": "cancel",
+      "mode": "capture",
+      "expectedSuccess": true,
+      "result": {
+        "accountedBytes": 4096,
+        "bodyObservations": 1,
+        "checks": [
+          {
+            "name": "Fixture selects one actual manifest track",
+            "passed": true
+          },
+          {
+            "name": "Strong response identity is checkpointed before body accounting",
+            "passed": true
+          },
+          {
+            "name": "Recovery verifies the accepted resource receipt",
+            "passed": true
+          },
+          {
+            "name": "Stored bytes and SHA-256 match the durable receipt",
+            "passed": true
+          }
+        ],
+        "error": "",
+        "index": {
+          "captureEnd": 1.0,
+          "captureStart": 0.0,
+          "schema": 2,
+          "selection": "72ca67359136e4b9a431ca7132f7987917c882591b3d600faf3bf309de3c1fbf",
+          "staticPresentation": true,
+          "tracks": [
+            {
+              "identity": {
+                "adaptation": "video",
+                "format": {
+                  "audioSamplingRate": "",
+                  "codecs": "avc1.42c01e",
+                  "contentType": "",
+                  "descriptors": [],
+                  "frameRate": "",
+                  "height": "90",
+                  "lang": "",
+                  "mimeType": "video/mp4",
+                  "sar": "",
+                  "scanType": "",
+                  "width": "160"
+                },
+                "period": "p",
+                "periodStart": 0.0,
+                "presentation": "c02181469f30182f585d5d68123d3a4ab7b77453adf80ba01f9d2a3b3b893ef4",
+                "presentationTimeOffset": 0,
+                "representation": "v",
+                "schema": 1,
+                "timescale": 1000
+              },
+              "initializationVerified": false,
+              "periodDuration": 1.0,
+              "segments": {
+                "1": {
+                  "binding": "14d36c339a38946abb4b12597771ef669c89ad5f4869adeed06f26554db2216f",
+                  "committed": true,
+                  "duration": 1000,
+                  "number": 1,
+                  "resource": {
+                    "bytes": 4096,
+                    "file": "14d36c339a38946abb4b12597771ef669c89ad5f4869adeed06f26554db2216f.part",
+                    "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+                  },
+                  "resourceVersion": {
+                    "etag": "\"first\"",
+                    "total": 4096,
+                    "url": "http://127.0.0.1:55699/cancel/segment.bin"
+                  },
+                  "time": 0,
+                  "urls": [
+                    "http://127.0.0.1:55699/cancel/segment.bin"
+                  ],
+                  "versionRequired": true
+                }
+              }
+            }
+          ]
+        },
+        "passed": true
+      },
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/cancel/manifest.mpd",
+          "range": null,
+          "ifMatch": null
+        },
+        {
+          "method": "GET",
+          "path": "/cancel/segment.bin",
+          "range": null,
+          "ifMatch": "\"first\""
+        }
+      ]
+    }
+  ],
+  "recovery": [],
+  "actorSha256": "7e1a928f1966a235534e1c9c9043b57850c1057167015849bf8c078f4a3d8b48",
+  "recipeSha256": "a9eac78971072951d0d9c71b3e6334225411905b793565b86a961691be6dc29e"
+}

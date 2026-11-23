@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "suites": [
+    {
+      "suite": "claim-frozen",
+      "passed": true,
+      "checks": 2,
+      "error": "",
+      "resultRoot": "ui-runs-cli-final"
+    },
+    {
+      "suite": "claim-current",
+      "passed": true,
+      "checks": 50,
+      "error": "",
+      "resultRoot": "ui-runs-cli-final"
+    },
+    {
+      "suite": "modal-regression",
+      "passed": true,
+      "checks": 136,
+      "error": "",
+      "resultRoot": "ui-runs-final"
+    },
+    {
+      "suite": "suppression-regression",
+      "passed": true,
+      "checks": 24,
+      "error": "",
+      "resultRoot": "ui-runs-final"
+    }
+  ]
+}

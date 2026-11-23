@@ -1,0 +1,66 @@
+{
+  "coverageValidated": true,
+  "normalBinarySameForBothModes": true,
+  "productionChangeAdmitted": false,
+  "rejectedForObservedRegressions": true,
+  "trials": [
+    {
+      "trial": 1,
+      "proposalLosses": [],
+      "proposalMinusDefaultMs": {
+        "firstAvailabilityTailSeconds": -126.88999999954831,
+        "processExitWallSeconds": -539.425899994967,
+        "processExitTailSeconds": -418.7865000058082,
+        "durableWallSeconds": -535.2074999900651,
+        "durableTailSeconds": -414.56810000090627
+      },
+      "proposalPartsDrive": "D:",
+      "defaultPartsDrive": "C:",
+      "proposalStageMode": "hard-link",
+      "defaultStageMode": "write-buffer"
+    },
+    {
+      "trial": 2,
+      "proposalLosses": [],
+      "proposalMinusDefaultMs": {
+        "firstAvailabilityTailSeconds": -794.9683999977424,
+        "processExitWallSeconds": -1328.523900010623,
+        "processExitTailSeconds": -1059.7435000017867,
+        "durableWallSeconds": -1318.3742000037455,
+        "durableTailSeconds": -1049.5937999949092
+      },
+      "proposalPartsDrive": "D:",
+      "defaultPartsDrive": "C:",
+      "proposalStageMode": "hard-link",
+      "defaultStageMode": "write-buffer"
+    },
+    {
+      "trial": 3,
+      "proposalLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "proposalMinusDefaultMs": {
+        "firstAvailabilityTailSeconds": 281.5698999984306,
+        "processExitWallSeconds": 298.6705500006792,
+        "processExitTailSeconds": 159.06304999953136,
+        "durableWallSeconds": 306.4537000027485,
+        "durableTailSeconds": 166.84620000160066
+      },
+      "proposalPartsDrive": "D:",
+      "defaultPartsDrive": "C:",
+      "proposalStageMode": "hard-link",
+      "defaultStageMode": "write-buffer"
+    }
+  ],
+  "lossCounts": {
+    "firstAvailabilityTailSeconds": 1,
+    "processExitWallSeconds": 1,
+    "processExitTailSeconds": 1,
+    "durableWallSeconds": 1,
+    "durableTailSeconds": 1
+  }
+}

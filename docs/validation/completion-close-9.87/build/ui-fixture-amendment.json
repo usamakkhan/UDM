@@ -1,0 +1,8 @@
+{
+  "path": "native/CompletionClosePriorityUiTests.cpp",
+  "before": "DD55AAD422A550AF3EF6A6612DCE57DDFA64C5BC2BA2FDC1DBE797E335A46224",
+  "after": "D7122CD142DFE22DED6B9A59A37C1702B5E29CF9CC19E00C3952B9CA7CD1424E",
+  "reason": "Strengthen the not-yet-compiled UI fixture to verify that direct admission also yields to the pending close owner. Production and backend inputs are unchanged.",
+  "beforeFirstUiFixtureCompilation": true,
+  "afterProductCompilation": true
+}

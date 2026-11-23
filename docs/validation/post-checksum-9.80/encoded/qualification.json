@@ -1,0 +1,233 @@
+{
+  "passed": true,
+  "wireSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+  "decodedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+  "wireBytes": 71,
+  "decodedBytes": 1517,
+  "baselineRedirectChecksumBugReproduced": true,
+  "candidateAllFourOutcomesCorrect": true,
+  "completedInitialFlowsReused": 3,
+  "remainingFlowsLaunched": 5,
+  "observations": [
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "download",
+      "postAttempted": true,
+      "published": true,
+      "publishedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": false,
+      "serverSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "status": "Complete",
+      "userSha256": "",
+      "wireReceiptInvalidated": false,
+      "role": "baseline",
+      "route": "direct-good",
+      "expectedRejection": false,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/direct-good",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "The server checksum did not match the encoded HTTP response. The file was not published.",
+      "mode": "download",
+      "postAttempted": true,
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "reusedResponse": false,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "",
+      "wireReceiptInvalidated": true,
+      "role": "baseline",
+      "route": "direct-bad",
+      "expectedRejection": true,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/direct-bad",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "download",
+      "postAttempted": true,
+      "published": true,
+      "publishedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": false,
+      "serverSha256": "",
+      "status": "Complete",
+      "userSha256": "",
+      "wireReceiptInvalidated": false,
+      "role": "baseline",
+      "route": "redirect-good",
+      "expectedRejection": false,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/redirect-good",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        },
+        {
+          "method": "GET",
+          "path": "/final/redirect-good",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "download",
+      "postAttempted": true,
+      "published": true,
+      "publishedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": false,
+      "serverSha256": "",
+      "status": "Complete",
+      "userSha256": "",
+      "wireReceiptInvalidated": false,
+      "role": "baseline",
+      "route": "redirect-bad",
+      "expectedRejection": false,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/redirect-bad",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        },
+        {
+          "method": "GET",
+          "path": "/final/redirect-bad",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "download",
+      "postAttempted": true,
+      "published": true,
+      "publishedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": false,
+      "serverSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "status": "Complete",
+      "userSha256": "",
+      "wireReceiptInvalidated": false,
+      "role": "candidate",
+      "route": "direct-good",
+      "expectedRejection": false,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/direct-good",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "The server checksum did not match the encoded HTTP response. The file was not published.",
+      "mode": "download",
+      "postAttempted": true,
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "reusedResponse": false,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "",
+      "wireReceiptInvalidated": true,
+      "role": "candidate",
+      "route": "direct-bad",
+      "expectedRejection": true,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/direct-bad",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "download",
+      "postAttempted": true,
+      "published": true,
+      "publishedSha256": "5a850cba8f5d730b0395c68fd3de09c0f38fd157f0e1cced0b7158fddf51df69",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": false,
+      "serverSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "status": "Complete",
+      "userSha256": "",
+      "wireReceiptInvalidated": false,
+      "role": "candidate",
+      "route": "redirect-good",
+      "expectedRejection": false,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/redirect-good",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        },
+        {
+          "method": "GET",
+          "path": "/final/redirect-good",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "The server checksum did not match the encoded HTTP response. The file was not published.",
+      "mode": "download",
+      "postAttempted": true,
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "de5e6dcb83d42a5d23cb98bdecd4ca97ce741f0af0228bc9e4d58fd6b08c6ba4",
+      "reusedResponse": false,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "",
+      "wireReceiptInvalidated": true,
+      "role": "candidate",
+      "route": "redirect-bad",
+      "expectedRejection": true,
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/redirect-bad",
+          "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+        },
+        {
+          "method": "GET",
+          "path": "/final/redirect-bad",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+--- native/LiveDash.hpp@9.76
++++ native/LiveDash.hpp@9.77
+@@ -227,7 +227,20 @@
+   std::optional<DashPeriodTransition> transition;bool advance=false;
+   if(!yes(index,"sealed")&&!session.saving()&&!finishRequested()&&index.is_object()&&index.contains("tracks")&&!index["tracks"].empty()){
+    const auto progress=liveDashProgress(index);const auto& first=index["tracks"].front();if(progress.ready&&first.contains("periodDuration")&&first["periodDuration"].is_number()&&progress.end+0.000001>=real(first,"periodDuration")){
+-    const auto saved=loadLiveDashState(folder,capturePlan,index,*cancel);transition=planDashPeriodTransition(saved,saved.snapshot,*cancel);if(transition)session.beginAdvance(*cancel);else if(!saved.snapshot.manifest.dynamic){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
++    try{
++     auto saved=loadLiveDashState(folder,capturePlan,index,*cancel);bool ended=!saved.snapshot.manifest.dynamic;
++     if(!ended){
++      // A completed retained Period can disappear from a sliding manifest.
++      // Plan its adjacent continuation before trying to rematch the old IDs.
++      connect(*capture);auto refreshed=refreshDashManifest(str(capturePlan,"manifest"),manifestHeaders,prefs,capture,&saved.snapshot,accountMetadata);
++      ended=!refreshed.manifest.dynamic;transition=planDashPeriodTransition(saved,refreshed,*capture);
++      if(!transition){
++       for(auto& track:saved.tracks)track=rematchDashTrack(refreshed,track,*capture);
++       saved.snapshot=std::move(refreshed);checkpointLiveDashRevision(folder,capturePlan,saved,*capture);preparedState=std::move(saved);
++      }
++     }else transition=planDashPeriodTransition(saved,saved.snapshot,*cancel);
++     if(transition)session.beginAdvance(*cancel);else if(ended){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
++    }catch(const Cancelled&){cancel->check();if(!finishRequested())throw;}
+    }
+   }
+   if(session.advancing()&&!yes(index,"sealed")){const auto progress=liveDashProgress(index);if(!progress.ready||progress.end+0.000001<real(index["tracks"].front(),"periodDuration"))throw std::runtime_error("DASH transition boundary is not fully captured.");index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);}
+--- native/Version.hpp@9.76
++++ native/Version.hpp@9.77
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 9,76,0,0
+-#define UDM_VERSION_STRING "9.76"
+-#define UDM_VERSION_WSTRING L"9.76"
++#define UDM_VERSION_TUPLE 9,77,0,0
++#define UDM_VERSION_STRING "9.77"
++#define UDM_VERSION_WSTRING L"9.77"

@@ -1,0 +1,291 @@
+{
+  "records": [
+    {
+      "case": "caption48",
+      "rate": 48000,
+      "samples": 48000,
+      "wanted": 48000,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47664,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\caption48\\assembled-6837e058fbcb49e0b938694d5971ef47.mp4",
+        "reused": false,
+        "sha256": "046d498aad95c94643e50f83247480bced5fd0e959a4186d8e358090f9227b0e",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "videoExact": true,
+      "captionPreserved": true,
+      "noRedundantSessionConcat": true,
+      "selectedTrackMetadataPreserved": true,
+      "metadataChangeInvalidatesReceipt": true,
+      "publication": {
+        "bytes": 47664,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\downloads\\caption48\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "046d498aad95c94643e50f83247480bced5fd0e959a4186d8e358090f9227b0e",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "caption44",
+      "rate": 44100,
+      "samples": 44100,
+      "wanted": 44100,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47929,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\caption44\\assembled-31899db18f944bd1b402f9b0256e6e01.mp4",
+        "reused": true,
+        "sha256": "989c702ee5aabfe3970f38d0373a2615568dd77f19070ca4931a146539fef9fd",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "videoExact": true,
+      "captionPreserved": true,
+      "noRedundantSessionConcat": true,
+      "selectedTrackMetadataPreserved": true,
+      "publication": {
+        "bytes": 47929,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\downloads\\caption44\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "989c702ee5aabfe3970f38d0373a2615568dd77f19070ca4931a146539fef9fd",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "caption-empty",
+      "rate": 48000,
+      "samples": 48000,
+      "wanted": 48000,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47089,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\caption-empty\\assembled-b592d5e403d64af98230989de82848cf.mp4",
+        "reused": true,
+        "sha256": "314ff4034a153e175c78b809d930aa15348349a4f4df7e961b5d41d9c7eee3d7",
+        "start": 0.0,
+        "subtitleCues": 0,
+        "temporaryInputCount": 2
+      },
+      "videoExact": true,
+      "emptyCaptionsOmitted": true,
+      "noRedundantSessionConcat": true,
+      "selectedTrackMetadataPreserved": true,
+      "publication": {
+        "bytes": 47089,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\downloads\\caption-empty\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "314ff4034a153e175c78b809d930aa15348349a4f4df7e961b5d41d9c7eee3d7",
+        "start": 0.0,
+        "subtitleCues": 0,
+        "temporaryInputCount": 2
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "caption-offset",
+      "rate": 48000,
+      "samples": 48000,
+      "wanted": 48000,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47672,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\caption-offset\\assembled-f9288447dece44649e2c0c46deb64bfc.mp4",
+        "reused": true,
+        "sha256": "ee4295d0596b01b1807a16fe532c9782a7fd71ae3973e4cd5798a6e4c6ddf509",
+        "start": 5.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "videoExact": true,
+      "captionPreserved": true,
+      "noRedundantSessionConcat": true,
+      "selectedTrackMetadataPreserved": true,
+      "publication": {
+        "bytes": 47672,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\caption-workflow-01\\downloads\\caption-offset\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "ee4295d0596b01b1807a16fe532c9782a7fd71ae3973e4cd5798a6e4c6ddf509",
+        "start": 5.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    }
+  ],
+  "requests": [
+    "/caption48.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/caption44.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a44100-init.mp4",
+    "/a44100-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a44100-init.mp4",
+    "/a44100-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/caption-empty.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-empty-segment.m4s",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-empty-segment.m4s",
+    "/caption-offset.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s"
+  ]
+}

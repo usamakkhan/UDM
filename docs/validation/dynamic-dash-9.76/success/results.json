@@ -1,0 +1,222 @@
+{
+  "checks": [
+    {
+      "name": "Actual adaptive admission identifies the live DASH recording",
+      "passed": true
+    },
+    {
+      "name": "Live worker finishes within the owned test deadline",
+      "passed": true
+    },
+    {
+      "name": "Dynamic live recording completes: ",
+      "passed": true
+    },
+    {
+      "name": "Growing live recording keeps its byte size unknown until finalization",
+      "passed": true
+    },
+    {
+      "name": "Static end finalizes naturally without a manual Stop request",
+      "passed": true
+    },
+    {
+      "name": "Controller seals and orders both real Periods in its persistent session",
+      "passed": true
+    },
+    {
+      "name": "Live progress includes both complete one-second video segments",
+      "passed": true
+    },
+    {
+      "name": "Dynamic stream publishes exactly one final download",
+      "passed": true
+    },
+    {
+      "name": "Actual pre-publication assembled bytes equal the completed file size",
+      "passed": true
+    },
+    {
+      "name": "Completed checksum describes the full published video",
+      "passed": true
+    },
+    {
+      "name": "Natural dynamic-to-static output decodes all twenty frames through EOF",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": 3848,
+  "frames": [
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c",
+    "b6bdf78425c71ed0f9dc99bdd3d6467c"
+  ],
+  "observations": [
+    {
+      "capturedSeconds": 0.0,
+      "phase": "Recording live DASH stream",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 1.0,
+      "phase": "Waiting for live DASH segments",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 1.0,
+      "phase": "Recording live DASH stream",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 2.0,
+      "phase": "Waiting for live DASH segments",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 2.0,
+      "phase": "Recording live DASH stream",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 2.0,
+      "phase": "Saving live DASH recording",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 2.0,
+      "phase": "Publishing prepared file",
+      "size": -1
+    },
+    {
+      "capturedSeconds": 2.0,
+      "phase": "Complete",
+      "size": 3848
+    }
+  ],
+  "passed": true,
+  "prePublicationBytes": 3848,
+  "publications": 1,
+  "savedJob": {
+    "AdaptiveAssemblyReused": false,
+    "AdaptiveCompletedSegments": 2,
+    "AdaptiveMetadataBytes": 4220,
+    "AdaptiveTotalSegments": 2,
+    "Added": "/Date(1795273925014)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 6.0894985,
+    "Error": "",
+    "ExpectedSha256": "",
+    "FileName": "dynamic.mp4",
+    "Finished": "/Date(1795273931272)/",
+    "Folder": "<development>\\owned-dynamic-dash-workflow-9.76-C-epoch3",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "Id": "714ffd6d06004165880d8aef53e83bc8",
+    "LastAttempt": "/Date(1795273925184)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCaptureSealed": true,
+    "LiveCapturedSeconds": 2.0,
+    "LiveRecording": true,
+    "LiveSaveReady": false,
+    "MediaFolder": "<repo>\\.media-cache\\owned-dynamic-dash-workflow-9.76\\run-epoch3\\temporary\\UDM-media\\714ffd6d06004165880d8aef53e83bc8",
+    "MediaPhase": "Complete",
+    "MediaPixelHeight": 360,
+    "MediaTracksReady": false,
+    "MergeSeconds": 1.1284788,
+    "PostAttempted": false,
+    "PrefetchedFinalSize": 3848,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "94EDFBCC1878E404257B96A762C3FB0546FEBCD9EE77E27786D03FD82F51FDED",
+      "characters": 636
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "0B742BB7CF80F8E9FE07509A0462215F6B4616D37108193AAA99E2CCAA51544D",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "BAAAB0F4AAB2EF43A23F2EED34BBDE07FFD270E348498C1CFD3C1706B81721E6",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "345243BAA8201AA1A160EF248541D452E7153278468C8AE7916BCCB748BB52AF",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "PublicationCommitId": "82c0ec183ac641d4b82533541f1ea085",
+    "PublicationPhases": {
+      "AcceptCatalog": 6.14e-05,
+      "IntentOperations": {
+        "bytes-written": 0.0001985,
+        "directories-ready": 0.0024928,
+        "publish": 0.0011368,
+        "temporary-flushed": 0.0379061,
+        "temporary-opened": 0.0002703
+      },
+      "PrepareCatalog": 0.0002141,
+      "PrepareIntent": 0.0003201,
+      "PrepareSource": 2.44e-05,
+      "ReleaseAcceptedFile": 2.74e-05,
+      "ReleasePins": 0.0001836,
+      "RemoveJournal": 0.0002734,
+      "Rename": 0.0014437,
+      "VerifyIdentity": 2.36e-05,
+      "WriteCatalog": 0.0319455,
+      "WriteIntent": 0.0420129
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": false,
+    "QueueOrigin": false,
+    "Received": 3848,
+    "SabrRetainedBytes": 0,
+    "Segments": [],
+    "Sha256": "ebc9d447bcb9c17286958ec0fc2758bf9c70cd47c700c93d7d1b88a0036b968c",
+    "Size": 3848,
+    "Status": "Complete",
+    "TransferSeconds": 4.7653823,
+    "TransferredBytes": 8906,
+    "Url": "https://example.invalid/owned-live-video",
+    "Video": null
+  }
+}

@@ -1,0 +1,313 @@
+{
+  "expectedFailure": true,
+  "exitCode": 1,
+  "binarySha256": "216AF7D6D77CFF2273DDAA85A8DA50CEF39964C027B65F1AFA8B6BE824FC8CF1",
+  "result": {
+    "checks": [
+      {
+        "name": "Occupied gzip stage prevents publication without losing encoded response semantics",
+        "passed": false
+      },
+      {
+        "name": "Unclaimed decoded/stripped file or directory is preserved",
+        "passed": false
+      },
+      {
+        "name": "Encoded spool remains and stripping is actually exercised when selected",
+        "passed": false
+      },
+      {
+        "name": "Occupied gzip stage prevents publication without losing encoded response semantics",
+        "passed": true
+      },
+      {
+        "name": "Unclaimed decoded/stripped file or directory is preserved",
+        "passed": false
+      },
+      {
+        "name": "Encoded spool remains and stripping is actually exercised when selected",
+        "passed": true
+      },
+      {
+        "name": "Occupied gzip stage prevents publication without losing encoded response semantics",
+        "passed": false
+      },
+      {
+        "name": "Unclaimed decoded/stripped file or directory is preserved",
+        "passed": false
+      },
+      {
+        "name": "Encoded spool remains and stripping is actually exercised when selected",
+        "passed": false
+      },
+      {
+        "name": "Occupied gzip stage prevents publication without losing encoded response semantics",
+        "passed": true
+      },
+      {
+        "name": "Unclaimed decoded/stripped file or directory is preserved",
+        "passed": false
+      },
+      {
+        "name": "Encoded spool remains and stripping is actually exercised when selected",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": true
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": true
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": true
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": true
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Actual decoded or stripped publication reaches the owned preflight interruption",
+        "passed": true
+      },
+      {
+        "name": "Only the created gzip stage can be removed; foreign replacements survive",
+        "passed": false
+      },
+      {
+        "name": "A gzip publication interruption retains its encoded recovery spool",
+        "passed": true
+      },
+      {
+        "name": "Successful gzip and stripped output retain exact decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Successful completion distinguishes final output size from encoded size",
+        "passed": true
+      },
+      {
+        "name": "Saved completion survives and an unused stripping pathname grants no cleanup ownership",
+        "passed": true
+      },
+      {
+        "name": "Successful gzip and stripped output retain exact decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Successful completion distinguishes final output size from encoded size",
+        "passed": true
+      },
+      {
+        "name": "Saved completion survives and an unused stripping pathname grants no cleanup ownership",
+        "passed": true
+      },
+      {
+        "name": "Successful gzip and stripped output retain exact decoded bytes",
+        "passed": true
+      },
+      {
+        "name": "Successful completion distinguishes final output size from encoded size",
+        "passed": true
+      },
+      {
+        "name": "Saved completion survives and an unused stripping pathname grants no cleanup ownership",
+        "passed": false
+      }
+    ],
+    "error": "",
+    "observations": [
+      {
+        "action": "unchanged",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": false
+      },
+      {
+        "action": "file",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": false
+      },
+      {
+        "action": "directory",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": false
+      },
+      {
+        "action": "unchanged",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": false
+      },
+      {
+        "action": "file",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": false
+      },
+      {
+        "action": "directory",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": false
+      },
+      {
+        "action": "unchanged",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": true
+      },
+      {
+        "action": "file",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": true
+      },
+      {
+        "action": "directory",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-begin",
+        "stripped": true
+      },
+      {
+        "action": "unchanged",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": true
+      },
+      {
+        "action": "file",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": true
+      },
+      {
+        "action": "directory",
+        "error": "Owned gzip publication interruption",
+        "point": "publication-preflight-ready",
+        "stripped": true
+      }
+    ],
+    "passed": false
+  }
+}

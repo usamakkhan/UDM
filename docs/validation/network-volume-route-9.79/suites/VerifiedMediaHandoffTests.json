@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "name": "No writer can enter between verification and publication",
+      "passed": true
+    },
+    {
+      "name": "Published bytes equal the digest measured before handoff",
+      "passed": true
+    },
+    {
+      "name": "Accepted catalog digest describes the actual completed file",
+      "passed": true
+    },
+    {
+      "name": "No writer can enter between verification and publication",
+      "passed": true
+    },
+    {
+      "name": "Published bytes equal the digest measured before handoff",
+      "passed": true
+    },
+    {
+      "name": "Accepted catalog digest describes the actual completed file",
+      "passed": true
+    },
+    {
+      "name": "An equal-byte different file cannot supply the verified handoff",
+      "passed": true
+    },
+    {
+      "name": "A rejected handoff retains the original verification protection",
+      "passed": true
+    },
+    {
+      "name": "The correct file remains available after a rejected handoff",
+      "passed": true
+    },
+    {
+      "name": "Invalid verification handles cannot create a publication proof",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

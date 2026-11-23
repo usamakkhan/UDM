@@ -1,0 +1,505 @@
+{
+  "result": {
+    "_meta": {
+      "provenance": {
+        "untrusted_content": true,
+        "source": "analysis_target"
+      }
+    },
+    "structuredContent": {
+      "evidence_id": "ev_f58d408f20cc79d86f07299f18e537b9f7b9c04c04a17984d3ff458f154bb4c8",
+      "subject": null,
+      "provider": {
+        "id": "frida",
+        "name": "Frida",
+        "version": null
+      },
+      "analysis_profile": null,
+      "predicate_type": "rea.frida.instrumentation-observation",
+      "operation": "instrument_with_frida",
+      "parameters": {
+        "session_id": "b19f5425-1856-4427-bba9-c24d4d6891f1",
+        "device_id": "local",
+        "mode": "spawn",
+        "program": "<idm-install>\\IDMan.exe",
+        "argv": [
+          "/d",
+          "http://127.0.0.1:50541/bench/file.bin?owned-io=0c8eb55a",
+          "/p",
+          "<research>\\idm-8k-0c8eb55a",
+          "/f",
+          "0c8eb55a.bin",
+          "/n",
+          "/q"
+        ]
+      },
+      "raw_result": null,
+      "normalized_result": {
+        "session_id": "b19f5425-1856-4427-bba9-c24d4d6891f1",
+        "device_id": "local",
+        "state": "detached",
+        "target": "<idm-install>\\IDMan.exe",
+        "pid": 5164,
+        "mode": "spawn",
+        "scripts": [
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "name": "rea-09e39fe2-62b7-478e-bc6e-45b2e2868858"
+          }
+        ],
+        "messages": [
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "observer-ready",
+              "pid": 5164,
+              "architecture": "ia32",
+              "hooks": [
+                "CreateFileA",
+                "CreateFileW",
+                "WriteFile",
+                "FlushFileBuffers",
+                "CloseHandle",
+                "NtWriteFile",
+                "NtFlushBuffersFile",
+                "NtFlushBuffersFileEx",
+                "file-part-flush",
+                "file-part-close",
+                "file-part-open",
+                "MoveFileA",
+                "MoveFileExA",
+                "CopyFileA",
+                "CopyFileExA",
+                "MoveFileW",
+                "MoveFileExW",
+                "CopyFileW",
+                "CopyFileExW"
+              ],
+              "scope": "0c8eb55a",
+              "changesArgumentsOrReturns": false,
+              "observesOnly": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 1,
+              "pid": 5164,
+              "api": "candidate-part-adopted",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "reason": "sole fresh owned spawn first DwnlData file part",
+              "tid": 30692,
+              "begin": 1795371481540,
+              "end": 1795371481540
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 2,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 2,
+              "flags": 0,
+              "begin": 1795371481540,
+              "tid": 30692,
+              "end": 1795371481541,
+              "handle": "0x1574",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 3,
+              "pid": 5164,
+              "api": "file-part-open",
+              "begin": 1795371481540,
+              "tid": 30692,
+              "matchedScope": true,
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "end": 1795371481541,
+              "returnCode": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 4,
+              "pid": 5164,
+              "api": "NtWriteFile",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "handle": "0x1574",
+              "begin": 1795371481546,
+              "tid": 30692,
+              "requested": 8192,
+              "end": 1795371481546,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 8192
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 5,
+              "pid": 5164,
+              "api": "WriteFile",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "handle": "0x1574",
+              "begin": 1795371481546,
+              "tid": 30692,
+              "requested": 8192,
+              "overlapped": false,
+              "end": 1795371481546,
+              "ok": true,
+              "error": 0,
+              "completed": 8192
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 6,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "handle": "0x1574",
+              "begin": 1795371481548,
+              "tid": 30692,
+              "end": 1795371481548,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 7,
+              "pid": 5164,
+              "api": "file-part-close",
+              "begin": 1795371481548,
+              "tid": 30692,
+              "handle": "0x1574",
+              "matchedScope": true,
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "end": 1795371481548
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 8,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "access": 2147483648,
+              "share": 3,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371481552,
+              "tid": 30692,
+              "end": 1795371481554,
+              "handle": "0x1578",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 9,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "handle": "0x1578",
+              "begin": 1795371481554,
+              "tid": 30692,
+              "end": 1795371481554,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 10,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "access": 2147483648,
+              "share": 3,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371481554,
+              "tid": 30692,
+              "end": 1795371481556,
+              "handle": "0x1578",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 11,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "handle": "0x1578",
+              "begin": 1795371481556,
+              "tid": 30692,
+              "end": 1795371481556,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 12,
+              "pid": 5164,
+              "api": "MoveFileW",
+              "from": "<idm-cache>\\127_0_0_1_749\\127_0_0_1",
+              "to": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "begin": 1795371481572,
+              "tid": 30692,
+              "end": 1795371481574,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 13,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371481574,
+              "tid": 30692,
+              "end": 1795371481575,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 14,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "handle": "0x1550",
+              "begin": 1795371481577,
+              "tid": 30692,
+              "end": 1795371481577,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 15,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371481577,
+              "tid": 30692,
+              "end": 1795371481577,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 16,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin.tmp",
+              "handle": "0x1550",
+              "begin": 1795371481577,
+              "tid": 30692,
+              "end": 1795371481577,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 17,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371481577,
+              "tid": 30692,
+              "end": 1795371481577,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 18,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "handle": "0x1550",
+              "begin": 1795371481578,
+              "tid": 30692,
+              "end": 1795371481578,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 19,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371481625,
+              "tid": 30692,
+              "end": 1795371481625,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 20,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin.tmp",
+              "handle": "0x1550",
+              "begin": 1795371481627,
+              "tid": 30692,
+              "end": 1795371481627,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 21,
+              "pid": 5164,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371481627,
+              "tid": 30692,
+              "end": 1795371481627,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "09e39fe2-62b7-478e-bc6e-45b2e2868858",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 22,
+              "pid": 5164,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-0c8eb55a\\0c8eb55a.bin",
+              "handle": "0x1550",
+              "begin": 1795371481628,
+              "tid": 30692,
+              "end": 1795371481628,
+              "ok": true,
+              "error": 0
+            }
+          }
+        ],
+        "messages_truncated": false,
+        "source_kind": "inline",
+        "source_path": null,
+        "source_sha256": "30b513791cb640c6c4afa332accabf4bb03f677f766427b1b97ec854efeabf19",
+        "cleanup_error": null
+      },
+      "confidence": "observed",
+      "authority": "external-service",
+      "environment": null,
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "The target operating system and architecture were not reported by this observation."
+      ],
+      "relationship_coverage": null,
+      "locations": [],
+      "evidence_links": []
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

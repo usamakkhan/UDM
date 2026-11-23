@@ -1,0 +1,14 @@
+{
+  "reason": "The AAC encoder adds one drain packet after the requested input-frame cap. Initial output had 145 packets and 4 fragments, with a one-packet fourth fragment. Request 143 input frames for 144 delivered packets and 23 for 24 short-clip packets.",
+  "initialAudioSha256": "dabdc6393a0ccbdc7879e8eb358add166ab535caffcbbf47c6e42b9955a79127",
+  "initialAudioPackets": 145,
+  "initialFragmentSamples": [
+    48,
+    48,
+    48,
+    1
+  ],
+  "initialGenerationNeverLaunchedNativeActor": true,
+  "nativeActorNotRecompiled": true,
+  "newFixtureRoot": "[repo]/.media-cache/owned-continuous-dash-workflow-9.83-corrected"
+}

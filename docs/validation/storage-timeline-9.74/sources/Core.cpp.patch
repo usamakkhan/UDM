@@ -1,0 +1,75 @@
+--- native/Core.cpp
++++ diagnostic/Core.cpp
+@@ -118,7 +118,7 @@
+  return result;
+ }
+ std::string readText(const fs::path& p,size_t limit){if(fs::file_size(p)>limit)throw std::runtime_error("File exceeds the supported size.");std::ifstream f(p,std::ios::binary);if(!f)throw std::runtime_error("Cannot read file.");std::string s((std::istreambuf_iterator<char>(f)),{});if(s.rfind("\xEF\xBB\xBF",0)==0)s.erase(0,3);return s;}
+-void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){
++void atomicText(const fs::path& p,const std::string& s,bool backup,const std::function<void(const char*)>& checkpoint){DiagnosticSpan total(p.filename()==L"state.json"?"cat-atomic-begin":"journal-atomic-begin",p.filename()==L"state.json"?"cat-atomic-end":"journal-atomic-end");
+ #ifdef UDM_PRODUCTION_UI_TIMING_TEST
+  if(checkpoint)nativeUiTraceRecord("save-atomic-entry");
+  nativeUiTraceSaveRecord("save-atomic-entry");
+@@ -147,14 +147,15 @@
+ if(checkpoint)checkpoint("bytes-written");
+ UDM_FINISH_POINT("atomic-flush-begin");if(!FlushFileBuffers(f.h))throw std::runtime_error("Could not flush the state file.");UDM_FINISH_POINT("atomic-flush-end");
+ #endif
++{DiagnosticSpan close("atomic-close-begin","atomic-close-end");CloseHandle(f.h);f.h=INVALID_HANDLE_VALUE;}
+ }if(checkpoint)checkpoint("temporary-flushed");if(fs::exists(p)){auto bak=p;bak+=L".bak";for(unsigned attempt=0;;++attempt){
+- if(ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr))break;
++ if([&]{DiagnosticSpan replace("atomic-replace-begin","atomic-replace-end");return ReplaceFileW(p.c_str(),temp.c_str(),backup?bak.c_str():nullptr,0,nullptr,nullptr);}())break;
+  const DWORD code=GetLastError();
+  // Readers of the catalog or its existing backup may briefly omit FILE_SHARE_DELETE.
+  // ReplaceFile error 1175 retains both filenames; 1176/1177 can change them and are not retried.
+  if(attempt>=6||(code!=ERROR_SHARING_VIOLATION&&code!=ERROR_LOCK_VIOLATION&&code!=ERROR_UNABLE_TO_REMOVE_REPLACED))throw std::runtime_error("Could not replace the saved state (Windows error "+std::to_string(code)+"). Retry after closing programs that hold the state file.");
+- Sleep(25*(attempt+1));
+-}}else if(!MoveFileExW(temp.c_str(),p.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Could not publish the saved state.");}
++ {DiagnosticSpan retry("atomic-backoff-begin","atomic-backoff-end");Sleep(25*(attempt+1));}
++}}else if(![&]{DiagnosticSpan move("atomic-move-begin","atomic-move-end");return MoveFileExW(temp.c_str(),p.c_str(),MOVEFILE_WRITE_THROUGH);}())throw std::runtime_error("Could not publish the saved state.");}
+ void writeBytes(const fs::path& p,const Bytes& b){std::ofstream f(p,std::ios::binary|std::ios::trunc);f.write((const char*)b.data(),(std::streamsize)b.size());f.flush();if(!f)throw std::runtime_error("Could not write file.");}
+ fs::path appDir(){wchar_t p[32768];DWORD n=GetModuleFileNameW(nullptr,p,32768);return fs::path(std::wstring(p,n)).parent_path();}
+ fs::path configuredData(const fs::path& installation,const fs::path& fallback){
+@@ -273,7 +274,7 @@
+   std::ostringstream result;for(auto byte:digest)result<<std::hex<<std::setfill('0')<<std::setw(2)<<(int)byte;return result.str();
+  }catch(...){if(hash)BCryptDestroyHash(hash);if(algorithm)BCryptCloseAlgorithmProvider(algorithm,0);throw;}
+ }
+-void markZone(const fs::path& p){Handle f(CreateFileW((p.wstring()+L":Zone.Identifier").c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(f){const char s[]="[ZoneTransfer]\r\nZoneId=3\r\n";DWORD n;WriteFile(f.h,s,sizeof(s)-1,&n,nullptr);}}
++void markZone(const fs::path& p){DiagnosticSpan metadata("zone-begin","zone-end");Handle f(CreateFileW((p.wstring()+L":Zone.Identifier").c_str(),GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_ALWAYS,0,nullptr));if(f){const char s[]="[ZoneTransfer]\r\nZoneId=3\r\n";DWORD n;WriteFile(f.h,s,sizeof(s)-1,&n,nullptr);}}
+ Json defaultSettings(){PWSTR p=nullptr;std::string folder;if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads,0,nullptr,&p))){folder=utf8((fs::path(p)/L"UDM").wstring());CoTaskMemFree(p);}return {{"FindQuery",normalizedFindQuery()},{"UseTls13",true},{"UseHttp3",true},{"IgnoreLastModified",false},{"ProxyAutoConfigUrl",""},{"BrowserDownloadLater",false},{"QueuePromptLater",true},{"QueuePromptBatch",true},{"CategoryRememberLast",Json::object()},{"ClipboardMode","Show a suggestion"},{"ClipboardOnlyFileTypes",true},{"GlobalLimitMode","Total across downloads"},{"UserAgent",""},{"FtpPassive",true},{"DialEnabled",false},{"DialEntry",""},{"DialPhonebook",""},{"DialAttempts",3},{"DialRetrySeconds",10},{"DialTimeoutSeconds",120},{"DownloadFolder",folder},{"Parallel",3},{"Connections",8},{"Retries",3},{"ServerResponseTimeoutSeconds",defaultServerResponseSeconds},{"LimitKbps",0},{"QuotaMb",0},{"QuotaHours",1},{"ServerConnections",Json::array()},{"TemporaryFolder",""},{"UseServerDate",false},{"StopOnWebPage",true},{"FtpProxyType","CONNECT"},{"WindowsLoginIntranet",true},{"CorrectFileExtensions",true},{"DuplicatePolicy","Ask"},{"PrefetchFileInfo",true},{"CompletedDoubleClick","Properties"},{"DarkMode",false},{"HideCategories",false},{"TrayIcon","Color"},{"FontName","Tahoma"},{"FontHeight",11},{"FontWeight",400},{"QueueProgressMinimized",true},{"CategoryFolders",true},{"ClipboardMonitor",false},{"CloseToTray",false},{"Sound",true},{"SkipBrowserFileInfo",false},{"SuppressProgressDialog",false},{"SuppressCompletionDialog",false},{"CategoryPaths",Json::array()},{"CustomCategories",Json::array()},{"CategoryRules",Json::array()},{"SiteLogins",Json::array()},{"CaptureExtensions",
+  "zip 7z rar tar gz bz2 xz zst iso img exe msi msix appx apk dmg deb rpm "
+  "pdf doc docx xls xlsx ppt pptx odt ods odp epub "
+@@ -319,7 +320,7 @@
+  if(finished)prefetchSampleTime.reset();
+ }
+ fs::path Job::target()const{return fs::path(wide(str(data,"Folder")))/wide(str(data,"FileName"));}
+-Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(auto& j:state["Downloads"]){auto job=std::make_shared<Job>(std::move(j));recoverScanner(job->data);auto status=str(job->data,"Status");
++Manager::Manager(fs::path p,StartupRecovery recovery):admissionRegistry(std::make_unique<CatalogAdmissionRegistry>()),root(fs::absolute(p)),periodicCheckpoint([this]{checkpointPeriodic();}){if(!nativeUiTraceSink.view&&!nativeUiTraceInitialize())throw std::runtime_error("Owned trace initialization failed");nativeUiTraceRecord("diag-manager-entry");fs::create_directories(root);auto file=root/L"state.json";if(fs::exists(file)){state=Json::parse(readText(file));if(num(state,"Schema")!=1||!state["Settings"].is_object()||!state["Downloads"].is_array()||!state["Queues"].is_array())throw std::runtime_error("Unsupported or invalid UDM state. Original preserved.");auto backup=root/L"state.before-native.json";if(!fs::exists(backup))fs::copy_file(file,backup);}else{state={{"Schema",1},{"Settings",defaultSettings()},{"Downloads",Json::array()},{"Queues",Json::array({defaultQueue()})},{"Projects",Json::array()},{"QuotaStart",date()},{"QuotaBytes",0}};state["Settings"]["IdmCategoryDefaults"]=true;state["Settings"]["Parallel"]=4;}state["Settings"]["FindQuery"]=normalizedFindQuery(state["Settings"].value("FindQuery",Json::object()));auto defaults=defaultSettings();for(auto it=defaults.begin();it!=defaults.end();++it)if(!state["Settings"].contains(it.key())||state["Settings"][it.key()].is_null())state["Settings"][it.key()]=it.value();if(!state.contains("Projects")||state["Projects"].is_null())state["Projects"]=Json::array();if(state["Queues"].empty())state["Queues"].push_back(defaultQueue());initializeDefaultQueues(state);std::vector<JobPtr> interruptedSyncTransfers;for(auto& j:state["Downloads"]){auto job=std::make_shared<Job>(std::move(j));recoverScanner(job->data);auto status=str(job->data,"Status");
+   if(status=="Pausing"){
+    const auto response=job->data.find("OriginalResponse");
+    if(response!=job->data.end()&&(str(*response,"State")=="Ready"||str(*response,"State")=="Publishing"))job->data["ResponseSaveDeferred"]=true;
+@@ -360,7 +361,7 @@
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+    if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+     const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+-    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
++    if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+    }
+   }
+  }catch(...){/* A failed recheck keeps the original forced-save path. */}
+@@ -874,7 +875,7 @@
+      if(active.count(j->id())&&active.at(j->id())==c&&!catalogTransaction&&storageError.empty()&&checkpointSequence&&checkpointSequence==catalogSequence){
+       auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+       if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+-       if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
++       if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+       }
+      }
+     }catch(...){/* Missing proof retains the final forced checkpoint. */}
+@@ -918,7 +919,7 @@
+    auto current=snapshot();auto admission=admissionRegistry->overlay(current);auto publication=PublicationCatalogProof::capture(*this,current);
+    if(!admission&&!publication&&!CatalogDiskCredit::active(*this)&&!checkpointText.empty()&&current==checkpointState){
+     const auto path=root/L"state.json";Handle disk(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));
+-    if(disk)alreadySaved=readPinnedCatalogText(disk.h,32*1024*1024)==checkpointText;
++    if(disk)alreadySaved=[&]{DiagnosticSpan read("catalog-read-begin","catalog-read-end");return readPinnedCatalogText(disk.h,32*1024*1024);}()==checkpointText;
+    }
+   }
+  }catch(...){/* Any missing proof retains a real durable shutdown write. */}

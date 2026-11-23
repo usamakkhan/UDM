@@ -1,0 +1,45 @@
+#include "DashMetadataTransport.hpp"
+#include "GuiModels.hpp"
+#include <future>
+#include <iostream>
+using namespace udm;
+int wmain(int argc,wchar_t** argv){
+ if(argc!=2||fs::exists(argv[1]))return 2;const auto root=fs::absolute(argv[1]);fs::create_directories(root);Json checks=Json::array();std::string error;
+ const auto check=[&](bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);};
+ try{
+  Json prefs={{"ProxyMode","Connect directly"}};const std::string url="http://127.0.0.1:19001/manifest.mpd";
+  check(!dashMetadataTransport(url,prefs),"Unscoped metadata retains ordinary per-request ownership");
+  std::weak_ptr<HttpSession> normal,exceptional,nested;
+  {
+   DashMetadataTransportScope scope;auto a=dashMetadataTransport(url,prefs);normal=a;
+   check(a&&a==dashMetadataTransport("http://127.0.0.1:19001/clock",prefs),"Same canonical origin and settings reuse one transport");
+   check(a!=dashMetadataTransport("http://127.0.0.1:19002/manifest.mpd",prefs),"Different ports cannot share transport authentication state");
+   check(a!=dashMetadataTransport("https://127.0.0.1:19001/manifest.mpd",prefs),"Different schemes cannot share transport authentication state");
+   auto changed=prefs;changed["UserAgent"]="Changed identity";check(a!=dashMetadataTransport(url,changed),"Changed transport preferences create a separate pool");
+   {DashMetadataTransportScope inner;auto b=dashMetadataTransport(url,prefs);nested=b;check(a!=b,"Nested work has its own transport lifetime");}
+   check(nested.expired()&&a==dashMetadataTransport(url,prefs),"Nested teardown releases its pool and restores the outer scope");
+   auto other=std::async(std::launch::async,[&]{return !dashMetadataTransport(url,prefs);});check(other.get(),"Another worker cannot borrow this recording's transports");
+   auto large=prefs;large["OversizedIdentity"]=std::string(1024*1024+1,'x');check(!dashMetadataTransport(url,large),"Oversized cache keys use ordinary request ownership without a new rejection");
+  }
+  check(normal.expired()&&!dashMetadataTransport(url,prefs),"Normal recording exit releases all owned transports");
+  try{DashMetadataTransportScope scope;exceptional=dashMetadataTransport(url,prefs);check(!exceptional.expired(),"Exceptional-exit probe owns a live transport before interruption");throw std::runtime_error("Owned test interruption");}catch(const std::runtime_error&){}
+  check(exceptional.expired()&&!dashMetadataTransport(url,prefs),"Exceptional recording exit releases transports and clears context");
+  {
+   DashMetadataTransportScope scope;std::vector<std::shared_ptr<HttpSession>> held;
+   for(int n=0;n<16;++n)held.push_back(dashMetadataTransport("http://127.0.0.1:"+std::to_string(19100+n)+"/",prefs));
+   check(std::all_of(held.begin(),held.end(),[](const auto& p){return bool(p);}),"Sixteen distinct origin/settings combinations can be retained");
+   check(!dashMetadataTransport("http://127.0.0.1:19116/",prefs),"A full cache falls back without retaining a seventeenth transport");
+   check(held[0]==dashMetadataTransport("http://127.0.0.1:19100/again",prefs),"Capacity fallback does not evict a transport still owned by recording requests");
+  }
+  Json session={{"Origin","http://127.0.0.1:19001"},{"UserAgent","Owned browser"},{"LogoutPages",""},{"Cookies",Json::array()}};
+  std::weak_ptr<HttpSession> cookieLifetime;
+  {DashMetadataTransportScope scope;auto authenticated=prefs;authenticated["ActiveBrowserSession"]=session;auto a=dashMetadataTransport(url,authenticated);cookieLifetime=a;
+   a->receiveBrowserCookies(url,{"owned=value; Path=/"});check(headerValue(a->browserHeaders(url,{}),"Cookie")=="owned=value","Response cookies remain available within their recording and origin");
+   auto anonymous=dashMetadataTransport(url,prefs);check(a!=anonymous&&headerValue(anonymous->browserHeaders(url,{}),"Cookie").empty(),"Anonymous or sanitized clock preferences cannot inherit browser cookies");
+   auto cross=dashMetadataTransport("http://127.0.0.1:19002/",authenticated);check(a!=cross&&headerValue(cross->browserHeaders("http://127.0.0.1:19002/",{}),"Cookie").empty(),"Another origin does not inherit rotated browser cookies");
+  }
+  check(cookieLifetime.expired(),"Cookie-bearing transport is released with the recording");
+  {DashMetadataTransportScope scope;auto authenticated=prefs;authenticated["ActiveBrowserSession"]=session;auto fresh=dashMetadataTransport(url,authenticated);check(headerValue(fresh->browserHeaders(url,{}),"Cookie").empty(),"A later recording starts from its captured cookie snapshot");}
+ }catch(const std::exception& e){error=e.what();}
+ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<error<<"\n";return error.empty()?0:1;
+}

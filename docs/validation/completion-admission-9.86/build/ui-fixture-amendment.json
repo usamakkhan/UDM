@@ -1,0 +1,8 @@
+{
+  "path": "native/CompletionAdmissionUiTests.cpp",
+  "before": "5467B68121737B985CDB89DA3C3687968C3E4E2E387947E2DA04F583E3D363EB",
+  "after": "2198C81BE41014E30705E3A55C0D4BD615BCE4C5FBB211286D5B9181EA1DC519",
+  "reason": "Qualify the actual integer-only worker wake through the owned main window instead of manually polling admission. Only this not-yet-compiled UI fixture changes; production and backend compiler inputs are unchanged.",
+  "afterProductCompilation": true,
+  "beforeFirstUiFixtureCompilation": true
+}

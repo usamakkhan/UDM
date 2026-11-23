@@ -1,0 +1,96 @@
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+namespace udm {
+static fs::path output;static Json checks=Json::array(),observations=Json::array();static bool baseline=false;
+static void check(bool ok,const char* text){checks.push_back({{"name",text},{"passed",ok}});if(!ok)throw std::runtime_error(text);}
+template<class F>static void until(F ready){const auto deadline=GetTickCount64()+7000;while(!ready()&&GetTickCount64()<deadline)Sleep(1);if(!ready())throw std::runtime_error("Owned automatic-presentation deadline");}
+static unsigned pump(HWND window,UINT message){MSG value{};unsigned count=0;while(IsWindow(window)&&PeekMessageW(&value,window,message,message,PM_REMOVE)){DispatchMessageW(&value);if(++count>1000)throw std::runtime_error("Owned wake limit");}return count;}
+struct AutomaticProbe {
+ inline static AutomaticProbe* active=nullptr;HWND owner;std::function<void()> inspect;std::string error;bool seen=false;UINT_PTR timer;ULONGLONG began=GetTickCount64();
+ static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){auto* self=active;if(!self||self->seen)return;HWND dialog=nullptr;
+  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM data)->BOOL{wchar_t title[256]{};GetWindowTextW(window,title,256);if(IsWindowVisible(window)&&GetWindow(window,GW_OWNER)==active->owner&&!wcscmp(title,L"UDM automatic presentation acceptance")){*reinterpret_cast<HWND*>(data)=window;return FALSE;}return TRUE;},reinterpret_cast<LPARAM>(&dialog));
+  if(!dialog){if(GetTickCount64()-self->began<7000)return;self->seen=true;self->error="Owned blocker did not appear";return;}
+  self->seen=true;try{self->inspect();}catch(const std::exception& e){self->error=e.what();}catch(...){self->error="Owned automatic-presentation observation failed";}PostMessageW(dialog,WM_CLOSE,0,0);
+ }
+ AutomaticProbe(HWND parent,std::function<void()> action):owner(parent),inspect(std::move(action)){active=this;timer=SetTimer(nullptr,0,10,tick);if(!timer)throw std::runtime_error("Cannot observe owned automatic blocker");}
+ ~AutomaticProbe(){KillTimer(nullptr,timer);active=nullptr;}
+};
+class ToolbarComponentTest {
+public:
+ static void cleanup(MainWindow*& frame){if(!frame)return;frame->automaticConfirmationPresenter={};frame->automaticReviewPresenter={};frame->automaticAuthenticationPresenter={};frame->requestedAuthenticationPresenter={};frame->automaticBatchPresenter={};
+#ifdef UDM_AUTOMATIC_PRESENTATION_AVAILABLE
+ frame->automaticBrowserPresenter={};frame->automaticPreparedPresenter={};frame->automaticPresentationDeferred=false;
+#endif
+ frame->quitting=true;closeOwnedMainWindow(frame);}
+ static void run(MainWindow*& frame,Manager& manager,const std::string& mode,bool dark){
+  frame->KillTimer(1);frame->modelMaintenance.stop();frame->presentationAcks.stop();frame->ShowWindow(mode=="hidden"?SW_HIDE:SW_SHOWNOACTIVATE);const auto window=frame->GetSafeHwnd();pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);
+  const auto make=[&](const char* name,const char* status){auto job=manager.add("https://example.invalid/owned.bin","",name,"Main queue",true);job->data["Status"]=status;return job;};
+  auto progress=make("progress.bin","Paused"),legacy=make("legacy.bin","Paused"),auth=make("auth.bin","Failed"),requested=make("requested.bin","Failed");
+  auth->data["QueueOrigin"]=false;auth->data["AuthenticationOrigin"]="https://example.invalid";auth->data["AuthenticationScheme"]="Basic";auth->data["LastHttpStatus"]=401;auth->data["AuthenticationPromptPending"]=true;
+  requested->data["AuthenticationOrigin"]="https://example.invalid";requested->data["AuthenticationScheme"]="Basic";requested->data["LastHttpStatus"]=401;requested->data["AuthenticationPromptPending"]=true;requested->data["QueueOrigin"]=true;
+  frame->showProgress(progress,true);check(!frame->progress.empty()&&frame->progress.back()->GetSafeHwnd(),"Automatic presentation uses a real progress owner");auto* owner=frame->progress.back().get();const bool visibleBefore=frame->IsWindowVisible()!=FALSE;
+  unsigned confirmations=0,reviews=0,batches=0,automaticLogins=0,requestedLogins=0,browser=0,prepared=0;
+  frame->automaticConfirmationPresenter=[&](const AutomaticConfirmation& candidate){check(candidate.job==legacy,"Confirmation retains the original job identity");++confirmations;};
+  const auto review=std::to_string(epoch())+"-11111111-2222-4333-8444-555555555555";
+  frame->automaticReviewPresenter=[&](const std::string& token){check(token==review,"Review retains its original receipt token");++reviews;};
+  frame->automaticBatchPresenter=[&](const std::vector<BrowserBatchRow>& rows){check(rows.size()==1&&rows[0].observedSize==4&&rows[0].linkText=="Owned batch","Browser batch retains its observed metadata");++batches;};
+  frame->automaticAuthenticationPresenter=[&](const JobPtr& job){check(job==auth,"Automatic login retains its claimed challenge");++automaticLogins;};
+  frame->requestedAuthenticationPresenter=[&](const RequestedAuthenticationViewPtr& view){check(view&&view->prompt.job==requested,"Requested login retains its prepared challenge");++requestedLogins;};
+  manager.pendingOffers={legacy};manager.state["BrowserCaptures"][review]={{"protocol",2},{"status","review"}};manager.browserRecoveryRequested=true;
+  BrowserBatchRow row;row.address="https://example.invalid/batch.bin";row.linkText="Owned batch";row.observedSize=4;manager.pendingBrowserBatches={{row}};
+  frame->authenticationTask->prepare(auth,frame->maintenanceSignal->notifier());until([&]{return frame->authenticationTask->ready();});frame->authenticationTask->poll();check(frame->authenticationTask->prepared()!=nullptr,"Automatic login is prepared before modal admission");
+  frame->requestedAuthenticationRequests.push_back(requested);frame->requestedAuthenticationTask->prepare(requested,true,frame->maintenanceSignal->notifier());until([&]{return frame->requestedAuthenticationTask->ready();});frame->requestedAuthenticationTask->poll();check(frame->requestedAuthenticationTask->prepared()!=nullptr,"Explicit queue login is prepared before modal admission");
+#ifdef UDM_AUTOMATIC_PRESENTATION_AVAILABLE
+  auto offered=make("browser.bin","Paused");const std::string receipt="owned-browser";manager.state["BrowserCaptures"][receipt]={{"status","accepted"},{"created",epoch()},{"id",offered->id()},{"presentation",{{"id",offered->id()},{"kind","download"}}}};
+  frame->automaticBrowserPresenter=[&](const Json& offer){check(str(offer,"id")==offered->id(),"Accepted browser presentation retains its exact job identity");++browser;manager.finishBrowserPresentation(offer);};
+  auto view=std::make_shared<const FileInfoInitialView>("owned-prepared",Json{{"FileName","prepared.bin"}},manager.state["Settings"],Json::object(),manager.root/L"prepared.bin",4,true,false,false,false,std::vector<std::string>{},"owned-fingerprint");
+  auto operation=std::make_shared<PendingFileInfoInbox::Operation>(42,view,"owned-prepared-token",nullptr);frame->preparedFileInfoViews.emplace(view->jobId,operation);
+  frame->automaticPreparedPresenter=[&](const std::shared_ptr<const PendingFileInfoInbox::Operation>& current){check(current==operation&&current->view==view&&current->view->savedSize==4,"Prepared presentation retains the original immutable operation and exact size");++prepared;current->attach();};
+#endif
+  const auto inspect=[&]{
+   frame->presentAutomaticPrompts(false,{});frame->pollRequestedAuthentication();frame->pollAutomaticAuthentication();frame->reviewBrowserRequests();frame->reviewAutomationBatches();frame->showQuotaWarning();frame->showPresentationRecovery();frame->showCancellationRecovery();frame->OnPresentCapture(0,0);
+   auto result=std::make_unique<MainWindow::UpdateOutcome>();result->error="Owned noninteractive update result";frame->updateChecking=true;frame->updateInteractive=false;frame->OnUpdateResult(0,reinterpret_cast<LPARAM>(result.release()));
+#ifdef UDM_AUTOMATIC_PRESENTATION_AVAILABLE
+   frame->clipboardPromptPending=true;frame->copiedUrl="https://example.invalid/copied.bin";frame->command(CMD_CLIPBOARD_CAPTURE);frame->command(CMD_BROWSER);frame->presentReadyPreparedFileInfo();
+   if(mode=="stale-enable"){owner->EnableWindow(TRUE);owner->EnableWindow(FALSE);pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);}
+   check(confirmations+reviews+batches+automaticLogins+requestedLogins+browser+prepared==0,"No automatic presenter dispatches while another modal invocation is owned");
+   check(manager.pendingOffers==std::vector<JobPtr>{legacy}&&manager.pendingBrowserBatches.size()==1&&manager.browserRecoveryRequested,"Blocked admission consumes neither offers, batch cohorts nor review reset intent");
+   check(!frame->infoSeen.count(legacy->id())&&!frame->captureReviewsSeen.count(review),"Deferred prompts are not marked seen");
+   check(frame->authenticationTask->prepared()&&frame->requestedAuthenticationTask->prepared()&&!frame->requestedAuthenticationRequests.empty(),"Both prepared authentication owners remain retained");
+   check(frame->deferredUpdateResult&&frame->updateChecking&&frame->clipboardCaptureDeferred&&frame->clipboardPromptPending&&!frame->copiedUrl.empty()&&manager.browserSettingsRequested,"Update, clipboard and integration-settings intent survive modal admission");
+   check(frame->preparedFileInfoViews.at(view->jobId)==operation&&operation->outcome()==PendingFileInfoInbox::Outcome::Pending&&!operation->cancelRequested(),"Blocked presentation preserves in-flight media preparation without cancellation");
+   {Lock lock(manager.mutex);check(!manager.pendingBrowserPresentations(offered).empty(),"The accepted browser receipt remains discoverable while its dialog is deferred");}
+#else
+   check(confirmations+reviews+batches+automaticLogins+requestedLogins>0,"Frozen 9.97 dispatches an automatic presenter inside another modal invocation");
+#endif
+   observations.push_back({{"mode",mode},{"dark",dark},{"mainEnabledDuringModal",frame->IsWindowEnabled()!=FALSE},{"confirmationCallsDuringModal",confirmations},{"reviewCallsDuringModal",reviews},{"batchCallsDuringModal",batches},{"automaticLoginCallsDuringModal",automaticLogins},{"requestedLoginCallsDuringModal",requestedLogins}});
+  };
+  if(mode=="reserved"||mode=="hidden"){CompletionModalFence::ModalScope reservation(owner->GetSafeHwnd());check(frame->IsWindowEnabled()&&owner->IsWindowEnabled(),"The pre-HWND reservation case has both windows enabled");inspect();}
+  else {
+   AutomaticProbe probe(mode=="mfc"?window:owner->GetSafeHwnd(),inspect);
+   if(mode=="mfc"){Form dialog("UDM automatic presentation acceptance",260,85,frame);dialog.init=[&]{dialog.label("Owned automatic admission acceptance",12,12,235);dialog.cancel=[&]{dialog.close(IDCANCEL);};dialog.button("Close",170,50,75,dialog.cancel);};check(dialog.DoModal()!=-1,"The real MFC blocker opens normally");}
+   else themedMessage(owner,L"Owned automatic admission acceptance",L"UDM automatic presentation acceptance",MB_OKCANCEL|MB_ICONERROR|(dark?MB_HELP:0));
+   check(probe.seen&&probe.error.empty(),probe.error.empty()?"The real owned modal is observed and closed normally":probe.error.c_str());
+  }
+  if(baseline){cleanup(frame);return;}
+#ifdef UDM_AUTOMATIC_PRESENTATION_AVAILABLE
+  unsigned settingsCommands=0,wakes=0;const auto deadline=GetTickCount64()+8000;
+  const auto settled=[&]{return confirmations==1&&reviews==1&&batches==1&&automaticLogins==1&&requestedLogins==1&&browser==1&&prepared==1&&!frame->updateChecking&&!frame->deferredUpdateResult&&!frame->clipboardPromptPending&&!frame->automaticPresentationDeferred;};
+  while(!settled()&&GetTickCount64()<deadline){wakes+=pump(window,UiTaskSignal::message);wakes+=pump(window,TRANSFER_EVENTS);wakes+=pump(window,PRESENT_CAPTURE);wakes+=pump(window,UPDATE_RESULT);MSG command{};while(PeekMessageW(&command,window,WM_COMMAND,WM_COMMAND,PM_REMOVE)){if(LOWORD(command.wParam)==CMD_BROWSER)++settingsCommands;else if(LOWORD(command.wParam)==CMD_CLIPBOARD_CAPTURE)frame->command(CMD_CLIPBOARD_CAPTURE);else throw std::runtime_error("Unexpected owned automatic command");}Sleep(1);}
+  check(settled()&&wakes>0,"The real release wake drains all retained automatic work without the main timer");check(settingsCommands==1&&!manager.browserSettingsRequested,"Integration settings are posted once after modal release");
+  check(manager.pendingOffers.empty()&&manager.pendingBrowserBatches.empty()&&manager.pendingBrowserPresentations(offered).empty()&&frame->preparedFileInfoViews.empty(),"Presented offers, batch and prepared views retire through their owned paths");
+  check(frame->infoSeen.count(legacy->id())&&frame->captureReviewsSeen.count(review)&&!manager.browserRecoveryRequested,"Seen and review-reset state advance only after allowed presentation");
+  check(frame->copiedUrl.empty()&&!frame->clipboardCaptureDeferred,"Queued clipboard intent is revalidated and retired with monitoring disabled");
+  const auto calls=confirmations+reviews+batches+automaticLogins+requestedLogins+browser+prepared;frame->resumeAutomaticPresentation();pump(window,UiTaskSignal::message);check(calls==7&&confirmations+reviews+batches+automaticLogins+requestedLogins+browser+prepared==calls,"Later wakes cannot duplicate an acknowledged automatic presentation");
+  check((frame->IsWindowVisible()!=FALSE)==visibleBefore,"Automatic replay preserves the existing main-window visibility for these owned presenters");
+#endif
+  cleanup(frame);
+ }
+};
+class AutomaticPresentationApplication:public CWinApp {int result=1;public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);std::string error;
+ try{if(!args||argc!=3)throw std::runtime_error("Pass candidate/baseline and fresh output");baseline=utf8(args[1])=="baseline";if(!baseline&&utf8(args[1])!="candidate")throw std::runtime_error("Unknown test mode");output=fs::absolute(args[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh fixture root required");}fs::create_directories(output);
+  for(bool dark:{false,true}){if(baseline&&dark)break;for(const std::string mode:{"reserved","native","stale-enable","mfc","hidden"}){if(baseline&&mode!="reserved"&&mode!="native")continue;Manager manager(output/wide((dark?"dark-":"light-")+mode));auto settings=manager.state["Settings"];settings["DarkMode"]=dark;settings["CloseToTray"]=false;settings["ClipboardMonitor"]=false;settings["Sound"]=false;settings["ShowTipsOnStartup"]=false;settings["SuppressAuthenticationDialog"]=false;settings["CategoryFolders"]=false;settings["DownloadFolder"]=utf8((manager.root/L"files").wstring());manager.setSettings(settings);auto* frame=new MainWindow(manager);m_pMainWnd=frame;try{ToolbarComponentTest::run(frame,manager,mode,dark);}catch(...){m_pMainWnd=nullptr;ToolbarComponentTest::cleanup(frame);throw;}m_pMainWnd=nullptr;manager.stop();}}
+  result=0;
+ }catch(const std::exception& e){error=e.what();}if(args)LocalFree(args);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"baseline",baseline},{"checks",checks},{"observations",observations},{"error",error}}.dump(2),false);return FALSE;
+ }int ExitInstance()override{AfxOleTerm(FALSE);return result;}};AutomaticPresentationApplication application;
+}

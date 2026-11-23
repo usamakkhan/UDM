@@ -1,0 +1,7 @@
+{
+  "stage": "Private diagnostic build driver parsing",
+  "initialDriverSha256": "AC1379B1678AEAC94ED7F85816B74447258C3B4BD3FE207084C4EFCDA2A516B1",
+  "correctedDriverSha256": "E754C45454B52419EB7EA075EF69827144C4588E3020BC32EAF0EE275582F2C6",
+  "correction": "Removed malformed nested backslash quoting by selecting the exact original one-line markZone implementation. The syntax error occurred before any directory creation, compilation or app launch.",
+  "productionSourceChange": false
+}

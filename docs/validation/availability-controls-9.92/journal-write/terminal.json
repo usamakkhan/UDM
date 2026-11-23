@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "label": "9.92-private-journal-write-control",
+  "transfers": 15,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 313.605,
+        "baseline": 315.236,
+        "idm": 414.201
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          313.605,
+          408.804,
+          359.176,
+          291.71,
+          76.55
+        ],
+        "baseline": [
+          350.764,
+          376.991,
+          273.309,
+          315.236,
+          73.891
+        ],
+        "idm": [
+          423.723,
+          333.398,
+          409.016,
+          429.864,
+          414.201
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

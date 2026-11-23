@@ -1,0 +1,39 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Frozen completion opening waits for the catalog writer on the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Frozen request eventually creates its completion dialog",
+      "passed": true
+    },
+    {
+      "name": "Frozen completion opening waits for the catalog writer on the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Frozen request eventually creates its completion dialog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dispatchMs": 547,
+      "eventPath": false,
+      "watchdogExpired": true,
+      "writerStillHeld": false
+    },
+    {
+      "dark": false,
+      "dispatchMs": 563,
+      "eventPath": true,
+      "watchdogExpired": true,
+      "writerStillHeld": false
+    }
+  ],
+  "passed": true
+}

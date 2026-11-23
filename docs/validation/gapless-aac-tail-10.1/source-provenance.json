@@ -1,0 +1,83 @@
+{
+  "sources": [
+    {
+      "path": "native/GaplessAacTail.hpp",
+      "snapshot": "source-snapshot/native__GaplessAacTail.hpp.txt",
+      "sha256": "C5464A49B0EA6BA7C68A3D520060A98887DB3E1C8FF6EFED4CD91BF505AE4823"
+    },
+    {
+      "path": "native/GaplessAacTailTests.cpp",
+      "snapshot": "source-snapshot/native__GaplessAacTailTests.cpp.txt",
+      "sha256": "F4CFCD8A0200B326BCC89D738D29A2BB81D13C07E3F42A9E2579E5C7F6BEA4B4"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "78AC72530EDAEB3DCAB0369C52C0DD2320B4496927AE817B1B7264890DDB9542"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "D1ED6C886596F1B182D107B3FB1F9E005D0A30589D13BF39C2616FF6B5F5F804"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "snapshot": "source-snapshot/native__backend-tests.json.txt",
+      "sha256": "E51813D593ADA2EF4C42D54A5C464ADC4CBFBAA23EBDB101DEFA9A9A39F1CD56"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "8C0CFE2BAB31D7E331C29B350A3AA55447B618D1D4F46CBC8BEEA191F3A72A26"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "2540C251ED93EE9ECC48A785D6EE6BE4009FAB6EEAA9A42822051C4A36BAD2B0"
+    },
+    {
+      "path": "benchmarks/speed/gapless_aac_tail_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__gapless_aac_tail_workflow.cpp.txt",
+      "sha256": "F5C9F0A590A0A5B22F144E08A879C77E941BC0D664B8B41C24E471EB5658DA0C"
+    },
+    {
+      "path": "tests/gapless-aac-tail.native-live.py",
+      "snapshot": "source-snapshot/tests__gapless-aac-tail.native-live.py.txt",
+      "sha256": "948DB6406D3F8EA0DDDC0345B5C7A62EBB0384368545EA882AA421CC4344371C"
+    },
+    {
+      "recipe": "build-attempt-01.py.txt",
+      "snapshot": "source-snapshot/build-attempt-01.py.txt.txt",
+      "sha256": "50ACF7626145558816238E21A9EDC9E9C653E02CF5208DDF97B8C7AE9F32100B"
+    },
+    {
+      "recipe": "build-resume.py",
+      "snapshot": "source-snapshot/build-resume.py.txt",
+      "sha256": "394D7CB0D5F0F09259F55799B356EC3FD117B13EE0902F8DCAD30C3396A2A3FB"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "9BFD58D0291ADF75785044452212F6DBB81CD91D0EDFD3230017541FD6DEA1CF"
+    },
+    {
+      "recipe": "run-workflow.py",
+      "snapshot": "source-snapshot/run-workflow.py.txt",
+      "sha256": "D6499710F511C850AF89853D7F1E18B4F154324303C3C54EA28012191AA1D46E"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "version": "10.0",
+      "snapshot": "source-snapshot/frozen-10.0-DashManifest.cpp.txt",
+      "sha256": "ABE7BBF0B4851D572584ADF91AFB42D7F6339AA9651DE76137A1E03113702A00"
+    }
+  ],
+  "validationRecipeChange": [
+    {
+      "path": "tests/gapless-aac-tail.native-live.py",
+      "buildRecordedSha256": "D4E6187E22B2A199EF3772F844C3545189247B8A0FCEC7A62D0FFE674E0225C6",
+      "validationSha256": "948DB6406D3F8EA0DDDC0345B5C7A62EBB0384368545EA882AA421CC4344371C"
+    }
+  ],
+  "compiledInputsUnchangedAfterBuild": true
+}

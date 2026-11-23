@@ -1,0 +1,32 @@
+{
+  "label": "9.92-availability-rotated-control",
+  "trial": 2,
+  "case": "single-4m",
+  "client": "idm",
+  "bytes": 4194304,
+  "configuredConnections": 1,
+  "firstAvailabilityTailSeconds": 0.02121939999778988,
+  "processExitTailSeconds": 0.4022396000000299,
+  "processExitWallSeconds": 2.210676800001238,
+  "firstAvailabilityWallSeconds": 1.829656599998998,
+  "exitAfterFirstAvailabilitySeconds": 0.38102020000224,
+  "clockMappingErrorBoundSeconds": 6.300000677583739e-06,
+  "clockDriftSeconds": 3.0499991883203847e-06,
+  "trackedProcesses": 1,
+  "requests": 1,
+  "originConnections": 1,
+  "peakConcurrent": 1,
+  "originBytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 0.4501081999987946,
+  "durableWallSeconds": 2.2585454000000027,
+  "postExitToDurableSeconds": 0.047868599998764694,
+  "postExitOperations": {
+    "openSeconds": 0.000145800004247576,
+    "flushSeconds": 0.022021099997800775,
+    "closeSeconds": 8.510000043315813e-05
+  }
+}

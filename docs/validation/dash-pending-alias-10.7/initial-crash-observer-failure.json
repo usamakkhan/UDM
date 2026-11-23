@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "phase": "after-admission checkpoint observation",
+  "error": "PermissionError reading recording.json during an atomic checkpoint replacement",
+  "firstCaseCompleted": true,
+  "retryReason": "Observer now tolerates transient sharing and missing-file races within the same bounded wait; native code unchanged"
+}

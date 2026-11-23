@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "label": "9.92-normal-destination-staging-control",
+  "transfers": 9,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 152.566,
+        "baseline": 571.352,
+        "idm": 364.48
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          152.566,
+          145.395,
+          648.993
+        ],
+        "baseline": [
+          571.352,
+          1205.139,
+          489.93
+        ],
+        "idm": [
+          320.229,
+          392.243,
+          364.48
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

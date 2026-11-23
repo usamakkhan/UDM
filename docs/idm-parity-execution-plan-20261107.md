@@ -1,6 +1,261 @@
-# UDM 5.25 versus IDM 6.43 build 10
+# UDM versus IDM 6.43 build 10 — parity execution plan
 
-## Current increment: 9.65 / browser 0.73.29
+## 10.8 / browser 0.73.72 — canonical HTTP identity encoding; built, uninstalled
+
+Emit one byte-preserving identity-encoding field for both Windows HTTP and curl, removing internal duplicates before request admission while retaining injection rejection. Frozen/current wire controls cover GET, POST, HEAD, ranges, lower/mixed-case and conflicting fields. All five native programs build; current parallel-origin, POST recovery, admission/decoder/read, metadata, crash, recording and complete-media regressions pass. C: has sufficient build reserve; D: still fails its workspace reserve, so combined delivery acceptance remains false. No installer or installation. [Implementation, complete counts, evidence and next work](http-wire-identity-10.8.md).
+
+
+## 10.7 / browser 0.73.71 — resume pending resource aliases; built, uninstalled
+
+Fix retries where another saved segment already pins the exact source list of an unfinished segment or initialization file. Only explicit unaccepted pending intents may adopt that known version; accepted data, coordinates, source lists and legacy rules retain their protection. Frozen 10.6 fails both controls; current code resumes without refetching accepted resources. All five native programs build; 107 focused assertions, 17 HTTP cases, three hard-stop cases, seven continuous recordings and nine direct/caption cases pass. Build outputs use C: with sufficient reserve; D: remains below its workspace reserve, so combined delivery acceptance remains false. No installation or installer. [Correction, evidence and ordered next work](dash-pending-alias-10.7.md).
+
+
+## 10.6 / browser 0.73.70 — single-pass full-resource capture; built, storage reserve not met
+
+Use the same full GET to pin and store a fresh independent DASH SegmentList resource, with a durable version checkpoint before body writes. Preserve ranged-object preflight, compatibility fallback, legacy receipts and strict changed-version rejection. All five native programs build; 107 focused assertions, 17 HTTP workflow cases, three recovery controls, eight freshness controls, seven continuous-recording cases and nine direct/caption media cases pass in the final runs. Initial failures are retained. The final free-space audit is below the unchanged 1 GiB reserve, so combined acceptance remains false and further candidate builds are held. No installer or installation. [Ownership, exact results, failed attempts and ordered follow-up](dash-single-pass-10.6.md).
+
+
+## 10.5 / browser 0.73.69 — purpose-scoped resource discovery; built, uninstalled
+
+Reuse recording-owned transport for resource-version discovery while isolating manifest, clock and discovery roles even with identical settings. Preserve HEAD/range fallback, strong version checks, cancellation and ownership bounds. All five native programs build; 85 focused assertions, 14 HTTP isolation/discovery requests, eight freshness controls and the production seven-case recording suite pass. Version probes remain; their single-pass response/checkpoint replacement is explicitly planned. No installer or installation. [Implementation, qualification and required next steps](dash-discovery-roles-10.5.md).
+
+
+## 10.4 / browser 0.73.68 — recording-owned DASH metadata transport; built, uninstalled
+
+Replace per-request metadata session setup with a bounded recording-owned cache, separating origins and complete preferences. Release transports on normal exit and exceptions; keep clock requests anonymous and headers request-local. The 82 lifetime/AAC/boundary assertions, real HTTP isolation checks, held-response cancellation, eight freshness controls and production seven-case continuous recording suite pass. All five native programs build as 10.4; no installer or installation. [Ownership rules, exact scope, build attempts and remaining work](dash-metadata-transport-10.4.md).
+
+
+## 10.3 / browser 0.73.67 — bounded live-manifest freshness recovery; built, full acceptance incomplete
+
+Recover from a transiently expired manifest or clock response within at most three attempts, preserving cached timing anchors, parent cancellation, identity checks and strict rejection. All five native programs build; eight targeted controls and 62 structural/boundary assertions pass. Full recording still fails when all three HTTP header stages exceed validity. A separate phase trace identifies 208–590 ms in HTTP construction/headers versus sub-millisecond parsing/accounting; a private reuse prototype passes the full suite, while a transfer-owned product implementation remains pending. No installer or installation. [Controls, retained failures and ordered follow-up](dash-freshness-10.3.md).
+
+
+## 10.2 / browser 0.73.66 — one final mux for a captioned DASH Period; built, uninstalled
+
+Assemble a single captioned recording directly in the final mux, preserving exact AAC ending samples, selected track names/languages and restart receipts. Changing those metadata choices invalidates reuse. All five native programs build; 62 focused assertions, four caption-session publication cases, five direct regression cases and three negative selection controls pass. A fresh seven-case continuous run passes, while its earlier manifest-clock expiry remains an explicit open issue with the failed attempt retained. No installer, installation or IDM timing claim. [Implementation, exact results, failed attempts and remaining work](single-caption-session-10.2.md).
+
+
+## 10.1 / browser 0.73.65 — exact final AAC samples in qualified DASH recordings; built, uninstalled
+
+Correct the partial final AAC LC packet for a qualified zero-origin single-Period MP4/M4A output, using bounded in-place padding metadata before the existing durable receipt. Legacy receipts are invalidated; corrected files remain reusable after restart. All five native programs build, 62 focused structural/boundary checks pass, five real capture/publication cases match complete source PCM, and seven continuous-recording regression cases pass. Multi-Period interiors, caption-session remuxing, leading edits, other players and installed/browser/IDM acceptance remain open. No installer, installation or release. [Implementation, exact results and limits](gapless-aac-tail-10.1.md).
+
+
+**DASH sample-boundary follow-up (unchanged 10.0 / 0.73.64 products):** The continuous-encoder positive control preserves 96 frames and 184,320 samples at aligned boundaries. A 1-second cut instead retains 62/75 frames and 144,128/144,000 samples. The actual coarse native duration guard accepts all six probes, five of which fail a decoded oracle. Keep strict transition admission; next implement exact sample/packet ownership and decoder preroll before supporting these cuts. These are local assembly and guard probes, not complete download or IDM acceptance. [Results and ordered implementation work](dash-boundary-research-10.0.md).
+
+
+## 10.0 / browser 0.73.64 — compact native object retention; built, uninstalled
+
+Add an opt-in, exclusively locked target-object scratch slot for builds without debug symbols, recording consumed object and executable digests before reuse. All five native programs link as 10.0; 31 distinct backend assertions pass in each of the old normal, current compact and current normal loops. Guard, lock and deliberately failed compilation controls pass. The driver executes the actual target statements with cached setup; the full packaging entrypoint is not exercised. This is a build-workflow change; installed programs and runtime parity gates remain open. [Measured retention, provenance and remaining work](compact-native-build-10.0.md).
+
+
+## 9.98 / browser 0.73.62 — automatic presentation respects dialog ownership; built, uninstalled
+
+Retain browser/prepared File Info, authentication, capture/review, update, clipboard and integration presentation while another owned dialog is open. Resume through the existing modal-release wake; retain newer prepared views across nested dispatch and bound presentation-failure retry to the existing timer. All five native programs build; all 116 backend and 1077 current UI assertions pass, plus 20 separate frozen 9.97 App-source assertions. Both source manifests advance to 0.73.62; no browser script changes or installed acceptance are implied. No installer, installation or release is included. [Implementation, qualification and remaining gates](automatic-presentation-9.98.md).
+
+
+## 9.97 / browser 0.73.61 — manual Exit honors dialog ownership; built, uninstalled
+
+Guard Window Close, Tasks → Exit and prepared tray decisions through modal creation and teardown. Reserve dialog invocations before HWND creation and release canceled layout ownership after modal return, including layout failure. All five native programs build as 9.97; both source manifests advance to 0.73.61. All 85 backend and 721 current UI assertions pass, plus 23 separate frozen-source counterexample assertions. No installer or installation is included. [Implementation and remaining gates](manual-exit-modal-9.97.md).
+
+
+## 9.96 / browser 0.73.60 — completion waits for secondary modals; built, uninstalled
+
+Defer completion presentation, action review, automatic file/queue actions and CLI completion exit while a secondary UDM window owns a modal. Recheck live ownership after a release wake and retain observation across an aborted shutdown. All five normal native programs build as 9.96; both source manifests advance to 0.73.60. All 76 backend and 428 current UI checks pass, plus six separate frozen-source counterexample assertions. No installer or installation is included. [Implementation, evidence and remaining gates](completion-secondary-modal-9.96.md).
+
+
+**Writeback request-gap follow-up (unchanged 9.95 products):** Existing D: split data contains 387.6200 ms without a retained linked request, including a 109.4422 ms gap almost entirely observed off-CPU. The sequential sample contains only 1.1969 ms in such gaps. These are scoped historical observations, not idle-device or cause proof. Next attribute system-worker/file-role activity across those gaps, preserving full-schema failures and final durability barriers. [Hashed replay, eight tests and next investigation](writeback-request-gaps-9.95.md).
+
+**Writeback research follow-up (unchanged 9.95 products):** Fresh REA analysis and owned Frida probes establish cached part creation, no observed writer-session flush in the short 4 MiB flow, and one actual periodic flush about 42 seconds into a slow 1 MiB flow before writes continue. Opaque part scope is validated against the exact output; incomplete captures are rejected. This identifies a different observed completion policy, not the kernel cause of UDM stalls or permission to remove its final barriers. [Evidence, eight verifier tests and next gate](idm-writeback-contract-9.95.md).
+
+
+## 9.95 / browser 0.73.59 — countdown wake; built, uninstalled
+
+Wake file and queue countdowns directly when owned maintenance completes, with scoped generation-checked dialog routing. Passive completion wakes do not schedule another tick; final acknowledgement, current eligibility and safe cancellation remain required. All five normal native programs build as 9.95 and both source manifests advance to 0.73.59. All 54 backend and 130 current UI checks pass, plus five separate frozen-control assertions. No installer, installation or release is included. [Implementation and remaining gates](countdown-wake-9.95.md).
+
+## 9.94 / browser 0.73.58 — queue countdown; built, uninstalled
+
+Move queue-finished countdown ticks to the existing background maintenance owner and use nonblocking current cycle/epoch admission. Keep Cancel/Enter responsive, acknowledge fresh scheduler work at expiry, and retain an ordered step cursor through model contention without repeating performed actions. All five normal native programs build as 9.94; both source manifests advance to 0.73.58. All 36 backend and 100 focused UI checks pass. The build is uninstalled, with no installer or release. [Implementation and remaining gates](queue-countdown-9.94.md).
+
+## 9.93 / browser 0.73.57 — file countdown; built, uninstalled
+
+Move file-completion countdown ticks to the existing model worker, use nonblocking current eligibility reads, and acknowledge a fresh scheduler tick at expiry before allowing an action. Cancel remains usable during model contention; stopped/failed final maintenance cannot authorize an action. All five normal native products build as 9.93 and both source manifests advance to 0.73.57. All 20 backend and 66 current UI checks pass. The build is uninstalled, with no installer or release. [Implementation and remaining gates](completion-countdown-9.93.md).
+
+**Availability research follow-up (same 9.92 products):** 57 verified 4 MiB transfers retain availability, total, exit and post-exit-flush endpoints. C: profiles with D: output are now measured explicitly. Body/intent flush stalls remain; serializing the barriers, journal write-through and automatic destination-cache placement all regress individual trials and are rejected. No production change or version increment is admitted. [All samples, storage ownership and next gate](availability-controls-9.92.md).
+
+## Previous candidate: 9.92 / browser 0.73.56 — responsive durable completion claims; uninstalled
+
+Move armed completion-action catalog saves off the UI thread and start them after completion presentation drains. Accepted claims survive dialog Close, retain durable rollback and explicit Retry/Cancel, defer errors behind a disabled modal owner, and gate CLI Exit until joined acknowledgement. All five native products build as 9.92; both source manifests advance to 0.73.56. All 147 backend and 210 current UI assertions pass, plus the two-assertion frozen counterexample. Controlled dispatch is 31 ms versus 593 ms in frozen App source, not IDM click-to-paint timing. A normal C: 4 MiB smoke hashes both files and joins process exit/flush, but UDM loses first file availability by 15.214 ms in that sample. The build is uninstalled and general parity remains open. [Implementation, qualification and limits](completion-claim-9.92.md).
+
+## Previous candidate: 9.91 / browser 0.73.55 — bounded initial work queue; uninstalled
+
+Queue bounded initial HTTP pieces after verified range admission, keeping the full first response and the existing read-ownership and recovery checks. All five native programs build as 9.91 and both source manifests advance to 0.73.55. All 244 focused native assertions and six accounting tests pass. The engine controls improve over frozen 9.89; one normal C: pair per 4 MiB/64 MiB sequential and 64 MiB split case beats IDM at total, availability, exit and post-exit-flush endpoints. Rejected 9.90 and all losing samples remain recorded. D: repetition, installed browser/UI and broad parity remain open; this build is uninstalled. [Implementation, evidence and limits](initial-range-queue-9.91.md).
+
+Intermediate 9.90 / 0.73.54 passed correctness but lost both slow-origin controls and was rejected for installation. [Retained rejection](initial-range-plan-9.90.md).
+
+## Previous candidate: 9.89 / browser 0.73.53 — pending-read range ownership; uninstalled
+
+Reserve pending HTTP body reads under the split-map lock, bound each request to live ownership, and retain that fence while committing the preceding write. Five native products build as 9.89; both source extension manifests advance to 0.73.53. All 213 focused assertions pass, including real 64 MiB split and Pause/Resume checks. The frozen-transfer ABBA control is mixed; speed and extra-byte parity remain open. The build is uninstalled. [Implementation and qualification](http-read-reservation-9.89.md).
+
+**Previous 9.88 research follow-up:** A same-binary engine ABBA control rejects suppressing optional data-only flushes: total engine time improves, but finishing and availability worsen; 252–295 ms file writes remain with zero such calls. That experiment left production at 9.88 / 0.73.52; the later 9.89 range-ownership change is described above. [Control, rejection and next gate](data-drain-control-9.88.md) · [Publication attribution](publication-clock-9.88.md) · [Range comparisons](range-accounting-9.88.md).
+
+## Previous candidate: 9.88 / browser 0.73.52 — completion respects modal ownership; uninstalled
+
+Defer completion while File Properties or another modal disables the main owner, retaining both inbox events and ready intents. Re-enable posts the existing transfer-event wake so retained work resumes before CLI Exit without a main-timer tick. Five native programs build as 9.88; both source extension manifests advance to 0.73.52. All 246 backend and 612 UI assertions pass, plus a normal 4 MiB hash/catalog/shutdown smoke. A fresh one-pair-per-case IDM comparison wins total process time and exit tail in three cases, but loses first file availability in all three and sends more extra split bytes. The candidate is uninstalled and the overall parity gate remains open. [Implementation, qualification and limits](completion-modal-9.88.md).
+
+## Current architecture and delivery state — November 22, 2026
+
+This section supersedes the original November 7 planning baseline below. The current native candidate is **9.97** and both source extension manifests are **0.73.61**. All five normal native programs are built. All 85 backend and 721 current UI checks pass, plus 23 separate frozen-source counterexample assertions. The candidate is uninstalled. Installed desktop **8.68** and installed extension files **0.72.32** remain unchanged; the browser's active code is not freshly verified. Development is active. The old statement that the goal was paused applies only to that historical planning delivery.
+
+[Current architecture](architecture.md) records the ownership boundaries, 8 MiB browser request cap, admission receipts, pending File Info views, publication recovery and completion state machine. [9.88 qualification](completion-modal-9.88.md) records **246 backend + 612 UI assertions**, a complete normal-product download, build provenance and cleanup. These focused checks are not a fresh full-suite run or installed acceptance. No installer, installation, commit, push or release occurs in this increment.
+
+### Earlier D: comparison and the still-open D: gate
+
+One pair per owned D: case compares normal uninstalled UDM 9.88 and installed IDM 6.43.10.2. All six files match their expected SHA-256; UDM catalogs report Complete; all six observed app processes exit. IDM launcher exit code is 1 in each run despite correct outputs; its success-code semantics are not established. Keep that observation rather than silently treating it as code 0. The harness restores IDM's two connection settings. Other-session processes are left alone.
+
+| Case | UDM / IDM total process time, s | UDM / IDM first-availability tail, ms | UDM / IDM process-exit tail, ms | UDM / IDM tail through explicit output flush, ms |
+| --- | --- | --- | --- | --- |
+| single-4m | 1.164 / 4.254 | 119.958 / 55.535 | 256.780 / 511.655 | 293.851 / 605.412 |
+| single-64m | 9.049 / 10.320 | 223.983 / 70.170 | 315.998 / 599.479 | 361.096 / 1265.863 |
+| split-64m | 2.373 / 3.924 | 289.826 / 177.780 | 380.308 / 502.207 | 414.390 / 1191.513 |
+
+**First availability remains slower in UDM in every case.** Full process time and exit tails improve relative to IDM in this observation; this does not overturn prior losing runs or establish a repeated no-regression gate. The split case sends 70,455,049 bytes in UDM versus 68,260,087 in IDM for a 67,108,864-byte output: **3,346,185 versus 1,151,223 extra bytes**, with 9 versus 16 requests. Request count alone is not efficiency. [Raw results](validation/completion-modal-9.88/comparison/results.json) · [Assessment and scope](validation/completion-modal-9.88/comparison/assessment.json).
+
+The timing includes observed application process/thread exit and a symmetric explicit output flush afterward. It does not measure GUI paint, every system service, device-cache persistence or power-loss behavior. There is one pair per case; do not call these samples a distribution or promote their single-value medians to acceptance. Payloads and isolated catalogs are removed after sanitized export.
+
+### Ordered implementation backlog
+
+| Order / ID | Next concrete work | Ownership and dependency | Required evidence before closing |
+| --- | --- | --- | --- |
+| 1 / PERF-AVAIL | Repeated normal 9.92/9.91/IDM 4 MiB controls now cover C: and C:-cache/D:-output. Availability losses persist despite total wins. Same-binary barrier serialization, journal write-through and destination-cache placement are rejected for individual endpoint regressions. See availability-controls-9.92.md; establish actual IDM write modes and runtime file roles, then attribute slow body/intent flushes before another policy. Earlier D: traces localize body/intent/catalog waits and slow split writes; pin close is below 0.1 ms. The same-binary data-only suppression control is rejected for finishing losses; slow writes persist without it. The 9.95 REA/Frida writeback follow-up now verifies IDM cached part creation and a conditional periodic flush, with no observed final writer-session flush in the small/slow probes. That is a different observed completion policy, not proof of every OS writeback path. Next qualify kernel/file-role attribution for UDM and preserve its final barriers before proposing a change. Preserve the complete availability/exit/flush comparison. | Transfer/publication owner; fresh paired baseline above. | Repeated alternating 4 MiB/64 MiB sequential and 64 MiB split pairs on the same volume; exact bytes, total time, availability, exit and post-exit flush all retained. No moved background work or removed barriers. |
+| 2 / PERF-EXTRA | 9.91 bounds queued helper responses after 9.89 attributed surplus to shortened parent tails; one-large-range 9.90 is rejected. Engine controls and one C: normal pair per case improve. Next repeat normal D: pairs once storage permits, including full exit/flush endpoints; retain remaining beyond-owner traffic and losing samples. | Transfer range ownership; can investigate independently of UI. | Per-request range/body accounting, complete coverage, no validator regression; fewer wasted bytes without worse total/finish time or recovery. |
+| 3 / UI-COMPLETE | 9.92 removes the armed-action save from presentation, with durable acknowledgement, Retry/Cancel and disabled-owner checks qualified. 9.93 moves the file countdown tick off-thread, adds nonblocking admission and requires a fresh scheduler acknowledgement at expiry; 20 backend and 66 focused UI checks pass. 9.94 qualifies queue countdown ownership and ordered continuation with 36 backend and 100 focused UI checks. 9.95 qualifies immediate countdown acknowledgement without self-scheduling loops (54 backend and 130 current UI checks, plus five frozen-control assertions). 9.96 qualifies secondary-window modal deferral and release wakes, including aborted shutdown (76 backend and 428 current UI checks; six separate frozen-source assertions). 9.97 qualifies explicit close/tray admission, pre-HWND modal reservations and deferred layout-owner release, including failure (85 backend and 721 UI assertions; 23 frozen-source assertions). 9.98 qualifies automatic-presentation deferral, release replay, reentrant prepared-view retention and bounded failure retry (356 focused new UI assertions). 9.99 qualifies folder-handoff ownership, modal error deferral and joined shutdown at a controlled Windows boundary (127 backend and 1,105 UI assertions; two frozen-source controls). Next qualify actual installed browser/media paths, remaining shell operations and window brokers outside this UI thread. | App/UI owner, owned tasks and completion queue. | Responsive Close, no duplicate action/dialog, current path and scanner policy, failure/cancel/retry and joined shutdown. Keep 9.88 main-disabled cases as regression controls. |
+| 4 / UI-FILEINFO | Finish pending admission variants, inline failure/retry and accepted Start/Later/Cancel persistence outside UI. Measure actual selection-to-actionable paint and hidden-main behavior. | Browser admission receipt, reservation and immutable view; retain existing synchronous variants until qualified. | Lost acknowledgement, duplicate/existing job, folder change, cancellation and restart preserve one transaction; current browser trace separates native receipt from paint and exact-size readiness. |
+| 5 / MEDIA-ENDS | Segment-level common coverage alone is insufficient. The 10.0 assembly probe loses frames and adds AAC samples at crossing boundaries; the aligned continuous control is exact. Keep current strict admission while implementing an encoded-sample boundary plan, decoder preroll and overlap ownership. Retain the separate independent-encoder mismatch. | DASH recording/session, verified resources and sample clocks. | Full native recording/restart/Save workflows; every frame hash/PTS/duration, packets and complete decoded PCM/count oracle; no silent trimming or codec change. See [boundary evidence and stages](dash-boundary-research-10.0.md). |
+| 6 / INSTALL-BROWSER | Qualify current installed desktop/host and actual browser extension versions, then selected-media handoff across the quality/container matrix. | Qualified candidate, normal-close update and activated browser extension. | Installed hashes, active browser version, correct selected video/full decode, before-Start exact-byte equality, prefetch reuse and no main-list activation. No source-build result substitutes for this. |
+| 7 / PARITY-DETAIL | Execute the existing G/B/E/D/S/W detail inventory for completion/progress, menus, accessibility, queues, metadata, Grabber and shell workflows. | Scenario-specific reference plus disposable UDM profile. | Control/state/keyboard/DPI evidence for each row, intentional branding differences documented; no blanket parity percentage. |
+| 8 / RELEASE | Assemble installer only for an authorized delivery milestone; qualify upgrade/repair/rollback, signing and publication. | Supported release-critical rows and matching package. | Preserve personal catalogs; verified package, installed bytes and browser activation; explicit release evidence. |
+
+Each functional change increments native and both browser source versions with at most two digits per part. Documentation and qualification retain the actual candidate number. Maintain separate statuses: reference observed, implemented, built, isolated verified, installed verified and paired accepted. Reopen only affected rows when code changes; retain historical evidence with its original version.
+
+## Earlier candidate evidence (retain original scope)
+
+## Previous candidate: 9.87 / browser 0.73.51 — close decisions precede completion retries; uninstalled
+
+Give pending close and exit-layout decisions priority over deferred completion presentation, including direct admission retries. Hide to tray before opening the retained completion, and resume queued work on an owned wake after cancellation or failure. Five native programs build as 9.87 and both source manifests advance to 0.73.51. Frozen 9.86 creates a dialog before applying either ready close route; current timer/wake routes create none at that decision. All 246 backend and 476 UI checks pass, plus a normal 4 MiB hash/catalog/graceful-exit smoke. Temporary fixtures are removed after sanitized export. The build is uninstalled and IDM speed/visual parity remains open. [Implementation, qualification and limits](completion-close-9.87.md).
+
+## Previous candidate: 9.86 / browser 0.73.50 — completion admission stays responsive; uninstalled
+
+Keep explicit completion requests and publication/finished handoffs responsive while the catalog is busy. Retain ordered intents, coalesce pending duplicates and read current eligibility/path/size before display. A cancellable worker wakes the UI when model access is available; CLI Exit retries on that wake instead of waiting for the main timer. Five native programs build as 9.86 and both source manifests advance to 0.73.50. The frozen routes block for 547–563 ms; current dispatches return before writer release. All 227 backend and 368 final UI assertions pass, and a normal 4 MiB download verifies its hash, saved catalog and graceful exit. The candidate is uninstalled; IDM speed and visual parity remain open. [Implementation, qualification and limits](completion-admission-9.86.md).
+
+## Previous candidate: 9.85 / browser 0.73.49 — completion preference stays responsive; uninstalled
+
+Save the completion dialog’s “Don’t show this dialog again” preference off the UI thread. Own the accepted save after dialog Close, merge only its field into current settings, retain rollback/error reporting, and defer main-window shutdown until acknowledgement. Five native programs build as 9.85 and both source manifests advance to 0.73.49. The frozen checkbox blocks for 563 ms; current handlers return in 0–16 ms while the writer remains held. All 214 focused backend and 340 UI checks pass. This does not establish first-paint or whole-download speed parity; the candidate is uninstalled. [Implementation, qualification and limits](completion-suppression-9.85.md).
+
+## Previous candidate: 9.84 / browser 0.73.48 — completion file actions stay responsive; uninstalled
+
+Keep completion Open/Open with/Open folder responsive while the catalog is busy. Queue one validated action, preserve Close and cancel pending actions on destruction; retain current Unicode destinations and scanner eligibility. Five native products build as 9.84 and both source manifests advance to 0.73.48. The frozen command blocks for 579 ms; current commands return in 0–16 ms while the writer remains held, with all 42 contention checks passing. The focused backend run passes 197 checks; all 274 retained-reference UI checks also pass. This is handler responsiveness, not whole-download speed parity. Desktop control captures IDM after activation, but Windows reports it unresponsive and its menu does not react; fresh paired timing and installed acceptance remain open. [Implementation, qualification and limits](completion-actions-9.84.md).
+
+## Previous candidate: 9.83 / browser 0.73.47 — continuous live chapter recovery; parity open
+
+Fix uninterrupted live DASH recording when a refreshed manifest retires the current chapter. Check verified adjacent transitions before rematching expired IDs; retain durable boundary/session ownership. Five native programs build as 9.83; both manifests advance to 0.73.47. All 1,601 backend assertions pass. Eight HTTP workflows qualify three-Period AV/video/audio, old-job Resume, held-refresh Save and three correct rejections. Frames, audio packets, decoded samples and timestamps match their sources. Remove 1,187 disposable files after sanitized export. Installed files and the IDM speed/UI gates remain unchanged; non-aligned chapter ends remain open. [Implementation, full-media evidence and limits](continuous-dash-9.83.md).
+
+## Previous candidate: 9.82 / browser 0.73.46 — retired live-chapter recovery extended; parity open
+
+Resume fully retained live DASH chapters whose duration was originally unknown after they disappear from the manifest. Require contiguous verified coverage in every track and a fresh explicit adjacent successor; checkpoint the boundary safely across restart. Five native programs build as 9.82; both manifests advance to 0.73.46. All 1,595 backend assertions pass. Nine HTTP workflows verify four complete 20-frame outputs and five preserved rejection cases, including interrupted-revision recovery. Remove 1,118 disposable files after sanitized export. Installed files and the open IDM speed/UI gates remain unchanged. [Implementation, controls and corrections](retired-dash-9.82.md).
+
+## Previous candidate: 9.81 / browser 0.73.45 — prefix copy avoids a second body read; speed gate open
+
+Remove a duplicate full-body disk read when publishing a response after approved prefix removal. Compute the raw server SHA-256 during the existing copy while separately hashing the final output; keep checksum rejection, source protection, flush and publication barriers. Five native programs build as 9.81; both manifests advance to 0.73.45. All 1,559 backend assertions, 274 current HTTP workflow assertions and 28 frozen 9.80 control assertions pass. Exact pre-Start and final sizes match for 395-byte and 4,560,015-byte outputs. Remove 1,059 temporary files after sanitized export; retain current products, resource and 42 core objects. Installed files remain unchanged. Desktop control still fails to initialize and IDM remains running in the current session, so no fresh IDM timing or overall speed-parity claim follows. [Implementation, controls and cleanup](prefix-checksum-9.81.md).
+
+## Previous candidate: 9.80 / browser 0.73.44 — form checksum defects fixed; overall parity open
+
+Enforce the selected server SHA-256 on plain form responses and retain hashing/checksum collection through form-to-GET redirects. Preserve cached-response validation without resubmitting forms, and distinguish no-content representation metadata from body checksums. Five native programs build as 9.80; both manifests advance to 0.73.44. All 1,559 backend assertions and 278 form-workflow checks pass. Frozen controls reproduce seven fresh plain mismatches, a redirected gzip mismatch and a cached-response checksum bypass; current legacy and encoded-byte controls pass. Remove 1,222 disposable files after sanitized export. Installed files remain unchanged, and the overall speed/UI/IDM gates stay open. [Reproduction, recovery, controls and cleanup](post-checksum-9.80.md).
+
+## Previous candidate: 9.79 / browser 0.73.43 — network fallback corrected; speed gate open
+
+Preserve the original volume lookup for UNC and mapped remote routes without the preliminary attribute open introduced by 9.78. Keep guarded local GUID queries, handle closure and all publication/durability barriers. Five native programs build as 9.79; both manifests advance to 0.73.43. All 1,559 assertions in 23 suites, 27 additional C: checks, twenty read-only API comparisons and two normal C:/D: 4 MiB completion/hash/post-exit-flush smokes pass. Remove both payloads and 908 disposable test/build/catalog files, including six superseded 9.78 artifacts. Live SMB and the earlier full-lifetime speed gate remain open; installed files stay unchanged. [Implementation, qualification, limits and cleanup](network-volume-route-9.79.md).
+
+## Previous candidate: 9.78 / browser 0.73.42 — local lookup qualified; speed gate failed
+
+Use a guarded opened-file volume query instead of repeating a full-path walk when a valid GUID root is available; retain legacy fallback and every durability/publication barrier. Five native products build as 9.78; both manifests advance to 0.73.42. All 1,551 assertions in 23 suites and nineteen additional C: checks pass. Twenty read-only comparisons show a faster helper, but the six normal-product pilot downloads retain total/finishing losses, so the speed gate fails and the candidate stays uninstalled. All payloads and 278 disposable fixture/build files are removed; current products/core objects and protected installed data remain. [Cause, all losses, metadata registration and cleanup](fixed-volume-9.78.md).
+
+## Previous candidate: 9.77 / browser 0.73.41 — live continuation qualified; speed gate open
+
+Fix fresh-process live DASH Resume after a completed retained Period has disappeared from the server MPD. Refresh and plan its adjacent compatible continuation before rematching old IDs; retain rejection of incomplete coverage and gaps, preserve ordinary waiting, and honor Save during a canceled refresh. Five native products build as 9.77; both manifests advance to 0.73.41. All 1,532 assertions in 22 affected suites pass. Frozen 9.76 controls reproduce the failure; 9.77 reuses the same retained bytes and completes both simple and moving-pattern video. All twenty distinct moving frames match the original, with 211,911 exact assembled/final bytes. Still-visible continuation and held-refresh Save also pass; both rejection controls preserve their cached files. Installed files and the unresolved IDM speed gate remain unchanged. [Cause, guards, all controls and cleanup](live-dash-continuation-9.77.md).
+
+### Current connection-cap acceptance
+
+The unchanged normal 9.77 product completes four independently verified 2 MiB jobs against a two-connection origin: four successful GETs, six refused opens, no body replay and a peak of two accepted connections. All payloads are removed. This is UDM-only admission acceptance; the driver does not measure graceful process shutdown and cannot close the finishing-speed gate. Split-worker pressure still needs separate qualification. [Evidence and exact limits](host-cap-qualification-9.77.md).
+
+### Current capped split lifecycle observation
+
+Normal 9.77 completes both two- and eight-configured-connection 32 MiB cases with exact hashes, two successful requests each and equal body overhead. Eight configured connections produce three refused opens. Both owned processes exit normally; post-exit output flushes are measured. The eight-connection run has a worse exit tail (579.696 versus 209.393 ms), with larger recorded final flush and metadata intervals. Retain this losing observation; one fixed-order pair does not prove causation or close the speed gate. Both payloads are removed. [Complete records, setup correction and next attribution step](capped-split-lifecycle-9.77.md).
+
+### Attribution of the broad metadata interval
+
+Private 9.77 call traces show zone marking at 1.647/1.598 ms in two hash-verified downloads, with the optional server timestamp verified. The old broad `PrePublicationMetadata` timer also includes staging, eligibility and advisory-task startup; its earlier 157.828 ms result cannot be assigned to the zone stream. Durable intent/body/catalog waits remain, as does framework window destruction. No production change, version increment or timing promotion follows. Payloads, raw rings and twelve disposable diagnostic files are removed. [Call durations, scope, losses and next action](zone-call-timeline-9.77.md).
+
+## Previous candidate: 9.76 / browser 0.73.40 — ownership qualified; speed gate open
+
+Carry the actual hashed DASH assembly into publication through a held source owner, including cached output and the confirmation wait. Replace the redundant session Period hash with a check against the continuously protected object and pinned name. Rewind shared file position before cross-volume copying. Five native products build as 9.76; both manifests advance to 0.73.40. All 1,532 assertions in 22 affected suites, sixteen DASH ownership/copy checks and 88 media-workflow checks pass, including nine complete EOF decodes. A frozen 9.75 control reproduces four protection/publication failures. Keep the installed app unchanged; full live multi-Period acceptance and the finishing-speed gate remain open. [Implementation, scope and evidence](dash-output-ownership-9.76.md).
+
+### Real offline DASH assembly acceptance
+
+The unchanged 9.76 core passes nineteen real capture/seal/assembly/cache/publication assertions after the owned origin is stopped. Single and joined output sizes match 2,311 and 3,848 final bytes; all ten single-Period and twenty ordered joined frames match independent source-frame oracles. No app/version increment or installation. Dynamic live refresh, browser/UI and IDM timing remain open. [Scope, fixture corrections and cleanup](dash-assembly-acceptance-9.76.md).
+
+### Dynamic DASH worker acceptance
+
+The unchanged 9.76 adaptive admission/Resume/dispatch/worker path passes eleven assertions on a real changing two-Period video. It keeps size unknown while growing, advances Periods, ends naturally on a static MPD and publishes once across volumes. All twenty frames match independent source hashes; assembled and final size both equal 3,848 bytes. Every media body downloads once. This is one healthy video-only controller flow, not browser/UI, failure-matrix or IDM timing parity. [Corrections, request trace and cleanup](dynamic-dash-acceptance-9.76.md).
+
+## Previous candidate: 9.75 / browser 0.73.39 — correctness qualified; speed gate open
+
+Keep the actual verified video protected through publication by acquiring an identity-matched reader before releasing its verification handle. Pass that ownership through YouTube/adaptive assembly and retained-media reuse. Frozen 9.74 controls reproduce modified/replaced-file acceptance; corrected 9.75 passes all 1,532 assertions in 22 affected suites, six retained-source checks and 84 media-workflow checks including eight complete EOF decodes. Five native products carry 9.75; both source manifests advance to 0.73.39. No new request, remux, full-file hash or flush barrier is added to the ordinary handoff. Installed files remain unchanged, the finishing-speed gate remains open, and no whole-app IDM parity claim follows. [Reproduction, ownership and qualification](verified-media-handoff-9.75.md).
+
+## Previous candidate: 9.74 / browser 0.73.38 — performance gate failed
+
+Release completed advisory hashing storage inside its owned worker and include deallocation in its recorded task time. The real split owner median wait falls from 3.0809 ms to 0.0237 ms; buffer release remains counted at about 2.83 ms. Five native products build; 1,522 affected assertions, 119 cache checks and 326 standalone lifetime checks pass. All eighteen normal-product downloads verify, but the complete no-regression gate fails, including slower sequential exit medians. Keep the candidate uninstalled and preserve every losing sample. Both source manifests advance to 0.73.38; there is no new IDM comparison or whole-app parity claim. [Cause, all measurements and cleanup](advisory-buffer-release-9.74.md).
+
+### Source-operation research after 9.74
+
+Five isolated diagnostic downloads verify actual body/intent overlap, serial catalog persistence, reception-time data-only calls and window-close intervals. Exactly one final catalog transaction occurs in each sample; proof reads and replacement backoffs do not explain the large waits. The expanded split scope captures seven optional calls, one lasting about 535 ms, with overlapping positioned writes. These are instrumented observations, not an admitted policy or IDM ranking. Normal 9.74 / browser 0.73.38 remains unchanged and uninstalled. [All scopes, corrections, limitations and next attribution steps](storage-finishing-timeline-9.74.md).
+
+### Optional split drainage control
+
+Six uninstrumented transfers with a common App object reject removing optional split drainage: all paired finishing and total endpoints worsen. Median process-exit tail rises from 373.287 to 740.088 ms; all files verify and payloads are removed. Keep the current policy and prior failed promotion gate. REA PE layout is unavailable in the configured provider; a read-only import list does not establish IDM runtime behavior. No production change or version increment. [Results, limitations and cleanup](optional-drain-control-9.74.md).
+
+## Previous candidate: 9.73 / browser 0.73.37 — performance gate failed
+
+Built unpromoted candidate: transfer the existing budgeted buffer and hash state into an owned advisory task, overlap it with an identity-bound durable intent, and join it before final catalog acceptance. Reject required/known-digest misuse and prevent a stale recorded checksum from supplying the pending intent digest. Five native products build; 1,522 affected assertions, 119 cache checks and seventeen HTTP checksum checks pass. All eighteen normal-product transfers verify, but the matched no-regression gate fails: median 4 MiB and split finishing regress against 9.71. Keep the installed app unchanged; no new IDM comparison or parity claim follows. Source manifests advance to 0.73.37. [Implementation, failures and evidence](advisory-intent-9.73.md).
+
+### Intermediate 9.72 / browser 0.73.36
+
+Introduced the value-owned advisory handoff and passed 1,506 affected assertions. Superseded without installation by 9.73 after review found stale-checksum and required/known-digest policy gaps. Seven exact source snapshots and raw build/test records remain.
+
+## Previous increment: 9.71 / browser 0.73.35
+
+Bind relocated publication to the actual opened source and retain source/stage objects through cleanup. Guard the writer-to-reader handoff and require a live reference for legacy identity deletion. Build five native products; pass 1,458 assertions in twenty affected suites, 66 cross-volume relocation checks, five scoped-handoff checks, twenty fallback identity checks and 43 gzip workflow checks. The separate checks overlap registered cases. Seven response-reuse routes each make one request. Source manifests advance to 0.73.35. No installation or new IDM speed claim follows. [Changes, qualifications and evidence](relocation-ownership-9.71.md).
+
+### Intermediate 9.70 / browser 0.73.34
+
+Introduced scoped source adoption and identity-aware relocation cleanup. Built and validated, then superseded without installation by 9.71 to keep referenced objects alive through cleanup.
+
+## Previous increment: 9.69 / browser 0.73.33
+
+Create decoded and prefix-stripped gzip outputs exclusively, and bind each cleanup to the identity captured from its actual new-file handle. Preserve pre-existing items, replacement files/directories and unused stripping paths while retaining encoded recovery bytes. Build five native products and pass 1,425 assertions in nineteen affected suites, plus 57 C-volume ownership checks and 43 gzip workflow checks. Validate exact decoded size before Start, saved completion, destination changes, Download Later reuse and encoded-offset resume; all seven one-response routes still use one request. Source extension manifests advance to 0.73.33. No installation, live-browser claim or new IDM timing claim follows. [Reproduction, changes and evidence](gzip-stage-ownership-9.69.md).
+
+## Previous increment: 9.68 / browser 0.73.32
+
+Bind ordinary transfer cleanup to the created file object, preserving an equal-byte replacement or empty folder at its old staging name. Capture copy/assembly identity on the exclusive new-file handle; use verified partial-file identity for failed hard-link cleanup, and join/release unhanded writeback before deletion. Build five native products and pass 1,351 assertions in seventeen affected suites, plus 36 cross-volume interruption checks and four successful copied-download checks. Source extension manifests advance to 0.73.32. Installed files and the unresolved IDM performance gates are unchanged. [Reproduction, implementation and evidence](transfer-stage-cleanup-9.68.md).
+
+## Previous increment: 9.67 / browser 0.73.31
+
+Refuse unclaimed staging files/directories with exclusive output creation, and preserve them on early checksum failure. Reuse a leftover hard link only after proving it names the current partial file and deleting through the checked handle. The same real HTTP controls reproduce foreign-item loss on 9.65 and the owned-link refusal in the incomplete 9.66 candidate; corrected 9.67 controls pass. Build five native products and pass 1,333 assertions in sixteen affected suites, plus eighteen C-volume checks. Source manifests advance to 0.73.31. No installation or new IDM speed claim follows. [Staging admission, recovery and all control corrections](staging-admission-9.67.md).
+
+### Intermediate 9.66 / browser 0.73.30
+
+Exclusive creation and unclaimed-cleanup protection were implemented and passed twelve foreign-item checks. Its owned-link recovery gate remained incomplete; the full desktop build was stopped and this candidate was superseded by 9.67 without installation.
+
+## Previous increment: 9.65 / browser 0.73.29
 
 Bind failed prepared-stage cleanup to the original stable file identity and delete through its checked handle, preserving a replacement file or directory at the old name. Reuse the pre-flush snapshot on the async path; retain recovery journals and joined-worker ordering. The same component and fully frozen real HTTP controls reproduce data loss on 9.64 and pass on 9.65. Five native products build; all 1,315 assertions in fourteen affected suites pass. Source extension manifests advance to 0.73.29. No new speed claim or installation follows; the existing IDM performance gaps remain open. [Ownership regression and validation](prepared-cleanup-owner-9.65.md).
 
@@ -829,7 +1084,7 @@ Each row is a testable difference or a pending comparison. **Critical** means co
 | B17 High | Browser context menu parity | D/S/U. Compare actual browser menus separately from Explorer. | Link, selection, all links, video, page and empty selection. Check label, ordering, enabled state and target identity. |
 | B18 Critical | YouTube 360p/1080p/AV1 and audio | R/F/S/U. Earlier exact-size/live acceptance covered selected cases. | Confirm full decode and exact pre-Start bytes where proven. Match identity and selected tracks for combined, split and streaming paths. |
 | B19 Critical | X original MP4 and HLS | R/F/S/U. Original URL selection and HLS paths have coverage. | Replay 1080p and alternate rendition, captions, selected audio, TS and MP4. Verify byte size and EOF playback. |
-| B20 Critical | DASH indexes and Period joins | F/S/U. Controlled flat/indexed output and resume exist. | Multiple Periods, uneven lengths, indexes, signed resource change and unsupported join. Check full coverage and no duplicate frames. |
+| B20 Critical | DASH indexes and Period joins | F/S/U. 9.83 qualifies owned three-Period continuous AV/video/audio, old-job Resume and held-refresh Save with exact frame/packet/PCM timing checks. Non-aligned ends and installed/reference comparison remain open. [Evidence](continuous-dash-9.83.md). | Multiple Periods, uneven lengths, indexes, signed resource change and unsupported join. Check full coverage and no duplicate frames. |
 | B21 High | Subtitle and language behavior | F/S/U. Current TTML validation and HLS subtitle gating exist. | Manual and automatic TTML, WebVTT, alternate audio and unsupported track. Verify language, cue text and timing. |
 | B22 High | Unsupported and protected streams | D/S/U. Reference documentation distinguishes unsupported/protected media. | Correct absence or actionable explanation. Never pass HTML, an ad or a different quality off as the chosen file. |
 | B23 High | Native host packaging and activation | S/U. Matching browser files are an install prerequisite. | Check running extension version, correct executable path, reconnect after idle/restart and repair of an owned host registration. |
@@ -861,7 +1116,7 @@ Reference descriptions establish the exposed panel, ordinary capture routes, and
 | G19 High | Progress window lifecycle | R/F/S/U. Manual and queued presentation rules exist. | Initial focus, taskbar, minimized/tray/suppressed states, Stop, close and rapid completion. Compare no main-list foreground flash. |
 | G20 Detail | Progress fields and connection map | R/F/S/U. Recent source exposes DASH ranges and tracked resources. | Compare status wording, timer tick, units, speed, ETA, resume badge, connection row count, splitter and details toggle. |
 | G21 High | Limiter and graph | R/F/S/U. Limiter controls and recorded graph measurements need current runtime comparison. | Current and queued limits, pause/resume, opening retained bytes, rate sample gaps, narrow viewport and accessible tooltip dismissal. |
-| G22 Detail | Completion dialog | R/F/S/U. Dedicated reference runner exists. | Compare labels, ordering, Open, Open with, Open folder, copy, Don't show again, suppression and missing target. |
+| G22 Detail | Completion dialog | R/F/S/U. 9.88 passes 612 focused UI assertions including 20 main-disabled modal scenarios; installed paint/shell and secondary-owner coverage remain open. | Compare labels, ordering, Open, Open with, Open folder, copy, Don't show again, suppression and missing target. |
 | G23 High | Properties, address refresh and preview | R/F/S/U. Address refresh, ZIP preview and audio metadata exist. | Edit, save/cancel, changed signed URL, wrong file, metadata read failure, filename preview and missing file. |
 | G24 Detail | Options tabs, size and default controls | R/F/S/U. Nine-page native fixture exists. | Compare tab order, dialog size, OK/Help, Escape and Enter, checkbox defaults, browse buttons and persistence. |
 | G25 High | Options behaviors by page | D/R/S/U. General, file types, connection, save folders, downloads and other controls exist. | Compare per-site exceptions, proxy/auth, file matching, scanner, limiter, duplicate and dialog preferences using safe fixtures. |
@@ -876,11 +1131,11 @@ Reference descriptions establish the exposed panel, ordinary capture routes, and
 | ID | Behavior to compare | Evidence and current UDM position | Acceptance |
 | --- | --- | --- | --- |
 | E01 High | Startup to first byte | L/R/U. Earlier and current trial methods measure different versions and loads. | Separate process start, probe, first validated response and first body byte. Report cold and warm. |
-| E02 High | Range assignment and tail | L/R/S/U. Current 5.25 ranged trials split 15–17 times and served 5.5–6.5 MiB extra. | On matching origin, compare workers, split timing, overlap, duplicate tail and goodput. No missing range. |
+| E02 High | Range assignment and tail | L/R/S/U. Historical 5.25 ranged trials split 15–17 times and served 5.5–6.5 MiB extra. | On matching origin, compare workers, split timing, overlap, duplicate tail and goodput. No missing range. |
 | E03 High | Refused connection budget | L/S/U. The capped origin saw 54–58 refusals in 5.25. | Compare current and revised policy with two accepted connections and eight requested. Measure refusal count and wall time. |
 | E04 High | Recovery after outage | L/R/S/U. 5.25 recovered both outages. | Time from origin recovery to first useful byte. Count refused attempts, retained bytes and extra requests. |
 | E05 Critical | Resume and entity change | F/S/U. Validators and durable checkpoints exist. | Pause/resume, changed ETag, short or ignored Range, lost partial and process restart. Resume only when identity and coverage are proven. |
-| E06 High | Sequential, allocation and finish | L/R/S/U. Current sequential trials took 4.456–5.945 seconds. | Measure transport vs disk and finalization. Repeat without background compression. Trace sync, hash, scan, rename and catalog steps. |
+| E06 High | Sequential, allocation and finish | L/R/S/U. Historical 5.25 sequential trials took 4.456–5.945 seconds. | Measure transport vs disk and finalization. Repeat without background compression. Trace sync, hash, scan, rename and catalog steps. |
 | E07 High | HTTP protocol and proxy routes | R/F/S/U. UDM chooses direct and proxy transport paths. | HTTP/1.1, HTTP/2, HTTP/3 where supported, PAC, manual proxy and per-site policy. Record negotiated route and effect on parallelism. |
 | E08 Critical | Authentication and FTP | D/F/S/U. UDM has FTP, site login and Windows authentication paths. | Active/passive configuration as supported, FTP restart, certificate failure, proxy auth and same-origin credential rules. |
 | E09 High | Limiter and multiple jobs | D/F/S/U. Current source separates global and job caps. | Compare measured sustained cap, start transients, priority and fairness across routes and queues. |
@@ -919,7 +1174,11 @@ Reference descriptions establish the exposed panel, ordinary capture routes, and
 6. Use provisional UI guardrails until the licensed reference is measured. For a warm ready-format selection on the same device, target a first actionable File Info paint within 500 ms in local fixtures. Track player detection, native dispatch and paint separately. No duplicate jobs, wrong media, clipped primary controls or accidental main-list activation qualify for a latency waiver.
 7. A detail closes when its screenshots or interaction trace and fixture show the disposition. Intentional differences get a reason and user-visible effect. A pending reference remains open even if the candidate behaves correctly. Publish no blanket parity percentage.
 
-### What to do next
+### Current next work
+
+Use the ordered November 21 backlog near the top of this plan: first-availability attribution, extra split-byte accounting, completion ownership, remaining pending File Info variants, live media ends and installed/browser acceptance. Older tasks below remain historical context, not instructions to rebuild 5.23 or repeat completed stages.
+
+### Historical startup and admission investigation
 
 The true cold baseline and the 7.66 startup-font optimization are complete. The ten-message reduction and preserved appearance are verified separately from wall time. Traced frame setup was 413.37/291.88 ms before and 297.33/254.10 ms after; the trials were not paired under matched load. Cold actionable observations still range from 548 to 936 ms in the updated trials, so the cold-start latency gap remains open. Warm observations were 217/277 ms in two original-production runs.
 
@@ -936,3 +1195,7 @@ The admission trace now localizes a variable 20.73–626.57 ms interval between 
 | 7 | WIN-01 and REL-01 | Qualified candidate and disposable Windows profiles | Registration, repair, rollback, publisher signing and preservation evidence complete. |
 
 Advance desktop and both browser versions for each separately delivered functional improvement. Documentation and qualification carry the actual candidate number. Keep source, build, install, browser activation and publication records separate. [Version policy](versioning.md) · [Release ledger](next-major-release.md)
+
+### Current execution constraints after 10.0
+
+Use compact intermediate objects for subsequent development builds while preserving existing qualified evidence. UDM-Lab remains unbooted at the current low storage reserve. Supported desktop listing responds, but IDM launch still fails with GetCursorPos access denied after a refreshed retry; no live comparison follows. The retained F088 language gap is confirmed in the current English-only menu/no-op command route. Keep this alongside the performance, File Info, media, installed-browser, accessibility and release gates; none is closed by the build-workflow change. [Current source locations and host constraints](validation/compact-native-build-10.0/parity-review.json).

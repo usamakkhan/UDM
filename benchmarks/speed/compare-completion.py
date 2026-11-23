@@ -7,6 +7,7 @@ from pathlib import Path
 import argparse,ctypes,json,os,statistics,subprocess,sys,time,uuid,winreg
 from ctypes import wintypes as W
 from origin import Origin,Options,expected_sha256
+from completion_layout import validate_catalog_root,catalog_directory
 import hashlib
 
 def sha(p):
@@ -84,19 +85,23 @@ def durable_output(output):
  return closed,{'openSeconds':opened-began,'flushSeconds':flushed-opened,'closeSeconds':closed-flushed}
 
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--output-root',type=Path,required=True);ap.add_argument('--udm',type=Path,default=Path('C:/Program Files/UDM/UDM.exe'));ap.add_argument('--idm',type=Path,default=Path('C:/Program Files (x86)/Internet Download Manager/IDMan.exe'));ap.add_argument('--expected-udm-sha256',required=True);ap.add_argument('--label',required=True);ap.add_argument('--trials',type=int,default=3);ap.add_argument('--case',choices=['single-4m','single-64m','split-64m'],help='Restrict a diagnostic to one paired case; default retains all three cases.');ap.add_argument('--baseline-udm',type=Path);ap.add_argument('--expected-baseline-sha256');ap.add_argument('--remove-owned-payloads',action='store_true');ap.add_argument('--flush-after-exit',action='store_true',help='Also record a symmetric explicit completed-output flush after app exit; retain original exit metrics.');args=ap.parse_args();work=args.output_root.resolve();assert not work.exists();assert 1<=args.trials<=5;assert sha(args.udm)==args.expected_udm_sha256.upper();assert not idm_pids(),'Current-session IDM must be closed before starting';assert bool(args.baseline_udm)==bool(args.expected_baseline_sha256),'Baseline path/hash pair required';clients=['udm','idm'];apps={'udm':args.udm,'idm':args.idm};
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--output-root',type=Path,required=True);ap.add_argument('--udm',type=Path,default=Path('C:/Program Files/UDM/UDM.exe'));ap.add_argument('--idm',type=Path,default=Path('C:/Program Files (x86)/Internet Download Manager/IDMan.exe'));ap.add_argument('--expected-udm-sha256',required=True);ap.add_argument('--label',required=True);ap.add_argument('--trials',type=int,default=3);ap.add_argument('--catalog-root',type=Path,help='Fresh isolated UDM catalog/cache root, separate from output; default remains alongside outputs.');ap.add_argument('--case',choices=['single-4m','single-64m','split-64m'],help='Restrict a diagnostic to one paired case; default retains all three cases.');ap.add_argument('--baseline-udm',type=Path);ap.add_argument('--expected-baseline-sha256');ap.add_argument('--remove-owned-payloads',action='store_true');ap.add_argument('--flush-after-exit',action='store_true',help='Also record a symmetric explicit completed-output flush after app exit; retain original exit metrics.');args=ap.parse_args();work=args.output_root.resolve();assert not work.exists();assert 1<=args.trials<=5;assert sha(args.udm)==args.expected_udm_sha256.upper();assert not idm_pids(),'Current-session IDM must be closed before starting';assert bool(args.baseline_udm)==bool(args.expected_baseline_sha256),'Baseline path/hash pair required';clients=['udm','idm'];apps={'udm':args.udm,'idm':args.idm};
+ catalog_root=validate_catalog_root(work,args.catalog_root)
  if args.baseline_udm:
   assert sha(args.baseline_udm)==args.expected_baseline_sha256.upper();clients=['udm','baseline','idm'];apps['baseline']=args.baseline_udm
- work.mkdir(parents=True);(work/'.udm-completion-comparison').write_text('owned comparison');original=read_settings();save(work/'idm-settings-original.json',original);results=[];payloads=[]
+ work.mkdir(parents=True);(work/'.udm-completion-comparison').write_text('owned comparison');
+ if catalog_root is not None:
+  catalog_root.mkdir(parents=True,exist_ok=False);(catalog_root/'.udm-comparison-catalogs').write_text('Fresh isolated UDM comparison catalogs; not a personal profile')
+ original=read_settings();save(work/'idm-settings-original.json',original);results=[];payloads=[]
  cases=[('single-4m',4*1024**2,1),('single-64m',64*1024**2,1),('split-64m',64*1024**2,8)]
  if args.case:cases=[case for case in cases if case[0]==args.case]
  try:
   for trial in range(1,args.trials+1):
    for case,size,connections in cases:
     for client in (clients[(trial-1)%len(clients):]+clients[:(trial-1)%len(clients)] if args.baseline_udm else (['udm','idm']if(trial+(case=='single-64m'))%2 else['idm','udm'])):
-     folder=work/(case+'-'+client+'-'+str(trial));folder.mkdir();destination=folder/'files';destination.mkdir();output=destination/'sample.bin';data=folder/'catalog';state=data/'state.json'
+     folder=work/(case+'-'+client+'-'+str(trial));folder.mkdir();destination=folder/'files';destination.mkdir();output=destination/'sample.bin';data=catalog_directory(work,catalog_root,case,client,trial);state=data/'state.json'
      if client!='idm':
-      data.mkdir();save(state,{'Schema':1,'Settings':{'Connections':connections,'Parallel':1,'DownloadFolder':str(destination),'CategoryFolders':False,'SuppressProgressDialog':True,'SuppressCompletionDialog':True,'Sound':False,'ShowTipsOnStartup':False,'ClipboardMonitor':False,'PrefetchFileInfo':False,'StopOnWebPage':False,'DuplicatePolicy':'Add'},'Downloads':[],'Queues':[]})
+      data.mkdir(parents=True);save(state,{'Schema':1,'Settings':{'Connections':connections,'Parallel':1,'DownloadFolder':str(destination),'CategoryFolders':False,'SuppressProgressDialog':True,'SuppressCompletionDialog':True,'Sound':False,'ShowTipsOnStartup':False,'ClipboardMonitor':False,'PrefetchFileInfo':False,'StopOnWebPage':False,'DuplicatePolicy':'Add'},'Downloads':[],'Queues':[]})
      else:assert not idm_pids();put_settings({n:[connections,winreg.REG_DWORD]for n in regnames})
      origin=Origin(Options(size=size,rate=8_000_000,latency_ms=20,no_range=connections==1,accept_ranges='none'if connections==1 else None,seed=20261113));url=origin.url+'?completion='+uuid.uuid4().hex;command=([str(apps[client]),'--instance-tag','complete-compare-'+uuid.uuid4().hex[:12],'--data-dir',str(data)]if client!='idm'else[str(args.idm)])+['/d',url,'/p',str(destination),'/f',output.name,'/n','/q'];clock=anchor();start=time.perf_counter();p=subprocess.Popen(command,cwd=apps[client].parent);save(folder/'process.json',{'pid':p.pid,'client':client});handles={p.pid:int(p._handle)};owned=[];exits={};first=None;last_scan=0
      try:
@@ -120,7 +125,7 @@ def main():
       else:raise TimeoutError('Inspect recorded owned processes before any retry; no process was killed')
       p.wait(timeout=3);completed=clock[0]+(max(exits.values())-clock[1])/1e7;after=anchor();drift=(after[0]-clock[0])-(after[1]-clock[1])/1e7;assert abs(drift)<.005,'System-clock drift invalidates exact process-exit mapping';snapshot=origin.snapshot();last=max(r['last_body_sent']for c in snapshot['detail']for r in c['requests']if r.get('last_body_sent')is not None);last_perf=origin.epoch+last;assert completed>=last_perf;assert output.stat().st_size==size and available(output);durability=durable_output(output)if args.flush_after_exit else None;digest=sha(output);assert digest==expected_sha256(size,20261113).upper();row=load(state)['Downloads'][0]if client!='idm'else None
       if row:assert row['Status']=='Complete'and row.get('Sha256','').upper()==digest
-      item={'label':args.label,'trial':trial,'case':case,'client':client,'bytes':size,'configuredConnections':connections,'firstAvailabilityTailSeconds':first-last_perf,'processExitTailSeconds':completed-last_perf,'processExitWallSeconds':completed-start,'firstAvailabilityWallSeconds':first-start,'exitAfterFirstAvailabilitySeconds':completed-first,'clockMappingErrorBoundSeconds':clock[2]/2,'clockDriftSeconds':drift,'trackedProcesses':len(handles),'requests':snapshot['requests'],'originConnections':snapshot['connections'],'peakConcurrent':snapshot['peak_concurrent'],'originBytes':snapshot['bytes_sent'],'sha256':digest,'hashMatches':True,'launcherExitCode':p.returncode,'sourceExecutableSha256':sha(apps[client])}
+      item={'label':args.label,'trial':trial,'case':case,'client':client,'bytes':size,'configuredConnections':connections,'firstAvailabilityTailSeconds':first-last_perf,'processExitTailSeconds':completed-last_perf,'processExitWallSeconds':completed-start,'firstAvailabilityWallSeconds':first-start,'exitAfterFirstAvailabilitySeconds':completed-first,'clockMappingErrorBoundSeconds':clock[2]/2,'clockDriftSeconds':drift,'trackedProcesses':len(handles),'requests':snapshot['requests'],'originConnections':snapshot['connections'],'peakConcurrent':snapshot['peak_concurrent'],'originBytes':snapshot['bytes_sent'],'sha256':digest,'hashMatches':True,'launcherExitCode':p.returncode,'sourceExecutableSha256':sha(apps[client]),'catalogDrive':data.drive if client!='idm' else None,'destinationDrive':destination.drive,'catalogRootExplicit':catalog_root is not None}
       if durability:item.update({'durableTailSeconds':durability[0]-last_perf,'durableWallSeconds':durability[0]-start,'postExitToDurableSeconds':durability[0]-completed,'postExitOperations':durability[1]})
       if row:item.update({'finishPhases':row.get('FinishPhases'),'publicationPhases':row.get('PublicationPhases'),'networkTailSeconds':row.get('NetworkTailSeconds'),'prefinishWriteback':row.get('PrefinishWriteback'),'finalSha256':row.get('Sha256')})
       results.append(item);payloads.append({'path':str(output),'bytes':size,'sha256':digest});save(folder/'result.json',item);save(work/'results.json',{'results':results,'payloads':payloads});print(json.dumps({'trial':trial,'case':case,'client':client,'fullExitTailMs':round(item['processExitTailSeconds']*1000,3),'firstTailMs':round(item['firstAvailabilityTailSeconds']*1000,3),'processes':len(handles),'hashMatches':True}),flush=True)
@@ -130,6 +135,9 @@ def main():
        assert output.stat().st_nlink==1 and sha(output)==digest
        output.unlink();payloads[-1]['removed']=True;save(work/'results.json',{'results':results,'payloads':payloads})
      finally:
+      # Retain range/body accounting even when a run fails. This is the owned
+      # synthetic origin, never browser traffic or a user's download history.
+      save(folder/'origin.json',origin.snapshot())
       for h in owned:k.CloseHandle(h)
       origin.close()
       if client=='idm':put_settings(original)

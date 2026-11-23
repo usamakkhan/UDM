@@ -1,0 +1,7 @@
+{"trial": 1, "case": "split-64m", "client": "udm", "fullExitTailMs": 747.567, "firstTailMs": 700.377, "processes": 1, "hashMatches": true}
+{"trial": 1, "case": "split-64m", "client": "baseline", "fullExitTailMs": 411.304, "firstTailMs": 359.256, "processes": 1, "hashMatches": true}
+{"trial": 2, "case": "split-64m", "client": "baseline", "fullExitTailMs": 373.287, "firstTailMs": 327.163, "processes": 1, "hashMatches": true}
+{"trial": 2, "case": "split-64m", "client": "udm", "fullExitTailMs": 740.088, "firstTailMs": 690.607, "processes": 1, "hashMatches": true}
+{"trial": 3, "case": "split-64m", "client": "udm", "fullExitTailMs": 626.866, "firstTailMs": 578.896, "processes": 1, "hashMatches": true}
+{"trial": 3, "case": "split-64m", "client": "baseline", "fullExitTailMs": 320.772, "firstTailMs": 272.708, "processes": 1, "hashMatches": true}
+{"summary": [{"case": "split-64m", "medianProcessExitTailMs": {"udm": 740.088, "baseline": 373.287}, "udmNotSlowerMedianThanBaseline": false, "processExitTailMs": {"udm": [747.567, 740.088, 626.866], "baseline": [411.304, 373.287, 320.772]}}]}

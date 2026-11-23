@@ -1,0 +1,203 @@
+{
+  "checks": [
+    {
+      "name": "Opening fresh form File Info never submits the POST speculatively",
+      "passed": true
+    },
+    {
+      "name": "An actual form response decodes and publishes the complete original bytes",
+      "passed": true
+    },
+    {
+      "name": "Form completion keeps encoded and decoded byte counts separate",
+      "passed": true
+    },
+    {
+      "name": "An actual form response decodes and publishes the complete original bytes",
+      "passed": true
+    },
+    {
+      "name": "Form completion keeps encoded and decoded byte counts separate",
+      "passed": true
+    },
+    {
+      "name": "An actual form response decodes and publishes the complete original bytes",
+      "passed": true
+    },
+    {
+      "name": "Form completion keeps encoded and decoded byte counts separate",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "Reopening File Info verifies a completed form response without submitting again",
+      "passed": true
+    },
+    {
+      "announcedBytes": 140000,
+      "name": "A verified decoded size is available before Start while the target remains absent",
+      "passed": true
+    },
+    {
+      "name": "Start publishes exactly the form file size shown before confirmation",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "Confirmed-checksum fixture reaches verified pre-Start output",
+      "passed": true
+    },
+    {
+      "name": "A forbidden checksum edit during prefetch rolls back and leaves confirmation pending",
+      "passed": true
+    },
+    {
+      "name": "Confirmation remains usable after a rejected transfer-property edit",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "Completed form response is ready for Download Later",
+      "passed": true
+    },
+    {
+      "name": "Download Later leaves the saved form response unpublished",
+      "passed": true
+    },
+    {
+      "name": "Resume after Download Later uses the saved form response",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "Changing the form request invalidates reuse and sends no replacement request",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "A damaged saved response fails Resume without replaying POST",
+      "passed": true
+    },
+    {
+      "name": "A subsequent explicit Restart rearms the form and downloads a fresh complete response",
+      "passed": true
+    },
+    {
+      "name": "Interrupted POST has no complete receipt and stays failed",
+      "passed": true
+    },
+    {
+      "name": "Queue ticks do not automatically resubmit an ambiguous form response",
+      "passed": true
+    },
+    {
+      "name": "Matching receipt metadata permits worker verification",
+      "passed": true
+    },
+    {
+      "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+      "passed": true
+    },
+    {
+      "name": "Matching receipt metadata permits worker verification",
+      "passed": true
+    },
+    {
+      "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+      "passed": true
+    },
+    {
+      "name": "Matching receipt metadata permits worker verification",
+      "passed": true
+    },
+    {
+      "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+      "passed": true
+    },
+    {
+      "name": "Matching receipt metadata permits worker verification",
+      "passed": true
+    },
+    {
+      "name": "Changed headers, encoding or redirect identity cannot reuse a form response",
+      "passed": true
+    },
+    {
+      "name": "A final checksum rejection does not publish or resubmit the form",
+      "passed": true
+    },
+    {
+      "name": "The complete encoded response has a request-bound reusable receipt",
+      "passed": true
+    },
+    {
+      "name": "The response receipt fingerprints the request without duplicating its encrypted body",
+      "passed": true
+    },
+    {
+      "name": "Request-bound completed response survives catalog reopening",
+      "passed": true
+    },
+    {
+      "name": "A reopened catalog publishes saved form bytes without another POST",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

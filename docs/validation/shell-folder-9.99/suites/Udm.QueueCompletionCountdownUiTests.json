@@ -1,0 +1,156 @@
+{
+  "checks": [
+    {
+      "name": "A disabled main owner retains the queue event without presenting another modal",
+      "passed": true
+    },
+    {
+      "name": "A foreign accepted decision retains the event and its ownership",
+      "passed": true
+    },
+    {
+      "name": "Busy initial admission preserves the queued file action and returns promptly",
+      "passed": true
+    },
+    {
+      "name": "Expired countdown pulse returns before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "A busy eligibility read keeps the expired countdown cancellable",
+      "passed": true
+    },
+    {
+      "name": "Countdown repaint does not wait for the model",
+      "passed": true
+    },
+    {
+      "name": "The Cancel click returns before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "The modal loop closes the window before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "Cancellation consumes the accepted queue action once and releases modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Countdown cancellation owns no File Info decision",
+      "passed": true
+    },
+    {
+      "name": "Neither Cancel nor Enter can perform a queue action",
+      "passed": true
+    },
+    {
+      "name": "Actual expiry acknowledges scheduler work and performs the current action exactly once",
+      "passed": true
+    },
+    {
+      "name": "Successful expiry destroys its actual modal window",
+      "passed": true
+    },
+    {
+      "name": "Contention between steps retains the confirmed cursor without replaying the first action",
+      "passed": true
+    },
+    {
+      "name": "A later wake resumes only the unfinished step without another countdown",
+      "passed": true
+    },
+    {
+      "name": "Repeated wakes cannot replay the consumed queue action",
+      "passed": true
+    },
+    {
+      "name": "Changing the actual queue plan between steps invalidates the remaining action",
+      "passed": true
+    },
+    {
+      "name": "A disabled main owner retains the queue event without presenting another modal",
+      "passed": true
+    },
+    {
+      "name": "A foreign accepted decision retains the event and its ownership",
+      "passed": true
+    },
+    {
+      "name": "Busy initial admission preserves the queued file action and returns promptly",
+      "passed": true
+    },
+    {
+      "name": "Expired countdown pulse returns before a held model writer releases",
+      "passed": true
+    },
+    {
+      "name": "A busy eligibility read keeps the expired countdown cancellable",
+      "passed": true
+    },
+    {
+      "name": "Countdown repaint does not wait for the model",
+      "passed": true
+    },
+    {
+      "name": "The Cancel click returns before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "The modal loop closes the window before the held writer releases",
+      "passed": true
+    },
+    {
+      "name": "Cancellation consumes the accepted queue action once and releases modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Countdown cancellation owns no File Info decision",
+      "passed": true
+    },
+    {
+      "name": "Neither Cancel nor Enter can perform a queue action",
+      "passed": true
+    },
+    {
+      "name": "Actual expiry acknowledges scheduler work and performs the current action exactly once",
+      "passed": true
+    },
+    {
+      "name": "Successful expiry destroys its actual modal window",
+      "passed": true
+    },
+    {
+      "name": "Contention between steps retains the confirmed cursor without replaying the first action",
+      "passed": true
+    },
+    {
+      "name": "A later wake resumes only the unfinished step without another countdown",
+      "passed": true
+    },
+    {
+      "name": "Repeated wakes cannot replay the consumed queue action",
+      "passed": true
+    },
+    {
+      "name": "Changing the actual queue plan between steps invalidates the remaining action",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "cancelMs": 16,
+      "pastDeadlineMs": 1125,
+      "pulseMs": 0,
+      "writerWatchdogExpired": false
+    },
+    {
+      "cancelMs": 0,
+      "pastDeadlineMs": 1109,
+      "pulseMs": 0,
+      "writerWatchdogExpired": false
+    }
+  ],
+  "passed": true
+}

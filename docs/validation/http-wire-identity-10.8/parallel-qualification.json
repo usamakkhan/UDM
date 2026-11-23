@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "same-version",
+      "passed": true,
+      "peakActiveResourceRequests": 3,
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/same-version/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/same-version/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/same-version/source"
+          }
+        }
+      ]
+    },
+    {
+      "case": "etag-conflict",
+      "passed": true,
+      "initialError": "DASH recording combines different versions of a shared resource.",
+      "peakActiveResourceRequests": 3,
+      "acceptedResourcesBeforeRetry": 0,
+      "retryResourceRequests": 3,
+      "pinnedVersion": {
+        "etag": "\"two\"",
+        "total": 4096,
+        "url": "http://127.0.0.1:61856/etag-conflict/source"
+      },
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"two\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/etag-conflict/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"two\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/etag-conflict/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"two\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/etag-conflict/source"
+          }
+        }
+      ]
+    },
+    {
+      "case": "length-conflict",
+      "passed": true,
+      "initialError": "DASH recording combines different versions of a shared resource.",
+      "peakActiveResourceRequests": 3,
+      "acceptedResourcesBeforeRetry": 0,
+      "retryResourceRequests": 3,
+      "pinnedVersion": {
+        "etag": "\"one\"",
+        "total": 4096,
+        "url": "http://127.0.0.1:61856/length-conflict/source"
+      },
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/length-conflict/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/length-conflict/source"
+          }
+        },
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61856/length-conflict/source"
+          }
+        }
+      ]
+    },
+    {
+      "case": "redirect-anonymous",
+      "passed": true,
+      "credentialsScoped": true,
+      "validatorOnlyAtPinnedOrigin": true,
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61857/redirect-anonymous/object"
+          }
+        }
+      ]
+    },
+    {
+      "case": "redirect-scoped",
+      "passed": true,
+      "credentialsScoped": true,
+      "validatorOnlyAtPinnedOrigin": true,
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61857/redirect-scoped/object"
+          }
+        }
+      ]
+    },
+    {
+      "case": "alternatives",
+      "passed": true,
+      "credentialsScoped": true,
+      "validatorOnlyAtPinnedOrigin": true,
+      "resources": [
+        {
+          "bytes": 4096,
+          "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193",
+          "version": {
+            "etag": "\"one\"",
+            "total": 4096,
+            "url": "http://127.0.0.1:61857/alternatives/good/segment.bin"
+          }
+        }
+      ]
+    }
+  ],
+  "actorSha256": "fa0b001711bd062c41944cb6b7142b60e9d81252b790810a6edf94d23b88cc75",
+  "recipeSha256": "9defa57356f0851bd74915dd90e345ebb75de07ac0fe4b265301028c7903cb95",
+  "maxWorkersTested": 3,
+  "requestHeaderIdentityCanonical": true,
+  "completeMediaDecodeTest": false,
+  "installed": false
+}

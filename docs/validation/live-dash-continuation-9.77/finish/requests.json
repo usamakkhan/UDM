@@ -1,0 +1,62 @@
+{
+  "requests": [
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 1571
+    }
+  ],
+  "heldRequests": [
+    {
+      "method": "GET",
+      "path": "/positive/manifest.mpd",
+      "headersWithheld": true
+    }
+  ],
+  "originClosed": true
+}

@@ -1,0 +1,568 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "dynamicSplits": 13,
+    "engineThroughJoinedStopMs": 2211.6669,
+    "finishPhases": {
+      "AdvisoryHashBufferRelease": 0.0046523,
+      "AdvisoryHashCommitHandoff": true,
+      "AdvisoryHashInput": "write-buffer",
+      "AdvisoryHashIntentOverlap": true,
+      "AdvisoryHashOverlap": true,
+      "AdvisoryHashOwnerJoin": 0.0087085,
+      "AdvisoryHashSeconds": 0.0282665,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 6e-06,
+      "Content": 0.0003877,
+      "DirectSize": 1.92e-05,
+      "FlushPublished": 0.0179232,
+      "Hash": 6.87e-05,
+      "HashMode": "deferred",
+      "PrePublicationMetadata": 0.0021312,
+      "PrefetchReceipt": 1.3e-06,
+      "PreparedTransferFinalizeSeconds": 0.0042509,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 3.6e-06,
+      "PublishedFileFlush": 0.0177472,
+      "PublishedFileOpen": 0.0001724,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.0075857,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0013916,
+      "SettleDestination": 0.001245,
+      "SettleLengthQuery": 3.67e-05,
+      "SettleLockWait": 1e-07,
+      "SettleRecoveryCheck": 7.72e-05,
+      "SettleSnapshot": 2.24e-05,
+      "SettleValidateFolder": 5e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0003149,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 67108864,
+    "savedHash": "b97ddc3c24818dfb00cc85ec6541ca9f977ba754c4a09b0a204345ff07faf465",
+    "segments": [
+      {
+        "Done": 9461760,
+        "End": 9461759,
+        "Index": 0,
+        "Start": 0
+      },
+      {
+        "Done": 9322496,
+        "End": 42876927,
+        "HttpBoundarySha256": "f229cc3940df8021cb1b88332352f92b828febf2a21bdec2e510f74e091f0a20",
+        "Index": 1,
+        "Start": 33554432
+      },
+      {
+        "Done": 2930688,
+        "End": 53262335,
+        "HttpBoundarySha256": "62503fa6ff235a505634816111fd8b844cbef315dade4c38e8be96834d58a58e",
+        "Index": 2,
+        "Start": 50331648
+      },
+      {
+        "Done": 8527872,
+        "End": 25845759,
+        "HttpBoundarySha256": "caf17a54cbae61e16f9f10dbc80d1d1a7ab3f2977e7d3cdb28a3db021db8604a",
+        "Index": 3,
+        "Start": 17317888
+      },
+      {
+        "Done": 8241152,
+        "End": 67108863,
+        "HttpBoundarySha256": "b90dc265c5b7ecc64cb6290c1eef0160c53311c785db41887e06c2e148a6c356",
+        "Index": 4,
+        "Start": 58867712
+      },
+      {
+        "Done": 2612708,
+        "End": 12074467,
+        "HttpBoundarySha256": "7fa2f437d1c90fe6813314943feaf15e329049b9c5e8ace679dc03f4fded6a7c",
+        "Index": 5,
+        "Start": 9461760
+      },
+      {
+        "Done": 7708672,
+        "End": 33554431,
+        "HttpBoundarySha256": "822537a971299d693df63bff7584900364a59c46d896afa0c0cdfd1296625971",
+        "Index": 6,
+        "Start": 25845760
+      },
+      {
+        "Done": 7454720,
+        "End": 50331647,
+        "HttpBoundarySha256": "1bcb613976ab4ba3a43932968e9de398c314058b2e8bcee4746f78f3b3e2e552",
+        "Index": 7,
+        "Start": 42876928
+      },
+      {
+        "Done": 2011136,
+        "End": 57675775,
+        "HttpBoundarySha256": "2d98d30a8a6aa3f1c5a92a1f1e4c7ce72a3adc94cdacce7c5729873222096414",
+        "Index": 8,
+        "Start": 55664640
+      },
+      {
+        "Done": 2996240,
+        "End": 17317887,
+        "HttpBoundarySha256": "44136862ad2486c13dc762c07ad60bfba5b0c75e9179b3c795948d676fe04331",
+        "Index": 9,
+        "Start": 14321648
+      },
+      {
+        "Done": 1601536,
+        "End": 55664639,
+        "HttpBoundarySha256": "e48334b68d6ed686d964c6c19d1386d04a8fb528f28b22e3ec99676e43d54139",
+        "Index": 10,
+        "Start": 54063104
+      },
+      {
+        "Done": 1498120,
+        "End": 14321647,
+        "HttpBoundarySha256": "b70e8716d6a1263a3d3859a70fc14c0ecdb4dba59054d47fe0fcfc4941c9a958",
+        "Index": 11,
+        "Start": 12823528
+      },
+      {
+        "Done": 800768,
+        "End": 54063103,
+        "HttpBoundarySha256": "1fa5cfa7d735bb1c7100b7eca14c8556b4053fc6a588f77be62304b3b851422c",
+        "Index": 12,
+        "Start": 53262336
+      },
+      {
+        "Done": 749060,
+        "End": 12823527,
+        "HttpBoundarySha256": "25f43fc89a87aece2914e6d61373ec56f767463e9a4e7eb6a13a747769e19f53",
+        "Index": 13,
+        "Start": 12074468
+      },
+      {
+        "Done": 1191936,
+        "End": 58867711,
+        "HttpBoundarySha256": "35f1aded42cea6671687d809ee66e3d5c7c55ca1c70a61b2b9c7a232f60a00de",
+        "Index": 14,
+        "Start": 57675776
+      }
+    ],
+    "size": 67108864,
+    "transferredBytes": 67109760
+  },
+  "variant": "frozen",
+  "origin": {
+    "connections": 11,
+    "rejected_connections": 0,
+    "requests": 15,
+    "bytes_sent": 67369829,
+    "drops": 0,
+    "peak_concurrent": 9,
+    "detail": [
+      {
+        "id": 1,
+        "opened": 0.22313840000424534,
+        "closed": 1.3649975000007544,
+        "peer_port": 49352,
+        "rejected": false,
+        "bytes": 9502693,
+        "requests": [
+          {
+            "at": 0.22356050000234973,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": null,
+            "status": 200,
+            "start": 0,
+            "end": 67108863,
+            "sent": 9502693,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.22365990000253078,
+            "first_body_sent": 0.2321996000027866,
+            "last_body_sent": 1.3569318000008934
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 2,
+        "opened": 0.24022460000560386,
+        "closed": 1.36630690000311,
+        "peer_port": 49353,
+        "rejected": false,
+        "bytes": 9371592,
+        "requests": [
+          {
+            "at": 0.2405990000042948,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=33554368-67108863",
+            "status": 206,
+            "start": 33554368,
+            "end": 67108863,
+            "sent": 9371592,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.2407080000048154,
+            "first_body_sent": 0.24870709999959217,
+            "last_body_sent": 1.3584444000007352
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 3,
+        "opened": 0.24991620000218973,
+        "closed": 1.6886917000010726,
+        "peer_port": 49354,
+        "rejected": false,
+        "bytes": 2949034,
+        "requests": [
+          {
+            "at": 0.2503059000009671,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=50331584-67108863",
+            "status": 206,
+            "start": 50331584,
+            "end": 67108863,
+            "sent": 2949034,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.25040180000360124,
+            "first_body_sent": 0.2821103000023868,
+            "last_body_sent": 1.657394599998952
+          }
+        ],
+        "drops": 0,
+        "rate": 2097152,
+        "drop_after": 0
+      },
+      {
+        "id": 4,
+        "opened": 0.3583485999988625,
+        "closed": 1.3887832000036724,
+        "peer_port": 49355,
+        "rejected": false,
+        "bytes": 8568824,
+        "requests": [
+          {
+            "at": 0.35875490000034915,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=17317824-33554431",
+            "status": 206,
+            "start": 17317824,
+            "end": 33554431,
+            "sent": 8568824,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.3588394000034896,
+            "first_body_sent": 0.36735540000518085,
+            "last_body_sent": 1.380888400002732
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 5,
+        "opened": 0.42001140000502346,
+        "closed": 2.3521959999998217,
+        "peer_port": 49356,
+        "rejected": false,
+        "bytes": 10234048,
+        "requests": [
+          {
+            "at": 0.4204892000052496,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=58867648-67108863",
+            "status": 206,
+            "start": 58867648,
+            "end": 67108863,
+            "sent": 8241216,
+            "finished": 1.403544000000693,
+            "outcome": "complete",
+            "headers_sent": 0.42061850000027334,
+            "first_body_sent": 0.42910700000356883,
+            "last_body_sent": 1.4035422000015387
+          },
+          {
+            "at": 1.4043437000000267,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=53262272-54063103",
+            "status": 206,
+            "start": 53262272,
+            "end": 54063103,
+            "sent": 800832,
+            "finished": 1.5006042000022717,
+            "outcome": "complete",
+            "headers_sent": 1.4044505999991088,
+            "first_body_sent": 1.4128383999996004,
+            "last_body_sent": 1.5005922999989707
+          },
+          {
+            "at": 1.7844200000035926,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=57675712-58867711",
+            "status": 206,
+            "start": 57675712,
+            "end": 58867711,
+            "sent": 1192000,
+            "finished": 1.9269856000028085,
+            "outcome": "complete",
+            "headers_sent": 1.784555600002932,
+            "first_body_sent": 1.7926742999989074,
+            "last_body_sent": 1.926977100003569
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 6,
+        "opened": 0.4304293000022881,
+        "closed": 1.7323173000040697,
+        "peer_port": 49357,
+        "rejected": false,
+        "bytes": 2662431,
+        "requests": [
+          {
+            "at": 0.43088990000251215,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=9461696-17317887",
+            "status": 206,
+            "start": 9461696,
+            "end": 17317887,
+            "sent": 2662431,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.4309806000019307,
+            "first_body_sent": 0.46288180000556167,
+            "last_body_sent": 1.7009405999997398
+          }
+        ],
+        "drops": 0,
+        "rate": 2097152,
+        "drop_after": 0
+      },
+      {
+        "id": 7,
+        "opened": 0.46431410000514006,
+        "closed": 2.352273200005584,
+        "peer_port": 49358,
+        "rejected": false,
+        "bytes": 9310336,
+        "requests": [
+          {
+            "at": 0.4647448000032455,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=25845696-33554431",
+            "status": 206,
+            "start": 25845696,
+            "end": 33554431,
+            "sent": 7708736,
+            "finished": 1.3844842000034987,
+            "outcome": "complete",
+            "headers_sent": 0.4648220000017318,
+            "first_body_sent": 0.4731690000044182,
+            "last_body_sent": 1.384480500004429
+          },
+          {
+            "at": 1.3852951000008034,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=54063040-55664639",
+            "status": 206,
+            "start": 54063040,
+            "end": 55664639,
+            "sent": 1601600,
+            "finished": 1.5768806000050972,
+            "outcome": "complete",
+            "headers_sent": 1.3854014000025927,
+            "first_body_sent": 1.3936447000014596,
+            "last_body_sent": 1.5768720000050962
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 8,
+        "opened": 0.4746006999994279,
+        "closed": 2.3525140000056126,
+        "peer_port": 49359,
+        "rejected": false,
+        "bytes": 10451088,
+        "requests": [
+          {
+            "at": 0.47504620000108844,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=42876864-50331647",
+            "status": 206,
+            "start": 42876864,
+            "end": 50331647,
+            "sent": 7454784,
+            "finished": 1.3641508000000613,
+            "outcome": "complete",
+            "headers_sent": 0.4751308000049903,
+            "first_body_sent": 0.4837372000038158,
+            "last_body_sent": 1.3641477000055602
+          },
+          {
+            "at": 1.3649138000037055,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=14321584-17317887",
+            "status": 206,
+            "start": 14321584,
+            "end": 17317887,
+            "sent": 2996304,
+            "finished": 1.72297680000338,
+            "outcome": "complete",
+            "headers_sent": 1.3651461000044947,
+            "first_body_sent": 1.3735683999984758,
+            "last_body_sent": 1.7228734000018449
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 9,
+        "opened": 1.3587503000017023,
+        "closed": 2.379769999999553,
+        "peer_port": 49361,
+        "rejected": false,
+        "bytes": 2072475,
+        "requests": [
+          {
+            "at": 1.3593338999999105,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=55664576-58867711",
+            "status": 206,
+            "start": 55664576,
+            "end": 58867711,
+            "sent": 2072475,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 1.3594312999994145,
+            "first_body_sent": 1.3911286000002292,
+            "last_body_sent": 2.348056300004828
+          }
+        ],
+        "drops": 0,
+        "rate": 2097152,
+        "drop_after": 0
+      },
+      {
+        "id": 10,
+        "opened": 1.3950858000025619,
+        "closed": 2.3523864000017056,
+        "peer_port": 49362,
+        "rejected": false,
+        "bytes": 1498184,
+        "requests": [
+          {
+            "at": 1.3955866000032984,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=12823464-14321647",
+            "status": 206,
+            "start": 12823464,
+            "end": 14321647,
+            "sent": 1498184,
+            "finished": 1.574938400000974,
+            "outcome": "complete",
+            "headers_sent": 1.3957587000040803,
+            "first_body_sent": 1.403964700002689,
+            "last_body_sent": 1.574839200002316
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 11,
+        "opened": 1.414322100004938,
+        "closed": 2.3526275000040187,
+        "peer_port": 49363,
+        "rejected": false,
+        "bytes": 749124,
+        "requests": [
+          {
+            "at": 1.4147462000037194,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=12074404-12823527",
+            "status": 206,
+            "start": 12074404,
+            "end": 12823527,
+            "sent": 749124,
+            "finished": 1.5047888000044622,
+            "outcome": "complete",
+            "headers_sent": 1.4148350000032224,
+            "first_body_sent": 1.4230793000024278,
+            "last_body_sent": 1.5047807000009925
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      }
+    ]
+  },
+  "exitCode": 0,
+  "parentLifetimeIncludingProofMs": 2647.825499996543
+}

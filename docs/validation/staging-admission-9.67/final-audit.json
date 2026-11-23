@@ -1,0 +1,2651 @@
+{
+  "version": "9.67",
+  "sourceExtensionVersion": "0.73.31",
+  "sourceInputsVerified": 684,
+  "retainedNativeProducts": 5,
+  "referencedCoreObjectsVerified": 42,
+  "affectedSuitesPassed": 16,
+  "affectedAssertionsPassed": 1333,
+  "additionalCVolumeAssertionsPassed": 18,
+  "protectedInstalledPersonalAndHelperFilesUnchanged": 11,
+  "exportedRecordsVerified": 117,
+  "installedFilesChanged": false,
+  "intermediate966SupersededWithoutFullBuildOrInstallation": true,
+  "invalidReuseFixtureSuperseded": true,
+  "correctedReuseFixtureSameAcrossBeforeAfter": true,
+  "productionSourcesUnchangedThroughFixtureCorrection": true,
+  "noNewSuccessfulDownloadOrIdmTimingClaim": true,
+  "broadParityComplete": false,
+  "cleanup": {
+    "recursiveRemovalUsed": false,
+    "removedFiles": 520,
+    "removedLogicalBytes": 369470799,
+    "physicalSpaceNotMeasured": true,
+    "productsAndRequiredCoreObjectsRetained": true,
+    "recordsAndSmallPrivateDirectoriesRetained": true,
+    "scopes": [
+      {
+        "scope": "current disposable binaries",
+        "removedFiles": 63,
+        "removedLogicalBytes": 328207789,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\Bridge.obj",
+            "sha256": "A4AEE410F38A97F1E39BC5BF51E89D1C441BAB1F829E364FFB476073C2CE2CCE",
+            "bytes": 11876264
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\CompletedCheckpointTests.obj",
+            "sha256": "7ADA48F93A725A32C3C4DE42A70684F906635141DE4B181DBC2D5F663451AC76",
+            "bytes": 6708217
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\IndependentFinishingTests.obj",
+            "sha256": "E9F597FF4174B460BEDBB37AA7B1A23BB5A9CF53274B19F222A897661AF3CEE1",
+            "bytes": 3409834
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\PreparedCleanupHttpTests.obj",
+            "sha256": "7397D4F429B6E2DA2EEE2BFEBC1986A695F9DEB0F9C0ED44175F519760B517D9",
+            "bytes": 2460280
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\PreparedCleanupTests.obj",
+            "sha256": "906C0EE1FC01BDE095AD21CC81AB7A7327222C4F857809EDBDC37E8FDF514E9D",
+            "bytes": 3807845
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\PublicationAvailabilityTests.obj",
+            "sha256": "817FF6C4344D422CD6BA33544D5EF8CF0ACBF7B50699FB72A3AB967FE1C849F5",
+            "bytes": 4452893
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\PublicationFailureLifetimeTests.obj",
+            "sha256": "1353D74C54C9B8655E519B7D525A5F90DE538040535D2017E099C74CBC7199AA",
+            "bytes": 3339886
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\PublicationOverlapTests.obj",
+            "sha256": "FBD9FE273209E7294B801F47120F8FE7D1632F0DEB29358A93767266F727F178",
+            "bytes": 5557591
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\StagingAdmissionTests.obj",
+            "sha256": "0B21A310083D9EDE5696C6758A71CA0B6A30F07264D1A8BDD3B1D8471F7D6ABC",
+            "bytes": 2472052
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\objects\\Transfer.obj",
+            "sha256": "0FC2922FF69E0AD62E12A65F19182316AE6AFD2EFFAAC0A0ABC741FF6F7AE09B",
+            "bytes": 19274476
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.CompletedCheckpointTests.exe",
+            "sha256": "5596B978F1A9BC11095728CD4335752837F65F71DEC297CFF960CD45FC6496E4",
+            "bytes": 5072384
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.IndependentFinishingTests.exe",
+            "sha256": "7FB79B126F1EF4F4475A132C42F9AF8487B9EC0F3F974408AEAC6A435F70B388",
+            "bytes": 5207040
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "sha256": "66BADD6F4A5977DCDCDD0B663CA3D377E274A4C7FD766117EF170A580E6ABC70",
+            "bytes": 4930048
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.PreparedCleanupTests.exe",
+            "sha256": "C005FCF23F4E65ACAAC70F3CFA5069D738203EE19ACF42052C30B0E70D8692F4",
+            "bytes": 2257920
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.PublicationAvailabilityTests.exe",
+            "sha256": "C03203DE34E45324EFB82E871452C073747CCB2F2667DFF021AA7A87DE052618",
+            "bytes": 2323456
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.PublicationFailureLifetimeTests.exe",
+            "sha256": "93D649C104E0705298A306ABAFFD47156915CAB7AD4C572C3C925B80703DF372",
+            "bytes": 4939264
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.PublicationOverlapTests.exe",
+            "sha256": "CC0D442F8B45B674399953C996DF514131ACDC8545C5EA5E690FB5956EB70772",
+            "bytes": 2348544
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.66\\release-native\\Udm.StagingAdmissionTests.exe",
+            "sha256": "535124774A9D2D6EC4BD20B1387638B2EA7D47672021CA6841F188645A56455A",
+            "bytes": 4929536
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\App.obj",
+            "sha256": "46CD126709DE5D246C36BF62818B7FDA40A49B4E8E2A684B4E7CE8CF7391803B",
+            "bytes": 67363654
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\AutomationMain.obj",
+            "sha256": "0ADC947C9BEAF20286AA8FCA80CA2E1C2D59B5937F2C9B2F71EF4C94209F8AE7",
+            "bytes": 3134985
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\CompletedCheckpointTests.obj",
+            "sha256": "3BE3F096423437C2BFAC8682915FD3EEE989A710F67F99BB6C9EA6E0A52C53C2",
+            "bytes": 6708217
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\EarlyPublicationRecoveryTests.obj",
+            "sha256": "18BBC42CC3B09592F5F45A69E13FAD85B94A312BB4AF853BADDDC369476630E6",
+            "bytes": 4414977
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\HostMain.obj",
+            "sha256": "80D853560201454E5B332847347E0648414A2095DDB050182871F06BD4D52583",
+            "bytes": 1599
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\IndependentFinishingTests.obj",
+            "sha256": "697EFBA100694A2A8EC35A1618C1679E77E1A1207C50ECED17401589B187A801",
+            "bytes": 3409834
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\LaunchFailureTests.obj",
+            "sha256": "19A98E86E3A4F8D6BE63334E55ED945DE19850C5479B163454ADC56BB6B1086F",
+            "bytes": 2503591
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\LaunchQueueTests.obj",
+            "sha256": "C28B34EAC064C93012D0E1AE30A34C14F3C07584E99AEB25268D135F1894DDEC",
+            "bytes": 4284981
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\MonitorMain.obj",
+            "sha256": "06D2E64AB987AEDC68A42016EFF6BF53A81E48A4A18205439D402FB5CBAA6FD5",
+            "bytes": 6742904
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PreparedCleanupHttpTests.obj",
+            "sha256": "9A8928CAEE3A43A2B8BE2E51F77B20AF4F5975311226A66E31FBD05F70AEE545",
+            "bytes": 2460280
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PreparedCleanupTests.obj",
+            "sha256": "4F6F90DFE65CF44112F5828E86352D6DD603A90EA4B7314BA319E1DDA5A41F12",
+            "bytes": 3807845
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationAvailabilityTests.obj",
+            "sha256": "5C3DAAE815B1867B6D581BBD5761872DD12C6F281F75AC6CF7F89284486A5D04",
+            "bytes": 4452893
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationCommitTests.obj",
+            "sha256": "421857B5A5F29AD88025EF9A4F689FEA8231B6A2DB295A25D512C6E47AB2D3B1",
+            "bytes": 6562613
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationFailureLifetimeTests.obj",
+            "sha256": "0439BF54F5808A5EA5328F4AEF46361FBD7F70151A5E160E8726C946F8DE8A7F",
+            "bytes": 3339886
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationOverlapTests.obj",
+            "sha256": "13D9D9FE950A250EE4B9C0216D8B802F3FAC4B58D47FE0306508FFA2B64AEE44",
+            "bytes": 5557591
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationOwnershipTests.obj",
+            "sha256": "BB66BB5C7016954F0DC52EC0AB887A5F6453B95AFB6A1FBB6CF8F74254BE78F9",
+            "bytes": 5495365
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationPreparationTests.obj",
+            "sha256": "B811ECA6B6E5F190B6E06B8F9D5CD3AE43664477BD98E1457D5FED026B4D5E89",
+            "bytes": 3704224
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\PublicationRecoveryTests.obj",
+            "sha256": "28987F0E684A2FE0F4F58687A284314478AC68611E4F29948F38BD0D82045F93",
+            "bytes": 3335573
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\SetupMain.obj",
+            "sha256": "F45BE25014C5AC414BCE07995FD6F8B32AF2CF4C5469B31B6E47F7636B713CB6",
+            "bytes": 4589843
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\StagingAdmissionTests.obj",
+            "sha256": "53EDFF6123FD9591626687B32C48E04B0D8AB8429104EA48D0B72B8FF1C2F887",
+            "bytes": 2472052
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\objects\\StagingLinkReuseTests.obj",
+            "sha256": "EAAC6C134C6634F6BBBA3003B553226F1563F3C64AD3ADA6FB3EF407BF3ED3EE",
+            "bytes": 2667277
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.CompletedCheckpointTests.exe",
+            "sha256": "36038588DAA42ACD5ED92CBC02D1018363D159862CD611EEF5851F3A11DAD1FF",
+            "bytes": 5073920
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.EarlyPublicationRecoveryTests.exe",
+            "sha256": "203568EA53194533D61067EF1CD230871824A127CB1599A7D4C91335828F9FBB",
+            "bytes": 2336768
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.IndependentFinishingTests.exe",
+            "sha256": "3E3598DE6AA4BB0C5099B674CE9E9C019B104C4847178EE29AEFD679A0414F2E",
+            "bytes": 5208064
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.LaunchFailureTests.exe",
+            "sha256": "5368E62BA2534791D6E35B6A920D10583E749F438F61DB4C0BB292DB91BC4D56",
+            "bytes": 1331712
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.LaunchQueueTests.exe",
+            "sha256": "B8349F48846DB963336612A3165776A46B2CCBC96BAF30CBFD1A6090C959238F",
+            "bytes": 5417472
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "sha256": "C5107F4382A945BF8656689B3C52964EA8577D6CD6D6FF98381E4DE7D3EFE4BA",
+            "bytes": 4931072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PreparedCleanupTests.exe",
+            "sha256": "20E3FFE425A3C47206AF675D82CC93090523BC7CD535136968783413054E0392",
+            "bytes": 2257920
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationAvailabilityTests.exe",
+            "sha256": "9F8510AB42672FB28CC9CF2CA7549A2D70A1583448457F71DD28CDAEE362A608",
+            "bytes": 2323456
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationCommitTests.exe",
+            "sha256": "ABDEA248B7F13FE85AE5429E528A72D4308B66EDF8BF7EED97AA76AC5BC325F4",
+            "bytes": 2529792
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationFailureLifetimeTests.exe",
+            "sha256": "A6885B26D4A5D656FC934159FFEE68F9C90B5D7A95FD44EEEC5F07BF2BF69A79",
+            "bytes": 4940288
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationOverlapTests.exe",
+            "sha256": "0C03DF376910D57CDF80D63FB8097DDF7AB315D12FEF70D77030934C85E6AAA9",
+            "bytes": 2348544
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationOwnershipTests.exe",
+            "sha256": "92A4E0464D8973DE563309A8972B724C39D66B626FE6B05C729811F177CEC998",
+            "bytes": 2570752
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationPreparationTests.exe",
+            "sha256": "3D20E652F02863F6DA3710F63936D45330250A4E16E4C406F315C89797EA5657",
+            "bytes": 2329088
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.PublicationRecoveryTests.exe",
+            "sha256": "840E353E2B77537C4EEB91D1DACE2A193B99DB5A47ED77F842BFBC7F1CC87993",
+            "bytes": 2409472
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.StagingAdmissionTests.exe",
+            "sha256": "334C9ED478A1A70FCDB1C9CDA3FF1865CD2B6FE874DA6837C3852FB2C2947484",
+            "bytes": 4930560
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-build-9.67\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "sha256": "23DBF3C073B763629B9E24AB9A5F0CCE30FC6B63280748DA7E40139EC8592EC2",
+            "bytes": 4937728
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\objects\\StagingAdmissionTests.obj",
+            "sha256": "425E44E95C9B0BAC2F7CC59AB2F6D986E1ACFD9A0D5628A0090D928BAB6BB5B9",
+            "bytes": 2472052
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\release-native\\Udm.StagingAdmissionTests.exe",
+            "sha256": "9946E163890072A8132EBD41A9825D7E2A699CA7C5782700895962D6A0410F6F",
+            "bytes": 4894208
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\objects\\StagingLinkReuseTests.obj",
+            "sha256": "8EA7D9D5A8549CF7EA02CE40D7C076BFCA4A5606A380153C1B9A2879D2B15A30",
+            "bytes": 2552613
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "sha256": "CC1C1F2ED80C7C1198603703CD8FD20943F281A0DF494F91C2E68821A6EDF5AC",
+            "bytes": 4895744
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\objects\\StagingLinkReuseTests.obj",
+            "sha256": "9E39310B5B58F9F93937841F2FFD8FEF7045BF761F63886C805784FFAC125E91",
+            "bytes": 2667281
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "sha256": "5B4D552AFC6410E9EFF88223F74BD4DBA15BD1E3650F6AB17FB863A52D33CB70",
+            "bytes": 4901376
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-probe-9.67\\objects\\StagingLinkReuseTests.obj",
+            "sha256": "E1B3869B307269CBDC548021B4AB906BDBB5B5E3B968EE808F9E025FAFC6CD91",
+            "bytes": 2667281
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-probe-9.67\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "sha256": "B2B304A7779FCBCDF417E0E93F357CA9C3820A2DC00CB7D2FD9103D812E028B1",
+            "bytes": 4902912
+          }
+        ]
+      },
+      {
+        "scope": "current selected test payloads",
+        "removedFiles": 235,
+        "removedLogicalBytes": 11799157,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\valid-file\\files\\.udm-4dff474bb86c4a1e93f6741eb4b5d42e.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\valid-file\\catalog\\parts\\4dff474bb86c4a1e93f6741eb4b5d42e\\4dff474bb86c4a1e93f6741eb4b5d42e.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\valid-directory\\catalog\\parts\\d67b4e72e1144285a1a9c653d94ffe9a\\d67b4e72e1144285a1a9c653d94ffe9a.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\mismatch-file\\files\\.udm-6eed042fb60b4a509a40b9fe477b6e22.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\mismatch-file\\catalog\\parts\\6eed042fb60b4a509a40b9fe477b6e22\\6eed042fb60b4a509a40b9fe477b6e22.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingAdmissionTests\\mismatch-directory\\catalog\\parts\\6438277b231048f2b23275b30afbb79d\\6438277b231048f2b23275b30afbb79d.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingLinkReuseTests\\own-link\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingLinkReuseTests\\foreign-equal-bytes\\files\\.udm-e8230d0ec85d458cab81fa619ce8ae7f.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-StagingLinkReuseTests\\foreign-equal-bytes\\catalog\\parts\\e8230d0ec85d458cab81fa619ce8ae7f\\e8230d0ec85d458cab81fa619ce8ae7f.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-ae4e2150978343e3a68f834b6f0ece8e.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-ae4e2150978343e3a68f834b6f0ece8e.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\sync-missing\\files\\.udm-8d8034625cbd48ad98e0f1ecae9ecf98.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\sync-directory\\files\\.udm-0e0b146ff9d64f8a9112b10e88e29eb8.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\async-replaced\\files\\.udm-78fde694fe8c47dda76ff225052cd3db.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\async-replaced\\files\\.udm-78fde694fe8c47dda76ff225052cd3db.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\async-missing\\files\\.udm-2811ec7a57c44c28a86a9285d70a94fc.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupTests\\async-directory\\files\\.udm-03eb144307024e95bb3b165d43f27716.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-531d4790482940cbb5a52f9518f8c9de.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-531d4790482940cbb5a52f9518f8c9de.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\parts\\531d4790482940cbb5a52f9518f8c9de\\531d4790482940cbb5a52f9518f8c9de.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\files\\.udm-aac5505ba93e4a17b50a293815c62433.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\parts\\aac5505ba93e4a17b50a293815c62433\\aac5505ba93e4a17b50a293815c62433.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-4fe46f4390b24ba5ac3cb044a90d7bcf.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-4fe46f4390b24ba5ac3cb044a90d7bcf.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\parts\\4fe46f4390b24ba5ac3cb044a90d7bcf\\4fe46f4390b24ba5ac3cb044a90d7bcf.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\files\\.udm-9e3c5f694ab54dabaf0036fafa1c87c9.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\parts\\9e3c5f694ab54dabaf0036fafa1c87c9\\9e3c5f694ab54dabaf0036fafa1c87c9.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\parts\\52b693413956480b96dee05f29a491e4\\52b693413956480b96dee05f29a491e4.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\parts\\18cc254a1b50466fa69ff496467ffdbf\\18cc254a1b50466fa69ff496467ffdbf.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationFailureLifetimeTests\\publication-intent-written\\files\\.udm-50d5bc2a1e354445b7a740675fb94b59.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\parts\\50d5bc2a1e354445b7a740675fb94b59\\50d5bc2a1e354445b7a740675fb94b59.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\parts\\90b7308a1ff24f4799530757ca201db5\\90b7308a1ff24f4799530757ca201db5.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\adopted.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\writer-rejected\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\writer-blocked\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\unwind-before-prepare\\files\\.udm-e86e8e96168d48408c23fef11c33edc9.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\unwind-before-prepare\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\throwing-flush\\files\\.udm-9ee5fe8c0a594bdab5fd6f25fa76793f.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\throwing-flush\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\moved-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\moved-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\intent-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\intent-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\intent-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\flush-error\\files\\.udm-5065397321c24efe841ed8e834a8c8ab.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\flush-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\changed-name\\files\\.udm-d76c5214c66149a6a8c18bf76faed7d4.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\changed-name\\files\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\changed-name\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\changed-folder\\files\\.udm-d3281666f64f44c4b696955c366c1599.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\changed-folder\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\cancel\\files\\.udm-2600ec69202e4cf986e8390d85c59b52.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOverlapTests\\cancel\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-CompletedCheckpointTests\\writeback-operations\\actual.bin",
+            "sha256": "A25BB2F97AC8B92896E698FB27BFFDC899025C26A69463FC402EF30E9DBE75E1",
+            "bytes": 35
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-CompletedCheckpointTests\\failure\\state\\parts\\184474e752484986a0cd7f4a88245cdf\\184474e752484986a0cd7f4a88245cdf.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-CompletedCheckpointTests\\cancel-prepared\\state\\parts\\d4485520cfa44f2d99b7a9097922364a\\d4485520cfa44f2d99b7a9097922364a.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-IndependentFinishingTests\\files\\finishing-0.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-IndependentFinishingTests\\files\\finishing-1.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-IndependentFinishingTests\\catalog\\parts\\de19cc80b48b450791976f4c1fa1ea54\\de19cc80b48b450791976f4c1fa1ea54.data",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\during-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\before-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\accepted-project-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\files\\output.bin",
+            "sha256": "AA264CC874384B47EC2570E94A5383D255C356198A2C0246E5AC46DAFD55071B",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationAvailabilityTests\\accepted-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\busy-source\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\cancel\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\changed-root\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\changed-source\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\changed-source\\staged-\u2603.part",
+            "sha256": "B050DF05EE76E769AB99552F7B229C5D182BA6A7694FF9FC6FBF8818D45D75A7",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\directories-changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\missing-project\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\pinned-source-reuse\\renamed.part",
+            "sha256": "55409AC6813854A11B4AA5FB6644A58CACC4D7BED691FA73B74612007CD482A5",
+            "bytes": 24
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\zero\\files\\output.bin",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\ready\\files\\output-\u2603.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\project\\moved\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\directories-ready\\files\\nested\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\child\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationPreparationTests\\begin\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\superseded\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\standalone-unknown\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\standalone-save-failure\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\standalone-receipt\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\standalone-cleanup-denied\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\source-change\\files\\.udm-3c93c2eca8d54a9bbc2cf1e89c9a634c.assembling",
+            "sha256": "053D94775E4CA5B2A318D3310740C21B59AAB01764799042496C53668BDE648E",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\snapshot-missing\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\shutdown-catalog\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\save-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\newer-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\metadata-rollback\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\late-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\invalid-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\intent-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\intent-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\intent-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\file-moved\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\entry-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\deferred-save\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\containing-success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\cleanup\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\child-catalog\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\catalog-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\catalog-snapshot\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\catalog-lost-ack\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\catalog-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\catalog-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\ack-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\accepted-unknown\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\accepted-extra-stage\\files\\.udm-9fc1a53ecbf943e6a8e9fcad9aa9e125.assembling",
+            "sha256": "04758716197FF1F1853635221A9B836E0574590C6B5017CCBCC5BA73984AD59A",
+            "bytes": 25
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\accepted-extra-stage\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationCommitTests\\accepted\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\cancel\\owned.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\retry-files\\retry.bin",
+            "sha256": "722BB1429C491DD72C69D2B9A177CCA1A452B6A3225604DD221C16FA7E60403C",
+            "bytes": 11
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-cancel\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-cancel\\shutdown.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-child\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-ordinary\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-replacement\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\d\u00e4ta-more.bin",
+            "sha256": "0B639EC453F3C7C4BCE436A5470A8A24E40124D7F95DC4C20BCD8232C78D89D2",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00e9-after.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00c9-before.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\shutdown-child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\recovery\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\move-first\\files\\after-move.bin",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\move-first\\files\\Moved-\u00c4.bin",
+            "sha256": "4917818DC32F88ED94ABA1F652FC8131C8A8A66B199D5C4C5E9D5C8F5745D6D0",
+            "bytes": 12
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\child\\files\\independent-move.bin",
+            "sha256": "DDE5EEFE6E10C83B749F28B85DAB725BDB1F164B990AA0781FB5DF1E63822FF5",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationOwnershipTests\\child\\files\\\u00c4.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\3\\assembled.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\recovery-file-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\recovery-staged-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\old.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\stage.part",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.bin.moved",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.previous.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-9\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-7\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-6\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-5\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-4\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-3\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-2\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-1\\files\\legacy.bin",
+            "sha256": "F313201A76A206752230603E8E0E1B3F2145DFAE87B203177DCC9BE3682822C6",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\legacy-0\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\4\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\2\\files\\file.bin",
+            "sha256": "6A90D515E65425BEC11614BFAAE15539C70673E109DEB6C1C4F68492DA553BEE",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\1\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-PublicationRecoveryTests\\0\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-final-9.67-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\valid-file\\files\\.udm-c148d2707771477da64eaa722661fb59.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\valid-file\\catalog\\parts\\c148d2707771477da64eaa722661fb59\\c148d2707771477da64eaa722661fb59.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\valid-directory\\catalog\\parts\\ad3b9b9e1efc426ab2652a2f26e178b1\\ad3b9b9e1efc426ab2652a2f26e178b1.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\mismatch-file\\files\\.udm-275f8ce256d145609417ae6e29c88a98.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\mismatch-file\\catalog\\parts\\275f8ce256d145609417ae6e29c88a98\\275f8ce256d145609417ae6e29c88a98.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingAdmissionTests\\mismatch-directory\\catalog\\parts\\dce0aa87fe324f48bfc8fbf2ff9f747e\\dce0aa87fe324f48bfc8fbf2ff9f747e.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingLinkReuseTests\\own-link\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingLinkReuseTests\\foreign-equal-bytes\\files\\.udm-6e4e98b6c80b422db629073b86be8fd4.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<development>\\owned-staging-admission-final-9.67-C\\StagingLinkReuseTests\\foreign-equal-bytes\\catalog\\parts\\6e4e98b6c80b422db629073b86be8fd4\\6e4e98b6c80b422db629073b86be8fd4.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\valid-file\\files\\.udm-ff82f8e4bc7446358ca829bd2b1bed54.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\valid-file\\catalog\\parts\\ff82f8e4bc7446358ca829bd2b1bed54\\ff82f8e4bc7446358ca829bd2b1bed54.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\valid-directory\\catalog\\parts\\32e6c4291c1f4e7597987c1ec01ed2fb\\32e6c4291c1f4e7597987c1ec01ed2fb.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\mismatch-file\\files\\.udm-96bcbe0f9d454cd48679c8f34a0b8743.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\mismatch-file\\catalog\\parts\\96bcbe0f9d454cd48679c8f34a0b8743\\96bcbe0f9d454cd48679c8f34a0b8743.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingAdmissionTests\\mismatch-directory\\catalog\\parts\\1540a49fb9ef475ba55495a75161d60f\\1540a49fb9ef475ba55495a75161d60f.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingLinkReuseTests\\own-link\\files\\.udm-6213536e049b496ba528af6ddd53aca8.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingLinkReuseTests\\own-link\\catalog\\parts\\6213536e049b496ba528af6ddd53aca8\\6213536e049b496ba528af6ddd53aca8.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingLinkReuseTests\\foreign-equal-bytes\\files\\.udm-26961f796ed3405b95a97fa335a91bb8.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-D-StagingLinkReuseTests\\foreign-equal-bytes\\catalog\\parts\\26961f796ed3405b95a97fa335a91bb8\\26961f796ed3405b95a97fa335a91bb8.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\owned-cases\\valid-file\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\owned-cases\\valid-directory\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\owned-cases\\mismatch-file\\catalog\\parts\\6f7cc762da774707aef26cf2833f7d42\\6f7cc762da774707aef26cf2833f7d42.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-before-9.65\\owned-cases\\mismatch-directory\\catalog\\parts\\49f57f294d6b42768df7cd51c4b56f2c\\49f57f294d6b42768df7cd51c4b56f2c.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\owned-cases\\own-link\\files\\.udm-7dcdad9f597a4f78970cc72d0f66d90d.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\owned-cases\\own-link\\catalog\\parts\\7dcdad9f597a4f78970cc72d0f66d90d\\7dcdad9f597a4f78970cc72d0f66d90d.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\owned-cases\\foreign-equal-bytes\\files\\.udm-b0bcbe7ea4424632b30f7b3b694b3f37.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-before-9.66\\owned-cases\\foreign-equal-bytes\\catalog\\parts\\b0bcbe7ea4424632b30f7b3b694b3f37\\b0bcbe7ea4424632b30f7b3b694b3f37.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\owned-cases\\own-link\\files\\.udm-68940f39f74e48e98742fb462160448e.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\owned-cases\\own-link\\catalog\\parts\\68940f39f74e48e98742fb462160448e\\68940f39f74e48e98742fb462160448e.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\owned-cases\\foreign-equal-bytes\\files\\.udm-a78ffd81fa4a4e0e8f4e56b7c9f95617.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-before-9.66\\owned-cases\\foreign-equal-bytes\\catalog\\parts\\a78ffd81fa4a4e0e8f4e56b7c9f95617\\a78ffd81fa4a4e0e8f4e56b7c9f95617.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-probe-9.67\\owned-cases\\own-link\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-probe-9.67\\owned-cases\\foreign-equal-bytes\\files\\.udm-dc993e465f324339b588fdd4696d3061.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-corrected-probe-9.67\\owned-cases\\foreign-equal-bytes\\catalog\\parts\\dc993e465f324339b588fdd4696d3061\\dc993e465f324339b588fdd4696d3061.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\valid-file\\files\\.udm-f136974de6ec4631ab7aae3b40b74393.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\valid-file\\catalog\\parts\\f136974de6ec4631ab7aae3b40b74393\\f136974de6ec4631ab7aae3b40b74393.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\valid-directory\\catalog\\parts\\c1ffe77c5f2e41e3982ca458327dcdd0\\c1ffe77c5f2e41e3982ca458327dcdd0.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\mismatch-file\\files\\.udm-ec4df809a35140b291b1a1ca58198974.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\mismatch-file\\catalog\\parts\\ec4df809a35140b291b1a1ca58198974\\ec4df809a35140b291b1a1ca58198974.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.66-precheck\\mismatch-directory\\catalog\\parts\\0a35a2eca28849bc8a7845c0ab7d5f92\\0a35a2eca28849bc8a7845c0ab7d5f92.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\valid-file\\files\\.udm-400d4d7393814deca74cab4fc1d4fd77.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\valid-file\\catalog\\parts\\400d4d7393814deca74cab4fc1d4fd77\\400d4d7393814deca74cab4fc1d4fd77.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\valid-directory\\catalog\\parts\\83b4be81fd7041028d8e46a60fceb710\\83b4be81fd7041028d8e46a60fceb710.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\mismatch-file\\files\\.udm-508d759b573147fc9cbea495dca7151c.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\mismatch-file\\catalog\\parts\\508d759b573147fc9cbea495dca7151c\\508d759b573147fc9cbea495dca7151c.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-admission-9.67-precheck\\mismatch-directory\\catalog\\parts\\4fc5a72089cc4d50a49e79cbac0a48f0\\4fc5a72089cc4d50a49e79cbac0a48f0.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-9.67-precheck\\own-link\\files\\.udm-c8cdda0f95774ef08d63ee2acb2b10ab.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-9.67-precheck\\own-link\\catalog\\parts\\c8cdda0f95774ef08d63ee2acb2b10ab\\c8cdda0f95774ef08d63ee2acb2b10ab.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-9.67-precheck\\foreign-equal-bytes\\files\\.udm-f538e7968fcc4634aa731ab21d85b3e6.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-staging-reuse-9.67-precheck\\foreign-equal-bytes\\catalog\\parts\\f538e7968fcc4634aa731ab21d85b3e6\\f538e7968fcc4634aa731ab21d85b3e6.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          }
+        ]
+      },
+      {
+        "scope": "prior selected generated binaries/payloads",
+        "removedFiles": 222,
+        "removedLogicalBytes": 29463853,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-859f413f16354278bd80d7bbea324af9.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-859f413f16354278bd80d7bbea324af9.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-missing\\files\\.udm-716ecb2e80124e95952a8e516137d7d1.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\sync-directory\\files\\.udm-67556e107e21476fa51a1f4048a1ff38.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\files\\.udm-db2efe24924b4855b0766a04aa62333e.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-replaced\\files\\.udm-db2efe24924b4855b0766a04aa62333e.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-missing\\files\\.udm-fc77606c8a5a4f7badfc09b51fb33cfe.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupTests\\async-directory\\files\\.udm-e443e7f575c5484b9e23261c284762e0.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-4dcddec5376c47f9bf02941bf53c9655.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-4dcddec5376c47f9bf02941bf53c9655.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\parts\\4dcddec5376c47f9bf02941bf53c9655\\4dcddec5376c47f9bf02941bf53c9655.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\files\\.udm-bf44399342774a2f9b9946e5c0d51bd3.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\parts\\bf44399342774a2f9b9946e5c0d51bd3\\bf44399342774a2f9b9946e5c0d51bd3.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-a192fe8123ee42e1bd23057937110544.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-a192fe8123ee42e1bd23057937110544.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\parts\\a192fe8123ee42e1bd23057937110544\\a192fe8123ee42e1bd23057937110544.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\files\\.udm-66261fd514e642d5a9ed828e0d397d45.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\parts\\66261fd514e642d5a9ed828e0d397d45\\66261fd514e642d5a9ed828e0d397d45.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\parts\\f5dcd3a3a144491297c7d0f047e9eba2\\f5dcd3a3a144491297c7d0f047e9eba2.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\parts\\3dc3ccccce914d38942baf81c88727ff\\3dc3ccccce914d38942baf81c88727ff.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\files\\.udm-40197fbdc16b4a16b12810c8bf17a400.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\parts\\40197fbdc16b4a16b12810c8bf17a400\\40197fbdc16b4a16b12810c8bf17a400.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\parts\\5d93a7f05a6b413abd26c1a13f77710a\\5d93a7f05a6b413abd26c1a13f77710a.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\adopted.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-rejected\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\writer-blocked\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\files\\.udm-42af689396ea4cdfbd9a28aedb31eda1.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unwind-before-prepare\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\files\\.udm-8812066fd4574a94b579f9ac328e5849.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\throwing-flush\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\moved-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\intent-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\files\\.udm-fb5ff114e61d482e9a0c8d48d8250188.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\flush-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\files\\.udm-bfb93e9c70084cdeae07c7dea0ae7ca4.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\files\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-name\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\files\\.udm-38f545fb382544b2ba7c8b8a7f119846.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\changed-folder\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\files\\.udm-1ec6dbb26f9a4665860ede09e1ac3030.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOverlapTests\\cancel\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\writeback-operations\\actual.bin",
+            "sha256": "A25BB2F97AC8B92896E698FB27BFFDC899025C26A69463FC402EF30E9DBE75E1",
+            "bytes": 35
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\failure\\state\\parts\\b101cfec48ab424fb8b1a6c1e2c031dd\\b101cfec48ab424fb8b1a6c1e2c031dd.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-CompletedCheckpointTests\\cancel-prepared\\state\\parts\\490900c90dad414a904fcd374b9fa38c\\490900c90dad414a904fcd374b9fa38c.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\files\\finishing-0.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\files\\finishing-1.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-IndependentFinishingTests\\catalog\\parts\\f50cacd67c70491eb69fc3f5870576c3\\f50cacd67c70491eb69fc3f5870576c3.data",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\during-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\before-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-project-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\files\\output.bin",
+            "sha256": "AA264CC874384B47EC2570E94A5383D255C356198A2C0246E5AC46DAFD55071B",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationAvailabilityTests\\accepted-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\busy-source\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\cancel\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-root\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\changed-source\\staged-\u2603.part",
+            "sha256": "B050DF05EE76E769AB99552F7B229C5D182BA6A7694FF9FC6FBF8818D45D75A7",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\missing-project\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\pinned-source-reuse\\renamed.part",
+            "sha256": "55409AC6813854A11B4AA5FB6644A58CACC4D7BED691FA73B74612007CD482A5",
+            "bytes": 24
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\zero\\files\\output.bin",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\ready\\files\\output-\u2603.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\project\\moved\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\directories-ready\\files\\nested\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\child\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationPreparationTests\\begin\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\superseded\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-unknown\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-save-failure\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-receipt\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\standalone-cleanup-denied\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\source-change\\files\\.udm-b0a0d0258ecf43999028239f73b86ae1.assembling",
+            "sha256": "053D94775E4CA5B2A318D3310740C21B59AAB01764799042496C53668BDE648E",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\snapshot-missing\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\shutdown-catalog\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\save-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\newer-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\metadata-rollback\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\late-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\invalid-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\intent-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\file-moved\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\entry-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\deferred-save\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\containing-success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\cleanup\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child-catalog\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-snapshot\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-lost-ack\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\catalog-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\ack-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-unknown\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\files\\.udm-efcd6924d0c34da199a66e0e3b76e6a8.assembling",
+            "sha256": "04758716197FF1F1853635221A9B836E0574590C6B5017CCBCC5BA73984AD59A",
+            "bytes": 25
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted-extra-stage\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationCommitTests\\accepted\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\cancel\\owned.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\retry-files\\retry.bin",
+            "sha256": "722BB1429C491DD72C69D2B9A177CCA1A452B6A3225604DD221C16FA7E60403C",
+            "bytes": 11
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-cancel\\shutdown.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\d\u00e4ta-more.bin",
+            "sha256": "0B639EC453F3C7C4BCE436A5470A8A24E40124D7F95DC4C20BCD8232C78D89D2",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00e9-after.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00c9-before.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\shutdown-child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\recovery\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\files\\after-move.bin",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\move-first\\files\\Moved-\u00c4.bin",
+            "sha256": "4917818DC32F88ED94ABA1F652FC8131C8A8A66B199D5C4C5E9D5C8F5745D6D0",
+            "bytes": 12
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\files\\independent-move.bin",
+            "sha256": "DDE5EEFE6E10C83B749F28B85DAB725BDB1F164B990AA0781FB5DF1E63822FF5",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationOwnershipTests\\child\\files\\\u00c4.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\3\\assembled.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-file-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\recovery-staged-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\old.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\stage.part",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.bin.moved",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.previous.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-9\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-7\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-6\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-5\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-4\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-3\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-2\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-1\\files\\legacy.bin",
+            "sha256": "F313201A76A206752230603E8E0E1B3F2145DFAE87B203177DCC9BE3682822C6",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\legacy-0\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\4\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\2\\files\\file.bin",
+            "sha256": "6A90D515E65425BEC11614BFAAE15539C70673E109DEB6C1C4F68492DA553BEE",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\1\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-PublicationRecoveryTests\\0\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\objects\\PreparedCleanupTests.obj",
+            "sha256": "D21C16C3A6190676B65E5B32CEC43FCA15AA82630E630D9C0D213F073D542AAE",
+            "bytes": 3751301
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\release-native\\Udm.PreparedCleanupTests.exe",
+            "sha256": "F9964A6B91440128EDF5515A031BEE547F7AB7EA564246924E67E1602314BE4B",
+            "bytes": 2220544
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-replaced\\files\\.udm-a9d19307aa594025aab5bb38f5a45325.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-missing\\files\\.udm-b565a42894ab4c00ab124ae973d5ca9d.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\sync-directory\\files\\.udm-4d9883c71c1044b0957d43fef56dc531.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-replaced\\files\\.udm-fd17a0035c384db88f70247f0839046e.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-missing\\files\\.udm-fbd1bf5ed8b04f84a715905ff12d971b.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-before-9.64\\owned-cases\\async-directory\\files\\.udm-924f0ddd51bc4de9835f9335c13811fb.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\objects\\PreparedCleanupHttpTests.obj",
+            "sha256": "FA4E004CF92CF97824D79AF69F0F8163CB0D070F35845C86A61F11D366FEC38D",
+            "bytes": 2460288
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "sha256": "BCDC5F10257F1E32D72413BB4AB2255B8A3EF923799D6F06D7893A51BA6B676E",
+            "bytes": 4892672
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\files\\.udm-824471b37bad4ee58bd1998213ddd11a.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\parts\\824471b37bad4ee58bd1998213ddd11a\\824471b37bad4ee58bd1998213ddd11a.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\files\\.udm-628fbbe49363411aa0e5684a9d9d181a.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\parts\\628fbbe49363411aa0e5684a9d9d181a\\628fbbe49363411aa0e5684a9d9d181a.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\files\\.udm-5175457487ea48babc5a3003bc6abc74.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\parts\\5175457487ea48babc5a3003bc6abc74\\5175457487ea48babc5a3003bc6abc74.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\files\\.udm-fb9bcbc2d5b5485ba554ce9c1cbf4fdb.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\parts\\fb9bcbc2d5b5485ba554ce9c1cbf4fdb\\fb9bcbc2d5b5485ba554ce9c1cbf4fdb.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\objects\\PreparedCleanupHttpTests.obj",
+            "sha256": "277D19CF139835C3626BB22BBB1E490FABF57D7E21FFF3E07163F886262280DD",
+            "bytes": 2460427
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "sha256": "ECD9FFD2A83B6DA333354535A7BEB70D8735223D33D88D6C72CC74FEF93A3080",
+            "bytes": 4894208
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\files\\.udm-533d2e52a5174659bc068761e814bf4f.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-equal-bytes\\catalog\\parts\\533d2e52a5174659bc068761e814bf4f\\533d2e52a5174659bc068761e814bf4f.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\files\\.udm-e32988ef41f1491483cfe9dddaa6d792.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-ready-directory\\catalog\\parts\\e32988ef41f1491483cfe9dddaa6d792\\e32988ef41f1491483cfe9dddaa6d792.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\files\\.udm-52c10e58c2524ff591da9b809681e88d.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-equal-bytes\\catalog\\parts\\52c10e58c2524ff591da9b809681e88d\\52c10e58c2524ff591da9b809681e88d.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\files\\.udm-8117d80871394ce8a6b1190bcb1085b1.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-http-frozen-before-9.64\\owned-cases\\publication-preflight-begin-directory\\catalog\\parts\\8117d80871394ce8a6b1190bcb1085b1\\8117d80871394ce8a6b1190bcb1085b1.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\files\\.udm-05770ca77af143618b24c88851f4bbe8.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-replaced\\files\\.udm-05770ca77af143618b24c88851f4bbe8.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-missing\\files\\.udm-dda75a60a39a4da8924081a3b6ef8ef4.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\sync-directory\\files\\.udm-431359c11cf1448d896d1dc08533530d.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\files\\.udm-602bf0e4152746d898f006b65b0b9c11.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-replaced\\files\\.udm-602bf0e4152746d898f006b65b0b9c11.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-missing\\files\\.udm-0a87db1fda9f442db30225855b4d2864.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-component-precheck\\async-directory\\files\\.udm-5a720b6214e8499eada31928636ca6d2.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\files\\.udm-5ada6d706eb6477fb1eb54ea04761535.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\files\\.udm-5ada6d706eb6477fb1eb54ea04761535.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-equal-bytes\\catalog\\parts\\5ada6d706eb6477fb1eb54ea04761535\\5ada6d706eb6477fb1eb54ea04761535.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\files\\.udm-f751037914e141a3871446df0b7de129.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-ready-directory\\catalog\\parts\\f751037914e141a3871446df0b7de129\\f751037914e141a3871446df0b7de129.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\files\\.udm-69944dd5f4c64d0c96021b2cf25adcd1.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\files\\.udm-69944dd5f4c64d0c96021b2cf25adcd1.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-equal-bytes\\catalog\\parts\\69944dd5f4c64d0c96021b2cf25adcd1\\69944dd5f4c64d0c96021b2cf25adcd1.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\files\\.udm-5950ff719c5a40a992f309f1c4068945.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-prepared-cleanup-owner-9.65-http-precheck\\publication-preflight-begin-directory\\catalog\\parts\\5950ff719c5a40a992f309f1c4068945\\5950ff719c5a40a992f309f1c4068945.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          }
+        ]
+      }
+    ]
+  },
+  "nextWork": "Audit owned stage cleanup after creation and before handoff, compressed-response and media staging, and unjournaled copied-stage recovery; resolve normal finishing/availability performance gates separately."
+}

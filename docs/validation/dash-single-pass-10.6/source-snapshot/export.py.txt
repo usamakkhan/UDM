@@ -1,0 +1,30 @@
+from pathlib import Path
+import json,hashlib,os
+repo=Path('D:/UDM');area=Path(__file__).parent;public=repo/'docs/validation/dash-single-pass-10.6';public.mkdir(exist_ok=False);snap=public/'source-snapshot';snap.mkdir();read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+def clean(value):
+ if isinstance(value,str):
+  for a,b in [(str(area),'<candidate>'),(str(repo),'<repository>'),(os.environ['USERPROFILE'],'<profile>'),('C:/Program Files/UDM','<host-install>'),('C:\\Program Files\\UDM','<host-install>')]:value=value.replace(a,b).replace(a.replace('\\','/'),b)
+  return value
+ if isinstance(value,list):return [clean(e) for e in value]
+ if isinstance(value,dict):return {k:clean(v) for k,v in value.items()}
+ return value
+def emit(name,value):(public/name).write_text(json.dumps(clean(value),indent=2),encoding='utf-8',newline='\n')
+for source,name in [('verification.json','verification.json'),('build-result.json','build.json'),('recovery-build.json','recovery-build.json'),('single-pass-qualified/qualification.json','single-pass-qualification.json'),('single-pass-qualified/requests.json','single-pass-requests.json'),('wire-qualified/qualification.json','wire-qualification.json'),('wire-qualified/requests.json','wire-requests.json'),('cancellation-qualified/qualification.json','cancellation-qualification.json'),('freshness-qualified/qualification.json','freshness-qualification.json'),('freshness-clock-final/qualification.json','freshness-clock-qualification.json'),('freshness-clock-qualified/results.json','initial-clock-failure.json'),('freshness-clock-final/results.json','freshness-clock-results.json'),('continuous-final/qualification.json','continuous-qualification.json'),('continuous-final/candidate-terminal.json','continuous-terminal.json'),('direct-qualified/passed.json','direct-qualification.json'),('direct-qualified/results.json','direct-results.json'),('direct-qualified/requests.json','direct-requests.json'),('caption-qualified/passed.json','caption-qualification.json'),('caption-qualified/results.json','caption-results.json'),('caption-qualified/requests.json','caption-requests.json'),('runtime-source-pins.json','runtime-source-pins.json'),('single-pass-first/fresh/capture-results.json','initial-fixture-failure.json')]:emit(name,read(area/source))
+for folder in ['pending-qualified','qualified-DashMetadataTransportTests','qualified-GaplessAacTailTests','qualified-RetiredDashBoundaryTests']:emit(folder+'.json',read(area/folder/'results.json'))
+terminal=read(area/'continuous-final/candidate-terminal.json');emit('continuous-case-results.json',[dict(case=e['case'],exitCode=e['exitCode'],result=read(Path(e['result']))) for e in terminal['records']])
+for name in ['recovery-first-compile-failure.log','freshness-clock-qualified.log','continuous-qualified.log','continuous-qualified/av-record.log','continuous-final.log','direct-qualified.log','caption-qualified.log','compile-DashManifest.log','compile-Bridge.log','Udm.DashSinglePassRecovery.log','Udm.DashSinglePassRecovery-Control10.5.log']:
+ p=area/name
+ if p.exists():(public/(name.replace('/','__'))).write_text(clean(p.read_text(encoding='utf-8',errors='replace')),encoding='utf-8',newline='\n')
+sources=[]
+for name in ['native/DashPendingVersion.hpp','native/DashPendingVersionTests.cpp','native/DashManifest.cpp','native/DashManifest.hpp','native/Version.hpp','native/backend-tests.json','browser/chromium/manifest.json','browser/firefox/manifest.json','benchmarks/speed/dash_single_pass_workflow.cpp','benchmarks/speed/dash_single_pass_recovery.cpp','tests/dash-single-pass.native-live.py']:
+ target=snap/(name.replace('/','__')+'.txt');target.write_bytes((repo/name).read_bytes());sources.append(dict(path=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+for name in ['build.py','build-recovery.py','run-validation.py','continue-validation.py','media-validation.py','verify.py','export.py']:
+ target=snap/(name+'.txt');target.write_bytes((area/name).read_bytes());sources.append(dict(recipe=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+before=area/'before-DashManifest.cpp';prior=read(repo/'.media-cache/dash-discovery-roles-build-10.5/build-result.json');assert sha(before)==next(e['sha256'] for e in prior['sources'] if e['path']=='native/DashManifest.cpp');target=snap/'frozen-10.5-DashManifest.cpp.txt';target.write_bytes(before.read_bytes());sources.append(dict(path='native/DashManifest.cpp',version='10.5',snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+emit('host-protection.json',read(repo/'docs/validation/completion-claim-9.92/host-protection.json'))
+emit('source-provenance.json',dict(sources=sources,compiledSourcesUnchanged=True,runtimeRecipesUnchangedDuringFinalRuns=True,reusedCoreCount=40,rebuiltCoreNames=['DashManifest','Bridge'],singlePassBodyHandoffImplemented=True,initialFailuresRetained=True,finalTechnicalChecksPassed=True,storageReservePassed=False,releaseQualified=False))
+files=[dict(path=p.relative_to(public).as_posix(),sha256=sha(p),bytes=p.stat().st_size) for p in sorted(public.rglob('*')) if p.is_file()];emit('manifest.json',dict(records=files,binariesIncluded=False,ownedMediaIncluded=False,finalTechnicalChecksPassed=True,storageReservePassed=False,releaseQualified=False))
+for e in files:assert sha(public/e['path'])==e['sha256']
+for p in public.rglob('*'):
+ if p.is_file() and p.parent!=snap:assert b'Usama' not in p.read_bytes(),p
+print(str(len(files))+' sanitized source/metadata records verified')

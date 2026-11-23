@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "label": "9.71 normal-product pilot only; no IDM comparison; all three cases retained",
+  "transfers": 3,
+  "idmSettingsNotReadOrChanged": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 159.227
+      },
+      "idmComparisonPerformed": false,
+      "processExitTailMs": {
+        "udm": [
+          159.227
+        ]
+      }
+    },
+    {
+      "case": "single-64m",
+      "medianProcessExitTailMs": {
+        "udm": 265.295
+      },
+      "idmComparisonPerformed": false,
+      "processExitTailMs": {
+        "udm": [
+          265.295
+        ]
+      }
+    },
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 265.084
+      },
+      "idmComparisonPerformed": false,
+      "processExitTailMs": {
+        "udm": [
+          265.084
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

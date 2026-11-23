@@ -1,0 +1,20 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "Secondary modality disables progress while the main list remains enabled",
+      "passed": false
+    },
+    {
+      "name": "The actual progress-owned modal closes normally",
+      "passed": false
+    }
+  ],
+  "error": "The actual progress-owned modal closes normally",
+  "observations": [],
+  "passed": false
+}

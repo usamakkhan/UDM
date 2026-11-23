@@ -1,0 +1,33 @@
+from pathlib import Path
+import json,hashlib,os
+repo=Path('D:/UDM');area=Path(__file__).parent;public=repo/'docs/validation/dash-discovery-roles-10.5';public.mkdir(exist_ok=False);snap=public/'source-snapshot';snap.mkdir();read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+def clean(value):
+ if isinstance(value,str):
+  for a,b in [(str(area),'<candidate>'),(str(repo),'<repository>'),(os.environ['USERPROFILE'],'<profile>'),('C:/Program Files/UDM','<host-install>'),('C:\\Program Files\\UDM','<host-install>')]:value=value.replace(a,b).replace(a.replace('\\','/'),b)
+  return value
+ if isinstance(value,list):return [clean(e) for e in value]
+ if isinstance(value,dict):return {k:clean(v) for k,v in value.items()}
+ return value
+def emit(name,value):(public/name).write_text(json.dumps(clean(value),indent=2),encoding='utf-8',newline='\n')
+for source,name in [('verification.json','verification.json'),('build-result.json','build.json'),('adaptive-dependency.json','header-dependency-audit.json'),('wire-qualified/qualification.json','wire-qualification.json'),('wire-qualified/requests.json','wire-requests.json'),('cancellation-qualified/qualification.json','cancellation-qualification.json'),('continuous-qualified/qualification.json','continuous-qualification.json'),('continuous-qualified/candidate-terminal.json','continuous-terminal.json'),('freshness-qualified/qualification.json','freshness-qualification.json'),('freshness-qualified/results.json','freshness-results.json'),('freshness-clock-qualified/qualification.json','freshness-clock-qualification.json'),('freshness-clock-qualified/results.json','freshness-clock-results.json')]:emit(name,read(area/source))
+for name in ['DashMetadataTransportTests','GaplessAacTailTests','RetiredDashBoundaryTests']:emit(name+'.json',read(area/('qualified-'+name)/'results.json'))
+terminal=read(area/'continuous-qualified/candidate-terminal.json');emit('continuous-case-results.json',[dict(case=e['case'],exitCode=e['exitCode'],result=read(Path(e['result']))) for e in terminal['records']])
+emit('host-protection.json',read(repo/'docs/validation/completion-claim-9.92/host-protection.json'))
+(public/'continuous.log').write_text(clean((area/'continuous-qualified.log').read_text(encoding='utf-8',errors='replace')),encoding='utf-8',newline='\n')
+sources=[]
+for name in ['native/DashMetadataTransport.hpp','native/DashMetadataTransportTests.cpp','native/DashManifest.cpp','native/LiveDash.hpp','native/Version.hpp','native/backend-tests.json','browser/chromium/manifest.json','browser/firefox/manifest.json','benchmarks/speed/dash_metadata_transport_workflow.cpp','benchmarks/speed/dash_metadata_cancellation.cpp','tests/dash-metadata-transport.native-live.py','tests/dash-metadata-cancellation.native-live.py','tests/live-dash-continuous.native-live.py','benchmarks/speed/live_dash_continuous_workflow.cpp','tests/dash-freshness.native-live.py','tests/dash-freshness-clock.native-live.py']:
+ target=snap/(name.replace('/','__')+'.txt');target.write_bytes((repo/name).read_bytes());sources.append(dict(path=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+for name in ['build.py','build-final.py','compile-adaptive-dependency.py','verify.py','export.py']:
+ target=snap/(name+'.txt');target.write_bytes((area/name).read_bytes());sources.append(dict(recipe=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+prior=read(repo/'.media-cache/dash-metadata-transport-build-10.4/build-result.json')
+for name,path in [('before-DashManifest.cpp','native/DashManifest.cpp'),('before-DashMetadataTransport.hpp','native/DashMetadataTransport.hpp')]:
+ original=area/name;assert sha(original)==next(e['sha256'] for e in prior['sources'] if e['path']==path);target=snap/('frozen-10.4-'+name+'.txt');target.write_bytes(original.read_bytes());sources.append(dict(path=path,version='10.4',snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+frozen=[]
+for version,folder in [('10.0','compact-native-build-10.0'),('10.1','gapless-aac-tail-build-10.1')]:frozen.append(dict(version=version,coreObjects=read(repo/'.media-cache'/folder/'build-result.json')['coreObjects']))
+emit('frozen-core-bindings.json',frozen)
+emit('source-provenance.json',dict(sources=sources,allBuildInputsStillMatch=True,sourceUnchangedDuringQualifiedRuns=True,initialCacheSelectionSuperseded=True,qualifiedExecutableFolder='release-native-final',singlePassBodyHandoffImplemented=False))
+files=[dict(path=p.relative_to(public).as_posix(),sha256=sha(p),bytes=p.stat().st_size) for p in sorted(public.rglob('*')) if p.is_file()];emit('manifest.json',dict(passed=True,records=files,binariesIncluded=False,ownedMediaIncluded=False,allQualifiedRuntimesPassed=True))
+for e in files:assert sha(public/e['path'])==e['sha256']
+for p in public.rglob('*'):
+ if p.is_file() and p.parent!=snap:assert b'Usama' not in p.read_bytes(),p
+print(str(len(files))+' tracked source and metadata records verified')

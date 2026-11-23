@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "label": "9.92-normal-C-cache-D-output",
+  "transfers": 9,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 178.033,
+        "baseline": 176.358,
+        "idm": 412.301
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          332.143,
+          178.033,
+          177.642
+        ],
+        "baseline": [
+          181.146,
+          176.358,
+          175.543
+        ],
+        "idm": [
+          681.64,
+          381.017,
+          412.301
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

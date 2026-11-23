@@ -1,0 +1,51 @@
+[
+  {
+    "case": "positive",
+    "stage": "capture",
+    "exitCode": 0,
+    "binarySha256": "869E7C345FDF5B84F85BC42718F57CD1AADE78B96E8F05E2B7B753BC33471D4A",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\positive\\capture-results.json"
+  },
+  {
+    "case": "positive",
+    "stage": "baseline",
+    "exitCode": 1,
+    "binarySha256": "869E7C345FDF5B84F85BC42718F57CD1AADE78B96E8F05E2B7B753BC33471D4A",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\positive\\baseline-results.json"
+  },
+  {
+    "case": "positive",
+    "stage": "candidate",
+    "exitCode": 0,
+    "binarySha256": "6D0CA64FF2925EF157175E4BA69CB771963C8DB9F82D8695F1D14A6E74FFACF2",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\positive\\candidate-results.json"
+  },
+  {
+    "case": "incomplete",
+    "stage": "capture",
+    "exitCode": 0,
+    "binarySha256": "6D0CA64FF2925EF157175E4BA69CB771963C8DB9F82D8695F1D14A6E74FFACF2",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\incomplete\\capture-results.json"
+  },
+  {
+    "case": "incomplete",
+    "stage": "candidate",
+    "exitCode": 1,
+    "binarySha256": "6D0CA64FF2925EF157175E4BA69CB771963C8DB9F82D8695F1D14A6E74FFACF2",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\incomplete\\candidate-results.json"
+  },
+  {
+    "case": "gap",
+    "stage": "capture",
+    "exitCode": 0,
+    "binarySha256": "6D0CA64FF2925EF157175E4BA69CB771963C8DB9F82D8695F1D14A6E74FFACF2",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\gap\\capture-results.json"
+  },
+  {
+    "case": "gap",
+    "stage": "candidate",
+    "exitCode": 1,
+    "binarySha256": "6D0CA64FF2925EF157175E4BA69CB771963C8DB9F82D8695F1D14A6E74FFACF2",
+    "result": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\gap\\candidate-results.json"
+  }
+]

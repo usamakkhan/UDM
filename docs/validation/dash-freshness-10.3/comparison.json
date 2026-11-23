@@ -1,0 +1,134 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "kind": "manifest",
+      "case": "transient",
+      "oldExit": 1,
+      "newExit": 0,
+      "oldElapsedMs": 489.6998,
+      "newElapsedMs": 674.6942,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "",
+      "newFresh": true,
+      "oldRequests": 2,
+      "newRequests": 3,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "manifest",
+      "case": "always",
+      "oldExit": 1,
+      "newExit": 1,
+      "oldElapsedMs": 509.0565,
+      "newElapsedMs": 1357.445,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "DASH manifest expired during all three bounded freshness attempts.",
+      "newFresh": null,
+      "oldRequests": 2,
+      "newRequests": 4,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "manifest",
+      "case": "identity",
+      "oldExit": 1,
+      "newExit": 1,
+      "oldElapsedMs": 468.2244,
+      "newElapsedMs": 452.6252,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "DASH presentation identity changed during refresh.",
+      "newFresh": null,
+      "oldRequests": 2,
+      "newRequests": 3,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "manifest",
+      "case": "http503",
+      "oldExit": 1,
+      "newExit": 1,
+      "oldElapsedMs": 470.4606,
+      "newElapsedMs": 574.2251,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "The server rejected the download URL (HTTP 503).",
+      "newFresh": null,
+      "oldRequests": 2,
+      "newRequests": 3,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "manifest",
+      "case": "cached304",
+      "oldExit": 1,
+      "newExit": 0,
+      "oldElapsedMs": 369.7186,
+      "newElapsedMs": 389.412,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "",
+      "newFresh": true,
+      "oldRequests": 2,
+      "newRequests": 3,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "manifest",
+      "case": "cancel",
+      "oldExit": 1,
+      "newExit": 3,
+      "oldElapsedMs": 468.0844,
+      "newElapsedMs": 468.1382,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "Download paused.",
+      "newFresh": null,
+      "oldRequests": 2,
+      "newRequests": 3,
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "http-clock",
+      "case": "once",
+      "oldExit": 1,
+      "newExit": 0,
+      "oldElapsedMs": 932.3568,
+      "newElapsedMs": 528.6718,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "",
+      "newFresh": true,
+      "oldRequests": {
+        "manifest": 2,
+        "clock": 1
+      },
+      "newRequests": {
+        "manifest": 3,
+        "clock": 2
+      },
+      "inputStateUnchanged": true
+    },
+    {
+      "kind": "http-clock",
+      "case": "always",
+      "oldExit": 1,
+      "newExit": 1,
+      "oldElapsedMs": 371.9066,
+      "newElapsedMs": 1224.6973,
+      "oldError": "DASH manifest expired while synchronizing its clock.",
+      "newError": "DASH manifest expired during all three bounded freshness attempts.",
+      "newFresh": null,
+      "oldRequests": {
+        "manifest": 2,
+        "clock": 1
+      },
+      "newRequests": {
+        "manifest": 4,
+        "clock": 3
+      },
+      "inputStateUnchanged": true
+    }
+  ],
+  "historicalFailureExactCauseProven": false,
+  "syntheticAccountingHoldMs": 350,
+  "syntheticNetworkDelayMs": 350,
+  "advertisedValidityMs": 200,
+  "requestCountBoundPreserved": true
+}

@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "name": "A scoped pin cannot bless a different staging path",
+      "passed": true
+    },
+    {
+      "name": "A rejected wrong-path call does not consume the valid handoff",
+      "passed": true
+    },
+    {
+      "name": "A consumed pin cannot be replayed to publish a replacement under a new destination",
+      "passed": true
+    },
+    {
+      "name": "An unrelated job cannot steal another job's scoped source",
+      "passed": true
+    },
+    {
+      "name": "An abandoned handoff releases its context without poisoning the next publication",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

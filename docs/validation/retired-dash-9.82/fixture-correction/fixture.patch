@@ -1,0 +1,11 @@
+--- initial/RetiredDashBoundaryTests.cpp
++++ corrected/RetiredDashBoundaryTests.cpp
+@@ -27,7 +27,7 @@
+   index["tracks"][1]["segments"]["2"]["duration"]=48100;rejects(index,"A longer audio track cannot be silently clipped to video");
+   Cancel stopped;stopped.stop=true;bool cancelled=false;try{dashRetainedPeriodEnd(original,stopped);}catch(const Cancelled&){cancelled=true;}check(cancelled,"Coverage inspection honors parent cancellation");
+   const std::string prefix="<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" id=\"owned-boundary\" type=\"dynamic\" availabilityStartTime=\"2026-11-21T00:00:00Z\" publishTime=\"2026-11-21T00:01:00Z\">";
+-  const auto period=[](const std::string& id,const std::string& timing,const std::string& codec="avc1.42c01e"){return "<Period id=\""+id+"\" "+timing+"><AdaptationSet id=\"v\" mimeType=\"video/mp4\" codecs=\""+codec+"\" width=\"640\" height=\"360\"><Representation id=\"r\" bandwidth=\"100000\"><SegmentList timescale=\"1000\" duration=\"1000\"><Initialization sourceURL=\"init.mp4\"/><SegmentURL media=\"segment.m4s\"/></SegmentList></Representation></AdaptationSet></Period>";};
++  const auto period=[](const std::string& id,const std::string& timing,const std::string& codec="avc1.42c01e"){return "<Period id=\""+id+"\" "+timing+"><AdaptationSet id=\"v\" mimeType=\"video/mp4\" codecs=\""+codec+"\" width=\"640\" height=\"360\"><Representation id=\"r\" bandwidth=\"100000\"><SegmentList timescale=\"1000\"><SegmentTimeline><S t=\"0\" d=\"1000\"/></SegmentTimeline><Initialization sourceURL=\"init.mp4\"/><SegmentURL media=\"segment.m4s\"/></SegmentList></Representation></AdaptationSet></Period>";};
+   const auto snapshot=[&](std::string body){DashManifestSnapshot result;result.requestUrl=result.url="http://127.0.0.1/owned/manifest.mpd";result.document=std::move(body);result.manifest=parseDashManifest(result.document,token);return result;};
+   auto old=snapshot(prefix+period("p0","start=\"PT0S\"")+"</MPD>");std::vector<size_t> representations;for(size_t n=0;n<old.manifest.nodes.size();++n)if(old.manifest.nodes[n].name=="Representation")representations.push_back(n);auto state=createDashLiveState(old,representations,token);
+   check(!state.tracks.front().addressing.period.duration,"The old live Period starts without a declared end");

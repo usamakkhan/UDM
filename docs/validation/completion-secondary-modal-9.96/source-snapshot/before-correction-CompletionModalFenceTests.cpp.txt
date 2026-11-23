@@ -1,0 +1,26 @@
+#include "CompletionModalFence.hpp"
+#include "third_party/json.hpp"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+int wmain(int argc,wchar_t** argv){using Json=nlohmann::json;namespace fs=std::filesystem;Json checks=Json::array();std::string error;int result=1;
+ const auto check=[&](bool value,const char* name){checks.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);};
+ if(argc!=2||fs::exists(argv[1]))return 2;fs::path root=fs::absolute(argv[1]);fs::create_directories(root);
+ auto window=[](HWND owner){auto value=CreateWindowExW(0,L"STATIC",L"Owned UDM modal fence fixture",WS_POPUP|WS_VISIBLE,0,0,20,20,owner,nullptr,GetModuleHandleW(nullptr),nullptr);if(!value)throw std::runtime_error("Cannot create owned test window");return value;};
+ HWND main=nullptr,child=nullptr,nested=nullptr,foreign=nullptr;
+ try{main=window(nullptr);child=window(main);nested=window(child);foreign=window(nullptr);unsigned wakes=0;
+  udm::CompletionModalFence fence;check(!fence.blocked(),"An unattached fence allows work");fence.attach(main,[&]{++wakes;});check(fence.wakeAvailable(),"Own-thread notification hook starts");check(!fence.blocked(),"Enabled owned windows allow work");
+  auto helper=window(main);ShowWindow(helper,SW_HIDE);EnableWindow(helper,FALSE);check(!fence.blocked(),"A hidden disabled helper without a visible owned popup is not a modal");DestroyWindow(helper);
+  ShowWindow(child,SW_HIDE);EnableWindow(child,FALSE);check(fence.blocked(),"A visible nested modal protects its hidden disabled owner");EnableWindow(child,TRUE);ShowWindow(child,SW_SHOWNOACTIVATE);check(!fence.blocked(),"Releasing the hidden owner resumes admission");
+  EnableWindow(foreign,FALSE);check(!fence.blocked(),"Disabled foreign window is excluded");EnableWindow(child,FALSE);check(fence.blocked(),"Disabled secondary owner blocks completion");EnableWindow(child,TRUE);check(wakes==1&&!fence.blocked(),"Re-enabled secondary owner wakes and releases the fence");
+  EnableWindow(nested,FALSE);check(fence.blocked(),"A disabled nested owner is included");EnableWindow(child,FALSE);EnableWindow(nested,TRUE);check(fence.blocked(),"Releasing inner ownership cannot bypass a disabled outer owner");EnableWindow(child,TRUE);check(!fence.blocked(),"All modal ownership must be released");
+  EnableWindow(child,FALSE);check(fence.blocked(),"Destroy case starts blocked");const auto before=wakes;DestroyWindow(child);child=nullptr;nested=nullptr;check(wakes>before&&!fence.blocked(),"Destroying a disabled owned window wakes pending work");
+  EnableWindow(main,FALSE);check(fence.blocked(),"A disabled main owner retains its original guard");EnableWindow(main,TRUE);check(!fence.blocked(),"Main owner release restores admission");
+  {udm::CompletionModalFence other;unsigned otherWakes=0;other.attach(foreign,[&]{++otherWakes;});check(other.blocked(),"A second frame has an independent ownership fence");check(!fence.blocked(),"Another frame's disabled state does not block this frame");EnableWindow(foreign,TRUE);check(otherWakes==1&&!other.blocked(),"Shared thread notification routes to the matching owner");}
+  fence.detach();const auto detached=wakes;EnableWindow(main,FALSE);EnableWindow(main,TRUE);check(wakes==detached&&!fence.blocked(),"Detach removes callbacks before root destruction");
+  {udm::CompletionModalFence throwing;throwing.attach(main,[]{throw std::runtime_error("owned wake failure");});EnableWindow(main,FALSE);check(throwing.blocked(),"A throwing wake starts with retained work");EnableWindow(main,TRUE);check(!throwing.blocked(),"Wake exceptions do not cross the Windows hook boundary");}
+  result=0;
+ }catch(const std::exception& e){error=e.what();}
+ for(auto value:{nested,child,foreign,main})if(value&&IsWindow(value))DestroyWindow(value);
+ std::ofstream(root/L"results.json")<<Json{{"passed",result==0},{"checks",checks},{"error",error}}.dump(2);std::cout<<checks.size()<<" modal ownership checks; "<<(result?error:"passed")<<"\n";return result;
+}

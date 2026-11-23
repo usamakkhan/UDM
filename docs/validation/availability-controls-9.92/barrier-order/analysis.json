@@ -1,0 +1,210 @@
+{
+  "coverageValidated": true,
+  "trials": [
+    {
+      "trial": 1,
+      "serialLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "serialMinusOverlapMs": {
+        "firstAvailabilityTailSeconds": 8.141499994962942,
+        "processExitWallSeconds": 285.22580000571907,
+        "processExitTailSeconds": 5.708900003810413,
+        "durableWallSeconds": 287.26319999987027,
+        "durableTailSeconds": 7.746299997961614
+      },
+      "serial": {
+        "firstAvailabilityTailSeconds": 0.03927809999731835,
+        "processExitWallSeconds": 1.2011924000034924,
+        "processExitTailSeconds": 0.0802938000051654,
+        "durableWallSeconds": 1.2109004000012646,
+        "durableTailSeconds": 0.09000180000293767
+      },
+      "overlap": {
+        "firstAvailabilityTailSeconds": 0.031136600002355408,
+        "processExitWallSeconds": 0.9159665999977733,
+        "processExitTailSeconds": 0.07458490000135498,
+        "durableWallSeconds": 0.9236372000013944,
+        "durableTailSeconds": 0.08225550000497606
+      },
+      "idm": {
+        "firstAvailabilityTailSeconds": 0.055956399999558926,
+        "processExitWallSeconds": 2.2479650000022957,
+        "processExitTailSeconds": 0.4450719000014942,
+        "durableWallSeconds": 2.275051099997654,
+        "durableTailSeconds": 0.4721579999968526
+      }
+    },
+    {
+      "trial": 2,
+      "serialLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "serialMinusOverlapMs": {
+        "firstAvailabilityTailSeconds": 4.6358000035979785,
+        "processExitWallSeconds": 11.684349992719945,
+        "processExitTailSeconds": 3.7582500008284114,
+        "durableWallSeconds": 13.230399992608,
+        "durableTailSeconds": 5.3043000007164665
+      },
+      "serial": {
+        "firstAvailabilityTailSeconds": 0.037045500001113396,
+        "processExitWallSeconds": 0.9317244499980006,
+        "processExitTailSeconds": 0.08017675000155577,
+        "durableWallSeconds": 0.9416332999971928,
+        "durableTailSeconds": 0.09008560000074795
+      },
+      "overlap": {
+        "firstAvailabilityTailSeconds": 0.03240969999751542,
+        "processExitWallSeconds": 0.9200401000052807,
+        "processExitTailSeconds": 0.07641850000072736,
+        "durableWallSeconds": 0.9284029000045848,
+        "durableTailSeconds": 0.08478130000003148
+      },
+      "idm": {
+        "firstAvailabilityTailSeconds": 0.021178400005737785,
+        "processExitWallSeconds": 2.09736719999637,
+        "processExitTailSeconds": 0.4036352999974042,
+        "durableWallSeconds": 2.1710951999993995,
+        "durableTailSeconds": 0.4773633000004338
+      }
+    },
+    {
+      "trial": 3,
+      "serialLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "serialMinusOverlapMs": {
+        "firstAvailabilityTailSeconds": 1.1758999971789308,
+        "processExitWallSeconds": 14.778749995457474,
+        "processExitTailSeconds": 9.467449992371257,
+        "durableWallSeconds": 10.082100001454819,
+        "durableTailSeconds": 4.770799998368602
+      },
+      "serial": {
+        "firstAvailabilityTailSeconds": 0.034655399998882785,
+        "processExitWallSeconds": 0.9209095999976853,
+        "processExitTailSeconds": 0.08419839999260148,
+        "durableWallSeconds": 0.9288486000004923,
+        "durableTailSeconds": 0.09213739999540849
+      },
+      "overlap": {
+        "firstAvailabilityTailSeconds": 0.033479500001703855,
+        "processExitWallSeconds": 0.9061308500022278,
+        "processExitTailSeconds": 0.07473095000023022,
+        "durableWallSeconds": 0.9187664999990375,
+        "durableTailSeconds": 0.08736659999703988
+      },
+      "idm": {
+        "firstAvailabilityTailSeconds": 0.04009470000164583,
+        "processExitWallSeconds": 2.132607250001456,
+        "processExitTailSeconds": 0.4100774500038824,
+        "durableWallSeconds": 2.165255199994135,
+        "durableTailSeconds": 0.44272539999656146
+      }
+    },
+    {
+      "trial": 4,
+      "serialLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitTailSeconds",
+        "durableTailSeconds"
+      ],
+      "serialMinusOverlapMs": {
+        "firstAvailabilityTailSeconds": 1.7120999982580543,
+        "processExitWallSeconds": -8.992300005047582,
+        "processExitTailSeconds": 1.371199992718175,
+        "durableWallSeconds": -8.676500001456589,
+        "durableTailSeconds": 1.6869999963091686
+      },
+      "serial": {
+        "firstAvailabilityTailSeconds": 0.03438800000003539,
+        "processExitWallSeconds": 0.9125254499958828,
+        "processExitTailSeconds": 0.0865485499962233,
+        "durableWallSeconds": 0.9216599999999744,
+        "durableTailSeconds": 0.09568310000031488
+      },
+      "overlap": {
+        "firstAvailabilityTailSeconds": 0.032675900001777336,
+        "processExitWallSeconds": 0.9215177500009304,
+        "processExitTailSeconds": 0.08517735000350513,
+        "durableWallSeconds": 0.930336500001431,
+        "durableTailSeconds": 0.09399610000400571
+      },
+      "idm": {
+        "firstAvailabilityTailSeconds": 0.0217391000041971,
+        "processExitWallSeconds": 2.118161250000412,
+        "processExitTailSeconds": 0.4165054500044789,
+        "durableWallSeconds": 2.157953900001303,
+        "durableTailSeconds": 0.45629810000536963
+      }
+    },
+    {
+      "trial": 5,
+      "serialLosses": [
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "serialMinusOverlapMs": {
+        "firstAvailabilityTailSeconds": -2.188300000852905,
+        "processExitWallSeconds": 40.79779999301536,
+        "processExitTailSeconds": 18.772099989291746,
+        "durableWallSeconds": 41.247800007113256,
+        "durableTailSeconds": 19.22210000338964
+      },
+      "serial": {
+        "firstAvailabilityTailSeconds": 0.032649799999489915,
+        "processExitWallSeconds": 0.9472899499960477,
+        "processExitTailSeconds": 0.09706424999603769,
+        "durableWallSeconds": 0.9579441000023508,
+        "durableTailSeconds": 0.10771840000234079
+      },
+      "overlap": {
+        "firstAvailabilityTailSeconds": 0.03483810000034282,
+        "processExitWallSeconds": 0.9064921500030323,
+        "processExitTailSeconds": 0.07829215000674594,
+        "durableWallSeconds": 0.9166962999952375,
+        "durableTailSeconds": 0.08849629999895114
+      },
+      "idm": {
+        "firstAvailabilityTailSeconds": 0.0630267999949865,
+        "processExitWallSeconds": 2.138875699994969,
+        "processExitTailSeconds": 0.42612229999213014,
+        "durableWallSeconds": 2.18707639999775,
+        "durableTailSeconds": 0.4743229999949108
+      }
+    }
+  ],
+  "trialsWithSerialLoss": 5,
+  "serialLossCounts": {
+    "firstAvailabilityTailSeconds": 4,
+    "processExitWallSeconds": 4,
+    "processExitTailSeconds": 5,
+    "durableWallSeconds": 4,
+    "durableTailSeconds": 5
+  },
+  "medianSerialMinusOverlapMs": {
+    "firstAvailabilityTailSeconds": 1.7120999982580543,
+    "processExitWallSeconds": 14.778749995457474,
+    "processExitTailSeconds": 5.708900003810413,
+    "durableWallSeconds": 13.230399992608,
+    "durableTailSeconds": 5.3043000007164665
+  },
+  "rejectedForObservedRegressions": true,
+  "productionChangeAdmitted": false,
+  "scope": "Private same-binary C: 4 MiB barrier-order diagnostic; normal-product repetition and recovery qualification remain separate gates."
+}

@@ -1,0 +1,60 @@
+--- a/native/FixedVolume.hpp
++++ b/native/FixedVolume.hpp
+@@ -17,9 +17,22 @@
+   else if(!((c>=L'0'&&c<=L'9')||(c>=L'a'&&c<=L'f')||(c>=L'A'&&c<=L'F')))return false;
+  }return true;
+ }
++// A share cannot supply a volume GUID. Preserve its old lookup without first
++// opening the remote file, including drive-letter mappings and extended UNC.
++template<class Ops> bool fixedVolumeTryOpenedPath(const std::wstring& full,Ops& ops){
++ const auto slash=[](wchar_t c){return c==L'\\'||c==L'/';};
++ const bool doubled=full.size()>=2&&slash(full[0])&&slash(full[1]);
++ const bool extended=full.size()>=4&&doubled&&full[2]==L'?'&&slash(full[3]);
++ const size_t offset=extended?4:0;
++ const bool drive=full.size()>=offset+3&&((full[offset]>=L'A'&&full[offset]<=L'Z')||(full[offset]>=L'a'&&full[offset]<=L'z'))&&full[offset+1]==L':'&&slash(full[offset+2]);
++ const bool guid=extended&&full.size()>=11&&_wcsnicmp(full.c_str()+4,L"Volume{",7)==0;
++ if(doubled&&!drive&&!guid)return false;
++ if(drive){wchar_t root[]={full[offset],L':',L'\\',0};if(ops.driveType(root)==DRIVE_REMOTE)return false;}
++ return true;
++}
+ template<class Ops> bool fileOnFixedVolume(const fs::path& path,Ops& ops){
+  const auto full=fs::absolute(path).wstring();
+- {
++ if(fixedVolumeTryOpenedPath(full,ops)){
+   const auto file=ops.open(full.c_str());
+   if(file&&file!=INVALID_HANDLE_VALUE){
+    struct Owned {Ops& ops;HANDLE file;~Owned(){ops.close(file);}} owned{ops,file};
+--- a/native/FixedVolumeTests.cpp
++++ b/native/FixedVolumeTests.cpp
+@@ -6,11 +6,11 @@
+ static void check(bool passed,const char* name){checks.push_back({{"name",name},{"passed",passed}});if(!passed)throw std::runtime_error(name);}
+ struct FakeOps {
+  std::wstring finalName=L"\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}\\file.bin";
+- DWORD reported=static_cast<DWORD>(finalName.size());UINT actualType=DRIVE_FIXED,legacyType=DRIVE_FIXED;
++ DWORD reported=static_cast<DWORD>(finalName.size());UINT actualType=DRIVE_FIXED,legacyType=DRIVE_FIXED,routeType=DRIVE_FIXED;
+  bool canOpen=true,canResolve=true;int opened=0,closed=0,legacy=0,queries=0;
+  HANDLE open(const wchar_t*){++opened;return canOpen?reinterpret_cast<HANDLE>(1):INVALID_HANDLE_VALUE;}
+  DWORD finalPath(HANDLE,wchar_t* text,DWORD capacity){++queries;std::copy_n(finalName.c_str(),std::min<size_t>(finalName.size()+1,capacity),text);return reported;}
+- UINT driveType(const wchar_t* text){return std::wstring(text)==L"X:\\"?legacyType:actualType;}
++ UINT driveType(const wchar_t* text){const std::wstring value(text);return value==L"X:\\"?legacyType:value.size()==3&&value[1]==L':'?routeType:actualType;}
+  bool volumePath(const wchar_t*,wchar_t* text,DWORD){++legacy;wcscpy_s(text,MAX_PATH,L"X:\\");return canResolve;}
+  void close(HANDLE){++closed;}
+ };
+@@ -28,6 +28,17 @@
+   }
+   {FakeOps ops;ops.reported=0;ops.legacyType=DRIVE_REMOTE;check(!fileOnFixedVolume(path,ops)&&ops.closed==1,"Unsupported network GUID queries preserve remote classification");}
+   {FakeOps ops;ops.canOpen=false;ops.canResolve=false;check(!fileOnFixedVolume(path,ops)&&ops.legacy==1,"Unresolvable paths remain conservative");}
++  for(const auto* remote:{L"\\\\udm-fixture.invalid\\share\\file.bin",L"\\\\?\\UNC\\udm-fixture.invalid\\share\\file.bin",L"//udm-fixture.invalid/share/file.bin"}){
++   FakeOps ops;ops.legacyType=DRIVE_REMOTE;
++   check(!fileOnFixedVolume(fs::path(remote),ops)&&ops.opened==0&&ops.queries==0&&ops.closed==0&&ops.legacy==1,"UNC routes perform only the legacy lookup without opening the remote file");
++  }
++  for(const auto* mapped:{L"Z:\\file.bin",L"\\\\?\\Z:\\file.bin"}){
++   FakeOps ops;ops.routeType=DRIVE_REMOTE;ops.legacyType=DRIVE_REMOTE;
++   check(!fileOnFixedVolume(fs::path(mapped),ops)&&ops.opened==0&&ops.queries==0&&ops.legacy==1,"Mapped remote drives avoid an attribute open before legacy classification");
++  }
++  {FakeOps ops;ops.routeType=DRIVE_REMOTE;check(fileOnFixedVolume(fs::path(L"Z:\\redirected.bin"),ops)&&ops.opened==0&&ops.legacy==1,"The mapping guard preserves the actual legacy decision rather than guessing from the drive letter");}
++  {FakeOps ops;check(fileOnFixedVolume(fs::path(L"\\\\?\\D:\\file.bin"),ops)&&ops.opened==1&&ops.queries==1&&ops.legacy==0&&ops.closed==1,"Extended local drive paths retain the guarded opened-file route");}
++  {FakeOps ops;check(fileOnFixedVolume(fs::path(L"\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}\\file.bin"),ops)&&ops.opened==1&&ops.legacy==0&&ops.closed==1,"Volume-GUID local paths are not confused with UNC shares");}
+   if(!output.empty()){
+    std::ofstream file(path,std::ios::binary);file<<"owned volume classification probe";file.close();
+    wchar_t root[MAX_PATH]{};const bool legacy=GetVolumePathNameW(path.c_str(),root,MAX_PATH)&&GetDriveTypeW(root)==DRIVE_FIXED;

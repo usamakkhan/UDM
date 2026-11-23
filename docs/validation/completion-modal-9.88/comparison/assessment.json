@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-21",
+  "candidate": "9.88",
+  "reference": "6.43.10.2",
+  "scope": "Uninstalled normal candidate and installed IDM; CLI, owned D: origin, no GUI timing",
+  "pairsPerCase": 1,
+  "rows": [
+    {
+      "case": "single-4m",
+      "pairs": 1,
+      "udmWallSeconds": 1.1636471999995592,
+      "idmWallSeconds": 4.253792949999479,
+      "udmAvailabilityTailMs": 119.95800000022427,
+      "idmAvailabilityTailMs": 55.534500000248954,
+      "udmExitTailMs": 256.77959999984523,
+      "idmExitTailMs": 511.6545499995482,
+      "udmExplicitFlushTailMs": 293.8513000003695,
+      "idmExplicitFlushTailMs": 605.4122000000461,
+      "udmExtraBytes": 0,
+      "idmExtraBytes": 0,
+      "udmRequests": 1,
+      "idmRequests": 1
+    },
+    {
+      "case": "single-64m",
+      "pairs": 1,
+      "udmWallSeconds": 9.048623400000452,
+      "idmWallSeconds": 10.319524000000001,
+      "udmAvailabilityTailMs": 223.98299999986193,
+      "idmAvailabilityTailMs": 70.16990000010992,
+      "udmExitTailMs": 315.997900000184,
+      "idmExitTailMs": 599.4786000001113,
+      "udmExplicitFlushTailMs": 361.09570000007807,
+      "idmExplicitFlushTailMs": 1265.8632000002399,
+      "udmExtraBytes": 0,
+      "idmExtraBytes": 0,
+      "udmRequests": 1,
+      "idmRequests": 1
+    },
+    {
+      "case": "split-64m",
+      "pairs": 1,
+      "udmWallSeconds": 2.3728724999996302,
+      "idmWallSeconds": 3.92424925000023,
+      "udmAvailabilityTailMs": 289.82630000018617,
+      "idmAvailabilityTailMs": 177.7804999996988,
+      "udmExitTailMs": 380.3081999999449,
+      "idmExitTailMs": 502.2068500002206,
+      "udmExplicitFlushTailMs": 414.3901000002188,
+      "idmExplicitFlushTailMs": 1191.512899999907,
+      "udmExtraBytes": 3346185,
+      "idmExtraBytes": 1151223,
+      "udmRequests": 9,
+      "idmRequests": 16
+    }
+  ],
+  "allFilesHashVerified": true,
+  "allUdmCatalogsComplete": true,
+  "allSixObservedProcessesExited": true,
+  "idmLauncherExitCodes": [
+    1,
+    1,
+    1
+  ],
+  "idmExitCodeSuccessMeaningNotEstablished": true,
+  "udmFirstAvailabilitySlowerInAllThree": true,
+  "overallParityGateAccepted": false,
+  "globalSystemAndDeviceCacheWorkNotMeasured": true,
+  "referenceSettingsRestored": true,
+  "payloadLogicalBytesRemoved": 276824064,
+  "sourceScriptHashesRecordedAfterExecution": {
+    "compare-completion.py": "FCABE9959CCBADD46A2E304B9D9974E9A2AF6F2AD9B2A73E49E986326807A821",
+    "origin.py": "49566475BBC0C19109EFEC38A946F747F7385A5022ED49295F61D4F26CB3FF0D"
+  }
+}

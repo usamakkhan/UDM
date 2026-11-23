@@ -1,0 +1,39 @@
+#pragma once
+#include "Core.hpp"
+namespace udm {
+inline void dashPendingVersionUrls(const Json& urls){
+ if(!urls.is_array()||urls.empty()||urls.size()>32)throw std::runtime_error("Invalid DASH pending version locations.");
+ for(const auto& url:urls)if(!url.is_string()||url.get_ref<const std::string&>().empty()||url.get_ref<const std::string&>().size()>32768)throw std::runtime_error("Invalid DASH pending version URL.");
+}
+// A full-resource intent may learn its first version from its own GET headers.
+// It cannot use an unversioned receipt or claim already accepted bytes.
+inline bool dashPendingFullResourceVersion(const Json& record){
+ if(!record.contains("versionRequired"))return false;
+ if(!record["versionRequired"].is_boolean())throw std::runtime_error("Invalid DASH pending version policy.");
+ if(!yes(record,"versionRequired"))return false;
+ if(record.contains("byteRange"))throw std::runtime_error("DASH deferred versions require a full resource.");
+ if(!record.contains("urls"))throw std::runtime_error("DASH pending version has no locations.");dashPendingVersionUrls(record["urls"]);
+ if(!record.value("resourceVersion",Json()).is_null())return false;
+ if(yes(record,"committed")||record.contains("resource")||record.contains("file"))throw std::runtime_error("DASH accepted resource has no required version.");
+ return true;
+}
+inline bool dashPendingInitializationVersion(const Json& track){
+ if(!track.contains("pendingInitializationRequiresVersion"))return false;
+ if(!track["pendingInitializationRequiresVersion"].is_boolean()||!track.contains("pendingInitialization"))throw std::runtime_error("Invalid DASH pending initialization version policy.");
+ if(!yes(track,"pendingInitializationRequiresVersion"))return false;
+ dashPendingVersionUrls(track["pendingInitialization"]);
+ if(track.contains("pendingInitializationByteRange"))throw std::runtime_error("DASH deferred initialization requires a full resource.");
+ if(!track.value("pendingInitializationVersion",Json()).is_null())return false;
+ if(track.contains("initialization"))throw std::runtime_error("DASH accepted initialization has no required version.");
+ return true;
+}
+inline void dashPendingVersionSchema(const Json& index){
+ const auto schema=num(index,"schema");if(schema!=1&&schema!=2)throw std::runtime_error("Unsupported DASH recording version policy.");
+ for(const auto& track:index.at("tracks")){
+  if(schema==1&&(track.contains("pendingInitializationRequiresVersion")||(track.contains("initialization")&&track["initialization"].contains("versionRequired"))))throw std::runtime_error("DASH pending versions require recording schema 2.");
+  dashPendingInitializationVersion(track);if(track.contains("initialization"))dashPendingFullResourceVersion(track["initialization"]);
+  for(const auto& record:track.at("segments")){if(schema==1&&record.contains("versionRequired"))throw std::runtime_error("DASH pending versions require recording schema 2.");dashPendingFullResourceVersion(record);}
+ }
+}
+
+}

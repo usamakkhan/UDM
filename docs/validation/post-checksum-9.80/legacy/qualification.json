@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "baselineBugReproducedAfterUserChecksumRemoval": true,
+  "candidateRejectsSameLegacyResponseClass": true,
+  "formRequests": 2,
+  "expectedSha256": "db0621f02ed8caf4b51cd6ad3f83176c115ea8162997b56ddc57c3220ed04c46",
+  "rawPayloadBytes": 595,
+  "observations": [
+    {
+      "completedResponseCandidate": true,
+      "error": "SHA-256 mismatch. The file was not published.",
+      "mode": "capture",
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "db0621f02ed8caf4b51cd6ad3f83176c115ea8162997b56ddc57c3220ed04c46",
+      "reusedResponse": false,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "old-control-capture",
+      "requestsSeen": 1
+    },
+    {
+      "completedResponseCandidate": false,
+      "error": "",
+      "mode": "resume",
+      "published": true,
+      "publishedSha256": "db0621f02ed8caf4b51cd6ad3f83176c115ea8162997b56ddc57c3220ed04c46",
+      "rawPresent": false,
+      "rawSha256": "",
+      "reusedResponse": true,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Complete",
+      "userSha256": "",
+      "stage": "old-control-resume",
+      "requestsSeen": 1
+    },
+    {
+      "completedResponseCandidate": true,
+      "error": "SHA-256 mismatch. The file was not published.",
+      "mode": "capture",
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "db0621f02ed8caf4b51cd6ad3f83176c115ea8162997b56ddc57c3220ed04c46",
+      "reusedResponse": false,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "stage": "new-resume-capture",
+      "requestsSeen": 2
+    },
+    {
+      "completedResponseCandidate": true,
+      "error": "The server's SHA-256 checksum did not match. The file was not published.",
+      "mode": "resume",
+      "published": false,
+      "publishedSha256": "",
+      "rawPresent": true,
+      "rawSha256": "db0621f02ed8caf4b51cd6ad3f83176c115ea8162997b56ddc57c3220ed04c46",
+      "reusedResponse": true,
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed",
+      "userSha256": "",
+      "stage": "new-resume-resume",
+      "requestsSeen": 2
+    }
+  ],
+  "requests": [
+    {
+      "path": "/old-control",
+      "bodyBytes": 5,
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    },
+    {
+      "path": "/new-resume",
+      "bodyBytes": 5,
+      "bodySha256": "f5e6d024c05c9cc2746a3e127408b91a8b7a7f2a30da0c259bc54265502ddef4"
+    }
+  ]
+}

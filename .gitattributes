@@ -1,4 +1,6 @@
 # Keep published evidence hashes stable across checkout platforms.
 docs/validation/** text eol=lf
+# Exact build-input snapshots retain their original LF/CRLF bytes and hashes.
+docs/validation/**/source-snapshot/*.txt -text
 LICENSE text eol=lf
 NOTICE text eol=lf

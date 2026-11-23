@@ -1,0 +1,312 @@
+{
+  "result": {
+    "_meta": {
+      "provenance": {
+        "untrusted_content": true,
+        "source": "analysis_target"
+      }
+    },
+    "structuredContent": {
+      "evidence_id": "ev_f635e947dcdd165b0ae5bc69da8ee9ee327c751ab1f22cac14e0987b56193af6",
+      "subject": null,
+      "provider": {
+        "id": "frida",
+        "name": "Frida",
+        "version": null
+      },
+      "analysis_profile": null,
+      "predicate_type": "rea.frida.instrumentation-observation",
+      "operation": "instrument_with_frida",
+      "parameters": {
+        "session_id": "5dd8e9a0-d9c4-4719-b69f-b0267c16fe62",
+        "device_id": "local",
+        "mode": "spawn",
+        "program": "<idm-install>\\IDMan.exe",
+        "argv": [
+          "/d",
+          "http://127.0.0.1:53073/bench/file.bin?owned-io=86072c94",
+          "/p",
+          "<research>\\idm-8k-86072c94",
+          "/f",
+          "86072c94.bin",
+          "/n",
+          "/q"
+        ]
+      },
+      "raw_result": null,
+      "normalized_result": {
+        "session_id": "5dd8e9a0-d9c4-4719-b69f-b0267c16fe62",
+        "device_id": "local",
+        "state": "detached",
+        "target": "<idm-install>\\IDMan.exe",
+        "pid": 33364,
+        "mode": "spawn",
+        "scripts": [
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "name": "rea-f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07"
+          }
+        ],
+        "messages": [
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "observer-ready",
+              "pid": 33364,
+              "architecture": "ia32",
+              "hooks": [
+                "CreateFileA",
+                "CreateFileW",
+                "WriteFile",
+                "FlushFileBuffers",
+                "CloseHandle",
+                "NtWriteFile",
+                "NtFlushBuffersFile",
+                "NtFlushBuffersFileEx",
+                "file-part-flush",
+                "file-part-close",
+                "file-part-open"
+              ],
+              "scope": "86072c94",
+              "changesArgumentsOrReturns": false,
+              "observesOnly": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 1,
+              "pid": 33364,
+              "api": "file-part-open",
+              "begin": 1795371308845,
+              "tid": 21584,
+              "matchedScope": false,
+              "end": 1795371308845,
+              "returnCode": 0
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 2,
+              "pid": 33364,
+              "api": "file-part-close",
+              "begin": 1795371308851,
+              "tid": 21584,
+              "handle": "0x1534",
+              "matchedScope": false,
+              "end": 1795371308851
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 3,
+              "pid": 33364,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 3,
+              "flags": 0,
+              "begin": 1795371308882,
+              "tid": 21584,
+              "end": 1795371308890,
+              "handle": "0x154c",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 4,
+              "pid": 33364,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "handle": "0x154c",
+              "begin": 1795371308890,
+              "tid": 21584,
+              "end": 1795371308890,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 5,
+              "pid": 33364,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371308890,
+              "tid": 21584,
+              "end": 1795371308890,
+              "handle": "0x154c",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 6,
+              "pid": 33364,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin.tmp",
+              "handle": "0x154c",
+              "begin": 1795371308891,
+              "tid": 21584,
+              "end": 1795371308891,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 7,
+              "pid": 33364,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371308891,
+              "tid": 21584,
+              "end": 1795371308891,
+              "handle": "0x1540",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 8,
+              "pid": 33364,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "handle": "0x1540",
+              "begin": 1795371308891,
+              "tid": 21584,
+              "end": 1795371308891,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 9,
+              "pid": 33364,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin.tmp",
+              "access": 3221356544,
+              "share": 0,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371308937,
+              "tid": 21584,
+              "end": 1795371308938,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 10,
+              "pid": 33364,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin.tmp",
+              "handle": "0x1550",
+              "begin": 1795371308938,
+              "tid": 21584,
+              "end": 1795371308938,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 11,
+              "pid": 33364,
+              "api": "CreateFileW",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "access": 393216,
+              "share": 0,
+              "disposition": 3,
+              "flags": 128,
+              "begin": 1795371308938,
+              "tid": 21584,
+              "end": 1795371308938,
+              "handle": "0x1550",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "f81e1ab0-d4ee-4dd9-bf94-19c6eb6a0c07",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 12,
+              "pid": 33364,
+              "api": "CloseHandle",
+              "path": "<research>\\idm-8k-86072c94\\86072c94.bin",
+              "handle": "0x1550",
+              "begin": 1795371308938,
+              "tid": 21584,
+              "end": 1795371308938,
+              "ok": true,
+              "error": 0
+            }
+          }
+        ],
+        "messages_truncated": false,
+        "source_kind": "inline",
+        "source_path": null,
+        "source_sha256": "15abe462cdc2d925106897d6056d18e192ac5825dd884e92587edc90ae5fa516",
+        "cleanup_error": null
+      },
+      "confidence": "observed",
+      "authority": "external-service",
+      "environment": null,
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "The target operating system and architecture were not reported by this observation."
+      ],
+      "relationship_coverage": null,
+      "locations": [],
+      "evidence_links": []
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

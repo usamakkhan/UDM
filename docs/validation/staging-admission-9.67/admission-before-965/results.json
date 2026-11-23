@@ -1,0 +1,54 @@
+{
+  "checks": [
+    {
+      "name": "Occupied staging is never silently published over unrelated content",
+      "passed": false
+    },
+    {
+      "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+      "passed": false
+    },
+    {
+      "name": "Received body remains available after staging refusal",
+      "passed": false
+    },
+    {
+      "name": "Occupied staging is never silently published over unrelated content",
+      "passed": false
+    },
+    {
+      "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+      "passed": false
+    },
+    {
+      "name": "Received body remains available after staging refusal",
+      "passed": false
+    },
+    {
+      "name": "Occupied staging is never silently published over unrelated content",
+      "passed": true
+    },
+    {
+      "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+      "passed": false
+    },
+    {
+      "name": "Received body remains available after staging refusal",
+      "passed": true
+    },
+    {
+      "name": "Occupied staging is never silently published over unrelated content",
+      "passed": true
+    },
+    {
+      "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+      "passed": false
+    },
+    {
+      "name": "Received body remains available after staging refusal",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": false
+}

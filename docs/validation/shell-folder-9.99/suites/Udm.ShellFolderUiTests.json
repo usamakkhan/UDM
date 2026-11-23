@@ -1,0 +1,137 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Completion exists while the Windows folder handoff remains held off the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Automatic folder launch never enters the old synchronous shell path",
+      "passed": true
+    },
+    {
+      "name": "The accepted automatic handoff captures the exact Unicode destination once",
+      "passed": true
+    },
+    {
+      "name": "Its actual maintenance notification joins the result with the main timer disabled",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement can retire while error presentation stays behind an owned modal",
+      "passed": true
+    },
+    {
+      "name": "The original destination and shell failure reach the UI owner",
+      "passed": true
+    },
+    {
+      "name": "Modal release presents the retained failure once without a timer",
+      "passed": true
+    },
+    {
+      "name": "Later notifications cannot duplicate the failure",
+      "passed": true
+    },
+    {
+      "name": "A new folder request waits before shell dispatch during modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Release wake drains the queued folder once and joins its result",
+      "passed": true
+    },
+    {
+      "name": "The real completion dialog exposes Open folder",
+      "passed": true
+    },
+    {
+      "name": "Open folder closes its completion dialog promptly while accepted work continues independently",
+      "passed": true
+    },
+    {
+      "name": "Explicit Exit remains responsive and retains accepted shell work before integration shutdown",
+      "passed": true
+    },
+    {
+      "name": "Actual shutdown follows the shell acknowledgement and stops integration exactly once",
+      "passed": true
+    },
+    {
+      "name": "Completion exists while the Windows folder handoff remains held off the UI thread",
+      "passed": true
+    },
+    {
+      "name": "Automatic folder launch never enters the old synchronous shell path",
+      "passed": true
+    },
+    {
+      "name": "The accepted automatic handoff captures the exact Unicode destination once",
+      "passed": true
+    },
+    {
+      "name": "Its actual maintenance notification joins the result with the main timer disabled",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement can retire while error presentation stays behind an owned modal",
+      "passed": true
+    },
+    {
+      "name": "The original destination and shell failure reach the UI owner",
+      "passed": true
+    },
+    {
+      "name": "Modal release presents the retained failure once without a timer",
+      "passed": true
+    },
+    {
+      "name": "Later notifications cannot duplicate the failure",
+      "passed": true
+    },
+    {
+      "name": "A new folder request waits before shell dispatch during modal ownership",
+      "passed": true
+    },
+    {
+      "name": "Release wake drains the queued folder once and joins its result",
+      "passed": true
+    },
+    {
+      "name": "The real completion dialog exposes Open folder",
+      "passed": true
+    },
+    {
+      "name": "Open folder closes its completion dialog promptly while accepted work continues independently",
+      "passed": true
+    },
+    {
+      "name": "Explicit Exit remains responsive and retains accepted shell work before integration shutdown",
+      "passed": true
+    },
+    {
+      "name": "Actual shutdown follows the shell acknowledgement and stops integration exactly once",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "completionDispatchMs": 31,
+      "dark": false,
+      "exitDispatchMs": 0,
+      "folderClickMs": 0,
+      "ownedHeldLauncher": true,
+      "realExplorerTiming": false
+    },
+    {
+      "completionDispatchMs": 47,
+      "dark": true,
+      "exitDispatchMs": 0,
+      "folderClickMs": 0,
+      "ownedHeldLauncher": true,
+      "realExplorerTiming": false
+    }
+  ],
+  "passed": true
+}

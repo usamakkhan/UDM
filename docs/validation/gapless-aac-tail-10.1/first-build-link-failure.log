@@ -1,0 +1,33 @@
+App.cpp
+<repository>\native\PendingFileInfoInbox.hpp(41): warning C4458: declaration of 'result' hides class member
+<repository>\native\PendingFileInfoInbox.hpp(19): note: see declaration of 'udm::PendingFileInfoInbox::Operation::result'
+<repository>\native\PendingFileInfoInbox.hpp(178): warning C4458: declaration of 'state' hides class member
+<repository>\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+<repository>\native\PendingFileInfoInbox.hpp(179): warning C4458: declaration of 'state' hides class member
+<repository>\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+<repository>\native\PendingFileInfoInbox.hpp(180): warning C4458: declaration of 'state' hides class member
+<repository>\native\PendingFileInfoInbox.hpp(62): note: see declaration of 'udm::PendingFileInfoInbox::state'
+<repository>\native\PropertiesUi.hpp(167): warning C4389: '!=': signed/unsigned mismatch
+<repository>\native\DownloadInfoUi.hpp(618): warning C4458: declaration of 'pending' hides class member
+<repository>\native\DownloadInfoUi.hpp(766): note: see declaration of 'udm::downloadInfo::<lambda_14>::()::<lambda_33>::pending'
+<repository>\native\BatchVirtualList.hpp(9): warning C4245: 'argument': conversion from 'int' to 'WPARAM', signed/unsigned mismatch
+<repository>\native\SelectionUi.hpp(158): warning C4456: declaration of 'source' hides previous local declaration
+<repository>\native\SelectionUi.hpp(154): note: see declaration of 'source'
+<repository>\native\ProgressUi.hpp(192): warning C4458: declaration of 'caption' hides class member
+<repository>\native\Ui.hpp(180): note: see declaration of 'udm::Form::caption'
+<repository>\native\ProgressUi.hpp(351): warning C4456: declaration of 'tracks' hides previous local declaration
+<repository>\native\ProgressUi.hpp(234): note: see declaration of 'tracks'
+<repository>\native\ProgressUi.hpp(637): warning C4458: declaration of 'caption' hides class member
+<repository>\native\Ui.hpp(180): note: see declaration of 'udm::Form::caption'
+<repository>\native\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'width' hides class member
+<repository>\native\Ui.hpp(180): note: see declaration of 'udm::Form::width'
+<repository>\native\BrowserCustomizationUi.hpp(31): warning C4458: declaration of 'height' hides class member
+<repository>\native\Ui.hpp(180): note: see declaration of 'udm::Form::height'
+<repository>\native\OptionsUi.hpp(54): warning C4458: declaration of 'caption' hides class member
+<repository>\native\Ui.hpp(180): note: see declaration of 'udm::Form::caption'
+<repository>\native\GrabberResultUi.hpp(37): warning C4458: declaration of 'folder' hides class member
+<repository>\native\GrabberUi.hpp(6): note: see declaration of 'udm::GrabberDialog::folder'
+<repository>\native\GrabberResultUi.hpp(48): warning C4458: declaration of 'folder' hides class member
+<repository>\native\GrabberUi.hpp(6): note: see declaration of 'udm::GrabberDialog::folder'
+libcmt.lib(exe_winmain.obj) : error LNK2019: unresolved external symbol WinMain referenced in function "int __cdecl __scrt_common_main_seh(void)" (?__scrt_common_main_seh@@YAHXZ)
+<candidate>\release-native\UDM.exe : fatal error LNK1120: 1 unresolved externals

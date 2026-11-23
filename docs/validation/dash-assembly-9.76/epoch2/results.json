@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "Owned manifest selects two distinct Period tracks",
+      "passed": true
+    },
+    {
+      "name": "Real segment resources are captured and sealed for a complete Period",
+      "passed": true
+    },
+    {
+      "name": "Real segment resources are captured and sealed for a complete Period",
+      "passed": true
+    },
+    {
+      "name": "Real segment resources are captured and sealed for a complete Period",
+      "passed": true
+    },
+    {
+      "name": "Origin is stopped before assembly, reuse and publication",
+      "passed": true
+    },
+    {
+      "name": "First real single-Period output is assembled with complete duration",
+      "passed": true
+    },
+    {
+      "name": "Single-Period cached output is reused without another mux",
+      "passed": true
+    },
+    {
+      "name": "Actual assembly retains ownership of the verified file",
+      "passed": true
+    },
+    {
+      "name": "Actual verified source transfers into publication",
+      "passed": true
+    },
+    {
+      "name": "Actual final file and accepted history match the pre-publication checksum",
+      "passed": true
+    },
+    {
+      "name": "Exact assembled size before publication equals final file size",
+      "passed": true
+    },
+    {
+      "name": "Published DASH media decodes completely through EOF",
+      "passed": true
+    },
+    {
+      "name": "Two adjacent real Periods assemble into the full two-second output",
+      "passed": true
+    },
+    {
+      "name": "Joined session cache reuses the identical completed file",
+      "passed": true
+    },
+    {
+      "name": "Actual assembly retains ownership of the verified file",
+      "passed": true
+    },
+    {
+      "name": "Actual verified source transfers into publication",
+      "passed": true
+    },
+    {
+      "name": "Actual final file and accepted history match the pre-publication checksum",
+      "passed": true
+    },
+    {
+      "name": "Exact assembled size before publication equals final file size",
+      "passed": true
+    },
+    {
+      "name": "Published DASH media decodes completely through EOF",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "outputs": [
+    {
+      "case": "single",
+      "finalBytes": 2311,
+      "frames": [
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac"
+      ],
+      "prePublicationBytes": 2311,
+      "sha256": "8945ea5e554359de73d892c9ce12fe7a9e77b276470153769417464b8e620ed1"
+    },
+    {
+      "case": "joined",
+      "finalBytes": 3848,
+      "frames": [
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "29a653044efdf73bae6681f875a750ac",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c",
+        "b6bdf78425c71ed0f9dc99bdd3d6467c"
+      ],
+      "prePublicationBytes": 3848,
+      "sha256": "ebc9d447bcb9c17286958ec0fc2758bf9c70cd47c700c93d7d1b88a0036b968c"
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,189 @@
+{
+  "records": [
+    {
+      "case": "once",
+      "counts": {
+        "manifest": 3,
+        "clock": 2
+      },
+      "exitCode": 0,
+      "result": {
+        "cancelled": false,
+        "completed": true,
+        "elapsedMs": 389.3864,
+        "error": "",
+        "events": [
+          {
+            "bytes": 655,
+            "callback": 1,
+            "endMs": 19.6675,
+            "requestedHoldMs": 0,
+            "startMs": 19.6659
+          },
+          {
+            "bytes": 24,
+            "callback": 2,
+            "endMs": 373.2802,
+            "requestedHoldMs": 0,
+            "startMs": 373.278
+          },
+          {
+            "bytes": 655,
+            "callback": 3,
+            "endMs": 376.2766,
+            "requestedHoldMs": 0,
+            "startMs": 376.2744
+          },
+          {
+            "bytes": 24,
+            "callback": 4,
+            "endMs": 389.0506,
+            "requestedHoldMs": 0,
+            "startMs": 389.0486
+          }
+        ],
+        "freshAtReturn": true,
+        "initialFetchAndParseMs": 16.9567,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 4,
+        "originalBodyAnchorPreserved": false,
+        "segments": 2,
+        "transition": false
+      }
+    },
+    {
+      "case": "always",
+      "counts": {
+        "manifest": 4,
+        "clock": 3
+      },
+      "exitCode": 1,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 1094.599,
+        "error": "DASH manifest expired during all three bounded freshness attempts.",
+        "events": [
+          {
+            "bytes": 659,
+            "callback": 1,
+            "endMs": 20.0713,
+            "requestedHoldMs": 0,
+            "startMs": 20.0693
+          },
+          {
+            "bytes": 24,
+            "callback": 2,
+            "endMs": 378.7827,
+            "requestedHoldMs": 0,
+            "startMs": 378.7795
+          },
+          {
+            "bytes": 659,
+            "callback": 3,
+            "endMs": 381.84,
+            "requestedHoldMs": 0,
+            "startMs": 381.8383
+          },
+          {
+            "bytes": 24,
+            "callback": 4,
+            "endMs": 735.4418,
+            "requestedHoldMs": 0,
+            "startMs": 735.4396
+          },
+          {
+            "bytes": 659,
+            "callback": 5,
+            "endMs": 739.3038,
+            "requestedHoldMs": 0,
+            "startMs": 739.3018
+          },
+          {
+            "bytes": 24,
+            "callback": 6,
+            "endMs": 1094.3603,
+            "requestedHoldMs": 0,
+            "startMs": 1094.358
+          }
+        ],
+        "initialFetchAndParseMs": 17.1284,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 6
+      }
+    }
+  ],
+  "requests": [
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 1,
+      "responseMs": 0.2082999999402091
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 2,
+      "responseMs": 0.3099000023212284
+    },
+    {
+      "case": "once",
+      "kind": "clock",
+      "request": 1,
+      "responseMs": 350.3764999913983
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 3,
+      "responseMs": 0.16110000433400273
+    },
+    {
+      "case": "once",
+      "kind": "clock",
+      "request": 2,
+      "responseMs": 0.62600000819657
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 1,
+      "responseMs": 0.14080000983085483
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 2,
+      "responseMs": 0.16029999824240804
+    },
+    {
+      "case": "always",
+      "kind": "clock",
+      "request": 1,
+      "responseMs": 351.18230000080075
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 3,
+      "responseMs": 0.15320000238716602
+    },
+    {
+      "case": "always",
+      "kind": "clock",
+      "request": 2,
+      "responseMs": 350.4501999996137
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 4,
+      "responseMs": 1.0701999999582767
+    },
+    {
+      "case": "always",
+      "kind": "clock",
+      "request": 3,
+      "responseMs": 351.07419999258127
+    }
+  ]
+}

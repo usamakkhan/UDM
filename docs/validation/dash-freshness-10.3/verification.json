@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "qualificationScope": "Native build, eight bounded freshness controls and unchanged structural guards; full continuous acceptance FAILED.",
+  "allAttemptsPassed": false,
+  "fullContinuousRegressionPassed": false,
+  "version": "10.3",
+  "sourceExtensionVersion": "0.73.67",
+  "verifiedSourceInputs": 740,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "verifiedCandidateOutputs": 12,
+  "frozenDiagnosticActorVerified": true,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native\\UDM.exe",
+      "sha256": "FD32FB47DC77AE307785E6F6437595564E25D6CD34E6C57D3FD5FCB0D03D96D0"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native\\Udm.NativeHost.exe",
+      "sha256": "B44FDA29A9DC7EB99A13A61FFFAAF0B2B185170D2A4C9D446AE31D476F4D586E"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native\\Udm.Monitor.exe",
+      "sha256": "D2D17438E44827EA355588902C61E3893DF29FE849F0B654D9264114A337B4B3"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "ED9B67985F990C6C048780C07A797AF0D55120891A09772F61399EBDE1AE13FD"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native\\Udm.Automation.exe",
+      "sha256": "A1CCB612ED03ADE5A7B40FEA3D2891BB80A3ACE67A6392D86D09E5B2C69144C2"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "GaplessAacTailTests",
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "name": "RetiredDashBoundaryTests",
+      "checks": 42,
+      "passed": true
+    }
+  ],
+  "distinctBackendAssertions": 62,
+  "freshnessControls": 8,
+  "expectedFrozenFailureReproductions": 8,
+  "retainedFailedFullRecordingAttempts": [
+    {
+      "attempt": "continuous-regression-01",
+      "error": "DASH manifest expired during all three bounded freshness attempts.",
+      "capturedSeconds": 2.048,
+      "publishedFiles": 0
+    },
+    {
+      "attempt": "continuous-timing-01",
+      "error": "DASH manifest expired during all three bounded freshness attempts.",
+      "capturedSeconds": 1.024,
+      "publishedFiles": 0
+    }
+  ],
+  "phaseTraceIdentifiesHttpConstructorHeadersStage": true,
+  "exactHistoricalFailureCauseProven": false,
+  "remainingHttpStageCauseProven": false,
+  "strictTimingBoundsRelaxed": false,
+  "hostProtectedFilesUnchanged": 9,
+  "ownedBuildAreaBytesExcludingSharedTools": 134527010,
+  "fullBuildEntrypointExecuted": false,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false
+}

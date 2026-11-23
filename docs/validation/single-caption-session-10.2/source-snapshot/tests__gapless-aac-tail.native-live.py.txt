@@ -1,0 +1,196 @@
+"""Owned loopback capture, frozen-control, exact PCM and publication fixture.
+
+Usage: python SCRIPT FRESH_ROOT ACTOR CONTROL_ACTOR. Uses installed shared tools;
+does not install, delete, control the desktop, or use third-party content.
+"""
+from pathlib import Path
+import hashlib, http.server, json, os, struct, subprocess, sys, threading
+
+root = Path(sys.argv[1]).resolve()
+assert not root.exists()
+root.mkdir(parents=True)
+actor, control = map(lambda p: Path(p).resolve(), sys.argv[2:4])
+session_mode = '--caption-sessions' in sys.argv[4:]
+selection_path = None
+tools = Path('C:/Program Files/UDM/tools')
+ffmpeg, ffprobe = tools/'ffmpeg.exe', tools/'ffprobe.exe'
+assets = root/'assets'
+assets.mkdir()
+requests = []
+sha = lambda b: hashlib.sha256(b).hexdigest()
+
+def run(args):
+    return subprocess.check_output(list(map(str,args)), stderr=subprocess.PIPE)
+
+def boxes(data):
+    at = 0
+    while at < len(data):
+        size, kind = struct.unpack_from('>I4s', data, at)
+        assert size >= 8 and at+size <= len(data)
+        yield kind, data[at:at+size]
+        at += size
+
+def split(path, name):
+    data = list(boxes(path.read_bytes()))
+    (assets/(name+'-init.mp4')).write_bytes(b''.join(v for k,v in data if k in [b'ftyp',b'moov']))
+    (assets/(name+'-segment.m4s')).write_bytes(b''.join(v for k,v in data if k in [b'moof',b'mdat']))
+
+video = assets/'video.mp4'
+run([ffmpeg,'-v','error','-nostdin','-f','lavfi','-i','testsrc2=s=160x90:r=25:d=2',
+     '-c:v','libx264','-preset','ultrafast','-profile:v','baseline','-bf','0','-g','50',
+     '-video_track_timescale','1000','-movflags','empty_moov+frag_keyframe+default_base_moof',video])
+split(video,'v')
+for rate in [48000,44100]:
+    p = assets/f'a{rate}.mp4'
+    run([ffmpeg,'-v','error','-nostdin','-f','lavfi','-i',f'sine=frequency=733:sample_rate={rate}:duration=2',
+         '-c:a','aac','-b:a','64000','-ac','1','-use_editlist','0','-avoid_negative_ts','make_zero',
+         '-movflags','empty_moov+default_base_moof',p])
+    split(p,f'a{rate}')
+(assets/'caption.vtt').write_text('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nOwned tail caption\n',encoding='utf-8')
+# Minimal owned, self-contained fragmented MP4 WebVTT. UDM's DASH path
+# deliberately accepts application/mp4+wvtt, not standalone text/vtt.
+def box(kind,body): return struct.pack('>I4s',len(body)+8,kind)+body
+def words(*values): return struct.pack('>'+'I'*len(values),*values)
+cue=box(b'vttc',box(b'payl',b'Owned tail caption'))
+entry=box(b'wvtt',words(0,1)+box(b'vttC',b'WEBVTT\n\n'))
+table=box(b'stbl',box(b'stsd',words(0,1)+entry))
+references=box(b'dinf',box(b'dref',words(0,1)+box(b'url ',words(1))))
+media=box(b'mdia',box(b'mdhd',words(0,0,0,1000,0,0))+box(b'minf',references+table))
+track=box(b'trak',box(b'tkhd',words(3,0,0,3,0,0))+media)
+init=box(b'ftyp',b'iso6'+words(1)+b'iso6')+box(b'moov',track+box(b'mvex',box(b'trex',words(0,3,1,1000,len(cue),0))))
+def fragment(offset):
+    return box(b'moof',box(b'mfhd',words(0,1))+box(b'traf',box(b'tfhd',words(0x20000,3))+box(b'tfdt',words(0,0))+box(b'trun',words(0x301,1,offset,1000,len(cue)))))
+moof=fragment(0)
+(assets/'s-init.mp4').write_bytes(init)
+(assets/'s-segment.m4s').write_bytes(fragment(len(moof)+8)+box(b'mdat',cue))
+cue=box(b'vtte',b'')
+moof=fragment(0)
+(assets/'s-empty-segment.m4s').write_bytes(fragment(len(moof)+8)+box(b'mdat',cue))
+
+cases = [('av48',48000,1,True,False),('audio48',48000,1.01,False,False),
+         ('av44',44100,1,True,False),('captions',48000,1,True,True),
+         ('aligned',48000,1.024,False,False)]
+if session_mode:
+    cases=[('caption48',48000,1,True,True),('caption44',44100,1,True,True),('caption-empty',48000,1,True,True),('caption-offset',48000,1,True,True)]
+    selection_path=root/'selection.json'
+    selection=dict(audioOnly=False,audioExpected=True,container='mp4',height=90,audioName='Owned audio',audioLanguage='en',subtitleName='Owned English captions',subtitleLanguage='en',tracks=[dict(kind='subtitle')])
+    selection_path.write_text(json.dumps(selection),encoding='utf-8')
+
+def manifest(case):
+    name,rate,duration,with_video,captions = case
+    period_start = 5 if name=='caption-offset' else 0
+    text = f'<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" id="owned-tail-{name}" type="static" mediaPresentationDuration="PT{duration+period_start}S"><Period id="p0" start="PT{period_start}S" duration="PT{duration}S">'
+    tracks = [('audio',f'a{rate}','audio/mp4','mp4a.40.2')]
+    if with_video: tracks.insert(0,('video','v','video/mp4','avc1.42c01e'))
+    if captions: tracks.append(('subtitle','s','application/mp4','wvtt'))
+    for kind,key,mime,codec in tracks:
+        attrs = f' audioSamplingRate="{rate}"' if kind=='audio' else (' width="160" height="90"' if kind=='video' else ' lang="en"')
+        text += f'<AdaptationSet id="{key}" mimeType="{mime}" codecs="{codec}"{attrs}><Representation id="r" bandwidth="100000"><SegmentList timescale="1000"><SegmentTimeline><S t="0" d="2000"/></SegmentTimeline>'
+        text += f'<Initialization sourceURL="{key}-init.mp4"/>'
+        suffix='-empty' if kind=='subtitle' and name=='caption-empty' else ''
+        text += f'<SegmentURL media="{key}{suffix}-segment.m4s"/></SegmentList></Representation></AdaptationSet>'
+    return (text+'</Period></MPD>').encode()
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self,*args): pass
+    def do_GET(self):
+        requests.append(self.path)
+        leaf = self.path.lstrip('/')
+        if leaf.endswith('.mpd'):
+            data = manifest(next(c for c in cases if c[0]+'.mpd'==leaf))
+            mime = 'application/dash+xml'
+        else:
+            assert '/' not in leaf and (assets/leaf).is_file(), leaf
+            data = (assets/leaf).read_bytes()
+            mime = 'text/vtt' if leaf.endswith('.vtt') else 'video/mp4'
+        self.send_response(200)
+        self.send_header('Content-Type',mime)
+        self.send_header('Content-Length',str(len(data)))
+        self.send_header('ETag','"'+sha(data)+'"')
+        self.end_headers()
+        self.wfile.write(data)
+
+server = http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler)
+threading.Thread(target=server.serve_forever,daemon=True).start()
+records = []
+def invoke(exe,mode,folder,arg,last):
+    args=[str(exe),mode,str(folder),str(arg),str(last)]
+    if selection_path: args.append(str(selection_path))
+    p = subprocess.run(args,capture_output=True,timeout=60)
+    (root/f'{folder.name}-{mode}-{exe.stem}.log').write_bytes(p.stdout+p.stderr)
+    result = json.loads((folder/(mode+'-results.json')).read_text(encoding='utf-8-sig'))
+    assert p.returncode==0 and result['passed'], result
+    return result
+
+def pcm(path,rate):
+    return run([ffmpeg,'-v','error','-xerror','-i',path,'-map','0:a:0','-ac','1','-ar',rate,'-f','s16le','-'])
+
+def frames(path):
+    data=run([ffmpeg,'-v','error','-xerror','-i',path,'-map','0:v:0','-fps_mode','passthrough','-f','framemd5','-']).decode()
+    return [line.split(',')[-1].strip() for line in data.splitlines() if line and not line.startswith('#')]
+
+try:
+    for case in cases:
+        name,rate,duration,with_video,captions = case
+        folder=root/name
+        original=pcm(assets/f'a{rate}.mp4',rate)
+        expected=original[:round(rate*duration)*2]
+        frozen_case = name==('caption48' if session_mode else 'av48')
+        first=invoke(control if frozen_case else actor,'capture',folder,f'http://127.0.0.1:{server.server_port}/{name}.mpd',duration)
+        if frozen_case:
+            old=pcm(first['path'],rate)
+            (root/'frozen-control.json').write_text(json.dumps(dict(samples=len(old)//2,wanted=len(expected)//2,exact=old==expected,assembly=first),indent=2),encoding='utf-8')
+            assert old!=expected
+        before=len(requests)
+        concat_before=len(list(folder.glob('session-*.ffconcat')))
+        assembled=invoke(actor,'assemble',folder,'unused','unused')
+        assert len(requests)==before, 'Assembly must not refetch resources'
+        if frozen_case: assert not assembled['reused'] and assembled['path']!=first['path']
+        else: assert assembled['reused']
+        actual=pcm(assembled['path'],rate)
+        record=dict(case=name,rate=rate,samples=len(actual)//2,wanted=len(expected)//2,pcmExact=actual==expected,assembly=assembled)
+        if with_video:
+            record['videoExact']=frames(assembled['path'])==frames(video)[:round(duration*25)]
+        if captions:
+            if name=='caption-empty':
+                probe=json.loads(run([ffprobe,'-v','error','-show_streams','-of','json',assembled['path']]))
+                record['emptyCaptionsOmitted']=not any(s['codec_type']=='subtitle' for s in probe['streams'])
+            else:
+                text=run([ffmpeg,'-v','error','-xerror','-i',assembled['path'],'-map','0:s:0','-f','webvtt','-']).decode()
+                record['captionPreserved']='Owned tail caption' in text
+        if session_mode:
+            assert assembled['start']==(5 if name=='caption-offset' else 0)
+            record['noRedundantSessionConcat']=len(list(folder.glob('session-*.ffconcat')))==concat_before
+            probe=json.loads(run([ffprobe,'-v','error','-show_streams','-of','json',assembled['path']]))
+            aud=next(s for s in probe['streams'] if s['codec_type']=='audio')
+            assert aud['tags']['handler_name']=='Owned audio' and aud['tags']['language']=='eng'
+            if name!='caption-empty':
+                sub=next(s for s in probe['streams'] if s['codec_type']=='subtitle')
+                assert sub['tags']['handler_name']=='Owned English captions' and sub['tags']['language']=='eng'
+            record['selectedTrackMetadataPreserved']=True
+            if frozen_case:
+                changed=dict(selection,audioName='Changed audio',subtitleName='Changed captions')
+                selection_path.write_text(json.dumps(changed),encoding='utf-8')
+                updated=invoke(actor,'assemble',folder,'unused','unused')
+                assert not updated['reused'] and updated['path']!=assembled['path']
+                updated_probe=json.loads(run([ffprobe,'-v','error','-show_streams','-of','json',updated['path']]))
+                assert next(s for s in updated_probe['streams'] if s['codec_type']=='audio')['tags']['handler_name']=='Changed audio'
+                assert next(s for s in updated_probe['streams'] if s['codec_type']=='subtitle')['tags']['handler_name']=='Changed captions'
+                assert pcm(updated['path'],rate)==expected
+                record['metadataChangeInvalidatesReceipt']=True
+                assembled=updated
+                record['assembly']=assembled
+        published=invoke(actor,'publish',folder,root/'downloads'/name,'unused')
+        record['publication']=published
+        record['publishedPcmExact']=pcm(published['path'],rate)==expected
+        record['noRefetch']=len(requests)==before
+        record['sizeAndHashExact']=published['bytes']==assembled['bytes'] and published['sha256']==assembled['sha256']
+        if session_mode: selection_path.write_text(json.dumps(selection),encoding='utf-8')
+        records.append(record)
+        (root/'results.json').write_text(json.dumps(dict(records=records,requests=requests),indent=2),encoding='utf-8')
+        assert record['pcmExact'] and record['publishedPcmExact'] and record['sizeAndHashExact']
+        assert record.get('videoExact',True) and record.get('captionPreserved',True) and record.get('emptyCaptionsOmitted',True) and record.get('noRedundantSessionConcat',True)
+    (root/'passed.json').write_text(json.dumps(dict(passed=True,cases=len(records),assets=[dict(name=p.name,sha256=sha(p.read_bytes()),bytes=p.stat().st_size) for p in assets.iterdir()]),indent=2),encoding='utf-8')
+finally:
+    server.shutdown()
+    (root/'requests.json').write_text(json.dumps(requests,indent=2),encoding='utf-8')

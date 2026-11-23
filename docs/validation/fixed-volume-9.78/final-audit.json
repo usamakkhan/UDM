@@ -1,0 +1,54 @@
+{
+  "version": "9.78",
+  "extensionVersions": [
+    "0.73.42",
+    "0.73.42"
+  ],
+  "sourceInputsVerified": true,
+  "sourceInputCount": 696,
+  "uncompiledMetadataAmendmentsAfterCompilation": [
+    {
+      "path": "native/backend-tests.json",
+      "beforeSha256": "E03363FEBCD94BC2AEF46171781589759E5773F197F64924ECF8579496BA9FF6",
+      "afterSha256": "AA69982DC6F670BEB2FD37E45038507AF74B3B20A9DD74665C3B9E54CF3B72F6",
+      "reason": "Register the newly qualified fixture in the regular backend suite list. This JSON is not consumed by native compilation.",
+      "compiledSourceChanged": false,
+      "selectedBuildAlreadyExecutedFixture": true
+    }
+  ],
+  "coreObjectsVerified": true,
+  "coreObjectCount": 42,
+  "productsVerified": true,
+  "protected11Unchanged": true,
+  "nativeSuiteAssertions": 1551,
+  "nativeSuiteCount": 23,
+  "additionalCDriveAssertions": 19,
+  "readonlyCostComparisons": 20,
+  "pilotTransfers": 6,
+  "pilotAllHashesMatch": true,
+  "pilotPayloadsRemoved": true,
+  "finishingSpeedGatePassed": false,
+  "installedAppChanged": false,
+  "idmComparison": false,
+  "windowsControlRetry": "Supported sky.list_windows returned failed to write kernel assets, OS error 3; IDM background PID31312/session2 remains present.",
+  "temporaryFilesRemoved": 278,
+  "logicalBytesRemoved": 259313181.0,
+  "physicalSpaceMeasured": false,
+  "baselineTransferReconstructedAgainstQualifiedHash": true,
+  "registeredFixedVolumeFixtures": 1,
+  "remainingNativeExecutables": [
+    "UDM.exe",
+    "Udm.Automation.exe",
+    "Udm.Monitor.exe",
+    "Udm.NativeHost.exe",
+    "Udm.SetupHelper.exe"
+  ],
+  "ownedAppProcessesRemaining": 0,
+  "productFileVersionsVerified": [
+    "9.78",
+    "9.78",
+    "9.78",
+    "9.78",
+    "9.78"
+  ]
+}

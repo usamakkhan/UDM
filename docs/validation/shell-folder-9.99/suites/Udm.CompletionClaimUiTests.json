@@ -1,0 +1,221 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Completion is created without waiting for the armed-action checkpoint",
+      "passed": true
+    },
+    {
+      "name": "The durable claim is accepted and still held after dialog creation",
+      "passed": true
+    },
+    {
+      "name": "The dialog is usable and no action is executable before durable acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Close returns while the accepted checkpoint remains held",
+      "passed": true
+    },
+    {
+      "name": "Repeated service cannot duplicate the held claim or execute an uncommitted action",
+      "passed": true
+    },
+    {
+      "name": "The claim survives its originating dialog closing",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for UI acknowledgement even after the claim has durably saved",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement delivers exactly one committed action after the dialog is gone",
+      "passed": true
+    },
+    {
+      "name": "Joined acknowledgement releases the normal CLI Exit route",
+      "passed": true
+    },
+    {
+      "name": "The released route posts exactly the owned Exit command without executing it in this fixture",
+      "passed": true
+    },
+    {
+      "name": "A later wake cannot replay the accepted action",
+      "passed": true
+    },
+    {
+      "name": "An unarmed completion adds no task or catalog write",
+      "passed": true
+    },
+    {
+      "name": "The owned failing checkpoint settles without blocking presentation",
+      "passed": true
+    },
+    {
+      "name": "The actual owned Retry/Cancel review is presented after save failure",
+      "passed": true
+    },
+    {
+      "name": "A failed claim cannot become an executable action and retains durable recovery state",
+      "passed": true
+    },
+    {
+      "name": "Retry retains exactly the failed job for a fresh durable attempt",
+      "passed": true
+    },
+    {
+      "name": "The explicitly retried claim settles",
+      "passed": true
+    },
+    {
+      "name": "Retry delivers one action only after the new checkpoint succeeds",
+      "passed": true
+    },
+    {
+      "name": "The owned failing checkpoint settles without blocking presentation",
+      "passed": true
+    },
+    {
+      "name": "The actual owned Retry/Cancel review is presented after save failure",
+      "passed": true
+    },
+    {
+      "name": "A failed claim cannot become an executable action and retains durable recovery state",
+      "passed": true
+    },
+    {
+      "name": "Cancel stops automatic retry and runs no action",
+      "passed": true
+    },
+    {
+      "name": "The owned modal-failure result becomes ready",
+      "passed": true
+    },
+    {
+      "name": "A disabled main owner retains the ready failure without opening another modal review",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled ownership presents the retained failure exactly once",
+      "passed": true
+    },
+    {
+      "name": "Completion is created without waiting for the armed-action checkpoint",
+      "passed": true
+    },
+    {
+      "name": "The durable claim is accepted and still held after dialog creation",
+      "passed": true
+    },
+    {
+      "name": "The dialog is usable and no action is executable before durable acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Close returns while the accepted checkpoint remains held",
+      "passed": true
+    },
+    {
+      "name": "Repeated service cannot duplicate the held claim or execute an uncommitted action",
+      "passed": true
+    },
+    {
+      "name": "The claim survives its originating dialog closing",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit waits for UI acknowledgement even after the claim has durably saved",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement delivers exactly one committed action after the dialog is gone",
+      "passed": true
+    },
+    {
+      "name": "Joined acknowledgement releases the normal CLI Exit route",
+      "passed": true
+    },
+    {
+      "name": "The released route posts exactly the owned Exit command without executing it in this fixture",
+      "passed": true
+    },
+    {
+      "name": "A later wake cannot replay the accepted action",
+      "passed": true
+    },
+    {
+      "name": "An unarmed completion adds no task or catalog write",
+      "passed": true
+    },
+    {
+      "name": "The owned failing checkpoint settles without blocking presentation",
+      "passed": true
+    },
+    {
+      "name": "The actual owned Retry/Cancel review is presented after save failure",
+      "passed": true
+    },
+    {
+      "name": "A failed claim cannot become an executable action and retains durable recovery state",
+      "passed": true
+    },
+    {
+      "name": "Retry retains exactly the failed job for a fresh durable attempt",
+      "passed": true
+    },
+    {
+      "name": "The explicitly retried claim settles",
+      "passed": true
+    },
+    {
+      "name": "Retry delivers one action only after the new checkpoint succeeds",
+      "passed": true
+    },
+    {
+      "name": "The owned failing checkpoint settles without blocking presentation",
+      "passed": true
+    },
+    {
+      "name": "The actual owned Retry/Cancel review is presented after save failure",
+      "passed": true
+    },
+    {
+      "name": "A failed claim cannot become an executable action and retains durable recovery state",
+      "passed": true
+    },
+    {
+      "name": "Cancel stops automatic retry and runs no action",
+      "passed": true
+    },
+    {
+      "name": "The owned modal-failure result becomes ready",
+      "passed": true
+    },
+    {
+      "name": "A disabled main owner retains the ready failure without opening another modal review",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled ownership presents the retained failure exactly once",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "checkpointWatchdogExpired": false,
+      "completionDispatchMs": 47,
+      "dark": false,
+      "dialogsAfterDispatch": 1
+    },
+    {
+      "checkpointWatchdogExpired": false,
+      "completionDispatchMs": 31,
+      "dark": true,
+      "dialogsAfterDispatch": 1
+    }
+  ],
+  "passed": true
+}

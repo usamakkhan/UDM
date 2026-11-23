@@ -1,0 +1,213 @@
+{
+  "passed": true,
+  "checks": 17,
+  "binaryPath": "<repo>\\.media-cache\\owned-advisory-intent-build-9.73\\release-native\\Udm.HttpSequentialHashTests.exe",
+  "binarySha256": "E97EDA0C76CA619FCD3BB8A6E35DCDCFAA9295D026791D619EA7C34B3C5932BE",
+  "sourceSha256": "737B806AF03964D1B59BA98068AFCD0BC25C89B3BC1659DB680F7460C6B8DE16",
+  "rows": [
+    {
+      "mode": "plain",
+      "passed": true,
+      "checks": 5,
+      "result": "<repo>\\.media-cache\\owned-advisory-http-hash-9.73-plain\\results.json",
+      "origin": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.22534869999799412,
+            "closed": 0.502790599999571,
+            "peer_port": 57083,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.22586149999915506,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 0.44138569999995525,
+                "outcome": "complete",
+                "headers_sent": 0.23111389999758103,
+                "first_body_sent": 0.23852029999761726,
+                "last_body_sent": 0.4413815000007162
+              }
+            ],
+            "drops": 0,
+            "rate": 40000000,
+            "drop_after": 0
+          }
+        ]
+      }
+    },
+    {
+      "mode": "verified",
+      "passed": true,
+      "checks": 5,
+      "result": "<repo>\\.media-cache\\owned-advisory-http-hash-9.73-verified\\results.json",
+      "origin": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.14908159999686177,
+            "closed": 0.41151719999834313,
+            "peer_port": 57085,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.14952899999843794,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 0.36551459999827784,
+                "outcome": "complete",
+                "headers_sent": 0.15512849999868195,
+                "first_body_sent": 0.16216629999689758,
+                "last_body_sent": 0.36551159999726224
+              }
+            ],
+            "drops": 0,
+            "rate": 40000000,
+            "drop_after": 0
+          }
+        ]
+      }
+    },
+    {
+      "mode": "mismatch",
+      "passed": true,
+      "checks": 2,
+      "result": "<repo>\\.media-cache\\owned-advisory-http-hash-9.73-mismatch\\results.json",
+      "origin": {
+        "connections": 1,
+        "rejected_connections": 0,
+        "requests": 1,
+        "bytes_sent": 8388608,
+        "drops": 0,
+        "peak_concurrent": 1,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.12613930000225082,
+            "closed": 0.4085680999996839,
+            "peer_port": 57087,
+            "rejected": false,
+            "bytes": 8388608,
+            "requests": [
+              {
+                "at": 0.12649040000178502,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 8388608,
+                "finished": 0.3422113000015088,
+                "outcome": "complete",
+                "headers_sent": 0.1319495999996434,
+                "first_body_sent": 0.13914780000050087,
+                "last_body_sent": 0.34220940000159317
+              }
+            ],
+            "drops": 0,
+            "rate": 40000000,
+            "drop_after": 0
+          }
+        ]
+      }
+    },
+    {
+      "mode": "ranged",
+      "passed": true,
+      "checks": 5,
+      "result": "<repo>\\.media-cache\\owned-advisory-http-hash-9.73-ranged\\results.json",
+      "origin": {
+        "connections": 2,
+        "rejected_connections": 0,
+        "requests": 2,
+        "bytes_sent": 8650804,
+        "drops": 0,
+        "peak_concurrent": 2,
+        "detail": [
+          {
+            "id": 1,
+            "opened": 0.11011860000144225,
+            "closed": 0.23456170000281418,
+            "peer_port": 57089,
+            "rejected": false,
+            "bytes": 4456436,
+            "requests": [
+              {
+                "at": 0.11046350000106031,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": null,
+                "status": 200,
+                "start": 0,
+                "end": 8388607,
+                "sent": 4456436,
+                "finished": null,
+                "outcome": "",
+                "headers_sent": 0.11593820000052801,
+                "first_body_sent": 0.12299450000136858,
+                "last_body_sent": 0.2276942999997118
+              }
+            ],
+            "drops": 0,
+            "rate": 40000000,
+            "drop_after": 0
+          },
+          {
+            "id": 2,
+            "opened": 0.12254140000004554,
+            "closed": 0.23771150000175112,
+            "peer_port": 57090,
+            "rejected": false,
+            "bytes": 4194368,
+            "requests": [
+              {
+                "at": 0.12290829999983544,
+                "method": "GET",
+                "path": "/bench/file.bin",
+                "range": "bytes=4194240-8388607",
+                "status": 206,
+                "start": 4194240,
+                "end": 8388607,
+                "sent": 4194368,
+                "finished": 0.2340055000022403,
+                "outcome": "complete",
+                "headers_sent": 0.12843010000142385,
+                "first_body_sent": 0.1284680999997363,
+                "last_body_sent": 0.2340014000001247
+              }
+            ],
+            "drops": 0,
+            "rate": 40000000,
+            "drop_after": 0
+          }
+        ]
+      }
+    }
+  ]
+}

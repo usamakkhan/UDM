@@ -1,0 +1,687 @@
+[
+  {"source": "QueueCompletionCountdownTests", "timeoutSeconds": 90},
+  {"source": "CompletionCountdownTests", "timeoutSeconds": 90},
+  {
+    "source": "CompletionClaimTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "HttpInitialRangePlanTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "HttpReadReservationTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "CompletionReadinessTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "CompletionSettingsTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "RetiredDashBoundaryTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FixedVolumeTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "AdvisoryPublicationTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "VerifiedMediaHandoffTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "RelocationOwnershipTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "GzipStageOwnershipTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "TransferStageCleanupTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "StagingLinkReuseTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "StagingAdmissionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PreparedCleanupHttpTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PreparedCleanupTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PublicationFailureLifetimeTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PublicationOverlapTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PublicationAvailabilityTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "LaunchFailureTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BrowserIntegrationTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "SelectionCommandSnapshotTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "HistoryNavigationTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "MainClosePolicyTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BatchSingleRefreshTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BatchRefreshApplyTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BatchRefreshProjectionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BatchRowProjectionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BatchInitialTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "BatchAdmissionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "QueueChoiceTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoActionTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "SchedulePreparationTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoLoadingViewTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoNameTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "ImmediateOptionsCommitTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "CategoryPropertiesTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoCategoryTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoRefreshTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "DownloadRefreshTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ZipCompletionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FileInfoZipTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "PrefetchedZipReadTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FileInfoPreviewTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FileInfoInitialTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "BrowserPresentationAcksTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FileInfoBindingTaskTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "IndependentFinishingTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FileInfoPrefetchTaskTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "FileInfoDisplayTaskTests",
+    "timeoutSeconds": 45
+  },
+  {
+    "source": "AsyncDialLookupTests",
+    "timeoutSeconds": 45
+  },
+  {
+    "source": "FileInfoDecisionTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "UiTaskSignalTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PendingFileInfoRetryTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "PendingFileInfoConcurrentRetryTests",
+    "timeoutSeconds": 90,
+    "requiresMediaHelpers": true
+  },
+  {
+    "source": "PendingFileInfoCancellationTests",
+    "timeoutSeconds": 120,
+    "requiresMediaHelpers": true
+  },
+  {
+    "source": "DetachedMediaAdmissionTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "CatalogAdmissionRegistryTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "CatalogAdmissionReservationTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "CatalogCommitCoordinatorTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "CatalogCheckpointTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "PinnedCatalogReadTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "CatalogDiskCreditTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "WrittenDiskCheckpointTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "OrderedBodyWriterTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "CompletedCheckpointTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "WrittenBodyCacheTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ModalSizeRefreshTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "DownloadListTooltipTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "WrittenPrefixTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PrefinishWritebackTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "DataOnlyWritebackTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PublicationPreparationTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "EarlyPublicationRecoveryTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "RecoveryJournalTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RecoveryCatalogTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "RecoveryCommandTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "RecoveryByteIoTests",
+    "timeoutSeconds": 240
+  },
+  {
+    "source": "ReplacementMetadataRecoveryTests",
+    "timeoutSeconds": 240
+  },
+  {
+    "source": "RecoveryDiscoveryTests",
+    "timeoutSeconds": 240
+  },
+  {
+    "source": "RecoveryCleanupTests",
+    "timeoutSeconds": 360
+  },
+  {
+    "source": "CapturePresentationModelTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "PublicationCommitTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "ReplacementCommitTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "PublicationOwnershipTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "HttpGzipDecoderTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ContentSniffNamingTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ContentSniffNoticeTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ProgressRecordViewTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FindFilterCacheTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "FindAddressTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PropertiesRequestDraftTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PropertiesDecisionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ProgressRateHistoryTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "HttpAdmissionTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "Id3v2Tests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "AudioMetadataTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "GrabberExploreSignatureTests",
+    "timeoutSeconds": 30,
+    "omitDataArgument": true
+  },
+  {
+    "source": "GrabberRenderedTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "QuotaDraftTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "DateParsingTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "SortKeyCacheTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "SchedulerNumberTests",
+    "timeoutSeconds": 30,
+    "omitDataArgument": true
+  },
+  {
+    "source": "PresentationLookupTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "AutomationTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "name": "AutomationRunningServer",
+    "source": "AutomationTests",
+    "arguments": [
+      "--running-server"
+    ],
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "MediaSizeTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ClipboardSnapshotTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PlayerAdTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PauseTransactionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "LaunchQueueTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "PublicationRecoveryTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "AtomicStateTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "IdleCheckpointTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "SyncProbeTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "ServerRetryTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "QueueRetryPolicyTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "QueueRetryLiveTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncRetryLiveTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncReplacementRecoveryTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueFinishPolicyTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueCompletionCycleTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueMultiSelectionTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "TerminalActionTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "RecoveryIoTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "BackupTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RestoreTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RestoreTests",
+    "name": "RestoreResume",
+    "arguments": [
+      "--resume"
+    ],
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "SyncMembershipTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "PeriodicSyncLiveTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "ServerConnectionsTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "SiteLoginProtocolsTests",
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "StreamingContinuationTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "LiveAudioMetadataTests",
+    "requiresMediaHelpers": true,
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "LiveSubtitleTests",
+    "requiresMediaHelpers": true,
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "OriginalResponseTests",
+    "omitDataArgument": true,
+    "timeoutSeconds": 60
+  },
+  {
+    "source": "MonitorReconnectTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "CssReferenceTests",
+    "timeoutSeconds": 15
+  },
+  {
+    "source": "BrokerExchangeTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "StartupPerformanceTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "ContentDispositionNameTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "RecordedHlsMapTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "FileHashTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "RecoveryPruningTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "QueueSnapshotTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "CatalogLoadTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "FilenameValidationTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "UnicodeFilenameWorkflowTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "HistoryReadSnapshotTests",
+    "timeoutSeconds": 30
+  },
+  {
+    "source": "ModelMaintenanceTests",
+    "timeoutSeconds": 45
+  },
+  {
+    "source": "AutomaticPromptSnapshotTests",
+    "timeoutSeconds": 45
+  },
+  {
+    "source": "AuthenticationPromptTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "AuthenticationLoginTaskTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "RequestedAuthenticationTaskTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "ResumeSelectionTaskTests",
+    "timeoutSeconds": 150
+  },
+  {
+    "source": "DuplicateDecisionTaskTests",
+    "timeoutSeconds": 180
+  },
+  {
+    "source": "NetworkCaptureSessionTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "DownloadMenuTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "MainExitLayoutTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ManagedModelWorkTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ManagerModelWorkTests",
+    "timeoutSeconds": 120
+  },
+  {
+    "source": "ColumnSettingsTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "GlobalLimitSettingsTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "GlobalLimitToggleTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ToolbarImageCacheTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "AppearanceSettingsTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "ToolbarSettingsTaskTests",
+    "timeoutSeconds": 90
+  }
+]

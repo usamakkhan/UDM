@@ -1,0 +1,24 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Frozen completion Open waits for the catalog writer on its UI thread",
+      "passed": true
+    },
+    {
+      "name": "The frozen action subsequently reaches the owned missing-file warning",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "action": "Open",
+      "dark": false,
+      "dispatchMs": 579,
+      "writerStillHeld": false,
+      "writerWatchdogExpired": true
+    }
+  ],
+  "passed": true
+}

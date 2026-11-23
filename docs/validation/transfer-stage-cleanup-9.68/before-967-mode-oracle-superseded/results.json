@@ -1,0 +1,237 @@
+{
+  "checks": [
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "An unchanged owned stage is removed after direct publication fails",
+      "passed": true
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "An unchanged owned stage is removed after direct publication fails",
+      "passed": true
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": false
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "An unchanged owned stage is removed after direct publication fails",
+      "passed": true
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "An unchanged owned stage is removed after direct publication fails",
+      "passed": true
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    },
+    {
+      "name": "Actual ordinary transfer reaches the selected stage mode and never publishes after interruption",
+      "passed": true
+    },
+    {
+      "name": "Renamed owned bytes and foreign replacement at the old staging name are preserved",
+      "passed": false
+    },
+    {
+      "name": "Received bytes remain available after pre-handoff failure",
+      "passed": true
+    }
+  ],
+  "copyRoot": "<development>\\owned-transfer-stage-cleanup-before-9.67-C",
+  "error": "",
+  "observations": [
+    {
+      "action": "unchanged",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "file",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "directory",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "unchanged",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    },
+    {
+      "action": "file",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    },
+    {
+      "action": "directory",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "link",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    },
+    {
+      "action": "unchanged",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "file",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "directory",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-begin",
+      "stageMode": ""
+    },
+    {
+      "action": "unchanged",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    },
+    {
+      "action": "file",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    },
+    {
+      "action": "directory",
+      "error": "Owned pre-handoff publication interruption",
+      "mode": "copy",
+      "point": "publication-preflight-ready",
+      "stageMode": ""
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,274 @@
+{
+  "evidenceValid": true,
+  "summary": {
+    "cases": 6,
+    "coarseAcceptedButOracleFailed": 5,
+    "allMediaExact": false,
+    "fullNativeRecordingWorkflow": false
+  },
+  "privateArtifactsRehashed": true,
+  "hostProtectedFilesUnchanged": 9,
+  "reports": {
+    "dash-boundary-clipping-10.0": {
+      "evidenceValid": true,
+      "allCasesExact": false,
+      "continuousEncoderControl": false,
+      "packetClockQualified": false,
+      "cases": [
+        {
+          "case": "packet-aligned",
+          "boundary": "1.28",
+          "expectedSamples": 184320,
+          "decodedSamples": 184320,
+          "sampleDelta": 0,
+          "expectedVideoFrames": 96,
+          "actualVideoFrames": 96,
+          "audioExact": false,
+          "videoHashesAndPtsExact": true,
+          "allExact": false
+        },
+        {
+          "case": "aac-crossing",
+          "boundary": "1.0",
+          "expectedSamples": 144000,
+          "decodedSamples": 144384,
+          "sampleDelta": 384,
+          "expectedVideoFrames": 75,
+          "actualVideoFrames": 75,
+          "audioExact": false,
+          "videoHashesAndPtsExact": true,
+          "allExact": false
+        },
+        {
+          "case": "both-crossing",
+          "boundary": "1.01",
+          "expectedSamples": 145440,
+          "decodedSamples": 147456,
+          "sampleDelta": 2016,
+          "expectedVideoFrames": 78,
+          "actualVideoFrames": 78,
+          "audioExact": false,
+          "videoHashesAndPtsExact": false,
+          "allExact": false
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "packet-aligned-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "a0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "a1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "a2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "v0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "v1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "v2.mp4",
+          "retained": true,
+          "rehashed": true
+        }
+      ],
+      "allMediaRehashed": true,
+      "nativeDownloadWorkflowProven": false,
+      "fullParityProven": false
+    },
+    "dash-boundary-continuous-10.0": {
+      "evidenceValid": true,
+      "allCasesExact": false,
+      "continuousEncoderControl": true,
+      "packetClockQualified": true,
+      "cases": [
+        {
+          "case": "packet-aligned",
+          "boundary": "1.28",
+          "expectedSamples": 184320,
+          "decodedSamples": 184320,
+          "sampleDelta": 0,
+          "expectedVideoFrames": 96,
+          "actualVideoFrames": 96,
+          "audioExact": true,
+          "videoHashesAndPtsExact": true,
+          "allExact": true
+        },
+        {
+          "case": "aac-crossing",
+          "boundary": "1.0",
+          "expectedSamples": 144000,
+          "decodedSamples": 144128,
+          "sampleDelta": 128,
+          "expectedVideoFrames": 75,
+          "actualVideoFrames": 62,
+          "audioExact": false,
+          "videoHashesAndPtsExact": false,
+          "allExact": false
+        },
+        {
+          "case": "both-crossing",
+          "boundary": "1.01",
+          "expectedSamples": 145440,
+          "decodedSamples": 146112,
+          "sampleDelta": 672,
+          "expectedVideoFrames": 76,
+          "actualVideoFrames": 65,
+          "audioExact": false,
+          "videoHashesAndPtsExact": false,
+          "allExact": false
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "packet-aligned-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "packet-aligned-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "aac-crossing-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-1.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-2.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "both-crossing-joined.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "a0.mp4",
+          "retained": true,
+          "rehashed": true
+        },
+        {
+          "name": "v0.mp4",
+          "retained": true,
+          "rehashed": true
+        }
+      ],
+      "allMediaRehashed": true,
+      "nativeDownloadWorkflowProven": false,
+      "fullParityProven": false
+    }
+  },
+  "actualNativeGuard": true,
+  "fullNativeDownloadWorkflow": false,
+  "productChanged": false
+}

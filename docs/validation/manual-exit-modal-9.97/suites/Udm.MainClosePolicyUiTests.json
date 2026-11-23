@@ -1,0 +1,128 @@
+{
+  "checks": [
+    {
+      "name": "The actual main Close returns before its policy writer releases",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Close does not wait for or destroy the pending policy owner",
+      "passed": true
+    },
+    {
+      "name": "Main timer and paint return while the close policy is waiting",
+      "passed": true
+    },
+    {
+      "name": "Fresh close-to-tray policy hides the window without stopping integration",
+      "passed": true
+    },
+    {
+      "name": "A tray policy read never saves layout or changes the fixture catalog",
+      "passed": true
+    },
+    {
+      "name": "The owned main close workflow completes without a held writer or stale result",
+      "passed": true
+    },
+    {
+      "name": "The actual main Close returns before its policy writer releases",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Close does not wait for or destroy the pending policy owner",
+      "passed": true
+    },
+    {
+      "name": "Main timer and paint return while the close policy is waiting",
+      "passed": true
+    },
+    {
+      "name": "Fresh close-to-tray policy hides the window without stopping integration",
+      "passed": true
+    },
+    {
+      "name": "A tray policy read never saves layout or changes the fixture catalog",
+      "passed": true
+    },
+    {
+      "name": "The owned main close workflow completes without a held writer or stale result",
+      "passed": true
+    },
+    {
+      "name": "The actual main Close returns before its policy writer releases",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Close does not wait for or destroy the pending policy owner",
+      "passed": true
+    },
+    {
+      "name": "Main timer and paint return while the close policy is waiting",
+      "passed": true
+    },
+    {
+      "name": "Show app cancels a waiting tray decision without waiting for Manager",
+      "passed": true
+    },
+    {
+      "name": "A cancelled tray decision cannot hide the restored app later",
+      "passed": true
+    },
+    {
+      "name": "The owned main close workflow completes without a held writer or stale result",
+      "passed": true
+    },
+    {
+      "name": "The actual main Close returns before its policy writer releases",
+      "passed": true
+    },
+    {
+      "name": "Duplicate Close does not wait for or destroy the pending policy owner",
+      "passed": true
+    },
+    {
+      "name": "Main timer and paint return while the close policy is waiting",
+      "passed": true
+    },
+    {
+      "name": "A fresh non-tray policy continues the real shutdown exactly once",
+      "passed": true
+    },
+    {
+      "name": "The owned main close workflow completes without a held writer or stale result",
+      "passed": true
+    }
+  ],
+  "diagnostics": {
+    "cancel-via-show": {
+      "closeReturnMs": 9.22800000011921,
+      "error": "",
+      "integrationStops": 0,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    },
+    "exit-decision": {
+      "closeReturnMs": 10.785299994051456,
+      "error": "",
+      "integrationStops": 1,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    },
+    "tray-busy": {
+      "closeReturnMs": 12.180900000035763,
+      "error": "",
+      "integrationStops": 0,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    },
+    "tray-late-setting": {
+      "closeReturnMs": 8.942199997603893,
+      "error": "",
+      "integrationStops": 0,
+      "writerExpiredAtReturn": false,
+      "writerHeldAtReturn": true
+    }
+  },
+  "error": "",
+  "passed": true
+}

@@ -1,0 +1,30 @@
+'use strict';
+const token = __TOKEN__;
+const files = new Map(), hooks = [], events = [];
+let seq = 0, dropped = false;
+function emit(e) { if (++seq > 2000) { if (!dropped) { dropped = true; send({kind:'capture-cap',limit:2000}); } return; } send(Object.assign({kind:'owned-io',sequence:seq,pid:Process.id},e)); }
+function owned(p) { return p.toLowerCase().indexOf(token.toLowerCase()) >= 0; }
+function valid(h) { return !h.isNull() && h.toInt32() !== -1; }
+function hook(module,name,callbacks,optional) { const at=module.findExportByName(name); if (!at) { if(!optional)throw new Error('Missing required API '+name);return; } Interceptor.attach(at,callbacks);hooks.push(name); }
+const kernel=Process.getModuleByName('kernel32.dll'), nt=Process.getModuleByName('ntdll.dll');
+for(const wide of [false,true])hook(kernel,'CreateFile'+(wide?'W':'A'),{
+ onEnter(a){let p;try{p=wide?a[0].readUtf16String():a[0].readCString();}catch(_){return;}if(!p||!owned(p))return;this.e={api:'CreateFile'+(wide?'W':'A'),path:p,access:a[1].toUInt32(),share:a[2].toUInt32(),disposition:a[4].toUInt32(),flags:a[5].toUInt32(),begin:Date.now(),tid:this.threadId};},
+ onLeave(r){if(!this.e)return;this.e.end=Date.now();this.e.handle=r.toString();this.e.ok=valid(r);if(this.e.ok)files.set(r.toString(),this.e.path);emit(this.e);}
+});
+for(const name of ['WriteFile','FlushFileBuffers','CloseHandle'])hook(kernel,name,{
+ onEnter(a){const p=files.get(a[0].toString());if(!p)return;this.e={api:name,path:p,handle:a[0].toString(),begin:Date.now(),tid:this.threadId};if(name==='WriteFile'){this.e.requested=a[2].toUInt32();this.e.overlapped=!a[4].isNull();this.count=a[3];}},
+ onLeave(r){if(!this.e)return;this.e.end=Date.now();this.e.ok=r.toInt32()!==0;this.e.error=this.e.ok?0:this.lastError;if(this.e.ok&&this.count&&!this.count.isNull())this.e.completed=this.count.readU32();if(this.e.ok&&name==='CloseHandle')files.delete(this.e.handle);emit(this.e);}
+});
+for(const name of ['NtWriteFile','NtFlushBuffersFile','NtFlushBuffersFileEx'])hook(nt,name,{
+ onEnter(a){const p=files.get(a[0].toString());if(!p)return;this.e={api:name,path:p,handle:a[0].toString(),begin:Date.now(),tid:this.threadId};if(name==='NtWriteFile'){this.e.requested=a[6].toUInt32();this.status=a[4];if(!a[7].isNull())this.e.offset=a[7].readS64().toString();}if(name==='NtFlushBuffersFileEx')this.e.flags=a[1].toUInt32();},
+ onLeave(r){if(!this.e)return;this.e.end=Date.now();this.e.status=r.toUInt32();this.e.pending=this.e.status===0x103;this.e.ok=r.toInt32()>=0&&!this.e.pending;if(this.e.ok&&this.status&&!this.status.isNull())this.e.completed=this.status.add(Process.pointerSize).readPointer().toUInt32();emit(this.e);}
+},name==='NtFlushBuffersFileEx');
+if(Process.mainModule.name.toLowerCase()==='idman.exe'){
+ if(Process.arch!=='ia32')throw new Error('Expected the verified x86 IDM target');
+ const base=Process.mainModule.base;
+ const sig=new Uint8Array(base.add(0x170290).readByteArray(11));if(sig[0]!==0x8b||sig[1]!==0x41||sig[2]!==0x14||sig[3]!==0x50||sig[4]!==0xff||sig[5]!==0x15||sig[10]!==0xc3)throw new Error('File-part flush signature mismatch');
+ for(const [name,rva] of [['file-part-flush',0x170290],['file-part-close',0x16fbd0],['file-part-open',0x16fc40]]){
+  Interceptor.attach(base.add(rva),{onEnter(a){this.e={api:name,begin:Date.now(),tid:this.threadId};let p='';if(name==='file-part-open'){try{p=a[0].readUtf16String()||'';}catch(_){}}else{const h=this.context.ecx.add(0x14).readPointer();if(!valid(h)){this.e=null;return;}this.e.handle=h.toString();p=files.get(h.toString())||'';}this.e.matchedScope=!!p&&owned(p);if(this.e.matchedScope)this.e.path=p;},onLeave(r){if(!this.e)return;this.e.end=Date.now();if(name==='file-part-open')this.e.returnCode=r.toUInt32();emit(this.e);}});hooks.push(name);
+ }
+}
+Interceptor.flush();send({kind:'observer-ready',pid:Process.id,architecture:Process.arch,hooks:hooks,scope:token,changesArgumentsOrReturns:false,observesOnly:true});

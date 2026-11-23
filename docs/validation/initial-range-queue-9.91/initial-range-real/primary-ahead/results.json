@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 4,
+    "dynamicSplits": 0,
+    "engineThroughJoinedStopMs": 1148.2261,
+    "finishPhases": {
+      "AdvisoryHashOverlap": false,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 4e-06,
+      "Content": 0.0002633,
+      "DirectSize": 2.93e-05,
+      "FlushPublished": 0.2172747,
+      "Hash": 5.53e-05,
+      "HashMode": "trailing",
+      "PrePublicationMetadata": 0.0020771,
+      "PrefetchReceipt": 1.6e-06,
+      "PreparedTransferFinalizeSeconds": 0.004275200000000001,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 3.5e-06,
+      "PublishedFileFlush": 0.2170828,
+      "PublishedFileOpen": 0.0001884,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.0857942,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0015915,
+      "SettleDestination": 0.0014353,
+      "SettleLengthQuery": 4.06e-05,
+      "SettleLockWait": 0.0,
+      "SettleRecoveryCheck": 8.96e-05,
+      "SettleSnapshot": 1.54e-05,
+      "SettleValidateFolder": 8e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0002683,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 16777216,
+    "savedHash": "684b38382481e9062a4836bbe46f53e63d5ef7f8d22b8a6eccafed18e891d97b",
+    "segments": [
+      {
+        "Done": 16777216,
+        "End": 16777215,
+        "Index": 0,
+        "Start": 0
+      }
+    ],
+    "size": 16777216,
+    "transferredBytes": 16777216
+  }
+}

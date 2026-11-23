@@ -1,0 +1,19 @@
+[
+  {
+    "name": "pinned_publication_scope",
+    "passed": false,
+    "exitCode": 1,
+    "result": {
+      "checks": [
+        {
+          "name": "A scoped pin cannot bless a different staging path",
+          "passed": true
+        }
+      ],
+      "error": "Cannot publish the download. The file and publication recovery record were preserved.",
+      "passed": false
+    },
+    "binarySha256": "89A63380DD0DCA8E288433C9DE51AE7DA70B633A3ACBC5FB67E5B8CC224D339E",
+    "fixtureSha256": "298CBA5A78280F339CC1C13C4809DF465F28D9F4A5EAFFF34EC33C033E42A172"
+  }
+]

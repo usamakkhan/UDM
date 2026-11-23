@@ -1,0 +1,31 @@
+from pathlib import Path
+import os,json,subprocess,hashlib,shutil
+repo=Path('D:/UDM');area=repo/'.media-cache/compact-native-build-10.0';base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development'
+scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+prior=json.loads((repo/'.media-cache/owned-shell-folder-build-9.99/build-result.json').read_text(encoding='utf-8'));sources=[dict(path=e['path'],sha256=sha(repo/e['path'])) for e in prior['sources']];changed=[e['path'] for e in sources if e['sha256']!=next(p['sha256'] for p in prior['sources'] if p['path']==e['path'])];assert set(changed)=={'native/build.ps1','native/Version.hpp','browser/chromium/manifest.json','browser/firefox/manifest.json'},changed
+for e in prior['coreObjects']:assert sha(Path(e['path']))==e['sha256']
+(area/'inputs.json').write_text(json.dumps(dict(sources=sources,changedSources=changed,priorCoreObjects=prior['coreObjects'],nativeRuntimeSourceUnchanged=True,installerCreated=False,installed=False),indent=2),encoding='utf-8')
+def budget():
+ free=shutil.disk_usage(area).free;used=sum(p.stat().st_size for p in area.rglob('*') if p.is_file());assert free>1024**3 and used<700*1024**2,(free,used)
+def invoke(args,name):
+ budget()
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:r=subprocess.run(args,cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT)
+ if r.returncode:print((area/(name+'.log')).read_text(encoding='utf-8',errors='replace')[-4500:],flush=True)
+ assert r.returncode==0,name
+invoke([str(compiler),*common,'/c',str(native/'Bridge.cpp'),'/Fo'+str(out/'Bridge.obj')],'compile-Bridge')
+objects=[str(out/'Bridge.obj') if Path(e['path']).stem=='Bridge' else e['path'] for e in prior['coreObjects']]
+invoke([str(cache/'microsoft.windows.sdk.cpp/c/bin/10.0.26100.0/x64/rc.exe'),'/nologo','/fo'+str(out/'App.res'),str(native/'App.rc')],'resources')
+tests=[dict(source='ShellFolderTaskTests',name='Udm.ShellFolderTaskTests',subsystem='CONSOLE'),dict(source='CompletionCountdownTests',name='Udm.CompletionCountdownTests',subsystem='CONSOLE')]
+products=[dict(source=s,name=n,subsystem=k) for s,n,k in [('App','UDM','WINDOWS'),('HostMain','Udm.NativeHost','CONSOLE'),('MonitorMain','Udm.Monitor','CONSOLE'),('SetupMain','Udm.SetupHelper','CONSOLE'),('AutomationMain','Udm.Automation','WINDOWS')]]
+outputs=[];runs=[]
+for mode,recipe,targets in [('normal',area/'before-build.ps1',tests),('compact',native/'build.ps1',products+tests)]:
+ folder=area/(mode+'-attempt-03');folder.mkdir(exist_ok=False);obj=folder/'objects';exe=folder/'release-native';obj.mkdir();exe.mkdir();(obj/'App.res').write_bytes((out/'App.res').read_bytes())
+ config=dict(native=str(native),compiler=str(compiler),common=common,system=system,objects=objects,include=env['INCLUDE'],lib=env['LIB'],temp=str(area),out=str(obj),release=str(exe),compact=mode=='compact',targets=targets,recipe=str(recipe),extract=str(folder/'executed-target-statements.ps1'))
+ path=folder/'config.json';path.write_text(json.dumps(config,indent=2),encoding='utf-8');invoke(['powershell.exe','-NoProfile','-File',str(area/'drive-targets.ps1'),'-Config',str(path)],mode+'-attempt-03-compile')
+ for target in targets:
+  p=exe/(target['name']+'.exe');outputs.append(dict(mode=mode,name=p.name,path=str(p),sha256=sha(p),kind='product' if target in products else 'backend'))
+ for target in tests:
+  run=folder/'runs'/target['name'];run.parent.mkdir(exist_ok=True);p=subprocess.run([str(exe/(target['name']+'.exe')),str(run)],cwd=repo,env=env,capture_output=True,text=True,timeout=30);result=json.loads((run/'results.json').read_text(encoding='utf-8-sig'));assert p.returncode==0 and result['passed'] and all(c['passed'] for c in result['checks']),(target,result);runs.append(dict(mode=mode,suite=target['name'],exitCode=p.returncode,passed=True,checks=len(result['checks'])));print(json.dumps(runs[-1]),flush=True)
+for e in sources:assert sha(repo/e['path'])==e['sha256']
+record=dict(passed=True,version='10.0',extensionVersion='0.73.64',sources=sources,coreObjects=[dict(path=p,sha256=sha(Path(p))) for p in objects],outputs=outputs,suites=runs,exactBuildLoopExecuted=True,fullBuildEntrypointExecuted=False,installerCreated=False,installed=False)
+(area/'build-result.json').write_text(json.dumps(record,indent=2),encoding='utf-8');print('Compact native build and frozen/default backend controls passed.',flush=True)

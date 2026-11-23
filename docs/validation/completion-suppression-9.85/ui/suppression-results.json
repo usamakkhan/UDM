@@ -1,0 +1,117 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Suppression returns before the held catalog writer releases",
+      "passed": true
+    },
+    {
+      "name": "Accepted save owns its guard and disables duplicate checkbox input",
+      "passed": true
+    },
+    {
+      "name": "Close remains usable during the accepted preference save",
+      "passed": true
+    },
+    {
+      "name": "Main timer stays responsive while suppression waits for the writer",
+      "passed": true
+    },
+    {
+      "name": "Closing completion does not block or abandon its accepted save",
+      "passed": true
+    },
+    {
+      "name": "The accepted suppression save reaches a terminal result after writer release",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement releases the guard and retains the saved choice after dialog Close",
+      "passed": true
+    },
+    {
+      "name": "Suppression merge preserves unrelated concurrent settings",
+      "passed": true
+    },
+    {
+      "name": "Accepted suppression remains durable after the originating dialog is destroyed",
+      "passed": true
+    },
+    {
+      "name": "A later explicit completion reflects the saved preference",
+      "passed": true
+    },
+    {
+      "name": "A later unchecked choice completes asynchronously",
+      "passed": true
+    },
+    {
+      "name": "A later unchecked choice restores automatic dialogs and input",
+      "passed": true
+    },
+    {
+      "name": "Suppression returns before the held catalog writer releases",
+      "passed": true
+    },
+    {
+      "name": "Accepted save owns its guard and disables duplicate checkbox input",
+      "passed": true
+    },
+    {
+      "name": "Close remains usable during the accepted preference save",
+      "passed": true
+    },
+    {
+      "name": "Main timer stays responsive while suppression waits for the writer",
+      "passed": true
+    },
+    {
+      "name": "Closing completion does not block or abandon its accepted save",
+      "passed": true
+    },
+    {
+      "name": "The accepted suppression save reaches a terminal result after writer release",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement releases the guard and retains the saved choice after dialog Close",
+      "passed": true
+    },
+    {
+      "name": "Suppression merge preserves unrelated concurrent settings",
+      "passed": true
+    },
+    {
+      "name": "Accepted suppression remains durable after the originating dialog is destroyed",
+      "passed": true
+    },
+    {
+      "name": "A later explicit completion reflects the saved preference",
+      "passed": true
+    },
+    {
+      "name": "A later unchecked choice completes asynchronously",
+      "passed": true
+    },
+    {
+      "name": "A later unchecked choice restores automatic dialogs and input",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dispatchMs": 16,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    },
+    {
+      "dark": true,
+      "dispatchMs": 0,
+      "watchdogExpired": false,
+      "writerStillHeld": true
+    }
+  ],
+  "passed": true
+}

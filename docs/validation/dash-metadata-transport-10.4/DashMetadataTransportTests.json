@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "Unscoped metadata retains ordinary per-request ownership",
+      "passed": true
+    },
+    {
+      "name": "Same canonical origin and settings reuse one transport",
+      "passed": true
+    },
+    {
+      "name": "Different ports cannot share transport authentication state",
+      "passed": true
+    },
+    {
+      "name": "Different schemes cannot share transport authentication state",
+      "passed": true
+    },
+    {
+      "name": "Changed transport preferences create a separate pool",
+      "passed": true
+    },
+    {
+      "name": "Nested work has its own transport lifetime",
+      "passed": true
+    },
+    {
+      "name": "Nested teardown releases its pool and restores the outer scope",
+      "passed": true
+    },
+    {
+      "name": "Another worker cannot borrow this recording's transports",
+      "passed": true
+    },
+    {
+      "name": "Oversized cache keys use ordinary request ownership without a new rejection",
+      "passed": true
+    },
+    {
+      "name": "Normal recording exit releases all owned transports",
+      "passed": true
+    },
+    {
+      "name": "Exceptional-exit probe owns a live transport before interruption",
+      "passed": true
+    },
+    {
+      "name": "Exceptional recording exit releases transports and clears context",
+      "passed": true
+    },
+    {
+      "name": "Sixteen distinct origin/settings combinations can be retained",
+      "passed": true
+    },
+    {
+      "name": "A full cache falls back without retaining a seventeenth transport",
+      "passed": true
+    },
+    {
+      "name": "Capacity fallback does not evict a transport still owned by recording requests",
+      "passed": true
+    },
+    {
+      "name": "Response cookies remain available within their recording and origin",
+      "passed": true
+    },
+    {
+      "name": "Anonymous or sanitized clock preferences cannot inherit browser cookies",
+      "passed": true
+    },
+    {
+      "name": "Another origin does not inherit rotated browser cookies",
+      "passed": true
+    },
+    {
+      "name": "Cookie-bearing transport is released with the recording",
+      "passed": true
+    },
+    {
+      "name": "A later recording starts from its captured cookie snapshot",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

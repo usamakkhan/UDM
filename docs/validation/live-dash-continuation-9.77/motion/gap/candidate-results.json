@@ -1,0 +1,104 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "Resume completes: DASH Period transition has a gap or overlap.",
+      "passed": false
+    }
+  ],
+  "error": "Resume completes: DASH Period transition has a gap or overlap.",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": false,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "savedJob": {
+    "AdaptiveCompletedSegments": 1,
+    "AdaptiveMetadataBytes": 1540,
+    "AdaptiveTotalSegments": 1,
+    "Added": "/Date(1795276030437)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "ConfirmationPending": false,
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 0.6772956,
+    "Error": "DASH Period transition has a gap or overlap.",
+    "ExpectedSha256": "",
+    "FileName": "restart.mp4",
+    "Folder": "<development>\\owned-live-dash-motion-restart-9.77-C\\gap",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "GrabberImmediate": false,
+    "Id": "e641599498bf447184109f4793c06fae",
+    "LastAttempt": "/Date(1795276031428)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "LiveSaveReady": true,
+    "MediaFolder": "<repo>\\.media-cache\\owned-live-dash-motion-restart-9.77\\gap\\temporary\\UDM-media\\e641599498bf447184109f4793c06fae",
+    "MediaPhase": "Paused",
+    "MediaPixelHeight": 360,
+    "PostAttempted": false,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "B17939EE2A70CF8E15B5BE3F597B9EC6272F6C85441C26FFDF33656B2453B032",
+      "characters": 656
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "9DD44D3CC466C2ED674B9A9AE85C130398EA7B3F4C44DFB7BB42BB27D8EB0677",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "BC1A77EA8F052D5AA545BEB7C1FAE874C8E8DFBD8C406CA57AFD52A64A9791BD",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "0A3F1670E677745E482E30F3398C31BC0B0CB21AB28AD67D260623EA354B505F",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": true,
+    "QueueOrigin": false,
+    "Received": 106375,
+    "Segments": [],
+    "Sha256": "",
+    "Size": -1,
+    "Status": "Failed",
+    "SyncPending": false,
+    "TransferSeconds": 0.677293,
+    "TransferredBytes": 107915,
+    "Url": "https://example.invalid/owned-restart",
+    "Video": null
+  }
+}

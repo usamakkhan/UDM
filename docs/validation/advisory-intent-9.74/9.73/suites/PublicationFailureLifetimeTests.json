@@ -1,0 +1,88 @@
+{
+  "checks": [
+    {
+      "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+      "passed": true
+    },
+    {
+      "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+      "passed": true
+    },
+    {
+      "name": "The failed real transfer never publishes a final output",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+      "passed": true
+    },
+    {
+      "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+      "passed": true
+    },
+    {
+      "name": "The failed real transfer never publishes a final output",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+      "passed": true
+    },
+    {
+      "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+      "passed": true
+    },
+    {
+      "name": "The failed real transfer never publishes a final output",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP failure drains the owned result task and reports its failure after release",
+      "passed": true
+    },
+    {
+      "name": "Manager cannot retire ownership or report failure while its owned body task is pending",
+      "passed": true
+    },
+    {
+      "name": "The failed real transfer never publishes a final output",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "activeOwnershipRetiredWhileTaskHeld": false,
+      "failedStatusVisibleWhileTaskHeld": false,
+      "nativeBodyCompleted": true,
+      "ownedResultWasHeld": true,
+      "point": "publication-preflight-begin",
+      "resultTaskCompleted": true
+    },
+    {
+      "activeOwnershipRetiredWhileTaskHeld": false,
+      "failedStatusVisibleWhileTaskHeld": false,
+      "nativeBodyCompleted": true,
+      "ownedResultWasHeld": true,
+      "point": "publication-preflight-ready",
+      "resultTaskCompleted": true
+    },
+    {
+      "activeOwnershipRetiredWhileTaskHeld": false,
+      "failedStatusVisibleWhileTaskHeld": false,
+      "nativeBodyCompleted": true,
+      "ownedResultWasHeld": true,
+      "point": "publication-intent-temporary-flushed",
+      "resultTaskCompleted": true
+    },
+    {
+      "activeOwnershipRetiredWhileTaskHeld": false,
+      "failedStatusVisibleWhileTaskHeld": false,
+      "nativeBodyCompleted": true,
+      "ownedResultWasHeld": true,
+      "point": "publication-intent-written",
+      "resultTaskCompleted": true
+    }
+  ],
+  "passed": true
+}

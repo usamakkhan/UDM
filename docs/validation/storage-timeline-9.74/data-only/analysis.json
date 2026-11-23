@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "diagnosticOnly": true,
+  "runs": [
+    {
+      "case": "split-64m",
+      "events": 688,
+      "diagnosticOnly": true,
+      "requestedBackground": true,
+      "bodyFlushMs": 93.7084,
+      "intentMs": 128.3799,
+      "bodyIntentOverlapMs": 93.7084,
+      "catalogMs": 35.1051,
+      "catalogFlushMs": 21.2284,
+      "catalogReplaceMs": 12.1505,
+      "catalogTransactionsAfterLastBodyWrite": 1,
+      "replacementBackoffs": 0,
+      "catalogReadMs": [
+        0.066,
+        0.0515,
+        0.0575
+      ],
+      "closeBaseIntervalMs": 14.5267,
+      "dataOnlyCallMs": [
+        174.9656,
+        27.5993,
+        63.3118,
+        145.8501,
+        177.2695,
+        147.003,
+        534.736
+      ],
+      "dataOnlyStatistics": {
+        "Adjustments": 0,
+        "DiscardedPending": false,
+        "Errors": 0,
+        "FinishWaitSeconds": 9.01e-05,
+        "Flushes": 7,
+        "InFlightAtFinish": false,
+        "LeadBytes": 0,
+        "LongestFlushSeconds": 0.5347376,
+        "Mode": "data-only",
+        "Seconds": 1.2707654000000002,
+        "WakeNotifications": 5
+      },
+      "bodyWriteCount": 270,
+      "longestBodyWriteMs": 268.7081,
+      "writesOverlappingDataOnlyCalls": 181,
+      "longestOverlappingWriteMs": 260.2944,
+      "notifyToCloseMs": 0.17320000000000002,
+      "actualProcessExitTailMs": 232.4037500002305,
+      "exclusiveAvailabilityTailMs": 203.49569999962114
+    }
+  ],
+  "normalProductSpeedRanking": false,
+  "newIdmComparison": false,
+  "kernelQueueFilterOrSchedulingCauseProven": false,
+  "removedPayloadLogicalBytes": 67108864
+}

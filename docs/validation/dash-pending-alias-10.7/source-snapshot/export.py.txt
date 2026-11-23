@@ -1,0 +1,32 @@
+from pathlib import Path
+import json,hashlib,os
+repo=Path('D:/UDM');area=Path(__file__).parent;public=repo/'docs/validation/dash-pending-alias-10.7';public.mkdir(exist_ok=False);snap=public/'source-snapshot';snap.mkdir();read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+def clean(value):
+ if isinstance(value,str):
+  for a,b in [(str(area),'<candidate>'),(str(repo),'<repository>'),(os.environ['USERPROFILE'],'<profile>'),('C:/Program Files/UDM','<host-install>'),('C:\\Program Files\\UDM','<host-install>')]:value=value.replace(a,b).replace(a.replace('\\','/'),b)
+  return value
+ if isinstance(value,list):return [clean(e) for e in value]
+ if isinstance(value,dict):return {k:clean(v) for k,v in value.items()}
+ return value
+def emit(name,value):(public/name).write_text(json.dumps(clean(value),indent=2),encoding='utf-8',newline='\n')
+for source,name in [('verification.json','verification.json'),('build-result.json','build.json'),('alias-build.json','alias-build.json'),('single-pass-qualified/qualification.json','single-pass-qualification.json'),('single-pass-qualified/requests.json','single-pass-requests.json'),('crash-qualified/qualification.json','crash-qualification.json'),('crash-qualified/requests.json','crash-requests.json'),('shared-url-qualified/diagnosis.json','segment-alias-current.json'),('shared-url-qualified/after-retry.json','segment-alias-current-final.json'),('shared-url-qualified/requests.json','segment-alias-current-requests.json'),('initialization-alias-qualified/qualification.json','initialization-alias-qualification.json'),('initialization-alias-qualified/requests.json','initialization-alias-requests.json'),('initialization-alias-qualified/control-retry.json','initialization-alias-control.json'),('initialization-alias-qualified/candidate-retry.json','initialization-alias-current-final.json'),('continuous-qualified/qualification.json','continuous-qualification.json'),('continuous-qualified/candidate-terminal.json','continuous-terminal.json'),('direct-qualified/passed.json','direct-qualification.json'),('direct-qualified/results.json','direct-results.json'),('caption-qualified/passed.json','caption-qualification.json'),('caption-qualified/results.json','caption-results.json'),('raw-runtime-source-pins.json','raw-runtime-source-pins.json'),('media-runtime-source-pins.json','media-runtime-source-pins.json')]:emit(name,read(area/source))
+for name in ['DashPendingVersionTests','DashMetadataTransportTests','GaplessAacTailTests','RetiredDashBoundaryTests']:emit(name+'.json',read(area/('qualified-'+name)/'results.json'))
+terminal=read(area/'continuous-qualified/candidate-terminal.json');emit('continuous-case-results.json',[dict(case=e['case'],exitCode=e['exitCode'],result=read(Path(e['result']))) for e in terminal['records']])
+prior=repo/'.media-cache/dash-single-pass-build-10.6'
+for source,name in [('shared-url-diagnosis/diagnosis.json','segment-alias-frozen-10.6.json'),('shared-url-diagnosis/restored-retry.json','segment-alias-frozen-result.json'),('crash-first/harness-failure.json','initial-crash-observer-failure.json'),('crash-first/cases.json','initial-crash-observer-completed-cases.json'),('crash-final/qualification.json','frozen-10.6-crash-qualification.json')]:emit(name,read(prior/source))
+emit('retained-object-compression.json',read(repo/'.media-cache/retained-object-compression-20261122/result.json'))
+emit('host-protection.json',read(repo/'docs/validation/completion-claim-9.92/host-protection.json'))
+for name in ['compile-DashManifest.log','compile-Bridge.log','continuous-qualified.log','direct-qualified.log','caption-qualified.log','initialization-alias-qualified.log']:
+ (public/name).write_text(clean((area/name).read_text(encoding='utf-8',errors='replace')),encoding='utf-8',newline='\n')
+sources=[]
+for name in ['native/DashManifest.cpp','native/DashPendingVersion.hpp','native/Version.hpp','browser/chromium/manifest.json','browser/firefox/manifest.json','benchmarks/speed/dash_pending_alias_workflow.cpp','tests/dash-pending-alias.native-live.py','tests/dash-single-pass-crash.native-live.py','tests/dash-single-pass-shared-url.native-live.py']:
+ target=snap/(name.replace('/','__')+'.txt');target.write_bytes((repo/name).read_bytes());sources.append(dict(path=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+for name in ['build.py','build-alias.py','raw-validation.py','media-validation.py','verify.py','export.py']:
+ target=snap/(name+'.txt');target.write_bytes((area/name).read_bytes());sources.append(dict(recipe=name,snapshot=target.relative_to(public).as_posix(),sha256=sha(target)))
+oldRecord=read(prior/'build-result.json');oldHash=next(e['sha256'] for e in oldRecord['sources'] if e['path']=='native/DashManifest.cpp');existing=repo/'docs/validation/dash-single-pass-10.6/source-snapshot/native__DashManifest.cpp.txt';assert sha(area/'before-DashManifest.cpp')==oldHash==sha(existing)
+emit('source-provenance.json',dict(sources=sources,frozenSourceReference='../dash-single-pass-10.6/source-snapshot/native__DashManifest.cpp.txt',frozenSourceSha256=oldHash,compiledSourcesUnchanged=True,runtimeRecipesUnchangedDuringFinalRuns=True,reusedCoreCount=40,rebuiltCoreNames=['DashManifest','Bridge'],supplementalControlUsesCurrentActorWithFrozen10_6Core=True,finalTechnicalChecksPassed=True,buildVolumeReservePassed=True,workspaceReservePassed=False,releaseQualified=False))
+files=[dict(path=p.relative_to(public).as_posix(),sha256=sha(p),bytes=p.stat().st_size) for p in sorted(public.rglob('*')) if p.is_file()];emit('manifest.json',dict(records=files,binariesIncluded=False,ownedMediaIncluded=False,finalTechnicalChecksPassed=True,buildVolumeReservePassed=True,workspaceReservePassed=False,releaseQualified=False))
+for e in files:assert sha(public/e['path'])==e['sha256']
+for p in public.rglob('*'):
+ if p.is_file() and p.parent!=snap:assert b'Usama' not in p.read_bytes(),p
+print(str(len(files))+' sanitized source/metadata records verified')

@@ -1,0 +1,34 @@
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -1,3 +1,4 @@
++#include "DiagnosticSpan.hpp"
+ #include "PreparedTransferCommit.hpp"
+ #include "CreatedStagingFile.hpp"
+ #include "PublishedWriteback.hpp"
+@@ -360,7 +361,7 @@
+ static void setFileLength(HANDLE file,i64 size){FILE_END_OF_FILE_INFO info{};info.EndOfFile.QuadPart=size;if(!SetFileInformationByHandle(file,FileEndOfFileInfo,&info,sizeof(info)))throw std::runtime_error("Cannot reserve space for the download file.");}
+ static void setSparse(HANDLE file,bool sparse){FILE_SET_SPARSE_BUFFER request{};request.SetSparse=sparse?1:0;DWORD returned=0;DeviceIoControl(file,FSCTL_SET_SPARSE,&request,sizeof(request),nullptr,0,&returned,nullptr);}
+ // Positioned I/O on a handle that may be one of several open on the same file.
+-static void writeAt(HANDLE file,const void* data,size_t count,i64 offset){OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD written=0;if(!WriteFile(file,data,(DWORD)count,&written,&at)||written!=count)throw std::runtime_error("Cannot write the partial download.");}
++static void writeAt(HANDLE file,const void* data,size_t count,i64 offset){DiagnosticSpan write("body-write-begin","body-write-end");OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD written=0;if(!WriteFile(file,data,(DWORD)count,&written,&at)||written!=count)throw std::runtime_error("Cannot write the partial download.");}
+ static size_t readAt(HANDLE file,void* data,size_t count,i64 offset){OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD read=0;if(!ReadFile(file,data,(DWORD)count,&read,&at)&&GetLastError()!=ERROR_HANDLE_EOF)return 0;return read;}
+ static i64 allocatedPrefix(HANDLE file,i64 begin,i64 saved,const Cancel& cancel){
+  const i64 end=begin+saved;
+@@ -618,7 +619,7 @@
+ static void transferHttp(Manager& m,JobPtr job,const std::shared_ptr<Cancel>& cancel,
+  const Json& prefs,const Headers& headers,const std::string& url,const fs::path& parts,
+  JobPtr limitOwner,const std::shared_ptr<Rate>& rate,std::shared_ptr<HttpSession> pool={},PrefixHasher* hasher=nullptr,WrittenBodyCache* bodyCache=nullptr,bool retainInlineBody=false){
+- const auto httpStartTick=GetTickCount64();
++ const auto httpStartTick=GetTickCount64();wchar_t switchValue[2]{};const bool suppressDataDrain=GetEnvironmentVariableW(L"UDM_TEST_SKIP_DATA_DRAIN",switchValue,2)==1&&switchValue[0]==L'1';
+  // HTTP/3 multiplexes every range of this download over one QUIC connection, which on a shared
+  // link gets one connection's share: Alpine over a 4 MB/s link took 143 to 156 s against 64 s on
+  // separate connections (docs/speed-benchmark-2026-10-23.md). A download planned with more than
+@@ -1134,7 +1135,7 @@
+    prefinishFile.h=CreateFileW(dataFile.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);
+    if(prefinishFile){
+     const auto dataFlush=connections>1?dataOnlyFlush():nullptr;
+-    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{return flushBodyData(dataFlush,prefinishFile.h);});
++    if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{DiagnosticSpan drain("data-drain-begin","data-drain-end");if(suppressDataDrain){nativeUiTraceRecord("data-drain-suppressed");return true;}const bool ok=flushBodyData(dataFlush,prefinishFile.h);nativeUiTraceRecord(ok?"data-drain-ok":"data-drain-failed");return ok;});
+     else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+    }
+   }catch(...){dataWriteback.reset();prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}

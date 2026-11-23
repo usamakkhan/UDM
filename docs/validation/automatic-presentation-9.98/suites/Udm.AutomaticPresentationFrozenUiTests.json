@@ -1,0 +1,109 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "The pre-HWND reservation case has both windows enabled",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Frozen 9.97 dispatches an automatic presenter inside another modal invocation",
+      "passed": true
+    },
+    {
+      "name": "Automatic presentation uses a real progress owner",
+      "passed": true
+    },
+    {
+      "name": "Automatic login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Explicit queue login is prepared before modal admission",
+      "passed": true
+    },
+    {
+      "name": "Requested login retains its prepared challenge",
+      "passed": true
+    },
+    {
+      "name": "Automatic login retains its claimed challenge",
+      "passed": true
+    },
+    {
+      "name": "Review retains its original receipt token",
+      "passed": true
+    },
+    {
+      "name": "Confirmation retains the original job identity",
+      "passed": true
+    },
+    {
+      "name": "Browser batch retains its observed metadata",
+      "passed": true
+    },
+    {
+      "name": "Frozen 9.97 dispatches an automatic presenter inside another modal invocation",
+      "passed": true
+    },
+    {
+      "name": "The real owned modal is observed and closed normally",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "automaticLoginCallsDuringModal": 1,
+      "batchCallsDuringModal": 1,
+      "confirmationCallsDuringModal": 1,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "reserved",
+      "requestedLoginCallsDuringModal": 1,
+      "reviewCallsDuringModal": 1
+    },
+    {
+      "automaticLoginCallsDuringModal": 1,
+      "batchCallsDuringModal": 1,
+      "confirmationCallsDuringModal": 1,
+      "dark": false,
+      "mainEnabledDuringModal": true,
+      "mode": "native",
+      "requestedLoginCallsDuringModal": 1,
+      "reviewCallsDuringModal": 1
+    }
+  ],
+  "passed": true
+}

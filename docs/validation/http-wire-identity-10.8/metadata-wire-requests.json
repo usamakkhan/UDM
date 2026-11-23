@@ -1,0 +1,114 @@
+[
+  {
+    "origin": "a",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": "Bearer owned-token",
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": "Bearer owned-token",
+    "cookie": "owned=rotated"
+  },
+  {
+    "origin": "a",
+    "path": "/clock",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/resource.bin",
+    "method": "HEAD",
+    "range": null,
+    "authorization": "Bearer resource-token",
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/resource.bin",
+    "method": "GET",
+    "range": "bytes=0-0",
+    "authorization": "Bearer resource-token",
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/resource.bin",
+    "method": "HEAD",
+    "range": null,
+    "authorization": "Bearer resource-token",
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/resource.bin",
+    "method": "GET",
+    "range": "bytes=0-0",
+    "authorization": "Bearer resource-token",
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/clock",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": null
+  },
+  {
+    "origin": "b",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/redirect",
+    "method": "GET",
+    "range": null,
+    "authorization": "Bearer owned-token",
+    "cookie": "owned=rotated"
+  },
+  {
+    "origin": "b",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": null
+  },
+  {
+    "origin": "a",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": "Bearer changed-token",
+    "cookie": "owned=rotated"
+  },
+  {
+    "origin": "a",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": "owned=rotated"
+  },
+  {
+    "origin": "a",
+    "path": "/manifest.mpd",
+    "method": "GET",
+    "range": null,
+    "authorization": null,
+    "cookie": null
+  }
+]

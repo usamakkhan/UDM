@@ -1,0 +1,37 @@
+{
+  "mapping": [
+    {
+      "drive": "C:",
+      "diskIndexes": [
+        0
+      ],
+      "fileSystem": "NTFS",
+      "size": 242541916160
+    },
+    {
+      "drive": "D:",
+      "diskIndexes": [
+        1
+      ],
+      "fileSystem": "NTFS",
+      "size": 249912229888
+    }
+  ],
+  "physicalModels": [
+    {
+      "Index": 1,
+      "Model": "WDC WD2500AAKX-753CA1",
+      "Size": 250056737280
+    },
+    {
+      "Index": 0,
+      "Model": "KINGSTON SKC600/256G",
+      "Size": 256052966400
+    }
+  ],
+  "idmConfiguredTempRoot": "C:",
+  "actualIdmTemporaryIoTraced": false,
+  "udmDefaultDataRoot": "LocalAppData\\UDM unless sidecar overrides",
+  "hostInstallSidecarPresent": false,
+  "defaultSource": "native/Core.cpp::defaultData"
+}

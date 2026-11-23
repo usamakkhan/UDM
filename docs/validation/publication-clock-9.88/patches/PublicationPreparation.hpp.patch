@@ -1,0 +1,18 @@
+--- native/PublicationPreparation.hpp
++++ diagnostic/PublicationPreparation.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticSpan.hpp"
+ #include "FileIdentity.hpp"
+ #include "PublicationSourcePin.hpp"
+ #include "GrabberDestinations.hpp"
+@@ -48,7 +49,7 @@
+  }
+  // Only the ordinary publication owner calls this after its exact completed
+  // catalog proof is accepted. Journal cleanup no longer needs the file pins.
+- void releaseAcceptedFile(){releaseSource();publishedName.reset();}
++ void releaseAcceptedFile(){DiagnosticSpan release("file-pins-begin","file-pins-end");releaseSource();publishedName.reset();}
+  void releaseSource(){if(source){CloseHandle(source.h);source.h=INVALID_HANDLE_VALUE;}}
+ };
+ }

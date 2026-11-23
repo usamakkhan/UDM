@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "split-8",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 67174824,
+      "requests": 8
+    },
+    {
+      "case": "split-3",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 16821019,
+      "requests": 3
+    },
+    {
+      "case": "unadvertised",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 16842932,
+      "requests": 4
+    },
+    {
+      "case": "connection-limit",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 16842932,
+      "requests": 4
+    },
+    {
+      "case": "range-ignored",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 16842752,
+      "requests": 2
+    },
+    {
+      "case": "primary-ahead",
+      "passed": true,
+      "checks": 5,
+      "originBytes": 16777216,
+      "requests": 2
+    },
+    {
+      "case": "resume-8",
+      "passed": true,
+      "checks": 7,
+      "originBytes": 72384752,
+      "requests": 17
+    }
+  ],
+  "scope": "Owned engine correctness/fallback; not normal App/IDM performance acceptance."
+}

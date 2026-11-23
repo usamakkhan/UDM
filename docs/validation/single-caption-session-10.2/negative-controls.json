@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "records": [
+    {
+      "case": "wrong-height",
+      "exitCode": 1,
+      "expectedRejection": true,
+      "publishedFileUnchanged": true,
+      "error": "A DASH Period changed the selected video dimensions."
+    },
+    {
+      "case": "wrong-audio-selection",
+      "exitCode": 1,
+      "expectedRejection": true,
+      "publishedFileUnchanged": true,
+      "error": "DASH output does not contain exactly the selected tracks."
+    },
+    {
+      "case": "selected-caption-missing",
+      "exitCode": 1,
+      "expectedRejection": true,
+      "publishedFileUnchanged": true,
+      "error": "DASH session is missing its selected caption track."
+    }
+  ],
+  "validSelectionRecovered": true,
+  "publishedFileUnchanged": true
+}

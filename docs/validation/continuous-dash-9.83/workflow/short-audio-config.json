@@ -1,0 +1,31 @@
+{
+  "plan": {
+    "type": "dash",
+    "live": true,
+    "manifest": "http://127.0.0.1:61188/short-audio/manifest.mpd",
+    "container": "mp4",
+    "audioOnly": false,
+    "audioExpected": true,
+    "height": 360,
+    "tracks": [
+      {
+        "kind": "video",
+        "periodId": "p0",
+        "adaptationId": "v",
+        "representationId": "r",
+        "credentialUrls": []
+      },
+      {
+        "kind": "audio",
+        "periodId": "p0",
+        "adaptationId": "a",
+        "representationId": "r",
+        "credentialUrls": []
+      }
+    ]
+  },
+  "destination": "[local-diagnostics]\\owned-continuous-dash-workflow-9.83-C\\short-audio",
+  "expectedPeriods": 3,
+  "saveExpected": false,
+  "saveTrigger": ""
+}

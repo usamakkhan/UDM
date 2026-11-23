@@ -1,0 +1,22 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Frozen automatic completion is accepted",
+      "passed": true
+    },
+    {
+      "name": "Frozen 9.98 waits for the owned synchronous shell probe before creating completion",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "baseline": true,
+      "dispatchMs": 390,
+      "realExplorerTiming": false
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "label": "Private uninstrumented split optional-drain control on frozen 9.74; same App object; no IDM comparison",
+  "transfers": 6,
+  "idmSettingsNotReadOrChanged": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "split-64m",
+      "medianProcessExitTailMs": {
+        "udm": 740.088,
+        "baseline": 373.287
+      },
+      "udmNotSlowerMedianThanBaseline": false,
+      "processExitTailMs": {
+        "udm": [
+          747.567,
+          740.088,
+          626.866
+        ],
+        "baseline": [
+          411.304,
+          373.287,
+          320.772
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "name": "Actual adaptive admission identifies the live DASH recording",
+      "passed": true
+    },
+    {
+      "name": "Live worker finishes within the owned test deadline",
+      "passed": true
+    },
+    {
+      "name": "Dynamic live recording completes: Live DASH segment lists require an explicit timeline.",
+      "passed": false
+    }
+  ],
+  "error": "Dynamic live recording completes: Live DASH segment lists require an explicit timeline.",
+  "finalBytes": -1,
+  "frames": [],
+  "observations": [],
+  "passed": false,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "savedJob": {
+    "AdaptiveCompletedSegments": 0,
+    "AdaptiveMetadataBytes": 732,
+    "AdaptiveTotalSegments": 0,
+    "Added": "/Date(1795273878360)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 0.0222951,
+    "Error": "Live DASH segment lists require an explicit timeline.",
+    "ExpectedSha256": "",
+    "FileName": "dynamic.mp4",
+    "Folder": "<development>\\owned-dynamic-dash-workflow-9.76-C-epoch2",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "Id": "397e657b37f84ec3a711b31e1d405676",
+    "LastAttempt": "/Date(1795273878464)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCapturedSeconds": 0.0,
+    "LiveRecording": true,
+    "LiveSaveReady": false,
+    "MediaFolder": "<repo>\\.media-cache\\owned-dynamic-dash-workflow-9.76\\run-epoch2\\temporary\\UDM-media\\397e657b37f84ec3a711b31e1d405676",
+    "MediaPixelHeight": 360,
+    "PostAttempted": false,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "3F7E8A975EF9FFBDE54D3AA2246C4C0E1A8797AABC9B2A7B61F3A8F0A7895B4B",
+      "characters": 636
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "0229DA746056D4976064EB26F4CAECEC166B57A4A78D1C0E82E31F8487A37890",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "F112CB3B604DEC5515DA8D2C592425E75383DFD944FE09454E9151EFB01810F2",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "FE4C3558BD99D37269B8AE9E7DB2BAC2DDAF01BE2DE18861056EDAC206F271D1",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": true,
+    "QueueOrigin": false,
+    "Received": 0,
+    "Segments": [],
+    "Sha256": "",
+    "Size": -1,
+    "Status": "Failed",
+    "TransferSeconds": 0.022294,
+    "TransferredBytes": 732,
+    "Url": "https://example.invalid/owned-live-video",
+    "Video": null
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 3,
+    "dynamicSplits": 0,
+    "engineThroughJoinedStopMs": 1072.5356,
+    "finishPhases": {
+      "AdvisoryHashBufferRelease": 0.0007996,
+      "AdvisoryHashCommitHandoff": true,
+      "AdvisoryHashInput": "write-buffer",
+      "AdvisoryHashIntentOverlap": true,
+      "AdvisoryHashOverlap": true,
+      "AdvisoryHashOwnerJoin": 8.45e-05,
+      "AdvisoryHashSeconds": 0.0164637,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 7.3e-06,
+      "Content": 0.0003477,
+      "DirectSize": 1.42e-05,
+      "FlushPublished": 0.212286,
+      "Hash": 2.34e-05,
+      "HashMode": "deferred",
+      "PrePublicationMetadata": 0.0020761,
+      "PrefetchReceipt": 1.4e-06,
+      "PreparedTransferFinalizeSeconds": 0.0042778,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 6.8e-06,
+      "PublishedFileFlush": 0.2120947,
+      "PublishedFileOpen": 0.0001845,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.1389969,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0015748,
+      "SettleDestination": 0.0014259,
+      "SettleLengthQuery": 3.91e-05,
+      "SettleLockWait": 1e-07,
+      "SettleRecoveryCheck": 8.46e-05,
+      "SettleSnapshot": 1.49e-05,
+      "SettleValidateFolder": 7e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0003171,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 16777216,
+    "savedHash": "684b38382481e9062a4836bbe46f53e63d5ef7f8d22b8a6eccafed18e891d97b",
+    "segments": [
+      {
+        "Done": 5592406,
+        "End": 5592405,
+        "Index": 0,
+        "Start": 0
+      },
+      {
+        "Done": 5592405,
+        "End": 11184810,
+        "HttpBoundarySha256": "85eb0120e98e3b48ffc2e89437cb525a611a68145e5e29c26d57f0dac3a49024",
+        "Index": 1,
+        "Start": 5592406
+      },
+      {
+        "Done": 5592405,
+        "End": 16777215,
+        "HttpBoundarySha256": "d5a895e3593cf6f57a506fe2ad5eba1a1eb9339abb2ccc26bf20a95bf41b6549",
+        "Index": 2,
+        "Start": 11184811
+      }
+    ],
+    "size": 16777216,
+    "transferredBytes": 16777344
+  },
+  "origin": {
+    "connections": 3,
+    "rejected_connections": 0,
+    "requests": 3,
+    "bytes_sent": 16821019,
+    "drops": 0,
+    "peak_concurrent": 3,
+    "detail": [
+      {
+        "id": 1,
+        "opened": 0.28106230000412324,
+        "closed": 0.9621643999998923,
+        "peer_port": 62137,
+        "rejected": false,
+        "bytes": 5636081,
+        "requests": [
+          {
+            "at": 0.2815158000012161,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": null,
+            "status": 200,
+            "start": 0,
+            "end": 16777215,
+            "sent": 5636081,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.2816186000054586,
+            "first_body_sent": 0.29050460000144085,
+            "last_body_sent": 0.9537947000062559
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 2,
+        "opened": 0.2899758000057773,
+        "closed": 0.972618899999361,
+        "peer_port": 62138,
+        "rejected": false,
+        "bytes": 5592469,
+        "requests": [
+          {
+            "at": 0.29042499999923166,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=5592342-11184810",
+            "status": 206,
+            "start": 5592342,
+            "end": 11184810,
+            "sent": 5592469,
+            "finished": 0.9579159999993863,
+            "outcome": "complete",
+            "headers_sent": 0.2905892000053427,
+            "first_body_sent": 0.2989769000050728,
+            "last_body_sent": 0.957907800002431
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 3,
+        "opened": 0.30027960000006715,
+        "closed": 0.9726792000001296,
+        "peer_port": 62139,
+        "rejected": false,
+        "bytes": 5592469,
+        "requests": [
+          {
+            "at": 0.3007209000061266,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=11184747-16777215",
+            "status": 206,
+            "start": 11184747,
+            "end": 16777215,
+            "sent": 5592469,
+            "finished": 0.9680859000000055,
+            "outcome": "complete",
+            "headers_sent": 0.30087320000166073,
+            "first_body_sent": 0.3088856000031228,
+            "last_body_sent": 0.9680832000012742
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      }
+    ]
+  },
+  "parentLifetimeIncludingProofMs": 1398.286100004043,
+  "originHandlersActiveAtSnapshot": 0,
+  "exitCode": 0,
+  "stdout": "5 checks; passed\n",
+  "stderr": "",
+  "boundedInitialHelperObserved": true
+}

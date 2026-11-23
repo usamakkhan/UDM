@@ -1,0 +1,26 @@
+from pathlib import Path
+import json,hashlib,subprocess,sys
+repo=Path('D:/UDM');area=repo/'.media-cache/owned-shell-folder-build-9.99';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+subprocess.run([sys.executable,str(area/'verify.py')],check=True)
+record=json.loads((area/'build-result.json').read_text(encoding='utf-8'));inputs=json.loads((area/'inputs.json').read_text(encoding='utf-8'))
+p=repo/'native/backend-tests.json';before=p.read_bytes();original=next(e for e in record['sources'] if e['path']=='native/backend-tests.json');assert sha(p)==original['sha256']
+rows=json.loads(before);assert not any(e['source']=='ShellFolderTaskTests' for e in rows)
+rows.insert(0,dict(source='ShellFolderTaskTests',timeoutSeconds=90))
+(area/'before-registry-backend-tests.json').write_bytes(before)
+for name in ['build-result.json','inputs.json']:(area/('before-registry-'+name)).write_bytes((area/name).read_bytes())
+newline=b'\r\n' if b'\r\n' in before else b'\n'
+assert before.startswith(b'['+newline)
+after=before.replace(b'['+newline,b'['+newline+b'  {"source": "ShellFolderTaskTests", "timeoutSeconds": 90},'+newline,1)
+p.write_bytes(after);assert json.loads(after)==rows
+for report in [record,inputs]:
+ entry=next(e for e in report['sources'] if e['path']=='native/backend-tests.json');entry['sha256']=sha(p)
+inputs['changedSources'].append('native/backend-tests.json');inputs['validationOnlyRegistryExtension']=True
+recipe=area/'build.py';text=recipe.read_text(encoding='utf-8');needle="'native/ShellFolderUiTests.cpp'};assert set(changed)==allowed";assert needle in text;text=text.replace(needle,"'native/ShellFolderUiTests.cpp','native/backend-tests.json'};assert set(changed)==allowed",1);recipe.write_text(text,encoding='utf-8')
+for name,report in [('build-result.json',record),('inputs.json',inputs)]:
+ (area/name).write_text(json.dumps(report,indent=2),encoding='utf-8')
+assert all(sha(Path(e['path']))==e['sha256'] for e in record['coreObjects']+record['outputs'])
+assert all(sha(repo/e['path'])==e['sha256'] for e in record['sources'])
+receipt=dict(passed=True,scope='Validation-only registration of the already-qualified ShellFolderTaskTests in the default backend suite.',source='native/backend-tests.json',beforeSha256=hashlib.sha256(before).hexdigest().upper(),afterSha256=sha(p),productAndCoreBinariesUnchanged=True,allRegisteredTestsRerun=False,focusedRegisteredTestRerunAlreadyRecorded=True)
+(area/'registry-extension.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
+subprocess.run([sys.executable,str(area/'verify.py')],check=True)
+print('Default backend registration qualified without changing native binaries.')

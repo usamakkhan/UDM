@@ -1,0 +1,50 @@
+{
+  "version": "9.71",
+  "extensionVersion": "0.73.35",
+  "runs": 3,
+  "samplesPerCase": 1,
+  "newIdmComparison": false,
+  "settingsNotReadOrChanged": true,
+  "processesNotTerminated": true,
+  "payloadsRemoved": 3,
+  "payloadLogicalBytesRemoved": 138412032,
+  "protectedFilesUnchanged": 11,
+  "sourceInputsVerified": 689,
+  "productSha256": "FF649C95A1C9104FC1B97AA5E07179C2D3240DCB568A87483EF8D1EECBE25097",
+  "performanceGatePassed": false,
+  "metrics": [
+    {
+      "case": "single-4m",
+      "availabilityTailMs": 110.7521000012639,
+      "exitTailMs": 159.22739999950863,
+      "totalExitMs": 1258.6114000005182,
+      "durableTailMs": 184.43499999921187,
+      "bodyFlushMs": 64.898,
+      "intentWriteMs": 65.829,
+      "bodyJoinAfterIntentMs": 0.031900000000000005,
+      "hashWaitBeforePreparedHandoffMs": 0
+    },
+    {
+      "case": "single-64m",
+      "availabilityTailMs": 216.11010000196984,
+      "exitTailMs": 265.29540000046836,
+      "totalExitMs": 9140.833099998417,
+      "durableTailMs": 289.5282999998017,
+      "bodyFlushMs": 171.393,
+      "intentWriteMs": 97.7371,
+      "bodyJoinAfterIntentMs": 73.78020000000001,
+      "hashWaitBeforePreparedHandoffMs": 0
+    },
+    {
+      "case": "split-64m",
+      "availabilityTailMs": 214.79810000164434,
+      "exitTailMs": 265.0839499983704,
+      "totalExitMs": 2375.4546499985736,
+      "durableTailMs": 277.0937999994203,
+      "bodyFlushMs": 74.74310000000001,
+      "intentWriteMs": 30.011699999999998,
+      "bodyJoinAfterIntentMs": 0.0262,
+      "hashWaitBeforePreparedHandoffMs": 81.4702
+    }
+  ]
+}

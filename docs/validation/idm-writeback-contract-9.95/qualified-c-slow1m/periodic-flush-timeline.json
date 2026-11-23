@@ -1,0 +1,24 @@
+{
+  "partOpenToLastWriteMs": 52434,
+  "flushEvents": [
+    {
+      "api": "NtFlushBuffersFile",
+      "afterPartOpenMs": 42336,
+      "durationMs": 1,
+      "millisecondsBeforeLastWrite": 10097
+    },
+    {
+      "api": "FlushFileBuffers",
+      "afterPartOpenMs": 42336,
+      "durationMs": 1,
+      "millisecondsBeforeLastWrite": 10097
+    },
+    {
+      "api": "file-part-flush",
+      "afterPartOpenMs": 42336,
+      "durationMs": 1,
+      "millisecondsBeforeLastWrite": 10097
+    }
+  ],
+  "nestedViewsNotThreeOperations": true
+}

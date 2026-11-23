@@ -1,0 +1,12 @@
+{
+  "expectedBehavior": "Resume the unbound pending alias using the already pinned original version, preserving accepted bytes",
+  "initialConflictRejected": true,
+  "acceptedFirstResourcePreserved": true,
+  "restoredRetryPassed": false,
+  "knownRecoveryDefectReproduced": true,
+  "retryError": "DASH refresh replaced an indexed segment.",
+  "bodyGetsDuringRetry": 0,
+  "actorSha256": "1d25961412f51147bb0982325a3c7556db4ff72ef4007e97aab9aa824df529d7",
+  "recipeSha256": "57e4f91579f41a5d4786963af0d0af547cce2cc40293af18eb228f09d2545aed",
+  "releaseQualified": false
+}

@@ -1,0 +1,28 @@
+from pathlib import Path
+import json,hashlib,subprocess,os,shutil,datetime
+repo=Path('D:/UDM');area=repo/'.media-cache/compact-native-build-10.0';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper();read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
+r=read(area/'build-result.json');assert r['passed'] and r['version']=='10.0' and len(r['sources'])==734 and len(r['coreObjects'])==42 and len(r['outputs'])==9
+assert all(sha(repo/e['path'])==e['sha256'] for e in r['sources'])
+assert all(sha(Path(e['path']))==e['sha256'] for e in r['coreObjects']+r['outputs'])
+previous=read(repo/'.media-cache/owned-shell-folder-build-9.99/build-result.json');old={Path(e['path']).stem:e['sha256'] for e in previous['coreObjects']};assert [Path(e['path']).stem for e in r['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]]==['Bridge']
+normal=read(area/'normal-control.json');failure=read(area/'failure-control.json');guards=read(area/'guard-results.json');live=read(area/'lock-live-result.json');assert all(e['passed'] for e in [normal,failure,guards,live])
+assert all(sha(Path(e['path']))==e['sha256'] for e in normal['outputs'])
+for row in r['suites']:
+ report=read(area/(row['mode']+'-attempt-03')/'runs'/row['suite']/'results.json');assert row['exitCode']==0 and report['passed'] and all(c['passed'] for c in report['checks']) and row['checks']==len(report['checks'])
+for row in normal['suites']:
+ report=read(area/'new-normal-control-attempt-03/runs'/row['suite']/'results.json');assert report['passed'] and all(c['passed'] for c in report['checks']) and row['checks']==len(report['checks'])
+for suite in ['Udm.ShellFolderTaskTests','Udm.CompletionCountdownTests']:
+ reports=[read(area/folder/'runs'/suite/'results.json') for folder in ['normal-attempt-03','compact-attempt-03','new-normal-control-attempt-03']];assert all(e['checks']==reports[0]['checks'] for e in reports)
+compact=area/'compact-attempt-03/objects';manifest=read(compact/'target-objects.json');assert manifest['passed'] and manifest['compact'] and len(manifest['targets'])==7 and len(list(compact.glob('*.obj')))==1
+for e in manifest['targets']:assert sha(area/'compact-attempt-03/release-native'/e['target'])==e['executableSha256']
+assert sha(compact/'target-scratch.obj')==manifest['targets'][-1]['objectSha256']
+command="$p=[IO.File]::Open('"+str(compact/'compact-target.lock')+"',[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None);$p.Dispose()";assert subprocess.run(['powershell.exe','-NoProfile','-Command',command],capture_output=True).returncode==0
+products=[e for e in r['outputs'] if e['kind']=='product'];assert len(products)==5
+for e in products:
+ command="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',command],text=True).strip()=='10.0'
+assert all(read(repo/'browser'/family/'manifest.json')['version']=='0.73.64' for family in ['chromium','firefox'])
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files']
+for e in protected:assert sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256']
+current=sum(p.stat().st_size for p in area.rglob('*') if p.is_file());assert current<700*1024**2 and shutil.disk_usage(area).free>1024**3
+result=dict(passed=True,version='10.0',sourceExtensionVersion='0.73.64',verifiedSourceInputs=734,verifiedCoreObjects=42,changedCoreObjects=['Bridge'],verifiedQualifiedOutputs=11,products=products,distinctBackendAssertions=31,executionModes=['old normal loop','current compact loop','current normal loop'],backendExecutions=6,guardCases=guards['checks'],secondWriterBlocked=live['secondWriterBlocked'],successLockReleased=True,failureLockReleased=failure['lockReleasedAfterFailure'],incompleteManifestOnFailure=failure['manifestRemainedIncomplete'],compactTargetCount=7,retainedTargetObjectCount=1,retainedTargetObjectBytes=(compact/'target-scratch.obj').stat().st_size,consumedTargetObjectBytes=sum(e['objectBytes'] for e in manifest['targets']),largestConsumedTargetObjectBytes=max(e['objectBytes'] for e in manifest['targets']),normalTwoTargetObjectBytes=sum(p.stat().st_size for p in (area/'new-normal-control-attempt-03/objects').glob('*.obj')),buildAreaBytes=current,hostProtectedFilesUnchanged=len(protected),nativeRuntimeImplementationChanged=False,fullBuildEntrypointExecuted=False,exactTargetLoopExecuted=True,installed=False,installerCreated=False,fullIdmParityProven=False,actualIdmUiComparison=False,temporaryFilesDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

@@ -1,0 +1,32 @@
+{
+  "label": "9.92-private-journal-write-control",
+  "trial": 2,
+  "case": "single-4m",
+  "client": "idm",
+  "bytes": 4194304,
+  "configuredConnections": 1,
+  "firstAvailabilityTailSeconds": 0.02129399999830639,
+  "processExitTailSeconds": 0.3333982499971171,
+  "processExitWallSeconds": 2.158613149993471,
+  "firstAvailabilityWallSeconds": 1.8465088999946602,
+  "exitAfterFirstAvailabilitySeconds": 0.3121042499988107,
+  "clockMappingErrorBoundSeconds": 7.1499998739454895e-06,
+  "clockDriftSeconds": 3.250004764421277e-06,
+  "trackedProcesses": 1,
+  "requests": 1,
+  "originConnections": 1,
+  "peakConcurrent": 1,
+  "originBytes": 4194304,
+  "sha256": "7FD145086B19CD4C91911BB8A689C8ACDDF5C877464E768E87A272C7AE38D8AF",
+  "hashMatches": true,
+  "launcherExitCode": 1,
+  "sourceExecutableSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "durableTailSeconds": 0.564252200005285,
+  "durableWallSeconds": 2.3894671000016388,
+  "postExitToDurableSeconds": 0.23085395000816789,
+  "postExitOperations": {
+    "openSeconds": 0.0001548000000184402,
+    "flushSeconds": 0.06192390000069281,
+    "closeSeconds": 8.30000062705949e-05
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "records": [
+    {
+      "case": "once",
+      "counts": {
+        "manifest": 2,
+        "clock": 1
+      },
+      "exitCode": 1,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 932.3568,
+        "error": "DASH manifest expired while synchronizing its clock.",
+        "events": [
+          {
+            "bytes": 655,
+            "callback": 1,
+            "endMs": 541.9363,
+            "requestedHoldMs": 0,
+            "startMs": 541.9344
+          },
+          {
+            "bytes": 24,
+            "callback": 2,
+            "endMs": 932.112,
+            "requestedHoldMs": 0,
+            "startMs": 932.1099
+          }
+        ],
+        "initialFetchAndParseMs": 368.8332,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 2
+      }
+    },
+    {
+      "case": "always",
+      "counts": {
+        "manifest": 2,
+        "clock": 1
+      },
+      "exitCode": 1,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 371.9066,
+        "error": "DASH manifest expired while synchronizing its clock.",
+        "events": [
+          {
+            "bytes": 659,
+            "callback": 1,
+            "endMs": 17.7909,
+            "requestedHoldMs": 0,
+            "startMs": 17.7892
+          },
+          {
+            "bytes": 24,
+            "callback": 2,
+            "endMs": 371.6342,
+            "requestedHoldMs": 0,
+            "startMs": 371.6324
+          }
+        ],
+        "initialFetchAndParseMs": 14.8124,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 2
+      }
+    }
+  ],
+  "requests": [
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 1,
+      "responseMs": 0.24300000222865492
+    },
+    {
+      "case": "once",
+      "kind": "manifest",
+      "request": 2,
+      "responseMs": 1.0184999991906807
+    },
+    {
+      "case": "once",
+      "kind": "clock",
+      "request": 1,
+      "responseMs": 350.9771999961231
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 1,
+      "responseMs": 0.15809999604243785
+    },
+    {
+      "case": "always",
+      "kind": "manifest",
+      "request": 2,
+      "responseMs": 0.14980000560171902
+    },
+    {
+      "case": "always",
+      "kind": "clock",
+      "request": 1,
+      "responseMs": 350.5038000002969
+    }
+  ]
+}

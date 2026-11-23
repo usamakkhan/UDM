@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "name": "Retained full response receives one initial share",
+      "passed": true
+    },
+    {
+      "name": "The initial helper request ends before later workers' assignments",
+      "passed": true
+    },
+    {
+      "name": "Last helper owns the exact final byte",
+      "passed": true
+    },
+    {
+      "name": "Worker-count and signed-limit matrix has disjoint complete balanced coverage without overflow",
+      "passed": true
+    },
+    {
+      "name": "Odd size and worker count keep all remainder bytes",
+      "passed": true
+    },
+    {
+      "name": "Single-byte single-worker ownership stays exact",
+      "passed": true
+    },
+    {
+      "name": "Invalid initial range size or worker count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid initial range size or worker count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid initial range size or worker count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid initial range size or worker count is rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid initial range size or worker count is rejected",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

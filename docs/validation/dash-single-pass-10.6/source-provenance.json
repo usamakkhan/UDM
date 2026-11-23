@@ -1,0 +1,112 @@
+{
+  "sources": [
+    {
+      "path": "native/DashPendingVersion.hpp",
+      "snapshot": "source-snapshot/native__DashPendingVersion.hpp.txt",
+      "sha256": "C95E9686A0B4108B39FA4868A7CC367BC35F240CB2ADD456E58D35C2D9600D1F"
+    },
+    {
+      "path": "native/DashPendingVersionTests.cpp",
+      "snapshot": "source-snapshot/native__DashPendingVersionTests.cpp.txt",
+      "sha256": "10CD2B8ADC5F9FEF4E9C0AA8B903506162B25B1896E6BB4CC19A07EC240EA187"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "DC377B0B22863CB08938CB7F8AA9440858D32D9CC33A4B40D5D0B23B909C268C"
+    },
+    {
+      "path": "native/DashManifest.hpp",
+      "snapshot": "source-snapshot/native__DashManifest.hpp.txt",
+      "sha256": "6E585C9934ABE143BE67CFD0A04CC3A23131A33BCB0BE8C41EA593459BDE4068"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "A4FC59F6472124E28D7CC11C51AD40E8E1AB82AAA72257C832990E86346DE822"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "snapshot": "source-snapshot/native__backend-tests.json.txt",
+      "sha256": "BC0643EFE89250550E8B4975A3E4474F24808290C92BBD6852C520A146B7CD0C"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "5BFEB24AA5D9D9B3C9AAB4764C5300943A2F7DA88AC633D873F158948AB69346"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "FCD7465E6730B764A4D1F503D088E8BAC2FB2AC950BF9771F15C3DC380A4AF26"
+    },
+    {
+      "path": "benchmarks/speed/dash_single_pass_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_single_pass_workflow.cpp.txt",
+      "sha256": "5475B164E4DF71418D3B4CBDB494AE1DAC9FE2A24322825E4D6675D544D65465"
+    },
+    {
+      "path": "benchmarks/speed/dash_single_pass_recovery.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_single_pass_recovery.cpp.txt",
+      "sha256": "1BDDD107FAC75A7314C1DC471C09C291D42AC7A903BD13F875CBC5DEE7E0ED4A"
+    },
+    {
+      "path": "tests/dash-single-pass.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-single-pass.native-live.py.txt",
+      "sha256": "A9EAC78971072951D0D9C71B3E6334225411905B793565B86A961691BE6DC29E"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "952BF5554C490BD829F45FFE0D747953F5C52A3542236871BCEDFE9ADF6DC5CA"
+    },
+    {
+      "recipe": "build-recovery.py",
+      "snapshot": "source-snapshot/build-recovery.py.txt",
+      "sha256": "FE0B3CA14D7A7D9891B94CC1F58EB392498907FFD0EB84B49F51DD1EFACAE70E"
+    },
+    {
+      "recipe": "run-validation.py",
+      "snapshot": "source-snapshot/run-validation.py.txt",
+      "sha256": "393F5C2709049BD0578985C1D795FF2B9988468458F0D5DE31FBA5FC308F1BDE"
+    },
+    {
+      "recipe": "continue-validation.py",
+      "snapshot": "source-snapshot/continue-validation.py.txt",
+      "sha256": "2065A23CCCF2E553006A5632C9B95B135DF85C1C837BB725C2DBE9CB29370285"
+    },
+    {
+      "recipe": "media-validation.py",
+      "snapshot": "source-snapshot/media-validation.py.txt",
+      "sha256": "77120E253827DEAB6E01406E188EB56E273A0FF6A882F42D2F1E4BAD55F0D98F"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "6D4925D3C64FB13B3E460CE37325A7EC429AE2435D50F6E63C919C1E9626E54A"
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "7888681E36B62BBD4FB4F248EEFC0FDFF98F87D233FE2850EE99D8EFD8031EB0"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "version": "10.5",
+      "snapshot": "source-snapshot/frozen-10.5-DashManifest.cpp.txt",
+      "sha256": "19AF6CED9CDE9CB2CBEBB049DDC9DB32268A26617C9DD5FC171495ECEAD1A4D3"
+    }
+  ],
+  "compiledSourcesUnchanged": true,
+  "runtimeRecipesUnchangedDuringFinalRuns": true,
+  "reusedCoreCount": 40,
+  "rebuiltCoreNames": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "singlePassBodyHandoffImplemented": true,
+  "initialFailuresRetained": true,
+  "finalTechnicalChecksPassed": true,
+  "storageReservePassed": false,
+  "releaseQualified": false
+}

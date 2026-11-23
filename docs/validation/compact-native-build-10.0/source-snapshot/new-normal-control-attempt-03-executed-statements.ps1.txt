@@ -1,0 +1,23 @@
+foreach($udmTarget in $udmTargets){
+ $udmTargetObject=Join-Path $udmOut $(if($CompactIntermediateObjects){'target-scratch.obj'}else{$udmTarget[0]+'.obj'})
+ # The reconnect fixture includes Network.cpp to exercise its private session state.
+ $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
+ # Keep diagnostic admission/save hooks out of the shared production object cache.
+ if($udmTarget[0] -eq 'ProductionUiTimingTests'){
+  $udmTraceObjects=@()
+  foreach($udmTraceStem in @('Bridge','Core')){
+   $udmTraceObject=Join-Path $udmOut ('ProductionUiTiming'+$udmTraceStem+'.obj')
+   & $udmCompiler @udmCommon /DUDM_PRODUCTION_UI_TIMING_TEST /c (Join-Path $PSScriptRoot ($udmTraceStem+'.cpp')) ('/Fo'+$udmTraceObject)
+   if($LASTEXITCODE){throw ('Production UI timing compilation failed: '+$udmTraceStem)}
+   $udmTraceObjects+=$udmTraceObject
+  }
+  $udmLinkObjects=@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -notin @('Bridge.obj','Core.obj')})+$udmTraceObjects
+ }
+ $udmEntry=@();if($udmTarget[0] -in @('AboutUiTests','GrabberWizardUiTests','DarkGroupsUiTests','FilenamePreviewUiTests','AutomationMain','CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','ColumnControlsUiTests','OptionsTabsUiTests','BatchDialogUiTests','ServerControlsUiTests','SchedulerNumberUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests','ProductionUiTimingTests','StartupFontUiTests','PendingFileInfoUiTests','ScheduleDownloadWizardUiTests','ProgressLimiterUiTests','ProgressCompletionUiTests','ProgressMenuUiTests','ProgressPreferencesUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
+ & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+$udmTargetObject) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA @udmLinkDebug /INCREMENTAL:NO /MANIFEST:NO
+ if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
+ if($CompactIntermediateObjects){
+ $udmTargetObjectRecords.Add([ordered]@{source=$udmTarget[0]+'.cpp';target=$udmTarget[1]+'.exe';objectPath=$udmTargetObject;objectBytes=([IO.FileInfo]::new($udmTargetObject)).Length;objectSha256=(Get-UdmTargetDigest $udmTargetObject);executableSha256=(Get-UdmTargetDigest (Join-Path $udmRelease ($udmTarget[1]+'.exe')))})
+ [IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+ }
+}

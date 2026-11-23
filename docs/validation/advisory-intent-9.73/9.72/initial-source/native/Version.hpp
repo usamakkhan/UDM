@@ -1,0 +1,4 @@
+#pragma once
+#define UDM_VERSION_TUPLE 9,72,0,0
+#define UDM_VERSION_STRING "9.72"
+#define UDM_VERSION_WSTRING L"9.72"

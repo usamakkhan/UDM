@@ -1,0 +1,24 @@
+{
+  "plan": {
+    "type": "dash",
+    "live": true,
+    "manifest": "http://127.0.0.1:61188/video/manifest.mpd",
+    "container": "mp4",
+    "audioOnly": false,
+    "audioExpected": false,
+    "height": 360,
+    "tracks": [
+      {
+        "kind": "video",
+        "periodId": "p0",
+        "adaptationId": "v",
+        "representationId": "r",
+        "credentialUrls": []
+      }
+    ]
+  },
+  "destination": "[local-diagnostics]\\owned-continuous-dash-workflow-9.83-C\\video",
+  "expectedPeriods": 3,
+  "saveExpected": false,
+  "saveTrigger": ""
+}

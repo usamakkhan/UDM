@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "An unattached fence allows work",
+      "passed": true
+    },
+    {
+      "name": "Own-thread notification hook starts",
+      "passed": true
+    },
+    {
+      "name": "Enabled owned windows allow work",
+      "passed": true
+    },
+    {
+      "name": "A reserved modal blocks before its HWND is created",
+      "passed": true
+    },
+    {
+      "name": "Nested modal reservations retain the same owner",
+      "passed": true
+    },
+    {
+      "name": "Inner teardown cannot release an outer modal reservation",
+      "passed": true
+    },
+    {
+      "name": "Final modal return notifies pending work and releases the reservation",
+      "passed": true
+    },
+    {
+      "name": "A failed dialog retains ownership during its invocation",
+      "passed": true
+    },
+    {
+      "name": "Exception unwinding releases modal ownership",
+      "passed": true
+    },
+    {
+      "name": "A hidden disabled helper without a visible owned popup is not a modal",
+      "passed": true
+    },
+    {
+      "name": "A visible nested modal protects its hidden disabled owner",
+      "passed": true
+    },
+    {
+      "name": "Releasing the hidden owner resumes admission",
+      "passed": true
+    },
+    {
+      "name": "Disabled foreign window is excluded",
+      "passed": true
+    },
+    {
+      "name": "Disabled secondary owner blocks completion",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled secondary owner wakes and releases the fence",
+      "passed": true
+    },
+    {
+      "name": "A disabled nested owner is included",
+      "passed": true
+    },
+    {
+      "name": "Releasing inner ownership cannot bypass a disabled outer owner",
+      "passed": true
+    },
+    {
+      "name": "All modal ownership must be released",
+      "passed": true
+    },
+    {
+      "name": "Destroy case starts blocked",
+      "passed": true
+    },
+    {
+      "name": "Destroying a disabled owned window wakes pending work",
+      "passed": true
+    },
+    {
+      "name": "A disabled main owner retains its original guard",
+      "passed": true
+    },
+    {
+      "name": "Secondary-only admission allows Exit's intentional main-frame disable",
+      "passed": true
+    },
+    {
+      "name": "A disabled secondary owner still blocks while the main frame is disabled",
+      "passed": true
+    },
+    {
+      "name": "A disabled modeless window without a live modal does not strand Exit",
+      "passed": true
+    },
+    {
+      "name": "Main owner release restores admission",
+      "passed": true
+    },
+    {
+      "name": "A second frame has an independent ownership fence",
+      "passed": true
+    },
+    {
+      "name": "Another frame's disabled state does not block this frame",
+      "passed": true
+    },
+    {
+      "name": "Shared thread notification routes to the matching owner",
+      "passed": true
+    },
+    {
+      "name": "Detach removes callbacks before root destruction",
+      "passed": true
+    },
+    {
+      "name": "A throwing wake starts with retained work",
+      "passed": true
+    },
+    {
+      "name": "Wake exceptions do not cross the Windows hook boundary",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

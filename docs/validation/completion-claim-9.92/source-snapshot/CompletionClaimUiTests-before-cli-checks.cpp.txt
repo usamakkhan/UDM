@@ -1,0 +1,95 @@
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+#include <condition_variable>
+namespace udm {
+struct CatalogCheckpointTestAccess {static std::function<void(const char*)>& checkpoint(Manager& m){return m.catalogCheckpoint;}};
+static fs::path output;static Json checks=Json::array(),observations=Json::array();static std::string failure;static bool baseline=false;
+static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!output.empty())atomicText(output/L"checks-progress.json",Json{{"checks",checks},{"observations",observations}}.dump(2),false);if(!ok)throw std::runtime_error(name);}
+template<class F>static bool until(F test){const auto end=GetTickCount64()+5000;while(!test()&&GetTickCount64()<end)Sleep(1);return test();}
+static HWND button(HWND parent,const wchar_t* label){for(auto child=GetWindow(parent,GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)){wchar_t text[128]{};GetWindowTextW(child,text,128);if(!wcscmp(text,label))return child;}throw std::runtime_error("Missing owned completion button");}
+struct SlowClaimCheckpoint {
+ Manager& manager;std::mutex mutex;std::condition_variable wake;bool released=false;std::atomic_bool entered=false,expired=false;std::atomic_uint saves=0;std::function<void()> settle;
+ explicit SlowClaimCheckpoint(Manager& m):manager(m){CatalogCheckpointTestAccess::checkpoint(manager)=[this](const char* phase){if(std::string(phase)!="temporary-flushed")return;++saves;entered=true;std::unique_lock waiting(mutex);expired=!wake.wait_for(waiting,std::chrono::milliseconds(550),[&]{return released;});};}
+ void open(){{std::lock_guard lock(mutex);released=true;}wake.notify_all();}
+ ~SlowClaimCheckpoint(){open();if(settle)settle();CatalogCheckpointTestAccess::checkpoint(manager)={};}
+};
+struct OwnedClaimChoice {
+ static inline OwnedClaimChoice* active=nullptr;HWND owner;int answer;UINT_PTR timer=0;unsigned count=0;
+ static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){if(!active)return;EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM)->BOOL{
+  wchar_t title[128]{};GetWindowTextW(window,title,128);if(wcscmp(title,L"Completion action"))return TRUE;
+  auto owner=GetWindow(window,GW_OWNER);while(owner&&owner!=active->owner)owner=GetWindow(owner,GW_OWNER);if(owner!=active->owner)return TRUE;
+  const auto label=active->answer==IDRETRY?L"Retry":L"Cancel";
+  // Dark Form buttons have generated IDs; verify their actual label instead
+  // of assuming the native MessageBox control ID applies to both themes.
+  for(auto choice=GetWindow(window,GW_CHILD);choice;choice=GetWindow(choice,GW_HWNDNEXT)){wchar_t text[64]{};GetWindowTextW(choice,text,64);std::wstring caption=text;caption.erase(std::remove(caption.begin(),caption.end(),L'&'),caption.end());if(caption==label){++active->count;PostMessageW(choice,BM_CLICK,0,0);break;}}return TRUE;
+ },0);}
+ OwnedClaimChoice(HWND window,int choice):owner(window),answer(choice){active=this;timer=SetTimer(nullptr,0,10,tick);if(!timer)throw std::runtime_error("Cannot observe owned claim review");}
+ ~OwnedClaimChoice(){KillTimer(nullptr,timer);active=nullptr;}
+};
+class ToolbarComponentTest {
+public:static void run(MainWindow& frame,bool dark){
+ auto& manager=frame.manager;frame.modelMaintenance.stop();frame.presentationAcks.stop();uiDark=dark;
+ const auto makeJob=[&](const char* name,bool armed){auto job=manager.add("https://example.invalid/owned-claim","",name,"Main queue",true);if(armed)manager.setCompletionPlan(job,{"Open downloaded file"},false,15,false);job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;manager.save();return job;};
+ auto job=makeJob("held.bin",true);const auto before=frame.completions.size();
+ {
+  SlowClaimCheckpoint gate(manager);
+#ifdef UDM_COMPLETION_CLAIM_TASK_AVAILABLE
+  gate.settle=[&]{frame.completionClaimTask.finish();};
+#endif
+  const auto begun=GetTickCount64();frame.complete(job);const auto elapsed=GetTickCount64()-begun;
+  observations.push_back({{"dark",dark},{"completionDispatchMs",elapsed},{"checkpointWatchdogExpired",gate.expired.load()},{"dialogsAfterDispatch",frame.completions.size()-before}});
+  if(baseline){check(gate.expired&&elapsed>=300,"Frozen UI completion waits for the armed-action checkpoint before creating its dialog");gate.open();check(frame.completions.size()==before+1,"Frozen checkpoint eventually permits completion presentation");SendMessageW(button(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);return;}
+#ifdef UDM_COMPLETION_CLAIM_TASK_AVAILABLE
+  check(elapsed<250&&!gate.expired&&frame.completions.size()==before+1,"Completion is created without waiting for the armed-action checkpoint");
+  check(until([&]{return gate.entered.load();})&&!gate.expired&&frame.completionClaimTask.valid()&&!frame.completionClaimTask.ready(),"The durable claim is accepted and still held after dialog creation");
+  auto window=frame.completions.back()->GetSafeHwnd();const auto close=button(window,L"Close");
+  check(IsWindow(window)&&IsWindowEnabled(close)&&frame.fileActions.empty(),"The dialog is usable and no action is executable before durable acknowledgement");
+  frame.completions.back()->RedrawWindow(nullptr,nullptr,RDW_INVALIDATE|RDW_ALLCHILDREN|RDW_UPDATENOW);frame.serviceCompletionClaims(true);
+  const auto closeStarted=GetTickCount64();SendMessageW(close,BM_CLICK,0,0);
+  check(!IsWindow(window)&&GetTickCount64()-closeStarted<250&&!gate.expired,"Close returns while the accepted checkpoint remains held");
+  check(gate.saves==1&&frame.fileActions.empty(),"Repeated service cannot duplicate the held claim or execute an uncommitted action");
+  gate.open();check(until([&]{return frame.completionClaimTask.ready();}),"The claim survives its originating dialog closing");frame.serviceCompletionClaims(false);
+  check(frame.fileActions.size()==1&&!yes(job->data,"CompletionActionArmed")&&!frame.completionClaimTask.valid(),"Acknowledgement delivers exactly one committed action after the dialog is gone");
+  frame.serviceCompletionClaims(false);check(frame.fileActions.size()==1&&gate.saves==1,"A later wake cannot replay the accepted action");frame.fileActions.clear();
+#else
+  throw std::runtime_error("Current completion claim implementation unavailable");
+#endif
+ }
+ if(baseline)return;
+#ifdef UDM_COMPLETION_CLAIM_TASK_AVAILABLE
+ job=makeJob("unarmed.bin",false);unsigned checkpoints=0;CatalogCheckpointTestAccess::checkpoint(manager)=[&](const char*){++checkpoints;};frame.complete(job);CatalogCheckpointTestAccess::checkpoint(manager)={};
+ check(!frame.completionClaimTask.valid()&&frame.pendingCompletionClaims.empty()&&checkpoints==0,"An unarmed completion adds no task or catalog write");SendMessageW(button(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);
+ for(const auto answer:{IDRETRY,IDCANCEL}){
+  job=makeJob(answer==IDRETRY?"retry.bin":"cancel.bin",true);std::atomic_bool fail=true;
+  CatalogCheckpointTestAccess::checkpoint(manager)=[&](const char* phase){if(std::string(phase)=="temporary-flushed"&&fail.exchange(false))throw std::runtime_error("Owned UI claim checkpoint failure");};
+  frame.complete(job);check(until([&]{return frame.completionClaimTask.ready();}),"The owned failing checkpoint settles without blocking presentation");
+  {OwnedClaimChoice choice(frame.GetSafeHwnd(),answer);frame.serviceCompletionClaims(false);check(choice.count>0,"The actual owned Retry/Cancel review is presented after save failure");}
+  check(frame.fileActions.empty()&&yes(job->data,"CompletionActionArmed"),"A failed claim cannot become an executable action and retains durable recovery state");
+  CatalogCheckpointTestAccess::checkpoint(manager)={};
+  if(answer==IDRETRY){check(frame.pendingCompletionClaims.size()==1,"Retry retains exactly the failed job for a fresh durable attempt");frame.serviceCompletionClaims(true);check(until([&]{return frame.completionClaimTask.ready();}),"The explicitly retried claim settles");frame.serviceCompletionClaims(false);check(frame.fileActions.size()==1&&!yes(job->data,"CompletionActionArmed"),"Retry delivers one action only after the new checkpoint succeeds");frame.fileActions.clear();}
+  else check(frame.pendingCompletionClaims.empty()&&!frame.completionClaimTask.valid(),"Cancel stops automatic retry and runs no action");
+  SendMessageW(button(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);
+ }
+ job=makeJob("modal-failure.bin",true);
+ CatalogCheckpointTestAccess::checkpoint(manager)=[](const char* phase){if(std::string(phase)=="temporary-flushed")throw std::runtime_error("Owned modal claim failure");};
+ frame.complete(job);check(until([&]{return frame.completionClaimTask.ready();}),"The owned modal-failure result becomes ready");
+ frame.EnableWindow(FALSE);
+ {OwnedClaimChoice choice(frame.GetSafeHwnd(),IDCANCEL);frame.serviceCompletionClaims(false);check(choice.count==0&&frame.completionClaimTask.ready(),"A disabled main owner retains the ready failure without opening another modal review");}
+ frame.EnableWindow(TRUE);
+ {OwnedClaimChoice choice(frame.GetSafeHwnd(),IDCANCEL);frame.serviceCompletionClaims(false);check(choice.count>0&&!frame.completionClaimTask.valid(),"Re-enabled ownership presents the retained failure exactly once");}
+ CatalogCheckpointTestAccess::checkpoint(manager)={};SendMessageW(button(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);
+#endif
+ }
+};
+class CompletionClaimApplication:public CWinApp {
+ int result=1;
+public:BOOL InitInstance()override{
+ CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);
+ try{if(!args||argc!=3)throw std::runtime_error("Pass mode and fresh output");baseline=utf8(args[1])=="baseline";if(!baseline&&utf8(args[1])!="candidate")throw std::runtime_error("Invalid fixture mode");output=fs::absolute(args[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh output required");}fs::create_directories(output);
+  for(bool dark:{false,true}){if(baseline&&dark)break;Manager manager(output/(dark?L"dark":L"light"));auto settings=manager.state["Settings"];settings["DownloadFolder"]=utf8((manager.root/L"files").wstring());settings["CategoryFolders"]=false;settings["Sound"]=false;settings["ClipboardMonitor"]=false;settings["CloseToTray"]=false;settings["SuppressCompletionDialog"]=false;manager.setSettings(settings);auto frame=new MainWindow(manager);m_pMainWnd=frame;frame->KillTimer(1);
+   try{ToolbarComponentTest::run(*frame,dark);}catch(...){m_pMainWnd=nullptr;closeOwnedMainWindow(frame);throw;}m_pMainWnd=nullptr;closeOwnedMainWindow(frame);manager.stop();
+  }result=0;
+ }catch(const std::exception& error){failure=error.what();}if(args)LocalFree(args);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"checks",checks},{"observations",observations},{"baseline",baseline},{"error",failure}}.dump(2),false);return FALSE;
+ }int ExitInstance()override{AfxOleTerm(FALSE);return result;}
+};CompletionClaimApplication application;
+}

@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "name": "The retained worker merges its captured layout",
+      "passed": true
+    },
+    {
+      "name": "Taking the result joins and releases its Manager ownership",
+      "passed": true
+    },
+    {
+      "name": "Preparation leaves the canonical disk checkpoint unchanged",
+      "passed": true
+    },
+    {
+      "name": "A failed merge retains the old layout and releases its joined work for retry",
+      "passed": true
+    },
+    {
+      "name": "Retry publishes after releasing Manager and survives a notification failure",
+      "passed": true
+    },
+    {
+      "name": "Cancellation after acceptance never describes an applied layout as discarded",
+      "passed": true
+    },
+    {
+      "name": "Invalid input cannot replace the last accepted layout",
+      "passed": true
+    },
+    {
+      "name": "Failure cancellation and retry add no intermediate catalog writes",
+      "passed": true
+    },
+    {
+      "name": "The existing canonical save persists the accepted layout",
+      "passed": true
+    },
+    {
+      "name": "Repeated cleanup after acknowledgement leaves no retained workers",
+      "passed": true
+    },
+    {
+      "name": "Normal lock acquisition waits on the worker while the caller remains free",
+      "passed": true
+    },
+    {
+      "name": "The Manager retains acquisition before it waits for the model",
+      "passed": true
+    },
+    {
+      "name": "A pending Exit owner rejects duplicate starts",
+      "passed": true
+    },
+    {
+      "name": "Releasing a cancelled window returns while Manager retains its blocked worker",
+      "passed": true
+    },
+    {
+      "name": "Manager stop joins cancelled acquisition before its checkpoint without applying the layout",
+      "passed": true
+    },
+    {
+      "name": "Cancellation retains a different writer's settings in the final checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An accepted File Info decision still defers the merge",
+      "passed": true
+    },
+    {
+      "name": "Releasing Exit ownership never clears another command's decision flag",
+      "passed": true
+    },
+    {
+      "name": "Manager shutdown drains deferred cancelled work before final save",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

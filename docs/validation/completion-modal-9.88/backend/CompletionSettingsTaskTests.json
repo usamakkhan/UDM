@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "Accepted caller returns while a different thread holds the catalog",
+      "passed": true
+    },
+    {
+      "name": "Acceptance owns the global decision guard before model acquisition",
+      "passed": true
+    },
+    {
+      "name": "Duplicate start cannot replace an accepted save or clear its guard",
+      "passed": true
+    },
+    {
+      "name": "Wake failure preserves a committed ready result and its guard",
+      "passed": true
+    },
+    {
+      "name": "Acknowledgement joins the writer and releases its decision guard",
+      "passed": true
+    },
+    {
+      "name": "Only suppression is merged into the latest concurrent settings",
+      "passed": true
+    },
+    {
+      "name": "The accepted choice is present in the durable reopened catalog",
+      "passed": true
+    },
+    {
+      "name": "An already-current requested choice adds no redundant catalog write",
+      "passed": true
+    },
+    {
+      "name": "A conflicting accepted decision is preserved by rejection",
+      "passed": true
+    },
+    {
+      "name": "A preparation failure returns the last committed value and releases acceptance",
+      "passed": true
+    },
+    {
+      "name": "Preparation failure cannot mutate current or durable settings",
+      "passed": true
+    },
+    {
+      "name": "A durable-save failure returns an explicit failed result",
+      "passed": true
+    },
+    {
+      "name": "A failed durable save rolls back all settings and retains the exact catalog",
+      "passed": true
+    },
+    {
+      "name": "The exact failed choice can be retried successfully",
+      "passed": true
+    },
+    {
+      "name": "Owner cleanup joins an accepted save instead of abandoning it",
+      "passed": true
+    },
+    {
+      "name": "Result publication follows model unlock and survives a diagnostic failure",
+      "passed": true
+    },
+    {
+      "name": "Repeated task cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

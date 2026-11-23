@@ -1,0 +1,155 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 4,
+    "dynamicSplits": 0,
+    "engineThroughJoinedStopMs": 2464.7105,
+    "finishPhases": {
+      "AdvisoryHashOverlap": false,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 7.9e-06,
+      "Content": 0.0003684,
+      "DirectSize": 1.37e-05,
+      "FlushPublished": 0.0619523,
+      "Hash": 5.46e-05,
+      "HashMode": "trailing",
+      "PrePublicationMetadata": 0.0020007,
+      "PrefetchReceipt": 1.2e-06,
+      "PreparedTransferFinalizeSeconds": 0.0041813,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 6.1e-06,
+      "PublishedFileFlush": 0.0617922,
+      "PublishedFileOpen": 0.000154,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 1.02e-05,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.001511,
+      "SettleDestination": 0.0013654,
+      "SettleLengthQuery": 3.83e-05,
+      "SettleLockWait": 1e-07,
+      "SettleRecoveryCheck": 8.43e-05,
+      "SettleSnapshot": 1.32e-05,
+      "SettleValidateFolder": 5e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0002595,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 16777216,
+    "savedHash": "684b38382481e9062a4836bbe46f53e63d5ef7f8d22b8a6eccafed18e891d97b",
+    "segments": [
+      {
+        "Done": 16777216,
+        "End": 16777215,
+        "Index": 0,
+        "Start": 0
+      }
+    ],
+    "size": 16777216,
+    "transferredBytes": 16777216
+  },
+  "origin": {
+    "connections": 2,
+    "rejected_connections": 0,
+    "requests": 2,
+    "bytes_sent": 16842752,
+    "drops": 0,
+    "peak_concurrent": 2,
+    "detail": [
+      {
+        "id": 1,
+        "opened": 0.3313401000050362,
+        "closed": 2.3540791000050376,
+        "peer_port": 55951,
+        "rejected": false,
+        "bytes": 16777216,
+        "requests": [
+          {
+            "at": 0.33188130000053206,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": null,
+            "status": 200,
+            "start": 0,
+            "end": 16777215,
+            "sent": 16777216,
+            "finished": 2.3326487000013003,
+            "outcome": "complete",
+            "headers_sent": 0.3319905000025756,
+            "first_body_sent": 0.3404874000043492,
+            "last_body_sent": 2.3326464999991003
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      },
+      {
+        "id": 2,
+        "opened": 0.33972390000417363,
+        "closed": 0.35655680000490975,
+        "peer_port": 55952,
+        "rejected": false,
+        "bytes": 65536,
+        "requests": [
+          {
+            "at": 0.340083399998548,
+            "method": "GET",
+            "path": "/bench/file.bin",
+            "range": "bytes=4194240-8388607",
+            "status": 200,
+            "start": 0,
+            "end": 16777215,
+            "sent": 65536,
+            "finished": null,
+            "outcome": "",
+            "headers_sent": 0.34016390000033425,
+            "first_body_sent": 0.3485541000045487,
+            "last_body_sent": 0.3485541000045487
+          }
+        ],
+        "drops": 0,
+        "rate": 8388608,
+        "drop_after": 0
+      }
+    ]
+  },
+  "parentLifetimeIncludingProofMs": 2758.0765999955474,
+  "originHandlersActiveAtSnapshot": 0,
+  "exitCode": 0,
+  "stdout": "5 checks; passed\n",
+  "stderr": ""
+}

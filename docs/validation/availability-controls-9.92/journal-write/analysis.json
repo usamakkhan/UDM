@@ -1,0 +1,112 @@
+{
+  "coverageValidated": true,
+  "trials": [
+    {
+      "trial": 1,
+      "proposalLosses": [
+        "processExitWallSeconds",
+        "durableWallSeconds"
+      ],
+      "proposalMinusBufferedMs": {
+        "firstAvailabilityTailSeconds": -65.1441000009072,
+        "processExitWallSeconds": 249.47634999261936,
+        "processExitTailSeconds": -37.15855000336887,
+        "durableWallSeconds": 246.0953000045265,
+        "durableTailSeconds": -40.53959999146173
+      },
+      "proposalIntentMs": 121.9793,
+      "bufferedIntentMs": 157.95929999999998,
+      "proposalWriteMs": 60.0255,
+      "proposalFlushMs": 57.5257
+    },
+    {
+      "trial": 2,
+      "proposalLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "proposalMinusBufferedMs": {
+        "firstAvailabilityTailSeconds": 37.85090000019409,
+        "processExitWallSeconds": 144.5185999982641,
+        "processExitTailSeconds": 31.812500004889444,
+        "durableWallSeconds": 187.85270000080345,
+        "durableTailSeconds": 75.14660000742879
+      },
+      "proposalIntentMs": 196.8607,
+      "bufferedIntentMs": 189.0098,
+      "proposalWriteMs": 129.6949,
+      "proposalFlushMs": 61.4878
+    },
+    {
+      "trial": 3,
+      "proposalLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitWallSeconds",
+        "processExitTailSeconds",
+        "durableWallSeconds",
+        "durableTailSeconds"
+      ],
+      "proposalMinusBufferedMs": {
+        "firstAvailabilityTailSeconds": 67.55229999544099,
+        "processExitWallSeconds": 107.81829999177717,
+        "processExitTailSeconds": 85.86689998628572,
+        "durableWallSeconds": 107.73429999971995,
+        "durableTailSeconds": 85.7828999942285
+      },
+      "proposalIntentMs": 180.1241,
+      "bufferedIntentMs": 145.4355,
+      "proposalWriteMs": 118.7878,
+      "proposalFlushMs": 58.276799999999994
+    },
+    {
+      "trial": 4,
+      "proposalLosses": [
+        "processExitWallSeconds",
+        "durableWallSeconds"
+      ],
+      "proposalMinusBufferedMs": {
+        "firstAvailabilityTailSeconds": -24.482299995725043,
+        "processExitWallSeconds": 151.14900000480702,
+        "processExitTailSeconds": -23.52599998266669,
+        "durableWallSeconds": 149.9850999971386,
+        "durableTailSeconds": -24.689899990335107
+      },
+      "proposalIntentMs": 128.1795,
+      "bufferedIntentMs": 124.83120000000001,
+      "proposalWriteMs": 0.7512000000000001,
+      "proposalFlushMs": 62.0395
+    },
+    {
+      "trial": 5,
+      "proposalLosses": [
+        "firstAvailabilityTailSeconds",
+        "processExitTailSeconds",
+        "durableTailSeconds"
+      ],
+      "proposalMinusBufferedMs": {
+        "firstAvailabilityTailSeconds": 3.1586999975843355,
+        "processExitWallSeconds": -3.3074999882956035,
+        "processExitTailSeconds": 2.6588000037008896,
+        "durableWallSeconds": -3.7815999967278913,
+        "durableTailSeconds": 2.184699995268602
+      },
+      "proposalIntentMs": 6.4549,
+      "bufferedIntentMs": 4.8831,
+      "proposalWriteMs": 1.4394,
+      "proposalFlushMs": 0.8817
+    }
+  ],
+  "lossCounts": {
+    "firstAvailabilityTailSeconds": 3,
+    "processExitWallSeconds": 4,
+    "processExitTailSeconds": 3,
+    "durableWallSeconds": 4,
+    "durableTailSeconds": 3
+  },
+  "productionChangeAdmitted": false,
+  "rejectedForObservedRegressions": true,
+  "requiredFlushRetained": true
+}

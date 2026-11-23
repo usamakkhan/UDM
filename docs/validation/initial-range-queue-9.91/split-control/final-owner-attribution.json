@@ -1,0 +1,902 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "run": "0-frozen.json",
+      "passed": true,
+      "overlapPrefixBytes": 704,
+      "beyondFinalOwnerBytes": 196200,
+      "clientChargedSurplusBytes": 704,
+      "coverage": {
+        "sentBytes": 67305768,
+        "uniqueBytes": 67108864,
+        "repeatedBytes": 196904,
+        "holes": [],
+        "overlap": [
+          {
+            "start": 9461696,
+            "endExclusive": 9502693,
+            "multiplicity": 2
+          },
+          {
+            "start": 13023168,
+            "endExclusive": 13041628,
+            "multiplicity": 2
+          },
+          {
+            "start": 14454720,
+            "endExclusive": 14454784,
+            "multiplicity": 2
+          },
+          {
+            "start": 17317824,
+            "endExclusive": 17317888,
+            "multiplicity": 2
+          },
+          {
+            "start": 25845696,
+            "endExclusive": 25886648,
+            "multiplicity": 2
+          },
+          {
+            "start": 33554368,
+            "endExclusive": 33554432,
+            "multiplicity": 2
+          },
+          {
+            "start": 42885056,
+            "endExclusive": 42925960,
+            "multiplicity": 2
+          },
+          {
+            "start": 50347968,
+            "endExclusive": 50348032,
+            "multiplicity": 2
+          },
+          {
+            "start": 54273984,
+            "endExclusive": 54329191,
+            "multiplicity": 2
+          },
+          {
+            "start": 55807936,
+            "endExclusive": 55808000,
+            "multiplicity": 2
+          },
+          {
+            "start": 58875840,
+            "endExclusive": 58875904,
+            "multiplicity": 2
+          }
+        ]
+      },
+      "requests": [
+        {
+          "connection": 1,
+          "start": 0,
+          "sent": 9502693,
+          "finalOwnerEnd": 9461759,
+          "overlapPrefixBytes": 0,
+          "beyondFinalOwnerBytes": 40933
+        },
+        {
+          "connection": 2,
+          "start": 33554368,
+          "sent": 9371592,
+          "finalOwnerEnd": 42885119,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40840
+        },
+        {
+          "connection": 3,
+          "start": 50347968,
+          "sent": 3981223,
+          "finalOwnerEnd": 54274047,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 55143
+        },
+        {
+          "connection": 4,
+          "start": 17317824,
+          "sent": 8568824,
+          "finalOwnerEnd": 25845759,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40888
+        },
+        {
+          "connection": 5,
+          "start": 58875840,
+          "sent": 8233024,
+          "finalOwnerEnd": 67108863,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 13023168,
+          "sent": 1431616,
+          "finalOwnerEnd": 14454783,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 6,
+          "start": 9461696,
+          "sent": 3579932,
+          "finalOwnerEnd": 13023231,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 18396
+        },
+        {
+          "connection": 7,
+          "start": 25845696,
+          "sent": 7708736,
+          "finalOwnerEnd": 33554431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 7,
+          "start": 14454720,
+          "sent": 2863168,
+          "finalOwnerEnd": 17317887,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 42885056,
+          "sent": 7462976,
+          "finalOwnerEnd": 50348031,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 55807936,
+          "sent": 3067968,
+          "finalOwnerEnd": 58875903,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 9,
+          "start": 54273984,
+          "sent": 1534016,
+          "finalOwnerEnd": 55807999,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        }
+      ],
+      "scope": "Origin socket sends versus final range owners; buffering location and client retention are not measured."
+    },
+    {
+      "run": "1-current.json",
+      "passed": true,
+      "overlapPrefixBytes": 1152,
+      "beyondFinalOwnerBytes": 155543,
+      "clientChargedSurplusBytes": 1152,
+      "coverage": {
+        "sentBytes": 67265559,
+        "uniqueBytes": 67108864,
+        "repeatedBytes": 156695,
+        "holes": [],
+        "overlap": [
+          {
+            "start": 4194240,
+            "endExclusive": 4259828,
+            "multiplicity": 2
+          },
+          {
+            "start": 8388544,
+            "endExclusive": 8388608,
+            "multiplicity": 2
+          },
+          {
+            "start": 11026368,
+            "endExclusive": 11075554,
+            "multiplicity": 2
+          },
+          {
+            "start": 12582848,
+            "endExclusive": 12582912,
+            "multiplicity": 2
+          },
+          {
+            "start": 16777152,
+            "endExclusive": 16777216,
+            "multiplicity": 2
+          },
+          {
+            "start": 20971456,
+            "endExclusive": 20971520,
+            "multiplicity": 2
+          },
+          {
+            "start": 22831040,
+            "endExclusive": 22872001,
+            "multiplicity": 2
+          },
+          {
+            "start": 23609280,
+            "endExclusive": 23609344,
+            "multiplicity": 2
+          },
+          {
+            "start": 25165760,
+            "endExclusive": 25165824,
+            "multiplicity": 2
+          },
+          {
+            "start": 29360064,
+            "endExclusive": 29360128,
+            "multiplicity": 2
+          },
+          {
+            "start": 33554368,
+            "endExclusive": 33554432,
+            "multiplicity": 2
+          },
+          {
+            "start": 37748672,
+            "endExclusive": 37748736,
+            "multiplicity": 2
+          },
+          {
+            "start": 41942976,
+            "endExclusive": 41943040,
+            "multiplicity": 2
+          },
+          {
+            "start": 46137280,
+            "endExclusive": 46137344,
+            "multiplicity": 2
+          },
+          {
+            "start": 50331584,
+            "endExclusive": 50331648,
+            "multiplicity": 2
+          },
+          {
+            "start": 54525888,
+            "endExclusive": 54525952,
+            "multiplicity": 2
+          },
+          {
+            "start": 58720192,
+            "endExclusive": 58720256,
+            "multiplicity": 2
+          },
+          {
+            "start": 62914496,
+            "endExclusive": 62914560,
+            "multiplicity": 2
+          }
+        ]
+      },
+      "requests": [
+        {
+          "connection": 1,
+          "start": 0,
+          "sent": 4259828,
+          "finalOwnerEnd": 4194303,
+          "overlapPrefixBytes": 0,
+          "beyondFinalOwnerBytes": 65524
+        },
+        {
+          "connection": 2,
+          "start": 4194240,
+          "sent": 4194368,
+          "finalOwnerEnd": 8388607,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 2,
+          "start": 23609280,
+          "sent": 1556544,
+          "finalOwnerEnd": 25165823,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 2,
+          "start": 50331584,
+          "sent": 4194368,
+          "finalOwnerEnd": 54525951,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 3,
+          "start": 8388544,
+          "sent": 2687010,
+          "finalOwnerEnd": 11026431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 49122
+        },
+        {
+          "connection": 4,
+          "start": 12582848,
+          "sent": 4194368,
+          "finalOwnerEnd": 16777215,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 4,
+          "start": 22831040,
+          "sent": 778304,
+          "finalOwnerEnd": 23609343,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 4,
+          "start": 46137280,
+          "sent": 4194368,
+          "finalOwnerEnd": 50331647,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 16777152,
+          "sent": 4194368,
+          "finalOwnerEnd": 20971519,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 33554368,
+          "sent": 4194368,
+          "finalOwnerEnd": 37748735,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 58720192,
+          "sent": 4194368,
+          "finalOwnerEnd": 62914559,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 6,
+          "start": 20971456,
+          "sent": 1900545,
+          "finalOwnerEnd": 22831103,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40897
+        },
+        {
+          "connection": 7,
+          "start": 25165760,
+          "sent": 4194368,
+          "finalOwnerEnd": 29360127,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 7,
+          "start": 37748672,
+          "sent": 4194368,
+          "finalOwnerEnd": 41943039,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 7,
+          "start": 62914496,
+          "sent": 4194368,
+          "finalOwnerEnd": 67108863,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 29360064,
+          "sent": 4194368,
+          "finalOwnerEnd": 33554431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 41942976,
+          "sent": 4194368,
+          "finalOwnerEnd": 46137343,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 9,
+          "start": 11026368,
+          "sent": 1556544,
+          "finalOwnerEnd": 12582911,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 10,
+          "start": 54525888,
+          "sent": 4194368,
+          "finalOwnerEnd": 58720255,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        }
+      ],
+      "scope": "Origin socket sends versus final range owners; buffering location and client retention are not measured."
+    },
+    {
+      "run": "2-current.json",
+      "passed": true,
+      "overlapPrefixBytes": 1216,
+      "beyondFinalOwnerBytes": 147354,
+      "clientChargedSurplusBytes": 1216,
+      "coverage": {
+        "sentBytes": 67257434,
+        "uniqueBytes": 67108864,
+        "repeatedBytes": 148570,
+        "holes": [],
+        "overlap": [
+          {
+            "start": 4194240,
+            "endExclusive": 4259828,
+            "multiplicity": 2
+          },
+          {
+            "start": 8388544,
+            "endExclusive": 8388608,
+            "multiplicity": 2
+          },
+          {
+            "start": 10379200,
+            "endExclusive": 10420197,
+            "multiplicity": 2
+          },
+          {
+            "start": 11026368,
+            "endExclusive": 11026432,
+            "multiplicity": 2
+          },
+          {
+            "start": 12582848,
+            "endExclusive": 12582912,
+            "multiplicity": 2
+          },
+          {
+            "start": 16777152,
+            "endExclusive": 16777216,
+            "multiplicity": 2
+          },
+          {
+            "start": 20971456,
+            "endExclusive": 20971520,
+            "multiplicity": 2
+          },
+          {
+            "start": 22765504,
+            "endExclusive": 22806465,
+            "multiplicity": 2
+          },
+          {
+            "start": 23478208,
+            "endExclusive": 23478272,
+            "multiplicity": 2
+          },
+          {
+            "start": 25165760,
+            "endExclusive": 25165824,
+            "multiplicity": 2
+          },
+          {
+            "start": 29360064,
+            "endExclusive": 29360128,
+            "multiplicity": 2
+          },
+          {
+            "start": 33554368,
+            "endExclusive": 33554432,
+            "multiplicity": 2
+          },
+          {
+            "start": 37748672,
+            "endExclusive": 37748736,
+            "multiplicity": 2
+          },
+          {
+            "start": 41942976,
+            "endExclusive": 41943040,
+            "multiplicity": 2
+          },
+          {
+            "start": 46137280,
+            "endExclusive": 46137344,
+            "multiplicity": 2
+          },
+          {
+            "start": 50331584,
+            "endExclusive": 50331648,
+            "multiplicity": 2
+          },
+          {
+            "start": 54525888,
+            "endExclusive": 54525952,
+            "multiplicity": 2
+          },
+          {
+            "start": 58720192,
+            "endExclusive": 58720256,
+            "multiplicity": 2
+          },
+          {
+            "start": 62914496,
+            "endExclusive": 62914560,
+            "multiplicity": 2
+          }
+        ]
+      },
+      "requests": [
+        {
+          "connection": 1,
+          "start": 0,
+          "sent": 4259828,
+          "finalOwnerEnd": 4194303,
+          "overlapPrefixBytes": 0,
+          "beyondFinalOwnerBytes": 65524
+        },
+        {
+          "connection": 2,
+          "start": 4194240,
+          "sent": 4194368,
+          "finalOwnerEnd": 8388607,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 2,
+          "start": 11026368,
+          "sent": 1556544,
+          "finalOwnerEnd": 12582911,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 2,
+          "start": 46137280,
+          "sent": 4194368,
+          "finalOwnerEnd": 50331647,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 3,
+          "start": 8388544,
+          "sent": 2031653,
+          "finalOwnerEnd": 10379263,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40933
+        },
+        {
+          "connection": 4,
+          "start": 12582848,
+          "sent": 4194368,
+          "finalOwnerEnd": 16777215,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 4,
+          "start": 22765504,
+          "sent": 712768,
+          "finalOwnerEnd": 23478271,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 4,
+          "start": 41942976,
+          "sent": 4194368,
+          "finalOwnerEnd": 46137343,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 16777152,
+          "sent": 4194368,
+          "finalOwnerEnd": 20971519,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 33554368,
+          "sent": 4194368,
+          "finalOwnerEnd": 37748735,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 62914496,
+          "sent": 4194368,
+          "finalOwnerEnd": 67108863,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 6,
+          "start": 20971456,
+          "sent": 1835009,
+          "finalOwnerEnd": 22765567,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40897
+        },
+        {
+          "connection": 7,
+          "start": 25165760,
+          "sent": 4194368,
+          "finalOwnerEnd": 29360127,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 7,
+          "start": 37748672,
+          "sent": 4194368,
+          "finalOwnerEnd": 41943039,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 29360064,
+          "sent": 4194368,
+          "finalOwnerEnd": 33554431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 10379200,
+          "sent": 647232,
+          "finalOwnerEnd": 11026431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 50331584,
+          "sent": 4194368,
+          "finalOwnerEnd": 54525951,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 9,
+          "start": 23478208,
+          "sent": 1687616,
+          "finalOwnerEnd": 25165823,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 10,
+          "start": 54525888,
+          "sent": 4194368,
+          "finalOwnerEnd": 58720255,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 11,
+          "start": 58720192,
+          "sent": 4194368,
+          "finalOwnerEnd": 62914559,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        }
+      ],
+      "scope": "Origin socket sends versus final range owners; buffering location and client retention are not measured."
+    },
+    {
+      "run": "3-frozen.json",
+      "passed": true,
+      "overlapPrefixBytes": 832,
+      "beyondFinalOwnerBytes": 448969,
+      "clientChargedSurplusBytes": 832,
+      "coverage": {
+        "sentBytes": 67558665,
+        "uniqueBytes": 67108864,
+        "repeatedBytes": 449801,
+        "holes": [],
+        "overlap": [
+          {
+            "start": 9330624,
+            "endExclusive": 9371624,
+            "multiplicity": 2
+          },
+          {
+            "start": 12924864,
+            "endExclusive": 12976092,
+            "multiplicity": 2
+          },
+          {
+            "start": 14389184,
+            "endExclusive": 14389248,
+            "multiplicity": 2
+          },
+          {
+            "start": 17317824,
+            "endExclusive": 17317888,
+            "multiplicity": 2
+          },
+          {
+            "start": 25845696,
+            "endExclusive": 26083256,
+            "multiplicity": 2
+          },
+          {
+            "start": 33554368,
+            "endExclusive": 33554432,
+            "multiplicity": 2
+          },
+          {
+            "start": 42622912,
+            "endExclusive": 42663816,
+            "multiplicity": 2
+          },
+          {
+            "start": 50347968,
+            "endExclusive": 50348032,
+            "multiplicity": 2
+          },
+          {
+            "start": 54273984,
+            "endExclusive": 54329191,
+            "multiplicity": 2
+          },
+          {
+            "start": 55807936,
+            "endExclusive": 55808000,
+            "multiplicity": 2
+          },
+          {
+            "start": 57189312,
+            "endExclusive": 57212766,
+            "multiplicity": 2
+          },
+          {
+            "start": 57751488,
+            "endExclusive": 57751552,
+            "multiplicity": 2
+          },
+          {
+            "start": 58875840,
+            "endExclusive": 58875904,
+            "multiplicity": 2
+          }
+        ]
+      },
+      "requests": [
+        {
+          "connection": 1,
+          "start": 0,
+          "sent": 9371624,
+          "finalOwnerEnd": 9330687,
+          "overlapPrefixBytes": 0,
+          "beyondFinalOwnerBytes": 40936
+        },
+        {
+          "connection": 2,
+          "start": 33554368,
+          "sent": 9109448,
+          "finalOwnerEnd": 42622975,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 40840
+        },
+        {
+          "connection": 3,
+          "start": 50347968,
+          "sent": 3981223,
+          "finalOwnerEnd": 54274047,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 55143
+        },
+        {
+          "connection": 4,
+          "start": 17317824,
+          "sent": 8765432,
+          "finalOwnerEnd": 25845759,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 237496
+        },
+        {
+          "connection": 5,
+          "start": 58875840,
+          "sent": 8233024,
+          "finalOwnerEnd": 67108863,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 12924864,
+          "sent": 1464384,
+          "finalOwnerEnd": 14389247,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 5,
+          "start": 57189312,
+          "sent": 562240,
+          "finalOwnerEnd": 57751551,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 6,
+          "start": 9330624,
+          "sent": 3645468,
+          "finalOwnerEnd": 12924927,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 51164
+        },
+        {
+          "connection": 7,
+          "start": 42622912,
+          "sent": 7725120,
+          "finalOwnerEnd": 50348031,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 7,
+          "start": 14389184,
+          "sent": 2928704,
+          "finalOwnerEnd": 17317887,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 25845696,
+          "sent": 7708736,
+          "finalOwnerEnd": 33554431,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 54273984,
+          "sent": 1534016,
+          "finalOwnerEnd": 55807999,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 8,
+          "start": 57751488,
+          "sent": 1124416,
+          "finalOwnerEnd": 58875903,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 0
+        },
+        {
+          "connection": 9,
+          "start": 55807936,
+          "sent": 1404830,
+          "finalOwnerEnd": 57189375,
+          "overlapPrefixBytes": 64,
+          "beyondFinalOwnerBytes": 23390
+        }
+      ],
+      "scope": "Origin socket sends versus final range owners; buffering location and client retention are not measured."
+    }
+  ]
+}

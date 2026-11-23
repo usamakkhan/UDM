@@ -1,0 +1,28 @@
+{
+  "driverSha256": "E6B2E8C827B4B74C2A10B2C79AE2E50BEAD54DF516929B029D391467F81E0044",
+  "originSha256": "49566475BBC0C19109EFEC38A946F747F7385A5022ED49295F61D4F26CB3FF0D",
+  "helperSha256": "FCABE9959CCBADD46A2E304B9D9974E9A2AF6F2AD9B2A73E49E986326807A821",
+  "diagnosticBinarySha256": "C2B931983C400D40F271EAED810F6D423374E81E54DB18C7DB509F393FD3D612",
+  "componentOnly": true,
+  "cases": [
+    [
+      "sequential-4m",
+      4194304,
+      1,
+      0
+    ],
+    [
+      "capped-32m",
+      33554432,
+      8,
+      2
+    ],
+    [
+      "healthy-32m",
+      33554432,
+      8,
+      0
+    ]
+  ],
+  "ratePerConnection": 2097152
+}

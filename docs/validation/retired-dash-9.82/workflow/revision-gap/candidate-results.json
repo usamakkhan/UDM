@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "Resume completes: DASH Period transition has a gap or overlap.",
+      "passed": false
+    }
+  ],
+  "error": "Resume completes: DASH Period transition has a gap or overlap.",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": false,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "ownedJob": {
+    "Status": "Failed",
+    "Error": "DASH Period transition has a gap or overlap.",
+    "Sha256": "",
+    "Size": -1,
+    "Received": 106375,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "TransferredBytes": 107917,
+    "AdaptiveMetadataBytes": 1542,
+    "TransferSeconds": 0.6646613,
+    "ElapsedSeconds": 0.6646636,
+    "MediaPhase": "Paused"
+  }
+}

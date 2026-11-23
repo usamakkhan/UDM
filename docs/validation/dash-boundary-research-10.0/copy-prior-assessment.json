@@ -1,0 +1,41 @@
+{
+  "sameSourceMediaBytes": true,
+  "sameMediaTools": true,
+  "addedOption": [
+    "-copypriorss:v",
+    "1"
+  ],
+  "productionModified": false,
+  "admittedForProduction": false,
+  "reason": "The candidate did not make either crossing boundary sample/frame exact.",
+  "cases": [
+    {
+      "case": "packet-aligned",
+      "beforeFrames": 96,
+      "afterFrames": 96,
+      "audioExact": true,
+      "videoExact": true,
+      "sampleDelta": 0,
+      "candidateComplete": true
+    },
+    {
+      "case": "aac-crossing",
+      "beforeFrames": 62,
+      "afterFrames": 62,
+      "audioExact": false,
+      "videoExact": false,
+      "sampleDelta": 128,
+      "candidateComplete": false
+    },
+    {
+      "case": "both-crossing",
+      "beforeFrames": 65,
+      "afterFrames": 65,
+      "audioExact": false,
+      "videoExact": false,
+      "sampleDelta": 672,
+      "candidateComplete": false
+    }
+  ],
+  "mediaRehashed": true
+}

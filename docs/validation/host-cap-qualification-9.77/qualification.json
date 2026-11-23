@@ -1,0 +1,99 @@
+{
+  "version": "9.77",
+  "productionChange": false,
+  "installedAppChanged": false,
+  "sources": [
+    {
+      "path": "benchmarks/speed/host_concurrency.py",
+      "sha256": "80DD6E398683E8ECCBA13846189E02E98BC0979683AADF06853F9164A039A4B1"
+    },
+    {
+      "path": "benchmarks/speed/origin.py",
+      "sha256": "49566475BBC0C19109EFEC38A946F747F7385A5022ED49295F61D4F26CB3FF0D"
+    },
+    {
+      "path": "benchmarks/speed/bench.py",
+      "sha256": "3BEFC2E65A215C52419B173CE3AA7CBA4095168AA3B9FF21D787A851DD6BE671"
+    },
+    {
+      "path": "native/HttpAdmission.hpp",
+      "sha256": "3A6F77FEEB94695A779916F77F44781224FC6256EDC4215BBACB65FBD22BD94E"
+    },
+    {
+      "path": "native/Transfer.cpp",
+      "sha256": "7267661F3FDE5FC9335EF4AC2F3CF565E271875DE47117FAB2B2D75CF8CA049A"
+    },
+    {
+      "path": "native/Version.hpp",
+      "sha256": "14AE1514A78018EC9840C4C2C6B00F3035C58996F2D86B98A706BAB2B288E80E"
+    }
+  ],
+  "currentCoreObjectsVerified": true,
+  "currentProductsVerified": true,
+  "payloadFilesRemaining": [],
+  "limits": [
+    "Owned UDM-only admission acceptance; no IDM comparison.",
+    "One connection per job; split-worker pressure not exercised.",
+    "Jobs reached Complete and hashes verified before fixture shutdown.",
+    "Driver terminates its private primary process after checks; whole-process shutdown time is not measured."
+  ],
+  "invocation": [
+    "--jobs",
+    "4",
+    "--server-connections",
+    "2",
+    "--size-mib",
+    "2",
+    "--rate-kib",
+    "256",
+    "--timeout",
+    "45"
+  ],
+  "protectedInstalledCatalogAndToolFiles": [
+    {
+      "index": 1,
+      "unchanged": true
+    },
+    {
+      "index": 2,
+      "unchanged": true
+    },
+    {
+      "index": 3,
+      "unchanged": true
+    },
+    {
+      "index": 4,
+      "unchanged": true
+    },
+    {
+      "index": 5,
+      "unchanged": true
+    },
+    {
+      "index": 6,
+      "unchanged": true
+    },
+    {
+      "index": 7,
+      "unchanged": true
+    },
+    {
+      "index": 8,
+      "unchanged": true
+    },
+    {
+      "index": 9,
+      "unchanged": true
+    },
+    {
+      "index": 10,
+      "unchanged": true
+    },
+    {
+      "index": 11,
+      "unchanged": true
+    }
+  ],
+  "ownedAppProcessesRemaining": 0
+}

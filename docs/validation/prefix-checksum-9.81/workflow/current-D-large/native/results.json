@@ -1,0 +1,206 @@
+{
+  "checks": [
+    {
+      "name": "A prefixed checksum response waits for an explicit removal choice",
+      "passed": true
+    },
+    {
+      "name": "The retained server digest is bound to the declared byte domain",
+      "passed": true
+    },
+    {
+      "name": "Prefix removal verifies saved bytes and reaches confirmation without another POST",
+      "passed": true
+    },
+    {
+      "name": "The pre-Start size excludes only the approved prefix",
+      "passed": true
+    },
+    {
+      "name": "Confirmation finishes the retained response worker",
+      "passed": true
+    },
+    {
+      "name": "One-pass server hashing preserves exact final bytes and pre-Start size",
+      "passed": true
+    },
+    {
+      "name": "The raw server checksum is computed during the existing tail copy",
+      "passed": true
+    },
+    {
+      "name": "A prefixed checksum response waits for an explicit removal choice",
+      "passed": true
+    },
+    {
+      "name": "The retained server digest is bound to the declared byte domain",
+      "passed": true
+    },
+    {
+      "name": "Prefix removal verifies saved bytes and reaches confirmation without another POST",
+      "passed": true
+    },
+    {
+      "name": "The pre-Start size excludes only the approved prefix",
+      "passed": true
+    },
+    {
+      "name": "Confirmation finishes the retained response worker",
+      "passed": true
+    },
+    {
+      "name": "Wrong raw-domain or final-output checksums block publication and preserve received bytes",
+      "passed": true
+    },
+    {
+      "name": "A checksum retry reuses and rejects the same bytes without resubmission",
+      "passed": true
+    },
+    {
+      "name": "A prefixed checksum response waits for an explicit removal choice",
+      "passed": true
+    },
+    {
+      "name": "The retained server digest is bound to the declared byte domain",
+      "passed": true
+    },
+    {
+      "name": "Prefix removal verifies saved bytes and reaches confirmation without another POST",
+      "passed": true
+    },
+    {
+      "name": "The pre-Start size excludes only the approved prefix",
+      "passed": true
+    },
+    {
+      "name": "Confirmation finishes the retained response worker",
+      "passed": true
+    },
+    {
+      "name": "Wrong raw-domain or final-output checksums block publication and preserve received bytes",
+      "passed": true
+    },
+    {
+      "name": "A checksum retry reuses and rejects the same bytes without resubmission",
+      "passed": true
+    },
+    {
+      "name": "A prefixed checksum response waits for an explicit removal choice",
+      "passed": true
+    },
+    {
+      "name": "The retained server digest is bound to the declared byte domain",
+      "passed": true
+    },
+    {
+      "name": "Prefix removal verifies saved bytes and reaches confirmation without another POST",
+      "passed": true
+    },
+    {
+      "name": "The pre-Start size excludes only the approved prefix",
+      "passed": true
+    },
+    {
+      "name": "Confirmation finishes the retained response worker",
+      "passed": true
+    },
+    {
+      "name": "Wrong raw-domain or final-output checksums block publication and preserve received bytes",
+      "passed": true
+    },
+    {
+      "name": "A checksum retry reuses and rejects the same bytes without resubmission",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "announcedBytes": 4560015,
+      "error": "",
+      "passed": true,
+      "phases": {
+        "AdvisoryHashOverlap": false,
+        "CleanupParts": 0.0011716,
+        "CommitOutput": 0.0516028,
+        "ConfirmationWait": 0.0412349,
+        "Content": 0.0003419,
+        "Hash": 0.0880898,
+        "HashMode": "assembled",
+        "PostPublicationMetadata": 0.001605,
+        "Publish": 0.0612195,
+        "RetainedFormContent": 0.0004432,
+        "ServerHashMode": "prefix-copy",
+        "Settle": 0.0011071,
+        "SettleDestination": 0.0008604,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.0001212,
+        "SettleSnapshot": 1.07e-05,
+        "SettleValidateFolder": 4e-07,
+        "StageOutput": 2.5e-06,
+        "Total": 0.15120150000000002,
+        "TransferBackgroundTotal": 0.1539905
+      },
+      "published": true,
+      "publishedSha256": "561c1aeeb2ea7f64287242bd5d9e46b5992d4cadf9dbaf381bf6373d49385dc9",
+      "rawBytes": 4560075,
+      "rawSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "route": "prefix-digest-good",
+      "serverSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "status": "Complete"
+    },
+    {
+      "announcedBytes": 4560015,
+      "error": "The server's SHA-256 checksum did not match. The file was not published.",
+      "passed": true,
+      "phases": {},
+      "published": false,
+      "publishedSha256": "",
+      "rawBytes": 4560075,
+      "rawSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "route": "prefix-digest-bad",
+      "serverSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "Failed"
+    },
+    {
+      "announcedBytes": 4560015,
+      "error": "The server's SHA-256 checksum did not match. The file was not published.",
+      "passed": true,
+      "phases": {},
+      "published": false,
+      "publishedSha256": "",
+      "rawBytes": 4560075,
+      "rawSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "route": "prefix-domain-bad",
+      "serverSha256": "561c1aeeb2ea7f64287242bd5d9e46b5992d4cadf9dbaf381bf6373d49385dc9",
+      "status": "Failed"
+    },
+    {
+      "announcedBytes": 4560015,
+      "error": "SHA-256 mismatch. The file was not published.",
+      "passed": true,
+      "phases": {
+        "ConfirmationWait": 3.9e-06,
+        "Content": 0.0003005,
+        "Hash": 0.1104289,
+        "HashMode": "assembled",
+        "RetainedFormContent": 0.0004293,
+        "ServerHashMode": "prefix-copy",
+        "Settle": 0.001218,
+        "SettleDestination": 0.0009653,
+        "SettleLockWait": 1e-07,
+        "SettleRecoveryCheck": 0.0001275,
+        "SettleSnapshot": 1.33e-05,
+        "SettleValidateFolder": 5e-07
+      },
+      "published": false,
+      "publishedSha256": "",
+      "rawBytes": 4560075,
+      "rawSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "route": "prefix-output-bad",
+      "serverSha256": "22a36343d74908926844af0b45f809471d6d3132b115303a75f3c47a5c2d9495",
+      "status": "Failed"
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,195 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 8,
+    "dynamicSplits": 0,
+    "engineThroughJoinedStopMs": 1202.5246,
+    "finishPhases": {
+      "AdvisoryHashBufferRelease": 0.0032344,
+      "AdvisoryHashCommitHandoff": true,
+      "AdvisoryHashInput": "write-buffer",
+      "AdvisoryHashIntentOverlap": true,
+      "AdvisoryHashOverlap": true,
+      "AdvisoryHashOwnerJoin": 0.0001438,
+      "AdvisoryHashSeconds": 0.0162801,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 5.7e-06,
+      "Content": 0.000487,
+      "DirectSize": 4.22e-05,
+      "FlushPublished": 0.0177334,
+      "Hash": 5.52e-05,
+      "HashMode": "deferred",
+      "PrePublicationMetadata": 0.0021535,
+      "PrefetchReceipt": 1.2e-06,
+      "PreparedTransferFinalizeSeconds": 0.0045823,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 3.6e-06,
+      "PublishedFileFlush": 0.0175623,
+      "PublishedFileOpen": 0.0001675,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.0091894,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0016025,
+      "SettleDestination": 0.0014269,
+      "SettleLengthQuery": 4.78e-05,
+      "SettleLockWait": 2e-07,
+      "SettleRecoveryCheck": 9.38e-05,
+      "SettleSnapshot": 2.45e-05,
+      "SettleValidateFolder": 5e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0003381,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 67108864,
+    "savedHash": "b97ddc3c24818dfb00cc85ec6541ca9f977ba754c4a09b0a204345ff07faf465",
+    "segments": [
+      {
+        "Done": 4194304,
+        "End": 4194303,
+        "Index": 0,
+        "Start": 0
+      },
+      {
+        "Done": 4194304,
+        "End": 8388607,
+        "HttpBoundarySha256": "aa2b648bc9d2524fbec538e8751d10b962ec5252591818cb9a5d4d4b855317cb",
+        "Index": 1,
+        "Start": 4194304
+      },
+      {
+        "Done": 4194304,
+        "End": 12582911,
+        "HttpBoundarySha256": "12ec7be5c623ad0a945fe545fa940a703eade3f2e1be0734e73d4dbcc954628f",
+        "Index": 2,
+        "Start": 8388608
+      },
+      {
+        "Done": 4194304,
+        "End": 16777215,
+        "HttpBoundarySha256": "a18143a0b576cc1cf02d3e14fb3c2e29deb956bbdc190875a762ceff2f55bd05",
+        "Index": 3,
+        "Start": 12582912
+      },
+      {
+        "Done": 4194304,
+        "End": 20971519,
+        "HttpBoundarySha256": "0b66526b113b6d4dd5b799d4e85826a4416f1d68846d66254a7082d48bf502b3",
+        "Index": 4,
+        "Start": 16777216
+      },
+      {
+        "Done": 4194304,
+        "End": 25165823,
+        "HttpBoundarySha256": "70b2f42951fd20c780d2b17b1a71513ff3c15007eb2950c5e8ac61b2f3eab3fe",
+        "Index": 5,
+        "Start": 20971520
+      },
+      {
+        "Done": 4194304,
+        "End": 29360127,
+        "HttpBoundarySha256": "9cbf87664f9c3a4df8758bd3fb1fa3329c2453861af809047d23acdf9fc73fad",
+        "Index": 6,
+        "Start": 25165824
+      },
+      {
+        "Done": 4194304,
+        "End": 33554431,
+        "HttpBoundarySha256": "8df28eb85e83f655bda1594ee3113bb3640abf6a3233fe4f4f6b8fbada02a09b",
+        "Index": 7,
+        "Start": 29360128
+      },
+      {
+        "Done": 4194304,
+        "End": 37748735,
+        "HttpBoundarySha256": "f229cc3940df8021cb1b88332352f92b828febf2a21bdec2e510f74e091f0a20",
+        "Index": 8,
+        "Start": 33554432
+      },
+      {
+        "Done": 4194304,
+        "End": 41943039,
+        "HttpBoundarySha256": "03b74d71d809013ace2c9c1acd38ca830a754ef986187660fd6711d262d7638f",
+        "Index": 9,
+        "Start": 37748736
+      },
+      {
+        "Done": 4194304,
+        "End": 46137343,
+        "HttpBoundarySha256": "40693af2a3be5b77b62cf55388a7cc2977ff81a502c9ce1827d668ad904e76b0",
+        "Index": 10,
+        "Start": 41943040
+      },
+      {
+        "Done": 4194304,
+        "End": 50331647,
+        "HttpBoundarySha256": "a6fc0a6aa0ce525a63033529e96b7ddfefdde686a6674953b4f5f8c2270616f8",
+        "Index": 11,
+        "Start": 46137344
+      },
+      {
+        "Done": 4194304,
+        "End": 54525951,
+        "HttpBoundarySha256": "62503fa6ff235a505634816111fd8b844cbef315dade4c38e8be96834d58a58e",
+        "Index": 12,
+        "Start": 50331648
+      },
+      {
+        "Done": 4194304,
+        "End": 58720255,
+        "HttpBoundarySha256": "39b04a159624df1129211c57a4ffdc5b107a1e50d6172d9530023b2283875232",
+        "Index": 13,
+        "Start": 54525952
+      },
+      {
+        "Done": 4194304,
+        "End": 62914559,
+        "HttpBoundarySha256": "706d9a8f94965a487e25f5ce3f9b9c291ea62dfe5d5f75aa55691638628a88a6",
+        "Index": 14,
+        "Start": 58720256
+      },
+      {
+        "Done": 4194304,
+        "End": 67108863,
+        "HttpBoundarySha256": "237c92a53a5006d310cb032bb68a91ce065142d7245e19f207f8f708f34a911d",
+        "Index": 15,
+        "Start": 62914560
+      }
+    ],
+    "size": 67108864,
+    "transferredBytes": 67109824
+  }
+}

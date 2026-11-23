@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "name": "A fully retained contiguous track proves its exact observed end",
+      "passed": true
+    },
+    {
+      "name": "A timestamp gap cannot prove a Period boundary",
+      "passed": true
+    },
+    {
+      "name": "Overlapping timestamps cannot prove a Period boundary",
+      "passed": true
+    },
+    {
+      "name": "A missing segment number cannot prove coverage",
+      "passed": true
+    },
+    {
+      "name": "Duplicate segment numbers cannot hide a missing range",
+      "passed": true
+    },
+    {
+      "name": "An unfinished tail cannot prove an end",
+      "passed": true
+    },
+    {
+      "name": "Zero-duration media cannot supply a boundary",
+      "passed": true
+    },
+    {
+      "name": "Negative media duration is rejected",
+      "passed": true
+    },
+    {
+      "name": "Tick addition cannot exceed exact supported precision",
+      "passed": true
+    },
+    {
+      "name": "A completion flag without a resource is not evidence",
+      "passed": true
+    },
+    {
+      "name": "Pending initialization prevents boundary promotion",
+      "passed": true
+    },
+    {
+      "name": "Unverified initialization cannot establish a recording end",
+      "passed": true
+    },
+    {
+      "name": "Verified initialization permits the complete coverage proof",
+      "passed": true
+    },
+    {
+      "name": "Invalid or inexact timescales are rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid or inexact timescales are rejected",
+      "passed": true
+    },
+    {
+      "name": "Invalid or inexact timescales are rejected",
+      "passed": true
+    },
+    {
+      "name": "A requested start inside the first retained segment keeps the exact end",
+      "passed": true
+    },
+    {
+      "name": "An empty retained interval cannot establish a boundary",
+      "passed": true
+    },
+    {
+      "name": "A prior different stop boundary is preserved",
+      "passed": true
+    },
+    {
+      "name": "A known longer Period cannot be shortened to the observed prefix",
+      "passed": true
+    },
+    {
+      "name": "A matching known duration remains valid",
+      "passed": true
+    },
+    {
+      "name": "Different track timescales must agree on the same presentation boundary",
+      "passed": true
+    },
+    {
+      "name": "A shorter audio track prevents inference from video alone",
+      "passed": true
+    },
+    {
+      "name": "A longer audio track cannot be silently clipped to video",
+      "passed": true
+    },
+    {
+      "name": "Coverage inspection honors parent cancellation",
+      "passed": true
+    }
+  ],
+  "error": "Live DASH segment lists require an explicit timeline.",
+  "passed": false
+}

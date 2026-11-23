@@ -1,0 +1,27 @@
+{
+  "args": [
+    "<user>\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\python.exe",
+    "<development>\\owned-pair-derived-no-drain-9.74.py",
+    "--output-root",
+    "<repo>\\.media-cache\\owned-no-drain-comparison-9.74",
+    "--udm",
+    "<repo>\\.media-cache\\owned-no-drain-control-9.74\\release-native\\UDM.NoOptionalDrain.exe",
+    "--expected-udm-sha256",
+    "A6E18E8496CEEFB92B3ADCF3F550945FA722ADE7E0DC8A31EFA7A621A13E6312",
+    "--baseline-udm",
+    "<repo>\\.media-cache\\owned-no-drain-control-9.74\\release-native\\UDM.ControlBaseline.exe",
+    "--expected-baseline-sha256",
+    "9C3F683186FD7AFAF2AF2E7F0B2C444C0E99F51367923251E4811B687FA7E577",
+    "--label",
+    "Private uninstrumented split optional-drain control on frozen 9.74; same App object; no IDM comparison",
+    "--case",
+    "split-64m",
+    "--trials",
+    "3",
+    "--flush-after-exit",
+    "--remove-owned-payloads"
+  ],
+  "commonAppObjectSha256": "0C016ECA00BB791EAC663BF505E4BFFFCD7837CDB2C8CB95BC318BEFF3283ECF",
+  "experimentalOnly": true,
+  "normalSourceChanged": false
+}

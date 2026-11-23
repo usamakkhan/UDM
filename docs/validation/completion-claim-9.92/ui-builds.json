@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "outputs": [
+    {
+      "name": "claim-current",
+      "sha256": "EE506D598213DB4071AE3EEAF8042EAC60B5FDA3E885732DCF952FC1C8007AF8",
+      "path": "<build>\\ui-fixtures\\claim-current.exe"
+    },
+    {
+      "name": "claim-frozen",
+      "sha256": "B7DE9C678822FFB0DD458CFD0C7495A7737B23FD06E0D1E80B7A713B532B70B5",
+      "path": "<build>\\ui-fixtures\\claim-frozen.exe"
+    },
+    {
+      "name": "modal-regression",
+      "sha256": "33F84DACA320E5568A08FFC383007F6AC2232544EB77C5F5E80DAE95DEA33900",
+      "path": "<build>\\ui-fixtures\\modal-regression.exe"
+    },
+    {
+      "name": "suppression-regression",
+      "sha256": "B45978C2B9AC7B3A6C9C649474A4F15F9274E5AB96CFF81998586257754434F3",
+      "path": "<build>\\ui-fixtures\\suppression-regression.exe"
+    }
+  ],
+  "unchangedRegressionInputs": "before-cli-ui-inputs.json"
+}

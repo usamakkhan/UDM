@@ -1,0 +1,122 @@
+[
+  {
+    "method": "GET",
+    "path": "/before-headers/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/before-headers/segment.bin",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 0,
+    "peerClosed": true
+  },
+  {
+    "method": "GET",
+    "path": "/before-headers/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/before-headers/segment.bin",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 131072,
+    "headersSent": true
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/segment.bin",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 0,
+    "headersSent": true,
+    "peerClosed": true
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/segment.bin",
+    "ifMatch": "\"original\"",
+    "range": null,
+    "bodyBytesWritten": 0
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/after-admission/segment.bin",
+    "ifMatch": "\"original\"",
+    "range": null,
+    "bodyBytesWritten": 131072,
+    "headersSent": true
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/segment.bin",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 65536,
+    "headersSent": true,
+    "peerClosed": true
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/segment.bin",
+    "ifMatch": "\"original\"",
+    "range": null,
+    "bodyBytesWritten": 0
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/manifest.mpd",
+    "ifMatch": null,
+    "range": null,
+    "bodyBytesWritten": 409
+  },
+  {
+    "method": "GET",
+    "path": "/mid-body/segment.bin",
+    "ifMatch": "\"original\"",
+    "range": null,
+    "bodyBytesWritten": 131072,
+    "headersSent": true
+  }
+]

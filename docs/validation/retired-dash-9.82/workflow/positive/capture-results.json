@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "name": "A verified one-second prefix is captured before pausing",
+      "passed": true
+    },
+    {
+      "name": "Pause preserves a nonpublished recording",
+      "passed": true
+    },
+    {
+      "name": "Actual saved resources retain the verified unsealed prefix",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": true,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": 1.0,
+  "retainedPeriodDuration": 0.0,
+  "ownedJob": {
+    "Status": "Paused",
+    "Error": "",
+    "Sha256": "",
+    "Size": -1,
+    "Received": 106375,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "TransferredBytes": 107134,
+    "AdaptiveMetadataBytes": 759,
+    "TransferSeconds": 0.5480747,
+    "ElapsedSeconds": 0.5480762,
+    "MediaPhase": "Waiting for live DASH segments"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "label": "9.92-availability-rotated-control",
+  "transfers": 9,
+  "settingsRestored": true,
+  "flushAfterExit": true,
+  "summary": [
+    {
+      "case": "single-4m",
+      "medianProcessExitTailMs": {
+        "udm": 80.576,
+        "baseline": 203.139,
+        "idm": 373.6
+      },
+      "udmNotSlowerMedian": true,
+      "processExitTailMs": {
+        "udm": [
+          80.576,
+          449.354,
+          74.265
+        ],
+        "baseline": [
+          203.139,
+          455.018,
+          91.652
+        ],
+        "idm": [
+          373.6,
+          402.24,
+          312.548
+        ]
+      }
+    }
+  ],
+  "primaryMetric": "Last origin body send to actual exit time of all observed current-session application processes, using GetProcessTimes; hashes and final catalog checked after exit. Includes app-owned background work and /q shutdown, not GUI timing or system services."
+}

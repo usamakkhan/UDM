@@ -1,3 +1,4 @@
+#include "CompletionModalFence.hpp"
 #include "ProgressPresentation.hpp"
 #include "CategoryLabels.hpp"
 #include "ProgressRateHistory.hpp"
@@ -116,7 +117,7 @@ public:
 };
 inline CBrush& dialogBrush(){static CBrush dark(RGB(32,34,38));return uiDark?dark:*CBrush::FromHandle(GetSysColorBrush(COLOR_BTNFACE));}
 inline CBrush& uiBrush(){static CBrush dark(RGB(32,34,38));return uiDark?dark:*CBrush::FromHandle(GetSysColorBrush(COLOR_WINDOW));}
-inline void openWith(CWnd* owner,const fs::path& path){if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
+inline void openWith(CWnd* owner,const fs::path& path){CompletionModalFence::ModalScope scope(owner?owner->GetSafeHwnd():nullptr);if(!fs::is_regular_file(path))throw std::runtime_error("The saved file is missing.");auto normalized=fs::absolute(path).lexically_normal().make_preferred();OPENASINFO info{normalized.c_str(),nullptr,OAIF_EXEC};auto filter=AfxOleGetMessageFilter();if(filter){filter->EnableBusyDialog(FALSE);filter->EnableNotRespondingDialog(FALSE);}auto result=SHOpenWithDialog(owner->GetSafeHwnd(),&info);if(filter){filter->EnableBusyDialog(TRUE);filter->EnableNotRespondingDialog(TRUE);}if(FAILED(result)&&result!=HRESULT_FROM_WIN32(ERROR_CANCELLED))throw std::runtime_error("Windows could not open the app chooser (HRESULT "+std::to_string((unsigned long)result)+").");}
 inline CString cs(const std::string& s){return CString(wide(s).c_str());}
 inline std::string text(CWnd* w){CString s;w->GetWindowText(s);return utf8((LPCWSTR)s);}
 inline int themedMessage(CWnd* owner,LPCWSTR message,LPCWSTR title,UINT flags=MB_OK);
@@ -143,7 +144,7 @@ inline bool openDownloadedFile(CWnd* owner,const fs::path& path){
  openFile(owner,path);
  return true;
 }
-inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
+inline std::wstring chooseFolder(CWnd* owner,const std::wstring& initial){CompletionModalFence::ModalScope scope(owner?owner->GetSafeHwnd():nullptr);CFolderPickerDialog dialog(initial.c_str(),OFN_PATHMUSTEXIST,owner);return dialog.DoModal()==IDOK?std::wstring(dialog.GetPathName()):L"";}
 #include "ThemeControls.hpp"
 class QueueCombo:public ThemeCombo {
  std::vector<std::string> names;
@@ -176,7 +177,7 @@ class Form:public CDialog {
  afx_msg LRESULT OnTaskPulse(WPARAM key,LPARAM){if(taskSignal&&taskSignal->matches(key)){const bool previous=taskPulse;taskPulse=true;struct Restore{bool& value;bool previous;~Restore(){value=previous;}}restore{taskPulse,previous};OnTimer(pulseTimer);}return 0;}
  afx_msg void OnNcDestroy(){if(taskSignal)taskSignal->disarm();CDialog::OnNcDestroy();}
  MenuBarTheme popupTheme;
- std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
+ HWND invocationOwner=nullptr;std::string caption;int width,height;DialogUnits units;std::map<HWND,CRect> logicalRects;
  std::map<HWND,ResizeAnchor> resizeAnchors;
  CRect preferredWindowRect(){
   auto bounds=rect(0,0,width,height);
@@ -349,7 +350,8 @@ public:
  }
  int MessageBox(LPCTSTR message,LPCTSTR title=nullptr,UINT flags=MB_OK){return themedMessage(this,message,title?title:L"UDM",flags);}
  bool modeless=false,dialogUnits=false,resizable=false;std::map<UINT,std::function<void(UINT)>> changes;std::function<void()> init,afterInit,accept,cancel,pulse;
- Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),caption(std::move(title)),width(w),height(h){}
+ Form(std::string title,int w,int h,CWnd* parent=nullptr):CDialog(100,parent),invocationOwner(parent?parent->GetSafeHwnd():nullptr),caption(std::move(title)),width(w),height(h){}
+ INT_PTR DoModal()override{const auto owner=invocationOwner?invocationOwner:(AfxGetMainWnd()?AfxGetMainWnd()->GetSafeHwnd():nullptr);CompletionModalFence::ModalScope scope(owner);return CDialog::DoModal();}
  void keepOnScreen(){CRect r;GetWindowRect(&r);MONITORINFO monitor{sizeof(monitor)};if(!GetMonitorInfoW(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor))return;const auto& work=monitor.rcWork;int x=std::max<int>(work.left,std::min<int>(r.left,work.right-r.Width())),y=std::max<int>(work.top,std::min<int>(r.top,work.bottom-r.Height()));SetWindowPos(nullptr,x,y,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);}
  void resizeClient(int w,int h){
   width=w;height=h;
@@ -456,6 +458,7 @@ BEGIN_MESSAGE_MAP(Form,CDialog)
  ON_MESSAGE(WM_DPICHANGED,OnDialogDpiChanged)
 END_MESSAGE_MAP()
 inline int themedMessage(CWnd* owner,LPCWSTR message,LPCWSTR title,UINT flags){
+ CompletionModalFence::ModalScope scope(owner?owner->GetSafeHwnd():(AfxGetMainWnd()?AfxGetMainWnd()->GetSafeHwnd():nullptr));
  const UINT type=flags&MB_TYPEMASK;
  if(!uiDark||type>MB_CANCELTRYCONTINUE||(flags&(MB_HELP|MB_SERVICE_NOTIFICATION|MB_DEFAULT_DESKTOP_ONLY)))return ::MessageBoxW(owner?owner->GetSafeHwnd():nullptr,message,title,flags);
  std::vector<std::pair<int,std::string>> choices;

@@ -1,4 +1,62 @@
 [
+  {"source": "DashResourceTransportTests", "timeoutSeconds": 90},
+  {"source": "HttpRouteRetentionTests", "timeoutSeconds": 90},
+  {"source": "DashPendingVersionTests", "timeoutSeconds": 90},
+  {"source": "DashMetadataTransportTests", "timeoutSeconds": 90},
+  {"source": "GaplessAacTailTests", "timeoutSeconds": 90},
+  {"source": "ShellFolderTaskTests", "timeoutSeconds": 90},
+  {"source": "CompletionModalFenceTests", "timeoutSeconds": 90},
+  {"source": "CompletionCountdownWakeTests", "timeoutSeconds": 90},
+  {"source": "QueueCompletionCountdownTests", "timeoutSeconds": 90},
+  {"source": "CompletionCountdownTests", "timeoutSeconds": 90},
+  {
+    "source": "CompletionClaimTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "HttpInitialRangePlanTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "HttpReadReservationTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "CompletionReadinessTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "CompletionSettingsTaskTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "RetiredDashBoundaryTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "FixedVolumeTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "AdvisoryPublicationTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "VerifiedMediaHandoffTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "RelocationOwnershipTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "GzipStageOwnershipTests",
+    "timeoutSeconds": 90
+  },
+  {
+    "source": "TransferStageCleanupTests",
+    "timeoutSeconds": 90
+  },
   {
     "source": "StagingLinkReuseTests",
     "timeoutSeconds": 90

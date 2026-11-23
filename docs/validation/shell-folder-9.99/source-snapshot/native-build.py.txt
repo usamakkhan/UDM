@@ -1,0 +1,40 @@
+from pathlib import Path
+import os,json,subprocess
+root=Path('D:/UDM');area=root/'.media-cache/owned-shell-folder-build-9.99';base=Path(os.environ['LOCALAPPDATA'])/'UDM-Development'
+assert (area/'frozen-9.98/source-proof.json').is_file()
+scope={'__file__':str(area/'config.py')};exec((base/'finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+prior=json.loads((root/'.media-cache/owned-auto-presentation-build-9.98/build-result.json').read_text(encoding='utf-8'));paths={e['path'] for e in prior['sources']}|{'native/ShellFolderTask.hpp','native/ShellFolderTaskTests.cpp','native/ShellFolderUiTests.cpp'};sources=[{'path':p,'sha256':sha(root/p)} for p in sorted(paths)];old={e['path']:e['sha256'] for e in prior['sources']};changed=[e['path'] for e in sources if old.get(e['path'])!=e['sha256']];allowed={'native/App.cpp','native/Version.hpp','browser/chromium/manifest.json','browser/firefox/manifest.json','native/ShellFolderTask.hpp','native/ShellFolderTaskTests.cpp','native/ShellFolderUiTests.cpp','native/backend-tests.json'};assert set(changed)==allowed,changed
+for e in prior['coreObjects']:assert sha(Path(e['path']))==e['sha256']
+frozen=area/'frozen-9.98';proof=json.loads((frozen/'source-proof.json').read_text(encoding='utf-8'));assert sha(frozen/'App.cpp')==proof['sha256'];(frozen/'ShellFolderUiTests.cpp').write_bytes((native/'ShellFolderUiTests.cpp').read_bytes())
+inputs={'sources':sources,'changedSources':changed,'priorCoreObjects':prior['coreObjects'],'newCoreUnits':['Bridge'],'normalOptimization':'/O2','isolatedUiOptimization':'/Od','frozenAppProof':proof,'sharedCoreObjectsCopied':False,'installerCreated':False,'installed':False};(area/'inputs.json').write_text(json.dumps(inputs,indent=2),encoding='utf-8')
+def invoke(args,name):
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:p=subprocess.run(args,cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT)
+ if p.returncode:print((area/(name+'.log')).read_text(encoding='utf-8',errors='replace')[-5000:],flush=True)
+ assert p.returncode==0,name
+invoke([str(compiler),*common,'/c',str(native/'Bridge.cpp'),'/Fo'+str(out/'Bridge.obj')],'compile-Bridge')
+objects=[out/'Bridge.obj' if Path(e['path']).stem=='Bridge' else Path(e['path']) for e in prior['coreObjects']];invoke([str(cache/'microsoft.windows.sdk.cpp/c/bin/10.0.26100.0/x64/rc.exe'),'/nologo','/fo'+str(area/'App.res'),str(native/'App.rc')],'resources')
+outputs=[];runs=[]
+def build(source,name,kind,windows=False,sourcePath=None):
+ flags=([x for x in common if x!='/O2']+['/Od']) if kind in ('ui','frozen-ui') else common
+ exe=release/(name+'.exe');invoke([str(compiler),*flags,str(sourcePath or native/(source+'.cpp')),*map(str,objects),str(area/'App.res'),'/Fo'+str(out/(name+'.obj')),'/Fe'+str(exe),'/link',*system,*(['/ENTRY:wWinMainCRTStartup'] if windows else []),'/SUBSYSTEM:'+('WINDOWS' if windows else 'CONSOLE'),'/DYNAMICBASE','/NXCOMPAT','/HIGHENTROPYVA','/INCREMENTAL:NO','/MANIFEST:NO'],'build-'+name)
+ outputs.append({'name':exe.name,'kind':kind,'path':str(exe),'sha256':sha(exe)});print('Built '+name,flush=True)
+def run(name,kind,args=[]):
+ exe=release/(name+'.exe');folder=area/'runs-attempt-01'/name;folder.parent.mkdir(exist_ok=True);assert not folder.exists(),'Fresh run directory required'
+ with (area/('run-'+name+'.log')).open('w',encoding='utf-8') as log:p=subprocess.run([str(exe),*args,str(folder)],cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=120)
+ report=json.loads((folder/'results.json').read_text(encoding='utf-8-sig'));row={'suite':name,'kind':kind,'exitCode':p.returncode,'passed':p.returncode==0 and report['passed'] and all(c['passed'] for c in report['checks']),'checks':len(report['checks']),'sha256':sha(exe)};runs.append(row);(area/'suite-progress.json').write_text(json.dumps({'passed':all(e['passed'] for e in runs),'suites':runs},indent=2),encoding='utf-8');print(json.dumps(row),flush=True)
+ if not row['passed']:print(json.dumps({'error':report.get('error'),'failedChecks':[e for e in report['checks'] if not e['passed']]}),flush=True)
+ assert row['passed'],name
+build('ShellFolderTaskTests','Udm.ShellFolderTaskTests','backend');run('Udm.ShellFolderTaskTests','backend')
+build('ShellFolderUiTests','Udm.ShellFolderUiTests','ui',True);run('Udm.ShellFolderUiTests','ui',['candidate'])
+build('ShellFolderUiTests','Udm.ShellFolderFrozenUiTests','frozen-ui',True,frozen/'ShellFolderUiTests.cpp');run('Udm.ShellFolderFrozenUiTests','frozen-ui',['baseline'])
+build('CompletionModalFenceTests','Udm.CompletionModalFenceTests','backend');run('Udm.CompletionModalFenceTests','backend')
+build('AutomaticPromptSnapshotTests','Udm.AutomaticPromptSnapshotTests','backend');run('Udm.AutomaticPromptSnapshotTests','backend')
+build('AutomaticPresentationUiTests','Udm.AutomaticPresentationUiTests','ui',True);run('Udm.AutomaticPresentationUiTests','ui',['candidate'])
+programs=[('App','UDM','product',True),('HostMain','Udm.NativeHost','product',False),('MonitorMain','Udm.Monitor','product',False),('SetupMain','Udm.SetupHelper','product',False),('AutomationMain','Udm.Automation','product',True),('CompletionCountdownWakeTests','Udm.CompletionCountdownWakeTests','backend',False),('QueueCompletionCountdownTests','Udm.QueueCompletionCountdownTests','backend',False),('CompletionCountdownTests','Udm.CompletionCountdownTests','backend',False),('CompletionManualExitUiTests','Udm.CompletionManualExitUiTests','ui',True),('CompletionSecondaryModalUiTests','Udm.CompletionSecondaryModalUiTests','ui',True),('CompletionModalOwnerUiTests','Udm.CompletionModalOwnerUiTests','ui',True),('MainExitLayoutUiTests','Udm.MainExitLayoutUiTests','ui',True),('MainClosePolicyUiTests','Udm.MainClosePolicyUiTests','ui',True),('CompletionCountdownWakeUiTests','Udm.CompletionCountdownWakeUiTests','ui',True),('QueueCompletionCountdownUiTests','Udm.QueueCompletionCountdownUiTests','ui',True),('CompletionCountdownUiTests','Udm.CompletionCountdownUiTests','ui',True),('CompletionClaimUiTests','Udm.CompletionClaimUiTests','ui',True)]
+for source,name,kind,windows in programs:build(source,name,kind,windows)
+assert len(outputs)==23 and all(sha(root/e['path'])==e['sha256'] for e in sources)
+(area/'build-result.json').write_text(json.dumps({'passed':True,'version':'9.99','extensionVersion':'0.73.63','sources':sources,'coreObjects':[dict(path=str(p),sha256=sha(p)) for p in objects],'outputs':outputs,'installedAppChanged':False},indent=2),encoding='utf-8')
+for source,name,kind,windows in programs:
+ if kind!='product':run(name,kind,['candidate'] if source in ('CompletionManualExitUiTests','CompletionSecondaryModalUiTests','CompletionModalOwnerUiTests','CompletionCountdownWakeUiTests','CompletionClaimUiTests') else [])
+assert len(runs)==18
+(area/'suite-results.json').write_text(json.dumps({'passed':True,'suites':runs},indent=2),encoding='utf-8');print('All native products and focused manual Exit/completion checks passed; not installed.',flush=True)

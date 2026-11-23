@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "bindings": [
+    {
+      "assemblerVersion": "10.1",
+      "objectName": "DashManifest.obj",
+      "sha256": "CEB03A15779D957BBA424313D7C99C59EAD7ED3B8049C2ECF223A023EC37337E",
+      "controlExecutableSha256": "0A29A992663D2D4EA8F884143E3390011EC6647CBBB46CF866BA0E56E6A9D160"
+    },
+    {
+      "assemblerVersion": "10.0",
+      "objectName": "DashManifest.obj",
+      "sha256": "ED3EA896D08E041AE940D1FC587005CABD41F88C2776FE5E90DA084D137DA212",
+      "controlExecutableSha256": "789E4AEE5EA9304AFAFB2143A8F7802C382D75EC02697EAAC1615BF2C5A8FA3E"
+    }
+  ],
+  "supplementalWorkflowSources": [
+    {
+      "path": "benchmarks/speed/live_dash_continuous_workflow.cpp",
+      "sha256": "CF5DFAEB583777C2A9CA83DCEAF48516942488EAFCF5426B193C942C5A28FBB2",
+      "snapshot": "source-snapshot/benchmarks__speed__live_dash_continuous_workflow.cpp.txt",
+      "includedInBuildSourceManifest": true,
+      "provenanceLimit": "Supplemental current snapshot taken after execution; unchanged by this task."
+    },
+    {
+      "path": "tests/live-dash-continuous.native-live.py",
+      "sha256": "2B8E6EF765741EC373E10FB9FB31A2D558BAADD338A5C77B6018275F0CA09BF1",
+      "snapshot": "source-snapshot/tests__live-dash-continuous.native-live.py.txt",
+      "includedInBuildSourceManifest": true,
+      "provenanceLimit": "Supplemental current snapshot taken after execution; unchanged by this task."
+    }
+  ]
+}

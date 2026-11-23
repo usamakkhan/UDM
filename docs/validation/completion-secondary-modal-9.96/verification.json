@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "version": "9.96",
+  "sourceExtensionVersions": [
+    "0.73.60",
+    "0.73.60"
+  ],
+  "verifiedSources": 729,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "Bridge"
+  ],
+  "verifiedOutputCount": 15,
+  "normalProducts": [
+    {
+      "name": "UDM.exe",
+      "sha256": "C5C370ABD2EB6CEAEE872894817AFC92ECEAEDAA14A5DB88A7087097A588E28D"
+    },
+    {
+      "name": "Udm.NativeHost.exe",
+      "sha256": "47F665F456A240F39D100FC96ECDE9CE958B87892555CF1ED7BED9A43B4B8898"
+    },
+    {
+      "name": "Udm.Monitor.exe",
+      "sha256": "99F0E75F91AB7B1BE388747CDB33743F285C9C4B0A41AEAAD26B314488159C3E"
+    },
+    {
+      "name": "Udm.SetupHelper.exe",
+      "sha256": "773016E233E1F2AAD0148D18E3D8F6F291220F5B0A491242570E744058984EB2"
+    },
+    {
+      "name": "Udm.Automation.exe",
+      "sha256": "555542CCE13E90D2BB03A42E557B9A1FF49124297C5937F2B9C3F3106718893D"
+    }
+  ],
+  "hostProtectedFilesUnchanged": 9,
+  "focusedChecks": 504,
+  "frozenControlChecks": 6,
+  "suites": [
+    {
+      "suite": "CompletionModalFenceTests",
+      "kind": "backend",
+      "passed": true,
+      "checks": 22,
+      "sha256": "A736938AC7CA234D85A83B22CFC65227FE71C93DC54C81A8AF9AEA79DE1A2391"
+    },
+    {
+      "suite": "CompletionSecondaryModalUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 162,
+      "sha256": "3197C153A8BB3B9C0820B45858AA1B92AB12A2523321F7E3FDEF6FC7D959ABC1"
+    },
+    {
+      "suite": "CompletionCountdownWakeTests",
+      "kind": "backend",
+      "passed": true,
+      "checks": 18,
+      "sha256": "AC5F3543165604D5033A262E4DBD03AA539A8891CE6209CBD12E42BC205E9A74"
+    },
+    {
+      "suite": "QueueCompletionCountdownTests",
+      "kind": "backend",
+      "passed": true,
+      "checks": 16,
+      "sha256": "1025781167528012D047639F0BBAD500233AAA62F20B19CBFB6BE9E449C91CDE"
+    },
+    {
+      "suite": "CompletionCountdownTests",
+      "kind": "backend",
+      "passed": true,
+      "checks": 20,
+      "sha256": "08ED81E3A90F073FB4E323B97D02B65B5B95D661136A325CA706BE847251A6E7"
+    },
+    {
+      "suite": "CompletionModalOwnerUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 136,
+      "sha256": "0B2F749256B9C1CD24BCCADB6EDB9B4CD2A2CAF6D8C3202BAC451A64F3DB1392"
+    },
+    {
+      "suite": "CompletionCountdownWakeUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 30,
+      "sha256": "21A78E9693289D7F795FDDD8D418000867E960A3EF6215F4CF2F1772A608A022"
+    },
+    {
+      "suite": "QueueCompletionCountdownUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 34,
+      "sha256": "11618248D5A2237BB1288E61735E62C6CF0F443AAEE9E0E8C85A30047A665042"
+    },
+    {
+      "suite": "CompletionCountdownUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 16,
+      "sha256": "6F12A876FB213338E0D7DEB9C7F83F4CC7834D173D3BD4CB93BD15C7560ED207"
+    },
+    {
+      "suite": "CompletionClaimUiTests",
+      "kind": "ui",
+      "passed": true,
+      "checks": 50,
+      "sha256": "214203695B4EBAE833CE62156A135D47A6A6EBC672DA0B7191BA576821276AF8"
+    }
+  ],
+  "installed": false,
+  "installerCreated": false,
+  "liveIdmComparison": false,
+  "fullParityProven": false,
+  "cleanupCompleted": false,
+  "frozenControlScope": "Separate frozen 9.95 App-source counterexample using its retained earlier fixture; not a product or timing comparison",
+  "frozenAppSourceSha256": "433DA11F80EB5B13D78A6C320783C5B3126AA96381EE3AAAD6AB75D71969BB6F",
+  "frozenFixtureSha256": "7746CD5F042BCD716BFCC146864A9E2BFD580AD575D1E6AB28FAC73691415044"
+}

@@ -1,0 +1,312 @@
+--- 9.84/native/App.cpp
++++ 9.85/native/App.cpp
+@@ -11,6 +11,7 @@
+ #include <regex>
+ #include "Core.hpp"
+ #include "ColumnSettingsTask.hpp"
++#include "CompletionSettingsTask.hpp"
+ #include "GlobalLimitSettingsTask.hpp"
+ #include "AppearanceSettingsTask.hpp"
+ #include "UiDesktopAttestation.hpp"
+@@ -170,6 +171,9 @@
+  enum class TransferEvent { Started, Published, Finished };
+  std::mutex eventsMutex;std::vector<std::pair<JobPtr,TransferEvent>> events;
+  std::set<std::string> presentedPublications;
++ CompletionSettingsTask completionSettingsTask;bool completionSettingsClosePending=false;
++ struct CompletionPreferenceView {Form* dialog;CWnd* checkbox;bool confirmed;};
++ std::weak_ptr<CompletionPreferenceView> completionSettingsSource;
+  std::shared_ptr<PendingFileInfoInbox> preparedFileInfo=std::make_shared<PendingFileInfoInbox>();
+  std::map<std::string,std::shared_ptr<const PendingFileInfoInbox::Operation>> preparedFileInfoViews;
+  bool cancellationRecoveryShowing=false;
+@@ -745,10 +749,23 @@
+   }
+   showCompletionDialog(job,requested);
+  }
++ bool pollCompletionSettings(){
++  if(!completionSettingsTask.valid()){if(completionSettingsClosePending){completionSettingsClosePending=false;OnClose();return true;}return false;}
++  if(!completionSettingsTask.ready())return true;
++  auto source=completionSettingsSource.lock();completionSettingsSource.reset();auto result=completionSettingsTask.take();
++  if(source&&source->dialog->GetSafeHwnd()){
++   if(result.persisted)source->confirmed=*result.persisted;
++   source->checkbox->SendMessage(BM_SETCHECK,source->confirmed?BST_CHECKED:BST_UNCHECKED);source->checkbox->EnableWindow(TRUE);
++  }
++  for(auto& dialog:completions)if(dialog->GetSafeHwnd())dialog->PostMessage(WM_TIMER,Form::pulseTimer,0);
++  if(!result.saved){completionSettingsClosePending=false;quitting=false;recoveryOnClose=false;auto owner=source&&source->dialog->GetSafeHwnd()?static_cast<CWnd*>(source->dialog):static_cast<CWnd*>(this);error(owner,std::runtime_error(result.error.empty()?"The completion preference could not be saved.":result.error));}
++  else if(completionSettingsClosePending)try{maintenanceSignal->notifier()();}catch(...){/* The main timer retains the accepted close decision. */}
++  return true;
++ }
+  void showCompletionDialog(JobPtr job,bool requested,bool publication=false){
+   Json addressInputs;
+   fs::path target;
+-  i64 fileSize,trackBytes;
++  i64 fileSize,trackBytes;bool suppressed;
+   std::string publicationId;
+   std::optional<std::string> scanSummary;
+   {
+@@ -766,6 +783,7 @@
+    target=job->target();
+    fileSize=num(job->data,"Size",-1);
+    trackBytes=completionTrackBytes(*job);
++   suppressed=yes(manager.state["Settings"],"SuppressCompletionDialog");
+    if(job->data.contains("ScanResult"))scanSummary=scannerSummary(job->data);
+   }
+   // IDM 6.43 "Download complete" (resource dialog 286, docs/reference/completion-dialog.json):
+@@ -778,29 +796,25 @@
+   try{address=downloadAddress(addressInputs);}catch(const std::exception&){addressUnavailable=true;}
+   const int extra=scanSummary?33:0;
+   auto dialog=std::make_unique<Form>("Download complete",303,132+extra,this);auto d=dialog.get();d->modeless=true;d->dialogUnits=true;
+-  d->init=[this,d,job,address=std::move(address),addressUnavailable,target=std::move(target),fileSize,trackBytes,scanSummary=std::move(scanSummary),extra]{
++  d->init=[this,d,job,address=std::move(address),addressUnavailable,target=std::move(target),fileSize,trackBytes,suppressed,scanSummary=std::move(scanSummary),extra]{
+    // The reference puts the file actions and suppression checkbox before the read-only edits in tab order.
+    auto openButton=d->button("Open",7,96+extra,61,{});
+    auto openWithButton=d->button("Open with...",76,96+extra,61,{});
+    auto folderButton=d->button("Open folder",145,96+extra,61,{});
+    auto closeButton=d->button("Close",235,96+extra,61,{});
+-   auto suppress=d->check("Don't show this dialog again",false,16,117+extra,238);
++   auto suppress=d->check("Don't show this dialog again",suppressed,16,117+extra,238);
++   auto preferenceView=std::make_shared<CompletionPreferenceView>(CompletionPreferenceView{d,suppress,suppressed});
+    enum class CompletionAction {Open,OpenWith,Folder};
+    struct CompletionActionState {std::optional<CompletionAction> pending;bool dispatching=false;bool busy()const{return pending.has_value()||dispatching;}};
+    auto actionState=std::make_shared<CompletionActionState>();
+    auto close=[d,actionState]{actionState->pending.reset();d->close();};
+    d->bind(closeButton,close);
+-   d->bind(suppress,[this,d,suppress]{
+-    auto settings=preferences();
+-    const bool saved=yes(settings,"SuppressCompletionDialog");
++   d->bind(suppress,[this,d,suppress,preferenceView]{
++    if(completionSettingsTask.valid()||manager.fileInfoDecisionPending){suppress->SendMessage(BM_SETCHECK,preferenceView->confirmed?BST_CHECKED:BST_UNCHECKED);return;}
+     const bool checked=d->checked(suppress);
+-    if(saved==checked)return;
+-    settings["SuppressCompletionDialog"]=checked;
+-    try{manager.setSettings(settings);}
+-    catch(...){
+-     suppress->SendMessage(BM_SETCHECK,saved?BST_CHECKED:BST_UNCHECKED);
+-     throw;
+-    }
++    if(preferenceView->confirmed==checked)return;
++    try{completionSettingsTask.start(manager,checked,maintenanceSignal->notifier());completionSettingsSource=preferenceView;suppress->EnableWindow(FALSE);}
++    catch(...){suppress->SendMessage(BM_SETCHECK,preferenceView->confirmed?BST_CHECKED:BST_UNCHECKED);throw;}
+    });
+    auto icon=d->make<FileDragIcon>(0,7,7,21,20);icon->setPath(target);
+    std::string result="Download complete";
+@@ -817,14 +831,15 @@
+    if(scanSummary)d->control(L"EDIT","Virus check: "+*scanSummary,WS_TABSTOP|ES_READONLY|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL,7,94,289,29,WS_EX_CLIENTEDGE);
+    auto drag=d->make<FileDragList>(WS_TABSTOP,276,115+extra,18,12);drag->setPath(target);
+    struct CompletionTarget {fs::path path;bool canOpen=false;};
+-   auto syncTarget=[this,d,job,location,icon,drag,openButton,openWithButton,folderButton,suppress,actionState]()->std::optional<CompletionTarget>{
++   auto syncTarget=[this,d,job,location,icon,drag,openButton,openWithButton,folderButton,suppress,preferenceView,actionState]()->std::optional<CompletionTarget>{
+     if(!d->GetSafeHwnd())return {};
+     std::unique_lock lock(manager.mutex,std::try_to_lock);
+     if(!lock.owns_lock())return {};
+     CompletionTarget current{job->target(),canOpenDownloadLocked(job)};
+     const bool suppressed=yes(manager.state["Settings"],"SuppressCompletionDialog");
+     lock.unlock();
+-    if(d->checked(suppress)!=suppressed)suppress->SendMessage(BM_SETCHECK,suppressed?BST_CHECKED:BST_UNCHECKED);
++    if(!completionSettingsTask.valid()){preferenceView->confirmed=suppressed;if(d->checked(suppress)!=suppressed)suppress->SendMessage(BM_SETCHECK,suppressed?BST_CHECKED:BST_UNCHECKED);}
++    suppress->EnableWindow(!completionSettingsTask.valid()&&!manager.fileInfoDecisionPending);
+     if(current.path!=drag->path){
+      location->SetWindowText(current.path.c_str());
+      icon->setPath(current.path);
+@@ -1400,12 +1415,12 @@
+   else historyRefreshDeferred=true;
+  }
+   void pollNetworkCapture(bool request=true){if(!networkCapture)return;networkCapture->pollReady();const auto& view=networkCapture->view();if(view.revision!=networkErrorRevision){networkErrorRevision=view.revision;if(!view.error.empty())showStatus(view.error);}if(request&&!quitting)networkCapture->requestPoll();}
+-  afx_msg void OnTimer(UINT_PTR id){if(pollAppearanceCommand())return;if(pollGlobalLimitCommand())return;if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
++  afx_msg void OnTimer(UINT_PTR id){if(pollCompletionSettings())return;if(pollAppearanceCommand())return;if(pollGlobalLimitCommand())return;if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
+   void consumeModelMaintenance(){const auto result=modelMaintenance.takeResult();if(!result.dispatchError.empty())showStatus(result.dispatchError);if(!result.tickError.empty())showStatus(result.tickError);}
+   void requestModelMaintenance(){consumeModelMaintenance();modelMaintenance.requestTick();}
+   afx_msg LRESULT OnModelMaintenanceReady(WPARAM identity,LPARAM){
+    if(!maintenanceSignal->matches(identity))return 0;
+-   if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;
++   if(pollCompletionSettings())return 0;if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;
+    if(exitLayoutTask.valid()){pollExitLayout();return 0;}if(quitting)return 0;
+    if(closePolicyTask.valid()){pollClosePolicy();return 0;}
+    try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}
+@@ -1555,7 +1570,7 @@
+    return 0;
+   }
+  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
+- afx_msg void OnClose(){cancelDownloadMenu();if(appearanceCommandTask.valid()){appearanceClosePending=true;showStatus("Finishing appearance changes before closing...");return;}appearanceClosePending=false;if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
++ afx_msg void OnClose(){if(completionSettingsTask.valid()){completionSettingsClosePending=true;showStatus("Saving completion preference before closing...");return;}completionSettingsClosePending=false;cancelDownloadMenu();if(appearanceCommandTask.valid()){appearanceClosePending=true;showStatus("Finishing appearance changes before closing...");return;}appearanceClosePending=false;if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
+  afx_msg LRESULT OnShow(WPARAM,LPARAM){if(exitLayoutTask.valid()||(appearanceClosePending&&quitting)||(globalLimitClosePending&&quitting))return 0;appearanceClosePending=false;globalLimitClosePending=false;cancelClosePolicy();ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
+  // Link arrays sent through automation wait, encrypted, until reviewed here.
+  void reviewAutomationBatches(){
+--- 9.84/native/CompletionDialogUiTests.cpp
++++ 9.85/native/CompletionDialogUiTests.cpp
+@@ -367,15 +367,22 @@
+  frame.complete(job,true);
+  const auto peer=frame.completions.back()->GetSafeHwnd();
+  const auto peerSuppress=named(peer,L"Don't show this dialog again");
++ const auto settleSuppression=[&]{
++  const auto deadline=GetTickCount64()+5000;
++  while(!frame.completionSettingsTask.ready()&&GetTickCount64()<deadline)Sleep(1);
++  if(!frame.completionSettingsTask.ready())throw std::runtime_error("Completion preference deadline");
++  frame.pollCompletionSettings();
++ };
+  {
+   Handle locked(CreateFileW((manager.root/L"state.json.tmp").c_str(),GENERIC_WRITE,0,nullptr,CREATE_ALWAYS,0,nullptr));
+   expect(static_cast<bool>(locked),"Hold the catalog write lock for a failed suppression change");
+-  const auto warning=MissingWarning::observe(w,[&]{SendMessageW(suppress,BM_CLICK,0,0);});
++  const auto warning=MissingWarning::observe(w,[&]{SendMessageW(suppress,BM_CLICK,0,0);settleSuppression();});
+   expect(!warning.title.empty()&&SendMessageW(suppress,BM_GETCHECK,0,0)==BST_UNCHECKED&&
+    !yes(manager.state["Settings"],"SuppressCompletionDialog")&&IsWindow(w),
+    "A failed suppression write restores the checkbox and keeps completion open");
+  }
+  SendMessageW(suppress,BM_CLICK,0,0);
++ settleSuppression();
+  expect(IsWindow(w)&&IsWindow(peer)&&yes(manager.state["Settings"],"SuppressCompletionDialog"),
+   "Checking Don't show again saves the preference before either completion dialog closes");
+  {Manager reopened(manager.root);expect(yes(reopened.state["Settings"],"SuppressCompletionDialog"),
+@@ -386,6 +393,7 @@
+  SendMessageW(peer,WM_TIMER,7,0);
+  expect(SendMessageW(peerSuppress,BM_GETCHECK,0,0)==BST_CHECKED,"Another open completion reflects the shared preference");
+  SendMessageW(peerSuppress,BM_CLICK,0,0);
++ settleSuppression();
+  SendMessageW(w,WM_TIMER,7,0);
+  expect(!yes(manager.state["Settings"],"SuppressCompletionDialog")&&SendMessageW(suppress,BM_GETCHECK,0,0)==BST_UNCHECKED,
+   "Unchecking restores automatic completion and synchronizes the first dialog");
+@@ -394,6 +402,7 @@
+  frame.completions.back()->SendMessage(WM_CLOSE);
+  SetActiveWindow(w);
+  SendMessageW(suppress,BM_CLICK,0,0);
++ settleSuppression();
+  expect(yes(manager.state["Settings"],"SuppressCompletionDialog"),
+   "The reactivated completion saves suppression again before Close");
+  SendMessageW(named(w,L"Close"),BM_CLICK,0,0);
+--- 9.84/native/backend-tests.json
++++ 9.85/native/backend-tests.json
+@@ -1,4 +1,8 @@
+ [
++  {
++    "source": "CompletionSettingsTaskTests",
++    "timeoutSeconds": 90
++  },
+   {
+     "source": "RetiredDashBoundaryTests",
+     "timeoutSeconds": 90
+--- 9.84/native/Version.hpp
++++ 9.85/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 9,84,0,0
+-#define UDM_VERSION_STRING "9.84"
+-#define UDM_VERSION_WSTRING L"9.84"
++#define UDM_VERSION_TUPLE 9,85,0,0
++#define UDM_VERSION_STRING "9.85"
++#define UDM_VERSION_WSTRING L"9.85"
+--- 9.84/browser/chromium/manifest.json
++++ 9.85/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.48",
++  "version": "0.73.49",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- 9.84/browser/firefox/manifest.json
++++ 9.85/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.48",
++  "version": "0.73.49",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- /dev/null
++++ 9.85/native/CompletionSettingsTask.hpp
+@@ -0,0 +1,27 @@
++#pragma once
++#include "Core.hpp"
++#include <future>
++#define UDM_COMPLETION_SUPPRESSION_TASK_AVAILABLE
++namespace udm {
++struct CompletionSettingsResult {bool saved=false;std::optional<bool> persisted;std::string error;};
++// Accepted saves outlive their originating dialog. Only the requested field
++// is merged under the live model lock; no window or control enters the worker.
++class CompletionSettingsTask {
++ std::future<CompletionSettingsResult> future;std::thread worker;Manager* guard=nullptr;
++ void release()noexcept{if(guard){guard->fileInfoDecisionPending=false;guard=nullptr;}}
++public:
++ CompletionSettingsTask()=default;CompletionSettingsTask(const CompletionSettingsTask&)=delete;CompletionSettingsTask& operator=(const CompletionSettingsTask&)=delete;~CompletionSettingsTask(){finish();}
++ bool valid()const noexcept{return future.valid();}bool ready()const{return valid()&&future.wait_for(std::chrono::seconds(0))==std::future_status::ready;}
++ void start(Manager& manager,bool suppressed,std::function<void()> notify={},std::function<void(const char*)> observe={}){
++  if(valid()||worker.joinable())throw std::runtime_error("A completion preference is already being saved.");bool expected=false;if(!manager.fileInfoDecisionPending.compare_exchange_strong(expected,true))throw std::runtime_error("Another change is being saved. Try again shortly.");guard=&manager;
++  try{std::promise<CompletionSettingsResult> promise;future=promise.get_future();worker=std::thread([&manager,suppressed,notify=std::move(notify),observe=std::move(observe),promise=std::move(promise)]()mutable{
++   CompletionSettingsResult result;
++   try{if(observe)observe("waiting-save");{Lock lock(manager.mutex);auto next=manager.state["Settings"];result.persisted=yes(next,"SuppressCompletionDialog");if(observe)observe("before-save");if(*result.persisted!=suppressed){next["SuppressCompletionDialog"]=suppressed;manager.setSettings(next);}result.persisted=suppressed;result.saved=true;}if(observe)try{observe("captured");}catch(...){}}
++   catch(const std::exception& error){result.error=error.what();}catch(...){result.error="The completion preference could not be saved.";}
++   promise.set_value(std::move(result));if(notify)try{notify();}catch(...){}
++  });}catch(...){future={};release();throw;}
++ }
++ CompletionSettingsResult take(){if(!ready())throw std::runtime_error("The completion preference is not ready.");auto result=future.get();if(worker.joinable())worker.join();release();return result;}
++ CompletionSettingsResult finish()noexcept{if(worker.joinable())worker.join();CompletionSettingsResult result;if(future.valid())try{result=future.get();}catch(...){}future={};release();return result;}
++};
++}
+--- /dev/null
++++ 9.85/native/CompletionSettingsTaskTests.cpp
+@@ -0,0 +1,19 @@
++#include "CompletionSettingsTask.hpp"
++#include <iostream>
++namespace udm {struct CatalogCheckpointTestAccess {static std::function<void(const char*)>& checkpoint(Manager& m){return m.catalogCheckpoint;}};}
++using namespace udm;
++template<class F>static bool until(F test){const auto end=GetTickCount64()+5000;while(!test()&&GetTickCount64()<end)Sleep(1);return test();}
++struct SuppressionWriter {std::promise<void> release;std::thread thread;std::atomic_bool held=false;bool opened=false;explicit SuppressionWriter(Manager& m){auto gate=release.get_future().share();thread=std::thread([this,&m,gate]{Lock lock(m.mutex);m.state["Settings"]["UserAgent"]="Concurrent suppression choice";held=true;gate.wait();});if(!until([&]{return held.load();}))throw std::runtime_error("Writer deadline");}void open(){if(!opened){opened=true;release.set_value();}if(thread.joinable())thread.join();}~SuppressionWriter(){open();}};
++int wmain(int argc,wchar_t** argv){if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;const auto check=[&](bool value,const char* name){checks.push_back({{"name",name},{"passed",value}});if(!value)throw std::runtime_error(name);};
++ try{Manager manager(root/L"catalog");manager.save();CompletionSettingsTask task;
++  const auto run=[&](bool value,std::function<void(const char*)> observer={},std::function<void()> notify={}){task.start(manager,value,std::move(notify),std::move(observer));if(!until([&]{return task.ready();}))throw std::runtime_error("Suppression deadline");return task.take();};
++  {SuppressionWriter writer(manager);std::atomic_bool waiting=false,notified=false;task.start(manager,true,[&]{notified=true;throw std::runtime_error("Ignored wake failure");},[&](const char* stage){if(std::string(stage)=="waiting-save")waiting=true;});check(until([&]{return waiting.load();})&&writer.held&&task.valid()&&!task.ready(),"Accepted caller returns while a different thread holds the catalog");check(manager.fileInfoDecisionPending,"Acceptance owns the global decision guard before model acquisition");bool rejected=false;try{task.start(manager,false);}catch(...){rejected=true;}check(rejected&&manager.fileInfoDecisionPending,"Duplicate start cannot replace an accepted save or clear its guard");writer.open();check(until([&]{return notified.load();})&&task.ready()&&manager.fileInfoDecisionPending,"Wake failure preserves a committed ready result and its guard");auto saved=task.take();check(saved.saved&&saved.persisted==true&&saved.error.empty()&&!manager.fileInfoDecisionPending,"Acknowledgement joins the writer and releases its decision guard");}
++  check(yes(manager.state["Settings"],"SuppressCompletionDialog")&&str(manager.state["Settings"],"UserAgent")=="Concurrent suppression choice","Only suppression is merged into the latest concurrent settings");{Manager reopened(manager.root);check(yes(reopened.state["Settings"],"SuppressCompletionDialog"),"The accepted choice is present in the durable reopened catalog");}
++  auto before=manager.snapshot();auto disk=readText(manager.root/L"state.json");unsigned saves=0;CatalogCheckpointTestAccess::checkpoint(manager)=[&](const char*){++saves;};auto same=run(true);CatalogCheckpointTestAccess::checkpoint(manager)={};check(same.saved&&same.persisted==true&&saves==0&&manager.snapshot()==before&&readText(manager.root/L"state.json")==disk,"An already-current requested choice adds no redundant catalog write");
++  manager.fileInfoDecisionPending=true;bool rejected=false;try{task.start(manager,false);}catch(...){rejected=true;}check(rejected&&!task.valid()&&manager.fileInfoDecisionPending,"A conflicting accepted decision is preserved by rejection");manager.fileInfoDecisionPending=false;
++  auto failed=run(false,[](const char* stage){if(std::string(stage)=="before-save")throw std::runtime_error("Owned preparation failure");});check(!failed.saved&&failed.persisted==true&&failed.error=="Owned preparation failure"&&!task.valid()&&!manager.fileInfoDecisionPending,"A preparation failure returns the last committed value and releases acceptance");check(manager.snapshot()==before&&readText(manager.root/L"state.json")==disk,"Preparation failure cannot mutate current or durable settings");
++  CatalogCheckpointTestAccess::checkpoint(manager)=[](const char* stage){if(std::string(stage)=="temporary-flushed")throw std::runtime_error("Owned suppression flush failure");};failed=run(false);CatalogCheckpointTestAccess::checkpoint(manager)={};check(!failed.saved&&failed.persisted==true&&failed.error=="Owned suppression flush failure"&&!manager.fileInfoDecisionPending,"A durable-save failure returns an explicit failed result");check(manager.snapshot()==before&&readText(manager.root/L"state.json")==disk,"A failed durable save rolls back all settings and retains the exact catalog");
++  auto saved=run(false);check(saved.saved&&saved.persisted==false&&!yes(manager.state["Settings"],"SuppressCompletionDialog"),"The exact failed choice can be retried successfully");
++  {SuppressionWriter writer(manager);task.start(manager,true);std::thread release([&]{Sleep(30);writer.open();});auto remaining=task.finish();release.join();check(remaining.saved&&remaining.persisted==true&&!task.valid()&&!manager.fileInfoDecisionPending,"Owner cleanup joins an accepted save instead of abandoning it");}
++  bool unlocked=false;saved=run(false,[&](const char* stage){if(std::string(stage)=="captured"){std::thread probe([&]{std::unique_lock lock(manager.mutex,std::try_to_lock);unlocked=lock.owns_lock();});probe.join();throw std::runtime_error("Ignored diagnostic failure");}});check(saved.saved&&saved.error.empty()&&unlocked,"Result publication follows model unlock and survives a diagnostic failure");task.finish();task.finish();check(!task.valid()&&!manager.fileInfoDecisionPending,"Repeated task cleanup is safe");manager.stop();
++ }catch(const std::exception& problem){error=problem.what();}atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;}
+--- /dev/null
++++ 9.85/native/CompletionSuppressionUiTests.cpp
+@@ -0,0 +1,39 @@
++#define UDM_TOOLBAR_COMPONENT_TEST
++#include "App.cpp"
++#include <condition_variable>
++#include <future>
++namespace udm {
++static fs::path output;static Json checks=Json::array(),observations=Json::array();static std::string failure;static bool baseline=false;
++static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
++static HWND named(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT)){wchar_t text[1024]{};GetWindowTextW(c,text,1024);if(!wcscmp(text,label))return c;}throw std::runtime_error("Missing owned completion control");}
++struct HeldSuppressionModel {
++ std::mutex mutex;std::condition_variable wake;bool released=false;std::atomic_bool held=false,expired=false;std::thread worker;
++ HeldSuppressionModel(Manager& manager){std::promise<void> entered;auto ready=entered.get_future();worker=std::thread([this,&manager,entered=std::move(entered)]()mutable{Lock lock(manager.mutex);manager.state["Settings"]["UserAgent"]="Concurrent completion choice";held=true;entered.set_value();std::unique_lock waiting(mutex);expired=!wake.wait_for(waiting,std::chrono::milliseconds(500),[&]{return released;});held=false;});ready.get();}
++ void open(){{std::lock_guard lock(mutex);released=true;}wake.notify_all();if(worker.joinable())worker.join();}~HeldSuppressionModel(){open();}
++};
++class ToolbarComponentTest {
++public:static void run(MainWindow& frame){auto& manager=frame.manager;frame.modelMaintenance.stop();frame.presentationAcks.stop();
++ for(bool dark:{false,true}){if(baseline&&dark)break;uiDark=dark;auto settings=manager.state["Settings"];settings["SuppressCompletionDialog"]=false;manager.setSettings(settings);
++  auto job=manager.add("https://example.invalid/owned-suppression","","suppression.bin","Main queue",true);job->data["Status"]="Complete";job->data["Size"]=4;frame.showCompletionDialog(job,false);auto form=frame.completions.back().get();auto window=form->GetSafeHwnd();auto checkbox=named(window,L"Don't show this dialog again");
++  HeldSuppressionModel writer(manager);auto start=GetTickCount64();SendMessageW(checkbox,BM_CLICK,0,0);auto elapsed=GetTickCount64()-start;observations.push_back({{"dark",dark},{"dispatchMs",elapsed},{"writerStillHeld",writer.held.load()},{"watchdogExpired",writer.expired.load()}});
++  if(baseline){check(writer.expired&&elapsed>=300,"Frozen completion suppression waits on the UI thread for the catalog writer");writer.open();check(yes(manager.state["Settings"],"SuppressCompletionDialog"),"Frozen suppression eventually persists through its canonical handler");SendMessageW(named(window,L"Close"),BM_CLICK,0,0);continue;}
++#ifdef UDM_COMPLETION_SUPPRESSION_TASK_AVAILABLE
++  check(writer.held&&!writer.expired&&elapsed<250,"Suppression returns before the held catalog writer releases");check(frame.completionSettingsTask.valid()&&manager.fileInfoDecisionPending&&!IsWindowEnabled(checkbox),"Accepted save owns its guard and disables duplicate checkbox input");check(IsWindowEnabled(named(window,L"Close")),"Close remains usable during the accepted preference save");
++  frame.OnTimer(1);check(writer.held&&!writer.expired&&frame.completionSettingsTask.valid(),"Main timer stays responsive while suppression waits for the writer");
++  SendMessageW(named(window,L"Close"),BM_CLICK,0,0);check(!IsWindow(window)&&writer.held&&!writer.expired,"Closing completion does not block or abandon its accepted save");writer.open();
++  auto deadline=GetTickCount64()+5000;while(!frame.completionSettingsTask.ready()&&GetTickCount64()<deadline)Sleep(1);check(frame.completionSettingsTask.ready(),"The accepted suppression save reaches a terminal result after writer release");frame.pollCompletionSettings();check(!frame.completionSettingsTask.valid()&&!manager.fileInfoDecisionPending&&yes(manager.state["Settings"],"SuppressCompletionDialog"),"Acknowledgement releases the guard and retains the saved choice after dialog Close");check(str(manager.state["Settings"],"UserAgent")=="Concurrent completion choice","Suppression merge preserves unrelated concurrent settings");
++  {Manager reopened(manager.root);check(yes(reopened.state["Settings"],"SuppressCompletionDialog"),"Accepted suppression remains durable after the originating dialog is destroyed");}
++  frame.showCompletionDialog(job,true);auto later=frame.completions.back()->GetSafeHwnd();auto laterCheck=named(later,L"Don't show this dialog again");check(SendMessageW(laterCheck,BM_GETCHECK,0,0)==BST_CHECKED,"A later explicit completion reflects the saved preference");SendMessageW(laterCheck,BM_CLICK,0,0);deadline=GetTickCount64()+5000;while(!frame.completionSettingsTask.ready()&&GetTickCount64()<deadline)Sleep(1);check(frame.completionSettingsTask.ready(),"A later unchecked choice completes asynchronously");frame.pollCompletionSettings();check(!yes(manager.state["Settings"],"SuppressCompletionDialog")&&IsWindowEnabled(laterCheck),"A later unchecked choice restores automatic dialogs and input");SendMessageW(named(later,L"Close"),BM_CLICK,0,0);
++#else
++  throw std::runtime_error("Candidate suppression task unavailable");
++#endif
++ }
++ }
++};
++class CompletionSuppressionApplication:public CWinApp {
++ int result=1;bool started=false;std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;
++ void finish(){if(frame){closeOwnedMainWindow(frame);frame=nullptr;m_pMainWnd=nullptr;}manager.reset();if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks},{"observations",observations},{"baseline",baseline}}.dump(2),false);}
++public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);try{if(!argv||argc!=3)throw std::runtime_error("Pass mode and fresh output");baseline=utf8(argv[1])=="baseline";if(!baseline&&utf8(argv[1])!="candidate")throw std::runtime_error("Invalid fixture mode");output=fs::absolute(argv[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Use fresh output");}fs::create_directories(output);manager=std::make_unique<Manager>(output/L"state");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ClipboardMonitor"]=false;prefs["Sound"]=false;prefs["CloseToTray"]=false;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;frame->KillTimer(1);}catch(const std::exception& e){failure=e.what();if(argv)LocalFree(argv);finish();return FALSE;}LocalFree(argv);return TRUE;}
++ BOOL OnIdle(LONG)override{if(started)return FALSE;started=true;try{ToolbarComponentTest::run(*frame);result=0;}catch(const std::exception& e){failure=e.what();}finish();PostQuitMessage(result);return FALSE;}int ExitInstance()override{AfxOleTerm(FALSE);return result;}
++};CompletionSuppressionApplication application;
++}

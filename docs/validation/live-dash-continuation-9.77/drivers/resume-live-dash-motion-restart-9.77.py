@@ -1,0 +1,5 @@
+from pathlib import Path
+import json,subprocess,threading,time,http.server,re,datetime,struct
+base=Path('<development>');area=Path('<repo>/.media-cache/owned-live-dash-motion-restart-9.77');assert area.exists() and not (area/'inputs.json').exists();(area/'generation-correction.json').write_text(json.dumps(dict(initialFailure='Missing struct import while splitting generated MP4 boxes',originStarted=False,nativeActorStarted=False,productionCodeChanged=False,correction='Add the import and regenerate only the owned tiny source assets before starting the fixture.'),indent=2),encoding='utf-8')
+script=(base/'run-live-dash-motion-restart-9.77.py').read_text(encoding='utf-8');script=script.replace('assert not area.exists();area.mkdir()',"assert area.exists() and not (area/'inputs.json').exists();area.mkdir(exist_ok=True)")
+script=script.replace('assets.mkdir();expected=[]"+code','assets.mkdir(exist_ok=True);expected=[]"+code');needle='exec("assets=area/';assert needle in script;script=script.replace(needle,'code=code.replace("folder.mkdir();","folder.mkdir(exist_ok=True);");'+needle,1);exec(script,globals())

@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "name": "A current completed queue is eligible",
+      "passed": true
+    },
+    {
+      "name": "Presentation snapshots the current display label without changing the stored event name",
+      "passed": true
+    },
+    {
+      "name": "Step checks avoid rebuilding labels and preserve the event identity",
+      "passed": true
+    },
+    {
+      "name": "A foreign model writer never blocks queue countdown admission",
+      "passed": true
+    },
+    {
+      "name": "An accepted File Info decision defers queue actions without being borrowed",
+      "passed": true
+    },
+    {
+      "name": "A stale queue cycle cannot execute",
+      "passed": true
+    },
+    {
+      "name": "A previous work epoch cannot execute",
+      "passed": true
+    },
+    {
+      "name": "Missing cycle identity is rejected",
+      "passed": true
+    },
+    {
+      "name": "Queue cancellation invalidates the countdown",
+      "passed": true
+    },
+    {
+      "name": "New queued work invalidates completion",
+      "passed": true
+    },
+    {
+      "name": "Pending synchronization invalidates completion",
+      "passed": true
+    },
+    {
+      "name": "Eligibility returns only after all queue work is finished",
+      "passed": true
+    },
+    {
+      "name": "An owned action starts with a canonical ordered cursor",
+      "passed": true
+    },
+    {
+      "name": "Queue readiness reads never consume events, tick or checkpoint the model",
+      "passed": true
+    },
+    {
+      "name": "The real queue-settings API invalidates an edited completion plan",
+      "passed": true
+    },
+    {
+      "name": "Removing the queue rejects its pending action",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

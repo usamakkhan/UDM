@@ -1,0 +1,5 @@
+from pathlib import Path
+base=Path('<development>');s=(base/'build-dash-output-9.76.py').read_text(encoding='utf-8-sig')
+for before,after in [('owned-dash-output-build-9.76','owned-live-dash-continuation-build-9.77'),('owned-dash-output-native-temp-9.76','owned-live-dash-continuation-native-temp-9.77'),('owned-dash-output-9.76-D-','owned-live-dash-continuation-9.77-D-'),('owned-verified-handoff-build-9.75/build-result.json','owned-dash-output-build-9.76/build-result.json'),("version='9.76'","version='9.77'"),("extensionVersion='0.73.40'","extensionVersion='0.73.41'"),('UDM 9.76 captured','UDM 9.77 captured'),('Five native 9.76','Five native 9.77'),("'9.74 captured source inventory'","'9.76 captured source inventory'"),("'benchmarks/speed/dash_output_ownership.cpp'}|","'benchmarks/speed/dash_output_ownership.cpp','benchmarks/speed/live_dash_restart_workflow.cpp'}|")]:
+ assert before in s,before;s=s.replace(before,after)
+q=base/'build-live-dash-continuation-9.77.py';assert not q.exists();q.write_text(s,encoding='utf-8')

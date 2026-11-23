@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "records": {
+    "qualified-d-8k": {
+      "passed": true,
+      "payloadRehashedNow": false,
+      "writerFlushCalls": {
+        "FlushFileBuffers": 0,
+        "NtFlushBuffersFile": 0,
+        "NtFlushBuffersFileEx": 0,
+        "file-part-flush": 0
+      },
+      "bytes": 8192
+    },
+    "qualified-c-4m": {
+      "passed": true,
+      "payloadRehashedNow": false,
+      "writerFlushCalls": {
+        "FlushFileBuffers": 0,
+        "NtFlushBuffersFile": 0,
+        "NtFlushBuffersFileEx": 0,
+        "file-part-flush": 0
+      },
+      "bytes": 4194304
+    },
+    "qualified-c-slow1m": {
+      "passed": true,
+      "payloadRehashedNow": false,
+      "writerFlushCalls": {
+        "FlushFileBuffers": 1,
+        "NtFlushBuffersFile": 1,
+        "NtFlushBuffersFileEx": 0,
+        "file-part-flush": 1
+      },
+      "bytes": 1048576
+    },
+    "rejected-token-only-scope": {
+      "rejectedAsRequired": true
+    }
+  },
+  "privatePayloadRehashNotRepeatedInExport": true
+}

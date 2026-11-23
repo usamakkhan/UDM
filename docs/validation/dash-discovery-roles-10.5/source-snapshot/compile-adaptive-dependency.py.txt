@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,os,subprocess
+repo=Path('D:/UDM');area=Path(__file__).parent;scope={'__file__':str(area/'config.py')};exec((Path(os.environ['LOCALAPPDATA'])/'UDM-Development/finishing-8.34/config.py').read_text(encoding='utf-8-sig'),scope);globals().update({k:v for k,v in scope.items() if not k.startswith('__')});common+=['/I'+str(native),'/I'+str(native/'vendor/brotli/c/include')]
+prior=json.loads((repo/'.media-cache/dash-metadata-transport-build-10.4/build-result.json').read_text(encoding='utf-8'));old=next(e for e in prior['coreObjects'] if Path(e['path']).stem=='Adaptive');assert sha(Path(old['path']))==old['sha256']
+sources=[dict(path=name,sha256=sha(repo/name)) for name in ['native/Adaptive.cpp','native/LiveDash.hpp','native/DashMetadataTransport.hpp']]
+target=out/'Adaptive-current-header.obj'
+with (area/'compile-adaptive-dependency.log').open('w',encoding='utf-8') as log:r=subprocess.run([str(compiler),*common,'/c',str(native/'Adaptive.cpp'),'/Fo'+str(target)],stdout=log,stderr=subprocess.STDOUT,env=env)
+assert r.returncode==0,(area/'compile-adaptive-dependency.log').read_text(encoding='utf-8')[-2500:];assert all(sha(repo/e['path'])==e['sha256'] for e in sources)
+record=dict(passed=True,sources=sources,oldObject=old,newPath=str(target),newSha256=sha(target),byteIdentical=sha(target)==old['sha256']);(area/'adaptive-dependency.json').write_text(json.dumps(record,indent=2),encoding='utf-8');print(json.dumps(dict(byteIdentical=record['byteIdentical'],newSha256=record['newSha256'],oldSha256=old['sha256'])),flush=True)

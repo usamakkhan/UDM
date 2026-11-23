@@ -1,0 +1,301 @@
+{
+  "records": [
+    {
+      "case": "transient",
+      "exitCode": 0,
+      "requests": 3,
+      "result": {
+        "cancelled": false,
+        "completed": true,
+        "elapsedMs": 1062.5709,
+        "error": "",
+        "events": [
+          {
+            "bytes": 672,
+            "callback": 1,
+            "endMs": 936.3969,
+            "requestedHoldMs": 350,
+            "startMs": 403.8424
+          },
+          {
+            "bytes": 672,
+            "callback": 2,
+            "endMs": 1061.9326,
+            "requestedHoldMs": 0,
+            "startMs": 1061.9298
+          }
+        ],
+        "freshAtReturn": true,
+        "initialFetchAndParseMs": 276.5976,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 2,
+        "originalBodyAnchorPreserved": false,
+        "segments": 2,
+        "transition": false
+      }
+    },
+    {
+      "case": "always",
+      "exitCode": 1,
+      "requests": 4,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 2170.3637,
+        "error": "DASH manifest expired during all three bounded freshness attempts.",
+        "events": [
+          {
+            "bytes": 669,
+            "callback": 1,
+            "endMs": 857.1593,
+            "requestedHoldMs": 350,
+            "startMs": 343.3114
+          },
+          {
+            "bytes": 669,
+            "callback": 2,
+            "endMs": 1587.0814,
+            "requestedHoldMs": 350,
+            "startMs": 1035.6801
+          },
+          {
+            "bytes": 669,
+            "callback": 3,
+            "endMs": 2169.8576,
+            "requestedHoldMs": 350,
+            "startMs": 1689.8474
+          }
+        ],
+        "initialFetchAndParseMs": 253.9369,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 3
+      }
+    },
+    {
+      "case": "identity",
+      "exitCode": 1,
+      "requests": 3,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 1158.6479,
+        "error": "DASH presentation identity changed during refresh.",
+        "events": [
+          {
+            "bytes": 671,
+            "callback": 1,
+            "endMs": 1011.6787,
+            "requestedHoldMs": 350,
+            "startMs": 518.2016
+          },
+          {
+            "bytes": 654,
+            "callback": 2,
+            "endMs": 1158.0758,
+            "requestedHoldMs": 0,
+            "startMs": 1158.074
+          }
+        ],
+        "initialFetchAndParseMs": 429.9825,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 2
+      }
+    },
+    {
+      "case": "http503",
+      "exitCode": 1,
+      "requests": 3,
+      "result": {
+        "cancelled": false,
+        "elapsedMs": 1315.316,
+        "error": "The server rejected the download URL (HTTP 503).",
+        "events": [
+          {
+            "bytes": 670,
+            "callback": 1,
+            "endMs": 1148.0683,
+            "requestedHoldMs": 350,
+            "startMs": 583.3287
+          }
+        ],
+        "initialFetchAndParseMs": 481.7361,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 1
+      }
+    },
+    {
+      "case": "cached304",
+      "exitCode": 0,
+      "requests": 3,
+      "result": {
+        "cancelled": false,
+        "completed": true,
+        "elapsedMs": 895.2034,
+        "error": "",
+        "events": [],
+        "freshAtReturn": true,
+        "initialFetchAndParseMs": 303.0407,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 0,
+        "originalBodyAnchorPreserved": true,
+        "segments": 2,
+        "transition": false
+      }
+    },
+    {
+      "case": "cancel",
+      "exitCode": 3,
+      "requests": 3,
+      "result": {
+        "cancelled": true,
+        "elapsedMs": 1053.3915,
+        "error": "Download paused.",
+        "events": [
+          {
+            "bytes": 669,
+            "callback": 1,
+            "endMs": 875.724,
+            "requestedHoldMs": 350,
+            "startMs": 337.5863
+          }
+        ],
+        "initialFetchAndParseMs": 258.8438,
+        "inputSnapshotUnchanged": true,
+        "metadataCallbacks": 2
+      }
+    }
+  ],
+  "requests": [
+    {
+      "case": "transient",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.23379999038297683
+    },
+    {
+      "case": "transient",
+      "request": 2,
+      "status": 200,
+      "conditional": "\"1\"",
+      "responseMs": 0.22519999765791
+    },
+    {
+      "case": "transient",
+      "request": 3,
+      "status": 200,
+      "conditional": "\"2\"",
+      "responseMs": 0.2111999929184094
+    },
+    {
+      "case": "always",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.20049999875482172
+    },
+    {
+      "case": "always",
+      "request": 2,
+      "status": 200,
+      "conditional": "\"1\"",
+      "responseMs": 0.20470000163186342
+    },
+    {
+      "case": "always",
+      "request": 3,
+      "status": 200,
+      "conditional": "\"2\"",
+      "responseMs": 0.20920000679325312
+    },
+    {
+      "case": "always",
+      "request": 4,
+      "status": 200,
+      "conditional": "\"3\"",
+      "responseMs": 0.19890000112354755
+    },
+    {
+      "case": "identity",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.19279999833088368
+    },
+    {
+      "case": "identity",
+      "request": 2,
+      "status": 200,
+      "conditional": "\"1\"",
+      "responseMs": 0.18850000924430788
+    },
+    {
+      "case": "identity",
+      "request": 3,
+      "status": 200,
+      "conditional": "\"2\"",
+      "responseMs": 0.1939000067068264
+    },
+    {
+      "case": "http503",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.20140000560786575
+    },
+    {
+      "case": "http503",
+      "request": 2,
+      "status": 200,
+      "conditional": "\"1\"",
+      "responseMs": 0.20169999334029853
+    },
+    {
+      "case": "http503",
+      "request": 3,
+      "status": 503,
+      "conditional": "\"2\"",
+      "responseMs": 0.14319999900180846
+    },
+    {
+      "case": "cached304",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.22570000146515667
+    },
+    {
+      "case": "cached304",
+      "request": 2,
+      "status": 304,
+      "conditional": "\"cached\"",
+      "responseMs": 356.2886999861803
+    },
+    {
+      "case": "cached304",
+      "request": 3,
+      "status": 304,
+      "conditional": "\"cached\"",
+      "responseMs": 0.1512000017100945
+    },
+    {
+      "case": "cancel",
+      "request": 1,
+      "status": 200,
+      "conditional": null,
+      "responseMs": 0.19609999435488135
+    },
+    {
+      "case": "cancel",
+      "request": 2,
+      "status": 200,
+      "conditional": "\"1\"",
+      "responseMs": 0.1917999907163903
+    },
+    {
+      "case": "cancel",
+      "request": 3,
+      "status": 200,
+      "conditional": "\"2\"",
+      "responseMs": 0.22279999393504113
+    }
+  ]
+}

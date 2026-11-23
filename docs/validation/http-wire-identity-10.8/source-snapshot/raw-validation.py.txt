@@ -1,0 +1,18 @@
+from pathlib import Path
+import os,subprocess,json,hashlib
+repo=Path('D:/UDM');area=Path(__file__).parent;release=area/'release-native';env=os.environ.copy();env.update(TEMP=str(area),TMP=str(area),UDM_POST_IDENTITY_TEST_EXE=str(release/'Udm.HttpPostIdentityTests.exe'))
+recipes=['tests/http-identity.native-live.py','tests/dash-parallel-admission.native-live.py','tests/http-post-identity.native-live.cjs','tests/dash-single-pass.native-live.py','tests/dash-single-pass-crash.native-live.py','tests/dash-single-pass-shared-url.native-live.py'];sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper();pins=[dict(path=p,sha256=sha(repo/p)) for p in recipes]
+def run(args,name):
+ with (area/(name+'.log')).open('w',encoding='utf-8') as log:r=subprocess.run(list(map(str,args)),cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=250)
+ print(name+': '+str(r.returncode),flush=True)
+ if r.returncode:print((area/(name+'.log')).read_text(encoding='utf-8',errors='replace')[-3500:],flush=True)
+ assert r.returncode==0,name
+for recipe,actor,name in [('dash-single-pass.native-live.py','Udm.DashSinglePassWorkflow','single-pass-qualified'),('dash-single-pass-crash.native-live.py','Udm.DashSinglePassWorkflow','crash-qualified'),('dash-single-pass-shared-url.native-live.py','Udm.DashSinglePassWorkflow','shared-url-qualified')]:
+ run(['python',repo/'tests'/recipe,area/name,release/(actor+'.exe')],name)
+assert json.loads((area/'parallel-qualified/qualification.json').read_text())['requestHeaderIdentityCanonical']
+assert json.loads((area/'shared-url-qualified/diagnosis.json').read_text())['restoredRetryPassed']
+run(['node',repo/'tests/http-post-identity.native-live.cjs',area/'post-qualified'],'post-qualified')
+for name in ['DashPendingVersionTests','DashMetadataTransportTests','GaplessAacTailTests','RetiredDashBoundaryTests']:
+ run([release/('Udm.'+name+'.exe'),area/('qualified-'+name)],name)
+assert all(sha(repo/e['path'])==e['sha256'] for e in pins)
+(area/'raw-runtime-source-pins.json').write_text(json.dumps(pins,indent=2),encoding='utf-8')

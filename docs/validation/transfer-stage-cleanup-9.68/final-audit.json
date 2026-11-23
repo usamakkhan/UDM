@@ -1,0 +1,1583 @@
+{
+  "version": "9.68",
+  "sourceExtensionVersion": "0.73.32",
+  "nativeSourceInputsVerified": 686,
+  "separateCopiedSuccessFixtureVerified": true,
+  "nativeProductsBuiltAndRetained": 5,
+  "referencedCoreObjectsVerified": 42,
+  "affectedSuitesPassed": 17,
+  "affectedAssertionsPassed": 1351,
+  "additionalCrossVolumeFailureAssertionsPassed": 36,
+  "additionalCrossVolumeSuccessAssertionsPassed": 4,
+  "before967ForeignReplacementLosses": 8,
+  "sameAcceptedFailureFixtureBeforeAfter": true,
+  "physicallyVerifiedStageModes": [
+    "hard-link",
+    "copy"
+  ],
+  "protectedInstalledPersonalAndHelperFilesUnchanged": 11,
+  "exportedRecordsVerified": 90,
+  "installedFilesChanged": false,
+  "noNewIdmOrSuccessfulDownloadTimingComparison": true,
+  "noPowerLossClaim": true,
+  "broadIdmParityComplete": false,
+  "cleanup": {
+    "recursiveDeletionUsed": false,
+    "removedFiles": 307,
+    "removedLogicalBytes": 244207116,
+    "physicalSpaceNotMeasured": true,
+    "productsCoreObjectsEvidenceAndSmallRecordsRetained": true,
+    "scopes": [
+      {
+        "scope": "generated compiler/test binaries",
+        "removedFiles": 45,
+        "removedLogicalBytes": 227820655,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\App.obj",
+            "bytes": 67363658,
+            "sha256": "92A84BCA74D3EB7EA982885E62333831BB80A1473DAE05B89C0E2A77D886E2DC"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\AutomationMain.obj",
+            "bytes": 3134989,
+            "sha256": "691B29A11EA4C0630705BC76AAFCD08422E24E4E4BD0701CE1242D4823A2BB79"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\CompletedCheckpointTests.obj",
+            "bytes": 6708225,
+            "sha256": "C53BB4306AAB1383CEBE2F3EB3836EA2EDC10063A8045BCE6799DA0C657EE50F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\EarlyPublicationRecoveryTests.obj",
+            "bytes": 4414981,
+            "sha256": "208952FCBCACE238E5ED4B64C28099F9277395F47D2C915C1634D40D613B80BA"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\HostMain.obj",
+            "bytes": 1607,
+            "sha256": "847C8544F78F50A20843D0380F8D8C4C07A83402668E05566C646EE8C37CB383"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\IndependentFinishingTests.obj",
+            "bytes": 3409838,
+            "sha256": "E6B4E2106BFE5675F1B556B4673AA47C52FA781124706E9EB3920641CD9ABA0B"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\LaunchFailureTests.obj",
+            "bytes": 2503595,
+            "sha256": "EE2E630F0D634B21F65E55922AC01B49EA2BD8F6B632DEB191B18B86ED36398D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\LaunchQueueTests.obj",
+            "bytes": 4284989,
+            "sha256": "CD0C06BDBE226F42F573E03B30F8FE15BA43175600C32572A3387FF0FDA83EBD"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\MonitorMain.obj",
+            "bytes": 6742908,
+            "sha256": "68DB65471913965F63558573649BE6730825E7D70519C127EA1B96B267EADCAB"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PreparedCleanupHttpTests.obj",
+            "bytes": 2460288,
+            "sha256": "E062DFB5BC55D78D69EA6A41663BA38DEC2369B5E23087584752EFE013ACC36C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PreparedCleanupTests.obj",
+            "bytes": 3807853,
+            "sha256": "AB0F451EA87BCCEE93D21B6E58A0B2559FB2A79A987B73EC4D51F0348EACA112"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationAvailabilityTests.obj",
+            "bytes": 4452901,
+            "sha256": "9CE85DF38B613CC029BBF1B4CA159973EB596B0592B6C786A6D2D5EA2E186AE4"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationCommitTests.obj",
+            "bytes": 6562617,
+            "sha256": "99FB1170E76764AB81D54ED8F26931178169F2B3197E4FE840532E9EDBBB5231"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationFailureLifetimeTests.obj",
+            "bytes": 3339890,
+            "sha256": "861F1DE0748E8DEADF5BAC9DDA1C5F7FC6CC299C29D2210FEC77120567A42518"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationOverlapTests.obj",
+            "bytes": 5557595,
+            "sha256": "2E7C2D101D3D7B52535A4523BCF5374DCE1351ED05DAA6204F1D7C4BEE04AC1A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationOwnershipTests.obj",
+            "bytes": 5495369,
+            "sha256": "F14CE8E53606D0063C71B61C6F15374DC4AE97686B1871916E78E507E8B6B16B"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationPreparationTests.obj",
+            "bytes": 3704228,
+            "sha256": "21C272722AF037A40F4B279254AC4043E5CF0B0BDBD1924B9A39B597E672D282"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\PublicationRecoveryTests.obj",
+            "bytes": 3335581,
+            "sha256": "8161D71EB73A6CB99B5A411CEB358D066EB07F7338346B356A5E6B7123FFF5EF"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\SetupMain.obj",
+            "bytes": 4589847,
+            "sha256": "FF23D9D697FCBCF2991929218E1BE91E0AE1F13BD381B22ED5149C555BEB2593"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\StagingAdmissionTests.obj",
+            "bytes": 2472056,
+            "sha256": "EA801E60F71019520A3CD3C572597B59B47E6C35AB3A21098EAFB58CC55643F8"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\StagingLinkReuseTests.obj",
+            "bytes": 2667281,
+            "sha256": "F48C4B16F2A0543ACCBE0BF59F9AFCA8FC41D80D10E61E414207C51B4921653A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\objects\\TransferStageCleanupTests.obj",
+            "bytes": 2635038,
+            "sha256": "A5EFD3C92921F63A009035E59E5747356BD7986255F200F0F9A610E885FEC21C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.CompletedCheckpointTests.exe",
+            "bytes": 5074432,
+            "sha256": "81706451344352ADA3895DE09E264B39641F3B9849816042B43F5261D955DD0C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.EarlyPublicationRecoveryTests.exe",
+            "bytes": 2336768,
+            "sha256": "0CB8E4057537FBD02F0D6A03FF9DA3BC9C1ED2B1D84C7A41BD0D05CC02C4DF0B"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.IndependentFinishingTests.exe",
+            "bytes": 5208576,
+            "sha256": "106FF0ADF8A5FCB160A0AE0F4DB04474747B6D92BFCAB17682CD7DD73F970F62"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.LaunchFailureTests.exe",
+            "bytes": 1331712,
+            "sha256": "07A579620B6BA98127A2EA0F86F05AFD7972A85D13D0A7BE528A381C9188EE60"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.LaunchQueueTests.exe",
+            "bytes": 5417984,
+            "sha256": "26846F886DC505743CF0E158D22112921C763490A510641B84B355A9196B6E87"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "bytes": 4931584,
+            "sha256": "A10818E83A1A81F758D2F14B4A53D360C5B2C20478828361A3F1E3FBB4FA0F2F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PreparedCleanupTests.exe",
+            "bytes": 2257920,
+            "sha256": "6846B0101614721B1FC0217B0A95E400FA77E33CC77CD7D5CED422BCE894C7D9"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationAvailabilityTests.exe",
+            "bytes": 2323456,
+            "sha256": "788E3AF09DBC10C92A84CE2E5C64C1C0E5418B3D26F2274B3ED630C50FF92A71"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationCommitTests.exe",
+            "bytes": 2529792,
+            "sha256": "B6220144F427F7C10CCE84B0E4D052A37BFFC5509C0EB55D8B7DD98FAAEE63FB"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationFailureLifetimeTests.exe",
+            "bytes": 4940800,
+            "sha256": "7A6ABAF4EF350A7F82BDE94440464C35E18BE3AD0467A17114FA6B8C67854899"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationOverlapTests.exe",
+            "bytes": 2348544,
+            "sha256": "4C111BA202B417F49F172395E770AEC132898E9A1273951DF3BDF4176367CAA6"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationOwnershipTests.exe",
+            "bytes": 2570752,
+            "sha256": "4C3FB69D5973D0AA8B6AD36134ECE7B8BCBF2BB8F8707FA0A925DB725F2D2501"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationPreparationTests.exe",
+            "bytes": 2329088,
+            "sha256": "401CEA5298D3AFCAE58C8C067BE3D30760428E70F64956427B49C56A2B494ACB"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.PublicationRecoveryTests.exe",
+            "bytes": 2409472,
+            "sha256": "570CB93C4CE54BDDE9AA97B14669E8210A58505BF8B853305B805F3950AB9BD7"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.StagingAdmissionTests.exe",
+            "bytes": 4931072,
+            "sha256": "71011EE9990349874C1371C34917C65E7F711BBBBECE52D089B030AB2FE32981"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "bytes": 4937728,
+            "sha256": "70464E0109CEC0CA6B10AB9B6AD8233C916A50C5ECEA5FDAB48062C68B2F9B5F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-build-9.68\\release-native\\Udm.TransferStageCleanupTests.exe",
+            "bytes": 3350528,
+            "sha256": "DBB1EA09BE465E51B552E43CAFA831A1486E163D699A597DCED4BF2A097C852F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-copy-success-9.68\\objects\\Success.obj",
+            "bytes": 3751076,
+            "sha256": "B040C14ABE338A6CF9DFBF38B22293E1D8ED2F5FEBFCB05DCCF1B137C4A2536B"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-copy-success-9.68\\release-native\\transfer-copy-success.exe",
+            "bytes": 3308544,
+            "sha256": "7C42BBBA32001F9D78BA1C47541EFC4E9BC7B4A10D15BC330ED40706C615DBE4"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\objects\\TransferStageCleanupTests.obj",
+            "bytes": 2623115,
+            "sha256": "F8F9B3200AB7BB6ED70449A22B23E289F0E9642BB91E466DB006954F13D19813"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\release-native\\Udm.TransferStageCleanupTests.exe",
+            "bytes": 3312128,
+            "sha256": "F00E09E95DFADE93E0D3F29078E7A2C017FD0DFD89195BA6FAF7D2F85A945EA3"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\objects\\TransferStageCleanupTests.obj",
+            "bytes": 2635050,
+            "sha256": "062286C2865CB2FBEDE49830F49DF63F9CE7F02895723B485C35259B9CDDF48F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\release-native\\Udm.TransferStageCleanupTests.exe",
+            "bytes": 3315200,
+            "sha256": "70BB9338BF201401EDACA72E251A519B62C6C871C2ABFB7AD3125D6B8EB3C583"
+          }
+        ]
+      },
+      {
+        "scope": "selected generated test payloads",
+        "removedFiles": 262,
+        "removedLogicalBytes": 16386461,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-unchanged\\catalog\\parts\\03a916928d964d4fab0edc8a5f073674\\03a916928d964d4fab0edc8a5f073674.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\files\\.udm-ce08c54c782747808525c8f0f9b537df.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\files\\.udm-ce08c54c782747808525c8f0f9b537df.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\catalog\\parts\\ce08c54c782747808525c8f0f9b537df\\ce08c54c782747808525c8f0f9b537df.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-directory\\files\\.udm-42e8d514238c46d49a4580cc75741b07.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-ready-directory\\catalog\\parts\\42e8d514238c46d49a4580cc75741b07\\42e8d514238c46d49a4580cc75741b07.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-unchanged\\catalog\\parts\\75bdb7ec62e346b3add718e17793306a\\75bdb7ec62e346b3add718e17793306a.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\files\\.udm-59827620fb694e1eb49296701ca21398.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\files\\.udm-59827620fb694e1eb49296701ca21398.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\catalog\\parts\\59827620fb694e1eb49296701ca21398\\59827620fb694e1eb49296701ca21398.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-directory\\files\\.udm-9a31737dbf154781a579fd520a16bdea.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-TransferStageCleanupTests\\link-publication-preflight-begin-directory\\catalog\\parts\\9a31737dbf154781a579fd520a16bdea\\9a31737dbf154781a579fd520a16bdea.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\valid-file\\files\\.udm-6fdb04bac8c7498fa77f305a73928886.assembling",
+            "bytes": 27,
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\valid-file\\catalog\\parts\\6fdb04bac8c7498fa77f305a73928886\\6fdb04bac8c7498fa77f305a73928886.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\valid-directory\\catalog\\parts\\d84b3a623bf641ceb1c3bdfdc83358c0\\d84b3a623bf641ceb1c3bdfdc83358c0.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\mismatch-file\\files\\.udm-440d5c04c78946cf88c918fba0251f9e.assembling",
+            "bytes": 27,
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\mismatch-file\\catalog\\parts\\440d5c04c78946cf88c918fba0251f9e\\440d5c04c78946cf88c918fba0251f9e.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingAdmissionTests\\mismatch-directory\\catalog\\parts\\dfb58f1126cf4b07b5522609f4dfd3f3\\dfb58f1126cf4b07b5522609f4dfd3f3.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingLinkReuseTests\\own-link\\files\\output.bin",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingLinkReuseTests\\foreign-equal-bytes\\files\\.udm-8c914a5c35b04e3281d6a036d84f9586.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-StagingLinkReuseTests\\foreign-equal-bytes\\catalog\\parts\\8c914a5c35b04e3281d6a036d84f9586\\8c914a5c35b04e3281d6a036d84f9586.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-c00665268e50482d9e02f49a12cb7e4d.assembling",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-c00665268e50482d9e02f49a12cb7e4d.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\sync-missing\\files\\.udm-0ac8b667e94f47609ceeb7b21e352122.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\sync-directory\\files\\.udm-6b3a20a9e3104a6688ea825058404756.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\async-replaced\\files\\.udm-9778c33a20614c879cf5afe60e8bd0dd.assembling",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\async-replaced\\files\\.udm-9778c33a20614c879cf5afe60e8bd0dd.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\async-missing\\files\\.udm-990cbda9fa3e4487aa37a091fe04982f.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupTests\\async-directory\\files\\.udm-04fccca3f53245438821c57fbf8c275a.assembling.moved",
+            "bytes": 13,
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-1d5d56a4352741cfbd78aec64cb4748e.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-1d5d56a4352741cfbd78aec64cb4748e.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\parts\\1d5d56a4352741cfbd78aec64cb4748e\\1d5d56a4352741cfbd78aec64cb4748e.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\files\\.udm-728845433b0b437699cdd0302310e3b4.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\parts\\728845433b0b437699cdd0302310e3b4\\728845433b0b437699cdd0302310e3b4.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-b95e1304130f4e5a974f7dcdf0921e9d.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-b95e1304130f4e5a974f7dcdf0921e9d.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\parts\\b95e1304130f4e5a974f7dcdf0921e9d\\b95e1304130f4e5a974f7dcdf0921e9d.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\files\\.udm-16e872a2495f4db986fedf9e77c74685.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\parts\\16e872a2495f4db986fedf9e77c74685\\16e872a2495f4db986fedf9e77c74685.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\parts\\2c13c4f480624528b2a764b20ef0c0f0\\2c13c4f480624528b2a764b20ef0c0f0.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\parts\\e79bc4757c714b6ba6995b913c31d5d3\\e79bc4757c714b6ba6995b913c31d5d3.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationFailureLifetimeTests\\publication-intent-written\\files\\.udm-779c078d339d4e41ab6949febfec8f71.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\parts\\779c078d339d4e41ab6949febfec8f71\\779c078d339d4e41ab6949febfec8f71.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\parts\\0bc0dd564d914e408a77d8dfc499f83d\\0bc0dd564d914e408a77d8dfc499f83d.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\adopted.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\writer-rejected\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\writer-blocked\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\unwind-before-prepare\\files\\.udm-d02eb8a005de43bb9170b06e3f390a70.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\unwind-before-prepare\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\unknown-hash\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\throwing-flush\\files\\.udm-891fe6aa4f25442c95ae2a9e82060f62.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\throwing-flush\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\success\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\moved-interruption\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\moved-interruption\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\intent-interruption\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\intent-interruption\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\intent-error\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\flush-error\\files\\.udm-b5513db72b8048999c3d62540d590f18.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\flush-error\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\changed-name\\files\\.udm-8906d66e6996416cbf17c06dc54640ea.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\changed-name\\files\\retained.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\changed-name\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\changed-folder\\files\\.udm-7879f5d2ce0e4ead8e7e6e9ec55469cf.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\changed-folder\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\cancel\\files\\.udm-1b90697fa7534bd19db82f3f023f2126.assembling",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOverlapTests\\cancel\\parts\\owned.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-CompletedCheckpointTests\\writeback-operations\\actual.bin",
+            "bytes": 35,
+            "sha256": "A25BB2F97AC8B92896E698FB27BFFDC899025C26A69463FC402EF30E9DBE75E1"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-CompletedCheckpointTests\\failure\\state\\parts\\e4e45ea9ffc54dafb2a82c2e66dbd291\\e4e45ea9ffc54dafb2a82c2e66dbd291.data",
+            "bytes": 131072,
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-CompletedCheckpointTests\\cancel-prepared\\state\\parts\\b4fe2c95466c4a1d9ff47e7424518831\\b4fe2c95466c4a1d9ff47e7424518831.data",
+            "bytes": 131072,
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-IndependentFinishingTests\\files\\finishing-0.bin",
+            "bytes": 1048647,
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-IndependentFinishingTests\\files\\finishing-1.bin",
+            "bytes": 1048647,
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-IndependentFinishingTests\\catalog\\parts\\6a19434463294a42880743125f5208b9\\6a19434463294a42880743125f5208b9.data",
+            "bytes": 1048647,
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\during-catalog\\files\\output.bin",
+            "bytes": 22,
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\before-catalog\\files\\output.bin",
+            "bytes": 22,
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\accepted-project-cleanup\\files\\output.bin",
+            "bytes": 22,
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\files\\output.bin",
+            "bytes": 27,
+            "sha256": "AA264CC874384B47EC2570E94A5383D255C356198A2C0246E5AC46DAFD55071B"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\files\\output.bin",
+            "bytes": 22,
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationAvailabilityTests\\accepted-cleanup\\files\\output.bin",
+            "bytes": 22,
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\busy-source\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\cancel\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\changed-folder\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\changed-root\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\changed-source\\retained.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\changed-source\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "B050DF05EE76E769AB99552F7B229C5D182BA6A7694FF9FC6FBF8818D45D75A7"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\directories-changed-folder\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\missing-project\\staged-\u2603.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\pinned-source-reuse\\renamed.part",
+            "bytes": 24,
+            "sha256": "55409AC6813854A11B4AA5FB6644A58CACC4D7BED691FA73B74612007CD482A5"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\zero\\files\\output.bin",
+            "bytes": 0,
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\unknown-hash\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\ready\\files\\output-\u2603.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\project\\moved\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\gzip\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\directories-ready\\files\\nested\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\child\\files\\child.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationPreparationTests\\begin\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\unknown-hash\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\superseded\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\standalone-unknown\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\standalone-save-failure\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\standalone-receipt\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\standalone-cleanup-denied\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\source-change\\files\\.udm-3a15faac9c4c4801bfca9993b3f69708.assembling",
+            "bytes": 13,
+            "sha256": "053D94775E4CA5B2A318D3310740C21B59AAB01764799042496C53668BDE648E"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\snapshot-missing\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\shutdown-catalog\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\save-failure\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\newer-id\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\metadata-rollback\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\late-batch\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\invalid-id\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\intent-written\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\intent-flush\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\intent-failure\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\gzip\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\file-moved\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\files\\internal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\entry-batch\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\deferred-save\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\containing-success\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\cleanup\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\child-catalog\\files\\child.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\child\\files\\track.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\catalog-written\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\catalog-snapshot\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\catalog-lost-ack\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\catalog-flush\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\catalog-failure\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\ack-failure\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\accepted-unknown\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\accepted-extra-stage\\files\\.udm-babdab0045b74016bb346fc39df972c2.assembling",
+            "bytes": 25,
+            "sha256": "04758716197FF1F1853635221A9B836E0574590C6B5017CCBCC5BA73984AD59A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\accepted-extra-stage\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationCommitTests\\accepted\\files\\output.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\cancel\\owned.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\retry-files\\retry.bin",
+            "bytes": 11,
+            "sha256": "722BB1429C491DD72C69D2B9A177CCA1A452B6A3225604DD221C16FA7E60403C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-cancel\\late.part",
+            "bytes": 10,
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-cancel\\shutdown.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-child\\late.part",
+            "bytes": 10,
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-ordinary\\late.part",
+            "bytes": 10,
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-replacement\\late.part",
+            "bytes": 10,
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\d\u00e4ta-more.bin",
+            "bytes": 10,
+            "sha256": "0B639EC453F3C7C4BCE436A5470A8A24E40124D7F95DC4C20BCD8232C78D89D2"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00e9-after.bin",
+            "bytes": 14,
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00c9-before.bin",
+            "bytes": 14,
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-replacement\\files\\old.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-replacement\\files\\previous.bin",
+            "bytes": 9,
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-ordinary\\files\\new.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\shutdown-child\\files\\track.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\replacement\\files\\old.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\replacement\\files\\previous.bin",
+            "bytes": 9,
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\recovery\\files\\new.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\ordinary\\files\\new.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\move-first\\files\\after-move.bin",
+            "bytes": 10,
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\move-first\\files\\Moved-\u00c4.bin",
+            "bytes": 12,
+            "sha256": "4917818DC32F88ED94ABA1F652FC8131C8A8A66B199D5C4C5E9D5C8F5745D6D0"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\child\\files\\independent-move.bin",
+            "bytes": 10,
+            "sha256": "DDE5EEFE6E10C83B749F28B85DAB725BDB1F164B990AA0781FB5DF1E63822FF5"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationOwnershipTests\\child\\files\\\u00c4.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\3\\assembled.part",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\recovery-file-pin\\moved.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\recovery-staged-pin\\moved.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\old.bin.moved",
+            "bytes": 9,
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\stage.part",
+            "bytes": 9,
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.bin.moved",
+            "bytes": 9,
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.previous.bin.moved",
+            "bytes": 9,
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-9\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-7\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-6\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-5\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-4\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-3\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-2\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-1\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "F313201A76A206752230603E8E0E1B3F2145DFAE87B203177DCC9BE3682822C6"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\legacy-0\\files\\legacy.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\4\\files\\file.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\2\\files\\file.bin",
+            "bytes": 15,
+            "sha256": "6A90D515E65425BEC11614BFAAE15539C70673E109DEB6C1C4F68492DA553BEE"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\1\\files\\file.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-PublicationRecoveryTests\\0\\files\\file.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-valid\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-truncated\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-read-held\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-foreign\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-changed\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-valid\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-truncated\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-read-held\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-foreign\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-changed\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\files\\recovery.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\normal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\retained.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\normal.bin",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-9.68-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\retained.data",
+            "bytes": 14,
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-unchanged\\catalog\\parts\\2509f4272a1848efa6ea503c7627c7cc\\2509f4272a1848efa6ea503c7627c7cc.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-file\\files\\.udm-2bf7909932cd439a899bf1d6516e2775.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-file\\files\\.udm-2bf7909932cd439a899bf1d6516e2775.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-file\\catalog\\parts\\2bf7909932cd439a899bf1d6516e2775\\2bf7909932cd439a899bf1d6516e2775.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-directory\\files\\.udm-5267765a604e43c7b9950f3626748763.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-ready-directory\\catalog\\parts\\5267765a604e43c7b9950f3626748763\\5267765a604e43c7b9950f3626748763.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-unchanged\\catalog\\parts\\10fe69e1877743aa88100a13f01a54a6\\10fe69e1877743aa88100a13f01a54a6.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-file\\files\\.udm-18923a9d0a6545a7a9971374727d6e45.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-file\\files\\.udm-18923a9d0a6545a7a9971374727d6e45.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-file\\catalog\\parts\\18923a9d0a6545a7a9971374727d6e45\\18923a9d0a6545a7a9971374727d6e45.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-directory\\files\\.udm-1edd91e14e7b4705ba67f6f6db83cad5.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\link-publication-preflight-begin-directory\\catalog\\parts\\1edd91e14e7b4705ba67f6f6db83cad5\\1edd91e14e7b4705ba67f6f6db83cad5.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-ready-file\\files\\.udm-ffb2f8d6b14444bfab8f808030bfe754.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-ready-file\\files\\.udm-ffb2f8d6b14444bfab8f808030bfe754.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-ready-directory\\files\\.udm-da42fab0f7944d0d94ddb31d75df6451.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-begin-file\\files\\.udm-6b91095c09e546c1b022b653f0f40f97.assembling",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-begin-file\\files\\.udm-6b91095c09e546c1b022b653f0f40f97.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-cross-9.68-D\\copy-publication-preflight-begin-directory\\files\\.udm-c72f85a14d8e4dcf9383b03b1dafcbe0.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-ready-unchanged\\UDM-parts\\7bf9cea17fec4e709b694e1cc1a3b456\\7bf9cea17fec4e709b694e1cc1a3b456.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-ready-file\\UDM-parts\\ffb2f8d6b14444bfab8f808030bfe754\\ffb2f8d6b14444bfab8f808030bfe754.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-ready-directory\\UDM-parts\\da42fab0f7944d0d94ddb31d75df6451\\da42fab0f7944d0d94ddb31d75df6451.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-begin-unchanged\\UDM-parts\\c59a3fbbf215496ab847546212a8fc1e\\c59a3fbbf215496ab847546212a8fc1e.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-begin-file\\UDM-parts\\6b91095c09e546c1b022b653f0f40f97\\6b91095c09e546c1b022b653f0f40f97.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-cross-9.68-C\\copy-publication-preflight-begin-directory\\UDM-parts\\c72f85a14d8e4dcf9383b03b1dafcbe0\\c72f85a14d8e4dcf9383b03b1dafcbe0.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-copy-success-9.68\\owned-files\\files\\output.bin",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-ready-unchanged\\catalog\\parts\\9daea442ebb84312bd1b0b0acd54fbea\\9daea442ebb84312bd1b0b0acd54fbea.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-ready-file\\files\\.udm-d428729303674ce0be1dd4b153c0420c.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-ready-file\\catalog\\parts\\d428729303674ce0be1dd4b153c0420c\\d428729303674ce0be1dd4b153c0420c.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-ready-directory\\files\\.udm-8568280f42ae408c860035270e16c275.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-ready-directory\\catalog\\parts\\8568280f42ae408c860035270e16c275\\8568280f42ae408c860035270e16c275.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-begin-unchanged\\catalog\\parts\\fe97f7bd05304d80afc3091d55cad5a7\\fe97f7bd05304d80afc3091d55cad5a7.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-begin-file\\files\\.udm-e10d3e3c2e44485fac00ed1a83f4c58c.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-begin-file\\catalog\\parts\\e10d3e3c2e44485fac00ed1a83f4c58c\\e10d3e3c2e44485fac00ed1a83f4c58c.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-begin-directory\\files\\.udm-99eb4c620a7b4176adbda7b009d637cc.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\link-publication-preflight-begin-directory\\catalog\\parts\\99eb4c620a7b4176adbda7b009d637cc\\99eb4c620a7b4176adbda7b009d637cc.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\copy-publication-preflight-ready-file\\files\\.udm-a2ebb165004a4230a66fc8ed43069b7f.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\copy-publication-preflight-ready-directory\\files\\.udm-587cb8f33ca34435858064700dc9bf4d.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\copy-publication-preflight-begin-file\\files\\.udm-4e29669be1ac4399a78c88c6c493fa5c.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-before-9.67\\owned-cases\\copy-publication-preflight-begin-directory\\files\\.udm-1f5e6b51e0d742778ba5a8ebaa366259.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-ready-unchanged\\catalog\\parts\\6a66a6fe28d44b2798adf5b509278045\\6a66a6fe28d44b2798adf5b509278045.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-ready-file\\files\\.udm-83badf3730684cc381a33db430e908a4.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-ready-file\\catalog\\parts\\83badf3730684cc381a33db430e908a4\\83badf3730684cc381a33db430e908a4.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-ready-directory\\files\\.udm-3cd6b5aa9c9d45dda9aa71de55f5e30f.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-ready-directory\\catalog\\parts\\3cd6b5aa9c9d45dda9aa71de55f5e30f\\3cd6b5aa9c9d45dda9aa71de55f5e30f.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-begin-unchanged\\catalog\\parts\\85c56800775a4b3ab7db893c1ccbf95a\\85c56800775a4b3ab7db893c1ccbf95a.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-begin-file\\files\\.udm-161b36e44886464586c5ba703daedd11.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-begin-file\\catalog\\parts\\161b36e44886464586c5ba703daedd11\\161b36e44886464586c5ba703daedd11.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-begin-directory\\files\\.udm-2cf97f9bdab444b0884c90ae8a63221f.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\link-publication-preflight-begin-directory\\catalog\\parts\\2cf97f9bdab444b0884c90ae8a63221f\\2cf97f9bdab444b0884c90ae8a63221f.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\copy-publication-preflight-ready-file\\files\\.udm-8fc0270afe6d4144808131aae4152246.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\copy-publication-preflight-ready-directory\\files\\.udm-7f3c851f3bb3412e8dc6ea6bb33bd0f3.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\copy-publication-preflight-begin-file\\files\\.udm-36ba4617949e414186831a5268ca8f01.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-transfer-stage-cleanup-corrected-before-9.67\\owned-cases\\copy-publication-preflight-begin-directory\\files\\.udm-8fd708e34feb4f56b977107845d34ed7.assembling.moved",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-ready-unchanged\\UDM-parts\\9eda0ec7390c41018121f55a7268f395\\9eda0ec7390c41018121f55a7268f395.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-ready-file\\UDM-parts\\a2ebb165004a4230a66fc8ed43069b7f\\a2ebb165004a4230a66fc8ed43069b7f.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-ready-directory\\UDM-parts\\587cb8f33ca34435858064700dc9bf4d\\587cb8f33ca34435858064700dc9bf4d.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-begin-unchanged\\UDM-parts\\2e175fb44c244c28bbf90c17ffc4a46d\\2e175fb44c244c28bbf90c17ffc4a46d.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-begin-file\\UDM-parts\\4e29669be1ac4399a78c88c6c493fa5c\\4e29669be1ac4399a78c88c6c493fa5c.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-before-9.67-C\\copy-publication-preflight-begin-directory\\UDM-parts\\1f5e6b51e0d742778ba5a8ebaa366259\\1f5e6b51e0d742778ba5a8ebaa366259.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-ready-unchanged\\UDM-parts\\e3dc23decfec4f1a8faae5f52e2161dd\\e3dc23decfec4f1a8faae5f52e2161dd.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-ready-file\\UDM-parts\\8fc0270afe6d4144808131aae4152246\\8fc0270afe6d4144808131aae4152246.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-ready-directory\\UDM-parts\\7f3c851f3bb3412e8dc6ea6bb33bd0f3\\7f3c851f3bb3412e8dc6ea6bb33bd0f3.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-begin-unchanged\\UDM-parts\\c0802489bbf3410c8f6a4085d48699d9\\c0802489bbf3410c8f6a4085d48699d9.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-begin-file\\UDM-parts\\36ba4617949e414186831a5268ca8f01\\36ba4617949e414186831a5268ca8f01.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          },
+          {
+            "path": "<development>\\owned-transfer-stage-cleanup-corrected-before-9.67-C\\copy-publication-preflight-begin-directory\\UDM-parts\\8fd708e34feb4f56b977107845d34ed7\\8fd708e34feb4f56b977107845d34ed7.data",
+            "bytes": 131072,
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D"
+          }
+        ]
+      }
+    ]
+  },
+  "nextWork": "Audit compressed-response decoding/stripping, media staging and process-loss recovery of unjournaled copied stages; successful finishing and first-availability speed gates remain separate unresolved work."
+}

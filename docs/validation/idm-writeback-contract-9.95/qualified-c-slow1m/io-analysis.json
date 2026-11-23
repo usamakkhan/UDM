@@ -1,0 +1,31 @@
+{
+  "coverageQualified": true,
+  "bytes": 1048576,
+  "targetSha256": "03CC62E9ADB77A380F9DC12F67CCAAEE5106F12844AA73CE32C914DDD16D607C",
+  "win32BodyWrites": 92,
+  "nativeWriteEnvelopesValidated": 92,
+  "logicalBodyBytes": 1048576,
+  "nativeBytesCountedAgain": false,
+  "creationFlags": 0,
+  "desiredAccess": 3221225472,
+  "share": 1,
+  "writerSessionFlushCalls": {
+    "FlushFileBuffers": 1,
+    "NtFlushBuffersFile": 1,
+    "NtFlushBuffersFileEx": 0,
+    "file-part-flush": 1
+  },
+  "noObservedWriterSessionFlushCalls": false,
+  "observedFlushBeforeFinalWrite": true,
+  "observedFlushAfterFinalWrite": false,
+  "successfulMoveAssociatesOpaquePartWithOwnedOutput": true,
+  "partDrive": "C:",
+  "outputDrive": "C:",
+  "postExitOutputFlushMs": 1.728499999444466,
+  "wholeApplicationFlushAbsenceProven": false,
+  "kernelOrDeviceWritebackMeasured": false,
+  "performanceComparison": false,
+  "productionChangeAdmitted": false,
+  "scope": "One owned single-part transfer. Native opens inside OS move/copy, mappings, indirect paths and kernel writeback are not exhaustively observed. Clock readings are diagnostic only.",
+  "payloadRehashedNow": true
+}

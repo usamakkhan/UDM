@@ -1,0 +1,1580 @@
+{
+  "port": 61188,
+  "states": {
+    "baseline-av": {
+      "period": 2,
+      "ended": true,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "",
+      "served": [
+        "p0/a/segment.m4s",
+        "p0/v/segment.m4s",
+        "p1/v/segment.m4s",
+        "p1/a/segment.m4s",
+        "p2/a/segment.m4s",
+        "p2/v/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:03:35.349003+00:00",
+      "holdTimedOut": false
+    },
+    "av": {
+      "period": 2,
+      "ended": true,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "",
+      "served": [
+        "p0/a/segment.m4s",
+        "p0/v/segment.m4s",
+        "p1/v/segment.m4s",
+        "p1/a/segment.m4s",
+        "p2/v/segment.m4s",
+        "p2/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:16:58.540384+00:00",
+      "holdTimedOut": false
+    },
+    "video": {
+      "period": 2,
+      "ended": true,
+      "tracks": [
+        "v"
+      ],
+      "fault": "",
+      "served": [
+        "p0/v/segment.m4s",
+        "p1/v/segment.m4s",
+        "p2/v/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:08.735545+00:00",
+      "holdTimedOut": false
+    },
+    "audio": {
+      "period": 2,
+      "ended": true,
+      "tracks": [
+        "a"
+      ],
+      "fault": "",
+      "served": [
+        "p0/a/segment.m4s",
+        "p1/a/segment.m4s",
+        "p2/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:16.547417+00:00",
+      "holdTimedOut": false
+    },
+    "gap": {
+      "period": 1,
+      "ended": false,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "gap",
+      "served": [
+        "p0/v/segment.m4s",
+        "p0/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:25.438948+00:00",
+      "holdTimedOut": false
+    },
+    "short-audio": {
+      "period": 1,
+      "ended": false,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "short-audio",
+      "served": [
+        "p0/v/segment.m4s",
+        "p0/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:27.570768+00:00",
+      "holdTimedOut": false
+    },
+    "changed": {
+      "period": 1,
+      "ended": false,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "changed",
+      "served": [
+        "p0/v/segment.m4s",
+        "p0/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:29.800671+00:00",
+      "holdTimedOut": false
+    },
+    "save": {
+      "period": 1,
+      "ended": false,
+      "tracks": [
+        "v",
+        "a"
+      ],
+      "fault": "save",
+      "served": [
+        "p0/v/segment.m4s",
+        "p0/a/segment.m4s"
+      ],
+      "origin": "2026-11-21T19:17:31.986988+00:00",
+      "holdTimedOut": false
+    }
+  },
+  "requests": [
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "HEAD",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "baseline-av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1041,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1231,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1231,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1231,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1231,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1231,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "HEAD",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "av",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 1032,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 767,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 767,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 767,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p1/v/init.mp4",
+      "period": 1,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p1/v/segment.m4s",
+      "period": 1,
+      "bytes": 103240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 767,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 767,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "HEAD",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p2/v/init.mp4",
+      "period": 2,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "p2/v/segment.m4s",
+      "period": 2,
+      "bytes": 132995,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "video",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 568,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 875,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 875,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 875,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p1/a/init.mp4",
+      "period": 1,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p1/a/segment.m4s",
+      "period": 1,
+      "bytes": 8680,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 875,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 875,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "HEAD",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p2/a/init.mp4",
+      "period": 2,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "p2/a/segment.m4s",
+      "period": 2,
+      "bytes": 8629,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 2,
+      "bytes": 676,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1232,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "gap",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1232,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 4467,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 4467,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "short-audio",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1240,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1236,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "changed",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1242,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 0,
+      "bytes": 1233,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "HEAD",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "HEAD",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "HEAD",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "HEAD",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "p0/v/init.mp4",
+      "period": 0,
+      "bytes": 772,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "p0/a/init.mp4",
+      "period": 0,
+      "bytes": 728,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "p0/v/segment.m4s",
+      "period": 0,
+      "bytes": 87906,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "p0/a/segment.m4s",
+      "period": 0,
+      "bytes": 8667,
+      "status": 200,
+      "held": false,
+      "range": null
+    },
+    {
+      "case": "save",
+      "method": "GET",
+      "path": "manifest.mpd",
+      "period": 1,
+      "bytes": 1233,
+      "status": 200,
+      "held": true,
+      "range": null
+    }
+  ],
+  "records": [
+    {
+      "case": "baseline-av",
+      "mode": "record",
+      "exitCode": 1,
+      "binarySha256": "8c6b6cca3f88f69f5cca50e0b8eea7aea9cb56e7424b9b129a55b14dec96290a",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\baseline-av\\record-results.json"
+    },
+    {
+      "case": "baseline-av",
+      "mode": "resume",
+      "exitCode": 0,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\baseline-av\\resume-results.json"
+    },
+    {
+      "case": "av",
+      "mode": "record",
+      "exitCode": 0,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\av\\record-results.json"
+    },
+    {
+      "case": "video",
+      "mode": "record",
+      "exitCode": 0,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\video\\record-results.json"
+    },
+    {
+      "case": "audio",
+      "mode": "record",
+      "exitCode": 0,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\audio\\record-results.json"
+    },
+    {
+      "case": "gap",
+      "mode": "record",
+      "exitCode": 1,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\gap\\record-results.json"
+    },
+    {
+      "case": "short-audio",
+      "mode": "record",
+      "exitCode": 1,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\short-audio\\record-results.json"
+    },
+    {
+      "case": "changed",
+      "mode": "record",
+      "exitCode": 1,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\changed\\record-results.json"
+    },
+    {
+      "case": "save",
+      "mode": "record",
+      "exitCode": 0,
+      "binarySha256": "afdf7f91c6812d6615df5885d594b6c652715548f00edf9ddf261998c0c0dc30",
+      "result": "[repo]\\.media-cache\\owned-continuous-dash-workflow-9.83-corrected\\save\\record-results.json"
+    }
+  ]
+}

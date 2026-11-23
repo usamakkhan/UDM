@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "fixture": "CompletionSuppressionUiTests",
+      "mode": "suppression",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 24,
+      "result": "[repo]\\.media-cache\\owned-completion-suppression-9.85-D-suppression\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-suppression-ui-9.85\\release-native\\Udm.CompletionSuppressionUiTests.exe",
+      "binarySha256": "FC15044FFE2E2A71A3E5DEEA903BDBCCCF05FA465BAB6CFE931EBCBA29EA961E",
+      "sourceSha256": "AD2FD0ED5235789AB55227C1D54A5278C3ECA6641C20032EA931E7078E9462B8"
+    },
+    {
+      "fixture": "CompletionActionContentionUiTests",
+      "mode": "contention",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 42,
+      "result": "[repo]\\.media-cache\\owned-completion-suppression-9.85-D-contention\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-suppression-ui-9.85\\release-native\\Udm.CompletionActionContentionUiTests.exe",
+      "binarySha256": "9A1A315FF86A4343F4F072BF9B6FB1EF9DDDAE889B6510A55000D08E6AAF3FE1",
+      "sourceSha256": "1D3DCEB30FEFC71CC1613770F522D7F1AF0EE2817A8FA2075D7082D0A765B2E8"
+    },
+    {
+      "fixture": "CompletionDialogUiTests",
+      "mode": "reference",
+      "exitCode": 0,
+      "passed": true,
+      "assertions": 274,
+      "result": "[repo]\\.media-cache\\owned-completion-suppression-9.85-D-reference\\results.json",
+      "binary": "[repo]\\.media-cache\\owned-completion-suppression-ui-9.85\\release-native\\Udm.CompletionDialogUiTests.exe",
+      "binarySha256": "626C080A31C0554F8BF87A4C98A5D7ECA14054D13149A8382B9173E52601932F",
+      "sourceSha256": "921D572C81B4EAC822038AEDA6BE3EC6851F80313E1D14F82D56C6B3B86432CE"
+    }
+  ]
+}

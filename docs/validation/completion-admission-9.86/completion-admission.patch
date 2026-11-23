@@ -1,0 +1,357 @@
+--- 9.85/native/App.cpp
++++ 9.86/native/App.cpp
+@@ -12,6 +12,8 @@
+ #include "Core.hpp"
+ #include "ColumnSettingsTask.hpp"
+ #include "CompletionSettingsTask.hpp"
++#include "CompletionReadinessTask.hpp"
++#include <deque>
+ #include "GlobalLimitSettingsTask.hpp"
+ #include "AppearanceSettingsTask.hpp"
+ #include "UiDesktopAttestation.hpp"
+@@ -171,6 +173,9 @@
+  enum class TransferEvent { Started, Published, Finished };
+  std::mutex eventsMutex;std::vector<std::pair<JobPtr,TransferEvent>> events;
+  std::set<std::string> presentedPublications;
++ enum class CompletionRequestKind {Dialog,Complete,Finished,Started};
++ struct CompletionRequest {JobPtr job;CompletionRequestKind kind;bool requested=false,publication=false;};
++ std::deque<CompletionRequest> pendingCompletions;CompletionReadinessTask completionReadiness;bool completionDraining=false;
+  CompletionSettingsTask completionSettingsTask;bool completionSettingsClosePending=false;
+  struct CompletionPreferenceView {Form* dialog;CWnd* checkbox;bool confirmed;};
+  std::weak_ptr<CompletionPreferenceView> completionSettingsSource;
+@@ -727,13 +732,50 @@
+   }
+   return total;
+  }
+- void complete(JobPtr job,bool requested=false){
++ void queueCompletionWork(JobPtr job,CompletionRequestKind kind,bool requested=false,bool publication=false){
++  if(quitting)return;
++  if(std::none_of(pendingCompletions.begin(),pendingCompletions.end(),[&](const auto& value){return value.job==job&&value.kind==kind&&value.requested==requested&&value.publication==publication;}))pendingCompletions.push_back({std::move(job),kind,requested,publication});
++  pollCompletionWork();
++ }
++ bool pollCompletionWork(){
++  if(completionDraining)return true;
++  if(pendingCompletions.empty()){
++   if(completionReadiness.valid()&&quitAfterDownload&&!quitting){
++    if(manager.fileInfoDecisionPending)return false;
++    if(!completionReadiness.ready())return true;
++    auto result=completionReadiness.take();if(!result.error.empty())throw std::runtime_error(result.error);
++   }else completionReadiness.finish();
++   return false;
++  }
++  if(quitting)return false;
++  auto wait=[this]{if(!completionReadiness.valid())completionReadiness.start(manager,maintenanceSignal->notifier());};
++  // Do not starve the owner that must acknowledge an accepted decision.
++  if(manager.fileInfoDecisionPending||resumePresenting||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot){wait();return false;}
++  if(completionReadiness.valid()){
++   if(!completionReadiness.ready())return true;
++   auto result=completionReadiness.take();if(!result.error.empty())throw std::runtime_error(result.error);
++  }
++  completionDraining=true;struct DrainingGuard{bool& value;~DrainingGuard(){value=false;}} guard{completionDraining};
++  while(!pendingCompletions.empty()){
++   auto request=std::move(pendingCompletions.front());pendingCompletions.pop_front();bool accepted=false;
++   switch(request.kind){
++    case CompletionRequestKind::Dialog:accepted=tryShowCompletionDialog(request.job,request.requested,request.publication);break;
++    case CompletionRequestKind::Complete:accepted=tryComplete(request.job,request.requested);break;
++    case CompletionRequestKind::Finished:accepted=tryFinishTransferNotification(request.job);break;
++    case CompletionRequestKind::Started:accepted=tryPresentStartedTransfer(request.job);break;
++   }
++   if(!accepted){pendingCompletions.push_front(std::move(request));wait();return true;}
++  }
++  completionReadiness.finish();return false;
++ }
++ void complete(JobPtr job,bool requested=false){queueCompletionWork(std::move(job),CompletionRequestKind::Complete,requested);}
++ bool tryComplete(JobPtr job,bool requested){
+   if(!requested){
+    Json action,sound;
+    bool showDialog,closeProgress;
+    fs::path completionFolder;
+    {
+-    Lock lock(manager.mutex);
++    std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return false;
+     action=manager.takeDownloadCompletion(job);
+     const auto& settings=manager.state["Settings"];
+     sound={{"Sound",yes(settings,"Sound",true)},{"CompletionSoundFile",str(settings,"CompletionSoundFile")}};
+@@ -745,9 +787,10 @@
+    playDownloadSound(sound,"Sound","CompletionSoundFile");
+    if(closeProgress)for(auto& p:progress)if(p->GetSafeHwnd()&&p->downloadId()==job->id())p->requestCompletionClose(true);
+    if(!completionFolder.empty())try{openFile(this,completionFolder);}catch(const std::exception& e){error(this,e);}
+-   if(presentedPublications.erase(job->id())||!showDialog)return;
++   if(presentedPublications.erase(job->id())||!showDialog)return true;
+   }
+   showCompletionDialog(job,requested);
++  return true;
+  }
+  bool pollCompletionSettings(){
+   if(!completionSettingsTask.valid()){if(completionSettingsClosePending){completionSettingsClosePending=false;OnClose();return true;}return false;}
+@@ -762,14 +805,15 @@
+   else if(completionSettingsClosePending)try{maintenanceSignal->notifier()();}catch(...){/* The main timer retains the accepted close decision. */}
+   return true;
+  }
+- void showCompletionDialog(JobPtr job,bool requested,bool publication=false){
++ void showCompletionDialog(JobPtr job,bool requested,bool publication=false){queueCompletionWork(std::move(job),CompletionRequestKind::Dialog,requested,publication);}
++ bool tryShowCompletionDialog(JobPtr job,bool requested,bool publication){
+   Json addressInputs;
+   fs::path target;
+   i64 fileSize,trackBytes;bool suppressed;
+   std::string publicationId;
+   std::optional<std::string> scanSummary;
+   {
+-   Lock lock(manager.mutex);
++   std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return false;
+    if(publication){
+     const auto& record=job->data;
+     const auto& settings=manager.state["Settings"];
+@@ -777,7 +821,7 @@
+     if(presentedPublications.count(publicationId)||str(record,"Status")!="Complete"||record.contains("ScanResult")||
+        !str(settings,"ScanProgram").empty()||!str(record,"UpdateSetupVersion").empty()||
+        !showDownloadCompletionDialog(record,yes(settings,"SuppressCompletionDialog"))||
+-       std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return;
++       std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end())return true;
+    }
+    addressInputs=downloadAddressInputs(*job);
+    target=job->target();
+@@ -900,6 +944,7 @@
+    if(scanSummary)d->resizeClient(303,132+extra);
+   };if(!d->Create(101,this))throw std::runtime_error("Cannot open the completion dialog.");d->ShowWindow(requested?SW_SHOW:SW_SHOWNOACTIVATE);if(requested){d->BringWindowToTop();d->SetForegroundWindow();}completions.push_back(std::move(dialog));
+   if(publication)presentedPublications.insert(std::move(publicationId));
++  return true;
+  }
+ 
+  std::unique_ptr<Form> quotaWarning;
+@@ -960,13 +1005,17 @@
+   if(optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)return;
+   std::vector<std::pair<JobPtr,TransferEvent>> pending;
+   {std::lock_guard<std::mutex> lock(eventsMutex);pending.swap(events);}
+-  if(pending.empty())return;
++  if(pending.empty()){pollCompletionWork();return;}
+   for(const auto& [job,kind]:pending){
+    if(kind==TransferEvent::Published){showCompletionDialog(job,false,true);continue;}
+-   if(kind==TransferEvent::Finished){if(!finishUpdateDownload(job))complete(job);continue;}
++   if(kind==TransferEvent::Finished){queueCompletionWork(job,CompletionRequestKind::Finished);continue;}
++   queueCompletionWork(job,CompletionRequestKind::Started);
++  }
++ }
++ bool tryPresentStartedTransfer(const JobPtr& job){
+    bool show;
+    {
+-    Lock lock(manager.mutex);
++    std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return false;
+     const auto& prefs=manager.state["Settings"];
+     const auto& record=job->data;
+     const bool completedAndClosing=str(record,"Status")=="Complete"&&!manager.isActive(job)&&yes(record,"CloseProgressOnCompletion",true);
+@@ -975,7 +1024,7 @@
+     show=(!completedAndClosing||showFinishedPrefetch)&&!yes(record,"ConfirmationPending")&&!yes(prefs,"SuppressProgressDialog")&&!yes(record,"SuppressProgressDialog");
+    }
+    if(show)showProgress(job,false);
+-  }
++   return true;
+  }
+  void enqueueRequestedAuthentication(const JobPtr& job){
+   if(std::find(requestedAuthenticationRequests.begin(),requestedAuthenticationRequests.end(),job)==requestedAuthenticationRequests.end())requestedAuthenticationRequests.push_back(job);
+@@ -1415,14 +1464,15 @@
+   else historyRefreshDeferred=true;
+  }
+   void pollNetworkCapture(bool request=true){if(!networkCapture)return;networkCapture->pollReady();const auto& view=networkCapture->view();if(view.revision!=networkErrorRevision){networkErrorRevision=view.revision;if(!view.error.empty())showStatus(view.error);}if(request&&!quitting)networkCapture->requestPoll();}
+-  afx_msg void OnTimer(UINT_PTR id){if(pollCompletionSettings())return;if(pollAppearanceCommand())return;if(pollGlobalLimitCommand())return;if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
++  afx_msg void OnTimer(UINT_PTR id){if(pollCompletionSettings())return;if(pollAppearanceCommand())return;if(pollGlobalLimitCommand())return;try{if(pollCompletionWork())return;}catch(const std::exception& e){showStatus(e.what());return;}if(exitLayoutTask.valid()){pollExitLayout();return;}try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}if(closePolicyTask.valid()){pollClosePolicy();return;}if(automationReviewDeferred&&!quitting)try{reviewAutomationBatches();}catch(const std::exception& e){showStatus(e.what());}try{pollResumeCommands();}catch(const std::exception& e){showStatus(e.what());}if(!cancellationRecoveryShowing)showCancellationRecovery();showPresentationRecovery();if(manager.fileInfoDecisionPending){CFrameWnd::OnTimer(id);return;}if(optionsAppearanceSnapshot){CFrameWnd::OnTimer(id);return;}if(optionsUiActive){tickOptionsModel();CFrameWnd::OnTimer(id);return;}if(optionsRefreshPending){try{finishOptionsAppearance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);return;}if(deferredUpdateResult&&PostMessage(UPDATE_RESULT,0,reinterpret_cast<LPARAM>(deferredUpdateResult.get())))deferredUpdateResult.release();if(IsWindowEnabled())try{while(takeCliHangup(manager,false))performSystemAction("Disconnect dial-up / VPN");}catch(const std::exception& e){error(this,e);return;}if(postCliCompletionExit())return;try{pollNetworkCapture();}catch(const std::exception& e){showStatus(e.what());}try{showQuotaWarning();}catch(const std::exception& e){showStatus(e.what());}if(IsWindowEnabled()&&manager.browserSettingsRequested.exchange(false))PostMessage(WM_COMMAND,CMD_BROWSER);completions.erase(std::remove_if(completions.begin(),completions.end(),[](const auto& d){return !d->GetSafeHwnd();}),completions.end());rememberLayout();refresh(false,true);if(!refreshing)try{fileCompletionActions();queueCompletionActions();}catch(const std::exception& e){error(this,e);}if(!quitting)try{requestModelMaintenance();}catch(const std::exception& e){showStatus(e.what());}CFrameWnd::OnTimer(id);}
+   void consumeModelMaintenance(){const auto result=modelMaintenance.takeResult();if(!result.dispatchError.empty())showStatus(result.dispatchError);if(!result.tickError.empty())showStatus(result.tickError);}
+   void requestModelMaintenance(){consumeModelMaintenance();modelMaintenance.requestTick();}
+   afx_msg LRESULT OnModelMaintenanceReady(WPARAM identity,LPARAM){
+    if(!maintenanceSignal->matches(identity))return 0;
+-   if(pollCompletionSettings())return 0;if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;
++   if(pollCompletionSettings())return 0;if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;try{if(pollCompletionWork())return 0;}catch(const std::exception& e){showStatus(e.what());return 0;}
+    if(exitLayoutTask.valid()){pollExitLayout();return 0;}if(quitting)return 0;
+    if(closePolicyTask.valid()){pollClosePolicy();return 0;}
++   if(postCliCompletionExit())return 0;
+    try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}
+    showPresentationRecovery();
+    try{pollNetworkCapture(false);}catch(const std::exception& e){showStatus(e.what());}
+@@ -1493,8 +1543,8 @@
+   // retire. Use it immediately; the main timer remains a retry after modal UI,
+   // a failed PostMessage or a later explicit save/scanner decision.
+   bool postCliCompletionExit(){
+-   if(quitting||!quitAfterDownload||!IsWindowEnabled()||manager.fileInfoDecisionPending||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)return false;
+-   Lock lock(manager.mutex);const auto job=quitAfterDownload;
++   if(quitting||!pendingCompletions.empty()||completionDraining||completionReadiness.valid()||!quitAfterDownload||!IsWindowEnabled()||manager.fileInfoDecisionPending||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)return false;
++   std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){if(!completionReadiness.valid())completionReadiness.start(manager,maintenanceSignal->notifier());return false;}const auto job=quitAfterDownload;
+    if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()){quitAfterDownload.reset();return false;}
+    if(!cliCompletionReady(manager,job)||!PostMessage(WM_COMMAND,CMD_EXIT))return false;
+    quitAfterDownload.reset();return true;
+@@ -1551,15 +1601,21 @@
+    }
+    showStatus("Downloading UDM "+manifest.version+"...");refresh();
+   }
++  struct UpdateCompletionInput {std::string version,sha;fs::path path;};
++  UpdateCompletionInput updateCompletionInput(const JobPtr& job){UpdateCompletionInput input{str(job->data,"UpdateSetupVersion"),str(job->data,"ExpectedSha256"),{}};if(!input.version.empty()&&!input.sha.empty())input.path=job->target();return input;}
++  bool tryFinishTransferNotification(const JobPtr& job){
++   UpdateCompletionInput input;{std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock())return false;input=updateCompletionInput(job);}
++   if(!beginUpdateCompletion(std::move(input)))complete(job);return true;
++  }
+   // True when the job is an update setup UDM downloaded: its gate replaces the ordinary completion handling.
+-  bool finishUpdateDownload(JobPtr job){
+-   std::string version,sha;{Lock lock(manager.mutex);version=str(job->data,"UpdateSetupVersion");sha=str(job->data,"ExpectedSha256");}
+-   if(version.empty()||sha.empty())return false;
++  bool finishUpdateDownload(JobPtr job){UpdateCompletionInput input;{Lock lock(manager.mutex);input=updateCompletionInput(job);}return beginUpdateCompletion(std::move(input));}
++  bool beginUpdateCompletion(UpdateCompletionInput input){
++   if(input.version.empty()||input.sha.empty())return false;
+    if(updateLaunching)return true;
+-   updateLaunching=true;showStatus("Checking the downloaded UDM "+version+" setup...");
++   updateLaunching=true;showStatus("Checking the downloaded UDM "+input.version+" setup...");
+    if(updateLaunchThread.joinable())updateLaunchThread.join();
+    // Copying, hashing and WinVerifyTrust on a setup take seconds: off the UI thread.
+-   updateLaunchThread=std::thread([path=job->target(),sha,hwnd=m_hWnd]{auto outcome=std::make_unique<UpdateLaunch>();try{outcome->verified=verifyDownloadedSetup(path,sha);}catch(const std::exception& e){outcome->error=e.what();}::PostMessage(hwnd,UPDATE_LAUNCHED,0,(LPARAM)outcome.release());});
++   updateLaunchThread=std::thread([path=std::move(input.path),sha=std::move(input.sha),hwnd=m_hWnd]{auto outcome=std::make_unique<UpdateLaunch>();try{outcome->verified=verifyDownloadedSetup(path,sha);}catch(const std::exception& e){outcome->error=e.what();}::PostMessage(hwnd,UPDATE_LAUNCHED,0,(LPARAM)outcome.release());});
+    return true;
+   }
+   afx_msg LRESULT OnUpdateLaunched(WPARAM,LPARAM l){
+@@ -1570,7 +1626,7 @@
+    return 0;
+   }
+  afx_msg void OnGetMinMaxInfo(MINMAXINFO* info){info->ptMinTrackSize.x=px(596);info->ptMinTrackSize.y=px(340);CFrameWnd::OnGetMinMaxInfo(info);}
+- afx_msg void OnClose(){if(completionSettingsTask.valid()){completionSettingsClosePending=true;showStatus("Saving completion preference before closing...");return;}completionSettingsClosePending=false;cancelDownloadMenu();if(appearanceCommandTask.valid()){appearanceClosePending=true;showStatus("Finishing appearance changes before closing...");return;}appearanceClosePending=false;if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
++ afx_msg void OnClose(){if(completionSettingsTask.valid()){completionSettingsClosePending=true;showStatus("Saving completion preference before closing...");return;}completionSettingsClosePending=false;cancelDownloadMenu();if(appearanceCommandTask.valid()){appearanceClosePending=true;showStatus("Finishing appearance changes before closing...");return;}appearanceClosePending=false;if(globalLimitCommandTask.valid()){globalLimitClosePending=true;showStatus("Saving Speed Limiter settings before closing...");return;}globalLimitClosePending=false;if(exitLayoutTask.valid()){pollExitLayout();return;}if(closePolicyTask.valid()){if(!quitting)return;cancelClosePolicy();}if(closeBlockedByDialog()||(!IsWindowEnabled()&&!exitLayoutPrepared)){if(exitLayoutPrepared)EnableWindow(exitLayoutOwnerEnabled);exitLayoutPrepared=false;quitting=false;recoveryOnClose=false;return;}UDM_FINISH_POINT("close-entry");if(!quitting){std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){try{closePolicyTask.start(manager,maintenanceSignal->notifier());showStatus("Waiting for download settings...");}catch(const std::exception& error){showStatus(error.what());}return;}if(yes(manager.state["Settings"],"CloseToTray")){ShowWindow(SW_HIDE);return;}}quitting=true;if(!exitLayoutPrepared)try{if(!prepareExitLayout())return;}catch(const std::exception& e){exitLayoutTask.finish();EnableWindow(exitLayoutOwnerEnabled);quitting=false;recoveryOnClose=false;showStatus(e.what());return;}exitLayoutPrepared=false;completionReadiness.finish();downloadMenuTask.finish();preparedFileInfo->close();preparedFileInfoViews.clear();if(updateCancel)updateCancel->stop=true;if(updateThread.joinable())updateThread.join();if(updateLaunchThread.joinable())updateLaunchThread.join();KillTimer(1);maintenanceSignal->disarm();modelMaintenance.stop();presentationAcks.stop();UDM_FINISH_POINT("integration-stop-begin");if(stopIntegration)stopIntegration();UDM_FINISH_POINT("integration-stop-end");preparedFileInfo->stopWorker();UDM_FINISH_POINT("file-info-stop-end");showStatus("Saving downloads and closing...");EnableWindow(FALSE);try{resumeTask.finish();resumePending.clear();resumeActive.clear();resumeFollowups.clear();resumeDecision.reset();requestedAuthenticationTask->finish();requestedAuthenticationRequests.clear();authenticationTask->finish();if(networkCapture)networkCapture->stop();for(auto& window:progress)window->finishPendingCommandForShutdown();for(auto& window:progress)window->flushQueuedLimitsForShutdown();UDM_FINISH_POINT("manager-stop-begin");manager.stop();UDM_FINISH_POINT("manager-stop-end");}catch(const std::exception& e){EnableWindow(TRUE);quitting=false;recoveryOnClose=false;modelMaintenance.restart();presentationAcks.restart();maintenanceSignal->arm(GetSafeHwnd());SetTimer(1,500,nullptr);try{if(restartIntegration)restartIntegration();}catch(const std::exception& bridge){error(this,bridge);}error(this,e);return;}pendingCompletions.clear();UDM_FINISH_POINT("icons-stop-begin");fileIconLoader.stop();UDM_FINISH_POINT("icons-stop-end");commandFiles.stop();UDM_FINISH_POINT("command-files-stop-end");if(recoveryOnClose){try{launchRecoveryMode(manager.root,true);}catch(const std::exception& e){error(this,e);}}manager.event={};manager.filePublished={};manager.queueSound={};manager.showCompletedDownload={};if(quotaWarning&&quotaWarning->GetSafeHwnd())quotaWarning->DestroyWindow();quotaWarning.reset();for(auto& d:completions)if(d->GetSafeHwnd())d->DestroyWindow();completions.clear();basket.reset();tableDrop.Revoke();treeDrop.Revoke();drop.Revoke();for(auto& p:progress)if(p->GetSafeHwnd()){p->DestroyWindow();}Shell_NotifyIconW(NIM_DELETE,&tray);UDM_FINISH_POINT("windows-cleanup-end");CFrameWnd::OnClose();UDM_FINISH_POINT("close-return");}
+  afx_msg LRESULT OnShow(WPARAM,LPARAM){if(exitLayoutTask.valid()||(appearanceClosePending&&quitting)||(globalLimitClosePending&&quitting))return 0;appearanceClosePending=false;globalLimitClosePending=false;cancelClosePolicy();ShowWindow(SW_RESTORE);SetForegroundWindow();requestDeferredHistoryRefresh();reviewAutomationBatches();return 0;}
+  // Link arrays sent through automation wait, encrypted, until reviewed here.
+  void reviewAutomationBatches(){
+--- 9.85/native/backend-tests.json
++++ 9.86/native/backend-tests.json
+@@ -1,4 +1,8 @@
+ [
++  {
++    "source": "CompletionReadinessTaskTests",
++    "timeoutSeconds": 90
++  },
+   {
+     "source": "CompletionSettingsTaskTests",
+     "timeoutSeconds": 90
+--- 9.85/native/Version.hpp
++++ 9.86/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 9,85,0,0
+-#define UDM_VERSION_STRING "9.85"
+-#define UDM_VERSION_WSTRING L"9.85"
++#define UDM_VERSION_TUPLE 9,86,0,0
++#define UDM_VERSION_STRING "9.86"
++#define UDM_VERSION_WSTRING L"9.86"
+--- 9.85/browser/chromium/manifest.json
++++ 9.86/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.49",
++  "version": "0.73.50",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- 9.85/browser/firefox/manifest.json
++++ 9.86/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.49",
++  "version": "0.73.50",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- /dev/null
++++ 9.86/native/CompletionReadinessTask.hpp
+@@ -0,0 +1,30 @@
++#pragma once
++#include "Core.hpp"
++#include <future>
++#include <condition_variable>
++#define UDM_COMPLETION_ADMISSION_AVAILABLE
++namespace udm {
++struct CompletionReadinessResult {bool cancelled=false;std::string error;};
++// A cancellable availability wake-up only. Presentation data is read afresh
++// on the UI thread using try_lock; this worker never consumes an action.
++class CompletionReadinessTask {
++ std::future<CompletionReadinessResult> future;std::thread worker;std::atomic_bool cancelled=false;std::mutex mutex;std::condition_variable wake;
++public:
++ CompletionReadinessTask()=default;CompletionReadinessTask(const CompletionReadinessTask&)=delete;CompletionReadinessTask& operator=(const CompletionReadinessTask&)=delete;~CompletionReadinessTask(){finish();}
++ bool valid()const noexcept{return future.valid();}bool ready()const{return valid()&&future.wait_for(std::chrono::seconds(0))==std::future_status::ready;}
++ void start(Manager& manager,std::function<void()> notify={},std::function<void(const char*)> observe={}){
++  if(valid()||worker.joinable())throw std::runtime_error("Completion admission is already waiting.");cancelled=false;std::promise<CompletionReadinessResult> promise;future=promise.get_future();
++  try{worker=std::thread([this,&manager,notify=std::move(notify),observe=std::move(observe),promise=std::move(promise)]()mutable{
++   CompletionReadinessResult result;
++   try{for(;;){if(cancelled){result.cancelled=true;break;}std::unique_lock lock(manager.mutex,std::try_to_lock);
++    if(lock.owns_lock()&&!manager.fileInfoDecisionPending){lock.unlock();if(observe)observe("available");break;}
++    if(lock.owns_lock())lock.unlock();if(observe)observe("waiting-model");std::unique_lock waiting(mutex);wake.wait_for(waiting,std::chrono::milliseconds(10),[&]{return cancelled.load();});
++   }}catch(const std::exception& error){result.error=error.what();}catch(...){result.error="Completion admission could not be prepared.";}
++   result.cancelled=result.cancelled||cancelled.load();promise.set_value(std::move(result));if(notify)try{notify();}catch(...){}
++  });}catch(...){future={};throw;}
++ }
++ void cancelRead()noexcept{cancelled=true;wake.notify_all();}
++ CompletionReadinessResult take(){if(!ready())throw std::runtime_error("Completion admission is not ready.");auto result=future.get();if(worker.joinable())worker.join();return result;}
++ CompletionReadinessResult finish()noexcept{cancelRead();if(worker.joinable())worker.join();CompletionReadinessResult result;if(future.valid())try{result=future.get();}catch(...){}future={};return result;}
++};
++}
+--- /dev/null
++++ 9.86/native/CompletionReadinessTaskTests.cpp
+@@ -0,0 +1,14 @@
++#include "CompletionReadinessTask.hpp"
++#include <iostream>
++using namespace udm;
++template<class F>static bool until(F test){const auto end=GetTickCount64()+5000;while(!test()&&GetTickCount64()<end)Sleep(1);return test();}
++struct ReadinessWriter {std::promise<void> release;std::thread thread;std::atomic_bool held=false;bool opened=false;explicit ReadinessWriter(Manager& manager){auto gate=release.get_future().share();thread=std::thread([this,&manager,gate]{Lock lock(manager.mutex);held=true;gate.wait();});if(!until([&]{return held.load();}))throw std::runtime_error("Writer deadline");}void open(){if(!opened){opened=true;release.set_value();}if(thread.joinable())thread.join();}~ReadinessWriter(){open();}};
++int wmain(int argc,wchar_t** argv){if(argc!=2)return 2;auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;auto check=[&](bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);};
++ try{Manager manager(root/L"state");manager.save();auto before=manager.snapshot();auto disk=readText(manager.root/L"state.json");CompletionReadinessTask task;
++  {ReadinessWriter writer(manager);std::atomic_bool waiting=false;task.start(manager,{},[&](const char* stage){if(std::string(stage)=="waiting-model")waiting=true;});check(until([&]{return waiting.load();})&&writer.held&&!task.ready(),"Waiting for the model does not block admission's caller");bool rejected=false;try{task.start(manager);}catch(...){rejected=true;}check(rejected&&task.valid(),"Duplicate start preserves the original readiness operation");check(task.finish().cancelled&&writer.held&&!task.valid(),"Cancelling joins before a held model writer releases");writer.open();}
++  manager.fileInfoDecisionPending=true;std::atomic_bool waiting=false;task.start(manager,{},[&](const char* stage){if(std::string(stage)=="waiting-model")waiting=true;});check(until([&]{return waiting.load();})&&!task.ready(),"Availability waits for an accepted model decision");check(task.finish().cancelled&&manager.fileInfoDecisionPending,"Read cancellation does not release another owner's decision");manager.fileInfoDecisionPending=false;
++  std::atomic_bool notified=false;bool unlocked=false;task.start(manager,[&]{notified=true;throw std::runtime_error("Ignored wake failure");},[&](const char* stage){if(std::string(stage)=="available"){std::thread probe([&]{std::unique_lock lock(manager.mutex,std::try_to_lock);unlocked=lock.owns_lock();});probe.join();}});check(until([&]{return notified.load();})&&task.ready(),"A wake-up failure cannot discard an available result");auto result=task.take();check(!result.cancelled&&result.error.empty()&&unlocked&&!task.valid(),"Available result is published after model unlock and joined on acknowledgement");
++  task.start(manager,{},[](const char* stage){if(std::string(stage)=="available")throw std::runtime_error("Owned availability failure");});check(until([&]{return task.ready();}),"An availability exception reaches a terminal result");result=task.take();check(result.error=="Owned availability failure"&&!task.valid(),"An availability failure is reported and consumed for retry");task.start(manager);check(until([&]{return task.ready();})&&task.take().error.empty(),"A failed preparation permits a fresh readiness request");
++  {ReadinessWriter writer(manager);task.start(manager);writer.open();check(until([&]{return task.ready();})&&!task.take().cancelled,"Releasing the actual model writer produces readiness without a UI timer wait");}
++  task.finish();task.finish();check(!task.valid()&&!manager.fileInfoDecisionPending,"Repeated readiness cleanup is safe and owns no decision guard");check(manager.snapshot()==before&&readText(manager.root/L"state.json")==disk,"Readiness neither consumes completion actions nor changes the model or catalog");manager.stop();
++ }catch(const std::exception& problem){error=problem.what();}atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;}
+--- /dev/null
++++ 9.86/native/CompletionAdmissionUiTests.cpp
+@@ -0,0 +1,45 @@
++#define UDM_TOOLBAR_COMPONENT_TEST
++#include "App.cpp"
++#include <condition_variable>
++#include <future>
++namespace udm {
++static fs::path output;static Json checks=Json::array(),observations=Json::array();static std::string failure;static bool baseline=false;
++static void check(bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);}
++static std::wstring text(HWND w){wchar_t b[2048]{};GetWindowTextW(w,b,2048);return b;}
++static HWND named(HWND w,const wchar_t* label){for(auto c=GetWindow(w,GW_CHILD);c;c=GetWindow(c,GW_HWNDNEXT))if(text(c)==label)return c;return nullptr;}
++struct AdmissionWriter {std::mutex mutex;std::condition_variable wake;bool released=false;std::atomic_bool held=false,expired=false;std::thread worker;AdmissionWriter(Manager& manager,std::function<void()> change={}){std::promise<void> entered;auto ready=entered.get_future();worker=std::thread([this,&manager,change=std::move(change),entered=std::move(entered)]()mutable{Lock lock(manager.mutex);if(change)change();held=true;entered.set_value();std::unique_lock waiting(mutex);expired=!wake.wait_for(waiting,std::chrono::milliseconds(500),[&]{return released;});held=false;});ready.get();}void open(){{std::lock_guard lock(mutex);released=true;}wake.notify_all();if(worker.joinable())worker.join();}~AdmissionWriter(){open();}};
++class ToolbarComponentTest {
++public:static void run(MainWindow& frame){auto& manager=frame.manager;frame.modelMaintenance.stop();frame.presentationAcks.stop();
++ const auto jobFor=[&](const char* name){MSG stale{};while(PeekMessageW(&stale,frame.GetSafeHwnd(),UiTaskSignal::message,UiTaskSignal::message,PM_REMOVE)){}auto job=manager.add("https://example.invalid/admission","",name,"Main queue",true);job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;return job;};
++#ifdef UDM_COMPLETION_ADMISSION_AVAILABLE
++ const auto settle=[&]{const auto began=GetTickCount64(),deadline=began+5000;unsigned wakes=0;while((!frame.pendingCompletions.empty()||frame.completionReadiness.valid())&&GetTickCount64()<deadline){MSG message{};while(PeekMessageW(&message,frame.GetSafeHwnd(),UiTaskSignal::message,UiTaskSignal::message,PM_REMOVE)){++wakes;DispatchMessageW(&message);}Sleep(1);}check(frame.pendingCompletions.empty()&&!frame.completionReadiness.valid(),"Completion admission drains and joins its readiness reader");check(wakes>0,"Actual integer-only readiness wake dispatches through the main window without a timer poll");observations.push_back({{"stage","writer-release-to-owned-wake-return"},{"dark",uiDark},{"milliseconds",GetTickCount64()-began},{"ownedWakes",wakes}});};
++#endif
++ for(bool dark:{false,true}){if(baseline&&dark)break;uiDark=dark;
++  for(bool eventPath:{false,true}){auto job=jobFor(eventPath?"event.bin":"explicit.bin");const auto before=frame.completions.size();AdmissionWriter writer(manager,[&]{job->data["FileName"]="latest 文件.bin";job->data["Size"]=16;});auto start=GetTickCount64();
++   if(eventPath){manager.filePublished(job);manager.event(job,true);frame.OnTransferEvents(0,0);}else frame.showCompletionDialog(job,true);
++   auto elapsed=GetTickCount64()-start;observations.push_back({{"dark",dark},{"eventPath",eventPath},{"dispatchMs",elapsed},{"writerStillHeld",writer.held.load()},{"watchdogExpired",writer.expired.load()}});
++   if(baseline){check(writer.expired&&elapsed>=300,"Frozen completion opening waits for the catalog writer on the UI thread");writer.open();check(frame.completions.size()==before+1,"Frozen request eventually creates its completion dialog");SendMessageW(named(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);continue;}
++#ifdef UDM_COMPLETION_ADMISSION_AVAILABLE
++   check(writer.held&&!writer.expired&&elapsed<250,"Explicit and real publication/finished dispatch return while the writer remains held");check(frame.completions.size()==before&&!frame.pendingCompletions.empty(),"Busy admission retains intent without showing stale metadata");
++   if(eventPath){manager.filePublished(job);frame.OnTransferEvents(0,0);check(frame.pendingCompletions.size()==2,"Repeated pending publication coalesces without reordering Finished");}
++   frame.pollCompletionWork();check(writer.held&&!writer.expired,"Admission polling does not wait for the held writer");writer.open();settle();check(frame.completions.size()==before+1,"Publication followed by Finished creates exactly one completion dialog");auto window=frame.completions.back()->GetSafeHwnd();check(named(window,job->target().c_str())&&named(window,L"Download complete\r\nDownloaded 16 Bytes"),"Opening uses the current Unicode destination and size captured after contention");frame.pollCompletionWork();check(frame.completions.size()==before+1,"A subsequent poll cannot replay a completed presentation");SendMessageW(named(window,L"Close"),BM_CLICK,0,0);
++#else
++   throw std::runtime_error("Candidate admission unavailable");
++#endif
++  }
++  if(baseline)continue;
++#ifdef UDM_COMPLETION_ADMISSION_AVAILABLE
++  {auto job=jobFor("stale-start.bin");const auto before=frame.completions.size(),progressBefore=frame.progress.size();AdmissionWriter writer(manager);manager.event(job,false);manager.filePublished(job);manager.event(job,true);frame.OnTransferEvents(0,0);check(writer.held&&!writer.expired&&frame.pendingCompletions.size()==3,"Stale Started, Published and Finished retain their order without a UI lock wait");writer.open();settle();check(frame.completions.size()==before+1&&frame.progress.size()==progressBefore,"The complete event sequence shows one completion and no stale progress window");SendMessageW(named(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);}
++  for(int mode=0;mode<3;++mode){auto job=jobFor("obsolete.bin");auto before=frame.completions.size();AdmissionWriter writer(manager,[&]{if(mode==0)job->data["Status"]="Failed";else if(mode==1)job->data["SuppressCompletionDialog"]=true;else manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),job));});manager.filePublished(job);frame.OnTransferEvents(0,0);check(writer.held&&!writer.expired&&!frame.pendingCompletions.empty(),"Publication retains a busy request until current eligibility is readable");writer.open();settle();check(frame.completions.size()==before,"Failed, suppressed and removed publications cannot open a stale completion");}
++  for(bool eventPath:{true,false}){auto job=jobFor("cli-exit.bin");job->data["SuppressCompletionDialog"]=true;manager.save();check(cliCompletionReady(manager,job),"CLI wake fixture starts with the actual final catalog snapshot saved");frame.quitAfterDownload=job;
++   const auto exitQueued=[&]{MSG message{};if(!PeekMessageW(&message,frame.GetSafeHwnd(),WM_COMMAND,WM_COMMAND,PM_REMOVE))return false;if(LOWORD(message.wParam)!=CMD_EXIT)throw std::runtime_error("Unexpected owned command during CLI wake qualification");return true;};
++   AdmissionWriter writer(manager);auto start=GetTickCount64();if(eventPath){manager.filePublished(job);manager.event(job,true);frame.OnTransferEvents(0,0);}else frame.postCliCompletionExit();auto elapsed=GetTickCount64()-start;check(writer.held&&!writer.expired&&elapsed<250,"Deferred completion and direct CLI exit readiness never wait on the UI thread");check(!exitQueued()&&frame.quitAfterDownload==job,"A busy model cannot prematurely post CLI Exit");writer.open();settle();check(exitQueued()&&!frame.quitAfterDownload,"The actual owned readiness wake posts CLI Exit without a main timer tick");observations.push_back({{"stage","cli-dispatch"},{"dark",dark},{"eventPath",eventPath},{"milliseconds",elapsed}});
++  }
++  auto job=jobFor("cancelled.bin");auto before=frame.completions.size();AdmissionWriter writer(manager);frame.showCompletionDialog(job,true);auto start=GetTickCount64();frame.completionReadiness.finish();frame.pendingCompletions.clear();check(writer.held&&!writer.expired&&GetTickCount64()-start<250&&!frame.completionReadiness.valid(),"Closing admission joins its cancelled reader without waiting for the model");writer.open();frame.pollCompletionWork();check(frame.completions.size()==before,"A cancelled pending presentation cannot replay on a later wake");
++#endif
++ }
++ }
++};
++class CompletionAdmissionApplication:public CWinApp {int result=1;bool started=false;std::unique_ptr<Manager> manager;MainWindow* frame=nullptr;void finish(){if(frame){closeOwnedMainWindow(frame);frame=nullptr;m_pMainWnd=nullptr;}manager.reset();if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"error",failure},{"checks",checks},{"observations",observations},{"baseline",baseline}}.dump(2),false);}
++public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX common{sizeof(common),ICC_WIN95_CLASSES|ICC_DATE_CLASSES};InitCommonControlsEx(&common);AfxOleInit();int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);try{if(!argv||argc!=3)throw std::runtime_error("Pass mode and fresh output");baseline=utf8(argv[1])=="baseline";if(!baseline&&utf8(argv[1])!="candidate")throw std::runtime_error("Invalid fixture mode");output=fs::absolute(argv[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Use fresh output");}fs::create_directories(output);manager=std::make_unique<Manager>(output/L"state");auto prefs=manager->state["Settings"];prefs["DownloadFolder"]=utf8((output/L"files").wstring());prefs["CategoryFolders"]=false;prefs["ClipboardMonitor"]=false;prefs["Sound"]=false;prefs["CloseToTray"]=false;manager->setSettings(prefs);frame=new MainWindow(*manager);m_pMainWnd=frame;frame->KillTimer(1);}catch(const std::exception& e){failure=e.what();if(argv)LocalFree(argv);finish();return FALSE;}LocalFree(argv);return TRUE;}BOOL OnIdle(LONG)override{if(started)return FALSE;started=true;try{ToolbarComponentTest::run(*frame);result=0;}catch(const std::exception& e){failure=e.what();}finish();PostQuitMessage(result);return FALSE;}int ExitInstance()override{AfxOleTerm(FALSE);return result;}};CompletionAdmissionApplication application;
++}

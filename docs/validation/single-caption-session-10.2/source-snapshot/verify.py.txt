@@ -1,0 +1,34 @@
+from pathlib import Path
+import json,hashlib,os,subprocess,shutil
+repo=Path('D:/UDM');area=Path(__file__).parent;read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+build=read(area/'build-result.json');assert build['passed'] and build['version']=='10.2' and len(build['coreObjects'])==42 and len(build['outputs'])==11
+assert all(sha(repo/e['path'])==e['sha256'] for e in build['sources']);assert all(sha(Path(e['path']))==e['sha256'] for e in build['coreObjects']+build['outputs'])
+old={Path(e['path']).stem:e['sha256'] for e in read(repo/'.media-cache/gapless-aac-tail-build-10.1/build-result.json')['coreObjects']};changed=[Path(e['path']).stem for e in build['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert set(changed)=={'Bridge','DashManifest'}
+products=[e for e in build['outputs'] if e['name'] in ['UDM','Udm.NativeHost','Udm.Monitor','Udm.SetupHelper','Udm.Automation']];assert len(products)==5
+for e in products:
+ command="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',command],text=True).strip()=='10.2'
+assert all(read(repo/'browser'/f/'manifest.json')['version']=='0.73.66' for f in ['chromium','firefox'])
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files']
+for e in protected:assert sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256']
+suites=[]
+for name in ['GaplessAacTailTests','RetiredDashBoundaryTests']:
+ r=read(area/('final-'+name)/'results.json');assert r['passed'] and all(c['passed'] for c in r['checks']);suites.append(dict(name=name,checks=len(r['checks']),passed=True))
+for name,count in [('caption-workflow-01',4),('direct-regression-01',5)]:
+ r=read(area/name/'results.json');assert len(r['records'])==count and read(area/name/'passed.json')['passed']
+ for e in r['records']:
+  assert all(e[k] for k in ['pcmExact','publishedPcmExact','noRefetch','sizeAndHashExact']) and all(e.get(k,True) for k in ['videoExact','captionPreserved','emptyCaptionsOmitted','noRedundantSessionConcat','selectedTrackMetadataPreserved'])
+  final=Path(e['publication']['path']);assert final.stat().st_size==e['assembly']['bytes'] and sha(final).lower()==e['assembly']['sha256']
+  if name=='caption-workflow-01':assert e['assembly']['start']==(5 if e['case']=='caption-offset' else 0)
+assert read(area/'caption-workflow-01/results.json')['records'][0]['metadataChangeInvalidatesReceipt']
+negative=read(area/'negative-controls.json');assert negative['passed'] and len(negative['records'])==3 and negative['validSelectionRecovered'] and all(e['expectedRejection'] and e['publishedFileUnchanged'] for e in negative['records'])
+packet=read(area/'encoded-payload-control.json');assert packet['passed'] and packet['audioEncodedPacketsIdentical'] and packet['captionEncodedPacketsIdentical'] and len(packet['sourceVideoOracles'])==4 and all(e['sourceVideoPacketsAndTimingExact'] for e in packet['sourceVideoOracles'])
+reg=read(area/'continuous-regression-02/qualification.json');assert reg['passed'] and all(v for k,v in reg.items() if k!='resumedBaseline');terminal=read(area/'continuous-regression-02/candidate-terminal.json');assert terminal['originClosed'] and terminal['allActorsTerminal'] and len(terminal['records'])==7
+for e in terminal['records']:assert e['exitCode']==(1 if e['case'] in ['gap','short-audio','changed'] else 0)
+first=read(area/'continuous-regression-01/candidate-terminal.json');assert first['originClosed'] and first['allActorsTerminal'] and len(first['records'])==1 and first['records'][0]['exitCode']==1
+failure=read(Path(first['records'][0]['result']));assert failure['publications']==0 and 'expired while synchronizing' in failure['error']
+size=0
+for folder,dirs,files in os.walk(area):
+ dirs[:]=[d for d in dirs if not (Path(folder)/d).is_junction() and not (Path(folder)/d).is_symlink()];size+=sum((Path(folder)/f).stat().st_size for f in files)
+assert size<700*1024**2 and shutil.disk_usage(area).free>1024**3
+result=dict(passed=True,qualificationScope='Single-Period caption-session final mux, exact media, metadata, receipt and publication; not general timing parity.',allAttemptsPassed=False,version='10.2',sourceExtensionVersion='0.73.66',verifiedSourceInputs=len(build['sources']),verifiedCoreObjects=42,changedCoreObjects=changed,verifiedOutputs=11,products=products,backendSuites=suites,distinctBackendAssertions=sum(e['checks'] for e in suites),captionSessionPublicationCases=4,directPublicationRegressionCases=5,negativeSelectionCases=3,continuousRegressionFreshPassingCases=7,priorContinuousAttemptFailedAt='av: DASH manifest expired while synchronizing its clock.',priorContinuousAttemptPublishedFiles=0,priorContinuousAttemptRetained=True,timingFailureCauseProven=False,strictTimingBoundsRelaxed=False,sourceUnchangedBetweenContinuousAttempts=True,hostProtectedFilesUnchanged=len(protected),ownedBuildAreaBytesExcludingSharedTools=size,fullBuildEntrypointExecuted=False,installed=False,installerCreated=False,actualBrowserTest=False,actualIdmComparison=False,fullIdmParityProven=False,temporaryFilesExplicitlyDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8',newline='\n');print(json.dumps(result))

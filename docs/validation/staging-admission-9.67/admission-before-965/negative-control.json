@@ -1,0 +1,59 @@
+{
+  "expectedFailure": true,
+  "exitCode": 1,
+  "binarySha256": "9946E163890072A8132EBD41A9825D7E2A699CA7C5782700895962D6A0410F6F",
+  "result": {
+    "checks": [
+      {
+        "name": "Occupied staging is never silently published over unrelated content",
+        "passed": false
+      },
+      {
+        "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+        "passed": false
+      },
+      {
+        "name": "Received body remains available after staging refusal",
+        "passed": false
+      },
+      {
+        "name": "Occupied staging is never silently published over unrelated content",
+        "passed": false
+      },
+      {
+        "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+        "passed": false
+      },
+      {
+        "name": "Received body remains available after staging refusal",
+        "passed": false
+      },
+      {
+        "name": "Occupied staging is never silently published over unrelated content",
+        "passed": true
+      },
+      {
+        "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+        "passed": false
+      },
+      {
+        "name": "Received body remains available after staging refusal",
+        "passed": true
+      },
+      {
+        "name": "Occupied staging is never silently published over unrelated content",
+        "passed": true
+      },
+      {
+        "name": "Unclaimed staging contents remain unchanged on both valid and rejected bodies",
+        "passed": false
+      },
+      {
+        "name": "Received body remains available after staging refusal",
+        "passed": true
+      }
+    ],
+    "error": "",
+    "passed": false
+  }
+}

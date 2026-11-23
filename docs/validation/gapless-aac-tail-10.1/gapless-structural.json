@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "Zero-origin fragmented AAC LC admits an integral partial-tail plan",
+      "passed": true
+    },
+    {
+      "name": "Already aligned samples need no reservation",
+      "passed": true
+    },
+    {
+      "name": "Nonfinite intervals cannot create a plan",
+      "passed": true
+    },
+    {
+      "name": "Unqualified AAC profiles retain the existing path",
+      "passed": true
+    },
+    {
+      "name": "Nonzero encoded origins cannot imply a zero-origin tail",
+      "passed": true
+    },
+    {
+      "name": "Initialization edits cannot silently change leading sample ownership",
+      "passed": true
+    },
+    {
+      "name": "Only the final partial AAC packet is declared as padding",
+      "passed": true
+    },
+    {
+      "name": "Reserved metadata keeps the exact final file size",
+      "passed": true
+    },
+    {
+      "name": "Encoded media bytes remain unchanged",
+      "passed": true
+    },
+    {
+      "name": "Custom metadata survives and no internal reservation leaks",
+      "passed": true
+    },
+    {
+      "name": "Global padding metadata is parsed after AAC and before later captions",
+      "passed": true
+    },
+    {
+      "name": "Changed sample rate is rejected before any write",
+      "passed": true
+    },
+    {
+      "name": "Whole-packet trimming is not disguised as padding",
+      "passed": true
+    },
+    {
+      "name": "Nonzero leading edits are rejected without modifying the file",
+      "passed": true
+    },
+    {
+      "name": "Unsupported packet lengths cannot use the LC tail rule",
+      "passed": true
+    },
+    {
+      "name": "Truncated variable sample-size tables cannot authorize a patch",
+      "passed": true
+    },
+    {
+      "name": "Duplicate reservations are rejected without modification",
+      "passed": true
+    },
+    {
+      "name": "Unrecognized metadata cannot be overwritten as a reservation",
+      "passed": true
+    },
+    {
+      "name": "A truncated movie body is rejected before metadata writes",
+      "passed": true
+    },
+    {
+      "name": "Parent cancellation preserves an unmodified staging file",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

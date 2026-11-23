@@ -1,0 +1,38 @@
+{
+  "connections": 1,
+  "rejected_connections": 0,
+  "requests": 1,
+  "bytes_sent": 4194304,
+  "drops": 0,
+  "peak_concurrent": 1,
+  "detail": [
+    {
+      "id": 1,
+      "opened": 0.6384579999939888,
+      "closed": 1.1878940999959013,
+      "peer_port": 49821,
+      "rejected": false,
+      "bytes": 4194304,
+      "requests": [
+        {
+          "at": 0.6389243999947212,
+          "method": "GET",
+          "path": "/bench/file.bin?completion=c99df71c6cff423b81206948f65e532b",
+          "range": null,
+          "status": 200,
+          "start": 0,
+          "end": 4194303,
+          "sent": 4194304,
+          "finished": 1.1843028999937815,
+          "outcome": "complete",
+          "headers_sent": 0.6595096999953967,
+          "first_body_sent": 0.6929334999949788,
+          "last_body_sent": 1.1843001999950502
+        }
+      ],
+      "drops": 0,
+      "rate": 8000000,
+      "drop_after": 0
+    }
+  ]
+}

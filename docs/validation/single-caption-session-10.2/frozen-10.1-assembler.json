@@ -1,0 +1,35 @@
+{
+  "samples": 48128,
+  "wanted": 48000,
+  "exact": false,
+  "assembly": {
+    "bytes": 47208,
+    "checks": [
+      {
+        "name": "Capture uses a fresh owned folder",
+        "passed": true
+      },
+      {
+        "name": "Owned manifest selects media tracks",
+        "passed": true
+      },
+      {
+        "name": "Captured resources seal before assembly",
+        "passed": true
+      },
+      {
+        "name": "Assembly owns a verified complete file",
+        "passed": true
+      }
+    ],
+    "duration": 1.0,
+    "error": "",
+    "passed": true,
+    "path": "<candidate>\\caption-workflow-01\\caption48\\assembled-9e8d4abf25314d98855a1731ea851be0.mp4",
+    "reused": false,
+    "sha256": "c287b38beb114b2ac994212b9e620a3106a8a6951a6797076419841459808c87",
+    "start": 0.0,
+    "subtitleCues": 1,
+    "temporaryInputCount": 2
+  }
+}

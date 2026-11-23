@@ -1,0 +1,6 @@
+av record: 1; Continuous recording completes: DASH manifest expired while synchronizing its clock.
+Traceback (most recent call last):
+  File "<repository>\tests\live-dash-continuous.native-live.py", line 278, in <module>
+    new_case(name,kinds); data,code=actor(name); assert code==0 and data['passed']; validate(name,data)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

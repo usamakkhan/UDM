@@ -1,0 +1,236 @@
+[
+  {
+    "method": "GET",
+    "path": "/fresh/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/fresh/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/head-supported/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/head-supported/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/init/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/init/init.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/init/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/ranged/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "HEAD",
+    "path": "/ranged/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/ranged/segment.bin",
+    "range": "bytes=0-4095",
+    "ifMatch": "\"first\""
+  },
+  {
+    "method": "GET",
+    "path": "/fresh/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/html/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/html/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/encoding/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/encoding/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/content-range/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/content-range/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/duplicate/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/duplicate/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/weak/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/weak/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "HEAD",
+    "path": "/weak/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/weak/segment.bin",
+    "range": "bytes=0-0",
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/missing-tag/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/missing-tag/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "HEAD",
+    "path": "/missing-tag/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/missing-tag/segment.bin",
+    "range": "bytes=0-0",
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/chunked/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/chunked/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "HEAD",
+    "path": "/chunked/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/chunked/segment.bin",
+    "range": null,
+    "ifMatch": "\"first\""
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/segment.bin",
+    "range": null,
+    "ifMatch": "\"first\""
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/manifest.mpd",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/cancel/segment.bin",
+    "range": null,
+    "ifMatch": "\"first\""
+  },
+  {
+    "method": "GET",
+    "path": "/fresh/segment.bin",
+    "range": null,
+    "ifMatch": null
+  },
+  {
+    "method": "GET",
+    "path": "/fresh/segment.bin",
+    "range": null,
+    "ifMatch": "\"first\""
+  }
+]

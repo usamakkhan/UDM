@@ -1,0 +1,235 @@
+{
+  "diagnosticOnly": true,
+  "normalProductSpeedGateAccepted": false,
+  "overlappingRegionsMustNotBeSummed": true,
+  "runs": [
+    {
+      "case": "single-4m",
+      "bytes": 4194304,
+      "events": 98,
+      "lastBodyWriteAfterLastSendMs": 1.210550000450894,
+      "slowBodyWritesOverlappingAfterLastSend": [],
+      "filePinsReleasedAfterCatalogResolved": true,
+      "catalogResolveToPinCloseBeginMs": 0.0355,
+      "pinCloseMs": 0.0707,
+      "lastSendToPinReleaseMs": 137.72715000050084,
+      "pinReleaseToExclusiveObservationMs": 1.1507499998515414,
+      "regions": {
+        "body-flush": [
+          {
+            "startAfterLastSendMs": 11.08405000059065,
+            "endAfterLastSendMs": 99.82655000067098,
+            "durationMs": 88.7425
+          }
+        ],
+        "body-join": [
+          {
+            "startAfterLastSendMs": 101.1827500005893,
+            "endAfterLastSendMs": 101.20185000050697,
+            "durationMs": 0.0191
+          }
+        ],
+        "hash-join": [],
+        "intent-write": [
+          {
+            "startAfterLastSendMs": 9.50745000045572,
+            "endAfterLastSendMs": 101.16635000031238,
+            "durationMs": 91.6589
+          }
+        ],
+        "rename": [
+          {
+            "startAfterLastSendMs": 101.37885000040114,
+            "endAfterLastSendMs": 102.16885000045295,
+            "durationMs": 0.79
+          }
+        ],
+        "catalog-write": [
+          {
+            "startAfterLastSendMs": 102.74445000050036,
+            "endAfterLastSendMs": 137.60335000051782,
+            "durationMs": 34.8589
+          }
+        ],
+        "file-pins": [
+          {
+            "startAfterLastSendMs": 137.65645000057702,
+            "endAfterLastSendMs": 137.72715000050084,
+            "durationMs": 0.0707
+          }
+        ],
+        "manager-stop-native": [
+          {
+            "startAfterLastSendMs": 143.30235000034008,
+            "endAfterLastSendMs": 143.79265000070518,
+            "durationMs": 0.49030000000000007
+          }
+        ]
+      },
+      "exclusiveAvailabilityTailMs": 138.87790000035238,
+      "processExitTailMs": 164.4003999999768,
+      "qpcMappingBoundSeconds": 6.250000069485395e-06
+    },
+    {
+      "case": "single-64m",
+      "bytes": 67108864,
+      "events": 618,
+      "lastBodyWriteAfterLastSendMs": 1.0046500001408276,
+      "slowBodyWritesOverlappingAfterLastSend": [],
+      "filePinsReleasedAfterCatalogResolved": true,
+      "catalogResolveToPinCloseBeginMs": 0.0348,
+      "pinCloseMs": 0.0553,
+      "lastSendToPinReleaseMs": 225.2356500002861,
+      "pinReleaseToExclusiveObservationMs": 2.6785499994730344,
+      "regions": {
+        "body-flush": [
+          {
+            "startAfterLastSendMs": 8.265850000043429,
+            "endAfterLastSendMs": 191.42775000000256,
+            "durationMs": 183.1619
+          }
+        ],
+        "body-join": [
+          {
+            "startAfterLastSendMs": 88.35345000034067,
+            "endAfterLastSendMs": 191.49055000025328,
+            "durationMs": 103.13709999999999
+          }
+        ],
+        "hash-join": [],
+        "intent-write": [
+          {
+            "startAfterLastSendMs": 8.060650000061287,
+            "endAfterLastSendMs": 88.34115000036036,
+            "durationMs": 80.2805
+          }
+        ],
+        "rename": [
+          {
+            "startAfterLastSendMs": 191.75505000021076,
+            "endAfterLastSendMs": 192.79344999995374,
+            "durationMs": 1.0384
+          }
+        ],
+        "catalog-write": [
+          {
+            "startAfterLastSendMs": 193.25625000010405,
+            "endAfterLastSendMs": 225.13595000009445,
+            "durationMs": 31.879699999999996
+          }
+        ],
+        "file-pins": [
+          {
+            "startAfterLastSendMs": 225.18035000030068,
+            "endAfterLastSendMs": 225.2356500002861,
+            "durationMs": 0.0553
+          }
+        ],
+        "manager-stop-native": [
+          {
+            "startAfterLastSendMs": 230.88284999994357,
+            "endAfterLastSendMs": 231.52294999999867,
+            "durationMs": 0.6401
+          }
+        ]
+      },
+      "exclusiveAvailabilityTailMs": 227.91419999975915,
+      "processExitTailMs": 252.0524999999907,
+      "qpcMappingBoundSeconds": 7.150000101319165e-06
+    },
+    {
+      "case": "split-64m",
+      "bytes": 67108864,
+      "events": 628,
+      "lastBodyWriteAfterLastSendMs": 133.87844999988374,
+      "slowBodyWritesOverlappingAfterLastSend": [
+        {
+          "startMs": -6.798150000122405,
+          "endMs": 95.33194999994521,
+          "durationMs": 102.1301
+        },
+        {
+          "startMs": -9.129850000135775,
+          "endMs": 100.56505000011384,
+          "durationMs": 109.6949
+        },
+        {
+          "startMs": -0.023549999696115265,
+          "endMs": 110.25005000010424,
+          "durationMs": 110.2736
+        },
+        {
+          "startMs": 95.60714999997799,
+          "endMs": 123.45305000008011,
+          "durationMs": 27.8459
+        }
+      ],
+      "filePinsReleasedAfterCatalogResolved": true,
+      "catalogResolveToPinCloseBeginMs": 0.0443,
+      "pinCloseMs": 0.0427,
+      "lastSendToPinReleaseMs": 383.53095000002213,
+      "pinReleaseToExclusiveObservationMs": 0.1627500000722648,
+      "regions": {
+        "body-flush": [
+          {
+            "startAfterLastSendMs": 144.6915500000614,
+            "endAfterLastSendMs": 301.9870500002071,
+            "durationMs": 157.2955
+          }
+        ],
+        "body-join": [
+          {
+            "startAfterLastSendMs": 303.6704500000269,
+            "endAfterLastSendMs": 303.6885500000608,
+            "durationMs": 0.018099999999999998
+          }
+        ],
+        "hash-join": [
+          {
+            "startAfterLastSendMs": 303.6895499999446,
+            "endAfterLastSendMs": 303.77674999999726,
+            "durationMs": 0.0872
+          }
+        ],
+        "intent-write": [
+          {
+            "startAfterLastSendMs": 143.94584999990911,
+            "endAfterLastSendMs": 303.6584500000572,
+            "durationMs": 159.7126
+          }
+        ],
+        "rename": [
+          {
+            "startAfterLastSendMs": 303.95795000004,
+            "endAfterLastSendMs": 304.8187499998676,
+            "durationMs": 0.8608
+          }
+        ],
+        "catalog-write": [
+          {
+            "startAfterLastSendMs": 305.2228500000638,
+            "endAfterLastSendMs": 383.43215000031705,
+            "durationMs": 78.2093
+          }
+        ],
+        "file-pins": [
+          {
+            "startAfterLastSendMs": 383.4882500000276,
+            "endAfterLastSendMs": 383.53095000002213,
+            "durationMs": 0.0427
+          }
+        ],
+        "manager-stop-native": [
+          {
+            "startAfterLastSendMs": 411.2708500001645,
+            "endAfterLastSendMs": 411.8831499999942,
+            "durationMs": 0.6123
+          }
+        ]
+      },
+      "exclusiveAvailabilityTailMs": 383.6937000000944,
+      "processExitTailMs": 432.2213999998894,
+      "qpcMappingBoundSeconds": 9.749999890118488e-06
+    }
+  ]
+}

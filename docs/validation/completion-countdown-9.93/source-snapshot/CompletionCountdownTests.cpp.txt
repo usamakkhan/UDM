@@ -1,0 +1,37 @@
+#include "CompletionCountdown.hpp"
+#include <future>
+#include <iostream>
+#include <condition_variable>
+using namespace udm;
+int wmain(int argc,wchar_t** argv){
+ if(argc!=2)return 2;auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
+ auto check=[&](bool ok,const char* label){checks.push_back({{"name",label},{"passed",ok}});if(!ok)throw std::runtime_error(label);};
+ try{Manager manager(root/L"catalog");auto job=manager.add("https://example.invalid/countdown","","owned.bin","Main queue",true);job->data["Status"]="Complete";manager.save();const auto disk=readText(manager.root/L"state.json");Json action={{"WaitForOthers",true}};
+  auto current=[&]{return tryFileCompletionCountdown(manager,job,action);};
+  check(current().state==CompletionCountdownState::Ready&&current().fileName=="owned.bin","Current completed file supplies an owned presentation snapshot");
+  std::promise<void> held,release;auto gate=release.get_future();std::thread writer([&]{Lock lock(manager.mutex);held.set_value();gate.wait();});held.get_future().wait();
+  const auto begun=GetTickCount64();auto busy=current();const auto elapsed=GetTickCount64()-begun;release.set_value();writer.join();
+  check(busy.state==CompletionCountdownState::Busy&&elapsed<200,"A foreign model writer returns Busy without waiting for release");
+  manager.fileInfoDecisionPending=true;check(current().state==CompletionCountdownState::Busy,"An accepted File Info decision defers the countdown");check(manager.fileInfoDecisionPending,"A read cannot release a foreign accepted decision");manager.fileInfoDecisionPending=false;
+  check(current().state==CompletionCountdownState::Ready,"Fresh eligibility resumes after the accepted owner settles");
+  job->data["Status"]="Paused";check(current().state==CompletionCountdownState::Obsolete,"A completion that became paused cannot execute");job->data["Status"]="Complete";
+  job->data["ScanResult"]={{"Status","Pending"}};check(current().state==CompletionCountdownState::Obsolete,"A newly pending scanner rejects completion actions");job->data.erase("ScanResult");
+  auto other=manager.add("https://example.invalid/other","","other.bin","Main queue",true);other->data["Status"]="Queued";
+  check(current().state==CompletionCountdownState::WaitingForOthers,"WaitForOthers retains an action behind queued work");action["WaitForOthers"]=false;check(current().state==CompletionCountdownState::Ready,"Explicit independent completion does not wait for another queued file");action["WaitForOthers"]=true;
+  other->data["Status"]="Paused";check(current().state==CompletionCountdownState::Ready,"Inactive paused work does not postpone the action");manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),other));
+  manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),job));check(current().state==CompletionCountdownState::Obsolete,"A removed file invalidates its countdown");manager.jobs.push_back(job);
+  check(tryFileCompletionCountdown(manager,{},action).state==CompletionCountdownState::Obsolete,"An absent job cannot become an action");
+  check(readText(manager.root/L"state.json")!=disk,"Only the explicit second add above changes the saved catalog");
+  const auto stable=readText(manager.root/L"state.json");const auto model=manager.snapshot();for(int i=0;i<20;++i)current();check(manager.snapshot()==model&&readText(manager.root/L"state.json")==stable,"Repeated eligibility reads neither tick the scheduler nor write the catalog");
+  auto until=[](auto ready){const auto end=GetTickCount64()+5000;while(!ready()&&GetTickCount64()<end)Sleep(1);return ready();};
+  std::promise<void> tickRelease;auto tickGate=tickRelease.get_future().share();std::atomic_bool tickEntered=false;ModelMaintenance maintenance([&]{tickEntered=true;tickGate.wait_for(std::chrono::seconds(4));},[]{});CompletionCountdownDeadline deadline;std::string tickError;
+  check(deadline.poll(maintenance,true,tickError)==CompletionCountdownTick::Pending,"Expiry requests a fresh tick instead of executing from a stale scheduler view");
+  const bool entered=until([&]{return tickEntered.load();});const auto waitingStarted=GetTickCount64();auto pending=deadline.poll(maintenance,true,tickError);const auto waitingMs=GetTickCount64()-waitingStarted;tickRelease.set_value();
+  check(entered&&pending==CompletionCountdownTick::Pending&&waitingMs<200,"Held final scheduler work leaves the deadline poll nonblocking");
+  check(until([&]{return deadline.poll(maintenance,true,tickError)==CompletionCountdownTick::Ready;}),"Successful fresh scheduler acknowledgement releases the final eligibility read");maintenance.stop();
+  check(deadline.poll(maintenance,true,tickError)==CompletionCountdownTick::Failed,"Stopped maintenance never grants an action");
+  ModelMaintenance failed([]{throw std::runtime_error("Owned countdown tick failure");},[]{});CompletionCountdownDeadline failedDeadline;tickError.clear();
+  check(failedDeadline.poll(failed,true,tickError)==CompletionCountdownTick::Pending,"A new deadline requires its own scheduler acknowledgement");
+  check(until([&]{return failedDeadline.poll(failed,true,tickError)==CompletionCountdownTick::Failed;})&&tickError=="Owned countdown tick failure","Failed scheduler work rejects the action and preserves its error");failed.stop();manager.stop();
+ }catch(const std::exception& e){error=e.what();}atomicText(root/L"results.json",Json{{"passed",error.empty()},{"checks",checks},{"error",error}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<(error.empty()?"passed":error)<<"\n";return error.empty()?0:1;
+}

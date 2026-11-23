@@ -1,0 +1,450 @@
+{
+  "totalOutputs": 57,
+  "allIntegrityChecksPassed": true,
+  "fullParityProven": false,
+  "groups": {
+    "normal-c": {
+      "outputs": 9,
+      "trialPairs": [
+        {
+          "trial": 1,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -125.9758999949554,
+            "processExitWallSeconds": -87.80155000567902,
+            "processExitTailSeconds": -122.5634500005981,
+            "durableWallSeconds": -153.6231999998563,
+            "durableTailSeconds": -188.38509999477537
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 15.55759999610018,
+            "processExitWallSeconds": -2406.053900005645,
+            "processExitTailSeconds": -293.024400009017,
+            "durableWallSeconds": -2652.5275000021793,
+            "durableTailSeconds": -539.4980000055511
+          }
+        },
+        {
+          "trial": 2,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 14.018699992448092,
+            "processExitWallSeconds": -87.9840499983402,
+            "processExitTailSeconds": -5.664650001563132,
+            "durableWallSeconds": -66.36729999445379,
+            "durableTailSeconds": 15.952100002323277
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 384.7719999976107,
+            "processExitWallSeconds": -793.7217500002589,
+            "processExitTailSeconds": 47.11395000049379,
+            "durableWallSeconds": -769.4011999992654,
+            "durableTailSeconds": 71.43450000148732
+          }
+        },
+        {
+          "trial": 3,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -3.4116000024368986,
+            "processExitWallSeconds": 31.381200009491295,
+            "processExitTailSeconds": -17.386299994541332,
+            "durableWallSeconds": 34.693600005994085,
+            "durableTailSeconds": -14.073899998038542
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -6.916499994986225,
+            "processExitWallSeconds": -1350.2198999922257,
+            "processExitTailSeconds": -238.28249998769024,
+            "durableWallSeconds": -1644.575000005716,
+            "durableTailSeconds": -532.6376000011805
+          }
+        }
+      ],
+      "candidateLossCounts": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": 1,
+          "processExitWallSeconds": 1,
+          "processExitTailSeconds": 0,
+          "durableWallSeconds": 1,
+          "durableTailSeconds": 1
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": 2,
+          "processExitWallSeconds": 0,
+          "processExitTailSeconds": 1,
+          "durableWallSeconds": 0,
+          "durableTailSeconds": 1
+        }
+      },
+      "integrityPassed": true,
+      "settingsRestored": true,
+      "productionChangeAdmitted": false
+    },
+    "barrier-order": {
+      "outputs": 15,
+      "trialPairs": [
+        {
+          "trial": 1,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 8.141499994962942,
+            "processExitWallSeconds": 285.22580000571907,
+            "processExitTailSeconds": 5.708900003810413,
+            "durableWallSeconds": 287.26319999987027,
+            "durableTailSeconds": 7.746299997961614
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -16.678300002240576,
+            "processExitWallSeconds": -1046.7725999988033,
+            "processExitTailSeconds": -364.7780999963288,
+            "durableWallSeconds": -1064.1506999963894,
+            "durableTailSeconds": -382.1561999939149
+          }
+        },
+        {
+          "trial": 2,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 4.6358000035979785,
+            "processExitWallSeconds": 11.684349992719945,
+            "processExitTailSeconds": 3.7582500008284114,
+            "durableWallSeconds": 13.230399992608,
+            "durableTailSeconds": 5.3043000007164665
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 15.86709999537561,
+            "processExitWallSeconds": -1165.6427499983693,
+            "processExitTailSeconds": -323.45854999584844,
+            "durableWallSeconds": -1229.4619000022067,
+            "durableTailSeconds": -387.27769999968586
+          }
+        },
+        {
+          "trial": 3,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 1.1758999971789308,
+            "processExitWallSeconds": 14.778749995457474,
+            "processExitTailSeconds": 9.467449992371257,
+            "durableWallSeconds": 10.082100001454819,
+            "durableTailSeconds": 4.770799998368602
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -5.439300002763048,
+            "processExitWallSeconds": -1211.6976500037708,
+            "processExitTailSeconds": -325.8790500112809,
+            "durableWallSeconds": -1236.4065999936429,
+            "durableTailSeconds": -350.588000001153
+          }
+        },
+        {
+          "trial": 4,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 1.7120999982580543,
+            "processExitWallSeconds": -8.992300005047582,
+            "processExitTailSeconds": 1.371199992718175,
+            "durableWallSeconds": -8.676500001456589,
+            "durableTailSeconds": 1.6869999963091686
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 12.648899995838292,
+            "processExitWallSeconds": -1205.6358000045293,
+            "processExitTailSeconds": -329.9569000082556,
+            "durableWallSeconds": -1236.2939000013284,
+            "durableTailSeconds": -360.61500000505475
+          }
+        },
+        {
+          "trial": 5,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -2.188300000852905,
+            "processExitWallSeconds": 40.79779999301536,
+            "processExitTailSeconds": 18.772099989291746,
+            "durableWallSeconds": 41.247800007113256,
+            "durableTailSeconds": 19.22210000338964
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -30.37699999549659,
+            "processExitWallSeconds": -1191.5857499989215,
+            "processExitTailSeconds": -329.05804999609245,
+            "durableWallSeconds": -1229.132299995399,
+            "durableTailSeconds": -366.60459999257
+          }
+        }
+      ],
+      "candidateLossCounts": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": 4,
+          "processExitWallSeconds": 4,
+          "processExitTailSeconds": 5,
+          "durableWallSeconds": 4,
+          "durableTailSeconds": 5
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": 2,
+          "processExitWallSeconds": 0,
+          "processExitTailSeconds": 0,
+          "durableWallSeconds": 0,
+          "durableTailSeconds": 0
+        }
+      },
+      "integrityPassed": true,
+      "settingsRestored": true,
+      "productionChangeAdmitted": false
+    },
+    "journal-write": {
+      "outputs": 15,
+      "trialPairs": [
+        {
+          "trial": 1,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -65.1441000009072,
+            "processExitWallSeconds": 249.47634999261936,
+            "processExitTailSeconds": -37.15855000336887,
+            "durableWallSeconds": 246.0953000045265,
+            "durableTailSeconds": -40.53959999146173
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 225.0075999982073,
+            "processExitWallSeconds": -785.2248499984853,
+            "processExitTailSeconds": -110.11784999573138,
+            "durableWallSeconds": -824.3339999971795,
+            "durableTailSeconds": -149.22699999442557
+          }
+        },
+        {
+          "trial": 2,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 37.85090000019409,
+            "processExitWallSeconds": 144.5185999982641,
+            "processExitTailSeconds": 31.812500004889444,
+            "durableWallSeconds": 187.85270000080345,
+            "durableTailSeconds": 75.14660000742879
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 326.2477000025683,
+            "processExitWallSeconds": -744.3738499932806,
+            "processExitTailSeconds": 75.40535000589443,
+            "durableWallSeconds": -901.7205999989528,
+            "durableTailSeconds": -81.94139999977779
+          }
+        },
+        {
+          "trial": 3,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 67.55229999544099,
+            "processExitWallSeconds": 107.81829999177717,
+            "processExitTailSeconds": 85.86689998628572,
+            "durableWallSeconds": 107.73429999971995,
+            "durableTailSeconds": 85.7828999942285
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 273.5418000011123,
+            "processExitWallSeconds": -886.2840000074357,
+            "processExitTailSeconds": -49.84020000847522,
+            "durableWallSeconds": -1394.8708000025363,
+            "durableTailSeconds": -558.4270000035758
+          }
+        },
+        {
+          "trial": 4,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -24.482299995725043,
+            "processExitWallSeconds": 151.14900000480702,
+            "processExitTailSeconds": -23.52599998266669,
+            "durableWallSeconds": 149.9850999971386,
+            "durableTailSeconds": -24.689899990335107
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 209.16820000275038,
+            "processExitWallSeconds": -1011.8975999939721,
+            "processExitTailSeconds": -138.15339998836862,
+            "durableWallSeconds": -969.410900004732,
+            "durableTailSeconds": -95.66669999912847
+          }
+        },
+        {
+          "trial": 5,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 3.1586999975843355,
+            "processExitWallSeconds": -3.3074999882956035,
+            "processExitTailSeconds": 2.6588000037008896,
+            "durableWallSeconds": -3.7815999967278913,
+            "durableTailSeconds": 2.184699995268602
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -14.716799996676855,
+            "processExitWallSeconds": -1226.0003499904997,
+            "processExitTailSeconds": -337.65154999127844,
+            "durableWallSeconds": -1261.5124000003561,
+            "durableTailSeconds": -373.1636000011349
+          }
+        }
+      ],
+      "candidateLossCounts": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": 3,
+          "processExitWallSeconds": 4,
+          "processExitTailSeconds": 3,
+          "durableWallSeconds": 4,
+          "durableTailSeconds": 3
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": 4,
+          "processExitWallSeconds": 0,
+          "processExitTailSeconds": 1,
+          "durableWallSeconds": 0,
+          "durableTailSeconds": 0
+        }
+      },
+      "integrityPassed": true,
+      "settingsRestored": true,
+      "productionChangeAdmitted": false
+    },
+    "normal-mixed": {
+      "outputs": 9,
+      "trialPairs": [
+        {
+          "trial": 1,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -77.00820000172826,
+            "processExitWallSeconds": 65.04640000639483,
+            "processExitTailSeconds": 150.99690000351984,
+            "durableWallSeconds": 61.70040000870358,
+            "durableTailSeconds": 147.6509000058286
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -148.6016000053496,
+            "processExitWallSeconds": -2776.788099996338,
+            "processExitTailSeconds": -349.49690000212286,
+            "durableWallSeconds": -2922.1392999897944,
+            "durableTailSeconds": -494.8480999955791
+          }
+        },
+        {
+          "trial": 2,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -77.81999999861,
+            "processExitWallSeconds": -104.3183500005398,
+            "processExitTailSeconds": 1.6754500029492192,
+            "durableWallSeconds": -105.04719999880763,
+            "durableTailSeconds": 0.946600004681386
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": -18.108099997334648,
+            "processExitWallSeconds": -1562.4936999956844,
+            "processExitTailSeconds": -202.9833999913535,
+            "durableWallSeconds": -1584.2189000031794,
+            "durableTailSeconds": -224.7085999988485
+          }
+        },
+        {
+          "trial": 3,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 8.746799998334609,
+            "processExitWallSeconds": -13.891600006900262,
+            "processExitTailSeconds": 2.098899996781256,
+            "durableWallSeconds": 10.388499998953193,
+            "durableTailSeconds": 26.37900000263471
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 77.41689999966184,
+            "processExitWallSeconds": -1114.935500008869,
+            "processExitTailSeconds": -234.6595000126399,
+            "durableWallSeconds": -1198.9516000030562,
+            "durableTailSeconds": -318.67560000682715
+          }
+        }
+      ],
+      "candidateLossCounts": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": 1,
+          "processExitWallSeconds": 1,
+          "processExitTailSeconds": 3,
+          "durableWallSeconds": 2,
+          "durableTailSeconds": 3
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": 1,
+          "processExitWallSeconds": 0,
+          "processExitTailSeconds": 0,
+          "durableWallSeconds": 0,
+          "durableTailSeconds": 0
+        }
+      },
+      "integrityPassed": true,
+      "settingsRestored": true,
+      "productionChangeAdmitted": false
+    },
+    "stage-setting": {
+      "outputs": 9,
+      "trialPairs": [
+        {
+          "trial": 1,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -126.88999999954831,
+            "processExitWallSeconds": -539.425899994967,
+            "processExitTailSeconds": -418.7865000058082,
+            "durableWallSeconds": -535.2074999900651,
+            "durableTailSeconds": -414.56810000090627
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 60.13199999870267,
+            "processExitWallSeconds": -2082.4416499963263,
+            "processExitTailSeconds": -167.66265000478597,
+            "durableWallSeconds": -2117.3087999923155,
+            "durableTailSeconds": -202.52980000077514
+          }
+        },
+        {
+          "trial": 2,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": -794.9683999977424,
+            "processExitWallSeconds": -1328.523900010623,
+            "processExitTailSeconds": -1059.7435000017867,
+            "durableWallSeconds": -1318.3742000037455,
+            "durableTailSeconds": -1049.5937999949092
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 82.3277000017697,
+            "processExitWallSeconds": -1345.9717000150704,
+            "processExitTailSeconds": -246.84830001206137,
+            "durableWallSeconds": -1437.5128999963636,
+            "durableTailSeconds": -338.38949999335455
+          }
+        },
+        {
+          "trial": 3,
+          "candidateMinusBaselineMs": {
+            "firstAvailabilityTailSeconds": 281.5698999984306,
+            "processExitWallSeconds": 298.6705500006792,
+            "processExitTailSeconds": 159.06304999953136,
+            "durableWallSeconds": 306.4537000027485,
+            "durableTailSeconds": 166.84620000160066
+          },
+          "candidateMinusIdmMs": {
+            "firstAvailabilityTailSeconds": 542.2999999937019,
+            "processExitWallSeconds": -481.1656000019866,
+            "processExitTailSeconds": 284.5129999986966,
+            "durableWallSeconds": -495.96590000146534,
+            "durableTailSeconds": 269.7126999992179
+          }
+        }
+      ],
+      "candidateLossCounts": {
+        "baseline": {
+          "firstAvailabilityTailSeconds": 1,
+          "processExitWallSeconds": 1,
+          "processExitTailSeconds": 1,
+          "durableWallSeconds": 1,
+          "durableTailSeconds": 1
+        },
+        "idm": {
+          "firstAvailabilityTailSeconds": 3,
+          "processExitWallSeconds": 0,
+          "processExitTailSeconds": 1,
+          "durableWallSeconds": 0,
+          "durableTailSeconds": 1
+        }
+      },
+      "integrityPassed": true,
+      "settingsRestored": true,
+      "productionChangeAdmitted": false
+    }
+  }
+}

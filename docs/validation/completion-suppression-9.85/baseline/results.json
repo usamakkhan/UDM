@@ -1,0 +1,23 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "Frozen completion suppression waits on the UI thread for the catalog writer",
+      "passed": true
+    },
+    {
+      "name": "Frozen suppression eventually persists through its canonical handler",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dispatchMs": 563,
+      "watchdogExpired": true,
+      "writerStillHeld": false
+    }
+  ],
+  "passed": true
+}

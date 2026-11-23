@@ -1,0 +1,181 @@
+{
+  "checks": [
+    {
+      "name": "The production worker and owned shutdown report completion",
+      "passed": true
+    },
+    {
+      "name": "The saved output has the independent origin's exact length",
+      "passed": true
+    },
+    {
+      "name": "Output and completion digest match the independent source",
+      "passed": true
+    },
+    {
+      "name": "Range credits cover the complete representation",
+      "passed": true
+    },
+    {
+      "name": "Complete and the exact checksum survive in the saved catalog",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true,
+  "transfer": {
+    "configuredConnections": 8,
+    "dynamicSplits": 12,
+    "engineThroughJoinedStopMs": 2371.7218,
+    "finishPhases": {
+      "AdvisoryHashBufferRelease": 0.0058557,
+      "AdvisoryHashCommitHandoff": true,
+      "AdvisoryHashInput": "write-buffer",
+      "AdvisoryHashIntentOverlap": true,
+      "AdvisoryHashOverlap": true,
+      "AdvisoryHashOwnerJoin": 8.49e-05,
+      "AdvisoryHashSeconds": 0.1114044,
+      "CleanupPartsOrder": "after-final-publication-checkpoint",
+      "CommitStrategy": "prepared-final-checkpoint",
+      "ConfirmationWait": 1.9e-06,
+      "Content": 0.0004239,
+      "DirectSize": 1.72e-05,
+      "FlushPublished": 0.19370159999999997,
+      "Hash": 6.56e-05,
+      "HashMode": "deferred",
+      "PrePublicationMetadata": 0.0023508,
+      "PrefetchReceipt": 1e-06,
+      "PreparedTransferFinalizeSeconds": 0.0049826,
+      "PublishedCloseError": 0,
+      "PublishedFileClose": 3.5e-06,
+      "PublishedFileFlush": 0.1935294,
+      "PublishedFileOpen": 0.0001687,
+      "PublishedFlushError": 0,
+      "PublishedNormalizeError": 0,
+      "PublishedOpenError": 0,
+      "PublishedSparseNormalize": 0.0,
+      "PublishedWriteAccess": "write-only",
+      "PublishedWritebackJoin": 0.0675174,
+      "PublishedWritebackOverlap": true,
+      "PublishedWritebackTimingScope": "worker-operation-durations-and-owner-join",
+      "Settle": 0.0018879,
+      "SettleDestination": 0.001597,
+      "SettleLengthQuery": 5.3e-05,
+      "SettleLockWait": 2e-07,
+      "SettleRecoveryCheck": 0.0001855,
+      "SettleSnapshot": 3.4e-05,
+      "SettleValidateFolder": 9e-07,
+      "SettleWriterReopen": false,
+      "SparseNormalization": "not-needed",
+      "StageMode": "hard-link",
+      "StageOutput": 0.0003341,
+      "TimingScope": "through-prepared-transfer-handoff",
+      "Unsparse": 0.0
+    },
+    "mode": "split",
+    "proofHashAfterTimedEngineStop": true,
+    "received": 67108864,
+    "savedHash": "b97ddc3c24818dfb00cc85ec6541ca9f977ba754c4a09b0a204345ff07faf465",
+    "segments": [
+      {
+        "Done": 9330688,
+        "End": 9330687,
+        "Index": 0,
+        "Start": 0
+      },
+      {
+        "Done": 9068544,
+        "End": 42622975,
+        "HttpBoundarySha256": "f229cc3940df8021cb1b88332352f92b828febf2a21bdec2e510f74e091f0a20",
+        "Index": 1,
+        "Start": 33554432
+      },
+      {
+        "Done": 3926016,
+        "End": 54274047,
+        "HttpBoundarySha256": "87af76390dff685152052675a1859a4dd1ca53b4a494daff68859a2105563204",
+        "Index": 2,
+        "Start": 50348032
+      },
+      {
+        "Done": 8527872,
+        "End": 25845759,
+        "HttpBoundarySha256": "caf17a54cbae61e16f9f10dbc80d1d1a7ab3f2977e7d3cdb28a3db021db8604a",
+        "Index": 3,
+        "Start": 17317888
+      },
+      {
+        "Done": 8232960,
+        "End": 67108863,
+        "HttpBoundarySha256": "587662793b1d8402b2a5d79ea31e187733b123f6bd4eb5488ab0e93e2cd96650",
+        "Index": 4,
+        "Start": 58875904
+      },
+      {
+        "Done": 3594240,
+        "End": 12924927,
+        "HttpBoundarySha256": "504da0169706253eae3f2f3a26819e0fd97526b8bae42518f46324af0fe170cc",
+        "Index": 5,
+        "Start": 9330688
+      },
+      {
+        "Done": 7725056,
+        "End": 50348031,
+        "HttpBoundarySha256": "ddd6d3e4aba07417bff30c66c8e736220ae7fd74d05e96c3278c9db00567e99f",
+        "Index": 6,
+        "Start": 42622976
+      },
+      {
+        "Done": 7708672,
+        "End": 33554431,
+        "HttpBoundarySha256": "822537a971299d693df63bff7584900364a59c46d896afa0c0cdfd1296625971",
+        "Index": 7,
+        "Start": 25845760
+      },
+      {
+        "Done": 1381376,
+        "End": 57189375,
+        "HttpBoundarySha256": "8e365c14390073f3774848156c1d56affe2eede1822f4033e7d4705e8ad81ef8",
+        "Index": 8,
+        "Start": 55808000
+      },
+      {
+        "Done": 2928640,
+        "End": 17317887,
+        "HttpBoundarySha256": "983f91313aef73b6e3841165e690ee4c0791aacd4066a85490f22eec206c227e",
+        "Index": 9,
+        "Start": 14389248
+      },
+      {
+        "Done": 1533952,
+        "End": 55807999,
+        "HttpBoundarySha256": "1d8a8e65c31e6f45f82a84fe4d9b0e6a2f1f0f1bf32ebca033f3707c823db923",
+        "Index": 10,
+        "Start": 54274048
+      },
+      {
+        "Done": 1464320,
+        "End": 14389247,
+        "HttpBoundarySha256": "bc324297a9f6de547ae9125dd463f7ed911dd4b5160f0707fc8886b11c047abc",
+        "Index": 11,
+        "Start": 12924928
+      },
+      {
+        "Done": 1124352,
+        "End": 58875903,
+        "HttpBoundarySha256": "f3feaaf20c2702eeafbe94a5f9b91b10fed592ad8d37f3ddd0fd2c434c19cc86",
+        "Index": 12,
+        "Start": 57751552
+      },
+      {
+        "Done": 562176,
+        "End": 57751551,
+        "HttpBoundarySha256": "a173c4833a3936484462b856fc1545b0a465e7e11f8fa364f7380cc32ac6d6ef",
+        "Index": 13,
+        "Start": 57189376
+      }
+    ],
+    "size": 67108864,
+    "transferredBytes": 67109696
+  }
+}

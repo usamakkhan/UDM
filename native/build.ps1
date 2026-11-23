@@ -1,5 +1,6 @@
-param([switch]$ProductionOnly,[switch]$OmitDebugSymbols,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$ProductionUiTimingTestsOnly,[switch]$PendingFileInfoUiTestsOnly,[switch]$ScheduleDownloadWizardUiTestsOnly,[switch]$ProgressLimiterUiTestsOnly,[switch]$ProgressCompletionUiTestsOnly,[switch]$ProgressMenuUiTestsOnly,[switch]$ProgressPreferencesUiTestsOnly,[switch]$StartupFontUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
+param([switch]$CompactIntermediateObjects,[switch]$ProductionOnly,[switch]$OmitDebugSymbols,[switch]$AboutUiTestsOnly,[switch]$GrabberWizardUiTestsOnly,[switch]$DarkGroupsUiTestsOnly,[switch]$OptionsTabsUiTestsOnly,[switch]$BatchDialogUiTestsOnly,[switch]$FilenamePreviewUiTestsOnly,[switch]$CompletionDialogUiTestsOnly,[switch]$ProgressDialogUiTestsOnly,[switch]$PropertiesDialogUiTestsOnly,[switch]$FindDialogUiTestsOnly,[switch]$MenuStateTestsOnly,[string[]]$BackendTestNames=@(),[switch]$BackendTestsOnly,[switch]$DialCredentialsUiTestsOnly,[switch]$TransportPoolTestsOnly,[switch]$CapturePresentationUiTestsOnly,[switch]$ProductionUiTimingTestsOnly,[switch]$PendingFileInfoUiTestsOnly,[switch]$ScheduleDownloadWizardUiTestsOnly,[switch]$ProgressLimiterUiTestsOnly,[switch]$ProgressCompletionUiTestsOnly,[switch]$ProgressMenuUiTestsOnly,[switch]$ProgressPreferencesUiTestsOnly,[switch]$StartupFontUiTestsOnly,[switch]$Test,[switch]$CoreOnly,[switch]$UseInstalledToolchain,[switch]$AppOnly,[switch]$TestsOnly,[switch]$ZipUiTestsOnly,[switch]$ToolbarUiTestsOnly,[switch]$ColumnControlsUiTestsOnly,[switch]$ServerControlsUiTestsOnly,[switch]$SchedulerNumberUiTestsOnly,[switch]$QueueExportUiTestsOnly,[switch]$CaptureExclusionUiTestsOnly,[string]$OutputRoot,[string]$ToolchainRoot)
 $ErrorActionPreference='Stop'
+if($CompactIntermediateObjects -and (!$OmitDebugSymbols -or $CoreOnly)){throw 'CompactIntermediateObjects requires OmitDebugSymbols and at least one linked target.'}
 if($ProgressLimiterUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressLimiterUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressLimiterUiTestsOnly separately.'}
 if($ProgressCompletionUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressCompletionUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressCompletionUiTestsOnly separately.'}
 if($ProgressMenuUiTestsOnly -and (@($PSBoundParameters.Keys | Where-Object {($_ -like '*Only' -and $_ -ne 'ProgressMenuUiTestsOnly' -and $PSBoundParameters[$_]) -or ($_ -eq 'Test' -and $PSBoundParameters[$_])}).Count)){throw 'Use -ProgressMenuUiTestsOnly separately.'}
@@ -69,6 +70,7 @@ if($UseInstalledToolchain -or !(Test-Path -LiteralPath $udmCompiler)){
  $env:INCLUDE=$udmIncludes -join ';'
  $env:LIB=$udmLibraries -join ';'
 }
+$udmCompactTargetLock=$null
 Push-Location -LiteralPath $udmRoot
 try {
 $udmOut=Join-Path $PSScriptRoot 'out'
@@ -80,6 +82,10 @@ if($OutputRoot){
 }
 if($OmitDebugSymbols){$udmOut+='-nosymbols'}
 New-Item -ItemType Directory -Force -Path $udmOut,$udmRelease | Out-Null
+if($CompactIntermediateObjects){
+ # One owned scratch slot; exclude other compact writers for this output root.
+ $udmCompactTargetLock=[IO.File]::Open((Join-Path $udmOut 'compact-target.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+}
 $env:VCTIP_NOOPTIN='1'
 $env:VSCMD_SKIP_SENDTELEMETRY='1'
 $udmCommon=@('/nologo','/bigobj','/std:c++17','/EHsc','/MT','/O2','/W4','/utf-8','/permissive-','/DUNICODE','/D_UNICODE','/DNOMINMAX','/D_WIN32_WINNT=0x0A00','/DWINVER=0x0A00','/D_CRT_SECURE_NO_WARNINGS','/Zc:__cplusplus')
@@ -194,7 +200,19 @@ if($BackendTestsOnly){
   ,@($udmName,('Udm.'+$udmName),'CONSOLE')
  })
 }
+if($CompactIntermediateObjects){
+function Get-UdmTargetDigest([string]$Path){
+ $udmHash=[Security.Cryptography.SHA256]::Create();$udmInput=$null
+ try{$udmInput=[IO.File]::OpenRead($Path);return ([BitConverter]::ToString($udmHash.ComputeHash($udmInput))).Replace('-','')}
+ finally{if($udmInput){$udmInput.Dispose()};$udmHash.Dispose()}
+}
+$udmTargetObjectRecords=[Collections.Generic.List[object]]::new()
+$udmTargetObjectManifest=[ordered]@{schema=1;runId=[Guid]::NewGuid().ToString('N');passed=$false;compact=[bool]$CompactIntermediateObjects;scope='Top-level target objects; shared core and diagnostic variants remain separate.';targets=$udmTargetObjectRecords}
+$udmTargetObjectManifestPath=Join-Path $udmOut 'target-objects.json'
+[IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+}
 foreach($udmTarget in $udmTargets){
+ $udmTargetObject=Join-Path $udmOut $(if($CompactIntermediateObjects){'target-scratch.obj'}else{$udmTarget[0]+'.obj'})
  # The reconnect fixture includes Network.cpp to exercise its private session state.
  $udmLinkObjects=if($udmTarget[0] -eq 'MonitorReconnectTests'){@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -ne 'Network.obj'})}else{$udmObjects}
  # Keep diagnostic admission/save hooks out of the shared production object cache.
@@ -209,8 +227,16 @@ foreach($udmTarget in $udmTargets){
   $udmLinkObjects=@($udmObjects | Where-Object {[IO.Path]::GetFileName($_) -notin @('Bridge.obj','Core.obj')})+$udmTraceObjects
  }
  $udmEntry=@();if($udmTarget[0] -in @('AboutUiTests','GrabberWizardUiTests','DarkGroupsUiTests','FilenamePreviewUiTests','AutomationMain','CompletionDialogUiTests','ProgressDialogUiTests','PropertiesDialogUiTests','FindDialogUiTests','MenuStateTests','App','DialCredentialsUiTests','ZipPreviewUiTests','ToolbarUiTests','ColumnControlsUiTests','OptionsTabsUiTests','BatchDialogUiTests','ServerControlsUiTests','SchedulerNumberUiTests','QueueExportUiTests','CaptureExclusionUiTests','CapturePresentationUiTests','ProductionUiTimingTests','StartupFontUiTests','PendingFileInfoUiTests','ScheduleDownloadWizardUiTests','ProgressLimiterUiTests','ProgressCompletionUiTests','ProgressMenuUiTests','ProgressPreferencesUiTests')){$udmEntry=@('/ENTRY:wWinMainCRTStartup')}
- & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+(Join-Path $udmOut ($udmTarget[0]+'.obj'))) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA @udmLinkDebug /INCREMENTAL:NO /MANIFEST:NO
+ & $udmCompiler @udmCommon (Join-Path $PSScriptRoot ($udmTarget[0]+'.cpp')) @udmLinkObjects (Join-Path $udmOut 'App.res') ('/Fo'+$udmTargetObject) ('/Fe'+(Join-Path $udmRelease ($udmTarget[1]+'.exe'))) /link @udmSystem @udmEntry ('/SUBSYSTEM:'+$udmTarget[2]) /DYNAMICBASE /NXCOMPAT /HIGHENTROPYVA @udmLinkDebug /INCREMENTAL:NO /MANIFEST:NO
  if($LASTEXITCODE){throw ('C++ link failed: '+$udmTarget[1])}
+ if($CompactIntermediateObjects){
+ $udmTargetObjectRecords.Add([ordered]@{source=$udmTarget[0]+'.cpp';target=$udmTarget[1]+'.exe';objectPath=$udmTargetObject;objectBytes=([IO.FileInfo]::new($udmTargetObject)).Length;objectSha256=(Get-UdmTargetDigest $udmTargetObject);executableSha256=(Get-UdmTargetDigest (Join-Path $udmRelease ($udmTarget[1]+'.exe')))})
+ [IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
+ }
+}
+if($CompactIntermediateObjects){
+$udmTargetObjectManifest.passed=$true
+[IO.File]::WriteAllText($udmTargetObjectManifestPath,($udmTargetObjectManifest|ConvertTo-Json -Depth 8),[Text.UTF8Encoding]::new($false))
 }
 Copy-Item -LiteralPath (Join-Path $udmBrotli 'LICENSE') -Destination (Join-Path $udmRelease 'Brotli-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'third_party\mime-db-LICENSE.txt') -Destination (Join-Path $udmRelease 'mime-db-LICENSE.txt')
@@ -231,6 +257,7 @@ if($Test){
 if($Test){& (Join-Path $udmRelease 'Udm.NativeTests.exe');if($LASTEXITCODE){throw 'Native tests failed'}}
 Write-Output ('Native C++/MFC binaries: '+$udmRelease)
 } finally {
+ if($udmCompactTargetLock){$udmCompactTargetLock.Dispose()}
  Pop-Location
  $env:INCLUDE=$udmSavedInclude
  $env:LIB=$udmSavedLib

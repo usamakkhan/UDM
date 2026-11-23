@@ -1,0 +1,28 @@
+param([string]$Config)
+$ErrorActionPreference='Stop'
+$c=Get-Content -LiteralPath $Config -Raw|ConvertFrom-Json
+$env:INCLUDE=$c.include;$env:LIB=$c.lib;$env:TEMP=$c.temp;$env:TMP=$c.temp
+$udmCompiler=$c.compiler;$udmCommon=@($c.common);$udmSystem=@($c.system);$udmObjects=@($c.objects);$udmOut=$c.out;$udmRelease=$c.release;$udmLinkDebug=@();$CompactIntermediateObjects=[bool]$c.compact
+$udmTargets=@();foreach($row in $c.targets){$udmTargets+=,@($row.source,$row.name,$row.subsystem)}
+$tokens=$null;$errors=$null;$ast=[Management.Automation.Language.Parser]::ParseFile($c.recipe,[ref]$tokens,[ref]$errors);if($errors.Count){throw 'Build script parse failed'}
+$try=@($ast.EndBlock.Statements|Where-Object{$_ -is [Management.Automation.Language.TryStatementAst]});if($try.Count -ne 1){throw 'Expected one owning build scope'}
+$statements=$try[0].Body.Statements
+$start=-1;$end=-1
+for($i=0;$i -lt $statements.Count;$i++){
+ $code=$statements[$i].Extent.Text
+ if($code.StartsWith('foreach($udmTarget in $udmTargets)')){$end=$i;if(!$c.compact){$start=$i}}
+ if($c.compact -and $code.StartsWith('if($CompactIntermediateObjects)') -and $code.Contains('$udmTargetObjectRecords=')){$start=$i}
+}
+if($start -lt 0 -or $end -lt $start){throw 'Exact target-loop scope was not found'}
+if($c.compact){$end++;if(!$statements[$end].Extent.Text.StartsWith('if($CompactIntermediateObjects)')){throw 'Missing final manifest acknowledgement'}}
+$lock=$null
+try{
+ if($c.compact){
+  $lockBlock=@($statements|Where-Object{$_.Extent.Text.StartsWith('if($CompactIntermediateObjects)') -and $_.Extent.Text.Contains('$udmCompactTargetLock=')});if($lockBlock.Count -ne 1){throw 'Missing owned lock block'}
+  . ([scriptblock]::Create($lockBlock[0].Extent.Text));$lock=$udmCompactTargetLock
+ }
+ $chunk=($statements[$start..$end]|ForEach-Object{$_.Extent.Text}) -join "`n"
+ [IO.File]::WriteAllText($c.extract,$chunk,[Text.UTF8Encoding]::new($false))
+ # Executes the selected statements verbatim, with cached compiler/core inputs.
+ . ([scriptblock]::Create('param([string]$PSScriptRoot)'+"`n"+$chunk)) -PSScriptRoot $c.native
+}finally{if($lock){$lock.Dispose()}}

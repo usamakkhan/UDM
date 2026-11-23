@@ -1,0 +1,1037 @@
+{
+  "port": 63137,
+  "states": {
+    "positive": {
+      "stage": 3,
+      "step": "candidate",
+      "origin": "2026-11-21T18:22:12.037052+00:00"
+    },
+    "known": {
+      "stage": 3,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:37.933723+00:00"
+    },
+    "visible": {
+      "stage": 3,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:42.478227+00:00"
+    },
+    "revision-only": {
+      "stage": 3,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:47.107117+00:00"
+    },
+    "gap": {
+      "stage": 2,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:51.995181+00:00"
+    },
+    "overlap": {
+      "stage": 2,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:53.154202+00:00"
+    },
+    "incomplete": {
+      "stage": 2,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:54.341032+00:00"
+    },
+    "changed": {
+      "stage": 2,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:55.502864+00:00"
+    },
+    "revision-gap": {
+      "stage": 2,
+      "step": "candidate",
+      "origin": "2026-11-21T18:36:56.588375+00:00"
+    }
+  },
+  "requests": [
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 759
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "positive",
+      "step": "baseline",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 775
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "positive",
+      "step": "candidate",
+      "stage": 3,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 572
+    },
+    {
+      "case": "known",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "known",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "known",
+      "step": "candidate",
+      "stage": 3,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 569
+    },
+    {
+      "case": "visible",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 758
+    },
+    {
+      "case": "visible",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "visible",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "visible",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "visible",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 1167
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 1167
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "visible",
+      "step": "candidate",
+      "stage": 3,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 964
+    },
+    {
+      "case": "revision-only",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 764
+    },
+    {
+      "case": "revision-only",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-only",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "revision-only",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-only",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 780
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 780
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 780
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "HEAD",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "p1/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105602
+    },
+    {
+      "case": "revision-only",
+      "step": "candidate",
+      "stage": 3,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 577
+    },
+    {
+      "case": "gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 754
+    },
+    {
+      "case": "gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "gap",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 770
+    },
+    {
+      "case": "overlap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 758
+    },
+    {
+      "case": "overlap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "overlap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "overlap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "overlap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "overlap",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 776
+    },
+    {
+      "case": "incomplete",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 777
+    },
+    {
+      "case": "incomplete",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "incomplete",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "incomplete",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "incomplete",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "incomplete",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 777
+    },
+    {
+      "case": "changed",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 758
+    },
+    {
+      "case": "changed",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "changed",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "changed",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "changed",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "changed",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 782
+    },
+    {
+      "case": "revision-gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 763
+    },
+    {
+      "case": "revision-gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "HEAD",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "revision-gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/init.mp4",
+      "status": 200,
+      "range": null,
+      "bytes": 772
+    },
+    {
+      "case": "revision-gap",
+      "step": "capture",
+      "stage": 1,
+      "method": "GET",
+      "path": "p0/segment.m4s",
+      "status": 200,
+      "range": null,
+      "bytes": 105603
+    },
+    {
+      "case": "revision-gap",
+      "step": "candidate",
+      "stage": 2,
+      "method": "GET",
+      "path": "manifest.mpd",
+      "status": 200,
+      "range": null,
+      "bytes": 779
+    }
+  ],
+  "records": [
+    {
+      "case": "positive",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "EB65F8302EE1057196088C8B8937F11837BDEFAFABBBC56B64291CC8DCE4A6FF",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\positive\\capture-results.json"
+    },
+    {
+      "case": "positive",
+      "stage": "baseline",
+      "exitCode": 1,
+      "binarySha256": "EB65F8302EE1057196088C8B8937F11837BDEFAFABBBC56B64291CC8DCE4A6FF",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\positive\\baseline-results.json"
+    },
+    {
+      "case": "positive",
+      "stage": "candidate",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\positive\\candidate-results.json"
+    },
+    {
+      "case": "known",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\known\\capture-results.json"
+    },
+    {
+      "case": "known",
+      "stage": "candidate",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\known\\candidate-results.json"
+    },
+    {
+      "case": "visible",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\visible\\capture-results.json"
+    },
+    {
+      "case": "visible",
+      "stage": "candidate",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\visible\\candidate-results.json"
+    },
+    {
+      "case": "revision-only",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-only\\capture-results.json"
+    },
+    {
+      "case": "revision-only",
+      "stage": "revision-only",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-only\\revision-only-results.json"
+    },
+    {
+      "case": "revision-only",
+      "stage": "candidate",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-only\\candidate-results.json"
+    },
+    {
+      "case": "gap",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\gap\\capture-results.json"
+    },
+    {
+      "case": "gap",
+      "stage": "candidate",
+      "exitCode": 1,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\gap\\candidate-results.json"
+    },
+    {
+      "case": "overlap",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\overlap\\capture-results.json"
+    },
+    {
+      "case": "overlap",
+      "stage": "candidate",
+      "exitCode": 1,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\overlap\\candidate-results.json"
+    },
+    {
+      "case": "incomplete",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\incomplete\\capture-results.json"
+    },
+    {
+      "case": "incomplete",
+      "stage": "candidate",
+      "exitCode": 1,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\incomplete\\candidate-results.json"
+    },
+    {
+      "case": "changed",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\changed\\capture-results.json"
+    },
+    {
+      "case": "changed",
+      "stage": "candidate",
+      "exitCode": 1,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\changed\\candidate-results.json"
+    },
+    {
+      "case": "revision-gap",
+      "stage": "capture",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-gap\\capture-results.json"
+    },
+    {
+      "case": "revision-gap",
+      "stage": "revision-only",
+      "exitCode": 0,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-gap\\revision-only-results.json"
+    },
+    {
+      "case": "revision-gap",
+      "stage": "candidate",
+      "exitCode": 1,
+      "binarySha256": "BB383EC8B466F682322024ADDBC046AA9397B1B0488997F88FDB016BF9A3BCD5",
+      "result": "[repo]\\.media-cache\\owned-retired-dash-baseline-9.81\\revision-gap\\candidate-results.json"
+    }
+  ],
+  "expected": [
+    [
+      "b2889702d8dd3be845fc9a6562a6e055",
+      "795419b7993ffb45320957b8000a196f",
+      "8ec6afd88f02cfad827c7430e365f66d",
+      "333100870421ccfc3c0c1b0e2cf1361e",
+      "49c8d828ec7823e5261c54f9e8b2fccd",
+      "abcd9ca9efb148a796401bb3a7a09339",
+      "4d8b6d7626c6120d43670bad09f0cb73",
+      "9cf14d4e671f047d6c8da631eea5e43e",
+      "3d316271ad557add654d2552dfa72ed8",
+      "ef0c1cec84b4d0a9e55f48814c0433d9"
+    ],
+    [
+      "4524bebe83121382d5d143aa7920d3af",
+      "1b1914ce135c45e81535d42901766908",
+      "dbe76d43e078787c7dbd5bc1893b51e7",
+      "cd52ff6f68c5d81683102987d92005f0",
+      "a4a853bc516ab87a750207ad3ef381f0",
+      "d26a19871c0f21fce82487094a13c166",
+      "69e620e71e5ecbe075e2b239618abe9d",
+      "899fcda31b98016dd206477f31c9db0e",
+      "ad18514d7b9d10ff3972e03e95d21000",
+      "b1e80e6fc0a0297be10e49a12b7e7e92"
+    ]
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "sources": [
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "17603404492B82552913C034B8D6BED40457D6D88331D6E1C5D80AA4D0184EBB"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "26E3463A4E60D03CAB5DF59D5EF3020A7AA90DD04139AE575B606097FC3DD0F7"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "D5BC564940A052517A4D60065F5280604E888AB08B0C95B8D22BBA77A3F07178"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "86FB525E88854FDB12831FB3C03E2AEFD6A49956392577163AD31D7981C8A880"
+    },
+    {
+      "path": "benchmarks/speed/dash_freshness_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_freshness_workflow.cpp.txt",
+      "sha256": "C285BA592CFEF87DC4E94481B10559F2FE4D6CB28DB4B74A235DF3CB0A6DB3A6"
+    },
+    {
+      "path": "tests/dash-freshness.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-freshness.native-live.py.txt",
+      "sha256": "6241F28C9837E0608C937DD4CB9BA6B0CD68FFE1BC7EB5FEFA9A45676D011FDC"
+    },
+    {
+      "path": "tests/dash-freshness-clock.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-freshness-clock.native-live.py.txt",
+      "sha256": "0C2A23C0B48E9803F8246BE963D4B4DD5E249687A2DE14FC50F82E4AA336CF54"
+    },
+    {
+      "path": "tests/live-dash-continuous.native-live.py",
+      "snapshot": "source-snapshot/tests__live-dash-continuous.native-live.py.txt",
+      "sha256": "2B8E6EF765741EC373E10FB9FB31A2D558BAADD338A5C77B6018275F0CA09BF1"
+    },
+    {
+      "path": "benchmarks/speed/live_dash_continuous_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__live_dash_continuous_workflow.cpp.txt",
+      "sha256": "CF5DFAEB583777C2A9CA83DCEAF48516942488EAFCF5426B193C942C5A28FBB2"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "17CD2658166EBE6994C16E7D617453C3B7D02B5A312C3BCF001DB58095227052",
+      "diagnosticNotProduct": false
+    },
+    {
+      "recipe": "compile-control.py",
+      "snapshot": "source-snapshot/compile-control.py.txt",
+      "sha256": "96B1A7CD1D6401B18C48E2E4CD9B783D4373FA15BAE3A85803415604776958E4",
+      "diagnosticNotProduct": false
+    },
+    {
+      "recipe": "compile-timing.py",
+      "snapshot": "source-snapshot/compile-timing.py.txt",
+      "sha256": "9E018E7B7798EC4D053B468A2B33C1D47CF01036BE43B259E774B4FE18E8C140",
+      "diagnosticNotProduct": false
+    },
+    {
+      "recipe": "compile-reuse-experiment.py",
+      "snapshot": "source-snapshot/compile-reuse-experiment.py.txt",
+      "sha256": "031D551599B6A7BBFEAF069D9481497F6EDF0604AE5EF85F68AF81DAEE7561BF",
+      "diagnosticNotProduct": false
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "C9DE11DD729609C902E7058522203DB89A466110D6FD7B563CD5A3F68F16DAA5",
+      "diagnosticNotProduct": false
+    },
+    {
+      "recipe": "DashManifest-Timing.cpp",
+      "snapshot": "source-snapshot/DashManifest-Timing.cpp.txt",
+      "sha256": "24F8E0D924D21DF19D1821568E574D8A904E6673800FF12667F3996276F94DEA",
+      "diagnosticNotProduct": true
+    },
+    {
+      "recipe": "DashManifest-ReuseExperiment.cpp",
+      "snapshot": "source-snapshot/DashManifest-ReuseExperiment.cpp.txt",
+      "sha256": "E0A1ED6C1EB892124BD99A59B3E162EE8861833A4AD2C3F0049CD3B130DB165F",
+      "diagnosticNotProduct": true
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "EB6422B230C6BE32B592609B36CAA21DFF11BD7DBA9784B4889BE2DCD11BD7C4",
+      "diagnosticNotProduct": false
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "version": "10.2",
+      "snapshot": "source-snapshot/frozen-10.2-DashManifest.cpp.txt",
+      "sha256": "64272CDD661C12384D992B3A03B00733B06E372CA8395D73523BB9AAD5D6C8A2"
+    }
+  ],
+  "buildInputsStillMatch": true,
+  "clockFixturePinnedBeforeAndAfterItsRuns": true,
+  "unchangedContinuousFixtureSnapshotTakenAfterExecution": true,
+  "fullProductionAcceptancePassed": false,
+  "privatePrototypeIsNotShippingCode": true
+}

@@ -1,0 +1,105 @@
+{
+  "files": [
+    {
+      "path": "independent/results.json",
+      "sourceSha256": "4FAFD50637818789416ECCADB89610A525B225B50243D9216D07EC652B1450B4",
+      "exportSha256": "BCFA75ACCF8FB79584B620A3DED612DA3683EDF93ED31015B5835C0A918FAC47"
+    },
+    {
+      "path": "independent/source-provenance.json",
+      "sourceSha256": "8970E564064789D16319EE386280171FFB5664DAC3700B662D70AF24E531BC05",
+      "exportSha256": "9AC32BECA28E4E5DCB1C868F2833734E1878654821BD404050320A2DFC08316A"
+    },
+    {
+      "path": "continuous/results.json",
+      "sourceSha256": "F28387D16D26F13FF371D8DA9FC73EC73C527DB6616639152ABB7A012B0047DD",
+      "exportSha256": "B45EB3FCB13F292466E4FB6319B49314D4CB2BA2EEE67D4BE6F581CE45143240"
+    },
+    {
+      "path": "native-guard/inputs.json",
+      "sourceSha256": "068808E916C8A4D199F5A32C3AFFE7C7052DBF28B57A35337337DEB09DC76355",
+      "exportSha256": "62671BD84ACD789F32B606B812DEDCADF2D9032FA16A13734894BAA55966A9D8"
+    },
+    {
+      "path": "native-guard/results.json",
+      "sourceSha256": "E57F5AA32D67F5AA0A70EC4F11151BFD14BA2BABD23799DA947C3AD210600F56",
+      "exportSha256": "D101177B53540D2852152ADBECE0EEDD0EC0D9EF75B8D7537E8C7741E2A93054"
+    },
+    {
+      "path": "native-guard/actor.json",
+      "sourceSha256": "8B1B79EAEE546C58F024CAC7C54408E43653CB197B18B04868F83B2E3D73E2A0",
+      "exportSha256": "7CF706004DC7032BB64DE8F867EA7ABEB57272556A57DA2779FEEAD121B7CC43"
+    },
+    {
+      "path": "native-guard/duration-input.json",
+      "sourceSha256": "C05DA4667CEBDE7B00245071EFA8851BF79A81FEB96E1BC93B6FB0922D66B974",
+      "exportSha256": "3C08384696F9D5D2DFDB13349F92F0AB2F25F24EA1694029014294E6378AC03B"
+    },
+    {
+      "path": "native-guard/audit.json",
+      "sourceSha256": "004788379300EDC30396E16BA81ABBA2E9B344EB96E526D24D50FEBD2EF13D54",
+      "exportSha256": "5B1FECE4F0499324FCACB804F4841E2DFDC74E71A15DD3D3AED89722DC75B26F"
+    },
+    {
+      "path": "native-guard/packet-facts.json",
+      "sourceSha256": "541D4B032A60132ED177905AE75F3D8178218F4702D7983981DB69171A201FBD",
+      "exportSha256": "FEB9ABCB1C3868117D3095012CC163A4E6D7D489587E7C6BFA858B515014F776"
+    },
+    {
+      "path": "copy-prior-assessment.json",
+      "sourceSha256": "186E427AC0D236D7C13EB5B0C8E96DBBEBCA6BF28F7C7AE592F3767AF3E9573B",
+      "exportSha256": "4894FA836B4B8FCCCE39BF83CB263E3FEA9FD9F92CFA2FF20B1BB78F183DFFBA"
+    },
+    {
+      "path": "copy-prior/results.json",
+      "sourceSha256": "98057BE64FEC6623C5012ED787FD4A3C8430036F7FA2E405F8F920AE812688F4",
+      "exportSha256": "9A5E520E2ECB04E980AD465E338774E720DED58C23D62F8A99D07FAEACAE7833"
+    },
+    {
+      "path": "validator-tests.json",
+      "exportSha256": "7805FB1508E98093ED767183D96E01EAC4B46674BDAA97D6059B6204BB6420FE"
+    }
+  ],
+  "sourceSnapshots": [
+    {
+      "path": "source-snapshot/initial-probe.py.txt",
+      "sha256": "A42E2E980C12D557188ED2CCAAC94CC78BD8FC01FDC1138991F9A153968DA60D",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/current-probe.py.txt",
+      "sha256": "4E7E498FB4299F4D1C44708DDB95400E0687155F9E7CA809E0F3B774930C927F",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/analyzer.py.txt",
+      "sha256": "4908DD667B94BF2FFD96075336A17B72344A3BB1A0074782BD0CB416B24A09DF",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/analyzer-tests.py.txt",
+      "sha256": "976F504AE975EE3FCD7DC1ECB51C26BCD2BC7B168EED744E771D26F431BCBDA3",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/native-actor.cpp.txt",
+      "sha256": "CD46F55B664A75D1F04A4DD012E1D35379B5E84D0B89310F7A382F9EFD97D7D5",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/native-guard.hpp.txt",
+      "sha256": "A38BF487F9488F6DA73F639FAE7D6712513B880DB92B0D896A52D4F3DF5520AC",
+      "exactBytes": true
+    },
+    {
+      "path": "source-snapshot/copy-prior-probe.py.txt",
+      "sha256": "D0A22D267EBA7507F7FE7539960F13AF6A5468F15CFB9153C27B7C5A2BF142C0",
+      "exactBytes": true
+    }
+  ],
+  "mediaPayloadsExported": false,
+  "productVersion": "10.0",
+  "sourceExtensionVersion": "0.73.64",
+  "productChanged": false,
+  "fullIdmParity": false
+}

@@ -1,0 +1,98 @@
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+#include <future>
+namespace udm {
+static fs::path output;static Json checks=Json::array(),observations=Json::array();static bool baseline=false;
+static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
+template<class F>static void until(F ready){const auto end=GetTickCount64()+6000;while(!ready()&&GetTickCount64()<end)Sleep(1);if(!ready())throw std::runtime_error("Owned manual Exit deadline");}
+static unsigned pump(HWND window,UINT id){MSG message{};unsigned count=0;while(IsWindow(window)&&PeekMessageW(&message,window,id,id,PM_REMOVE)){DispatchMessageW(&message);++count;}return count;}
+struct ExitWriter {
+ std::promise<void> entered,release;std::shared_future<void> gate=release.get_future().share();std::thread worker;
+ explicit ExitWriter(Manager& manager,std::function<void()> change={}){auto ready=entered.get_future();worker=std::thread([this,&manager,change=std::move(change)]{Lock lock(manager.mutex);if(change)change();entered.set_value();gate.wait();});ready.get();}
+ void open(){try{release.set_value();}catch(...){}if(worker.joinable())worker.join();}~ExitWriter(){open();}
+};
+struct ExitProbe {
+ inline static ExitProbe* active=nullptr;HWND owner;std::function<void(HWND)> inspect;std::string error;bool seen=false;UINT_PTR timer;ULONGLONG began=GetTickCount64();
+ static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){auto* self=active;if(!self||self->seen)return;HWND dialog=nullptr;
+  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM data)->BOOL{wchar_t title[256]{};GetWindowTextW(window,title,256);if(IsWindowVisible(window)&&GetWindow(window,GW_OWNER)==active->owner&&!wcscmp(title,L"UDM manual Exit acceptance")){*reinterpret_cast<HWND*>(data)=window;return FALSE;}return TRUE;},reinterpret_cast<LPARAM>(&dialog));
+  if(!dialog){if(GetTickCount64()-self->began<6000)return;self->seen=true;self->error="Owned native message did not appear";return;}
+  self->seen=true;try{self->inspect(dialog);}catch(const std::exception& e){self->error=e.what();}catch(...){self->error="Owned Exit observation failed";}if(IsWindow(dialog))PostMessageW(dialog,WM_CLOSE,0,0);
+ }
+ ExitProbe(HWND parent,std::function<void(HWND)> action):owner(parent),inspect(std::move(action)){active=this;timer=SetTimer(nullptr,0,10,tick);if(!timer)throw std::runtime_error("Cannot observe owned Exit dialog");}
+ ~ExitProbe(){KillTimer(nullptr,timer);active=nullptr;}
+};
+class ToolbarComponentTest {
+public:
+ static void cleanup(MainWindow*& frame){if(frame){frame->quitting=true;closeOwnedMainWindow(frame);}}
+ static void run(MainWindow*& frame,Manager& manager,const std::string& mode,bool dark){
+ frame->KillTimer(1);frame->modelMaintenance.stop();frame->presentationAcks.stop();frame->ShowWindow(mode=="hidden"?SW_HIDE:SW_SHOWNOACTIVATE);const auto window=frame->GetSafeHwnd();pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);
+ auto job=manager.add("https://example.invalid/manual-exit","","manual-exit.bin","Main queue",true);job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;fs::create_directories(job->target().parent_path());writeBytes(job->target(),Bytes{'t','e','s','t'});
+ auto stops=std::make_shared<unsigned>(0);frame->stopIntegration=[stops]{++*stops;};frame->showProgress(job,true);check(!frame->progress.empty()&&frame->progress.back()->GetSafeHwnd(),"Manual Exit fixture uses a real UDM progress owner");auto* secondary=frame->progress.back().get();const auto parent=secondary->GetSafeHwnd();const bool visibleBefore=frame->IsWindowVisible()!=FALSE;
+ std::atomic_bool layoutFailureInjected=false;std::unique_ptr<ExitWriter> formPolicyWriter;
+ if(mode=="policy-form"){formPolicyWriter=std::make_unique<ExitWriter>(manager);frame->closePolicyTask.start(manager,frame->maintenanceSignal->notifier());}
+ else if(mode=="policy-ready"||mode=="layout-ready"||mode=="layout-failure-ready"){
+  ExitWriter writer(manager);
+  if(mode=="layout-failure-ready")frame->exitLayoutObserver=[&](const char* stage){if(std::string_view(stage)=="before-merge"){layoutFailureInjected=true;throw std::runtime_error("Owned modal layout failure acceptance");}};
+  if(mode=="policy-ready")frame->closePolicyTask.start(manager,frame->maintenanceSignal->notifier());
+  else {frame->quitting=true;check(!frame->prepareExitLayout()&&!frame->IsWindowEnabled(),"An accepted layout preparation owns the main-frame disable");}
+  writer.open();until([&]{return mode=="policy-ready"?frame->closePolicyTask.ready():frame->exitLayoutTask.ready();});if(mode=="layout-failure-ready")check(layoutFailureInjected,"The layout failure was injected before merge and modal presentation");
+ }
+ bool requested=false;unsigned modalWakes=0;
+ ExitProbe probe(mode=="policy-form"?window:parent,[&](HWND){
+  if(mode=="policy-form")check(!frame->IsWindowEnabled(),"The main-owned MFC modal disables the main frame");
+  else check(!secondary->IsWindowEnabled(),"Native secondary modality disables its progress owner");
+  if(formPolicyWriter){check(!frame->IsWindowEnabled(),"The real MFC modal owns the main-frame disable");formPolicyWriter->open();until([&]{return frame->closePolicyTask.ready();});}
+  modalWakes+=pump(window,UiTaskSignal::message);frame->pollClosePolicy();frame->pollExitLayout();
+  check((frame->IsWindowEnabled()!=FALSE)==(mode!="policy-form"&&mode!="layout-ready"&&mode!="layout-failure-ready"),"A prepared close preserves the native or MFC modal's current main ownership");
+  if(mode=="stale-enable"){secondary->EnableWindow(TRUE);secondary->EnableWindow(FALSE);modalWakes+=pump(window,UiTaskSignal::message);modalWakes+=pump(window,TRANSFER_EVENTS);}
+  if(mode=="tray"){
+   frame->OnClose();requested=frame->quitting||frame->closePolicyTask.valid()||frame->exitLayoutTask.valid()||(frame->IsWindowVisible()!=FALSE)!=visibleBefore;
+  }else{
+   ExitWriter writer(manager);if(mode=="task-exit")frame->SendMessage(WM_COMMAND,CMD_EXIT);else frame->OnClose();requested=frame->quitting||frame->closePolicyTask.valid()||frame->exitLayoutTask.valid();
+   // The frozen control is deliberately stopped at the asynchronous close
+   // admission. Cancel its owned read while the model remains held, before
+   // another UI message can turn it into destructive window teardown.
+   if(frame->closePolicyTask.valid())frame->cancelClosePolicy();writer.open();
+   if(frame->exitLayoutTask.valid()){frame->exitLayoutTask.finish();frame->exitLayoutPrepared=false;frame->quitting=false;frame->EnableWindow(frame->exitLayoutOwnerEnabled);}
+  }
+  requested=requested||((frame->IsWindowVisible()!=FALSE)!=visibleBefore);
+  check(IsWindow(window)&&*stops==0,"The secondary dialog outlives a manual close request without integration shutdown");
+  observations.push_back({{"mode",mode},{"dark",dark},{"closePreparedDuringSecondaryModal",requested},{"mainVisibilityPreserved",(frame->IsWindowVisible()!=FALSE)==visibleBefore},{"mainEnabledDuringModal",frame->IsWindowEnabled()!=FALSE},{"progressEnabledDuringModal",secondary->IsWindowEnabled()!=FALSE},{"integrationStopsDuringModal",*stops},{"wakesDuringModal",modalWakes}});
+  if(baseline)check(requested,"Frozen 9.96 prepares Exit or hides to tray while a secondary modal is open");
+  else {check(!requested&&!frame->quitting&&!frame->exitLayoutPrepared&&(frame->IsWindowVisible()!=FALSE)==visibleBefore,"Manual Exit and stale prepared close preserve the open secondary interaction");if(mode!="policy-form")check(!secondary->IsWindowEnabled(),"A blocked close does not re-enable the active modal's progress owner");}
+ });
+ if(mode=="policy-form"){
+  Form dialog("UDM manual Exit acceptance",260,85,frame);dialog.init=[&]{dialog.label("Owned close-decision acceptance",12,12,235);dialog.cancel=[&]{dialog.close(IDCANCEL);};dialog.button("Close",170,50,75,dialog.cancel);};check(dialog.DoModal()!=-1,"The main-owned MFC modal is created normally");
+ }else themedMessage(secondary,L"Owned manual Exit acceptance",L"UDM manual Exit acceptance",MB_OKCANCEL|MB_ICONERROR|(dark?MB_HELP:0));
+ check(probe.seen&&probe.error.empty(),probe.error.empty()?"The owned native modal closes normally":probe.error.c_str());
+ #ifdef UDM_MANUAL_EXIT_SECONDARY_AVAILABLE
+ if(mode=="layout-ready"||mode=="layout-failure-ready"){const auto deadline=GetTickCount64()+6000;while(frame->exitLayoutRestorePending&&GetTickCount64()<deadline){pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);Sleep(1);}check(!frame->exitLayoutRestorePending&&frame->IsWindowEnabled(),"The real modal-release wake restores the canceled layout owner's main frame without its timer");}
+#endif
+ check(frame->IsWindowEnabled()&&secondary->IsWindowEnabled(),"Modal release restores both original windows");
+ if(baseline)return;
+#ifdef UDM_MANUAL_EXIT_SECONDARY_AVAILABLE
+ if(mode=="tray"||mode=="policy-form"){frame->OnClose();check(IsWindow(window)&&!frame->IsWindowVisible()&&*stops==0,"After modal release Close to tray retains its saved behavior");}
+ // Exercise real shutdown with its own asynchronous layout preparation, not
+ // just a direct call to the new predicate. No dialog is open at this point.
+ frame->exitLayoutObserver={};frame->ShowWindow(SW_SHOWNOACTIVATE);frame->table.SetColumnWidth(0,321);const auto expected=frame->listLayout();const auto disk=readText(manager.root/L"state.json");
+ {ExitWriter writer(manager,[&]{manager.state["Settings"]["ManualExitConcurrentMarker"]="preserved";manager.state["Settings"]["CloseToTray"]=false;});frame->quitting=true;frame->OnClose();
+  check(frame->exitLayoutTask.valid()&&!frame->IsWindowEnabled(),"Normal accepted Exit defers layout merge while a model writer owns the catalog");
+  const bool allBlocked=frame->completionModalFence.blocked(),secondaryBlocked=frame->completionModalFence.modalActive();
+  if(!allBlocked||secondaryBlocked){Json windows=Json::array();struct WindowProbe{HWND main,progress;Json* rows;} scope{window,parent,&windows};EnumThreadWindows(GetCurrentThreadId(),[](HWND current,LPARAM data)->BOOL{auto& value=*reinterpret_cast<WindowProbe*>(data);wchar_t kind[128]{},title[256]{};GetClassNameW(current,kind,128);GetWindowTextW(current,title,256);const auto owner=GetWindow(current,GW_OWNER);value.rows->push_back({{"class",utf8(kind)},{"title",utf8(title)},{"enabled",IsWindowEnabled(current)!=FALSE},{"visible",IsWindowVisible(current)!=FALSE},{"isMain",current==value.main},{"isProgress",current==value.progress},{"owner",owner==value.main?"main":owner==value.progress?"progress":owner?"other":"none"},{"style",GetWindowLongPtrW(current,GWL_STYLE)},{"extendedStyle",GetWindowLongPtrW(current,GWL_EXSTYLE)}});return TRUE;},reinterpret_cast<LPARAM>(&scope));observations.push_back({{"phase","layout-owner-diagnostic"},{"allBlocked",allBlocked},{"secondaryBlocked",secondaryBlocked},{"windows",windows}});}
+  check(allBlocked&&!secondaryBlocked,"Exit's own main disable does not masquerade as secondary modality");
+  check(readText(manager.root/L"state.json")==disk,"Layout admission adds no premature catalog checkpoint");writer.open();}
+ closeOwnedMainWindow(frame);check(!IsWindow(window)&&!frame&&*stops==1,"After modal release the normal layout-save and shutdown finish exactly once");
+ const auto saved=Json::parse(readText(manager.root/L"state.json"));check(saved["Settings"]["ListLayout"]==expected&&str(saved["Settings"],"ManualExitConcurrentMarker")=="preserved","Final canonical checkpoint preserves the captured layout and concurrent settings");
+#else
+ throw std::runtime_error("Manual Exit correction is unavailable");
+#endif
+ }
+};
+class ManualExitApplication:public CWinApp {int result=1;public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);std::string error;
+ try{if(!args||argc!=3)throw std::runtime_error("Pass candidate/baseline and fresh output");baseline=utf8(args[1])=="baseline";if(!baseline&&utf8(args[1])!="candidate")throw std::runtime_error("Unknown test mode");output=fs::absolute(args[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh test root required");}fs::create_directories(output);
+  for(bool dark:{false,true}){if(baseline&&dark)break;for(const std::string mode:{"blocked","task-exit","tray","hidden","stale-enable","policy-ready","layout-ready","layout-failure-ready","policy-form"}){if(baseline&&mode!="blocked"&&mode!="task-exit"&&mode!="policy-form")continue;Manager manager(output/wide((dark?"dark-":"light-")+mode));auto settings=manager.state["Settings"];settings["DarkMode"]=dark;settings["CloseToTray"]=mode=="tray"||mode=="policy-form";settings["ClipboardMonitor"]=false;settings["Sound"]=false;settings["ShowTipsOnStartup"]=false;settings["CategoryFolders"]=false;settings["DownloadFolder"]=utf8((manager.root/L"files").wstring());manager.setSettings(settings);auto* frame=new MainWindow(manager);m_pMainWnd=frame;
+   try{ToolbarComponentTest::run(frame,manager,mode,dark);}catch(...){m_pMainWnd=nullptr;ToolbarComponentTest::cleanup(frame);throw;}m_pMainWnd=nullptr;ToolbarComponentTest::cleanup(frame);manager.stop();}}
+  result=0;
+ }catch(const std::exception& e){error=e.what();}if(args)LocalFree(args);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"baseline",baseline},{"checks",checks},{"observations",observations},{"error",error}}.dump(2),false);return FALSE;
+ }int ExitInstance()override{AfxOleTerm(FALSE);return result;}};ManualExitApplication application;
+}

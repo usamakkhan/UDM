@@ -1,0 +1,155 @@
+{
+  "checks": [
+    {
+      "name": "Finish control reopens its one owned recording",
+      "passed": true
+    },
+    {
+      "name": "Finish control binds the original manifest and unpublished destination",
+      "passed": true
+    },
+    {
+      "name": "Save recording is requested while fresh-manifest headers are held",
+      "passed": true
+    },
+    {
+      "name": "Held-refresh Save completes: ",
+      "passed": true
+    },
+    {
+      "name": "Manual Save seals exactly the retained one-second prefix",
+      "passed": true
+    },
+    {
+      "name": "Manual Save publishes exact accepted bytes",
+      "passed": true
+    },
+    {
+      "name": "Saved retained prefix decodes all ten frames through EOF",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "frames": [
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac",
+    "29a653044efdf73bae6681f875a750ac"
+  ],
+  "passed": true,
+  "savedJob": {
+    "AdaptiveAssemblyReused": false,
+    "AdaptiveCompletedSegments": 1,
+    "AdaptiveMetadataBytes": 775,
+    "AdaptiveTotalSegments": 1,
+    "Added": "/Date(1795275543611)/",
+    "Audio": null,
+    "AuthenticationPromptPending": false,
+    "Category": "Video",
+    "ConfirmationPending": false,
+    "Connections": 8,
+    "Description": "",
+    "ElapsedSeconds": 1.5317823000000002,
+    "Error": "",
+    "ExpectedSha256": "",
+    "FileName": "restart.mp4",
+    "Finished": "/Date(1795275545508)/",
+    "Folder": "<development>\\owned-live-dash-restart-9.76-C\\finish",
+    "FormatDescription": "DASH to MP4 browser capture",
+    "GrabberImmediate": false,
+    "Id": "71d075dde10b452693e7b8d4f5c07dc0",
+    "LastAttempt": "/Date(1795275544697)/",
+    "LastFtpStatus": 0,
+    "LastHttpStatus": 0,
+    "LimitKbps": 0,
+    "LiveCaptureSealed": true,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "LiveSaveReady": false,
+    "LiveStopRequested": true,
+    "MediaFolder": "<repo>\\.media-cache\\owned-live-dash-restart-9.76\\finish\\temporary\\UDM-media\\71d075dde10b452693e7b8d4f5c07dc0",
+    "MediaPhase": "Complete",
+    "MediaPixelHeight": 360,
+    "MediaTracksReady": false,
+    "MergeSeconds": 0.3758599,
+    "PostAttempted": false,
+    "PrefetchedFinalSize": 2311,
+    "ProtectedAdaptive": {
+      "omitted": true,
+      "sha256": "1773142E0E36ED3051EC5D313B9CD59DD7B44BD7BB744EB520FCFD40711BF06A",
+      "characters": 656
+    },
+    "ProtectedAdaptiveDisplayAddress": {
+      "omitted": true,
+      "sha256": "B7B3C6CFB7D0C2C7ADAE8924D1FE366A88BBB97A8431495261E0B7022E35E632",
+      "characters": 360
+    },
+    "ProtectedBrowserProxy": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedHeaders": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "ProtectedMediaCookies": {
+      "omitted": true,
+      "sha256": "6E0AB1EAF294E4D618DF1DC8BDDC5FDC0DC7865BD1EEB0442C177A34655FEF35",
+      "characters": 316
+    },
+    "ProtectedMediaHeaders": {
+      "omitted": true,
+      "sha256": "1D754A841D94B1DAA322818FB8FAFDE4B288961125CD20A5D07DEAD095A59E84",
+      "characters": 316
+    },
+    "ProtectedRequest": {
+      "omitted": true,
+      "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "characters": 0
+    },
+    "PublicationCommitId": "38f6955476854c2d8b9cdcada5c8a423",
+    "PublicationPhases": {
+      "AcceptCatalog": 3.06e-05,
+      "IntentOperations": {
+        "bytes-written": 0.0001321,
+        "directories-ready": 0.0009369,
+        "publish": 0.0012372,
+        "temporary-flushed": 0.0869307,
+        "temporary-opened": 0.0001695
+      },
+      "PrepareCatalog": 0.0002059,
+      "PrepareIntent": 0.0003189,
+      "PrepareSource": 6.8e-06,
+      "ReleaseAcceptedFile": 2.36e-05,
+      "ReleasePins": 0.0001408,
+      "RemoveJournal": 0.0002033,
+      "Rename": 0.0014269,
+      "VerifyIdentity": 1.22e-05,
+      "WriteCatalog": 0.0618829,
+      "WriteIntent": 0.0894112
+    },
+    "Queue": "Main queue",
+    "QueueAttempts": 0,
+    "QueueMember": false,
+    "QueueOrigin": false,
+    "Received": 2311,
+    "SabrRetainedBytes": 0,
+    "Segments": [],
+    "Sha256": "8945ea5e554359de73d892c9ce12fe7a9e77b276470153769417464b8e620ed1",
+    "Size": 2311,
+    "Status": "Complete",
+    "SyncPending": false,
+    "TransferSeconds": 0.9267737,
+    "TransferredBytes": 3118,
+    "Url": "https://example.invalid/owned-restart",
+    "Video": null
+  }
+}

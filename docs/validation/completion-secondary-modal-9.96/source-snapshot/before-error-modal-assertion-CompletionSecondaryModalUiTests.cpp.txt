@@ -1,0 +1,74 @@
+#define UDM_TOOLBAR_COMPONENT_TEST
+#include "App.cpp"
+#include <future>
+namespace udm {
+static fs::path output;static Json checks=Json::array(),observations=Json::array();static bool baseline=false;
+static void check(bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);}
+static unsigned pump(HWND window,UINT id){MSG message{};unsigned count=0;while(IsWindow(window)&&PeekMessageW(&message,window,id,id,PM_REMOVE)){DispatchMessageW(&message);++count;}return count;}
+struct SecondaryProbe {
+ inline static SecondaryProbe* active=nullptr;HWND owner;std::wstring title;std::function<void(HWND)> inspect;std::string error;bool seen=false;UINT_PTR timer;ULONGLONG began=GetTickCount64();
+ static void CALLBACK tick(HWND,UINT,UINT_PTR,DWORD){auto* self=active;if(!self||self->seen)return;HWND dialog=nullptr;
+  EnumThreadWindows(GetCurrentThreadId(),[](HWND window,LPARAM data)->BOOL{wchar_t title[256]{};GetWindowTextW(window,title,256);if(IsWindowVisible(window)&&GetWindow(window,GW_OWNER)==active->owner&&title==active->title){*reinterpret_cast<HWND*>(data)=window;return FALSE;}return TRUE;},reinterpret_cast<LPARAM>(&dialog));
+  if(!dialog){if(GetTickCount64()-self->began<6000)return;self->seen=true;self->error="Secondary modal was not observed";PostMessageW(self->owner,WM_CLOSE,0,0);return;}
+  self->seen=true;try{self->inspect(dialog);}catch(const std::exception& e){self->error=e.what();}catch(...){self->error="Secondary modal test failed";}PostMessageW(dialog,WM_CLOSE,0,0);
+ }
+ SecondaryProbe(HWND parent,std::wstring caption,std::function<void(HWND)> action):owner(parent),title(std::move(caption)),inspect(std::move(action)){active=this;timer=SetTimer(nullptr,0,10,tick);if(!timer)throw std::runtime_error("Cannot observe secondary modal");}
+ ~SecondaryProbe(){KillTimer(nullptr,timer);active=nullptr;}
+};
+class ToolbarComponentTest {
+public:static void run(MainWindow& frame,Manager& manager,const std::string& mode,bool dark){
+ frame.KillTimer(1);frame.modelMaintenance.stop();frame.presentationAcks.stop();frame.ShowWindow(SW_SHOWNOACTIVATE);const auto window=frame.GetSafeHwnd();pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);
+ if(mode=="close-abort"){
+#ifdef UDM_COMPLETION_SECONDARY_MODAL_AVAILABLE
+  frame.completionShutdownObserver=[]{throw std::runtime_error("Owned shutdown failure acceptance");};
+  SecondaryProbe probe(window,L"UDM",[&](HWND){check(!frame.quitting&&frame.IsWindowEnabled(),"A failed shutdown restores the live main window");});
+  frame.OnClose();const auto deadline=GetTickCount64()+6000;
+  while(!probe.seen&&GetTickCount64()<deadline){pump(window,UiTaskSignal::message);pump(window,TRANSFER_EVENTS);Sleep(1);}
+  frame.completionShutdownObserver=nullptr;check(probe.seen&&probe.error.empty(),"The injected shutdown failure is reported and dismissed normally");
+  check(frame.GetSafeHwnd()&&frame.completionModalFence.wakeAvailable(),"Aborted close retains secondary-modal observation");frame.KillTimer(1);frame.modelMaintenance.stop();frame.presentationAcks.stop();
+#else
+  throw std::runtime_error("Close-abort fixture requires the current ownership fence");
+#endif
+ }
+ auto job=manager.add("https://example.invalid/secondary-modal","","secondary.bin","Main queue",true);job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;fs::create_directories(job->target().parent_path());writeBytes(job->target(),Bytes{'t','e','s','t'});
+ const bool cli=mode=="cli",ready=mode=="ready";if(cli){job->data["SuppressCompletionDialog"]=true;manager.save();frame.quitAfterDownload=job;}
+ frame.showProgress(job,true);check(!frame.progress.empty()&&frame.progress.back()->GetSafeHwnd(),"A real UDM progress window owns the secondary modal");auto* secondary=frame.progress.back().get();const auto parent=secondary->GetSafeHwnd();
+ if(ready){std::promise<void> entered,release;auto gate=release.get_future().share();auto reached=entered.get_future();std::thread writer([&]{Lock lock(manager.mutex);entered.set_value();gate.wait();});reached.wait();manager.filePublished(job);frame.OnTransferEvents(0,0);release.set_value();writer.join();const auto deadline=GetTickCount64()+6000;while(!frame.completionReadiness.ready()&&GetTickCount64()<deadline)Sleep(1);check(frame.completionReadiness.ready()&&!frame.pendingCompletions.empty(),"A queued ready intent exists before the secondary modal");}
+ const auto before=frame.completions.size();size_t during=0;bool retained=false,premature=false;unsigned wakes=0;
+ const auto exitQueued=[&]{MSG value{};if(!PeekMessageW(&value,window,WM_COMMAND,WM_COMMAND,PM_REMOVE))return false;check(LOWORD(value.wParam)==CMD_EXIT,"Only the owned CLI-exit command is intercepted");return true;};
+ const auto inspect=[&](HWND){
+  check(!secondary->IsWindowEnabled(),"The real secondary modal disables its progress owner");
+  if(mode!="properties"&&mode!="form")check(frame.IsWindowEnabled(),"The native secondary message leaves the main list enabled");
+  if(!ready){manager.filePublished(job);manager.filePublished(job);if(cli)manager.event(job,true);frame.OnTransferEvents(0,0);}
+  frame.pollCompletionWork();frame.postCliCompletionExit();wakes+=pump(window,UiTaskSignal::message);wakes+=pump(window,TRANSFER_EVENTS);
+  if(mode=="stale-enable"){secondary->EnableWindow(TRUE);secondary->EnableWindow(FALSE);wakes+=pump(window,UiTaskSignal::message);wakes+=pump(window,TRANSFER_EVENTS);}
+  during=frame.completions.size()-before;{std::lock_guard<std::mutex> lock(frame.eventsMutex);retained=!frame.events.empty()||!frame.pendingCompletions.empty();}premature=exitQueued();
+ };
+ if(mode=="properties"){SecondaryProbe probe(parent,L"File Properties",inspect);fileProperties(secondary,manager,job);check(probe.seen&&probe.error.empty(),probe.error.empty()?"Actual progress-owned Properties closes normally":probe.error.c_str());}
+ else if(mode=="form"){Form dialog("UDM secondary modal",260,85,secondary);dialog.init=[&]{dialog.label("Owned secondary dialog",12,12,230);dialog.cancel=[&]{dialog.close(IDCANCEL);};dialog.button("Close",170,50,75,dialog.cancel);};SecondaryProbe probe(parent,L"UDM secondary modal",inspect);check(dialog.DoModal()!=-1&&probe.seen&&probe.error.empty(),probe.error.empty()?"The actual progress-owned modal closes normally":probe.error.c_str());}
+ else {SecondaryProbe probe(parent,L"UDM native secondary message",inspect);themedMessage(secondary,L"Owned progress error acceptance",L"UDM native secondary message",MB_OKCANCEL|MB_ICONERROR|(dark?MB_HELP:0));check(probe.seen&&probe.error.empty(),probe.error.empty()?"The actual native secondary message closes normally":probe.error.c_str());}
+ check(frame.IsWindowEnabled()&&secondary->IsWindowEnabled(),"Both windows retain their enabled state after modal release");
+ observations.push_back({{"mode",mode},{"dark",dark},{"dialogsDuringSecondaryModal",during},{"retained",retained},{"prematureCliExit",premature},{"wakesDuringModal",wakes}});
+ if(baseline){check(during==1,"Frozen 9.95 presents completion while a secondary modal is open");return;}
+#ifdef UDM_COMPLETION_SECONDARY_MODAL_AVAILABLE
+ check(frame.completionModalFence.wakeAvailable(),"The owned UI-thread release notification is installed");
+ check(during==0&&retained&&!premature,"Completion and CLI Exit remain deferred through secondary modality");
+ const auto deadline=GetTickCount64()+6000;unsigned releaseWakes=0;
+ for(;;){releaseWakes+=pump(window,UiTaskSignal::message);releaseWakes+=pump(window,TRANSFER_EVENTS);bool inbox;{std::lock_guard<std::mutex> lock(frame.eventsMutex);inbox=!frame.events.empty();}if(!inbox&&frame.pendingCompletions.empty()&&!frame.completionReadiness.valid()&&(!cli||!frame.quitAfterDownload))break;if(GetTickCount64()>=deadline)throw std::runtime_error("Secondary modal release did not resume without the main timer");Sleep(1);}
+ check(releaseWakes>0&&frame.completions.size()==before+(cli?0:1),"Release wakes exactly one completion without a main-timer tick");
+ if(cli)check(exitQueued()&&!frame.quitAfterDownload,"CLI Exit follows modal release and completion processing");
+ frame.pollCompletionWork();check(frame.completions.size()==before+(cli?0:1),"Later polls do not duplicate secondary-deferred completion");
+ // A disabled top-level window outside this frame's ownership must not block it.
+ Form unrelated("UDM unrelated fixture",120,60,nullptr);unrelated.modeless=true;check(unrelated.Create(100,nullptr)!=FALSE,"Create an unrelated owned test window");::SetWindowLongPtrW(unrelated.GetSafeHwnd(),GWLP_HWNDPARENT,0);unrelated.EnableWindow(FALSE);check(!frame.completionModalFence.blocked(),"An unrelated disabled window is outside the completion ownership fence");unrelated.DestroyWindow();
+#else
+ throw std::runtime_error("Secondary-modal correction is unavailable");
+#endif
+ }
+};
+class SecondaryModalApplication:public CWinApp {int result=1;public:BOOL InitInstance()override{CWinApp::InitInstance();INITCOMMONCONTROLSEX controls{sizeof(controls),ICC_WIN95_CLASSES|ICC_DATE_CLASSES|ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);AfxOleInit();int argc=0;auto args=CommandLineToArgvW(GetCommandLineW(),&argc);std::string error;
+ try{if(!args||argc!=3)throw std::runtime_error("Pass candidate/baseline and fresh output");baseline=utf8(args[1])=="baseline";if(!baseline&&utf8(args[1])!="candidate")throw std::runtime_error("Unknown test mode");output=fs::absolute(args[2]);if(fs::exists(output)){output.clear();throw std::runtime_error("Fresh test root required");}fs::create_directories(output);
+  for(bool dark:{false,true}){if(baseline&&dark)break;for(const std::string mode:{"inbox","ready","properties","form","stale-enable","cli","close-abort"}){if(baseline&&mode!="inbox")continue;Manager manager(output/wide((dark?"dark-":"light-")+mode));auto settings=manager.state["Settings"];settings["DarkMode"]=dark;settings["CloseToTray"]=false;settings["ClipboardMonitor"]=false;settings["Sound"]=false;settings["ShowTipsOnStartup"]=false;settings["CategoryFolders"]=false;settings["DownloadFolder"]=utf8((manager.root/L"files").wstring());manager.setSettings(settings);auto* frame=new MainWindow(manager);m_pMainWnd=frame;try{ToolbarComponentTest::run(*frame,manager,mode,dark);}catch(...){m_pMainWnd=nullptr;closeOwnedMainWindow(frame);throw;}m_pMainWnd=nullptr;closeOwnedMainWindow(frame);manager.stop();}}
+  result=0;
+ }catch(const std::exception& e){error=e.what();}if(args)LocalFree(args);if(!output.empty())atomicText(output/L"results.json",Json{{"passed",result==0},{"baseline",baseline},{"checks",checks},{"observations",observations},{"error",error}}.dump(2),false);return FALSE;
+ }int ExitInstance()override{AfxOleTerm(FALSE);return result;}};SecondaryModalApplication application;
+}

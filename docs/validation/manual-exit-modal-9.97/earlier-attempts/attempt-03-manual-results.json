@@ -1,0 +1,55 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "Manual Exit fixture uses a real UDM progress owner",
+      "passed": true
+    },
+    {
+      "name": "Native secondary modality disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "A prepared close preserves the native or MFC modal's current main ownership",
+      "passed": true
+    },
+    {
+      "name": "The secondary dialog outlives a manual close request without integration shutdown",
+      "passed": true
+    },
+    {
+      "name": "Manual Exit and stale prepared close preserve the open secondary interaction",
+      "passed": true
+    },
+    {
+      "name": "The owned native modal closes normally",
+      "passed": true
+    },
+    {
+      "name": "Modal release restores both original windows",
+      "passed": true
+    },
+    {
+      "name": "Normal accepted Exit defers layout merge while a model writer owns the catalog",
+      "passed": true
+    },
+    {
+      "name": "Exit's own main disable does not masquerade as secondary modality",
+      "passed": false
+    }
+  ],
+  "error": "Owned main Exit did not complete.",
+  "observations": [
+    {
+      "closePreparedDuringSecondaryModal": false,
+      "dark": false,
+      "integrationStopsDuringModal": 0,
+      "mainEnabledDuringModal": true,
+      "mainVisibilityPreserved": true,
+      "mode": "blocked",
+      "progressEnabledDuringModal": false,
+      "wakesDuringModal": 0
+    }
+  ],
+  "passed": false
+}

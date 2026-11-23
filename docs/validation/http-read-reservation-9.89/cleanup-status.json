@@ -1,0 +1,136 @@
+{
+  "completed": false,
+  "reason": "Automatic approval review rejected both fixture-root removal and narrower payload-only removal: blocked by policy. Neither command executed.",
+  "remainingPayloadFiles": [
+    {
+      "path": "<build>/split-control/3-frozen/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/split-control/2-current/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/split-control/1-current/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/split-control/0-frozen/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-ready-unchanged/catalog/parts/b406f22dcebd424ab08a8d279de9e0a0/b406f22dcebd424ab08a8d279de9e0a0.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-ready-file/catalog/parts/d6b0c9306416444fafff7e2b4fe0e7fc/d6b0c9306416444fafff7e2b4fe0e7fc.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-ready-directory/catalog/parts/f1bbd68cbc344c598217e57632e1c124/f1bbd68cbc344c598217e57632e1c124.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-begin-unchanged/catalog/parts/b145c5c8b33649bd8379403c901efd20/b145c5c8b33649bd8379403c901efd20.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-begin-file/catalog/parts/d92bc187b77943d799d371f308d5de26/d92bc187b77943d799d371f308d5de26.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/TransferStageCleanupTests/link-publication-preflight-begin-directory/catalog/parts/e132fcda86ba4c6daab326a41a2c0fb3/e132fcda86ba4c6daab326a41a2c0fb3.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingLinkReuseTests/own-link/files/output.bin",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingLinkReuseTests/foreign-equal-bytes/catalog/parts/f8936d8af5634a20aa64ba7ba69927be/f8936d8af5634a20aa64ba7ba69927be.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingAdmissionTests/valid-file/catalog/parts/9b16ac85db5c443fb71628e415473d0f/9b16ac85db5c443fb71628e415473d0f.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingAdmissionTests/valid-directory/catalog/parts/270f054a40bf4a23b45a7d5be2c72fea/270f054a40bf4a23b45a7d5be2c72fea.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingAdmissionTests/mismatch-file/catalog/parts/b1ba5cae0b904d279af3d965945f2657/b1ba5cae0b904d279af3d965945f2657.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/StagingAdmissionTests/mismatch-directory/catalog/parts/aa31eda6b5a6474696cf6e22bacc7960/aa31eda6b5a6474696cf6e22bacc7960.data",
+      "bytes": 131072
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/during-catalog/files/output.bin",
+      "bytes": 22
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/before-catalog/files/output.bin",
+      "bytes": 22
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/accepted-project-cleanup/files/output.bin",
+      "bytes": 22
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/accepted-edited-cleanup-failure/files/output.bin",
+      "bytes": 27
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/accepted-cleanup-failure/files/output.bin",
+      "bytes": 22
+    },
+    {
+      "path": "<build>/runs/PublicationAvailabilityTests/accepted-cleanup/files/output.bin",
+      "bytes": 22
+    },
+    {
+      "path": "<build>/http-sequential-real/verified/files/payload.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "<build>/http-sequential-real/ranged/files/payload.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "<build>/http-sequential-real/plain/files/payload.bin",
+      "bytes": 8388608
+    },
+    {
+      "path": "<build>/http-sequential-real/mismatch/catalog/parts/c97662fc1a5e4caeade00bb6daae3c50/c97662fc1a5e4caeade00bb6daae3c50.data",
+      "bytes": 8388608
+    },
+    {
+      "path": "<build>/http-read-ownership/split/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/http-read-ownership/single/files/owned.bin",
+      "bytes": 4194304
+    },
+    {
+      "path": "<build>/http-read-ownership/resume/files/owned.bin",
+      "bytes": 67108864
+    },
+    {
+      "path": "<build>/http-gzip-real/native/state/parts/145a6ecc29ac4ee9af9788db55ce7f20/145a6ecc29ac4ee9af9788db55ce7f20.data",
+      "bytes": 1943
+    },
+    {
+      "path": "<build>/http-gzip-real/native/state/parts/1a49547539cc466e88a3744bc42d1d20/1a49547539cc466e88a3744bc42d1d20.data",
+      "bytes": 1942
+    },
+    {
+      "path": "<build>/http-gzip-real/native/state/parts/3e4e44a24aee454185b19b7abad15139/3e4e44a24aee454185b19b7abad15139.data",
+      "bytes": 1944
+    }
+  ],
+  "remainingPayloadLogicalBytes": 441980750,
+  "evidenceExported": true
+}

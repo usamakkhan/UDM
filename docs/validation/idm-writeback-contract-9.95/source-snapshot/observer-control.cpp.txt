@@ -1,0 +1,13 @@
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shellapi.h>
+#include <filesystem>
+#include <vector>
+int WINAPI wWinMain(HINSTANCE,HINSTANCE,PWSTR,int){
+ int argc=0;auto argv=CommandLineToArgvW(GetCommandLineW(),&argc);if(!argv||argc!=2)return 2;
+ const auto target=std::filesystem::absolute(argv[1]);LocalFree(argv);if(!std::filesystem::exists(target.parent_path()/L".udm-io-observer-owned")||std::filesystem::exists(target))return 3;
+ HANDLE file=CreateFileW(target.c_str(),GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr);if(file==INVALID_HANDLE_VALUE)return 4;
+ std::vector<unsigned char> bytes(8192);for(size_t i=0;i<bytes.size();++i)bytes[i]=(unsigned char)(i%251);DWORD written=0;
+ if(!WriteFile(file,bytes.data(),(DWORD)bytes.size(),&written,nullptr)||written!=bytes.size())return 5;
+ if(!FlushFileBuffers(file)||!CloseHandle(file))return 6;return 0;
+}

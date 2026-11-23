@@ -1,0 +1,369 @@
+{
+  "passed": true,
+  "sourceScope": "retained linked requests on measured flush thread",
+  "nativeFlushMs": 927.2062,
+  "linkedRequestUnionMs": 539.5862,
+  "noRetainedLinkedRequestMs": 387.62,
+  "gapCount": 58,
+  "gapObservedOffCpuMs": 376.715,
+  "largestGaps": [
+    {
+      "beginAfterNativeStartMs": 448.4105,
+      "durationMs": 109.4422,
+      "observedOffCpuMs": 109.2319,
+      "notClassifiedOffCpuMs": 0.2103
+    },
+    {
+      "beginAfterNativeStartMs": 680.2146,
+      "durationMs": 59.8126,
+      "observedOffCpuMs": 59.6072,
+      "notClassifiedOffCpuMs": 0.2054
+    },
+    {
+      "beginAfterNativeStartMs": 304.1665,
+      "durationMs": 55.8779,
+      "observedOffCpuMs": 55.6579,
+      "notClassifiedOffCpuMs": 0.22
+    },
+    {
+      "beginAfterNativeStartMs": 795.8674,
+      "durationMs": 31.2924,
+      "observedOffCpuMs": 31.1348,
+      "notClassifiedOffCpuMs": 0.1576
+    },
+    {
+      "beginAfterNativeStartMs": 617.7816,
+      "durationMs": 24.5597,
+      "observedOffCpuMs": 24.3844,
+      "notClassifiedOffCpuMs": 0.1753
+    },
+    {
+      "beginAfterNativeStartMs": 883.5099,
+      "durationMs": 20.827,
+      "observedOffCpuMs": 20.6927,
+      "notClassifiedOffCpuMs": 0.1343
+    },
+    {
+      "beginAfterNativeStartMs": 582.8942,
+      "durationMs": 19.4308,
+      "observedOffCpuMs": 19.0594,
+      "notClassifiedOffCpuMs": 0.3714
+    },
+    {
+      "beginAfterNativeStartMs": 206.2026,
+      "durationMs": 11.5077,
+      "observedOffCpuMs": 11.341,
+      "notClassifiedOffCpuMs": 0.1667
+    },
+    {
+      "beginAfterNativeStartMs": 776.4487,
+      "durationMs": 9.63,
+      "observedOffCpuMs": 9.3807,
+      "notClassifiedOffCpuMs": 0.2493
+    },
+    {
+      "beginAfterNativeStartMs": 764.0249,
+      "durationMs": 9.3441,
+      "observedOffCpuMs": 9.1518,
+      "notClassifiedOffCpuMs": 0.1923
+    },
+    {
+      "beginAfterNativeStartMs": 433.5969,
+      "durationMs": 6.6108,
+      "observedOffCpuMs": 6.3428,
+      "notClassifiedOffCpuMs": 0.268
+    },
+    {
+      "beginAfterNativeStartMs": 190.7232,
+      "durationMs": 4.2499,
+      "observedOffCpuMs": 4.0834,
+      "notClassifiedOffCpuMs": 0.1665
+    },
+    {
+      "beginAfterNativeStartMs": 63.6286,
+      "durationMs": 3.3258,
+      "observedOffCpuMs": 3.1294,
+      "notClassifiedOffCpuMs": 0.1964
+    },
+    {
+      "beginAfterNativeStartMs": 117.5742,
+      "durationMs": 2.621,
+      "observedOffCpuMs": 2.4022,
+      "notClassifiedOffCpuMs": 0.2188
+    },
+    {
+      "beginAfterNativeStartMs": 846.9759,
+      "durationMs": 2.47,
+      "observedOffCpuMs": 2.246,
+      "notClassifiedOffCpuMs": 0.224
+    },
+    {
+      "beginAfterNativeStartMs": 652.7014,
+      "durationMs": 2.2153,
+      "observedOffCpuMs": 1.7534,
+      "notClassifiedOffCpuMs": 0.4619
+    },
+    {
+      "beginAfterNativeStartMs": 791.2186,
+      "durationMs": 1.6669,
+      "observedOffCpuMs": 1.4745,
+      "notClassifiedOffCpuMs": 0.1924
+    },
+    {
+      "beginAfterNativeStartMs": 874.3728,
+      "durationMs": 1.1469,
+      "observedOffCpuMs": 0.9661,
+      "notClassifiedOffCpuMs": 0.1808
+    },
+    {
+      "beginAfterNativeStartMs": 98.585,
+      "durationMs": 1.0791,
+      "observedOffCpuMs": 0.9149,
+      "notClassifiedOffCpuMs": 0.1642
+    },
+    {
+      "beginAfterNativeStartMs": 573.7286,
+      "durationMs": 0.9214,
+      "observedOffCpuMs": 0.6185,
+      "notClassifiedOffCpuMs": 0.3029
+    },
+    {
+      "beginAfterNativeStartMs": 645.2951,
+      "durationMs": 0.9117,
+      "observedOffCpuMs": 0.7104,
+      "notClassifiedOffCpuMs": 0.2013
+    },
+    {
+      "beginAfterNativeStartMs": 605.3966,
+      "durationMs": 0.8789,
+      "observedOffCpuMs": 0.6878,
+      "notClassifiedOffCpuMs": 0.1911
+    },
+    {
+      "beginAfterNativeStartMs": 753.9964,
+      "durationMs": 0.6376,
+      "observedOffCpuMs": 0.4666,
+      "notClassifiedOffCpuMs": 0.171
+    },
+    {
+      "beginAfterNativeStartMs": 163.8604,
+      "durationMs": 0.3918,
+      "observedOffCpuMs": 0.2163,
+      "notClassifiedOffCpuMs": 0.1755
+    },
+    {
+      "beginAfterNativeStartMs": 837.8511,
+      "durationMs": 0.37,
+      "observedOffCpuMs": 0.0164,
+      "notClassifiedOffCpuMs": 0.3536
+    },
+    {
+      "beginAfterNativeStartMs": 661.8348,
+      "durationMs": 0.343,
+      "observedOffCpuMs": 0.1243,
+      "notClassifiedOffCpuMs": 0.2187
+    },
+    {
+      "beginAfterNativeStartMs": 113.7574,
+      "durationMs": 0.3354,
+      "observedOffCpuMs": 0.1059,
+      "notClassifiedOffCpuMs": 0.2295
+    },
+    {
+      "beginAfterNativeStartMs": 561.0731,
+      "durationMs": 0.3078,
+      "observedOffCpuMs": 0.0709,
+      "notClassifiedOffCpuMs": 0.2369
+    },
+    {
+      "beginAfterNativeStartMs": 670.9685,
+      "durationMs": 0.2911,
+      "observedOffCpuMs": 0.0201,
+      "notClassifiedOffCpuMs": 0.271
+    },
+    {
+      "beginAfterNativeStartMs": 167.7324,
+      "durationMs": 0.2904,
+      "observedOffCpuMs": 0.1303,
+      "notClassifiedOffCpuMs": 0.1601
+    },
+    {
+      "beginAfterNativeStartMs": 138.6617,
+      "durationMs": 0.2644,
+      "observedOffCpuMs": 0.0126,
+      "notClassifiedOffCpuMs": 0.2518
+    },
+    {
+      "beginAfterNativeStartMs": 905.4259,
+      "durationMs": 0.2477,
+      "observedOffCpuMs": 0.1439,
+      "notClassifiedOffCpuMs": 0.1038
+    },
+    {
+      "beginAfterNativeStartMs": 245.3114,
+      "durationMs": 0.2412,
+      "observedOffCpuMs": 0.0868,
+      "notClassifiedOffCpuMs": 0.1544
+    },
+    {
+      "beginAfterNativeStartMs": 54.195,
+      "durationMs": 0.2368,
+      "observedOffCpuMs": 0.0105,
+      "notClassifiedOffCpuMs": 0.2263
+    },
+    {
+      "beginAfterNativeStartMs": 856.1488,
+      "durationMs": 0.2332,
+      "observedOffCpuMs": 0.0118,
+      "notClassifiedOffCpuMs": 0.2214
+    },
+    {
+      "beginAfterNativeStartMs": 35.8431,
+      "durationMs": 0.2212,
+      "observedOffCpuMs": 0.0163,
+      "notClassifiedOffCpuMs": 0.2049
+    },
+    {
+      "beginAfterNativeStartMs": 26.7092,
+      "durationMs": 0.219,
+      "observedOffCpuMs": 0.0118,
+      "notClassifiedOffCpuMs": 0.2072
+    },
+    {
+      "beginAfterNativeStartMs": 156.9148,
+      "durationMs": 0.2179,
+      "observedOffCpuMs": 0.0341,
+      "notClassifiedOffCpuMs": 0.1838
+    },
+    {
+      "beginAfterNativeStartMs": 80.3168,
+      "durationMs": 0.2143,
+      "observedOffCpuMs": 0.012,
+      "notClassifiedOffCpuMs": 0.2023
+    },
+    {
+      "beginAfterNativeStartMs": 865.2338,
+      "durationMs": 0.2138,
+      "observedOffCpuMs": 0.0167,
+      "notClassifiedOffCpuMs": 0.1971
+    },
+    {
+      "beginAfterNativeStartMs": 259.7679,
+      "durationMs": 0.2065,
+      "observedOffCpuMs": 0.0141,
+      "notClassifiedOffCpuMs": 0.1924
+    },
+    {
+      "beginAfterNativeStartMs": 44.9621,
+      "durationMs": 0.1978,
+      "observedOffCpuMs": 0.019,
+      "notClassifiedOffCpuMs": 0.1788
+    },
+    {
+      "beginAfterNativeStartMs": 89.4491,
+      "durationMs": 0.1934,
+      "observedOffCpuMs": 0.0192,
+      "notClassifiedOffCpuMs": 0.1742
+    },
+    {
+      "beginAfterNativeStartMs": 17.6118,
+      "durationMs": 0.1892,
+      "observedOffCpuMs": 0.0159,
+      "notClassifiedOffCpuMs": 0.1733
+    },
+    {
+      "beginAfterNativeStartMs": 107.7038,
+      "durationMs": 0.1882,
+      "observedOffCpuMs": 0.012,
+      "notClassifiedOffCpuMs": 0.1762
+    },
+    {
+      "beginAfterNativeStartMs": 268.9356,
+      "durationMs": 0.1881,
+      "observedOffCpuMs": 0.0207,
+      "notClassifiedOffCpuMs": 0.1674
+    },
+    {
+      "beginAfterNativeStartMs": 830.1267,
+      "durationMs": 0.1839,
+      "observedOffCpuMs": 0.0175,
+      "notClassifiedOffCpuMs": 0.1664
+    },
+    {
+      "beginAfterNativeStartMs": 147.7882,
+      "durationMs": 0.1786,
+      "observedOffCpuMs": 0.0148,
+      "notClassifiedOffCpuMs": 0.1638
+    },
+    {
+      "beginAfterNativeStartMs": 73.0566,
+      "durationMs": 0.1756,
+      "observedOffCpuMs": 0.0147,
+      "notClassifiedOffCpuMs": 0.1609
+    },
+    {
+      "beginAfterNativeStartMs": 3.8084,
+      "durationMs": 0.1704,
+      "observedOffCpuMs": 0.0152,
+      "notClassifiedOffCpuMs": 0.1552
+    },
+    {
+      "beginAfterNativeStartMs": 742.551,
+      "durationMs": 0.1703,
+      "observedOffCpuMs": 0.0139,
+      "notClassifiedOffCpuMs": 0.1564
+    },
+    {
+      "beginAfterNativeStartMs": 0.0,
+      "durationMs": 0.1696,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.1696
+    },
+    {
+      "beginAfterNativeStartMs": 289.4397,
+      "durationMs": 0.1199,
+      "observedOffCpuMs": 0.0212,
+      "notClassifiedOffCpuMs": 0.0987
+    },
+    {
+      "beginAfterNativeStartMs": 905.8659,
+      "durationMs": 0.0669,
+      "observedOffCpuMs": 0.011,
+      "notClassifiedOffCpuMs": 0.0559
+    },
+    {
+      "beginAfterNativeStartMs": 0.5158,
+      "durationMs": 0.0496,
+      "observedOffCpuMs": 0.0183,
+      "notClassifiedOffCpuMs": 0.0313
+    },
+    {
+      "beginAfterNativeStartMs": 927.1664,
+      "durationMs": 0.0398,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.0398
+    },
+    {
+      "beginAfterNativeStartMs": 0.7752,
+      "durationMs": 0.0254,
+      "observedOffCpuMs": 0.009,
+      "notClassifiedOffCpuMs": 0.0164
+    },
+    {
+      "beginAfterNativeStartMs": 926.9714,
+      "durationMs": 0.0081,
+      "observedOffCpuMs": 0.0,
+      "notClassifiedOffCpuMs": 0.0081
+    }
+  ],
+  "rawCounterReplay": false,
+  "newCapture": false,
+  "payloadIntegrityReverified": false,
+  "deviceIdleProven": false,
+  "kernelCauseVerified": false,
+  "performanceComparison": false,
+  "productionChangeAdmitted": false,
+  "limitations": "Reanalysis of exported decimal milliseconds. Only requests retained by the source join, wholly inside the native call and attributed to its issuing thread, are included. Other threads, crossing requests, filesystem/filter work and complete device activity are outside this partition. Off-CPU overlap is observed scheduling evidence, not exclusive wait-cause or exact CPU accounting.",
+  "inputSha256": "8A5E246D8BD1D69B876F5B97B52BBD6E0D2BFF1FF72155CFC360FB87587B3127",
+  "inputPath": "docs/validation/scheduling-filter-8.65/app-split-phase.json"
+}

@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "name": "Accepting a claim returns while the live catalog is held",
+      "passed": true
+    },
+    {
+      "name": "A duplicate start cannot overwrite the accepted claim",
+      "passed": true
+    },
+    {
+      "name": "The accepted claim becomes ready after the model owner releases",
+      "passed": true
+    },
+    {
+      "name": "Only the durable claim returns the canonical action",
+      "passed": true
+    },
+    {
+      "name": "The successful claim disarms the live action",
+      "passed": true
+    },
+    {
+      "name": "The disarm is present in the reopened durable catalog",
+      "passed": true
+    },
+    {
+      "name": "A repeated claim has no action and adds no redundant checkpoint",
+      "passed": true
+    },
+    {
+      "name": "An accepted foreign decision retains priority over the new claim",
+      "passed": true
+    },
+    {
+      "name": "The claim resumes when the foreign decision is acknowledged",
+      "passed": true
+    },
+    {
+      "name": "A newly pending scanner prevents a stale claim without disarming it",
+      "passed": true
+    },
+    {
+      "name": "A checkpoint failure returns no executable action",
+      "passed": true
+    },
+    {
+      "name": "Checkpoint failure restores the armed live job and exact durable catalog",
+      "passed": true
+    },
+    {
+      "name": "The exact failed claim can be explicitly retried once",
+      "passed": true
+    },
+    {
+      "name": "Preparation failure preserves the armed action for retry",
+      "passed": true
+    },
+    {
+      "name": "Result publication releases the model and survives a failed notification",
+      "passed": true
+    },
+    {
+      "name": "Independent competing claim owners both settle",
+      "passed": true
+    },
+    {
+      "name": "Concurrent claims produce at most one executable action",
+      "passed": true
+    },
+    {
+      "name": "Owner shutdown joins its accepted claim instead of detaching or dropping it",
+      "passed": true
+    },
+    {
+      "name": "A removed or absent target cannot produce an action",
+      "passed": true
+    },
+    {
+      "name": "Repeated owner cleanup is safe",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

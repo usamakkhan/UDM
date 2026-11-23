@@ -1,0 +1,276 @@
+{
+  "checks": [
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "Exclusive readers stay blocked while catalog acceptance is outstanding",
+      "passed": true
+    },
+    {
+      "name": "File writes stay blocked until durable acceptance",
+      "passed": true
+    },
+    {
+      "name": "The pending published name cannot be replaced or moved before acceptance",
+      "passed": true
+    },
+    {
+      "name": "Pre-acceptance availability never fabricates a durable completed catalog",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "Normal publication still retires its recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Accepted file and completion survive a fresh Manager",
+      "passed": true
+    },
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "Exclusive readers stay blocked while catalog acceptance is outstanding",
+      "passed": true
+    },
+    {
+      "name": "File writes stay blocked until durable acceptance",
+      "passed": true
+    },
+    {
+      "name": "The pending published name cannot be replaced or moved before acceptance",
+      "passed": true
+    },
+    {
+      "name": "Pre-acceptance availability never fabricates a durable completed catalog",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "Normal publication still retires its recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Accepted file and completion survive a fresh Manager",
+      "passed": true
+    },
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "A durable exact completed record precedes unfinished journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "An accepted file admits exclusive readers while journal cleanup is pending",
+      "passed": true
+    },
+    {
+      "name": "An accepted file returns write ownership to the user before journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "Normal publication still retires its recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Accepted file and completion survive a fresh Manager",
+      "passed": true
+    },
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "A durable exact completed record precedes unfinished journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "An accepted file admits exclusive readers while journal cleanup is pending",
+      "passed": true
+    },
+    {
+      "name": "An accepted file returns write ownership to the user before journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "Normal publication still retires its recovery journal",
+      "passed": true
+    },
+    {
+      "name": "Accepted file and completion survive a fresh Manager",
+      "passed": true
+    },
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "A durable exact completed record precedes unfinished journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "An accepted file admits exclusive readers while journal cleanup is pending",
+      "passed": true
+    },
+    {
+      "name": "An accepted file returns write ownership to the user before journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup failure holds only this accepted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "An unremovable accepted journal is retained for recovery",
+      "passed": true
+    },
+    {
+      "name": "A retained accepted journal recovers without another download or changed file",
+      "passed": true
+    },
+    {
+      "name": "Accepted file and completion survive a fresh Manager",
+      "passed": true
+    },
+    {
+      "name": "A normal shared reader sees the complete verified bytes after rename",
+      "passed": true
+    },
+    {
+      "name": "A durable exact completed record precedes unfinished journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "An accepted file admits exclusive readers while journal cleanup is pending",
+      "passed": true
+    },
+    {
+      "name": "An accepted file returns write ownership to the user before journal cleanup",
+      "passed": true
+    },
+    {
+      "name": "The owned cleanup failure holds only this accepted publication journal",
+      "passed": true
+    },
+    {
+      "name": "Journal cleanup does not revoke accepted output or change its bytes",
+      "passed": true
+    },
+    {
+      "name": "After publication all callers can exclusively open the accepted file",
+      "passed": true
+    },
+    {
+      "name": "Recovery preserves an acknowledged user-edited file and requests manual resolution",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "exclusiveError": 32,
+      "exclusiveReader": false,
+      "journalStillExists": true,
+      "mode": "before-catalog",
+      "savedStatus": "Paused",
+      "sharedReader": true,
+      "writer": false,
+      "writerError": 32
+    },
+    {
+      "exclusiveError": 32,
+      "exclusiveReader": false,
+      "journalStillExists": true,
+      "mode": "during-catalog",
+      "savedStatus": "Paused",
+      "sharedReader": true,
+      "writer": false,
+      "writerError": 32
+    },
+    {
+      "exclusiveError": 0,
+      "exclusiveReader": true,
+      "journalStillExists": true,
+      "mode": "accepted-cleanup",
+      "savedStatus": "Complete",
+      "sharedReader": true,
+      "writer": true,
+      "writerError": 0
+    },
+    {
+      "exclusiveError": 0,
+      "exclusiveReader": true,
+      "journalStillExists": true,
+      "mode": "accepted-project-cleanup",
+      "savedStatus": "Complete",
+      "sharedReader": true,
+      "writer": true,
+      "writerError": 0
+    },
+    {
+      "exclusiveError": 0,
+      "exclusiveReader": true,
+      "journalStillExists": true,
+      "mode": "accepted-cleanup-failure",
+      "savedStatus": "Complete",
+      "sharedReader": true,
+      "writer": true,
+      "writerError": 0
+    },
+    {
+      "exclusiveError": 0,
+      "exclusiveReader": true,
+      "journalStillExists": true,
+      "mode": "accepted-edited-cleanup-failure",
+      "savedStatus": "Complete",
+      "sharedReader": true,
+      "writer": true,
+      "writerError": 0
+    }
+  ],
+  "passed": true
+}

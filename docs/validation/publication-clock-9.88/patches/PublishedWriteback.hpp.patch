@@ -1,0 +1,18 @@
+--- native/PublishedWriteback.hpp
++++ diagnostic/PublishedWriteback.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ #include "Core.hpp"
++#include "DiagnosticSpan.hpp"
+ #include <winioctl.h>
+ namespace udm {
+ struct PublishedWritebackResult {
+@@ -10,7 +11,7 @@
+ struct PublishedWritebackOps {
+  HANDLE open(const fs::path& path,DWORD access){return CreateFileW(path.c_str(),access,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,0,nullptr);}
+  bool normalize(HANDLE file){FILE_SET_SPARSE_BUFFER request{};DWORD returned=0;return DeviceIoControl(file,FSCTL_SET_SPARSE,&request,sizeof(request),nullptr,0,&returned,nullptr)!=FALSE;}
+- bool flush(HANDLE file){return FlushFileBuffers(file)!=FALSE;}
++ bool flush(HANDLE file){DiagnosticSpan flush("body-flush-begin","body-flush-end");return FlushFileBuffers(file)!=FALSE;}
+  bool close(HANDLE file){return CloseHandle(file)!=FALSE;}
+ };
+ template<class Ops> PublishedWritebackResult publishedWriteback(const fs::path& path,bool normalize,Ops& ops){

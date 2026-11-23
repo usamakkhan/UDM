@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "version": "10.0",
+  "sourceExtensionVersion": "0.73.64",
+  "verifiedSourceInputs": 734,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "Bridge"
+  ],
+  "verifiedQualifiedOutputs": 11,
+  "products": [
+    {
+      "mode": "compact",
+      "name": "UDM.exe",
+      "path": "<build>\\compact-attempt-03\\release-native\\UDM.exe",
+      "sha256": "33A719DFAF0F4013B8AD3863AE83D1B036D0A9593C27DF4342D0190EB4786F57",
+      "kind": "product"
+    },
+    {
+      "mode": "compact",
+      "name": "Udm.NativeHost.exe",
+      "path": "<build>\\compact-attempt-03\\release-native\\Udm.NativeHost.exe",
+      "sha256": "B411CA3B8733885789D996838498EB308AEA9941522F287886B617D93B6B629A",
+      "kind": "product"
+    },
+    {
+      "mode": "compact",
+      "name": "Udm.Monitor.exe",
+      "path": "<build>\\compact-attempt-03\\release-native\\Udm.Monitor.exe",
+      "sha256": "30805DB7EC4DCCD1533C707D822E21642B569184025EED71DD49B84988510195",
+      "kind": "product"
+    },
+    {
+      "mode": "compact",
+      "name": "Udm.SetupHelper.exe",
+      "path": "<build>\\compact-attempt-03\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "84A07FBC33C3FB870BCB4399983B2A83FD01409A5289E9860A9481A5014EB06C",
+      "kind": "product"
+    },
+    {
+      "mode": "compact",
+      "name": "Udm.Automation.exe",
+      "path": "<build>\\compact-attempt-03\\release-native\\Udm.Automation.exe",
+      "sha256": "F0D56D1ED99D8014B40BED974031750A454848F98AE31EB23666BA93D182867C",
+      "kind": "product"
+    }
+  ],
+  "distinctBackendAssertions": 31,
+  "executionModes": [
+    "old normal loop",
+    "current compact loop",
+    "current normal loop"
+  ],
+  "backendExecutions": 6,
+  "guardCases": [
+    {
+      "case": "no-symbol-omission",
+      "passed": true,
+      "exitCode": 1,
+      "outputRootCreated": false
+    },
+    {
+      "case": "core-only",
+      "passed": true,
+      "exitCode": 1,
+      "outputRootCreated": false
+    }
+  ],
+  "secondWriterBlocked": true,
+  "successLockReleased": true,
+  "failureLockReleased": true,
+  "incompleteManifestOnFailure": true,
+  "compactTargetCount": 7,
+  "retainedTargetObjectCount": 1,
+  "retainedTargetObjectBytes": 2688052,
+  "consumedTargetObjectBytes": 87790088,
+  "largestConsumedTargetObjectBytes": 68262098,
+  "normalTwoTargetObjectBytes": 5058655,
+  "buildAreaBytes": 160836477,
+  "hostProtectedFilesUnchanged": 9,
+  "nativeRuntimeImplementationChanged": false,
+  "fullBuildEntrypointExecuted": false,
+  "exactTargetLoopExecuted": true,
+  "installed": false,
+  "installerCreated": false,
+  "fullIdmParityProven": false,
+  "actualIdmUiComparison": false,
+  "temporaryFilesDeleted": false
+}

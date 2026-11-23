@@ -1,0 +1,59 @@
+{
+  "sourceVersion": "9.74",
+  "extensionVersion": "0.73.38",
+  "experimentalOnly": true,
+  "productionSourceChanged": false,
+  "comparison": "No optional split drainage versus unchanged split drainage; common App object; mandatory final flush retained",
+  "mediansMs": {
+    "udm": {
+      "firstAvailabilityTailSeconds": 690.6070999975782,
+      "processExitTailSeconds": 740.0883999944199,
+      "processExitWallSeconds": 2568.2388999994146,
+      "durableTailSeconds": 769.784999996773,
+      "durableWallSeconds": 2600.2758000031463
+    },
+    "baseline": {
+      "firstAvailabilityTailSeconds": 327.16260000597686,
+      "processExitTailSeconds": 373.28715000330703,
+      "processExitWallSeconds": 2453.589099997771,
+      "durableTailSeconds": 396.51250000315486,
+      "durableWallSeconds": 2475.4509999984293
+    }
+  },
+  "pairedEndpoints": [
+    {
+      "trial": 1,
+      "notSlower": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "trial": 2,
+      "notSlower": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    },
+    {
+      "trial": 3,
+      "notSlower": {
+        "firstAvailabilityTailSeconds": false,
+        "processExitTailSeconds": false,
+        "processExitWallSeconds": false,
+        "durableTailSeconds": false,
+        "durableWallSeconds": false
+      }
+    }
+  ],
+  "admitted": false,
+  "reason": "Disabled drainage loses every paired finishing and total endpoint; retain current policy.",
+  "payloadBytesRemoved": 402653184,
+  "newIdmComparison": false
+}

@@ -1,0 +1,641 @@
+{
+  "baseline": false,
+  "checks": [
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "A queued ready intent exists before the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "Actual progress-owned Properties closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The actual progress-owned modal closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Only the owned CLI-exit command is intercepted",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit follows modal release and completion processing",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "A queued ready intent exists before the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "Actual progress-owned Properties closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The actual progress-owned modal closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    },
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "The owned UI-thread release notification is installed",
+      "passed": true
+    },
+    {
+      "name": "Completion and CLI Exit remain deferred through secondary modality",
+      "passed": true
+    },
+    {
+      "name": "Release wakes exactly one completion without a main-timer tick",
+      "passed": true
+    },
+    {
+      "name": "Only the owned CLI-exit command is intercepted",
+      "passed": true
+    },
+    {
+      "name": "CLI Exit follows modal release and completion processing",
+      "passed": true
+    },
+    {
+      "name": "Later polls do not duplicate secondary-deferred completion",
+      "passed": true
+    },
+    {
+      "name": "Create an unrelated owned test window",
+      "passed": true
+    },
+    {
+      "name": "An unrelated disabled window is outside the completion ownership fence",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "inbox",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "ready",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 0
+    },
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "properties",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "form",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "stale-enable",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 3
+    },
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "cli",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "inbox",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "ready",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 0
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "properties",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "form",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "stale-enable",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 3
+    },
+    {
+      "dark": true,
+      "dialogsDuringSecondaryModal": 0,
+      "mode": "cli",
+      "prematureCliExit": false,
+      "retained": true,
+      "wakesDuringModal": 1
+    }
+  ],
+  "passed": true
+}

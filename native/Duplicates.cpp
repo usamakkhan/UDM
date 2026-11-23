@@ -1,3 +1,4 @@
+#include "ScopedPublicationSource.hpp"
 #include "PreparedTransferCommit.hpp"
 #include "Core.hpp"
 #ifdef UDM_FINISH_TIMING_TEST
@@ -220,13 +221,18 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
  struct RecordPublicationTiming {std::function<void()> record;~RecordPublicationTiming(){record();}} recordTiming{[&]()noexcept{try{timing("ReleasePins");Lock guard(mutex);const auto owner=active.find(job->id());if(cancel&&owner!=active.end()&&owner->second.get()==cancel)if(finalCommit)finalCommit->publicationTimings=publicationTimings;else job->data["PublicationPhases"]=publicationTimings;}catch(...){}}};
  auto checkpoint=[&]{if(cancel)cancel->check();};checkpoint();
  if(publicationObservation)publicationObservation("publication-preflight-begin");
- const bool overlap=finalCommit&&finalCommit->pendingWriteback()&&finalCommit->hasWritebackPin()&&originalId.empty()&&!knownHash.empty();
- std::unique_ptr<PublicationSourcePin> bodyPin;if(overlap)bodyPin=finalCommit->takeWritebackPin();
+ auto bodyPin=ScopedPublicationSource::take(*this,job,staging);const bool suppliedSource=bool(bodyPin);
+ auto hash=knownHash;
+ const bool deferredAdvisory=registered&&finalCommit&&finalCommit->pendingAdvisoryHash();
+ const bool overlap=!suppliedSource&&finalCommit&&finalCommit->pendingWriteback()&&finalCommit->hasWritebackPin()&&originalId.empty()&&(!hash.empty()||deferredAdvisory);
+ // Private/ephemeral publications retain their digest-bound receipt format.
+ // Only a registered ordinary job can use an identity-bound early intent.
+ if(finalCommit&&finalCommit->pendingAdvisoryHash()&&!overlap)hash=finalCommit->finishAdvisoryHash();
+ if(overlap)bodyPin=finalCommit->takeWritebackPin();
  else if(finalCommit){finalCommit->finishWriteback();finalCommit->releaseWritebackPin();}
  PublicationPreparation prepared(staging,destinationInputs,std::move(bodyPin));
  if(publicationObservation)publicationObservation("publication-preflight-ready");timing("PrepareSource");checkpoint();
- auto hash=knownHash;
- Json stagedIdentity;if(overlap)stagedIdentity=prepared.sourceIdentity();
+ Json stagedIdentity;if(overlap||suppliedSource)stagedIdentity=prepared.sourceIdentity();
  if(hash.empty()){
   if(originalId.empty()){
    stagedIdentity=prepared.sourceIdentity();
@@ -281,6 +287,13 @@ void Manager::publishFile(JobPtr job,const fs::path& staging,const std::string& 
   timing("PrepareIntent");UDM_FINISH_POINT("intent-write-begin");intentMark=std::chrono::steady_clock::now();atomicText(journal,intent.dump(),false,observeIntent);try{intentOperations["publish"]=std::chrono::duration<double>(std::chrono::steady_clock::now()-intentMark).count();publicationTimings["IntentOperations"]=std::move(intentOperations);}catch(...){}timing("WriteIntent");UDM_FINISH_POINT("intent-write-end");
   if(publicationObservation)publicationObservation("publication-intent-written");
   if(overlap){finalCommit->finishWriteback();checkpoint();timing("JoinWriteback");if(publicationObservation)publicationObservation("publication-writeback-protected");}
+  if(deferredAdvisory&&overlap){
+   // The durable intent deliberately retains its empty advisory digest and
+   // captured source identity. Recovery hashes that exact file independently.
+   // The final catalog may include the newly joined advisory digest.
+   hash=finalCommit->finishAdvisoryHash();checkpoint();after["Sha256"]=hash;timing("JoinAdvisoryHash");
+   if(publicationObservation)publicationObservation("publication-advisory-joined");
+  }
   prepared.validateSourceName(staging);prepared.validateDirectories();
   if(overlap){Lock guard(mutex);checkpoint();if(stopping||(std::find(jobs.begin(),jobs.end(),job)!=jobs.end())!=registered||job->target()!=target||publicationDestinationInputs(job->data)!=destinationInputs)throw std::runtime_error("The download changed during body writeback. Keep its file and recovery record.");}
   if(!MoveFileExW(staging.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH))throw std::runtime_error("Cannot publish the download. The file and publication recovery record were preserved.");

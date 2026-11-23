@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,subprocess,hashlib
+area=Path('D:/UDM/.media-cache/compact-native-build-10.0');source=area/'compact-attempt-03/config.json';c=json.loads(source.read_text(encoding='utf-8'));root=area/'failure-control-attempt-03';root.mkdir(exist_ok=False);obj=root/'objects';exe=root/'release-native';obj.mkdir();exe.mkdir();(obj/'App.res').write_bytes((area/'objects/App.res').read_bytes())
+c.update(out=str(obj),release=str(exe),extract=str(root/'executed-target-statements.ps1'),targets=[dict(source='ShellFolderTaskTests',name='Udm.ShellFolderTaskTests',subsystem='CONSOLE'),dict(source='OwnedDeliberatelyMissingSource',name='Udm.DeliberatelyMissing',subsystem='CONSOLE')]);config=root/'config.json';config.write_text(json.dumps(c,indent=2),encoding='utf-8')
+with (root/'compiler.log').open('w',encoding='utf-8') as log:p=subprocess.run(['powershell.exe','-NoProfile','-File',str(area/'drive-targets.ps1'),'-Config',str(config)],stdout=log,stderr=subprocess.STDOUT)
+m=json.loads((obj/'target-objects.json').read_text(encoding='utf-8-sig'));assert p.returncode!=0 and m['passed'] is False and len(m['targets'])==1 and not (exe/'Udm.DeliberatelyMissing.exe').exists()
+# A fresh Windows file-open checks that the owning driver's finally released it.
+command="$p=[IO.File]::Open('"+str(obj/'compact-target.lock')+"',[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None);$p.Dispose()"
+r=subprocess.run(['powershell.exe','-NoProfile','-Command',command],capture_output=True,text=True);assert r.returncode==0,r.stderr
+receipt=dict(passed=True,expectedCompilerFailure=True,exitCode=p.returncode,successfulTargetsBeforeFailure=len(m['targets']),manifestRemainedIncomplete=True,failedExecutableProduced=False,lockReleasedAfterFailure=True,logSha256=hashlib.sha256((root/'compiler.log').read_bytes()).hexdigest().upper())
+(area/'failure-control.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8');print(json.dumps(receipt))

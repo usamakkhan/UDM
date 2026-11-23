@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,subprocess,hashlib
+area=Path('D:/UDM/.media-cache/compact-native-build-10.0');repo=Path('D:/UDM');c=json.loads((area/'normal-attempt-03/config.json').read_text(encoding='utf-8'));root=area/'new-normal-control-attempt-03';root.mkdir(exist_ok=False);obj=root/'objects';exe=root/'release-native';obj.mkdir();exe.mkdir();(obj/'App.res').write_bytes((area/'objects/App.res').read_bytes());c.update(out=str(obj),release=str(exe),extract=str(root/'executed-target-statements.ps1'),recipe=str(repo/'native/build.ps1'));config=root/'config.json';config.write_text(json.dumps(c,indent=2),encoding='utf-8')
+with (root/'compiler.log').open('w',encoding='utf-8') as log:p=subprocess.run(['powershell.exe','-NoProfile','-File',str(area/'drive-targets.ps1'),'-Config',str(config)],stdout=log,stderr=subprocess.STDOUT)
+assert p.returncode==0,(root/'compiler.log').read_text(encoding='utf-8',errors='replace')[-3000:]
+assert not (obj/'target-objects.json').exists() and not (obj/'compact-target.lock').exists()
+runs=[];outputs=[];sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+for target in c['targets']:
+ run=root/'runs'/target['name'];run.parent.mkdir(exist_ok=True);path=exe/(target['name']+'.exe');p=subprocess.run([str(path),str(run)],capture_output=True,text=True,timeout=30);r=json.loads((run/'results.json').read_text(encoding='utf-8-sig'));assert p.returncode==0 and r['passed'] and all(e['passed'] for e in r['checks']);runs.append(dict(suite=target['name'],exitCode=p.returncode,passed=True,checks=len(r['checks'])));outputs.append(dict(path=str(path),sha256=sha(path),kind='backend',mode='new-normal',name=path.name))
+receipt=dict(passed=True,defaultModeCreatesNoCompactMetadata=True,targetObjectFiles=len(list(obj.glob('*.obj'))),suites=runs,outputs=outputs);assert receipt['targetObjectFiles']==2
+(area/'normal-control.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8');print(json.dumps(receipt))

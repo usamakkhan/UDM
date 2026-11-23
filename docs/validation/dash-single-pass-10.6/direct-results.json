@@ -1,0 +1,307 @@
+{
+  "records": [
+    {
+      "case": "av48",
+      "rate": 48000,
+      "samples": 48000,
+      "wanted": 48000,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47063,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\av48\\assembled-b9053a57909346b7a07757c773858dc1.mp4",
+        "reused": false,
+        "sha256": "15fb8730b2a3c33c87c9f44feefe707afd490230fd8841f6521d2d50cd4411db",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 2
+      },
+      "videoExact": true,
+      "publication": {
+        "bytes": 47063,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\downloads\\av48\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "15fb8730b2a3c33c87c9f44feefe707afd490230fd8841f6521d2d50cd4411db",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 2
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "audio48",
+      "rate": 48000,
+      "samples": 48480,
+      "wanted": 48480,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 9870,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.01,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\audio48\\assembled-dd0b96581e1b49e7866d52ede9c20ecf.m4a",
+        "reused": true,
+        "sha256": "270ed93a0cf6980222f9b0c6994913e83ec6893e9ce7cd938d5eea0aee73a7a5",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 1
+      },
+      "publication": {
+        "bytes": 9870,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.01,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\downloads\\audio48\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "270ed93a0cf6980222f9b0c6994913e83ec6893e9ce7cd938d5eea0aee73a7a5",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 1
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "av44",
+      "rate": 44100,
+      "samples": 44100,
+      "wanted": 44100,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47320,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\av44\\assembled-fcf786e133cc4220976b72e11ec54156.mp4",
+        "reused": true,
+        "sha256": "3b0b9b97c997c5c5ac4f5d99144136c26ce82e3a74c14721412574a0127ff0cb",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 2
+      },
+      "videoExact": true,
+      "publication": {
+        "bytes": 47320,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\downloads\\av44\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "3b0b9b97c997c5c5ac4f5d99144136c26ce82e3a74c14721412574a0127ff0cb",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 2
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "captions",
+      "rate": 48000,
+      "samples": 48000,
+      "wanted": 48000,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 47601,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\captions\\assembled-e578f88d8789404e9284e13d70ae0a68.mp4",
+        "reused": true,
+        "sha256": "3079958be7f40cc4a0072805044f348f386343c77189d5b1eae74effdaa16bca",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "videoExact": true,
+      "captionPreserved": true,
+      "publication": {
+        "bytes": 47601,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.0,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\downloads\\captions\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "3079958be7f40cc4a0072805044f348f386343c77189d5b1eae74effdaa16bca",
+        "start": 0.0,
+        "subtitleCues": 1,
+        "temporaryInputCount": 3
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    },
+    {
+      "case": "aligned",
+      "rate": 48000,
+      "samples": 49152,
+      "wanted": 49152,
+      "pcmExact": true,
+      "assembly": {
+        "bytes": 9370,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          }
+        ],
+        "duration": 1.024,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\aligned\\assembled-2e1dad51f6f54bd1abf0fb91c8cb4d02.m4a",
+        "reused": true,
+        "sha256": "cf0d51d3d0c11c5fe84a958ec2e6855c5944471ba4c00dc2fecbd7eea530d1c9",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 1
+      },
+      "publication": {
+        "bytes": 9370,
+        "checks": [
+          {
+            "name": "Assembly owns a verified complete file",
+            "passed": true
+          },
+          {
+            "name": "A new process reuses the verified assembly receipt",
+            "passed": true
+          },
+          {
+            "name": "Accepted final file matches the pre-publication size and checksum",
+            "passed": true
+          }
+        ],
+        "duration": 1.024,
+        "error": "",
+        "passed": true,
+        "path": "<candidate>\\direct-qualified\\downloads\\aligned\\owned-tail.mp4",
+        "reused": true,
+        "sha256": "cf0d51d3d0c11c5fe84a958ec2e6855c5944471ba4c00dc2fecbd7eea530d1c9",
+        "start": 0.0,
+        "subtitleCues": null,
+        "temporaryInputCount": 1
+      },
+      "publishedPcmExact": true,
+      "noRefetch": true,
+      "sizeAndHashExact": true
+    }
+  ],
+  "requests": [
+    "/av48.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/audio48.mpd",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/av44.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a44100-init.mp4",
+    "/a44100-segment.m4s",
+    "/captions.mpd",
+    "/v-init.mp4",
+    "/v-segment.m4s",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s",
+    "/s-init.mp4",
+    "/s-segment.m4s",
+    "/aligned.mpd",
+    "/a48000-init.mp4",
+    "/a48000-segment.m4s"
+  ]
+}

@@ -1,0 +1,57 @@
+--- 9.86-before-cli/native/App.cpp
++++ 9.86-corrected/native/App.cpp
+@@ -739,7 +739,14 @@
+  }
+  bool pollCompletionWork(){
+   if(completionDraining)return true;
+-  if(pendingCompletions.empty()){completionReadiness.finish();return false;}
++  if(pendingCompletions.empty()){
++   if(completionReadiness.valid()&&quitAfterDownload&&!quitting){
++    if(manager.fileInfoDecisionPending)return false;
++    if(!completionReadiness.ready())return true;
++    auto result=completionReadiness.take();if(!result.error.empty())throw std::runtime_error(result.error);
++   }else completionReadiness.finish();
++   return false;
++  }
+   if(quitting)return false;
+   auto wait=[this]{if(!completionReadiness.valid())completionReadiness.start(manager,maintenanceSignal->notifier());};
+   // Do not starve the owner that must acknowledge an accepted decision.
+@@ -1465,6 +1472,7 @@
+    if(pollCompletionSettings())return 0;if(pollAppearanceCommand())return 0;if(pollGlobalLimitCommand())return 0;try{if(pollCompletionWork())return 0;}catch(const std::exception& e){showStatus(e.what());return 0;}
+    if(exitLayoutTask.valid()){pollExitLayout();return 0;}if(quitting)return 0;
+    if(closePolicyTask.valid()){pollClosePolicy();return 0;}
++   if(postCliCompletionExit())return 0;
+    try{pollDownloadMenu();}catch(const std::exception& e){cancelDownloadMenu();showStatus(e.what());}
+    showPresentationRecovery();
+    try{pollNetworkCapture(false);}catch(const std::exception& e){showStatus(e.what());}
+@@ -1536,7 +1544,7 @@
+   // a failed PostMessage or a later explicit save/scanner decision.
+   bool postCliCompletionExit(){
+    if(quitting||!pendingCompletions.empty()||completionDraining||completionReadiness.valid()||!quitAfterDownload||!IsWindowEnabled()||manager.fileInfoDecisionPending||optionsUiActive||optionsRefreshPending||optionsAppearanceSnapshot)return false;
+-   Lock lock(manager.mutex);const auto job=quitAfterDownload;
++   std::unique_lock lock(manager.mutex,std::try_to_lock);if(!lock.owns_lock()){if(!completionReadiness.valid())completionReadiness.start(manager,maintenanceSignal->notifier());return false;}const auto job=quitAfterDownload;
+    if(std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()){quitAfterDownload.reset();return false;}
+    if(!cliCompletionReady(manager,job)||!PostMessage(WM_COMMAND,CMD_EXIT))return false;
+    quitAfterDownload.reset();return true;
+--- 9.86-before-cli/native/CompletionAdmissionUiTests.cpp
++++ 9.86-corrected/native/CompletionAdmissionUiTests.cpp
+@@ -12,7 +12,7 @@
+ public:static void run(MainWindow& frame){auto& manager=frame.manager;frame.modelMaintenance.stop();frame.presentationAcks.stop();
+  const auto jobFor=[&](const char* name){MSG stale{};while(PeekMessageW(&stale,frame.GetSafeHwnd(),UiTaskSignal::message,UiTaskSignal::message,PM_REMOVE)){}auto job=manager.add("https://example.invalid/admission","",name,"Main queue",true);job->data["Status"]="Complete";job->data["Size"]=4;job->data["Received"]=4;return job;};
+ #ifdef UDM_COMPLETION_ADMISSION_AVAILABLE
+- const auto settle=[&]{const auto began=GetTickCount64(),deadline=began+5000;unsigned wakes=0;while(!frame.pendingCompletions.empty()&&GetTickCount64()<deadline){MSG message{};while(PeekMessageW(&message,frame.GetSafeHwnd(),UiTaskSignal::message,UiTaskSignal::message,PM_REMOVE)){++wakes;DispatchMessageW(&message);}Sleep(1);}check(frame.pendingCompletions.empty()&&!frame.completionReadiness.valid(),"Completion admission drains and joins its readiness reader");check(wakes>0,"Actual integer-only readiness wake dispatches through the main window without a timer poll");observations.push_back({{"stage","writer-release-to-owned-wake-return"},{"dark",uiDark},{"milliseconds",GetTickCount64()-began},{"ownedWakes",wakes}});};
++ const auto settle=[&]{const auto began=GetTickCount64(),deadline=began+5000;unsigned wakes=0;while((!frame.pendingCompletions.empty()||frame.completionReadiness.valid())&&GetTickCount64()<deadline){MSG message{};while(PeekMessageW(&message,frame.GetSafeHwnd(),UiTaskSignal::message,UiTaskSignal::message,PM_REMOVE)){++wakes;DispatchMessageW(&message);}Sleep(1);}check(frame.pendingCompletions.empty()&&!frame.completionReadiness.valid(),"Completion admission drains and joins its readiness reader");check(wakes>0,"Actual integer-only readiness wake dispatches through the main window without a timer poll");observations.push_back({{"stage","writer-release-to-owned-wake-return"},{"dark",uiDark},{"milliseconds",GetTickCount64()-began},{"ownedWakes",wakes}});};
+ #endif
+  for(bool dark:{false,true}){if(baseline&&dark)break;uiDark=dark;
+   for(bool eventPath:{false,true}){auto job=jobFor(eventPath?"event.bin":"explicit.bin");const auto before=frame.completions.size();AdmissionWriter writer(manager,[&]{job->data["FileName"]="latest 文件.bin";job->data["Size"]=16;});auto start=GetTickCount64();
+@@ -31,6 +31,10 @@
+ #ifdef UDM_COMPLETION_ADMISSION_AVAILABLE
+   {auto job=jobFor("stale-start.bin");const auto before=frame.completions.size(),progressBefore=frame.progress.size();AdmissionWriter writer(manager);manager.event(job,false);manager.filePublished(job);manager.event(job,true);frame.OnTransferEvents(0,0);check(writer.held&&!writer.expired&&frame.pendingCompletions.size()==3,"Stale Started, Published and Finished retain their order without a UI lock wait");writer.open();settle();check(frame.completions.size()==before+1&&frame.progress.size()==progressBefore,"The complete event sequence shows one completion and no stale progress window");SendMessageW(named(frame.completions.back()->GetSafeHwnd(),L"Close"),BM_CLICK,0,0);}
+   for(int mode=0;mode<3;++mode){auto job=jobFor("obsolete.bin");auto before=frame.completions.size();AdmissionWriter writer(manager,[&]{if(mode==0)job->data["Status"]="Failed";else if(mode==1)job->data["SuppressCompletionDialog"]=true;else manager.jobs.erase(std::find(manager.jobs.begin(),manager.jobs.end(),job));});manager.filePublished(job);frame.OnTransferEvents(0,0);check(writer.held&&!writer.expired&&!frame.pendingCompletions.empty(),"Publication retains a busy request until current eligibility is readable");writer.open();settle();check(frame.completions.size()==before,"Failed, suppressed and removed publications cannot open a stale completion");}
++  for(bool eventPath:{true,false}){auto job=jobFor("cli-exit.bin");job->data["SuppressCompletionDialog"]=true;manager.save();check(cliCompletionReady(manager,job),"CLI wake fixture starts with the actual final catalog snapshot saved");frame.quitAfterDownload=job;
++   const auto exitQueued=[&]{MSG message{};if(!PeekMessageW(&message,frame.GetSafeHwnd(),WM_COMMAND,WM_COMMAND,PM_REMOVE))return false;if(LOWORD(message.wParam)!=CMD_EXIT)throw std::runtime_error("Unexpected owned command during CLI wake qualification");return true;};
++   AdmissionWriter writer(manager);auto start=GetTickCount64();if(eventPath){manager.filePublished(job);manager.event(job,true);frame.OnTransferEvents(0,0);}else frame.postCliCompletionExit();auto elapsed=GetTickCount64()-start;check(writer.held&&!writer.expired&&elapsed<250,"Deferred completion and direct CLI exit readiness never wait on the UI thread");check(!exitQueued()&&frame.quitAfterDownload==job,"A busy model cannot prematurely post CLI Exit");writer.open();settle();check(exitQueued()&&!frame.quitAfterDownload,"The actual owned readiness wake posts CLI Exit without a main timer tick");observations.push_back({{"stage","cli-dispatch"},{"dark",dark},{"eventPath",eventPath},{"milliseconds",elapsed}});
++  }
+   auto job=jobFor("cancelled.bin");auto before=frame.completions.size();AdmissionWriter writer(manager);frame.showCompletionDialog(job,true);auto start=GetTickCount64();frame.completionReadiness.finish();frame.pendingCompletions.clear();check(writer.held&&!writer.expired&&GetTickCount64()-start<250&&!frame.completionReadiness.valid(),"Closing admission joins its cancelled reader without waiting for the model");writer.open();frame.pollCompletionWork();check(frame.completions.size()==before,"A cancelled pending presentation cannot replay on a later wake");
+ #endif
+  }

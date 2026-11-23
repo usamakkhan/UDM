@@ -1,0 +1,126 @@
+{
+  "sources": [
+    {
+      "path": "native/DashMetadataTransport.hpp",
+      "snapshot": "source-snapshot/native__DashMetadataTransport.hpp.txt",
+      "sha256": "17C1F5D2671BAA86BAD76BD0450D94B1471455A3EAC18D60145F469A8C2992BB"
+    },
+    {
+      "path": "native/DashMetadataTransportTests.cpp",
+      "snapshot": "source-snapshot/native__DashMetadataTransportTests.cpp.txt",
+      "sha256": "0A3E7A23BB0B66FBEE39D87D3F1310B4E840B92AE654206889AA5EE995079B95"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "snapshot": "source-snapshot/native__DashManifest.cpp.txt",
+      "sha256": "19AF6CED9CDE9CB2CBEBB049DDC9DB32268A26617C9DD5FC171495ECEAD1A4D3"
+    },
+    {
+      "path": "native/LiveDash.hpp",
+      "snapshot": "source-snapshot/native__LiveDash.hpp.txt",
+      "sha256": "54AE6B587227171447A53C0D6E877000BAC72E56213B45C96E661E1026F2D33D"
+    },
+    {
+      "path": "native/Version.hpp",
+      "snapshot": "source-snapshot/native__Version.hpp.txt",
+      "sha256": "2CFAE8FCCE1401002EEA0DA2756994825509115FCF9C248FC9F0AFC95ECE3DCB"
+    },
+    {
+      "path": "native/backend-tests.json",
+      "snapshot": "source-snapshot/native__backend-tests.json.txt",
+      "sha256": "D36256F1F4B13184AE2CD480A0987875FC6F4DF7DBC7A4C1BFE0543EBD65737F"
+    },
+    {
+      "path": "browser/chromium/manifest.json",
+      "snapshot": "source-snapshot/browser__chromium__manifest.json.txt",
+      "sha256": "29CDAA95E1E8D561836EFFA57AA597FD2AA65F4ADFFF92442A25D2D04BAB14BD"
+    },
+    {
+      "path": "browser/firefox/manifest.json",
+      "snapshot": "source-snapshot/browser__firefox__manifest.json.txt",
+      "sha256": "425202FC7EE4DDD245EBC3B9CCD5E5C306AEF2CBD08C5D081C7B535CE784B6EE"
+    },
+    {
+      "path": "benchmarks/speed/dash_metadata_transport_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_metadata_transport_workflow.cpp.txt",
+      "sha256": "CF02074A39D01A632357C4427A03B75845314FA41D6FF43305540C0DFC7535A3"
+    },
+    {
+      "path": "benchmarks/speed/dash_metadata_cancellation.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__dash_metadata_cancellation.cpp.txt",
+      "sha256": "F34A2EE2BB09C602D254E1D0A23BB1F4C18304450020229D53994626879F6292"
+    },
+    {
+      "path": "tests/dash-metadata-transport.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-metadata-transport.native-live.py.txt",
+      "sha256": "7EFE41336655EA50E5351300627F434BFD2BED1681988655C695CBB6AE62D451"
+    },
+    {
+      "path": "tests/dash-metadata-cancellation.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-metadata-cancellation.native-live.py.txt",
+      "sha256": "2CC79F91EC42803176E2568CCE8F4042F8729AE824D0D01CB18CDCE001E80010"
+    },
+    {
+      "path": "tests/live-dash-continuous.native-live.py",
+      "snapshot": "source-snapshot/tests__live-dash-continuous.native-live.py.txt",
+      "sha256": "2B8E6EF765741EC373E10FB9FB31A2D558BAADD338A5C77B6018275F0CA09BF1"
+    },
+    {
+      "path": "benchmarks/speed/live_dash_continuous_workflow.cpp",
+      "snapshot": "source-snapshot/benchmarks__speed__live_dash_continuous_workflow.cpp.txt",
+      "sha256": "CF5DFAEB583777C2A9CA83DCEAF48516942488EAFCF5426B193C942C5A28FBB2"
+    },
+    {
+      "path": "tests/dash-freshness.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-freshness.native-live.py.txt",
+      "sha256": "6241F28C9837E0608C937DD4CB9BA6B0CD68FFE1BC7EB5FEFA9A45676D011FDC"
+    },
+    {
+      "path": "tests/dash-freshness-clock.native-live.py",
+      "snapshot": "source-snapshot/tests__dash-freshness-clock.native-live.py.txt",
+      "sha256": "0C2A23C0B48E9803F8246BE963D4B4DD5E249687A2DE14FC50F82E4AA336CF54"
+    },
+    {
+      "recipe": "build.py",
+      "snapshot": "source-snapshot/build.py.txt",
+      "sha256": "BD4DF6BEE90CBF4C2224932EF7464B4A333CF96218BFFC6E7034F892C581382B"
+    },
+    {
+      "recipe": "build-final.py",
+      "snapshot": "source-snapshot/build-final.py.txt",
+      "sha256": "D0D1A064E5A5F0E41023D785F9E682E5CF7CEF00D453358376506EF5BABDC5BC"
+    },
+    {
+      "recipe": "compile-adaptive-dependency.py",
+      "snapshot": "source-snapshot/compile-adaptive-dependency.py.txt",
+      "sha256": "EC45D2B6CEE1C42A772E21409C04FFA412B91FB4707F0CF21AA79B75BE2BD31E"
+    },
+    {
+      "recipe": "verify.py",
+      "snapshot": "source-snapshot/verify.py.txt",
+      "sha256": "5F1C02499482BCEE21EB4A56C5A4502F043B41651CC2FC47F68977F09101252D"
+    },
+    {
+      "recipe": "export.py",
+      "snapshot": "source-snapshot/export.py.txt",
+      "sha256": "C387C0C1A06373BC0593E5E0D548D52A15BFDC613DC3CDB78DE09DB4165D22EE"
+    },
+    {
+      "path": "native/DashManifest.cpp",
+      "version": "10.4",
+      "snapshot": "source-snapshot/frozen-10.4-before-DashManifest.cpp.txt",
+      "sha256": "77143548B07AE096405DA53E4B40B45FFD9F5736E14E3FA902FAF8672D4B51FF"
+    },
+    {
+      "path": "native/DashMetadataTransport.hpp",
+      "version": "10.4",
+      "snapshot": "source-snapshot/frozen-10.4-before-DashMetadataTransport.hpp.txt",
+      "sha256": "7E984E41F093F3A2C229468682FED3ACD5BA22D53AD647ED2DC2B146683486FF"
+    }
+  ],
+  "allBuildInputsStillMatch": true,
+  "sourceUnchangedDuringQualifiedRuns": true,
+  "initialCacheSelectionSuperseded": true,
+  "qualifiedExecutableFolder": "release-native-final",
+  "singlePassBodyHandoffImplemented": false
+}

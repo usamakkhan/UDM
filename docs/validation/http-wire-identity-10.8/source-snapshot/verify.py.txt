@@ -1,0 +1,65 @@
+from pathlib import Path
+import json,hashlib,subprocess,shutil,os
+repo=Path('D:/UDM');area=Path(__file__).parent
+read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+b=read(area/'build-result.json');assert b['passed'] and b['version']=='10.8' and len(b['coreObjects'])==42 and len(b['outputs'])==20
+assert all(sha(repo/e['path'])==e['sha256'] for e in b['sources']);assert all(sha(Path(e['path']))==e['sha256'] for e in b['coreObjects']+b['outputs'])
+prior=read(Path(os.environ['LOCALAPPDATA'])/'UDM-Development/dash-pending-alias-build-10.7/build-result.json');old={Path(e['path']).stem:e['sha256'] for e in prior['coreObjects']};changed=[Path(e['path']).stem for e in b['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert set(changed)=={'Transfer','Bridge'}
+assert b['coreObjects']==read(area/'early-core-record.json')['coreObjects']
+rb=read(area/'alias-build.json');assert rb['passed'] and rb['sourceSha256']==sha(repo/'benchmarks/speed/dash_pending_alias_workflow.cpp');assert all(sha(Path(e['path']))==e['sha256'] for e in rb['outputs'])
+products=[e for e in b['outputs'] if e['name'] in ['UDM','Udm.NativeHost','Udm.Monitor','Udm.SetupHelper','Udm.Automation']]
+for e in products:
+ cmd="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',cmd],text=True).strip()=='10.8'
+assert len(products)==5;assert all(read(repo/'browser'/f/'manifest.json')['version']=='0.73.72' for f in ['chromium','firefox'])
+for name in ['raw-runtime-source-pins.json','media-runtime-source-pins.json','metadata-runtime-source-pins.json']:
+ assert all(sha(repo/e['path'])==e['sha256'].upper() for e in read(area/name))
+suites=[]
+for name in ['DashPendingVersionTests','DashMetadataTransportTests','GaplessAacTailTests','RetiredDashBoundaryTests']:
+ r=read(area/('qualified-'+name)/'results.json');assert r['passed'] and all(e['passed'] for e in r['checks']);suites.append(dict(name=name,checks=len(r['checks'])))
+assert sum(e['checks'] for e in suites)==107
+actor=next(e for e in b['outputs'] if e['name']=='Udm.DashSinglePassWorkflow')
+single=read(area/'single-pass-qualified/qualification.json');assert single['passed'] and single['cases']==17 and not single['recovery'];assert single['actorSha256'].upper()==actor['sha256'] and single['recipeSha256'].upper()==sha(repo/'tests/dash-single-pass.native-live.py')
+crash=read(area/'crash-qualified/qualification.json');assert crash['passed'] and len(crash['cases'])==3 and crash['processCrashTest'] and not crash['powerLossTest'] and not crash['receiptCommitTransitionsCovered'];assert crash['actorSha256'].upper()==actor['sha256'] and crash['recipeSha256'].upper()==sha(repo/'tests/dash-single-pass-crash.native-live.py')
+for e in crash['cases']:assert e['passed'] and e['finalBytes']==131072 and e['clientAccountedBytes']==e['serverFinalBodyBytesWritten']==e['finalBytes'] and e['successfulResumeMediaRequests']==1
+oldAlias=read(repo/'.media-cache/dash-single-pass-build-10.6/shared-url-diagnosis/diagnosis.json');assert oldAlias['knownRecoveryDefectReproduced'] and not oldAlias['restoredRetryPassed']
+shared=read(area/'shared-url-qualified/diagnosis.json');assert shared['restoredRetryPassed'] and not shared['knownRecoveryDefectReproduced'] and shared['bodyGetsDuringRetry']==1 and shared['acceptedFirstResourcePreserved'];assert shared['actorSha256'].upper()==actor['sha256']
+final=read(area/'shared-url-qualified/after-retry.json')['result']['index'];assert all(e['committed'] for e in final['tracks'][0]['segments'].values())
+init=read(area/'initialization-alias-qualified/qualification.json');assert init['passed'] and init['frozenControlVersion']=='10.6' and init['pendingInitializationAdoptedPinnedAlias'] and init['acceptedTrackPreserved'] and init['clientBodyBytes']==8192 and len(init['physicalResources'])==3
+assert init['recipeSha256'].upper()==sha(repo/'tests/dash-pending-alias.native-live.py')
+assert len(rb['outputs'])==1 and init['currentActorSha256'].upper()==rb['outputs'][0]['sha256']
+oldControl=read(Path(os.environ['LOCALAPPDATA'])/'UDM-Development/dash-pending-alias-build-10.7/alias-build.json')['outputs'][1];assert init['controlActorSha256'].upper()==oldControl['sha256']==sha(Path(oldControl['path']))
+control=read(area/'control-build.json');assert control['passed'] and control['sourceSha256']==sha(repo/'benchmarks/speed/http_identity_workflow.cpp');assert len(control['outputs'])==1 and sha(Path(control['outputs'][0]['path']))==control['outputs'][0]['sha256']
+for folder,baseline in [('baseline',True),('identity-qualified',False)]:
+ q=read(area/folder/'qualification.json');assert q['passed'] and q['baseline']==baseline and q['canonicalIdentity']==(not baseline) and q['wireRequests']==16 and q['actorChecks']==48 and q['recipeSha256'].upper()==sha(repo/'tests/http-identity.native-live.py')
+ assert q['actorSha256'].upper()==(control['outputs'][0]['sha256'] if baseline else next(e['sha256'] for e in b['outputs'] if e['name']=='Udm.HttpIdentityWorkflow'))
+parallel=read(area/'parallel-qualified/qualification.json');assert parallel['passed'] and parallel['maxWorkersTested']==3 and len(parallel['cases'])==6 and all(e['passed'] for e in parallel['cases']) and parallel['requestHeaderIdentityCanonical']
+assert parallel['recipeSha256'].upper()==sha(repo/'tests/dash-parallel-admission.native-live.py')
+unitBuild=read(area/'http-unit-build.json');assert unitBuild['passed'] and len(unitBuild['outputs'])==3 and all(sha(Path(e['path']))==e['sha256'] for e in unitBuild['outputs'])
+httpUnits=[]
+for name,count in [('HttpAdmissionTests',105),('HttpGzipDecoderTests',17),('HttpReadReservationTests',14)]:
+ q=read(area/('qualified-'+name)/'results.json');assert q['passed'] and len(q['checks'])==count and all(e['passed'] for e in q['checks']);httpUnits.append(dict(name=name,assertions=count))
+post=read(area/'post-qualified/native/results.json');assert post['passed'] and len(post['checks'])==53 and all(e['passed'] for e in post['checks'])
+wire=read(area/'wire-qualified/qualification.json');assert wire['passed'] and wire['requestCount']==14 and all(e['passed'] for e in wire['actorChecks'])
+cancel=read(area/'cancellation-qualified/qualification.json');assert cancel['passed'] and cancel['headersStillHeldWhenActorExited'] and cancel['result']['transportReleased'] and cancel['result']['cancelToUnwindMs']<3000
+for folder,count in [('freshness-qualified',6),('freshness-clock-qualified',2)]:
+ q=read(area/folder/'qualification.json');assert q['passed'] and q['cases']==count
+
+q=read(area/'continuous-qualified/qualification.json');assert q['passed'];terminal=read(area/'continuous-qualified/candidate-terminal.json');assert terminal['allActorsTerminal'] and terminal['originClosed'] and len(terminal['records'])==7
+published=[]
+for e in terminal['records']:
+ r=read(Path(e['result']));assert e['exitCode']==(1 if e['case'] in ['gap','short-audio','changed'] else 0)
+ if e['exitCode']==0:
+  assert r['passed'] and r['publications']==1 and r['assembledBytes']==r['finalBytes'];files=[p for p in (area/'continuous-qualified/downloads'/e['case']).rglob('*') if p.is_file()];assert len(files)==1;f=files[0];assert f.stat().st_size==r['finalBytes'] and sha(f).lower()==r['sha256'];published.append(dict(case=e['case'],bytes=f.stat().st_size,sha256=sha(f)))
+ else:assert r['publications']==0
+for folder,count in [('direct-qualified',5),('caption-qualified',4)]:
+ q=read(area/folder/'passed.json');assert q['passed'] and q['cases']==count
+ for e in read(area/folder/'results.json')['records']:
+  publication=e['publication'];f=Path(publication['path']);assert f.stat().st_size==publication['bytes'] and sha(f).lower()==publication['sha256'] and e['sizeAndHashExact']
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files'];assert all(sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256'] for e in protected)
+size=0
+for folder,dirs,files in os.walk(area):
+ dirs[:]=[d for d in dirs if not (Path(folder)/d).is_junction() and not (Path(folder)/d).is_symlink()];size+=sum((Path(folder)/f).stat().st_size for f in files)
+assert size<700*1024**2
+buildFree=shutil.disk_usage(area).free;workspaceFree=shutil.disk_usage(repo).free;buildGate=buildFree>1024**3;workspaceGate=workspaceFree>1024**3;assert buildGate
+result=dict(passed=workspaceGate,technicalChecksPassed=True,buildVolumeReservePassed=buildGate,buildVolume='C:',buildVolumeFreeBytes=buildFree,workspaceReservePassed=workspaceGate,workspaceVolume='D:',workspaceFreeBytes=workspaceFree,requiredFreeBytes=1024**3,releaseQualified=False,version='10.8',sourceExtensionVersion='0.73.72',verifiedSourceInputs=len(b['sources']),verifiedCoreObjects=42,changedCoreObjects=changed,mainBuildExecutables=20,supplementalAliasExecutables=1,supplementalHttpUnitExecutables=3,frozenHeaderControlExecutables=1,products=products,backendSuites=suites,distinctBackendAssertions=107,headerWireRequests=16,headerActorAssertions=48,parallelAndOriginCases=6,httpRegressionSuites=httpUnits,postResponseAssertions=53,metadataWireRequests=14,freshnessControls=8,singlePassWorkflowCases=17,hardProcessCrashCases=3,segmentAliasFrozenFailureCorrected=True,initializationAliasFrozenFailureCorrected=True,continuousCases=7,publishedFiles=published,directMediaCases=5,captionSessionCases=4,hostProtectedFilesUnchanged=len(protected),ownedBuildAreaBytesExcludingSharedTools=size,allFinalRuntimesPassed=True,fullBuildEntrypointExecuted=False,installed=False,installerCreated=False,actualBrowserTest=False,actualIdmComparison=False,fullIdmParityProven=False,temporaryFilesExplicitlyDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

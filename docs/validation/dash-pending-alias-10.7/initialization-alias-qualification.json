@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "frozenControlVersion": "10.6",
+  "controlError": "DASH pending initialization version changed.",
+  "acceptedTrackPreserved": true,
+  "pendingInitializationAdoptedPinnedAlias": true,
+  "clientBodyBytes": 8192,
+  "mediaRequests": [
+    {
+      "path": "/shared.bin",
+      "ifMatch": "\"original\"",
+      "range": null
+    },
+    {
+      "path": "/audio.bin",
+      "ifMatch": null,
+      "range": null
+    }
+  ],
+  "physicalResources": [
+    {
+      "bytes": 4096,
+      "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+    },
+    {
+      "bytes": 4096,
+      "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+    },
+    {
+      "bytes": 4096,
+      "sha256": "c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"
+    }
+  ],
+  "injectedExitCode": 1,
+  "currentActorSha256": "edf1f459458fd0bcc93d49a40573847f1ebd8d5f4d0994c706bec012e004f897",
+  "controlActorSha256": "1eadf34a53f9ed4d118df8d9cc0ff540a42dacf292c7c3446cc6097a91c01299",
+  "recipeSha256": "28e2429fdab62b23853d17d53636ec17d90cdfaaa07e4e546fe8dc8784f977a0",
+  "installed": false
+}

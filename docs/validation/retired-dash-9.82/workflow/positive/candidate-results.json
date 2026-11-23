@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "Resume completes: ",
+      "passed": true
+    },
+    {
+      "name": "Fresh-process Resume publishes exactly once",
+      "passed": true
+    },
+    {
+      "name": "Resumed output matches exact assembled size and checksum",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the retired first Period and appends the adjacent continuation",
+      "passed": true
+    },
+    {
+      "name": "Resumed recording decodes all twenty original frames through EOF",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": 211911,
+  "frames": [
+    "b2889702d8dd3be845fc9a6562a6e055",
+    "795419b7993ffb45320957b8000a196f",
+    "8ec6afd88f02cfad827c7430e365f66d",
+    "333100870421ccfc3c0c1b0e2cf1361e",
+    "49c8d828ec7823e5261c54f9e8b2fccd",
+    "abcd9ca9efb148a796401bb3a7a09339",
+    "4d8b6d7626c6120d43670bad09f0cb73",
+    "9cf14d4e671f047d6c8da631eea5e43e",
+    "3d316271ad557add654d2552dfa72ed8",
+    "ef0c1cec84b4d0a9e55f48814c0433d9",
+    "4524bebe83121382d5d143aa7920d3af",
+    "1b1914ce135c45e81535d42901766908",
+    "dbe76d43e078787c7dbd5bc1893b51e7",
+    "cd52ff6f68c5d81683102987d92005f0",
+    "a4a853bc516ab87a750207ad3ef381f0",
+    "d26a19871c0f21fce82487094a13c166",
+    "69e620e71e5ecbe075e2b239618abe9d",
+    "899fcda31b98016dd206477f31c9db0e",
+    "ad18514d7b9d10ff3972e03e95d21000",
+    "b1e80e6fc0a0297be10e49a12b7e7e92"
+  ],
+  "passed": true,
+  "prePublicationBytes": 211911,
+  "publications": 1,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "ownedJob": {
+    "Status": "Complete",
+    "Error": "",
+    "Sha256": "0f42c65558cfc501ada9523ab4bd16fff94ddb5cc014dfab40b74ab28613dce8",
+    "Size": 211911,
+    "Received": 211911,
+    "LiveCapturedSeconds": 2.0,
+    "LiveRecording": true,
+    "LiveCaptureSealed": true,
+    "AdaptiveAssemblyReused": false,
+    "TransferredBytes": 217180,
+    "AdaptiveMetadataBytes": 4431,
+    "TransferSeconds": 3.0151540000000003,
+    "ElapsedSeconds": 4.1879712,
+    "MediaPhase": "Complete"
+  }
+}

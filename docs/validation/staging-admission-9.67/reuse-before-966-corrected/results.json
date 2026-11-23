@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "name": "A stage hard-linked to the current partial file remains resumable",
+      "passed": false
+    },
+    {
+      "name": "Recovered owned link publishes the complete exact body",
+      "passed": false
+    },
+    {
+      "name": "Reused owned stage does not leave a stale staging name",
+      "passed": false
+    },
+    {
+      "name": "Equal bytes in a different file do not establish staging ownership",
+      "passed": true
+    },
+    {
+      "name": "Foreign equal-byte staging is preserved",
+      "passed": true
+    },
+    {
+      "name": "Refused foreign stage retains the received body",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "error": "Cannot stage the downloaded file without replacing an existing item. Keep its files and choose another destination.",
+      "ownLink": true,
+      "status": "Failed"
+    },
+    {
+      "error": "Cannot stage the downloaded file without replacing an existing item. Keep its files and choose another destination.",
+      "ownLink": false,
+      "status": "Failed"
+    }
+  ],
+  "passed": false
+}

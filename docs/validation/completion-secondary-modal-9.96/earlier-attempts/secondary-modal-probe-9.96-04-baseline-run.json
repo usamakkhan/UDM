@@ -1,0 +1,41 @@
+{
+  "baseline": true,
+  "checks": [
+    {
+      "name": "A real UDM progress window owns the secondary modal",
+      "passed": true
+    },
+    {
+      "name": "The real secondary modal disables its progress owner",
+      "passed": true
+    },
+    {
+      "name": "The native secondary message leaves the main list enabled",
+      "passed": true
+    },
+    {
+      "name": "The actual native secondary message closes normally",
+      "passed": true
+    },
+    {
+      "name": "Both windows retain their enabled state after modal release",
+      "passed": true
+    },
+    {
+      "name": "Frozen 9.95 presents completion while a secondary modal is open",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "observations": [
+    {
+      "dark": false,
+      "dialogsDuringSecondaryModal": 1,
+      "mode": "inbox",
+      "prematureCliExit": false,
+      "retained": false,
+      "wakesDuringModal": 1
+    }
+  ],
+  "passed": true
+}

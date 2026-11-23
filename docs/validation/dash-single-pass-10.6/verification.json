@@ -1,0 +1,105 @@
+{
+  "passed": false,
+  "technicalChecksPassed": true,
+  "storageReservePassed": false,
+  "requiredFreeBytes": 1073741824,
+  "observedFreeBytes": 1031274496,
+  "releaseQualified": false,
+  "version": "10.6",
+  "sourceExtensionVersion": "0.73.70",
+  "verifiedSourceInputs": 750,
+  "verifiedCoreObjects": 42,
+  "changedCoreObjects": [
+    "DashManifest",
+    "Bridge"
+  ],
+  "mainBuildExecutables": 17,
+  "supplementalRecoveryExecutables": 2,
+  "products": [
+    {
+      "name": "UDM",
+      "path": "<candidate>\\release-native\\UDM.exe",
+      "sha256": "68975B4068A7EF6240D840768E723750F2BAB11FE2BF7ACA04F46CDC4627A357"
+    },
+    {
+      "name": "Udm.NativeHost",
+      "path": "<candidate>\\release-native\\Udm.NativeHost.exe",
+      "sha256": "829391A7526E112C096700F4B8DA5CB4F5ED6278F507E1D5EB97C0392E10A175"
+    },
+    {
+      "name": "Udm.Monitor",
+      "path": "<candidate>\\release-native\\Udm.Monitor.exe",
+      "sha256": "4B1F44F8D126C4C5EC0F33EAEC18CCEF89C8B21799DD2B70022C1ADC2A98B8FE"
+    },
+    {
+      "name": "Udm.SetupHelper",
+      "path": "<candidate>\\release-native\\Udm.SetupHelper.exe",
+      "sha256": "76FAB8BEA923D7C4E2E5B89492AE24406CF628FA5AF3854E901B87AFB101A8E1"
+    },
+    {
+      "name": "Udm.Automation",
+      "path": "<candidate>\\release-native\\Udm.Automation.exe",
+      "sha256": "1FB7F72F1BE15791F83A31B78B35B5C5639FE4AB9626C56E82A530E51B684CB6"
+    }
+  ],
+  "backendSuites": [
+    {
+      "name": "pending-qualified",
+      "checks": 22
+    },
+    {
+      "name": "qualified-DashMetadataTransportTests",
+      "checks": 23
+    },
+    {
+      "name": "qualified-GaplessAacTailTests",
+      "checks": 20
+    },
+    {
+      "name": "qualified-RetiredDashBoundaryTests",
+      "checks": 42
+    }
+  ],
+  "distinctBackendAssertions": 107,
+  "singlePassWorkflowCases": 17,
+  "recoveryCases": 3,
+  "wireRequests": 14,
+  "freshnessControls": 8,
+  "continuousCases": 7,
+  "publishedFiles": [
+    {
+      "case": "av",
+      "bytes": 351173,
+      "sha256": "5148A911238626CE0F9BFE51732B7738A9B1D36FC20652A360873492DF87C814"
+    },
+    {
+      "case": "video",
+      "bytes": 324776,
+      "sha256": "F4E564AD0FA6C9E1743AF201B765AE2ECA5CDAC844B05B8F468C9C7D44D65D1C"
+    },
+    {
+      "case": "audio",
+      "bytes": 26450,
+      "sha256": "6403995E71D9CB9D8AF67C3D9B4D9083F786053324B3C649B022FA3783BDD53B"
+    },
+    {
+      "case": "save",
+      "bytes": 97822,
+      "sha256": "9D9362E150F24A2B62B0B67884C448DA7F26FB26D675D6509A57E044095C7694"
+    }
+  ],
+  "directMediaCases": 5,
+  "captionSessionCases": 4,
+  "hostProtectedFilesUnchanged": 9,
+  "ownedBuildAreaBytesExcludingSharedTools": 96574022,
+  "initialClockFailureRetained": true,
+  "initialContinuousSetupFailureRetained": true,
+  "initialRecoveryCompileFailureRetained": true,
+  "allFinalRuntimesPassed": true,
+  "installed": false,
+  "installerCreated": false,
+  "actualBrowserTest": false,
+  "actualIdmComparison": false,
+  "fullIdmParityProven": false,
+  "temporaryFilesExplicitlyDeleted": false
+}

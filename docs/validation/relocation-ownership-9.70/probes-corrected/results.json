@@ -1,0 +1,48 @@
+[
+  {
+    "name": "pinned_publication_scope",
+    "passed": true,
+    "exitCode": 0,
+    "result": {
+      "checks": [
+        {
+          "name": "A scoped pin cannot bless a different staging path",
+          "passed": true
+        },
+        {
+          "name": "A rejected wrong-path call does not consume the valid handoff",
+          "passed": true
+        },
+        {
+          "name": "A consumed pin cannot be replayed to publish a replacement under a new destination",
+          "passed": true
+        },
+        {
+          "name": "An unrelated job cannot steal another job's scoped source",
+          "passed": true
+        },
+        {
+          "name": "An abandoned handoff releases its context without poisoning the next publication",
+          "passed": true
+        }
+      ],
+      "error": "",
+      "passed": true
+    },
+    "binarySha256": "92240551298617F7BA9FC0F7CCD35EA7DE8F1B9D7397B9A4AE87C32F83D95F75",
+    "fixtureSha256": "D8D891F87CB0CEB0F85E36FFC1FF3C1038A73655C8E509E6CC8F01AE9A39C199"
+  },
+  {
+    "name": "legacy_cleanup_identity",
+    "passed": true,
+    "exitCode": 0,
+    "result": {
+      "passed": true,
+      "checks": 17,
+      "forced128BitQueryFailures": 6,
+      "noActualLegacyFilesystemClaim": true
+    },
+    "binarySha256": "2A7B82D8546804CAC5B6966A42EB613594954616BA92D5FEC7C6EED1430C574D",
+    "fixtureSha256": "C9EF7387EE42F95C285073ACA84C7DFA44AD764D49BA11E3A73CA3F57B8DF3D2"
+  }
+]

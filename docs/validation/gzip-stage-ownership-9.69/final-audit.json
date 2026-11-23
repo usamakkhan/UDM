@@ -1,0 +1,1975 @@
+{
+  "version": "9.69",
+  "sourceExtensionVersion": "0.73.33",
+  "nativeInputsVerified": 687,
+  "retainedNativeProducts": 5,
+  "referencedCoreObjectsVerified": 42,
+  "affectedSuitesPassed": 19,
+  "affectedAssertionsPassed": 1425,
+  "additionalCVolumeOwnershipAssertionsPassed": 57,
+  "gzipWorkflowAssertionsPassed": 43,
+  "before968FailedAssertions": 17,
+  "sameOwnershipSourceAcrossControls": true,
+  "integrationCoding": "X-GZip",
+  "integrationResumeCoding": "gzip",
+  "oneResponseRouteCounts": {
+    "known": 1,
+    "unknown": 1,
+    "concatenated": 1,
+    "empty": 1,
+    "prefetch": 1,
+    "relocated": 1,
+    "deferred": 1
+  },
+  "encodedOffsetResumeRequests": 1,
+  "protectedInstalledPersonalAndHelperFilesUnchanged": 11,
+  "exportedRecordsVerified": 92,
+  "installedFilesChanged": false,
+  "noNewLiveBrowserOrIdmTimingClaim": true,
+  "noPowerLossClaim": true,
+  "broadParityComplete": false,
+  "cleanup": {
+    "recursiveDeletionUsed": false,
+    "removedFiles": 384,
+    "removedLogicalBytes": 246772097,
+    "physicalSpaceNotMeasured": true,
+    "productsCoreObjectsSanitizedEvidenceAndSmallRecordsRetained": true,
+    "scopes": [
+      {
+        "scope": "generated compiler/test binaries",
+        "removedFiles": 47,
+        "removedLogicalBytes": 235221814,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\App.obj",
+            "sha256": "62F8492EC9FCADCF9CCAF090E32EE6E3C696062529ABBEDEE5E88E2FC3D1E50B",
+            "bytes": 67363658
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\AutomationMain.obj",
+            "sha256": "84E6497A747EB959D64DFD927972A992F155FAF35C9B9B9AE0D03B0848A4E875",
+            "bytes": 3134989
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\CompletedCheckpointTests.obj",
+            "sha256": "EDF953D5F4F1D3BB4821E2A90741E3D8BBA12A3F942E33F2945C98D3198695D3",
+            "bytes": 6708221
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\EarlyPublicationRecoveryTests.obj",
+            "sha256": "88313E6F627ED1B80CB578C800460AD99C617C097320839C623629DC266B9089",
+            "bytes": 4414977
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\GzipStageOwnershipTests.obj",
+            "sha256": "21CC7652D4FA209A8FE1F452174731B2DF19F11B47E5CE9E6EEC5B2375D42CD5",
+            "bytes": 3976817
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\HostMain.obj",
+            "sha256": "97FC990D46915C84BF600B120CFF65D35E87EF97338A837D69DB7A4E9710E62F",
+            "bytes": 1603
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\HttpGzipDecoderTests.obj",
+            "sha256": "684FC0F0B52EAAB537CD90EB2E7EF882169D598AEB65C9FF78B29202D5E571E6",
+            "bytes": 2207206
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\HttpGzipTransferTests.obj",
+            "sha256": "6345778245064DFD2571DA6E5803D377A0B4B0B93E122E07ADDFFFEDE20AB941",
+            "bytes": 2996376
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\IndependentFinishingTests.obj",
+            "sha256": "99B6BAA5A9E86BCD696F2C9C5ACE4EB1D56338474BC2C6F7DA4B658C97BE90AE",
+            "bytes": 3409834
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\LaunchFailureTests.obj",
+            "sha256": "1A82E373A57FA8A3D757A625DD172CEA3E21ABDE54C538F77B6480B7E054DD6F",
+            "bytes": 2503595
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\LaunchQueueTests.obj",
+            "sha256": "7F11565627A800CF77E1674907734F13C86BC15ACCF8E6A26A1A0021B8D2352C",
+            "bytes": 4284985
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\MonitorMain.obj",
+            "sha256": "83C1A978FFF635B738A5533941AB5943344AF31A576030EBB1621ED781222FA4",
+            "bytes": 6742908
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PreparedCleanupHttpTests.obj",
+            "sha256": "11B4B037100AE4F9B089383DC211890E8BA9F98E6D88C4CD5EE09548834B8517",
+            "bytes": 2460284
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PreparedCleanupTests.obj",
+            "sha256": "668335A3249A98170DEC997869C913B83F61989FDBE53217C962C83CE0C5BB5D",
+            "bytes": 3807849
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationAvailabilityTests.obj",
+            "sha256": "669857CBEA82768D8E91A80754FE6CB0E0180CFED13423623A60D3AFC7744037",
+            "bytes": 4452897
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationCommitTests.obj",
+            "sha256": "3338434AF1AC2C5B7AFCF4A30965852C393D14B28A8EE3614D0BCBADF6608E54",
+            "bytes": 6562617
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationFailureLifetimeTests.obj",
+            "sha256": "DED3B78B0CE7CB410B08D97E29511BCA07A2CBD9EEA1F80D16FB7125DCFD9DCB",
+            "bytes": 3339890
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationOverlapTests.obj",
+            "sha256": "50ADADB795E801487D0188539C021871BB45934E5F59C7C0A914A71FDEA9FA25",
+            "bytes": 5557595
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationOwnershipTests.obj",
+            "sha256": "3E5261016FFF79DEE0331419C89A9B8792EB4FC0837174BFE9E4F353C901F6B8",
+            "bytes": 5495365
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationPreparationTests.obj",
+            "sha256": "34714E39841F24283BCD6412CF5447F14AEC297174748241A064F73EB5D80DAA",
+            "bytes": 3704228
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\PublicationRecoveryTests.obj",
+            "sha256": "E4DBD6F8882DCADB70EA62A0327BDD3E22AFA70E96AB137250FBB1AB118CE815",
+            "bytes": 3335577
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\SetupMain.obj",
+            "sha256": "2417D3CEC0AB9E106936BC9EF253EA459CD8BEB7227E66DC61B29BCE4804EF25",
+            "bytes": 4589843
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\StagingAdmissionTests.obj",
+            "sha256": "C850B3C9190AD25D47EDB216634AAAE2E290D7E9B13DCB072844205799168E95",
+            "bytes": 2472052
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\StagingLinkReuseTests.obj",
+            "sha256": "A38F612EE96501608640C32D1EF26E418448537730E84D4F083D22948B858F58",
+            "bytes": 2667277
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\objects\\TransferStageCleanupTests.obj",
+            "sha256": "E9328790596F9930BA4BB5903602C7EC2BAC9F3A360BFEAB23921A254D613A3A",
+            "bytes": 2635034
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.CompletedCheckpointTests.exe",
+            "sha256": "C1ED1692B03E65BC2A9BB01BD8C438C16D24628303C96EEA9ECBB476337CB7AA",
+            "bytes": 5074432
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.EarlyPublicationRecoveryTests.exe",
+            "sha256": "F901AA62B9BDC20ECA42669A5DFC462D3795E2555C2449DF38515AB726C28AD0",
+            "bytes": 2336768
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.GzipStageOwnershipTests.exe",
+            "sha256": "CBFBD2EF7C1AAC6571F0C2AD5DFB0ADED665B5AD0099EBA59AF77C08CE6874B3",
+            "bytes": 3358208
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.HttpGzipDecoderTests.exe",
+            "sha256": "D56A2B3A987347127C337658CAFE3E0CE1FD9317FAB77682B874E9136B34AF1D",
+            "bytes": 1180672
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.HttpGzipTransferTests.exe",
+            "sha256": "6A92D894843A946F17813D20229B8ADB076A15E44CC5CD363FAF360613A0E866",
+            "bytes": 5325312
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.IndependentFinishingTests.exe",
+            "sha256": "C4E1ABE4BB9A52DA50E8BB7012BAC1FCBD0B2FA4A9CAB2CC5736E13FC6515631",
+            "bytes": 5209088
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.LaunchFailureTests.exe",
+            "sha256": "CFA308F1151728EED3CC0CBE6C1BE7A7CC60DE3B3D04538CECAE9EF57CC3A991",
+            "bytes": 1331712
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.LaunchQueueTests.exe",
+            "sha256": "91EDFCE9F777F986D13B12B8820F628CDF29B662E6126AAB61DC6B1E6E64BB16",
+            "bytes": 5417984
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PreparedCleanupHttpTests.exe",
+            "sha256": "FF78FAF239C61C7F850A4FF21D6FEABC6ECD197B905A1432FAEC6AEF88A3A0E5",
+            "bytes": 4931584
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PreparedCleanupTests.exe",
+            "sha256": "6F9552214053032D9A95166BD0905E7DFA1E491E850E2F5FCD49F0F822CA0991",
+            "bytes": 2257920
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationAvailabilityTests.exe",
+            "sha256": "620B4AF26CF4B98381EDF448BA77ED0BE8EFD9FAC4107CA7C1A0ECB932CC0EB8",
+            "bytes": 2323456
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationCommitTests.exe",
+            "sha256": "6D664731C1E7F09A0AD3706A42C58F1688A28C446B821AE7F330D8302463227B",
+            "bytes": 2529792
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationFailureLifetimeTests.exe",
+            "sha256": "FD5278D721FF5865B0FD13951E3C2A6297E5DAD0322D8678CA82616929826C64",
+            "bytes": 4941312
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationOverlapTests.exe",
+            "sha256": "B28E08DA418DE9A9B1E63FE5023BFC91E1935365AA167D2E205D7A3BD0DE6792",
+            "bytes": 2348544
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationOwnershipTests.exe",
+            "sha256": "0BF1BD00C05A7AC5CC3692FFDB0C6A2AD31EB9FF7636CB87953DEFA7200B5525",
+            "bytes": 2570752
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationPreparationTests.exe",
+            "sha256": "2B0F91ABF989ADACCE2A142419FDC0E4124386DAD6E6E672B7C8E41B9B38997D",
+            "bytes": 2329088
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.PublicationRecoveryTests.exe",
+            "sha256": "0153D23AF23CBC893E10877B0CE8F8FFC14479B5051F4770D86CB4A371D7A9A9",
+            "bytes": 2409472
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.StagingAdmissionTests.exe",
+            "sha256": "E5761B33DCDAFE91891BC05697A9F9F80C6057F5F6D036552A20BADAC21F1E92",
+            "bytes": 4931072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.StagingLinkReuseTests.exe",
+            "sha256": "C9ADFDC84CE354E1EF9E69490A76D7E9E14182F2D8F99FDC6BF48D48FF31CD31",
+            "bytes": 4938752
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-build-9.69\\release-native\\Udm.TransferStageCleanupTests.exe",
+            "sha256": "80C8FD01E756A48794D56F9D3C0E5BAB91AFCA231E2D345FE11FB72D1FA01AD4",
+            "bytes": 3351040
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\objects\\GzipStageOwnershipTests.obj",
+            "sha256": "B5B75805311BA36CF27AD6AD2083E09A74CB0BFAF6F87572F3ADCCD516D57E25",
+            "bytes": 3976809
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\release-native\\Udm.GzipStageOwnershipTests.exe",
+            "sha256": "216AF7D6D77CFF2273DDAA85A8DA50CEF39964C027B65F1AFA8B6BE824FC8CF1",
+            "bytes": 3322368
+          }
+        ]
+      },
+      {
+        "scope": "selected test payloads",
+        "removedFiles": 337,
+        "removedLogicalBytes": 11550283,
+        "files": [
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\success-unused-stripped\\files\\.udm-3050ef4296e34c489853de40b3a409d0.stripped.data",
+            "sha256": "4C3AD79C1AE761A10486FB06DF84B104451E8910C4199742DE060E8B0582C178",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\success-unused-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\success-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\success-plain\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-unchanged\\catalog\\parts\\22e2730ca35c41ac85ea9952509e3587\\22e2730ca35c41ac85ea9952509e3587.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-file\\files\\.udm-61091418839340749a03ef500fab2626.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-file\\files\\.udm-61091418839340749a03ef500fab2626.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-file\\catalog\\parts\\61091418839340749a03ef500fab2626\\61091418839340749a03ef500fab2626.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-directory\\files\\.udm-66a417d17b03415f9e75b4b8d1c74752.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-ready-directory\\catalog\\parts\\66a417d17b03415f9e75b4b8d1c74752\\66a417d17b03415f9e75b4b8d1c74752.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-unchanged\\catalog\\parts\\d43dba3745604eac8a6acab9bf5abab8\\d43dba3745604eac8a6acab9bf5abab8.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-file\\files\\.udm-9748c6f2c0ce4f48837bc48cf757e7ab.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-file\\files\\.udm-9748c6f2c0ce4f48837bc48cf757e7ab.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-file\\catalog\\parts\\9748c6f2c0ce4f48837bc48cf757e7ab\\9748c6f2c0ce4f48837bc48cf757e7ab.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-directory\\files\\.udm-620b26dc84cf41e8b92dc602caca01d2.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\stripped-publication-preflight-begin-directory\\catalog\\parts\\620b26dc84cf41e8b92dc602caca01d2\\620b26dc84cf41e8b92dc602caca01d2.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-stripped-file\\files\\.udm-b87b3f21dd644f869aebca796ec65513.stripped.data",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-stripped-file\\catalog\\parts\\b87b3f21dd644f869aebca796ec65513\\b87b3f21dd644f869aebca796ec65513.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-stripped-directory\\catalog\\parts\\54a7b7c70c724a85898f8ff7db01f5a4\\54a7b7c70c724a85898f8ff7db01f5a4.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-decoded-file\\files\\.udm-8cdb2e8f9f594493a0f0c446f0d67df3.assembling",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-decoded-file\\catalog\\parts\\8cdb2e8f9f594493a0f0c446f0d67df3\\8cdb2e8f9f594493a0f0c446f0d67df3.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\occupied-decoded-directory\\catalog\\parts\\42438162588b4816bee92ac0d3ffd74a\\42438162588b4816bee92ac0d3ffd74a.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-unchanged\\catalog\\parts\\568edb53bcb342dba1785bdfe396d70b\\568edb53bcb342dba1785bdfe396d70b.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-file\\files\\.udm-d683b5a930914b2e8039e81663b422bd.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-file\\files\\.udm-d683b5a930914b2e8039e81663b422bd.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-file\\catalog\\parts\\d683b5a930914b2e8039e81663b422bd\\d683b5a930914b2e8039e81663b422bd.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-directory\\files\\.udm-81bd1c9721d54baa8b8639bb3772fafa.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-ready-directory\\catalog\\parts\\81bd1c9721d54baa8b8639bb3772fafa\\81bd1c9721d54baa8b8639bb3772fafa.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-unchanged\\catalog\\parts\\38c69ab7e7674ca799e1479dea084e64\\38c69ab7e7674ca799e1479dea084e64.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-file\\files\\.udm-ff473619a4b545f88321ee3964a69e9c.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-file\\files\\.udm-ff473619a4b545f88321ee3964a69e9c.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-file\\catalog\\parts\\ff473619a4b545f88321ee3964a69e9c\\ff473619a4b545f88321ee3964a69e9c.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-directory\\files\\.udm-6e66552774d1494ab5afbe9fc369e028.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-GzipStageOwnershipTests\\decoded-publication-preflight-begin-directory\\catalog\\parts\\6e66552774d1494ab5afbe9fc369e028\\6e66552774d1494ab5afbe9fc369e028.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-unchanged\\catalog\\parts\\8d331e99ad524b90963bc0cbb2f57fff\\8d331e99ad524b90963bc0cbb2f57fff.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\files\\.udm-382d62994a5047c0befc42e620ae08b0.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\files\\.udm-382d62994a5047c0befc42e620ae08b0.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-file\\catalog\\parts\\382d62994a5047c0befc42e620ae08b0\\382d62994a5047c0befc42e620ae08b0.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-directory\\files\\.udm-5683b7457c1e4ecca657eb9182535a7b.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-ready-directory\\catalog\\parts\\5683b7457c1e4ecca657eb9182535a7b\\5683b7457c1e4ecca657eb9182535a7b.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-unchanged\\catalog\\parts\\8374cf9cbeaa4e91a17ab0c839931036\\8374cf9cbeaa4e91a17ab0c839931036.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\files\\.udm-ddc093e0a9db4d2cb494c0236b81a2fa.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\files\\.udm-ddc093e0a9db4d2cb494c0236b81a2fa.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-file\\catalog\\parts\\ddc093e0a9db4d2cb494c0236b81a2fa\\ddc093e0a9db4d2cb494c0236b81a2fa.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-directory\\files\\.udm-5fa94d2b0e3f49ee89daa61157141c57.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-TransferStageCleanupTests\\link-publication-preflight-begin-directory\\catalog\\parts\\5fa94d2b0e3f49ee89daa61157141c57\\5fa94d2b0e3f49ee89daa61157141c57.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\valid-file\\files\\.udm-f4458b2e9fe84ff9a0723b4b896b12eb.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\valid-file\\catalog\\parts\\f4458b2e9fe84ff9a0723b4b896b12eb\\f4458b2e9fe84ff9a0723b4b896b12eb.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\valid-directory\\catalog\\parts\\0a82cf3d576e445c9a00be27a7c0af3e\\0a82cf3d576e445c9a00be27a7c0af3e.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\mismatch-file\\files\\.udm-b344ba78620249e8804659590c3e45ff.assembling",
+            "sha256": "AA08034E3573EA6E9665A4223FC028B25458506CD6D4DB67B15D892E506015D9",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\mismatch-file\\catalog\\parts\\b344ba78620249e8804659590c3e45ff\\b344ba78620249e8804659590c3e45ff.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingAdmissionTests\\mismatch-directory\\catalog\\parts\\44244a8d32804d6ba2a82d42c57e3990\\44244a8d32804d6ba2a82d42c57e3990.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingLinkReuseTests\\own-link\\files\\output.bin",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingLinkReuseTests\\foreign-equal-bytes\\files\\.udm-fe6513fb99e545f29ab57bddd82d06c1.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-StagingLinkReuseTests\\foreign-equal-bytes\\catalog\\parts\\fe6513fb99e545f29ab57bddd82d06c1\\fe6513fb99e545f29ab57bddd82d06c1.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-e24fe8831b834ca6be9b6df3d8606f54.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\sync-replaced\\files\\.udm-e24fe8831b834ca6be9b6df3d8606f54.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\sync-missing\\files\\.udm-1b5ae98256934943ab90c7b6ed51b035.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\sync-directory\\files\\.udm-fd74611d93bc4d01afb5c6c25f013699.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\async-replaced\\files\\.udm-a2a2b465c6414d5998c43a1cdc296d9b.assembling",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\async-replaced\\files\\.udm-a2a2b465c6414d5998c43a1cdc296d9b.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\async-missing\\files\\.udm-377a5195853e41a095f2c5c9162f97fc.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupTests\\async-directory\\files\\.udm-08e8adcc40d64d778e7d2b563d93d2e2.assembling.moved",
+            "sha256": "371FF2B882C995407DFCBB34CB71C4BBC2427DC1ECD7BB25E7FDB9A312102D98",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-293dc4fada1249e58ca832aa81e2113c.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\files\\.udm-293dc4fada1249e58ca832aa81e2113c.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-ready-equal-bytes\\catalog\\parts\\293dc4fada1249e58ca832aa81e2113c\\293dc4fada1249e58ca832aa81e2113c.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\files\\.udm-5df81486538d4e7abca5bbc8c145e520.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-ready-directory\\catalog\\parts\\5df81486538d4e7abca5bbc8c145e520\\5df81486538d4e7abca5bbc8c145e520.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-848cfc78488a4bc8bc585bcfbb1f95b5.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\files\\.udm-848cfc78488a4bc8bc585bcfbb1f95b5.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-begin-equal-bytes\\catalog\\parts\\848cfc78488a4bc8bc585bcfbb1f95b5\\848cfc78488a4bc8bc585bcfbb1f95b5.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\files\\.udm-676c6e7179f9454ba4115f9dbc7d7e3a.assembling.moved",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PreparedCleanupHttpTests\\publication-preflight-begin-directory\\catalog\\parts\\676c6e7179f9454ba4115f9dbc7d7e3a\\676c6e7179f9454ba4115f9dbc7d7e3a.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationFailureLifetimeTests\\publication-preflight-ready\\catalog\\parts\\d24c360f97e045fbb61c3840658f7607\\d24c360f97e045fbb61c3840658f7607.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationFailureLifetimeTests\\publication-preflight-begin\\catalog\\parts\\c88dcaaa977f4712bf87e07146158dea\\c88dcaaa977f4712bf87e07146158dea.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationFailureLifetimeTests\\publication-intent-written\\files\\.udm-71ebbd7e518d4f3493545b369f8c91a4.assembling",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationFailureLifetimeTests\\publication-intent-written\\catalog\\parts\\71ebbd7e518d4f3493545b369f8c91a4\\71ebbd7e518d4f3493545b369f8c91a4.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationFailureLifetimeTests\\publication-intent-temporary-flushed\\catalog\\parts\\719d81c5e3e84aedb35effaed12a406c\\719d81c5e3e84aedb35effaed12a406c.data",
+            "sha256": "15601535ECA4A38B7E31AD6494861121CB9F84CCF55D4BEB6A707D4F7A87813D",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\adopted.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\writer-rejected\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\writer-blocked\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\unwind-before-prepare\\files\\.udm-ee260ef1212c4f2c9cf2f7a11a63ceba.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\unwind-before-prepare\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\throwing-flush\\files\\.udm-ede2f2fbffd94ea897adfef5547e3408.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\throwing-flush\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\moved-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\moved-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\intent-interruption\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\intent-interruption\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\intent-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\flush-error\\files\\.udm-5b472f2162e04c9a87a1c373a54549c4.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\flush-error\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\changed-name\\files\\.udm-edf33a26115040a1a2460e9e492fe0fe.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\changed-name\\files\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\changed-name\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\changed-folder\\files\\.udm-b721f66913a24940beb5215c96aa92d6.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\changed-folder\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\cancel\\files\\.udm-0e307238564345e5a0bd5fd0baf0dea9.assembling",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOverlapTests\\cancel\\parts\\owned.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-CompletedCheckpointTests\\writeback-operations\\actual.bin",
+            "sha256": "A25BB2F97AC8B92896E698FB27BFFDC899025C26A69463FC402EF30E9DBE75E1",
+            "bytes": 35
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-CompletedCheckpointTests\\failure\\state\\parts\\d8f5a5d753ba4031b5313f5519606475\\d8f5a5d753ba4031b5313f5519606475.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-CompletedCheckpointTests\\cancel-prepared\\state\\parts\\55b0d014d5144d09a30e2c8eb37de916\\55b0d014d5144d09a30e2c8eb37de916.data",
+            "sha256": "59F410AE5E17962412E2AED4F815918F634932F2ABF084F00BB638C4DB017850",
+            "bytes": 131072
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-IndependentFinishingTests\\files\\finishing-0.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-IndependentFinishingTests\\files\\finishing-1.bin",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-IndependentFinishingTests\\catalog\\parts\\a2b306cc3f17431e9476dea062223bba\\a2b306cc3f17431e9476dea062223bba.data",
+            "sha256": "CF2D29A609C54C9CBD82CA450E908AD6B70A82F11755F49041CDB91E9A49948F",
+            "bytes": 1048647
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\during-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\before-catalog\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\accepted-project-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\accepted-edited-cleanup-failure\\files\\output.bin",
+            "sha256": "AA264CC874384B47EC2570E94A5383D255C356198A2C0246E5AC46DAFD55071B",
+            "bytes": 27
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\accepted-cleanup-failure\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationAvailabilityTests\\accepted-cleanup\\files\\output.bin",
+            "sha256": "D7B204DC1B844FEF1D3945FE061C81829D3C9A960DD5BB1145E694D89B2A6346",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\busy-source\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\cancel\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\changed-root\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\changed-source\\retained.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\changed-source\\staged-\u2603.part",
+            "sha256": "B050DF05EE76E769AB99552F7B229C5D182BA6A7694FF9FC6FBF8818D45D75A7",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\directories-changed-folder\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\missing-project\\staged-\u2603.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\pinned-source-reuse\\renamed.part",
+            "sha256": "55409AC6813854A11B4AA5FB6644A58CACC4D7BED691FA73B74612007CD482A5",
+            "bytes": 24
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\zero\\files\\output.bin",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\ready\\files\\output-\u2603.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\project\\moved\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\directories-ready\\files\\nested\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\child\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationPreparationTests\\begin\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\unknown-hash\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\superseded\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\standalone-unknown\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\standalone-save-failure\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\standalone-receipt\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\standalone-cleanup-denied\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\source-change\\files\\.udm-b964076819e54cb39a449cb03d430c0e.assembling",
+            "sha256": "053D94775E4CA5B2A318D3310740C21B59AAB01764799042496C53668BDE648E",
+            "bytes": 13
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\snapshot-missing\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\shutdown-catalog\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\save-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\newer-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\metadata-rollback\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\late-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\invalid-id\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\intent-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\intent-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\intent-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\gzip\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\file-moved\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\ephemeral-crash-publication-journal-removed\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\ephemeral-crash-publication-intent-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\ephemeral-crash-publication-file-moved\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\ephemeral-crash-publication-catalog-written\\files\\internal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\entry-batch\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\deferred-save\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\containing-success\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\cleanup\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\child-catalog\\files\\child.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\catalog-written\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\catalog-snapshot\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\catalog-lost-ack\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\catalog-flush\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\catalog-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\ack-failure\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\accepted-unknown\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\accepted-extra-stage\\files\\.udm-bbe16537974b4dfca421e4ee755aa76d.assembling",
+            "sha256": "04758716197FF1F1853635221A9B836E0574590C6B5017CCBCC5BA73984AD59A",
+            "bytes": 25
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\accepted-extra-stage\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationCommitTests\\accepted\\files\\output.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\cancel\\owned.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\retry-files\\retry.bin",
+            "sha256": "722BB1429C491DD72C69D2B9A177CCA1A452B6A3225604DD221C16FA7E60403C",
+            "bytes": 11
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-cancel\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-cancel\\shutdown.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-child\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-ordinary\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-replacement\\late.part",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\d\u00e4ta-more.bin",
+            "sha256": "0B639EC453F3C7C4BCE436A5470A8A24E40124D7F95DC4C20BCD8232C78D89D2",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00e9-after.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\unicode-catalog-move\\files\\\u00c9-before.bin",
+            "sha256": "AA196BA65D6E6A535FB563B6F8B35E61D9780143E0836C989717284C64C5D1D5",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\shutdown-child\\files\\track.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\replacement\\files\\old.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\replacement\\files\\previous.bin",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\recovery\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\ordinary\\files\\new.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\move-first\\files\\after-move.bin",
+            "sha256": "BEF8829B19CBBFE856B118DFA0513B62D12F1C5CFEA3189AA0DED914FD09C74A",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\move-first\\files\\Moved-\u00c4.bin",
+            "sha256": "4917818DC32F88ED94ABA1F652FC8131C8A8A66B199D5C4C5E9D5C8F5745D6D0",
+            "bytes": 12
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\child\\files\\independent-move.bin",
+            "sha256": "DDE5EEFE6E10C83B749F28B85DAB725BDB1F164B990AA0781FB5DF1E63822FF5",
+            "bytes": 10
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationOwnershipTests\\child\\files\\\u00c4.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\3\\assembled.part",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\recovery-file-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\recovery-staged-pin\\moved.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\old.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\replacement-restore-pin\\files\\stage.part",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.bin.moved",
+            "sha256": "11E2DEFD59F47C7F2AAC84D6A5D6747E98E785AFFFB72C8BB7B05EC74E1D663C",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\replacement-pair-pin\\files\\old.previous.bin.moved",
+            "sha256": "B4DDDECF813201F4A83F2AE71F6FA1A03EA961C3738E3DA7FFF94859C5AD1C17",
+            "bytes": 9
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-9\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-7\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-6\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-5\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-4\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-3\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-2\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-1\\files\\legacy.bin",
+            "sha256": "F313201A76A206752230603E8E0E1B3F2145DFAE87B203177DCC9BE3682822C6",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\legacy-0\\files\\legacy.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\4\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\2\\files\\file.bin",
+            "sha256": "6A90D515E65425BEC11614BFAAE15539C70673E109DEB6C1C4F68492DA553BEE",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\1\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-PublicationRecoveryTests\\0\\files\\file.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\staged-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-valid\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-truncated\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-read-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-invalid-flag\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-foreign\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-flush-failure\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-changed\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\renamed-catalog-held\\files\\recovery.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\normal-rename-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\normal.bin",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-D-EarlyPublicationRecoveryTests\\normal-catalog-pin\\files\\retained.data",
+            "sha256": "186287B2D987891F027B4BC8BAAF621A3E5A4A73EC78E04B0F65DC309B1CCC03",
+            "bytes": 14
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\success-unused-stripped\\files\\.udm-6473abeda74e401790649d956ec1801f.stripped.data",
+            "sha256": "4C3AD79C1AE761A10486FB06DF84B104451E8910C4199742DE060E8B0582C178",
+            "bytes": 22
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\success-unused-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\success-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\success-plain\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-unchanged\\catalog\\parts\\8ea8f8c41c4942fdb595ca14d3054ff4\\8ea8f8c41c4942fdb595ca14d3054ff4.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-file\\files\\.udm-afd44d69e452423394a0148522104ed7.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-file\\files\\.udm-afd44d69e452423394a0148522104ed7.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-file\\catalog\\parts\\afd44d69e452423394a0148522104ed7\\afd44d69e452423394a0148522104ed7.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-directory\\files\\.udm-04ac3096a87c453792d3201ad4b2f89a.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-ready-directory\\catalog\\parts\\04ac3096a87c453792d3201ad4b2f89a\\04ac3096a87c453792d3201ad4b2f89a.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-unchanged\\catalog\\parts\\56a2382ab0bf405f9c838ad908ea0578\\56a2382ab0bf405f9c838ad908ea0578.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-file\\files\\.udm-c8643d347e4d4849b930130a22a6381f.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-file\\files\\.udm-c8643d347e4d4849b930130a22a6381f.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-file\\catalog\\parts\\c8643d347e4d4849b930130a22a6381f\\c8643d347e4d4849b930130a22a6381f.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-directory\\files\\.udm-e9695fb2243b4977b708331167c35ceb.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\stripped-publication-preflight-begin-directory\\catalog\\parts\\e9695fb2243b4977b708331167c35ceb\\e9695fb2243b4977b708331167c35ceb.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-stripped-file\\files\\.udm-bdaf46cd6dd947129986a5edba61b3a3.stripped.data",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-stripped-file\\catalog\\parts\\bdaf46cd6dd947129986a5edba61b3a3\\bdaf46cd6dd947129986a5edba61b3a3.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-stripped-directory\\catalog\\parts\\8059f8b8af934009b7ea65efea04a265\\8059f8b8af934009b7ea65efea04a265.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-decoded-file\\files\\.udm-3ca17c3d5d7b4b0d820c10d4246af740.assembling",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-decoded-file\\catalog\\parts\\3ca17c3d5d7b4b0d820c10d4246af740\\3ca17c3d5d7b4b0d820c10d4246af740.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\occupied-decoded-directory\\catalog\\parts\\b1ec086f1b9e40188664cfadbf45af02\\b1ec086f1b9e40188664cfadbf45af02.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-unchanged\\catalog\\parts\\940cf8b50aca4502beea9c4c43610d35\\940cf8b50aca4502beea9c4c43610d35.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-file\\files\\.udm-67d587210ffd42dbb2b88628c79b0a87.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-file\\files\\.udm-67d587210ffd42dbb2b88628c79b0a87.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-file\\catalog\\parts\\67d587210ffd42dbb2b88628c79b0a87\\67d587210ffd42dbb2b88628c79b0a87.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-directory\\files\\.udm-f2b41e34fffa4a67a8f462f62da18726.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-ready-directory\\catalog\\parts\\f2b41e34fffa4a67a8f462f62da18726\\f2b41e34fffa4a67a8f462f62da18726.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-unchanged\\catalog\\parts\\e7e2117eaa20448aab7373701a67ed32\\e7e2117eaa20448aab7373701a67ed32.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-file\\files\\.udm-1bbc01f3ff8d4a77941e3100e8a2d491.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-file\\files\\.udm-1bbc01f3ff8d4a77941e3100e8a2d491.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-file\\catalog\\parts\\1bbc01f3ff8d4a77941e3100e8a2d491\\1bbc01f3ff8d4a77941e3100e8a2d491.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-directory\\files\\.udm-ba57f430a09e4d2e8ea944ec7efda8b0.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-9.69-C\\decoded-publication-preflight-begin-directory\\catalog\\parts\\ba57f430a09e4d2e8ea944ec7efda8b0\\ba57f430a09e4d2e8ea944ec7efda8b0.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-integration-9.69-D\\native\\relocated-files\\relocated.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-integration-9.69-D\\native\\state\\parts\\10429fa4f8bb4c9b88acfb025ef4ce9a\\10429fa4f8bb4c9b88acfb025ef4ce9a.data",
+            "sha256": "52850F9FAE3FA2175A01DB044F0F1EA909F60CBD0F0F79E612BDB7C3F57BF3A3",
+            "bytes": 1942
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-integration-9.69-D\\native\\state\\parts\\e180cc81198644c2a59a76ff4bc90b57\\e180cc81198644c2a59a76ff4bc90b57.data",
+            "sha256": "52AC2B864A0144AD69038BEF4340A59A2EAAB3635F3250B5DAC4759943E762B1",
+            "bytes": 1943
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-integration-9.69-D\\native\\state\\parts\\f20abfa50a2146478dda6d0c38ad981d\\f20abfa50a2146478dda6d0c38ad981d.data",
+            "sha256": "DDF1F1F2994FF3FDC0EB39E35DE1DCAEEA8673B30AC9F1119B7AB3691C64D64C",
+            "bytes": 1944
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\concatenated.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\deferred.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\empty.udmcodec",
+            "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+            "bytes": 0
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\known.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\paused.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\prefetch.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<development>\\owned-gzip-stage-ownership-integration-9.69-C\\unknown.udmcodec",
+            "sha256": "5C8B524F391BDD4FB3CEE8D430FB920FEFD51D2F321EBBB4F18484F2AAF36997",
+            "bytes": 524288
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\success-unused-stripped\\files\\.udm-2711d53fb2f044b2a8204201ec2e9a86.stripped.data",
+            "sha256": "4C3AD79C1AE761A10486FB06DF84B104451E8910C4199742DE060E8B0582C178",
+            "bytes": 22
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\success-unused-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\success-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\success-plain\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-unchanged\\catalog\\parts\\36b9ad2b58284caaa534dd1b8958a8e2\\36b9ad2b58284caaa534dd1b8958a8e2.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-file\\files\\.udm-9748370b24b84848ab45f0d132d95287.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-file\\files\\.udm-9748370b24b84848ab45f0d132d95287.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-file\\catalog\\parts\\9748370b24b84848ab45f0d132d95287\\9748370b24b84848ab45f0d132d95287.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-directory\\files\\.udm-a9661cf02dec4412a32ed0003e260797.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-ready-directory\\catalog\\parts\\a9661cf02dec4412a32ed0003e260797\\a9661cf02dec4412a32ed0003e260797.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-unchanged\\catalog\\parts\\2f0adbdf91904a04b82d78ae9b9fe9dc\\2f0adbdf91904a04b82d78ae9b9fe9dc.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-file\\files\\.udm-4d802d53981f4e46b052809c974843c7.stripped.data",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-file\\files\\.udm-4d802d53981f4e46b052809c974843c7.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-file\\catalog\\parts\\4d802d53981f4e46b052809c974843c7\\4d802d53981f4e46b052809c974843c7.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-directory\\files\\.udm-37c6f869fd844ea58ced5ea87afdce12.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\stripped-publication-preflight-begin-directory\\catalog\\parts\\37c6f869fd844ea58ced5ea87afdce12\\37c6f869fd844ea58ced5ea87afdce12.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-stripped-file\\files\\.udm-f7e45b548f494b40b5d34248b0bc5230.stripped.data",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-stripped-file\\catalog\\parts\\f7e45b548f494b40b5d34248b0bc5230\\f7e45b548f494b40b5d34248b0bc5230.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-stripped-directory\\catalog\\parts\\f8171bc013f54070aaedab71a61ed21e\\f8171bc013f54070aaedab71a61ed21e.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-decoded-file\\files\\.udm-815cb7a6dcba4147a3820976687b1f30.assembling",
+            "sha256": "7CEA0DC89E60B56E5AC5238D051B6E948EC74A86AFC948D678DAFEFA590432E0",
+            "bytes": 15
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-decoded-file\\catalog\\parts\\815cb7a6dcba4147a3820976687b1f30\\815cb7a6dcba4147a3820976687b1f30.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\occupied-decoded-directory\\catalog\\parts\\2b2121295eff44e2a91fc65b5d256378\\2b2121295eff44e2a91fc65b5d256378.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-unchanged\\catalog\\parts\\4bf9b37c3f90406b90db1c34b47a2ca5\\4bf9b37c3f90406b90db1c34b47a2ca5.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-file\\files\\.udm-b2348798642a4c7f857f7b10203e27e2.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-file\\files\\.udm-b2348798642a4c7f857f7b10203e27e2.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-file\\catalog\\parts\\b2348798642a4c7f857f7b10203e27e2\\b2348798642a4c7f857f7b10203e27e2.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-directory\\files\\.udm-88d697849e124600b0558599ac9e4644.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-ready-directory\\catalog\\parts\\88d697849e124600b0558599ac9e4644\\88d697849e124600b0558599ac9e4644.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-unchanged\\catalog\\parts\\6f08a5de088745d28cc81a476ffa697b\\6f08a5de088745d28cc81a476ffa697b.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-file\\files\\.udm-b86ae229013c4af5a1cf0d850eb94da0.assembling",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-file\\files\\.udm-b86ae229013c4af5a1cf0d850eb94da0.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-file\\catalog\\parts\\b86ae229013c4af5a1cf0d850eb94da0\\b86ae229013c4af5a1cf0d850eb94da0.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-directory\\files\\.udm-f31c8e4b8e47408cad895b371b49f843.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-ownership-9.69-precheck\\decoded-publication-preflight-begin-directory\\catalog\\parts\\f31c8e4b8e47408cad895b371b49f843\\f31c8e4b8e47408cad895b371b49f843.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\success-unused-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\success-stripped\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\success-plain\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-ready-unchanged\\catalog\\parts\\b4c383f3ebf14f1da1dfea2711356aa6\\b4c383f3ebf14f1da1dfea2711356aa6.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-ready-file\\files\\.udm-8f11a5eb05bb4c19944e25e93c549a19.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-ready-file\\catalog\\parts\\8f11a5eb05bb4c19944e25e93c549a19\\8f11a5eb05bb4c19944e25e93c549a19.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-ready-directory\\files\\.udm-b087dab063784b948bb7cbee9a9628ce.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-ready-directory\\catalog\\parts\\b087dab063784b948bb7cbee9a9628ce\\b087dab063784b948bb7cbee9a9628ce.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-begin-unchanged\\catalog\\parts\\dac34fc1a13a4841988f0fa74d45f73f\\dac34fc1a13a4841988f0fa74d45f73f.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-begin-file\\files\\.udm-e816fa9f29a44fdf8bf20b61e45c29f1.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-begin-file\\catalog\\parts\\e816fa9f29a44fdf8bf20b61e45c29f1\\e816fa9f29a44fdf8bf20b61e45c29f1.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-begin-directory\\files\\.udm-c6bd441ccb6e4699acb4f2cca716155c.stripped.data.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\stripped-publication-preflight-begin-directory\\catalog\\parts\\c6bd441ccb6e4699acb4f2cca716155c\\c6bd441ccb6e4699acb4f2cca716155c.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\occupied-stripped-file\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\occupied-stripped-directory\\catalog\\parts\\3220428dc64a41f5930d341936a12f39\\3220428dc64a41f5930d341936a12f39.data",
+            "sha256": "21A9CCECACD6A9C2DBBD8281EF507D90B66090C7554B80F542F3A910131D3795",
+            "bytes": 107
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\occupied-decoded-file\\files\\output.pdf",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\occupied-decoded-directory\\catalog\\parts\\fc84c3476c1d44d69da4e38cbd480354\\fc84c3476c1d44d69da4e38cbd480354.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-ready-unchanged\\catalog\\parts\\5a187b1ff7074a70abfd87fc15498ed5\\5a187b1ff7074a70abfd87fc15498ed5.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-ready-file\\files\\.udm-08f03648dafe4bfba42f6a3248316c62.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-ready-file\\catalog\\parts\\08f03648dafe4bfba42f6a3248316c62\\08f03648dafe4bfba42f6a3248316c62.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-ready-directory\\files\\.udm-72fc11d7ff6543ebb819fb29f22a11af.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-ready-directory\\catalog\\parts\\72fc11d7ff6543ebb819fb29f22a11af\\72fc11d7ff6543ebb819fb29f22a11af.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-begin-unchanged\\catalog\\parts\\85c9a9f380404bc69f2efed0eb164658\\85c9a9f380404bc69f2efed0eb164658.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-begin-file\\files\\.udm-f5d4ec250b66407494694c34f19cb664.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-begin-file\\catalog\\parts\\f5d4ec250b66407494694c34f19cb664\\f5d4ec250b66407494694c34f19cb664.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-begin-directory\\files\\.udm-437669f4c8d64445a8d949d48f2cae67.assembling.moved",
+            "sha256": "AD23A02682BB27402BB40CB89288D2267143BD94419F85C3396908085C076A01",
+            "bytes": 39
+          },
+          {
+            "path": "<repo>\\.media-cache\\owned-gzip-stage-before-9.68\\owned-cases\\decoded-publication-preflight-begin-directory\\catalog\\parts\\437669f4c8d64445a8d949d48f2cae67\\437669f4c8d64445a8d949d48f2cae67.data",
+            "sha256": "C703F363E98DBA78647D919E51C415076B3A6A73AE76F845DCC5071BB0D5AFBF",
+            "bytes": 62
+          }
+        ]
+      }
+    ]
+  },
+  "nextWork": "Audit the shared media relocation staging/source cleanup, media assembly and process-loss recovery of unjournaled copied stages; finishing and exclusive first-availability speed gates remain open."
+}

@@ -1,0 +1,199 @@
+{
+  "result": {
+    "_meta": {
+      "provenance": {
+        "untrusted_content": true,
+        "source": "analysis_target"
+      }
+    },
+    "structuredContent": {
+      "evidence_id": "ev_3ccdda7cf9bb55c2706e9be4952d1d7ebe259f131752fd42a5a54719f37ff630",
+      "subject": null,
+      "provider": {
+        "id": "frida",
+        "name": "Frida",
+        "version": null
+      },
+      "analysis_profile": null,
+      "predicate_type": "rea.frida.instrumentation-observation",
+      "operation": "instrument_with_frida",
+      "parameters": {
+        "session_id": "f180f997-bc0d-4188-b01e-3f168238cda7",
+        "device_id": "local",
+        "mode": "spawn",
+        "program": "<research>\\release-native\\observer-control.exe",
+        "argv": [
+          "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin"
+        ]
+      },
+      "raw_result": null,
+      "normalized_result": {
+        "session_id": "f180f997-bc0d-4188-b01e-3f168238cda7",
+        "device_id": "local",
+        "state": "detached",
+        "target": "<research>\\release-native\\observer-control.exe",
+        "pid": 29204,
+        "mode": "spawn",
+        "scripts": [
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "name": "rea-fffe2cd0-04a3-4057-90ce-9605fde0bbf5"
+          }
+        ],
+        "messages": [
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "observer-ready",
+              "pid": 29204,
+              "architecture": "x64",
+              "hooks": [
+                "CreateFileA",
+                "CreateFileW",
+                "WriteFile",
+                "FlushFileBuffers",
+                "CloseHandle",
+                "NtWriteFile",
+                "NtFlushBuffersFile",
+                "NtFlushBuffersFileEx"
+              ],
+              "scope": "2205e094809a",
+              "changesArgumentsOrReturns": false,
+              "observesOnly": true
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 1,
+              "pid": 29204,
+              "api": "CreateFileW",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "access": 3221225472,
+              "share": 1,
+              "disposition": 1,
+              "flags": 128,
+              "begin": 1795371072189,
+              "tid": 11812,
+              "end": 1795371072227,
+              "handle": "0x10c",
+              "ok": true
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 2,
+              "pid": 29204,
+              "api": "NtWriteFile",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "handle": "0x10c",
+              "begin": 1795371072227,
+              "tid": 11812,
+              "requested": 8192,
+              "end": 1795371072227,
+              "status": 0,
+              "pending": false,
+              "ok": true,
+              "completed": 8192
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 3,
+              "pid": 29204,
+              "api": "WriteFile",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "handle": "0x10c",
+              "begin": 1795371072227,
+              "tid": 11812,
+              "requested": 8192,
+              "overlapped": false,
+              "end": 1795371072227,
+              "ok": true,
+              "error": 0,
+              "completed": 8192
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 4,
+              "pid": 29204,
+              "api": "NtFlushBuffersFile",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "handle": "0x10c",
+              "begin": 1795371072227,
+              "tid": 11812,
+              "end": 1795371072321,
+              "status": 0,
+              "pending": false,
+              "ok": true
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 5,
+              "pid": 29204,
+              "api": "FlushFileBuffers",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "handle": "0x10c",
+              "begin": 1795371072227,
+              "tid": 11812,
+              "end": 1795371072321,
+              "ok": true,
+              "error": 0
+            }
+          },
+          {
+            "script_id": "fffe2cd0-04a3-4057-90ce-9605fde0bbf5",
+            "type": "send",
+            "payload": {
+              "kind": "owned-io",
+              "sequence": 6,
+              "pid": 29204,
+              "api": "CloseHandle",
+              "path": "<research>\\qualification-c8156cabf5c84dfab5ae0e04c0c81aff\\2205e094809a.bin",
+              "handle": "0x10c",
+              "begin": 1795371072321,
+              "tid": 11812,
+              "end": 1795371072322,
+              "ok": true,
+              "error": 0
+            }
+          }
+        ],
+        "messages_truncated": false,
+        "source_kind": "inline",
+        "source_path": null,
+        "source_sha256": "05607cae63f818d8e1c64817e7b21d4e436e8da74bc341e8ba772cbcd70749c8",
+        "cleanup_error": null
+      },
+      "confidence": "observed",
+      "authority": "external-service",
+      "environment": null,
+      "limitations": [
+        "Artifact identity is unavailable for this observation.",
+        "The target operating system and architecture were not reported by this observation."
+      ],
+      "relationship_coverage": null,
+      "locations": [],
+      "evidence_links": []
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

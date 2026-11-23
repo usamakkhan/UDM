@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,subprocess,os,shutil
+repo=Path('D:/UDM');area=Path(__file__).parent;read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'));sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest().upper()
+build=read(area/'build-result.json');assert build['passed'] and build['version']=='10.3' and len(build['coreObjects'])==42 and len(build['outputs'])==12
+assert all(sha(repo/e['path'])==e['sha256'] for e in build['sources']);assert all(sha(Path(e['path']))==e['sha256'] for e in build['coreObjects']+build['outputs'])
+control=read(area/'control-build.json');assert control['passed'] and sha(Path(control['path']))==control['sha256'] and sha(repo/'benchmarks/speed/dash_freshness_workflow.cpp')==control['sourceSha256']
+prior=read(repo/'.media-cache/single-caption-session-build-10.2/build-result.json');assert all(sha(Path(e['path']))==e['sha256'] for e in prior['coreObjects']);old={Path(e['path']).stem:e['sha256'] for e in prior['coreObjects']};changed=[Path(e['path']).stem for e in build['coreObjects'] if e['sha256']!=old[Path(e['path']).stem]];assert set(changed)=={'Bridge','DashManifest'}
+products=[e for e in build['outputs'] if e['name'] in ['UDM','Udm.NativeHost','Udm.Monitor','Udm.SetupHelper','Udm.Automation']];assert len(products)==5
+for e in products:
+ cmd="(Get-Item -LiteralPath '"+e['path']+"').VersionInfo.ProductVersion";assert subprocess.check_output(['powershell.exe','-NoProfile','-Command',cmd],text=True).strip()=='10.3'
+assert all(read(repo/'browser'/f/'manifest.json')['version']=='0.73.67' for f in ['chromium','firefox'])
+protected=read(repo/'docs/validation/completion-claim-9.92/host-protection.json')['files']
+for e in protected:assert sha(Path(e['path'].replace('<host-install>',r'C:\Program Files\UDM')))==e['sha256']
+suites=[]
+for name in ['GaplessAacTailTests','RetiredDashBoundaryTests']:
+ r=read(area/('final-'+name)/'results.json');assert r['passed'] and all(e['passed'] for e in r['checks']);suites.append(dict(name=name,checks=len(r['checks']),passed=True))
+for folder,count in [('baseline-01',6),('current-01',6),('baseline-clock-01',2),('current-clock-01',2)]:
+ q=read(area/folder/'qualification.json');assert q['passed'] and q['cases']==count
+ if 'clock' in folder:assert q['recipeSha256'].upper()==sha(repo/'tests/dash-freshness-clock.native-live.py')
+assert read(area/'comparison.json')['passed']
+failures=[]
+for folder in ['continuous-regression-01','continuous-timing-01']:
+ terminal=read(area/folder/'candidate-terminal.json');assert terminal['allActorsTerminal'] and terminal['originClosed'] and len(terminal['records'])==1 and terminal['records'][0]['exitCode']==1
+ r=read(Path(terminal['records'][0]['result']));assert 'all three bounded' in r['error'] and r['publications']==0;failures.append(dict(attempt=folder,error=r['error'],capturedSeconds=r['capturedSeconds'],publishedFiles=0))
+trace=[]
+for line in (area/'continuous-timing-01/av-record.log').read_text(encoding='utf-8-sig').splitlines():
+ if line.startswith('UDM-FRESHNESS '):trace.append(json.loads(line[len('UDM-FRESHNESS '):]))
+assert trace and max(e['durationMs'] for e in trace if e['phase']=='manifest-accounting')<1 and max(e['durationMs'] for e in trace if e['phase']=='manifest-parse')<2
+(area/'phase-timings.json').write_text(json.dumps(dict(diagnosticOnly=True,events=trace),indent=2),encoding='utf-8')
+size=0
+for folder,dirs,files in os.walk(area):
+ dirs[:]=[d for d in dirs if not (Path(folder)/d).is_junction() and not (Path(folder)/d).is_symlink()];size+=sum((Path(folder)/f).stat().st_size for f in files)
+assert size<700*1024**2 and shutil.disk_usage(area).free>1024**3
+result=dict(passed=True,qualificationScope='Native build, eight bounded freshness controls and unchanged structural guards; full continuous acceptance FAILED.',allAttemptsPassed=False,fullContinuousRegressionPassed=False,version='10.3',sourceExtensionVersion='0.73.67',verifiedSourceInputs=len(build['sources']),verifiedCoreObjects=42,changedCoreObjects=changed,verifiedCandidateOutputs=12,frozenDiagnosticActorVerified=True,products=products,backendSuites=suites,distinctBackendAssertions=sum(e['checks'] for e in suites),freshnessControls=8,expectedFrozenFailureReproductions=8,retainedFailedFullRecordingAttempts=failures,phaseTraceIdentifiesHttpConstructorHeadersStage=True,exactHistoricalFailureCauseProven=False,remainingHttpStageCauseProven=False,strictTimingBoundsRelaxed=False,hostProtectedFilesUnchanged=len(protected),ownedBuildAreaBytesExcludingSharedTools=size,fullBuildEntrypointExecuted=False,installed=False,installerCreated=False,actualBrowserTest=False,actualIdmComparison=False,fullIdmParityProven=False,temporaryFilesExplicitlyDeleted=False)
+(area/'verification.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result))

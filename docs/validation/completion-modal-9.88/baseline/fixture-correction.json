@@ -1,0 +1,6 @@
+{
+  "originalFixtureSha256": "9934CE982497AAC7D2CC5E0827F937E188CF36F1DE8A8E39460D8088774B1C5C",
+  "correctedFixtureSha256": "145DD084D6CACC7FE61249C9F5CBD05522DA3B162387C4DF7AD22FAF73E1485B",
+  "reason": "Create the private download directory before writing the four-byte owned fixture. Initial runtime failed before any assertion or modal scenario.",
+  "productInputsUnchanged": true
+}

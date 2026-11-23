@@ -1,0 +1,358 @@
+{
+  "checks": [
+    {
+      "name": "ISO date compatibility",
+      "passed": true
+    },
+    {
+      "name": "ISO time-zone normalization",
+      "passed": true
+    },
+    {
+      "name": "Expired browser session rejected",
+      "passed": true
+    },
+    {
+      "name": "Mismatched captured video rejected",
+      "passed": true
+    },
+    {
+      "name": "Streaming metadata without video identity is rejected before publication",
+      "passed": true
+    },
+    {
+      "name": "Playable streaming coverage waits for both audio and video",
+      "passed": true
+    },
+    {
+      "name": "SABR fragmented UMP transcript assembles both tracks",
+      "passed": true
+    },
+    {
+      "name": "SABR transport does not publish unmerged output",
+      "passed": true
+    },
+    {
+      "name": "SABR publishes confirmed coverage for both tracks",
+      "passed": true
+    },
+    {
+      "name": "SABR exposes actual audio and video bytes in progress rows",
+      "passed": true
+    },
+    {
+      "name": "SABR progress rows cover the complete recorded timeline",
+      "passed": true
+    },
+    {
+      "name": "Streaming progress waits for final publication before showing 100 percent",
+      "passed": true
+    },
+    {
+      "name": "Unknown-byte media uses verified coverage and estimated remaining time",
+      "passed": true
+    },
+    {
+      "name": "Stalled streaming does not display a misleading countdown",
+      "passed": true
+    },
+    {
+      "name": "Media ETA can exceed one day without being clipped",
+      "passed": true
+    },
+    {
+      "name": "Extreme finite rates saturate ETA before integer conversion",
+      "passed": true
+    },
+    {
+      "name": "Fully received active files have zero seconds remaining before publication",
+      "passed": true
+    },
+    {
+      "name": "List ETA uses the integer-rate threshold without suppressing progress-dialog estimates",
+      "passed": true
+    },
+    {
+      "name": "Paused media hides remaining-time estimate",
+      "passed": true
+    },
+    {
+      "name": "Published media always displays complete progress",
+      "passed": true
+    },
+    {
+      "name": "Byte-based and unknown-length downloads retain their progress semantics",
+      "passed": true
+    },
+    {
+      "name": "Media timeline labels use bounded minutes and seconds",
+      "passed": true
+    },
+    {
+      "name": "YouTube media honors the selected temporary folder",
+      "passed": true
+    },
+    {
+      "name": "Streaming writes verified track data in the selected temporary folder",
+      "passed": true
+    },
+    {
+      "name": "Changing temporary preference preserves an existing media job location",
+      "passed": true
+    },
+    {
+      "name": "Legacy media tracks remain in place after temporary preference changes",
+      "passed": true
+    },
+    {
+      "name": "Empty legacy working directory does not trap new media on the old drive",
+      "passed": true
+    },
+    {
+      "name": "Disk-full error identifies the temporary folder and recovery action",
+      "passed": true
+    },
+    {
+      "name": "Actual segment sharing failure reports the Windows error",
+      "passed": true
+    },
+    {
+      "name": "Failed media stops its worker rows without publishing output",
+      "passed": true
+    },
+    {
+      "name": "SABR segment gap rejected",
+      "passed": true
+    },
+    {
+      "name": "SABR foreign video or advertisement rejected",
+      "passed": true
+    },
+    {
+      "name": "SABR encrypted media rejected",
+      "passed": true
+    },
+    {
+      "name": "Unselected compressed side track does not block the requested SABR video and audio",
+      "passed": true
+    },
+    {
+      "name": "Unfinished unselected side track does not invalidate complete requested SABR media",
+      "passed": true
+    },
+    {
+      "name": "Unfinished requested SABR segment remains invalid",
+      "passed": true
+    },
+    {
+      "name": "Malformed requested gzip SABR segment is rejected",
+      "passed": true
+    },
+    {
+      "name": "Native media assembly publishes verified MP4",
+      "passed": true
+    },
+    {
+      "name": "Merged output has requested video height and audio",
+      "passed": true
+    },
+    {
+      "name": "Media prefetch holds completed tracks without publishing or completing the parent",
+      "passed": true
+    },
+    {
+      "name": "Verified prefetched final size matches the independently assembled output exactly",
+      "passed": true
+    },
+    {
+      "name": "Canceling media prefetch promptly preserves both verified tracks without final output",
+      "passed": true
+    },
+    {
+      "name": "Cancel clears the exact staging-size claim",
+      "passed": true
+    },
+    {
+      "name": "Confirmation after rename reuses prefetched tracks and produces identical media",
+      "passed": true
+    },
+    {
+      "name": "Final renamed output has the exact size shown before confirmation",
+      "passed": true
+    },
+    {
+      "name": "M4A prefetch measures the verified final container before publication",
+      "passed": true
+    },
+    {
+      "name": "Audio-only final bytes equal the pre-confirmation size",
+      "passed": true
+    },
+    {
+      "name": "Immediate Start accepts a changed destination before worker startup",
+      "passed": true
+    },
+    {
+      "name": "Early destination change publishes identical verified media only at the chosen location",
+      "passed": true
+    },
+    {
+      "name": "Verified media reaches the direct confirmation boundary",
+      "passed": true
+    },
+    {
+      "name": "Confirmation rejects another download's destination",
+      "passed": true
+    },
+    {
+      "name": "Rejected confirmation preserves staged output and the confirmation gate",
+      "passed": true
+    },
+    {
+      "name": "Confirmation cannot change verified transfer properties",
+      "passed": true
+    },
+    {
+      "name": "Confirmation rejects a relative destination folder",
+      "passed": true
+    },
+    {
+      "name": "Catalog lock fixture opened",
+      "passed": true
+    },
+    {
+      "name": "Failed confirmation save does not release publication",
+      "passed": true
+    },
+    {
+      "name": "Failed save rolls back metadata and retains the verified staging file",
+      "passed": true
+    },
+    {
+      "name": "Start accepts verified media without stopping its worker",
+      "passed": true
+    },
+    {
+      "name": "Direct confirmation completes the existing worker",
+      "passed": true
+    },
+    {
+      "name": "Changed-folder output retains the verified staging bytes and file identity without remuxing",
+      "passed": true
+    },
+    {
+      "name": "Audio-only Start accepts its verified staging file",
+      "passed": true
+    },
+    {
+      "name": "M4A confirmation publishes the measured file without another assembly",
+      "passed": true
+    },
+    {
+      "name": "Recovery fixture confirms verified media in a changed folder",
+      "passed": true
+    },
+    {
+      "name": "Media publication preserves a recovery journal when saving completion fails",
+      "passed": true
+    },
+    {
+      "name": "Failed completion save retains source tracks",
+      "passed": true
+    },
+    {
+      "name": "Recovery reconciles the published media bytes with completed history",
+      "passed": true
+    },
+    {
+      "name": "Verified prefetch accepts a different destination volume",
+      "passed": true
+    },
+    {
+      "name": "Cross-volume fixture uses distinct Windows volumes",
+      "passed": true
+    },
+    {
+      "name": "Cross-volume confirmation publishes the exact measured bytes without reassembly",
+      "passed": true
+    },
+    {
+      "name": "Cross-volume copy rejects a mismatched verification hash",
+      "passed": true
+    },
+    {
+      "name": "Failed copy verification retains source and removes unpublished destination staging",
+      "passed": true
+    },
+    {
+      "name": "Cancelled media publication cannot create final output",
+      "passed": true
+    },
+    {
+      "name": "Cancelled publication retains source without a final file",
+      "passed": true
+    },
+    {
+      "name": "Disabled prefetch applies to captured video too",
+      "passed": true
+    },
+    {
+      "name": "Wrong media height blocks publication",
+      "passed": true
+    },
+    {
+      "name": "Rejected quality preserves source tracks",
+      "passed": true
+    },
+    {
+      "name": "DASH write-capable source ownership opens the real video",
+      "passed": true
+    },
+    {
+      "name": "FFprobe can read a video while its owned write-capable pin excludes other writers",
+      "passed": true
+    },
+    {
+      "name": "Write-capable pinned video decodes through EOF without errors",
+      "passed": true
+    },
+    {
+      "name": "Cross-volume real video copy starts at zero after the source hash reached EOF",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    },
+    {
+      "name": "Completed media decodes through EOF with no FFmpeg error",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "passed": true
+}

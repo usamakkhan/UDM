@@ -1,0 +1,29 @@
+--- native/Transfer.cpp
++++ diagnostic/Transfer.cpp
+@@ -359,7 +359,7 @@
+ static void setFileLength(HANDLE file,i64 size){FILE_END_OF_FILE_INFO info{};info.EndOfFile.QuadPart=size;if(!SetFileInformationByHandle(file,FileEndOfFileInfo,&info,sizeof(info)))throw std::runtime_error("Cannot reserve space for the download file.");}
+ static void setSparse(HANDLE file,bool sparse){FILE_SET_SPARSE_BUFFER request{};request.SetSparse=sparse?1:0;DWORD returned=0;DeviceIoControl(file,FSCTL_SET_SPARSE,&request,sizeof(request),nullptr,0,&returned,nullptr);}
+ // Positioned I/O on a handle that may be one of several open on the same file.
+-static void writeAt(HANDLE file,const void* data,size_t count,i64 offset){OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD written=0;if(!WriteFile(file,data,(DWORD)count,&written,&at)||written!=count)throw std::runtime_error("Cannot write the partial download.");}
++static void writeAt(HANDLE file,const void* data,size_t count,i64 offset){DiagnosticSpan write("body-write-begin","body-write-end");OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD written=0;if(!WriteFile(file,data,(DWORD)count,&written,&at)||written!=count)throw std::runtime_error("Cannot write the partial download.");}
+ static size_t readAt(HANDLE file,void* data,size_t count,i64 offset){OVERLAPPED at{};at.Offset=(DWORD)(offset&0xffffffffu);at.OffsetHigh=(DWORD)((unsigned long long)offset>>32);DWORD read=0;if(!ReadFile(file,data,(DWORD)count,&read,&at)&&GetLastError()!=ERROR_HANDLE_EOF)return 0;return read;}
+ static i64 allocatedPrefix(HANDLE file,i64 begin,i64 saved,const Cancel& cancel){
+  const i64 end=begin+saved;
+@@ -1127,7 +1127,7 @@
+    if(prefinishFile){
+     const auto dataFlush=connections>1?dataOnlyFlush():nullptr;
+     if(dataFlush)dataWriteback=std::make_unique<DataOnlyWriteback>([&,dataFlush]{return flushBodyData(dataFlush,prefinishFile.h);});
+-    else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
++    else prefinish=std::make_unique<PrefinishWriteback>(size,static_cast<unsigned>(connections),[&]{DiagnosticSpan flush("prefinish-flush-begin","prefinish-flush-end");return FlushFileBuffers(prefinishFile.h)!=FALSE;},true,true);
+    }
+   }catch(...){dataWriteback.reset();prefinish.reset();if(prefinishFile){CloseHandle(prefinishFile.h);prefinishFile.h=INVALID_HANDLE_VALUE;}}
+   std::vector<std::chrono::steady_clock::time_point> assigned(connections);
+@@ -2390,7 +2390,7 @@
+    }
+    rememberPrefetch=true;
+   }
+- networkEnd=std::chrono::steady_clock::now();
++ nativeUiTraceRecord("body-settled");networkEnd=std::chrono::steady_clock::now();
+  networkFinished=true;
+  {
+   Lock lock(m.mutex);

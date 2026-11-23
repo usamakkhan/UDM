@@ -8,7 +8,7 @@ inline Json publicationDestinationInputs(const Json& data){Json result=Json::obj
 // Prepared on the publishing worker without the Manager lock. Prevent source writes until durable catalog acceptance; keep directory names pinned through cleanup.
 // Directory writes stay shared so normal child-file publication can proceed.
 class PublicationPreparation {
- Handle source;bool writableSource=false;std::unique_ptr<Handle> publishedName;BY_HANDLE_FILE_INFORMATION identity{};Json capturedIdentity;std::vector<Handle> directories;std::vector<bool> belowRoots;
+ Handle source;bool writableSource=false,readableSource=true;std::unique_ptr<Handle> publishedName;BY_HANDLE_FILE_INFORMATION identity{};Json capturedIdentity;std::vector<Handle> directories;std::vector<bool> belowRoots;
  void pin(const fs::path& path,bool belowRoot,bool resolve=false){
   Handle handle(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|(resolve?0:FILE_FLAG_OPEN_REPARSE_POINT),nullptr));BY_HANDLE_FILE_INFORMATION info{};
   if(!handle)throw std::runtime_error("Cannot keep the Grabber destination stable for publication. Wait for other folder operations or choose another project folder.");
@@ -17,10 +17,10 @@ class PublicationPreparation {
  }
 public:
  i64 size=0;
- PublicationPreparation(const fs::path& staging,const Json& destination,std::unique_ptr<PublicationSourcePin> ownedWriteback={}):source(ownedWriteback?std::move(ownedWriteback->file):Handle{}),writableSource(bool(source)){
+ PublicationPreparation(const fs::path& staging,const Json& destination,std::unique_ptr<PublicationSourcePin> ownedWriteback={}):source(ownedWriteback?std::move(ownedWriteback->file):Handle{}),writableSource(ownedWriteback&&ownedWriteback->writeAccess),readableSource(!ownedWriteback||ownedWriteback->readAccess){
   if(ownedWriteback){
-   if(!source||ownedWriteback->stable.is_null())throw std::runtime_error("The prepared download source lost its protection.");
-   identity=ownedWriteback->information;capturedIdentity=ownedWriteback->stable;size=num(capturedIdentity,"Size",-1);
+   if(!source||(ownedWriteback->stable.is_null()&&!readableSource))throw std::runtime_error("The prepared download source lost its protection.");
+   identity=ownedWriteback->information;capturedIdentity=ownedWriteback->stable;size=static_cast<i64>((static_cast<uint64_t>(identity.nFileSizeHigh)<<32)|identity.nFileSizeLow);
   }else{
    source.h=CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr);BY_HANDLE_FILE_INFORMATION info{};LARGE_INTEGER length{};
    if(!source||!GetFileInformationByHandle(source.h,&info)||(info.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(source.h,&length)||length.QuadPart<0)throw std::runtime_error("Cannot inspect the completed download for publication.");size=length.QuadPart;identity=info;
@@ -32,7 +32,7 @@ public:
  // Reuse the already pinned read handle; never reopen the path for identity
  // or fallback hashing. validateSourceName still verifies the named file.
  Json sourceIdentity()const{return capturedIdentity.is_null()?stableFileIdentity(source.h):capturedIdentity;}
- std::string sourceHash(const std::function<void()>& checkpoint={})const{if(writableSource)throw std::runtime_error("A write-only publication pin cannot supply an unknown digest.");return fileHash(source.h,checkpoint);}
+ std::string sourceHash(const std::function<void()>& checkpoint={})const{if(!readableSource)throw std::runtime_error("A write-only publication pin cannot supply an unknown digest.");return fileHash(source.h,checkpoint);}
  void validateSourceName(const fs::path& staging)const{
   Handle named(CreateFileW(staging.c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,FILE_FLAG_OPEN_REPARSE_POINT,nullptr));BY_HANDLE_FILE_INFORMATION current{};LARGE_INTEGER length{};
   if(!named||!GetFileInformationByHandle(named.h,&current)||(current.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT))||!GetFileSizeEx(named.h,&length)||length.QuadPart!=size||current.dwVolumeSerialNumber!=identity.dwVolumeSerialNumber||current.nFileIndexHigh!=identity.nFileIndexHigh||current.nFileIndexLow!=identity.nFileIndexLow)throw std::runtime_error("The completed file changed before publication. Its files were preserved.");

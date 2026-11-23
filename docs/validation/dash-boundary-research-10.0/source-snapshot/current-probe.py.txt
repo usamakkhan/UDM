@@ -1,0 +1,193 @@
+"""Owned sample/timestamp oracle for the DASH chapter stream-copy boundary.
+
+Uses existing media tools, creates a fresh explicit root, never installs or
+deletes anything. This probes assembly semantics, not the download workflow.
+"""
+import argparse
+from fractions import Fraction
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+
+def digest(path):
+    value = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            value.update(block)
+    return value.hexdigest()
+
+
+def sample_count(seconds, rate):
+    value = Fraction(seconds) * rate
+    if value.denominator != 1:
+        raise ValueError('The requested endpoint is between PCM samples')
+    return value.numerator
+
+
+def frame_rows(text):
+    scale = None
+    rows = []
+    for line in text.splitlines():
+        if line.startswith('#tb 0:'):
+            scale = Fraction(line.split(':', 1)[1].strip())
+        elif line and not line.startswith('#'):
+            if scale is None:
+                raise ValueError('Frame time base is missing')
+            cells = [cell.strip() for cell in line.split(',')]
+            rows.append(dict(pts=Fraction(int(cells[2])) * scale,
+                             duration=Fraction(int(cells[3])) * scale,
+                             hash=cells[-1]))
+    if not rows:
+        raise ValueError('No decoded video frames')
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', type=Path, required=True)
+    parser.add_argument('--tools', type=Path, required=True)
+    parser.add_argument('--continuous-source', action='store_true')
+    args = parser.parse_args()
+    root, tools = args.root.resolve(), args.tools.resolve()
+    if root.exists():
+        parser.error('Use a new owned output directory')
+    ffmpeg, ffprobe = tools / 'ffmpeg.exe', tools / 'ffprobe.exe'
+    if not ffmpeg.is_file() or not ffprobe.is_file():
+        parser.error('Existing ffmpeg.exe and ffprobe.exe are required')
+    root.mkdir(parents=True)
+    (root / '.udm-owned').write_text('DASH boundary assembly probe\n', encoding='utf-8')
+    commands = []
+
+    def run(exe, argv, binary=False):
+        command = [str(exe), *map(str, argv)]
+        result = subprocess.run(command, capture_output=True, timeout=30)
+        number = len(commands)
+        log = root / f'command-{number:03d}.log'
+        log.write_bytes(result.stderr)
+        commands.append(dict(argv=command, exitCode=result.returncode,
+                             stderrSha256=digest(log)))
+        if result.returncode:
+            raise RuntimeError(f'Media command {number} failed; see {log.name}')
+        return result.stdout if binary else result.stdout.decode('utf-8')
+
+    def frames(path):
+        rows = frame_rows(run(ffmpeg, ['-v', 'error', '-xerror', '-i', path,
+                                      '-map', '0:v:0', '-fps_mode', 'passthrough',
+                                      '-f', 'framemd5', '-']))
+        probe = packets(path)
+        video = next(stream for stream in probe['streams'] if stream['codec_type'] == 'video')
+        clock = Fraction(video['time_base'])
+        stamps = [packet for packet in probe['packets'] if packet['stream_index'] == video['index']]
+        if len(stamps) != len(rows):
+            raise ValueError('The no-B-frame fixture must map frames to packets one to one')
+        for row, packet in zip(rows, stamps):
+            row['pts'] = int(packet['pts']) * clock
+            row['duration'] = int(packet['duration']) * clock
+        return rows
+
+    def pcm(path):
+        return run(ffmpeg, ['-v', 'error', '-xerror', '-i', path, '-map', '0:a:0',
+                           '-ac', '1', '-ar', '48000', '-acodec', 'pcm_s16le',
+                           '-f', 's16le', '-'], binary=True)
+
+    def packets(path):
+        return json.loads(run(ffprobe, ['-v', 'error', '-show_streams',
+                                       '-show_packets', '-show_data_hash', 'sha256',
+                                       '-of', 'json', path]))
+
+    sources = []
+    try:
+        for period in range(1 if args.continuous_source else 3):
+            video, audio = root / f'v{period}.mp4', root / f'a{period}.mp4'
+            run(ffmpeg, ['-v', 'error', '-nostdin', '-n', '-f', 'lavfi', '-i',
+                         'testsrc2=s=96x64:r=25:d=' + ('4.8' if args.continuous_source else '1.6'), '-vf', f'hue=h={period * 70}',
+                         '-frames:v', '120' if args.continuous_source else '40', '-c:v', 'libx264', '-threads', '1',
+                         '-preset', 'ultrafast', '-profile:v', 'baseline', '-bf', '0',
+                         '-g', '8', '-keyint_min', '8', '-sc_threshold', '0',
+                         '-pix_fmt', 'yuv420p', '-video_track_timescale', '1000',
+                         '-movflags', 'empty_moov+frag_keyframe+default_base_moof', video])
+            run(ffmpeg, ['-v', 'error', '-nostdin', '-n', '-f', 'lavfi', '-i',
+                         f'sine=frequency={330 + period * 220}:sample_rate=48000:duration=' + ('5.12' if args.continuous_source else '1.536'),
+                         '-frames:a', '239' if args.continuous_source else '71', '-c:a', 'aac', '-threads', '1', '-b:a',
+                         '64000', '-ac', '1', '-use_editlist', '0', '-avoid_negative_ts',
+                         'make_zero', '-movflags', 'empty_moov+default_base_moof',
+                         '-frag_duration', '1536000', audio])
+            video_frames, audio_pcm = frames(video), pcm(audio)
+            audio_probe = packets(audio)
+            if len(video_frames) != (120 if args.continuous_source else 40) or len(audio_pcm) != (240 if args.continuous_source else 72) * 1024 * 2:
+                raise ValueError('Unexpected source encoder drain or frame count')
+            sources.append(dict(video=video, audio=audio, frames=video_frames,
+                                pcm=audio_pcm, audioPackets=audio_probe))
+
+        cases = []
+        for label, end in [('packet-aligned', '1.28'),
+                           ('aac-crossing', '1.0'), ('both-crossing', '1.01')]:
+            seconds = Fraction(end)
+            wanted_samples = sample_count(seconds, 48000)
+            period_sources = sources * 3 if args.continuous_source else sources
+            expected_pcm = sources[0]['pcm'][:wanted_samples * 6] if args.continuous_source else b''.join(source['pcm'][:wanted_samples * 2] for source in sources)
+            expected_video, clips, clip_rows = [], [], []
+            for period, source in enumerate(period_sources):
+                offset = period * seconds if args.continuous_source else Fraction(0)
+                clip = root / f'{label}-{period}.mp4'
+                run(ffmpeg, ['-v', 'error', '-nostdin', '-n', '-copyts', '-itsoffset',
+                             str(float(-offset)), '-i', source['video'], '-itsoffset', str(float(-offset)), '-i',
+                             source['audio'], '-map', '0:v:0', '-map', '1:a:0',
+                             '-ss', '0', '-t', end, '-c', 'copy', '-avoid_negative_ts',
+                             'disabled', '-movflags', '+faststart', clip])
+                clips.append(clip)
+                chosen = [row for row in source['frames'] if offset <= row['pts'] < offset + seconds]
+                expected_video.extend(dict(pts=row['pts'] - offset + period * seconds,
+                                           hash=row['hash']) for row in chosen)
+                actual_pcm = pcm(clip)
+                clip_rows.append(dict(period=period, expectedSamples=wanted_samples,
+                                      decodedSamples=len(actual_pcm) // 2,
+                                      pcmMatches=actual_pcm == source['pcm'][sample_count(offset, 48000) * 2:(sample_count(offset, 48000) + wanted_samples) * 2],
+                                      sha256=digest(clip), probe=packets(clip)))
+            manifest = root / f'{label}.ffconcat'
+            manifest.write_text('ffconcat version 1.0\n' + ''.join(
+                f"file '{path.name}'\nduration {float(seconds):.9f}\n" for path in clips),
+                encoding='utf-8', newline='\n')
+            joined = root / f'{label}-joined.mp4'
+            run(ffmpeg, ['-v', 'error', '-nostdin', '-n', '-protocol_whitelist',
+                         'file,pipe', '-f', 'concat', '-safe', '1', '-i', manifest,
+                         '-map', '0', '-c', 'copy', '-t', f'{float(seconds * 3):.9f}',
+                         '-movflags', '+faststart', joined])
+            actual_pcm, actual_video = pcm(joined), frames(joined)
+            video_match = len(actual_video) == len(expected_video) and all(
+                left['hash'] == right['hash'] and left['pts'] == right['pts']
+                for left, right in zip(actual_video, expected_video))
+            audio_match = actual_pcm == expected_pcm
+            cases.append(dict(case=label, boundary=end, expectedSamples=wanted_samples * 3,
+                              decodedSamples=len(actual_pcm) // 2,
+                              sampleDelta=len(actual_pcm) // 2 - wanted_samples * 3,
+                              expectedPcmSha256=hashlib.sha256(expected_pcm).hexdigest(),
+                              actualPcmSha256=hashlib.sha256(actual_pcm).hexdigest(),
+                              audioExact=audio_match, videoHashesAndPtsExact=video_match,
+                              allExact=audio_match and video_match,
+                              expectedVideoFrames=len(expected_video),
+                              actualVideoFrames=len(actual_video), clips=clip_rows,
+                              joinedSha256=digest(joined), joinedProbe=packets(joined)))
+        result = dict(investigationCompleted=True, allCasesExact=all(row['allExact'] for row in cases),
+                      nativeVersion='10.0', productionCodeModified=False,
+                      continuousEncoderControl=args.continuous_source,
+                      videoClockFromContainerPackets=True,
+                      fullNativeDownloadWorkflow=False, realIdmComparison=False,
+                      tools=[dict(name=p.name, sha256=digest(p)) for p in [ffmpeg, ffprobe]],
+                      sourceFiles=[dict(name=p.name, sha256=digest(p)) for p in root.glob('[va][0-2].mp4')],
+                      cases=cases, commands=commands)
+        (root / 'results.json').write_text(json.dumps(result, indent=2) + '\n',
+                                          encoding='utf-8', newline='\n')
+        print(json.dumps(dict(allCasesExact=result['allCasesExact'], cases=[
+            {key: row[key] for key in ['case', 'audioExact', 'videoHashesAndPtsExact',
+                                      'sampleDelta']} for row in cases])))
+    except Exception as error:
+        (root / 'failure.json').write_text(json.dumps(dict(error=str(error), commands=commands),
+                                         indent=2), encoding='utf-8')
+        raise
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,266 @@
+--- 9.81/native/DashManifest.cpp
++++ 9.82/native/DashManifest.cpp
+@@ -744,7 +744,7 @@
+  }return state;
+ }
+ 
+-std::optional<DashPeriodTransition> planDashPeriodTransition(const DashLiveState& previous,const DashManifestSnapshot& refreshed,const Cancel& cancel){
++std::optional<DashPeriodTransition> planDashPeriodTransition(const DashLiveState& previous,const DashManifestSnapshot& refreshed,const Cancel& cancel,std::optional<double> verifiedRetainedEnd){
+  cancel.check();if(previous.tracks.empty()||previous.tracks.size()>3||previous.snapshot.manifest.nodes.empty()||refreshed.manifest.nodes.empty()||previous.snapshot.requestUrl!=refreshed.requestUrl)throw std::runtime_error("Invalid DASH Period transition source.");
+  const auto& old=previous.snapshot.manifest;const auto& next=refreshed.manifest;
+  auto rootId=[](const DashManifest& manifest){auto found=manifest.nodes[0].attributes.find("id");return found==manifest.nodes[0].attributes.end()?std::optional<std::string>{}:std::optional<std::string>{found->second};};
+@@ -758,12 +758,21 @@
+   if(std::abs(period.start-current.start)>0.000001||(current.duration&&period.duration&&std::abs(*current.duration-*period.duration)>0.000001))throw std::runtime_error("DASH current Period timing changed.");
+   if(period.duration)current.duration=period.duration;
+  }
+- if(!current.duration){if(!currentVisible)throw std::runtime_error("DASH selected Period disappeared before its end was known.");return {};}
+- const double boundary=current.start+*current.duration;if(!std::isfinite(boundary)||*current.duration<=0||boundary>7*86400)throw std::runtime_error("Invalid DASH Period end.");
+  std::optional<DashPeriodTiming> following;
+  for(const auto& period:periods){if(period.duration&&*period.duration==0)continue;if(period.id&&*period.id==first.periodId)continue;
+   if(period.start<current.start-0.000001){if(period.duration&&period.start+*period.duration>current.start+0.000001)throw std::runtime_error("DASH refreshed history overlaps the selected Period.");continue;}if(!following||period.start<following->start)following=period;
+  }
++ if(!current.duration){
++  if(currentVisible)return {};
++  // An expired live Period need not have carried a duration. A fresh explicit
++  // successor start can establish it only when every verified retained track
++  // ends there; a later successor must never conceal a missing interval.
++  if(!following||!next.nodes.at(following->node).attributes.count("start")||!verifiedRetainedEnd||!std::isfinite(*verifiedRetainedEnd)||
++     std::abs(following->start-*verifiedRetainedEnd)>0.000001)
++   throw std::runtime_error("DASH selected Period disappeared before its end was known; retained coverage does not reach the next Period.");
++  current.duration=following->start-current.start;
++ }
++ const double boundary=current.start+*current.duration;if(!std::isfinite(boundary)||*current.duration<=0||boundary>7*86400)throw std::runtime_error("Invalid DASH Period end.");
+  if(!following)return {};
+  if(std::abs(following->start-boundary)>0.000001)throw std::runtime_error("DASH Period transition has a gap or overlap.");
+  if(!following->id||following->id->empty())throw std::runtime_error("DASH next Period requires a stable ID.");
+@@ -1274,6 +1283,45 @@
+  cancel.check();const auto text=index.dump();if(text.size()>8*1024*1024)throw std::runtime_error("DASH recovery index exceeds its storage limit.");plain(path);plain(temporary);atomicText(path,Json{{"schema",1},{"protected",protect(text)}}.dump(),false);return index;
+ }
+ 
++std::optional<double> dashRetainedPeriodEnd(const Json& index,const Cancel& cancel){
++ cancel.check();constexpr i64 exact=9007199254740991LL;
++ if(!index.is_object()||!index.contains("tracks")||!index["tracks"].is_array()||index["tracks"].empty()||index["tracks"].size()>3||!index.contains("captureStart")||!index["captureStart"].is_number())return {};
++ const double begin=real(index,"captureStart");if(!std::isfinite(begin)||begin<0||begin>=7*86400)return {};
++ std::optional<double> end;
++ for(const auto& track:index["tracks"]){
++  cancel.check();if(!track.contains("identity")||!track.contains("segments")||!track["segments"].is_object()||track["segments"].empty()||track.contains("pendingInitialization")||(track.contains("initialization")&&!yes(track,"initializationVerified")))return {};
++  const auto& identity=track["identity"];const i64 scale=num(identity,"timescale"),offset=num(identity,"presentationTimeOffset",-1);
++  if(scale<=0||scale>exact||offset<0||offset>exact)return {};
++  std::map<i64,const Json*> ordered;
++  for(const auto& record:track["segments"]){cancel.check();const i64 number=num(record,"number",-1);if(number<0||number>exact||!ordered.emplace(number,&record).second)return {};}
++  i64 previousNumber=-1,previousEnd=0;bool first=true;
++  for(const auto& entry:ordered){
++   cancel.check();const auto& record=*entry.second;const i64 time=num(record,"time",-1),duration=num(record,"duration");
++   if(!yes(record,"committed")||!record.contains("resource")||time<0||time>exact||duration<=0||duration>exact-time)return {};
++   if(first){if(static_cast<double>(time-offset)/scale>begin+0.000001)return {};first=false;}
++   else if(entry.first!=previousNumber+1||time!=previousEnd)return {};
++   previousNumber=entry.first;previousEnd=time+duration;
++  }
++  const double current=static_cast<double>(previousEnd-offset)/scale;
++  if(!std::isfinite(current)||current<=begin||current>7*86400||(end&&std::abs(*end-current)>0.000001))return {};
++  if(track.contains("periodDuration")&&!track["periodDuration"].is_null()&&(!track["periodDuration"].is_number()||std::abs(real(track,"periodDuration")-current)>0.000001))return {};
++  end=current;
++ }
++ if(index.contains("captureEnd")&&!index["captureEnd"].is_null()&&(!index["captureEnd"].is_number()||std::abs(real(index,"captureEnd")-*end)>0.000001))return {};
++ return end;
++}
++
++Json checkpointDashPeriodEnd(const fs::path& directory,double end,const Cancel& cancel){
++ auto index=reconcileDashRecording(directory,cancel);const auto retained=dashRetainedPeriodEnd(index,cancel);
++ if(yes(index,"sealed")||!std::isfinite(end)||!retained||std::abs(*retained-end)>0.000001)
++  throw std::runtime_error("DASH retained tracks do not fully cover the new Period boundary.");
++ for(auto& track:index["tracks"])track["periodDuration"]=end;
++ index["captureEnd"]=end;
++ const auto path=fs::absolute(directory).lexically_normal()/L"recording.json";auto temporary=path;temporary+=L".tmp";
++ for(const auto& file:{path,temporary}){const auto flags=GetFileAttributesW(file.c_str());if(flags!=INVALID_FILE_ATTRIBUTES&&(flags&FILE_ATTRIBUTE_REPARSE_POINT))throw std::runtime_error("DASH boundary index must not be redirected.");}
++ cancel.check();const auto text=index.dump();if(text.size()>8*1024*1024)throw std::runtime_error("DASH boundary index exceeds its storage limit.");atomicText(path,Json{{"schema",1},{"protected",protect(text)}}.dump(),false);return index;
++}
++
+ Json sealDashRecording(const fs::path& directory,const Cancel& cancel){
+  auto index=reconcileDashRecording(directory,cancel);if(yes(index,"sealed"))return index;
+  double begin=0,end=std::numeric_limits<double>::infinity();
+--- 9.81/native/DashManifest.hpp
++++ 9.82/native/DashManifest.hpp
+@@ -176,7 +176,7 @@
+ // Plans only an adjacent nonempty Period with compatible selected track metadata.
+ // The caller must finish/seal the previous Period and own durable session joining.
+ std::optional<DashPeriodTransition> planDashPeriodTransition(const DashLiveState&,
+- const DashManifestSnapshot& refreshed,const Cancel&);
++ const DashManifestSnapshot& refreshed,const Cancel&,std::optional<double> verifiedRetainedEnd={});
+ DashLiveState createDashLiveState(const DashManifestSnapshot&,const std::vector<size_t>&,const Cancel&);
+ // Windows are per-track media ticks. The caller commits returned state only on
+ // success and owns polling, segment receipts, Period transitions and finalization.
+@@ -201,6 +201,12 @@
+ // Offline reconciliation: promotes verified receipts and clears stale completion
+ // claims, retaining committed media. Returns the protected index's decoded content.
+ Json reconcileDashRecording(const fs::path&,const Cancel&);
++// Accept only complete, contiguous reconciled tracks with the same exact end.
++// This is a coverage proof, not evidence that a live Period has actually ended.
++std::optional<double> dashRetainedPeriodEnd(const Json&,const Cancel&);
++// Persist a server-established end before declaring a session ready to advance.
++// Reconcile and recheck coverage again; leave sealing and session intent to caller.
++Json checkpointDashPeriodEnd(const fs::path&,double,const Cancel&);
+ // Freeze the complete common interval after Stop. Excluded tail records and all
+ // resource files are retained; an explicit requested end must be fully covered.
+ Json sealDashRecording(const fs::path&,const Cancel&);
+--- 9.81/native/LiveDash.hpp
++++ 9.82/native/LiveDash.hpp
+@@ -226,20 +226,34 @@
+   if(fs::exists(folder/L"recording.json")){index=reconcileDashRecording(folder,*cancel);if(index.contains("captureStart"))session.checkpoint(session.currentFolder(),index,*cancel);else if(session.hasPeriods())throw std::runtime_error("DASH session capture interval is missing from its recording index.");}else if(session.hasPeriods())throw std::runtime_error("DASH session recording index is missing; retained files were not rebound.");updateProgress();
+   std::optional<DashPeriodTransition> transition;bool advance=false;
+   if(!yes(index,"sealed")&&!session.saving()&&!finishRequested()&&index.is_object()&&index.contains("tracks")&&!index["tracks"].empty()){
+-   const auto progress=liveDashProgress(index);const auto& first=index["tracks"].front();if(progress.ready&&first.contains("periodDuration")&&first["periodDuration"].is_number()&&progress.end+0.000001>=real(first,"periodDuration")){
++   const auto progress=liveDashProgress(index);const auto& first=index["tracks"].front();const bool knownEnd=first.contains("periodDuration")&&first["periodDuration"].is_number();
++   const auto retainedEnd=knownEnd?std::optional<double>{}:dashRetainedPeriodEnd(index,*cancel);
++   if(progress.ready&&(knownEnd?progress.end+0.000001>=real(first,"periodDuration"):retainedEnd.has_value())){
+     try{
+      auto saved=loadLiveDashState(folder,capturePlan,index,*cancel);bool ended=!saved.snapshot.manifest.dynamic;
+      if(!ended){
+       // A completed retained Period can disappear from a sliding manifest.
+       // Plan its adjacent continuation before trying to rematch the old IDs.
+       connect(*capture);auto refreshed=refreshDashManifest(str(capturePlan,"manifest"),manifestHeaders,prefs,capture,&saved.snapshot,accountMetadata);
+-      ended=!refreshed.manifest.dynamic;transition=planDashPeriodTransition(saved,refreshed,*capture);
++      ended=!refreshed.manifest.dynamic;const auto absoluteRetainedEnd=retainedEnd?std::optional<double>{saved.tracks.front().addressing.period.start+*retainedEnd}:std::optional<double>{};
++      transition=planDashPeriodTransition(saved,refreshed,*capture,absoluteRetainedEnd);
++      if(transition&&!knownEnd&&std::abs(transition->previousEnd-saved.tracks.front().addressing.period.start-*retainedEnd)>0.000001)transition.reset();
+       if(!transition){
+        for(auto& track:saved.tracks)track=rematchDashTrack(refreshed,track,*capture);
+        saved.snapshot=std::move(refreshed);checkpointLiveDashRevision(folder,capturePlan,saved,*capture);preparedState=std::move(saved);
+       }
+      }else transition=planDashPeriodTransition(saved,saved.snapshot,*cancel);
+-     if(transition)session.beginAdvance(*cancel);else if(ended){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
++     if(transition){
++      if(!knownEnd){
++       const double boundary=transition->previousEnd-saved.tracks.front().addressing.period.start;
++       for(auto& track:saved.tracks)track.addressing.period.duration=boundary;
++       // Publish the protected origin/timing proof before updating the index.
++       // A crash between them can restore this revision and finish the checkpoint.
++       checkpointLiveDashRevision(folder,capturePlan,saved,*cancel);
++       index=checkpointDashPeriodEnd(folder,boundary,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);
++      }
++      session.beginAdvance(*cancel);
++     }else if(ended&&knownEnd){index=sealDashRecording(folder,*cancel);session.checkpoint(session.currentFolder(),index,*cancel);session.beginSaving(*cancel);}
+     }catch(const Cancelled&){cancel->check();if(!finishRequested())throw;}
+    }
+   }
+--- 9.81/native/Version.hpp
++++ 9.82/native/Version.hpp
+@@ -1,4 +1,4 @@
+ #pragma once
+-#define UDM_VERSION_TUPLE 9,81,0,0
+-#define UDM_VERSION_STRING "9.81"
+-#define UDM_VERSION_WSTRING L"9.81"
++#define UDM_VERSION_TUPLE 9,82,0,0
++#define UDM_VERSION_STRING "9.82"
++#define UDM_VERSION_WSTRING L"9.82"
+--- 9.81/native/backend-tests.json
++++ 9.82/native/backend-tests.json
+@@ -1,4 +1,8 @@
+ [
++  {
++    "source": "RetiredDashBoundaryTests",
++    "timeoutSeconds": 90
++  },
+   {
+     "source": "FixedVolumeTests",
+     "timeoutSeconds": 90
+--- 9.81/browser/chromium/manifest.json
++++ 9.82/browser/chromium/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.45",
++  "version": "0.73.46",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- 9.81/browser/firefox/manifest.json
++++ 9.82/browser/firefox/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "UDM Integration Module",
+-  "version": "0.73.45",
++  "version": "0.73.46",
+   "description": "UDM download capture, compact video panels, browser request context and persistent desktop integration.",
+   "permissions": [
+     "nativeMessaging",
+--- 9.81/benchmarks/speed/live_dash_restart_workflow.cpp
++++ 9.82/benchmarks/speed/live_dash_restart_workflow.cpp
+@@ -5,16 +5,25 @@
+ namespace udm {struct CatalogCheckpointTestAccess {static void observe(Manager& m,std::function<void(const char*)> callback){Lock lock(m.mutex);m.catalogCheckpoint=std::move(callback);}};}
+ using namespace udm;
+ int wmain(int argc,wchar_t** argv){
+- if(argc!=5)return 2;const auto stage=utf8(argv[1]);if(stage!="capture"&&stage!="baseline"&&stage!="candidate")return 2;const bool capture=stage=="capture";const auto root=fs::absolute(argv[2]),destination=fs::absolute(argv[4]);if(capture){if(fs::exists(root)||fs::exists(destination))return 2;fs::create_directories(root);atomicText(root/L".udm-live-restart-fixture","Owned restart fixture",false);}else if(readText(root/L".udm-live-restart-fixture")!="Owned restart fixture")return 2;
++ if(argc!=5)return 2;const auto stage=utf8(argv[1]);if(stage!="capture"&&stage!="baseline"&&stage!="candidate"&&stage!="revision-only")return 2;const bool capture=stage=="capture";const auto root=fs::absolute(argv[2]),destination=fs::absolute(argv[4]);if(capture){if(fs::exists(root)||fs::exists(destination))return 2;fs::create_directories(root);atomicText(root/L".udm-live-restart-fixture","Owned restart fixture",false);}else if(readText(root/L".udm-live-restart-fixture")!="Owned restart fixture")return 2;
+  WSADATA data{};WSAStartup(MAKEWORD(2,2),&data);CoInitializeEx(nullptr,COINIT_MULTITHREADED);Json checks=Json::array(),saved,decoded=Json::array();std::string error;i64 measured=-1,finalSize=-1;double retainedEnd=-1,retainedDuration=-1;std::atomic<int> publications{0};
+  const auto check=[&](bool ok,const char* name){checks.push_back({{"passed",ok},{"name",name}});if(!ok)throw std::runtime_error(name);};
+  try{Manager manager(root/L"catalog");JobPtr job;const auto manifest=utf8(argv[3]);
+  if(capture){auto prefs=manager.state["Settings"];prefs["DownloadFolder"]=utf8(destination.wstring());prefs["TemporaryFolder"]=utf8((root/L"temporary").wstring());prefs["CategoryFolders"]=false;prefs["Parallel"]=1;prefs["Retries"]=1;manager.setSettings(prefs);Json plan={{"type","dash"},{"live",true},{"manifest",manifest},{"container","mp4"},{"audioOnly",false},{"audioExpected",false},{"height",360},{"tracks",Json::array({{{"kind","video"},{"periodId","p0"},{"adaptationId","v"},{"representationId","r"},{"credentialUrls",Json::array()}}})}};job=receiveAdaptive(manager,{{"url","https://example.invalid/owned-restart"},{"filename","restart.mp4"},{"plan",plan}});}
+  else{check(manager.jobs.size()==1,"Fresh process reopens exactly one saved recording");job=manager.jobs.front();check(str(Json::parse(reveal(str(job->data,"ProtectedAdaptive"))),"manifest")==manifest&&job->target().parent_path()==destination,"Restart retains the exact manifest and destination");}
++ if(stage=="revision-only"){
++  Cancel token;const auto folder=fs::path(wide(str(job->data,"MediaFolder")))/L"live-dash";const auto index=reconcileDashRecording(folder,token);const auto plan=Json::parse(reveal(str(job->data,"ProtectedAdaptive")));auto state=loadLiveDashState(folder,plan,index,token);const auto end=dashRetainedPeriodEnd(index,token);
++  check(end.has_value()&&index["tracks"].front()["periodDuration"].is_null(),"The fault fixture starts with verified unknown-duration media");
++  for(auto& track:state.tracks)track.addressing.period.duration=*end;
++  checkpointLiveDashRevision(folder,plan,state,token);
++  const auto unchanged=reconcileDashRecording(folder,token);check(unchanged["tracks"].front()["periodDuration"].is_null()&&!yes(unchanged,"sealed"),"Simulated interruption leaves only the protected timing revision committed");
++  manager.stop();saved=job->snapshot();
++ }else{
+  CatalogCheckpointTestAccess::observe(manager,[&](const char* point){if(std::string_view(point)=="publication-preflight-begin"){Lock lock(manager.mutex);++publications;measured=num(job->data.value("RetainedMediaOutput",Json::object()),"Size",-1);}});manager.resume(job);manager.dispatchQueueWork();const auto deadline=GetTickCount64()+45000;bool pauseReady=false;
+  while(manager.isActive(job)&&GetTickCount64()<deadline){if(capture){{Lock lock(manager.mutex);pauseReady=real(job->data,"LiveCapturedSeconds")>=.999;}if(pauseReady){manager.pause(job);break;}}Sleep(20);}
+  if(manager.isActive(job)&&(!capture||!pauseReady))manager.pause(job);manager.stop();CatalogCheckpointTestAccess::observe(manager,{});saved=job->snapshot();
+  if(capture){check(pauseReady,"A verified one-second prefix is captured before pausing");check(str(saved,"Status")=="Paused"&&!fs::exists(job->target())&&publications==0,"Pause preserves a nonpublished recording");Cancel token;const auto folder=fs::path(wide(str(saved,"MediaFolder")))/L"live-dash";const auto index=reconcileDashRecording(folder,token);const auto progress=liveDashProgress(index);retainedEnd=progress.end;retainedDuration=real(index["tracks"].front(),"periodDuration");check(!yes(index,"sealed")&&progress.ready&&progress.end>=.999,"Actual saved resources retain the verified unsealed prefix");}
+  else{check(str(saved,"Status")=="Complete",("Resume completes: "+str(saved,"Error")).c_str());check(publications==1,"Fresh-process Resume publishes exactly once");finalSize=(i64)fs::file_size(job->target());check(measured>0&&measured==finalSize&&fileHash(job->target())==str(saved,"Sha256"),"Resumed output matches exact assembled size and checksum");Cancel token;const auto plan=Json::parse(reveal(str(saved,"ProtectedAdaptive")));DashRecordingSession session(fs::path(wide(str(saved,"MediaFolder")))/L"live-dash",plan,token);check(session.folders()==std::vector<std::string>{".","period-0001"}&&real(saved,"LiveCapturedSeconds")>=1.999,"Restart retains the retired first Period and appends the adjacent continuation");const auto text=execute(appDir()/L"tools/ffmpeg.exe",{L"-hide_banner",L"-loglevel",L"error",L"-xerror",L"-nostdin",L"-i",job->target().wstring(),L"-map",L"0:v:0",L"-f",L"framemd5",L"-"},30,token);std::istringstream lines(text);std::string line;while(std::getline(lines,line))if(!line.empty()&&line[0]!='#'){const auto comma=line.rfind(',');if(comma==std::string::npos)throw std::runtime_error("Invalid decoded frame record");decoded.push_back(trim(line.substr(comma+1)));}check(decoded.size()==20,"Resumed recording decodes all twenty original frames through EOF");}
++ }
+  }catch(const std::exception& e){error=e.what();}atomicText(root/(wide(stage)+L"-results.json"),Json{{"passed",error.empty()},{"error",error},{"checks",checks},{"savedJob",saved},{"frames",decoded},{"retainedEnd",retainedEnd},{"retainedPeriodDuration",retainedDuration},{"prePublicationBytes",measured},{"finalBytes",finalSize},{"publications",publications.load()}}.dump(2),false);std::cout<<stage<<": "<<checks.size()<<" checks; "<<error<<"\n";CoUninitialize();WSACleanup();return error.empty()?0:1;
+ }
+--- /dev/null
++++ 9.82/native/RetiredDashBoundaryTests.cpp
+@@ -0,0 +1,46 @@
++#include "DashManifest.hpp"
++#include <iostream>
++#include <limits>
++using namespace udm;
++int wmain(int argc,wchar_t** argv){
++ if(argc!=2)return 2;const auto root=fs::absolute(argv[1]);if(fs::exists(root))return 2;fs::create_directories(root);Json checks=Json::array();std::string error;
++ const auto check=[&](bool ok,const char* name){checks.push_back({{"name",name},{"passed",ok}});if(!ok)throw std::runtime_error(name);};
++ try{
++  Cancel token;
++  Json track={{"identity",{{"timescale",1000},{"presentationTimeOffset",0}}},{"periodDuration",nullptr},{"segments",{{"1",{{"number",1},{"time",0},{"duration",1000},{"committed",true},{"resource",Json::object()}}},{"2",{{"number",2},{"time",1000},{"duration",1000},{"committed",true},{"resource",Json::object()}}}}}};
++  const Json original={{"captureStart",0},{"captureEnd",nullptr},{"tracks",Json::array({track})}};
++  auto end=dashRetainedPeriodEnd(original,token);check(end&&*end==2,"A fully retained contiguous track proves its exact observed end");
++  auto rejects=[&](Json index,const char* name){check(!dashRetainedPeriodEnd(index,token),name);};
++  auto change=[&](const char* field,Json value,const char* name){auto index=original;index["tracks"][0]["segments"]["2"][field]=std::move(value);rejects(std::move(index),name);};
++  change("time",1100,"A timestamp gap cannot prove a Period boundary");change("time",900,"Overlapping timestamps cannot prove a Period boundary");change("number",3,"A missing segment number cannot prove coverage");change("number",1,"Duplicate segment numbers cannot hide a missing range");change("committed",false,"An unfinished tail cannot prove an end");change("duration",0,"Zero-duration media cannot supply a boundary");change("duration",-1,"Negative media duration is rejected");change("time",9007199254740991LL,"Tick addition cannot exceed exact supported precision");
++  auto index=original;index["tracks"][0]["segments"]["2"].erase("resource");rejects(index,"A completion flag without a resource is not evidence");
++  index=original;index["tracks"][0]["pendingInitialization"]=Json::object();rejects(index,"Pending initialization prevents boundary promotion");
++  index=original;index["tracks"][0]["initialization"]=Json::object();rejects(index,"Unverified initialization cannot establish a recording end");index["tracks"][0]["initializationVerified"]=true;check(dashRetainedPeriodEnd(index,token).has_value(),"Verified initialization permits the complete coverage proof");
++  for(i64 scale:{0LL,-1LL,9007199254740992LL}){index=original;index["tracks"][0]["identity"]["timescale"]=scale;rejects(index,"Invalid or inexact timescales are rejected");}
++  index=original;index["captureStart"]=.5;check(dashRetainedPeriodEnd(index,token)==std::optional<double>{2},"A requested start inside the first retained segment keeps the exact end");
++  index["captureStart"]=2;rejects(index,"An empty retained interval cannot establish a boundary");
++  index=original;index["captureEnd"]=1.5;rejects(index,"A prior different stop boundary is preserved");
++  index=original;index["tracks"][0]["periodDuration"]=3;rejects(index,"A known longer Period cannot be shortened to the observed prefix");
++  index=original;index["tracks"][0]["periodDuration"]=2;check(dashRetainedPeriodEnd(index,token).has_value(),"A matching known duration remains valid");
++  index=original;auto audio=track;audio["identity"]["timescale"]=48000;audio["segments"]["1"]["duration"]=48000;audio["segments"]["2"]["time"]=48000;audio["segments"]["2"]["duration"]=48000;index["tracks"].push_back(audio);check(dashRetainedPeriodEnd(index,token)==std::optional<double>{2},"Different track timescales must agree on the same presentation boundary");
++  index["tracks"][1]["segments"]["2"]["duration"]=47900;rejects(index,"A shorter audio track prevents inference from video alone");
++  index["tracks"][1]["segments"]["2"]["duration"]=48100;rejects(index,"A longer audio track cannot be silently clipped to video");
++  Cancel stopped;stopped.stop=true;bool cancelled=false;try{dashRetainedPeriodEnd(original,stopped);}catch(const Cancelled&){cancelled=true;}check(cancelled,"Coverage inspection honors parent cancellation");
++  const std::string prefix="<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" id=\"owned-boundary\" type=\"dynamic\" availabilityStartTime=\"2026-11-21T00:00:00Z\" publishTime=\"2026-11-21T00:01:00Z\">";
++  const auto period=[](const std::string& id,const std::string& timing,const std::string& codec="avc1.42c01e"){return "<Period id=\""+id+"\" "+timing+"><AdaptationSet id=\"v\" mimeType=\"video/mp4\" codecs=\""+codec+"\" width=\"640\" height=\"360\"><Representation id=\"r\" bandwidth=\"100000\"><SegmentList timescale=\"1000\"><SegmentTimeline><S t=\"0\" d=\"1000\"/></SegmentTimeline><Initialization sourceURL=\"init.mp4\"/><SegmentURL media=\"segment.m4s\"/></SegmentList></Representation></AdaptationSet></Period>";};
++  const auto snapshot=[&](std::string body){DashManifestSnapshot result;result.requestUrl=result.url="http://127.0.0.1/owned/manifest.mpd";result.document=std::move(body);result.manifest=parseDashManifest(result.document,token);return result;};
++  auto old=snapshot(prefix+period("p0","start=\"PT0S\"")+"</MPD>");std::vector<size_t> representations;for(size_t n=0;n<old.manifest.nodes.size();++n)if(old.manifest.nodes[n].name=="Representation")representations.push_back(n);auto state=createDashLiveState(old,representations,token);
++  check(!state.tracks.front().addressing.period.duration,"The old live Period starts without a declared end");
++  auto fresh=snapshot(prefix+period("p1","start=\"PT2S\" duration=\"PT1S\"")+"</MPD>");
++  const auto refusal=[&](const DashManifestSnapshot& next,std::optional<double> proof,const char* name){bool denied=false;try{planDashPeriodTransition(state,next,token,proof);}catch(const std::runtime_error&){denied=true;}check(denied,name);};
++  refusal(fresh,{},"A retired unknown-duration Period cannot advance without retained coverage");
++  auto planned=planDashPeriodTransition(state,fresh,token,2);check(planned&&planned->previousEnd==2&&planned->state.tracks.front().periodId=="p1","Exact retained coverage and a fresh explicit successor boundary permit continuation");
++  refusal(fresh,1,"A gap between retained media and the successor is rejected");refusal(fresh,3,"Retained overlap beyond the successor is rejected");refusal(fresh,std::numeric_limits<double>::infinity(),"A nonfinite coverage claim is rejected");
++  refusal(snapshot(prefix+period("p1","duration=\"PT1S\"")+"</MPD>"),2,"An implicit first Period start cannot invent the missing boundary");
++  auto changed=fresh;auto at=changed.document.find("owned-boundary");changed.document.replace(at,14,"other-boundary");changed.manifest=parseDashManifest(changed.document,token);refusal(changed,2,"A different presentation cannot adopt retained media");
++  refusal(snapshot(prefix+period("p1","start=\"PT2S\" duration=\"PT1S\"","hvc1.1.6.L93.B0")+"</MPD>"),2,"A successor with incompatible codecs is not joined");
++  auto visible=snapshot(prefix+period("p0","start=\"PT0S\"")+period("p1","start=\"PT2S\" duration=\"PT1S\"")+"</MPD>");planned=planDashPeriodTransition(state,visible,token);check(planned&&planned->previousEnd==2,"A still-visible Period retains the ordinary manifest-derived boundary path");
++  auto known=state;for(auto& selected:known.tracks)selected.addressing.period.duration=2;planned=planDashPeriodTransition(known,fresh,token);check(planned&&planned->previousEnd==2,"A previously known retired Period requires no inferred coverage argument");
++ }catch(const std::exception& e){error=e.what();}
++ atomicText(root/L"results.json",Json{{"passed",error.empty()},{"error",error},{"checks",checks}}.dump(2),false);std::cout<<checks.size()<<" checks; "<<error<<"\n";return error.empty()?0:1;
++}

@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "oldSamples": 48128,
+  "newSamples": 48000,
+  "expectedSamples": 48000,
+  "audioEncodedPacketsIdentical": true,
+  "audioPackets": 47,
+  "captionEncodedPacketsIdentical": true,
+  "sourceVideoOracles": [
+    {
+      "case": "caption48",
+      "sourceVideoPacketsAndTimingExact": true,
+      "packets": 25
+    },
+    {
+      "case": "caption44",
+      "sourceVideoPacketsAndTimingExact": true,
+      "packets": 25
+    },
+    {
+      "case": "caption-empty",
+      "sourceVideoPacketsAndTimingExact": true,
+      "packets": 25
+    },
+    {
+      "case": "caption-offset",
+      "sourceVideoPacketsAndTimingExact": true,
+      "packets": 25
+    }
+  ],
+  "oldFirstVideoNalTypes": [
+    6,
+    7,
+    8,
+    5
+  ],
+  "newFirstVideoNalTypes": [
+    6,
+    5
+  ],
+  "oldExtraConfigurationNalBytes": 36,
+  "combinedMdatBytesIdentical": false,
+  "reason": "The old concat pass adds SPS/PPS NAL units to the first H.264 packet; the new packets exactly match the source payloads and normalized PTS/DTS/duration.",
+  "oldFileBytes": 47208,
+  "newFileBytes": 47664
+}

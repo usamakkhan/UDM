@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "name": "Fresh process reopens exactly one saved recording",
+      "passed": true
+    },
+    {
+      "name": "Restart retains the exact manifest and destination",
+      "passed": true
+    },
+    {
+      "name": "The fault fixture starts with verified unknown-duration media",
+      "passed": true
+    },
+    {
+      "name": "Simulated interruption leaves only the protected timing revision committed",
+      "passed": true
+    }
+  ],
+  "error": "",
+  "finalBytes": -1,
+  "frames": [],
+  "passed": true,
+  "prePublicationBytes": -1,
+  "publications": 0,
+  "retainedEnd": -1.0,
+  "retainedPeriodDuration": -1.0,
+  "ownedJob": {
+    "Status": "Paused",
+    "Error": "",
+    "Sha256": "",
+    "Size": -1,
+    "Received": 106375,
+    "LiveCapturedSeconds": 1.0,
+    "LiveRecording": true,
+    "TransferredBytes": 107138,
+    "AdaptiveMetadataBytes": 763,
+    "TransferSeconds": 0.5780108,
+    "ElapsedSeconds": 0.5780123,
+    "MediaPhase": "Paused"
+  }
+}

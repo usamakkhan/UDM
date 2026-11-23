@@ -1,0 +1,57 @@
+#pragma once
+#include "Core.hpp"
+#include "Scanner.hpp"
+#include "ModelMaintenance.hpp"
+namespace udm {
+// UI-thread-only binding. The notifier itself uses the dialog's generation-
+// checked weak signal; no Form pointer or action crosses the worker boundary.
+class CompletionCountdownWakeGuard {
+ std::function<void()>& slot;
+public:
+ explicit CompletionCountdownWakeGuard(std::function<void()>& target):slot(target){if(slot)throw std::logic_error("A completion countdown wake is already owned.");}
+ CompletionCountdownWakeGuard(const CompletionCountdownWakeGuard&)=delete;CompletionCountdownWakeGuard& operator=(const CompletionCountdownWakeGuard&)=delete;
+ ~CompletionCountdownWakeGuard(){reset();}
+ void bind(std::function<void()> notify){if(slot)throw std::logic_error("The completion countdown wake is already bound.");slot=std::move(notify);}
+ void reset()noexcept{slot={};}
+};
+enum class CompletionCountdownTick { Pending, Ready, Failed };
+// At expiry, drain older work then acknowledge a newly requested scheduler
+// tick before allowing a fresh eligibility read. Never join on the UI thread.
+class CompletionCountdownDeadline {
+ bool requested=false;uint64_t expected=0,failures=0;
+public:
+ CompletionCountdownTick poll(ModelMaintenance& worker,bool expired,std::string& error,bool periodic=true){
+  auto state=worker.takeResult();if(!state.tickError.empty())error=state.tickError;if(!state.dispatchError.empty())error=state.dispatchError;
+  if(state.stopping)return CompletionCountdownTick::Failed;
+  // A completion wake refreshes eligibility, never requests its own successor.
+  // Periodic pulses keep normal scheduling alive without a wake/tick spin loop.
+  if(!expired){return (!periodic||worker.requestTick())?CompletionCountdownTick::Ready:CompletionCountdownTick::Failed;}
+  if(!requested){
+   if(state.active||state.tickPending||state.dispatchPending)return CompletionCountdownTick::Pending;
+   expected=state.ticks+1;failures=state.tickFailures;
+   if(!worker.requestTick())return CompletionCountdownTick::Failed;
+   requested=true;return CompletionCountdownTick::Pending;
+  }
+  if(state.ticks<expected)return CompletionCountdownTick::Pending;
+  return state.tickFailures==failures?CompletionCountdownTick::Ready:CompletionCountdownTick::Failed;
+ }
+};
+enum class CompletionCountdownState { Busy, Obsolete, WaitingForOthers, Ready };
+struct CompletionCountdownView {
+ CompletionCountdownState state=CompletionCountdownState::Busy;
+ std::string fileName;
+};
+// Read-only UI admission. Busy keeps the accepted action and its Cancel button
+// alive; it never waits for a scheduler/checkpoint or borrows another decision.
+inline CompletionCountdownView tryFileCompletionCountdown(Manager& manager,const JobPtr& job,const Json& action){
+ std::unique_lock lock(manager.mutex,std::try_to_lock);
+ if(!lock.owns_lock()||manager.fileInfoDecisionPending)return {};
+ if(!job||std::find(manager.jobs.begin(),manager.jobs.end(),job)==manager.jobs.end()
+    ||str(job->data,"Status")!="Complete"||manager.isActive(job)||!scannerAllowsCompletion(job->data))
+  return {CompletionCountdownState::Obsolete,{}};
+ if(yes(action,"WaitForOthers",true))for(const auto& other:manager.jobs)
+  if(other!=job&&(manager.isActive(other)||str(other->data,"Status")=="Queued"))
+   return {CompletionCountdownState::WaitingForOthers,{}};
+ return {CompletionCountdownState::Ready,str(job->data,"FileName")};
+}
+}

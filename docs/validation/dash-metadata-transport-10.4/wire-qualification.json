@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "actorChecks": [
+    {
+      "name": "Actual manifest uses the recording-owned transport",
+      "passed": true
+    },
+    {
+      "name": "A repeated manifest remains bound to its source document",
+      "passed": true
+    },
+    {
+      "name": "Actual HTTP clock synchronization succeeds through sanitized preferences",
+      "passed": true
+    },
+    {
+      "name": "Cross-origin redirect completes with its independently scoped transport",
+      "passed": true
+    },
+    {
+      "name": "Fully closed requests do not retain the recording's pool after scope exit",
+      "passed": true
+    }
+  ],
+  "requestCount": 9,
+  "rotatedCookieReused": true,
+  "nextRecordingCookieIsolated": true,
+  "authorizationIsRequestLocal": true,
+  "clockAndRedirectCredentialsIsolated": true,
+  "recipeSha256": "f81c6d604c67254cff74def2a964283b6c01fcc8b352da6792952185eaa9e02b",
+  "actorSha256": "79d41efb489c0b9dc69f0a199b60487d9550781a1db1acf0e7ed6a4ec1796282"
+}
